@@ -18,207 +18,210 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 import {async_beforeEach, async_fit, async_it} from './async';
 
-const dist =
-    new MockFileSystemBuilder()
-        .addFile('/foo.txt', 'this is foo')
-        .addFile('/bar.txt', 'this is bar')
-        .addFile('/baz.txt', 'this is baz')
-        .addFile('/qux.txt', 'this is qux')
-        .addFile('/quux.txt', 'this is quux')
-        .addFile('/quuux.txt', 'this is quuux')
-        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
-        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
-        .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
-        .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
-        .build();
-
-const distUpdate =
-    new MockFileSystemBuilder()
-        .addFile('/foo.txt', 'this is foo v2')
-        .addFile('/bar.txt', 'this is bar')
-        .addFile('/baz.txt', 'this is baz v2')
-        .addFile('/qux.txt', 'this is qux v2')
-        .addFile('/quux.txt', 'this is quux v2')
-        .addFile('/quuux.txt', 'this is quuux v2')
-        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
-        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
-        .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
-        .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
-        .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
-        .build();
-
-const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').build();
-
-const brokenManifest: Manifest = {
-  configVersion: 1,
-  timestamp: 1234567890123,
-  index: '/foo.txt',
-  assetGroups: [{
-    name: 'assets',
-    installMode: 'prefetch',
-    updateMode: 'prefetch',
-    urls: [
-      '/foo.txt',
-    ],
-    patterns: [],
-  }],
-  dataGroups: [],
-  navigationUrls: processNavigationUrls(''),
-  hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
-};
-
-// Manifest without navigation urls to test backward compatibility with
-// versions < 6.0.0.
-export interface ManifestV5 {
-  configVersion: number;
-  appData?: {[key: string]: string};
-  index: string;
-  assetGroups?: AssetGroupConfig[];
-  dataGroups?: DataGroupConfig[];
-  hashTable: {[url: string]: string};
-}
-
-// To simulate versions < 6.0.0
-const manifestOld: ManifestV5 = {
-  configVersion: 1,
-  index: '/foo.txt',
-  hashTable: tmpHashTableForFs(dist),
-};
-
-const manifest: Manifest = {
-  configVersion: 1,
-  timestamp: 1234567890123,
-  appData: {
-    version: 'original',
-  },
-  index: '/foo.txt',
-  assetGroups: [
-    {
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
-    },
-    {
-      name: 'other',
-      installMode: 'lazy',
-      updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
-      patterns: [],
-    },
-    {
-      name: 'lazy_prefetch',
-      installMode: 'lazy',
-      updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
-      patterns: [],
-    }
-  ],
-  navigationUrls: processNavigationUrls(''),
-  hashTable: tmpHashTableForFs(dist),
-};
-
-const manifestUpdate: Manifest = {
-  configVersion: 1,
-  timestamp: 1234567890123,
-  appData: {
-    version: 'update',
-  },
-  index: '/foo.txt',
-  assetGroups: [
-    {
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: [
-        '/foo.txt',
-        '/bar.txt',
-        '/redirected.txt',
-      ],
-      patterns: [
-        '/unhashed/.*',
-      ],
-    },
-    {
-      name: 'other',
-      installMode: 'lazy',
-      updateMode: 'lazy',
-      urls: [
-        '/baz.txt',
-        '/qux.txt',
-      ],
-      patterns: [],
-    },
-    {
-      name: 'lazy_prefetch',
-      installMode: 'lazy',
-      updateMode: 'prefetch',
-      urls: [
-        '/quux.txt',
-        '/quuux.txt',
-        '/lazy/unchanged1.txt',
-        '/lazy/unchanged2.txt',
-      ],
-      patterns: [],
-    }
-  ],
-  navigationUrls: processNavigationUrls(
-      '',
-      [
-        '/**/file1',
-        '/**/file2',
-        '!/ignored/file1',
-        '!/ignored/dir/**',
-      ]),
-  hashTable: tmpHashTableForFs(distUpdate),
-};
-
-const serverBuilderBase =
-    new MockServerStateBuilder()
-        .withStaticFiles(dist)
-        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-        .withError('/error.txt');
-
-const server = serverBuilderBase.withManifest(manifest).build();
-
-const serverRollback =
-    serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
-
-const serverUpdate =
-    new MockServerStateBuilder()
-        .withStaticFiles(distUpdate)
-        .withManifest(manifestUpdate)
-        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-        .build();
-
-const brokenServer =
-    new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
-
-const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
-
-const manifestHash = sha1(JSON.stringify(manifest));
-const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
+  const dist =
+      new MockFileSystemBuilder()
+          .addFile('/foo.txt', 'this is foo')
+          .addFile('/bar.txt', 'this is bar')
+          .addFile('/baz.txt', 'this is baz')
+          .addFile('/qux.txt', 'this is qux')
+          .addFile('/quux.txt', 'this is quux')
+          .addFile('/quuux.txt', 'this is quuux')
+          .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+          .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
+          .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
+          .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+          .build();
+
+  const distUpdate =
+      new MockFileSystemBuilder()
+          .addFile('/foo.txt', 'this is foo v2')
+          .addFile('/bar.txt', 'this is bar')
+          .addFile('/baz.txt', 'this is baz v2')
+          .addFile('/qux.txt', 'this is qux v2')
+          .addFile('/quux.txt', 'this is quux v2')
+          .addFile('/quuux.txt', 'this is quuux v2')
+          .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+          .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
+          .addUnhashedFile(
+              '/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
+          .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
+          .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
+          .build();
+
+  const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').build();
+
+  const brokenManifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    index: '/foo.txt',
+    assetGroups: [{
+      name: 'assets',
+      installMode: 'prefetch',
+      updateMode: 'prefetch',
+      urls: [
+        '/foo.txt',
+      ],
+      patterns: [],
+    }],
+    dataGroups: [],
+    navigationUrls: processNavigationUrls(''),
+    hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
+  };
+
+  // Manifest without navigation urls to test backward compatibility with
+  // versions < 6.0.0.
+  interface ManifestV5 {
+    configVersion: number;
+    appData?: {[key: string]: string};
+    index: string;
+    assetGroups?: AssetGroupConfig[];
+    dataGroups?: DataGroupConfig[];
+    hashTable: {[url: string]: string};
+  }
+
+  // To simulate versions < 6.0.0
+  const manifestOld: ManifestV5 = {
+    configVersion: 1,
+    index: '/foo.txt',
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const manifest: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {
+      version: 'original',
+    },
+    index: '/foo.txt',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+          '/bar.txt',
+          '/redirected.txt',
+        ],
+        patterns: [
+          '/unhashed/.*',
+        ],
+      },
+      {
+        name: 'other',
+        installMode: 'lazy',
+        updateMode: 'lazy',
+        urls: [
+          '/baz.txt',
+          '/qux.txt',
+        ],
+        patterns: [],
+      },
+      {
+        name: 'lazy_prefetch',
+        installMode: 'lazy',
+        updateMode: 'prefetch',
+        urls: [
+          '/quux.txt',
+          '/quuux.txt',
+          '/lazy/unchanged1.txt',
+          '/lazy/unchanged2.txt',
+        ],
+        patterns: [],
+      }
+    ],
+    navigationUrls: processNavigationUrls(''),
+    hashTable: tmpHashTableForFs(dist),
+  };
+
+  const manifestUpdate: Manifest = {
+    configVersion: 1,
+    timestamp: 1234567890123,
+    appData: {
+      version: 'update',
+    },
+    index: '/foo.txt',
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/foo.txt',
+          '/bar.txt',
+          '/redirected.txt',
+        ],
+        patterns: [
+          '/unhashed/.*',
+        ],
+      },
+      {
+        name: 'other',
+        installMode: 'lazy',
+        updateMode: 'lazy',
+        urls: [
+          '/baz.txt',
+          '/qux.txt',
+        ],
+        patterns: [],
+      },
+      {
+        name: 'lazy_prefetch',
+        installMode: 'lazy',
+        updateMode: 'prefetch',
+        urls: [
+          '/quux.txt',
+          '/quuux.txt',
+          '/lazy/unchanged1.txt',
+          '/lazy/unchanged2.txt',
+        ],
+        patterns: [],
+      }
+    ],
+    navigationUrls: processNavigationUrls(
+        '',
+        [
+          '/**/file1',
+          '/**/file2',
+          '!/ignored/file1',
+          '!/ignored/dir/**',
+        ]),
+    hashTable: tmpHashTableForFs(distUpdate),
+  };
+
+  const serverBuilderBase =
+      new MockServerStateBuilder()
+          .withStaticFiles(dist)
+          .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+          .withError('/error.txt');
+
+  const server = serverBuilderBase.withManifest(manifest).build();
+
+  const serverRollback =
+      serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
+
+  const serverUpdate =
+      new MockServerStateBuilder()
+          .withStaticFiles(distUpdate)
+          .withManifest(manifestUpdate)
+          .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+          .build();
+
+  const brokenServer =
+      new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
+
+  const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
+
+  const manifestHash = sha1(JSON.stringify(manifest));
+  const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
+
+
   describe('Driver', () => {
     let scope: SwTestHarness;
     let driver: Driver;
