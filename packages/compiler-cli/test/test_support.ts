@@ -122,15 +122,8 @@ export function setupBazelTo(tmpDirPath: string) {
   fs.mkdirSync(nodeModulesPath);
   fs.mkdirSync(angularDirectory);
 
-  getAngularPackagesFromRunfiles().forEach(({pkgPath, name}) => {
-    fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'dir');
-
-    // todo: check why we always need an index.d.ts
-    if (!fs.existsSync(path.join(angularDirectory, name, 'index.d.ts'))) {
-      fs.symlinkSync(
-          path.join(pkgPath, `${name}.d.ts`), path.join(angularDirectory, name, 'index.d.ts'));
-    }
-  });
+  getAngularPackagesFromRunfiles().forEach(
+      ({pkgPath, name}) => { fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'dir'); });
 
   // Link typescript
   const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
