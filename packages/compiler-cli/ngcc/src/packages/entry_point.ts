@@ -55,6 +55,9 @@ export interface EntryPointPackageJson extends PackageJsonFormatProperties {
 }
 
 export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);
+// We need to keep the elements of this const and the `EntryPointJsonProperty` type in sync.
+export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
+    ['fesm2015', 'fesm5', 'es2015', 'esm2015', 'esm5', 'main', 'module'];
 
 /**
  * Try to create an entry-point from the given paths and properties.
