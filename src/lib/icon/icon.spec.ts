@@ -57,6 +57,7 @@ describe('MatIcon', () => {
         IconWithBindingAndNgIf,
         InlineIcon,
         SvgIconWithUserContent,
+        IconWithLigatureAndSvgBinding,
       ],
       providers: [{
         provide: MAT_ICON_LOCATION,
@@ -161,6 +162,19 @@ describe('MatIcon', () => {
       expect(sortedClassNames(matIconElement))
           .toEqual(['mat-icon', 'mat-icon-no-color', 'myfont', 'notranslate']);
     });
+
+    it('should not clear the text of a ligature icon if the svgIcon is bound to something falsy',
+      () => {
+        let fixture = TestBed.createComponent(IconWithLigatureAndSvgBinding);
+
+        const testComponent = fixture.componentInstance;
+        const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+        testComponent.iconName = undefined;
+        fixture.detectChanges();
+
+        expect(matIconElement.textContent.trim()).toBe('house');
+      });
+
   });
 
   describe('Icons from URLs', () => {
@@ -853,4 +867,9 @@ class InlineIcon {
 @Component({template: `<mat-icon [svgIcon]="iconName"><div>Hello</div></mat-icon>`})
 class SvgIconWithUserContent {
   iconName: string | undefined = '';
+}
+
+@Component({template: '<mat-icon [svgIcon]="iconName">house</mat-icon>'})
+class IconWithLigatureAndSvgBinding {
+  iconName: string | undefined;
 }
