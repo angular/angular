@@ -48,7 +48,8 @@ export interface Decorator {
  * Classes are represented differently in different code formats:
  * - In TS code, they are typically defined using the `class` keyword.
  * - In ES2015 code, they are usually defined using the `class` keyword, but they can also be
- *   variable declarations, which are assigned to a class (e.g. `let Foo = Foo1 = class Foo {}`).
+ *   variable declarations, which are initialized to a class expression (e.g.
+ *   `let Foo = Foo1 = class Foo {}`).
  * - In ES5 code, they are typically defined as variable declarations being assigned the return
  *   value of an IIFE. The actual "class" is implemented as a constructor function inside the IIFE,
  *   but the outer variable declaration represents the "class" to the rest of the program.
