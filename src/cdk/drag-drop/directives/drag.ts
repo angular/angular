@@ -30,7 +30,7 @@ import {
   SimpleChanges,
   ChangeDetectorRef,
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {Observable, Observer, Subject, merge} from 'rxjs';
 import {startWith, take, map, takeUntil, switchMap, tap} from 'rxjs/operators';
 import {DragDropRegistry} from '../drag-drop-registry';
@@ -317,7 +317,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
-        ref.dragStartDelay = this.dragStartDelay;
+        ref.dragStartDelay = coerceNumberProperty(this.dragStartDelay);
         ref.constrainPosition = this.constrainPosition;
         ref
           .withBoundaryElement(this._getBoundaryElement())
