@@ -225,7 +225,6 @@ import {async_beforeEach, async_fit, async_it} from './async';
   describe('Driver', () => {
     let scope: SwTestHarness;
     let driver: Driver;
-    let baseHref = '/';
 
     beforeEach(() => {
       server.reset();
@@ -312,7 +311,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       server.clearRequests();
-      expect(await makeRequest(scope, `http://localhost${baseHref}foo.txt`)).toEqual('this is foo');
+      expect(await makeRequest(scope, 'http://localhost/foo.txt')).toEqual('this is foo');
       server.assertNoOtherRequests();
     });
 
@@ -588,8 +587,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
 
       let keys = await scope.caches.keys();
-      let hasOriginalCaches =
-          keys.some(name => name.startsWith(`ngsw:${baseHref}:${manifestHash}:`));
+      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(true);
 
       scope.clients.remove('default');
@@ -602,7 +600,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
 
       keys = await scope.caches.keys();
-      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${baseHref}:${manifestHash}:`));
+      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(false);
     });
 
@@ -845,7 +843,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       });
 
       async_it('redirects to index on a request to the origin URL request', async() => {
-        expect(await navRequest(`http://localhost${baseHref}`)).toEqual('this is foo');
+        expect(await navRequest('http://localhost/')).toEqual('this is foo');
         server.assertNoOtherRequests();
       });
 
@@ -931,7 +929,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
         });
 
         async_it('strips registration scope before checking `navigationUrls`', async() => {
-          expect(await navRequest(`http://localhost${baseHref}ignored/file1`))
+          expect(await navRequest('http://localhost/ignored/file1'))
               .toBe('this is not handled by the SW');
           serverUpdate.assertSawRequestFor('/ignored/file1');
         });
@@ -940,13 +938,21 @@ import {async_beforeEach, async_fit, async_it} from './async';
 
     describe('cleanupOldSwCaches()', () => {
       async_it('should delete the correct caches', async() => {
-        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
+        const oldSwCacheNames = [
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:active',
+          'ngsw:staged',
+          'ngsw:manifest:a1b2c3:super:duper',
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:a1b2c3:assets:foo',
+          'ngsw:db:a1b2c3:assets:bar',
+        ];
         const otherCacheNames = [
-          `ngsuu:${baseHref}:active`,
-          `not:${baseHref}:ngsw:active`,
-          `ngsw:${baseHref}:staged:not`,
-          `NgSw:${baseHref}:StAgEd`,
-          `ngsw:${baseHref}:manifest`,
+          'ngsuu:active',
+          'not:ngsw:active',
+          'NgSw:StAgEd',
+          'ngsw:/:active',
+          'ngsw:/foo/:staged',
         ];
         const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
 
