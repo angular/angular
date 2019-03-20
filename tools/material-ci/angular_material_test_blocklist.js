@@ -17,8 +17,16 @@
 // tslint:disable
 
 window.testBlocklist = {
+  "CdkDrag standalone draggable should throw if attached to an ng-container": {
+    "error": "Error: Expected function to throw an exception with a message matching /^cdkDrag must be attached to an element node/, but it threw an exception with message 'No provider for ChangeDetectorRef!'.",
+    "notes": "Unknown"
+  },
+  "MatBadge should clear any pre-existing badges": {
+    "error": "Error: Expected 2 to be 1.",
+    "notes": "Unknown"
+  },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c22979-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c380-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
