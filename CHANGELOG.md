@@ -1,3 +1,13 @@
+<a name="7.2.10"></a>
+## [7.2.10](https://github.com/angular/angular/compare/7.2.9...7.2.10) (2019-03-20)
+
+
+### Bug Fixes
+
+* **compiler-cli:** incorrect metadata bundle for multiple unnamed re-exports ([#29360](https://github.com/angular/angular/issues/29360)) ([cf8d934](https://github.com/angular/angular/commit/cf8d934)), closes [/github.com/angular/material2/blob/master/tools/package-tools/build-release.ts#L78-L85](https://github.com//github.com/angular/material2/blob/master/tools/package-tools/build-release.ts/issues/L78-L85)
+
+
+
 <a name="7.2.9"></a>
 ## [7.2.9](https://github.com/angular/angular/compare/7.2.8...7.2.9) (2019-03-12)
 
