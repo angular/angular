@@ -7,9 +7,8 @@
  */
 
 import {Stack} from '@angular/core/src/render3/util/stack';
-import {onlyInIvy} from '@angular/private/testing';
 
-onlyInIvy('Stacks are only used for Ivy').describe('Stack', () => {
+describe('Stack', () => {
   it('should push and pop values', () => {
     const stack = new Stack<number>();
 

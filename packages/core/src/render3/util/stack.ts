@@ -11,7 +11,8 @@ import {assertGreaterThan} from '../../util/assert';
 /**
  * A simple stack implementation
  *
- * This stack will expand to whatever size is required and stay allocated at that size.
+ * This stack will expand to whatever size is required and stay allocated at that size. This is to
+ * avoid resizing the underlying array for performance reasons.
  *
  * Unused spaces in the allocated stack will be set to `null` so we don't retain value references we
  * no longer want.
