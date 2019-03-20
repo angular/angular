@@ -19,38 +19,74 @@ describe('ngcc main()', () => {
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for fesm2015', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['fesm2015']})).not.toThrow();
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['fesm2015']}))
+        .not.toThrow();
   });
 
   it('should run ngcc without errors for fesm5', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['fesm5']})).not.toThrow();
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['fesm5']}))
+        .not.toThrow();
   });
 
   it('should run ngcc without errors for esm2015', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['esm2015']})).not.toThrow();
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['esm2015']}))
+        .not.toThrow();
   });
 
   it('should run ngcc without errors for esm5', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['esm5']})).not.toThrow();
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['esm5']}))
+        .not.toThrow();
   });
 
   it('should only compile the given package entry-point (and its dependencies)', () => {
-    mainNgcc({
-      baseSourcePath: '/node_modules',
-      formats: ['esm2015'],
-      targetEntryPointPath: '@angular/common'
-    });
+    mainNgcc({baseSourcePath: '/node_modules', targetEntryPointPath: '@angular/common/http'});
 
-    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
-      esm2015: '0.0.0-PLACEHOLDER',
+    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+      module: '0.0.0-PLACEHOLDER',
       es2015: '0.0.0-PLACEHOLDER',
+      esm5: '0.0.0-PLACEHOLDER',
+      esm2015: '0.0.0-PLACEHOLDER',
+      fesm5: '0.0.0-PLACEHOLDER',
+      fesm2015: '0.0.0-PLACEHOLDER'
+    });
+    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+      module: '0.0.0-PLACEHOLDER',
+      es2015: '0.0.0-PLACEHOLDER',
+      esm5: '0.0.0-PLACEHOLDER',
+      esm2015: '0.0.0-PLACEHOLDER',
+      fesm5: '0.0.0-PLACEHOLDER',
+      fesm2015: '0.0.0-PLACEHOLDER'
     });
     expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
-      esm2015: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
       es2015: '0.0.0-PLACEHOLDER',
+      esm5: '0.0.0-PLACEHOLDER',
+      esm2015: '0.0.0-PLACEHOLDER',
+      fesm5: '0.0.0-PLACEHOLDER',
+      fesm2015: '0.0.0-PLACEHOLDER'
     });
     expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toBeUndefined();
-    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toBeUndefined();
+  });
+
+  it('should only build the format properties specified for each entry-point', () => {
+    mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['main', 'esm5', 'module']});
+
+    expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+      esm5: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
+    });
+    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+      esm5: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
+    });
+    expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
+      esm5: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
+    });
+    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+      esm5: '0.0.0-PLACEHOLDER',
+      module: '0.0.0-PLACEHOLDER',
+    });
   });
 });
 
