@@ -675,5 +675,14 @@
     "website": "http://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
     "group": "GDE"
+  },
+  "jschwarty":
+  {
+    "name": "Justin Schwartzenberger",
+    "picture": "justinschwartzenberger.jpg",
+    "twitter": "schwarty",
+    "website": "https://schwarty.com",
+    "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
+    "group": "GDE"
   }
 }
