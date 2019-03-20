@@ -23,7 +23,7 @@
 ### BREAKING CHANGES
 
 * **core:** Certain elements (like `<tr>` or `<col>`) require parent elements to be of a certain type by the HTML specification
-(ex. <tr> can only be inside <tbody> / <thead>). Before this change Angular template parser was auto-correcting
+(ex. `<tr>` can only be inside `<tbody>` / `<thead>`). Before this change Angular template parser was auto-correcting
 "invalid" HTML using the following rules:
 - `<tr>` would be wrapped in `<tbody>` if not inside `<tbody>`, `<tfoot>` or `<thead>`;
 - `<col>` would be wrapped in `<colgroup>` if not inside `<colgroup>`.
