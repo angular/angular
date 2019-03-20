@@ -705,7 +705,7 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async deleteAllCaches(): Promise<void> {
     await(await this.scope.caches.keys())
-        .filter(key => key.startsWith('ngsw:'))
+        .filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:`))
         .reduce(async(previous, key) => {
           await Promise.all([
             previous,
@@ -924,9 +924,7 @@ export class Driver implements Debuggable, UpdateSource {
    */
   async cleanupOldSwCaches(): Promise<void> {
     const cacheNames = await this.scope.caches.keys();
-    const oldSwCacheNames =
-        cacheNames.filter(name => /^ngsw:(?:active|staged|manifest:.+)$/.test(name));
-
+    const oldSwCacheNames = cacheNames.filter(name => /^ngsw:(?!\/)/.test(name));
     await Promise.all(oldSwCacheNames.map(name => this.scope.caches.delete(name)));
   }
 
