@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./scripts/package-builder.sh
+source $(dirname $0)/package-builder.sh
 
 # Build the ivy packages
 buildTargetPackages "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"
