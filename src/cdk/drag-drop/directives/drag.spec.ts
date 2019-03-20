@@ -1,7 +1,17 @@
+import {Directionality} from '@angular/cdk/bidi';
+import {
+  createMouseEvent,
+  createTouchEvent,
+  dispatchEvent,
+  dispatchMouseEvent,
+  dispatchTouchEvent,
+} from '@angular/cdk/testing';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Input,
   NgZone,
   Provider,
   QueryList,
@@ -9,52 +19,48 @@ import {
   ViewChild,
   ViewChildren,
   ViewEncapsulation,
-  ChangeDetectionStrategy,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
-import {DragDropModule} from '../drag-drop-module';
-import {
-  createMouseEvent,
-  dispatchEvent,
-  dispatchMouseEvent,
-  dispatchTouchEvent,
-  createTouchEvent,
-} from '@angular/cdk/testing';
-import {Directionality} from '@angular/cdk/bidi';
 import {of as observableOf} from 'rxjs';
-import {CdkDrag, CDK_DRAG_CONFIG} from './drag';
+
+import {DragDropModule} from '../drag-drop-module';
 import {CdkDragDrop} from '../drag-events';
-import {moveItemInArray} from '../drag-utils';
-import {CdkDropList} from './drop-list';
-import {CdkDragHandle} from './drag-handle';
-import {CdkDropListGroup} from './drop-list-group';
-import {extendStyles} from '../drag-styling';
 import {DragRefConfig, Point} from '../drag-ref';
+import {extendStyles} from '../drag-styling';
+import {moveItemInArray} from '../drag-utils';
+
+import {CDK_DRAG_CONFIG, CdkDrag} from './drag';
+import {CdkDragHandle} from './drag-handle';
+import {CdkDropList} from './drop-list';
+import {CdkDropListGroup} from './drop-list-group';
 
 const ITEM_HEIGHT = 25;
 const ITEM_WIDTH = 75;
 
 describe('CdkDrag', () => {
-  function createComponent<T>(componentType: Type<T>, providers: Provider[] = [], dragDistance = 0):
-    ComponentFixture<T> {
-    TestBed.configureTestingModule({
-      imports: [DragDropModule],
-      declarations: [componentType, PassthroughComponent],
-      providers: [
-        {
-          provide: CDK_DRAG_CONFIG,
-          useValue: {
-            // We default the `dragDistance` to zero, because the majority of the tests
-            // don't care about it and drags are a lot easier to simulate when we don't
-            // have to deal with thresholds.
-            dragStartThreshold: dragDistance,
-            pointerDirectionChangeThreshold: 5
-          } as DragRefConfig
-        },
-        ...providers
-      ],
-    }).compileComponents();
+  function createComponent<T>(
+      componentType: Type<T>, providers: Provider[] = [], dragDistance = 0,
+      extraDeclarations: Type<any>[] = []): ComponentFixture<T> {
+    TestBed
+        .configureTestingModule({
+          imports: [DragDropModule],
+          declarations: [componentType, PassthroughComponent, ...extraDeclarations],
+          providers: [
+            {
+              provide: CDK_DRAG_CONFIG,
+              useValue: {
+                // We default the `dragDistance` to zero, because the majority of the tests
+                // don't care about it and drags are a lot easier to simulate when we don't
+                // have to deal with thresholds.
+                dragStartThreshold: dragDistance,
+                pointerDirectionChangeThreshold: 5
+              } as DragRefConfig
+            },
+            ...providers
+          ],
+        })
+        .compileComponents();
 
     return TestBed.createComponent<T>(componentType);
   }
@@ -2928,55 +2934,69 @@ describe('CdkDrag', () => {
         });
       }));
 
-      it('should set a class when a container can receive an item', fakeAsync(() => {
-        const fixture = createComponent(ConnectedDropZones);
-        fixture.detectChanges();
+    it('should set a class when a container can receive an item', fakeAsync(() => {
+         const fixture = createComponent(ConnectedDropZones);
+         fixture.detectChanges();
 
-        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
-        const item = fixture.componentInstance.groupedDragItems[0][1];
+         const dropZones =
+             fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+         const item = fixture.componentInstance.groupedDragItems[0][1];
 
-        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-            .toBe(true, 'Expected neither of the containers to have the class.');
+         expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+             .toBe(true, 'Expected neither of the containers to have the class.');
 
-        startDraggingViaMouse(fixture, item.element.nativeElement);
-        fixture.detectChanges();
+         startDraggingViaMouse(fixture, item.element.nativeElement);
+         fixture.detectChanges();
 
-        expect(dropZones[0].classList).not.toContain('cdk-drop-list-receiving',
-            'Expected source container not to have the receiving class.');
+         expect(dropZones[0].classList)
+             .not.toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected source container not to have the receiving class.');
 
-        expect(dropZones[1].classList).toContain('cdk-drop-list-receiving',
-            'Expected target container to have the receiving class.');
-      }));
+         expect(dropZones[1].classList)
+             .toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected target container to have the receiving class.');
+       }));
 
-      it('should toggle the `receiving` class when the item enters a new list', fakeAsync(() => {
-        const fixture = createComponent(ConnectedDropZones);
-        fixture.detectChanges();
+    it('should toggle the `receiving` class when the item enters a new list', fakeAsync(() => {
+         const fixture = createComponent(ConnectedDropZones);
+         fixture.detectChanges();
 
-        const groups = fixture.componentInstance.groupedDragItems;
-        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
-        const item = groups[0][1];
-        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+         const groups = fixture.componentInstance.groupedDragItems;
+         const dropZones =
+             fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+         const item = groups[0][1];
+         const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
-        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
-            .toBe(true, 'Expected neither of the containers to have the class.');
+         expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+             .toBe(true, 'Expected neither of the containers to have the class.');
 
-        startDraggingViaMouse(fixture, item.element.nativeElement);
+         startDraggingViaMouse(fixture, item.element.nativeElement);
 
-        expect(dropZones[0].classList).not.toContain('cdk-drop-list-receiving',
-            'Expected source container not to have the receiving class.');
+         expect(dropZones[0].classList)
+             .not.toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected source container not to have the receiving class.');
 
-        expect(dropZones[1].classList).toContain('cdk-drop-list-receiving',
-            'Expected target container to have the receiving class.');
+         expect(dropZones[1].classList)
+             .toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected target container to have the receiving class.');
 
-        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
-        fixture.detectChanges();
+         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+         fixture.detectChanges();
 
-        expect(dropZones[0].classList).toContain('cdk-drop-list-receiving',
-            'Expected old container not to have the receiving class after exiting.');
+         expect(dropZones[0].classList)
+             .toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected old container not to have the receiving class after exiting.');
 
-        expect(dropZones[1].classList).not.toContain('cdk-drop-list-receiving',
-            'Expected new container not to have the receiving class after entering.');
-      }));
+         expect(dropZones[1].classList)
+             .not.toContain(
+                 'cdk-drop-list-receiving',
+                 'Expected new container not to have the receiving class after entering.');
+       }));
 
     it('should be able to move the item over an intermediate container before ' +
       'dropping it into the final one', fakeAsync(() => {
@@ -3083,8 +3103,50 @@ describe('CdkDrag', () => {
         expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
       }));
 
-  });
+    it('should toggle a class when dragging an item inside a wrapper component component ' +
+           'with OnPush change detection',
+       fakeAsync(() => {
+         const fixture =
+             createComponent(ConnectedWrappedDropZones, [], 0, [WrappedDropContainerComponent]);
+         fixture.detectChanges();
 
+         const [startZone, targetZone] = fixture.nativeElement.querySelectorAll('.cdk-drop-list');
+         const item = startZone.querySelector('.cdk-drag');
+         const targetRect = targetZone.getBoundingClientRect();
+
+         expect(startZone.classList)
+             .not.toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected start not to have dragging class on init.');
+         expect(targetZone.classList)
+             .not.toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected target not to have dragging class on init.');
+
+         startDraggingViaMouse(fixture, item);
+
+         expect(startZone.classList)
+             .toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected start to have dragging class after dragging has started.');
+         expect(targetZone.classList)
+             .not.toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected target not to have dragging class after dragging has started.');
+
+         dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+         fixture.detectChanges();
+
+         expect(startZone.classList)
+             .not.toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected start not to have dragging class once item has been moved over.');
+         expect(targetZone.classList)
+             .toContain(
+                 'cdk-drop-list-dragging',
+                 'Expected target to have dragging class once item has been moved over.');
+       }));
+  });
 });
 
 @Component({
@@ -3568,6 +3630,34 @@ class DraggableInDropZoneWithoutEvents {
   ];
 }
 
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .cdk-drop-list {
+      display: block;
+      width: 100px;
+      min-height: ${ITEM_HEIGHT}px;
+      background: hotpink;
+    }
+
+    .cdk-drag {
+      display: block;
+      height: ${ITEM_HEIGHT}px;
+      background: red;
+    }
+  `],
+  template: `
+    <div cdkDropListGroup>
+      <wrapped-drop-container [items]="todo"></wrapped-drop-container>
+      <wrapped-drop-container [items]="done"></wrapped-drop-container>
+    </div>
+  `
+})
+class ConnectedWrappedDropZones {
+  todo = ['Zero', 'One', 'Two', 'Three'];
+  done = ['Four', 'Five', 'Six'];
+}
+
 /**
  * Component that passes through whatever content is projected into it.
  * Used to test having drag elements being projected into a component.
@@ -3577,6 +3667,21 @@ class DraggableInDropZoneWithoutEvents {
   template: '<ng-content></ng-content>'
 })
 class PassthroughComponent {}
+
+
+/** Component that wraps a drop container and uses OnPush change detection. */
+@Component({
+  selector: 'wrapped-drop-container',
+  template: `
+    <div cdkDropList [cdkDropListData]="items">
+      <div *ngFor="let item of items" cdkDrag>{{item}}</div>
+    </div>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+class WrappedDropContainerComponent {
+  @Input() items: string[];
+}
 
 /**
  * Drags an element to a position on the page using the mouse.

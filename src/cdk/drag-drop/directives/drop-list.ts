@@ -342,6 +342,7 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
         container: this,
         item: event.item.data
       });
+      this._changeDetectorRef.markForCheck();
     });
 
     ref.sorted.subscribe(event => {
