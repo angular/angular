@@ -86,7 +86,8 @@ export const _MatSlideToggleMixinBase:
   host: {
     'class': 'mat-slide-toggle',
     '[id]': 'id',
-    '[attr.tabindex]': '-1', // Needs to be `-1` so it can still receive programmatic focus.
+    // Needs to be `-1` so it can still receive programmatic focus.
+    '[attr.tabindex]': 'disabled ? null : -1',
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
@@ -101,8 +102,10 @@ export const _MatSlideToggleMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit,
-    ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
-
+                                                                        ControlValueAccessor,
+                                                                        CanDisable, CanColor,
+                                                                        HasTabIndex,
+                                                                        CanDisableRipple {
   private onChange = (_: any) => {};
   private onTouched = () => {};
 

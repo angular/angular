@@ -368,13 +368,23 @@ describe('MatSlideToggle without forms', () => {
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
     }));
 
-    it('should clear the tabindex from the host element', fakeAsync(() => {
+    it('should set the tabindex of the host element to -1', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
 
       fixture.detectChanges();
 
       const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
       expect(slideToggle.getAttribute('tabindex')).toBe('-1');
+    }));
+
+    it('should remove the tabindex from the host element when disabled', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
+      expect(slideToggle.hasAttribute('tabindex')).toBe(false);
     }));
   });
 
@@ -1124,10 +1134,10 @@ class SlideToggleWithFormControl {
   formControl = new FormControl();
 }
 
-@Component({
-  template: `<mat-slide-toggle tabindex="5"></mat-slide-toggle>`
-})
-class SlideToggleWithTabindexAttr {}
+@Component({template: `<mat-slide-toggle tabindex="5" [disabled]="disabled"></mat-slide-toggle>`})
+class SlideToggleWithTabindexAttr {
+  disabled = false;
+}
 
 @Component({
   template: `<mat-slide-toggle>{{label}}</mat-slide-toggle>`
