@@ -362,11 +362,12 @@ Compare to [custom element](#custom-element).
 
 ## entry point
 
-A JavaScript symbol that makes parts of an [npm package](guide/npm-packages) available for import by other code.
-The Angular [scoped packages](#scoped-package) each have an entry point named `index`.
-
-Within Angular, use [NgModules](#ngmodule) to make public parts available for import by other NgModules.
-
+A JavaScript module(#module) that is intended to be imported by a user of [an
+npm package](guide/npm-packages). An entry-point module typically re-exports
+symbols from other internal modules. A package can contain multiple
+entry points. For example, the `@angular/core` package has two entry-point
+modules, which can be imported using the module names `@angular/core` and
+`@angular/core/testing`.
 
 {@a F}
 
