@@ -14,6 +14,7 @@ import {getNameText, hasNameIdentifier} from '../utils';
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 
 
+
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
  *
@@ -117,8 +118,30 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       id = outerClassNode.name;
     }
 
-    // Resolve the identifier to a Symbol, and return the declaration of that.
-    return super.getDeclarationOfIdentifier(id);
+    const declaration = super.getDeclarationOfIdentifier(id);
+
+    if (!declaration || !ts.isVariableDeclaration(declaration.node) ||
+        declaration.node.initializer !== undefined ||
+        // VariableDeclaration => VariableDeclarationList => VariableStatement => IIFE Block
+        !ts.isBlock(declaration.node.parent.parent.parent)) {
+      return declaration;
+    }
+
+    // We might have an alias to another variable declaration.
+    // Search the containing iife body for it.
+    const block = declaration.node.parent.parent.parent;
+    const aliasSymbol = this.checker.getSymbolAtLocation(declaration.node.name);
+    for (let i = 0; i < block.statements.length; i++) {
+      const statement = block.statements[i];
+      // Looking for statement that looks like: `AliasedVariable = OriginalVariable;`
+      if (isAssignmentStatement(statement) && ts.isIdentifier(statement.expression.left) &&
+          ts.isIdentifier(statement.expression.right) &&
+          this.checker.getSymbolAtLocation(statement.expression.left) === aliasSymbol) {
+        return this.getDeclarationOfIdentifier(statement.expression.right);
+      }
+    }
+
+    return declaration;
   }
 
   /**
