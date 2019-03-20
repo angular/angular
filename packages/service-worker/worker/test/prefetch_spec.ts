@@ -14,26 +14,26 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
 import {async_fit, async_it} from './async';
 
-const dist = new MockFileSystemBuilder()
-                 .addFile('/foo.txt', 'this is foo')
-                 .addFile('/bar.txt', 'this is bar')
-                 .build();
-
-const manifest = tmpManifestSingleAssetGroup(dist);
-
-const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
-
-const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
-const db = new CacheDatabase(scope, scope);
-
-
-
 (function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
+
+  const dist = new MockFileSystemBuilder()
+                   .addFile('/foo.txt', 'this is foo')
+                   .addFile('/bar.txt', 'this is bar')
+                   .build();
+
+  const manifest = tmpManifestSingleAssetGroup(dist);
+
+  const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
+
+  const scope = new SwTestHarnessBuilder().withServerState(server).build();
+
+  const db = new CacheDatabase(scope, scope);
+
+
   describe('prefetch assets', () => {
     let group: PrefetchAssetGroup;
     let idle: IdleScheduler;
