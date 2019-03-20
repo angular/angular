@@ -55,7 +55,8 @@ export class Transformer {
    * Transform the source (and typings) files of a bundle.
    * @param bundle the bundle to transform.
    */
-  transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
+  transform(bundle: EntryPointBundle): void {
+    const isCore = bundle.isCore;
     const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
