@@ -48,7 +48,7 @@ node_repositories(
     node_version = "10.9.0",
     package_json = ["//:package.json"],
     preserve_symlinks = True,
-    yarn_version = "1.13.0",
+    yarn_version = "1.12.1",
 )
 
 yarn_install(
