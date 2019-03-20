@@ -12,23 +12,23 @@ ivy-ngcc
 # Did it add the appropriate build markers?
 
   # - esm2015
-  grep '"__modified_by_ngcc__":[^}]*"esm2015":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"esm2015":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - fesm2015
-  grep '"__modified_by_ngcc__":[^}]*"fesm2015":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"fesm2015":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
-  grep '"__modified_by_ngcc__":[^}]*"es2015":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"es2015":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - esm5
-  grep '"__modified_by_ngcc__":[^}]*"esm5":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"esm5":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
 
   # - fesm5
-  grep '"__modified_by_ngcc__":[^}]*"module":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"module":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
-  grep '"__modified_by_ngcc__":[^}]*"fesm5":"' node_modules/@angular/common/package.json
+  grep '"__processed_by_ivy_ngcc__":[^}]*"fesm5":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it replace the PRE_R3 markers correctly?

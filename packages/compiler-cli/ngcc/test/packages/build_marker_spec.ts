@@ -10,7 +10,7 @@ import {readFileSync, writeFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {checkMarker, hasBeenProcessed, writeMarker} from '../../src/packages/build_marker';
+import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPoint} from '../../src/packages/entry_point';
 
 function createMockFileSystem() {
@@ -94,104 +94,83 @@ function restoreRealFileSystem() {
   mockFs.restore();
 }
 
-function createEntryPoint(path: string): EntryPoint {
-  const absolutePath = AbsoluteFsPath.from(path);
-  return {
-    name: 'some-package',
-    path: absolutePath,
-    package: absolutePath,
-    typings: AbsoluteFsPath.from('/typings'),
-    packageJson: JSON.parse(readFileSync(path + '/package.json', 'utf8'))
-  };
-}
-
 describe('Marker files', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  describe('writeMarker', () => {
+  const COMMON_PACKAGE_PATH = AbsoluteFsPath.from('/node_modules/@angular/common/package.json');
+
+  describe('markAsProcessed', () => {
     it('should write a property in the package.json containing the version placeholder', () => {
-      let pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
-      expect(pkg.__modified_by_ngcc__).toBeUndefined();
-      expect(pkg.__modified_by_ngcc__).toBeUndefined();
+      let pkg = JSON.parse(readFileSync(COMMON_PACKAGE_PATH, 'utf8'));
+      expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
+      expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
 
-      writeMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015');
-      pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
-      expect(pkg.__modified_by_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
-      expect(pkg.__modified_by_ngcc__.esm5).toBeUndefined();
+      markAsProcessed(pkg, COMMON_PACKAGE_PATH, 'fesm2015');
+      pkg = JSON.parse(readFileSync(COMMON_PACKAGE_PATH, 'utf8'));
+      expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
+      expect(pkg.__processed_by_ivy_ngcc__.esm5).toBeUndefined();
 
-      writeMarker(createEntryPoint('/node_modules/@angular/common'), 'esm5');
-      pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
-      expect(pkg.__modified_by_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
-      expect(pkg.__modified_by_ngcc__.esm5).toEqual('0.0.0-PLACEHOLDER');
-    });
-  });
-
-  describe('checkMarker', () => {
-    it('should return false if the marker property does not exist', () => {
-      expect(checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
-          .toBe(false);
+      markAsProcessed(pkg, COMMON_PACKAGE_PATH, 'esm5');
+      pkg = JSON.parse(readFileSync(COMMON_PACKAGE_PATH, 'utf8'));
+      expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
+      expect(pkg.__processed_by_ivy_ngcc__.esm5).toEqual('0.0.0-PLACEHOLDER');
     });
 
-    it('should return true if the marker property exists and contains the correct version', () => {
-      const pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
-      pkg.__modified_by_ngcc__ = {fesm2015: '0.0.0-PLACEHOLDER'};
-      writeFileSync('/node_modules/@angular/common/package.json', JSON.stringify(pkg), 'utf8');
-      expect(checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015')).toBe(true);
-    });
-
-    it('should throw if the marker property exists but contains the wrong version', () => {
-      const pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
-      pkg.__modified_by_ngcc__ = {fesm2015: 'WRONG_VERSION'};
-      writeFileSync('/node_modules/@angular/common/package.json', JSON.stringify(pkg), 'utf8');
-      expect(() => checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
-          .toThrowError(
-              'The ngcc compiler has changed since the last ngcc build.\n' +
-              'Please completely remove `node_modules` and try again.');
+    it('should update the packageJson object in-place', () => {
+      let pkg = JSON.parse(readFileSync(COMMON_PACKAGE_PATH, 'utf8'));
+      expect(pkg.__processed_by_ivy_ngcc__).toBeUndefined();
+      markAsProcessed(pkg, COMMON_PACKAGE_PATH, 'fesm2015');
+      expect(pkg.__processed_by_ivy_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
     });
   });
 
   describe('hasBeenProcessed', () => {
     it('should return true if the marker exists for the given format property', () => {
-      expect(
-          hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}}, 'fesm2015'))
+      expect(hasBeenProcessed(
+                 {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
+                 'fesm2015'))
           .toBe(true);
     });
     it('should return false if the marker does not exist for the given format property', () => {
-      expect(hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}}, 'module'))
+      expect(hasBeenProcessed(
+                 {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
+                 'module'))
           .toBe(false);
     });
-    it('should return false if the no markers exist',
-       () => { expect(hasBeenProcessed({}, 'module')).toBe(false); });
-    it('should throw an Error if the packageJson is not an object', () => {
-      expect(() => hasBeenProcessed(undefined, 'fesm2015'))
-          .toThrowError('`packageJson` parameter is invalid. It parameter must be an object.');
+    it('should return false if no markers exist',
+       () => { expect(hasBeenProcessed({name: 'test'}, 'module')).toBe(false); });
+    it('should throw an Error if the format has been compiled with a different version.', () => {
       expect(
           () => hasBeenProcessed(
-              '{"__modified_by_ngcc__": {"fesm2015": "0.0.0-PLACEHOLDER"}}', 'fesm2015'))
-          .toThrowError('`packageJson` parameter is invalid. It parameter must be an object.');
-    });
-    it('should throw an Error if the format has been compiled with a different version.', () => {
-      expect(() => hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015'))
+              {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +
               'Please completely remove `node_modules` and try again.');
     });
     it('should throw an Error if any format has been compiled with a different version.', () => {
-      expect(() => hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '8.0.0'}}, 'module'))
+      expect(
+          () => hasBeenProcessed(
+              {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}}, 'module'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +
               'Please completely remove `node_modules` and try again.');
       expect(
           () => hasBeenProcessed(
-              {__modified_by_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}},
+              {
+                name: 'test',
+                __processed_by_ivy_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}
+              },
               'module'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +
               'Please completely remove `node_modules` and try again.');
       expect(
           () => hasBeenProcessed(
-              {__modified_by_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}},
+              {
+                name: 'test',
+                __processed_by_ivy_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}
+              },
               'fesm2015'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +

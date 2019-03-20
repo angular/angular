@@ -13,6 +13,7 @@ const Module = require('module');
 
 import {mainNgcc} from '../../src/main';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
+import {EntryPointPackageJson} from '../../src/packages/entry_point';
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
@@ -32,7 +33,7 @@ describe('ngcc main()', () => {
     it('should only compile the given package entry-point (and its dependencies).', () => {
       mainNgcc({basePath: '/node_modules', targetEntryPointPath: '@angular/common/http'});
 
-      expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
         module: '0.0.0-PLACEHOLDER',
         es2015: '0.0.0-PLACEHOLDER',
         esm5: '0.0.0-PLACEHOLDER',
@@ -41,7 +42,7 @@ describe('ngcc main()', () => {
         fesm2015: '0.0.0-PLACEHOLDER',
       });
       // * `common` is a dependency of `common/http`, so is compiled.
-      expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
         module: '0.0.0-PLACEHOLDER',
         es2015: '0.0.0-PLACEHOLDER',
         esm5: '0.0.0-PLACEHOLDER',
@@ -50,7 +51,7 @@ describe('ngcc main()', () => {
         fesm2015: '0.0.0-PLACEHOLDER',
       });
       // * `core` is a dependency of `common`, so is compiled.
-      expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
         module: '0.0.0-PLACEHOLDER',
         es2015: '0.0.0-PLACEHOLDER',
         esm5: '0.0.0-PLACEHOLDER',
@@ -60,7 +61,20 @@ describe('ngcc main()', () => {
       });
 
       // * `common/testing` is not a dependency of `common/http` so is not compiled.
-      expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toBeUndefined();
+      expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toBeUndefined();
+    });
+
+    it('should mark a non-Angular package target as processed', () => {
+      mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package'});
+
+      // `test-package` has no Angular but is marked as processed.
+      expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+        es2015: '0.0.0-PLACEHOLDER',
+      });
+
+      // * `core` is a dependency of `test-package`, but it is not processed, since test-package
+      // was not processed.
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
     });
   });
 
@@ -75,22 +89,22 @@ describe('ngcc main()', () => {
          // * the `main` property is UMD, which is not yet supported.
          // * none of the ES2015 formats are compiled as they are not on the `propertiesToConsider`
          // list.
-         expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
          });
-         expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+         expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
          });
-         expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
+         expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
          });
-         expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+         expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
@@ -109,19 +123,19 @@ describe('ngcc main()', () => {
       // * In the Angular packages fesm5 and module have the same underlying format,
       //   so both are marked as compiled.
       // * The `esm5` is not compiled because we stopped after the `fesm5` format.
-      expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
       });
-      expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
       });
-      expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
       });
-      expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+      expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
       });
@@ -135,6 +149,13 @@ function createMockFileSystem() {
     '/node_modules/@angular': loadAngularPackages(),
     '/node_modules/rxjs': loadDirectory(resolveNpmTreeArtifact('rxjs', 'index.js')),
     '/node_modules/tslib': loadDirectory(resolveNpmTreeArtifact('tslib', 'tslib.js')),
+    '/node_modules/test-package': {
+      'package.json': '{"name": "test-package", "es2015": "./index.js", "typings": "./index.d.ts"}',
+      'index.js':
+          'import {AppModule} from "@angular/common"; export class MyApp extends AppModule;',
+      'index.d.s':
+          'import {AppModule} from "@angular/common"; export declare class MyApp extends AppModule;',
+    }
   });
   spyOn(Module, '_resolveFilename').and.callFake(mockResolve);
 }
@@ -209,6 +230,6 @@ function mockResolve(request: string): string|null {
   }
 }
 
-function loadPackage(packageName: string): any {
+function loadPackage(packageName: string): EntryPointPackageJson {
   return JSON.parse(readFileSync(`/node_modules/${packageName}/package.json`, 'utf8'));
 }
