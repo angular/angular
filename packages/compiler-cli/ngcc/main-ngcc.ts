@@ -38,6 +38,11 @@ if (require.main === module) {
             alias: 'target',
             describe: 'A path to a single entry-point to compile (plus its dependencies).',
           })
+          .option('first-only', {
+            describe:
+                'If specified then only the first matching package.json property will be compiled',
+            type: 'boolean'
+          })
           .help()
           .parse(args);
 
@@ -50,8 +55,9 @@ if (require.main === module) {
   const propertiesToConsider: EntryPointJsonProperty[] = options['p'];
   const targetEntryPointPath =
       options['t'] ? AbsoluteFsPath.from(path.resolve(options['t'])) : undefined;
+  const compileAllFormats = !options['first-only'];
   try {
-    mainNgcc({baseSourcePath, propertiesToConsider, targetEntryPointPath});
+    mainNgcc({baseSourcePath, propertiesToConsider, targetEntryPointPath, compileAllFormats});
     process.exitCode = 0;
   } catch (e) {
     console.error(e.stack || e.message);
