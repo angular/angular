@@ -1536,7 +1536,7 @@ describe('Esm2015ReflectionHost', () => {
        });
   });
 
-  describe('getModuleWithProvidersFunctions', () => {
+  describe('getModuleWithProvidersFunctions()', () => {
     it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);

@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import {getIifeBody} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {CompiledClass} from '../analysis/decoration_analyzer';
 import {EsmRenderer} from './esm_renderer';
@@ -23,21 +24,18 @@ export class Esm5Renderer extends EsmRenderer {
    * Add the definitions to each decorated class
    */
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
-    const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
-    if (!classSymbol) {
-      throw new Error(
-          `Compiled class does not have a valid symbol: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
-    }
-    const parent = classSymbol.valueDeclaration && classSymbol.valueDeclaration.parent;
-    if (!parent || !ts.isBlock(parent)) {
+    const iifeBody = getIifeBody(compiledClass.declaration);
+    if (!iifeBody) {
       throw new Error(
           `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
-    const returnStatement = parent.statements.find(statement => ts.isReturnStatement(statement));
+
+    const returnStatement = iifeBody.statements.find(ts.isReturnStatement);
     if (!returnStatement) {
       throw new Error(
           `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
+
     const insertionPoint = returnStatement.getFullStart();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
