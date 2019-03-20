@@ -1272,6 +1272,9 @@
     "name": "setIsParent"
   },
   {
+    "name": "setNodeStylingTemplate"
+  },
+  {
     "name": "setPlayerBuilder"
   },
   {
