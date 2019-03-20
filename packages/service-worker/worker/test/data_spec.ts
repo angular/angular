@@ -138,7 +138,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       async_it('names the caches correctly', async() => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         const keys = await scope.caches.keys();
-        expect(keys.every(key => key.startsWith('ngsw:'))).toEqual(true);
+        expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
       });
 
       async_it('caches a basic request', async() => {

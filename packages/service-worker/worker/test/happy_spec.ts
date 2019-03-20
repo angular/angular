@@ -136,6 +136,18 @@ import {async_beforeEach, async_fit, async_it} from './async';
         patterns: [],
       }
     ],
+    dataGroups: [
+      {
+        name: 'api',
+        version: 42,
+        maxAge: 3600000,
+        maxSize: 100,
+        strategy: 'performance',
+        patterns: [
+          '/api/.*',
+        ],
+      },
+    ],
     navigationUrls: processNavigationUrls(''),
     hashTable: tmpHashTableForFs(dist),
   };
@@ -718,6 +730,115 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(driver.state).toEqual(DriverReadyState.NORMAL);
       expect(scope.unregistered).toBeFalsy();
       expect(await scope.caches.keys()).not.toEqual([]);
+    });
+
+    describe('cache naming', () => {
+      // Helpers
+      const cacheKeysFor = (baseHref: string) =>
+          [`ngsw:${baseHref}:db:control`, `ngsw:${baseHref}:${manifestHash}:assets:assets:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:assets:meta`,
+           `ngsw:${baseHref}:${manifestHash}:assets:other:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:other:meta`,
+           `ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:${manifestHash}:assets:lazy_prefetch:meta`,
+           `ngsw:${baseHref}:42:data:dynamic:api:cache`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:lru`,
+           `ngsw:${baseHref}:db:ngsw:${baseHref}:42:data:dynamic:api:age`,
+      ];
+
+      const getClientAssignments = async(sw: SwTestHarness, baseHref: string) => {
+        const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
+        const dehydrated = cache.dehydrate();
+        return JSON.parse(dehydrated['/assignments'].body !);
+      };
+
+      const initializeSwFor =
+          async(baseHref: string, initialCacheState = '{}', serverState = server) => {
+        const newScope = new SwTestHarnessBuilder(`http://localhost${baseHref}`)
+                             .withCacheState(initialCacheState)
+                             .withServerState(serverState)
+                             .build();
+        const newDriver = new Driver(newScope, newScope, new CacheDatabase(newScope, newScope));
+
+        await makeRequest(newScope, '/foo.txt', baseHref.replace(/\//g, '_'));
+        await newDriver.initialized;
+
+        return newScope;
+      };
+
+      async_it('includes the SW scope in all cache names', async() => {
+        // Default SW with scope `/`.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        const cacheNames = await scope.caches.keys();
+
+        expect(cacheNames).toEqual(cacheKeysFor('/'));
+        expect(cacheNames.every(name => name.includes('/'))).toBe(true);
+
+        // SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        const fooCacheNames = await fooScope.caches.keys();
+
+        expect(fooCacheNames).toEqual(cacheKeysFor('/foo/'));
+        expect(fooCacheNames.every(name => name.includes('/foo/'))).toBe(true);
+      });
+
+      async_it('does not affect caches from other scopes', async() => {
+        // Create SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        const fooAssignments = await getClientAssignments(fooScope, '/foo/');
+
+        expect(fooAssignments).toEqual({_foo_: manifestHash});
+
+        // Add new SW with different scope.
+        const barScope = await initializeSwFor('/bar/', await fooScope.caches.dehydrate());
+        const barCacheNames = await barScope.caches.keys();
+        const barAssignments = await getClientAssignments(barScope, '/bar/');
+
+        expect(barAssignments).toEqual({_bar_: manifestHash});
+        expect(barCacheNames).toEqual([
+          ...cacheKeysFor('/foo/'),
+          ...cacheKeysFor('/bar/'),
+        ]);
+
+        // The caches for `/foo/` should be intact.
+        const fooAssignments2 = await getClientAssignments(barScope, '/foo/');
+        expect(fooAssignments2).toEqual({_foo_: manifestHash});
+      });
+
+      async_it('updates existing caches for same scope', async() => {
+        // Create SW with scope `/foo/`.
+        const fooScope = await initializeSwFor('/foo/');
+        await makeRequest(fooScope, '/foo.txt', '_bar_');
+        const fooAssignments = await getClientAssignments(fooScope, '/foo/');
+
+        expect(fooAssignments).toEqual({
+          _foo_: manifestHash,
+          _bar_: manifestHash,
+        });
+
+        expect(await makeRequest(fooScope, '/baz.txt', '_foo_')).toBe('this is baz');
+        expect(await makeRequest(fooScope, '/baz.txt', '_bar_')).toBe('this is baz');
+
+        // Add new SW with same scope.
+        const fooScope2 =
+            await initializeSwFor('/foo/', await fooScope.caches.dehydrate(), serverUpdate);
+        await fooScope2.handleMessage({action: 'CHECK_FOR_UPDATES'}, '_foo_');
+        await fooScope2.handleMessage({action: 'ACTIVATE_UPDATE'}, '_foo_');
+        const fooAssignments2 = await getClientAssignments(fooScope2, '/foo/');
+
+        expect(fooAssignments2).toEqual({
+          _foo_: manifestUpdateHash,
+          _bar_: manifestHash,
+        });
+
+        // Everything should still work as expected.
+        expect(await makeRequest(fooScope2, '/foo.txt', '_foo_')).toBe('this is foo v2');
+        expect(await makeRequest(fooScope2, '/foo.txt', '_bar_')).toBe('this is foo');
+
+        expect(await makeRequest(fooScope2, '/baz.txt', '_foo_')).toBe('this is baz v2');
+        expect(await makeRequest(fooScope2, '/baz.txt', '_bar_')).toBe('this is baz');
+      });
     });
 
     describe('unhashed requests', () => {
