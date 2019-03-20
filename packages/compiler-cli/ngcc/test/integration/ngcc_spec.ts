@@ -33,6 +33,25 @@ describe('ngcc main()', () => {
   it('should run ngcc without errors for esm5', () => {
     expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['esm5']})).not.toThrow();
   });
+
+  it('should only compile the given package entry-point (and its dependencies)', () => {
+    mainNgcc({
+      baseSourcePath: '/node_modules',
+      formats: ['esm2015'],
+      targetEntryPointPath: '@angular/common'
+    });
+
+    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+      esm2015: '0.0.0-PLACEHOLDER',
+      es2015: '0.0.0-PLACEHOLDER',
+    });
+    expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+      esm2015: '0.0.0-PLACEHOLDER',
+      es2015: '0.0.0-PLACEHOLDER',
+    });
+    expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toBeUndefined();
+    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toBeUndefined();
+  });
 });
 
 
