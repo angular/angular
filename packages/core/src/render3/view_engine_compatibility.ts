@@ -321,7 +321,7 @@ export function createContainerRef(
     }
 
     hostView[hostTNode.index] = lContainer =
-        createLContainer(slotValue, hostView, commentNode, true);
+        createLContainer(slotValue, hostView, commentNode, hostTNode, true);
 
     addToViewTree(hostView, lContainer);
   }

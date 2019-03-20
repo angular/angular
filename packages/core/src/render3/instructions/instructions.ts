@@ -1952,7 +1952,7 @@ function generateInitialInputs(
  */
 export function createLContainer(
     hostNative: RElement | RComment | StylingContext | LView, currentView: LView, native: RComment,
-    isForViewContainerRef?: boolean): LContainer {
+    tNode: TNode, isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
   const lContainer: LContainer = [
@@ -1962,8 +1962,9 @@ export function createLContainer(
     currentView,                     // parent
     null,                            // next
     null,                            // queries
-    [],                              // views
+    tNode,                           // t_host
     native,                          // native
+    [],                              // views
   ];
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
@@ -2037,7 +2038,8 @@ function containerInternal(
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   ngDevMode && ngDevMode.rendererCreateComment++;
   const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs);
-  const lContainer = lView[adjustedIndex] = createLContainer(lView[adjustedIndex], lView, comment);
+  const lContainer = lView[adjustedIndex] =
+      createLContainer(lView[adjustedIndex], lView, comment, tNode);
 
   appendChild(comment, tNode, lView);
 
