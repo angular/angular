@@ -31,6 +31,11 @@ export interface NgccOptions {
    * Each of properties contain a path to particular bundle format for a given entry-point.
    */
   propertiesToConsider?: EntryPointJsonProperty[];
+  /**
+   * Whether to compile all specified formats or to stop compiling this entry-point at the first
+   * matching format. Defaults to `true`.
+   */
+  compileAllFormats?: boolean;
 }
 
 const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
@@ -43,8 +48,8 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToConsider}: NgccOptions):
-    void {
+export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToConsider,
+                          compileAllFormats = true}: NgccOptions): void {
   const transformer = new Transformer(baseSourcePath, baseSourcePath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
@@ -74,7 +79,9 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToCons
         continue;
       }
 
-      if (!compiledFormats.has(formatPath)) {
+      // We don't break if this if statement fails because we still want to mark
+      // the property as processed even if its underlying format has been built already.
+      if (!compiledFormats.has(formatPath) && (compileAllFormats || compiledFormats.size === 0)) {
         const bundle = makeEntryPointBundle(
             entryPoint.path, formatPath, entryPoint.typings, isCore, format,
             compiledFormats.size === 0);
@@ -86,7 +93,7 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToCons
           console.warn(
               `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
         }
-      } else {
+      } else if (!compileAllFormats) {
         console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
       }
 
