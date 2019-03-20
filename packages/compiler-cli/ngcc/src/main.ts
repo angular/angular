@@ -20,6 +20,7 @@ import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
+import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
 
 
 /**
@@ -45,6 +46,10 @@ export interface NgccOptions {
    * this entry-point at the first matching format. Defaults to `true`.
    */
   compileAllFormats?: boolean;
+  /**
+   * Whether to create new entry-points bundles rather than overwriting the original files.
+   */
+  createNewEntryPointFormats?: boolean;
 }
 
 const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
@@ -57,14 +62,14 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({basePath, targetEntryPointPath,
-                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-                          compileAllFormats = true}: NgccOptions): void {
+export function mainNgcc(
+    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+     compileAllFormats = true, createNewEntryPointFormats = false}: NgccOptions): void {
   const transformer = new Transformer(basePath, basePath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);
-  const fileWriter = getFileWriter();
+  const fileWriter = getFileWriter(createNewEntryPointFormats);
 
   const absoluteTargetEntryPointPath = targetEntryPointPath ?
       AbsoluteFsPath.from(resolve(basePath, targetEntryPointPath)) :
@@ -115,7 +120,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
       // the property as processed even if its underlying format has been built already.
       if (!compiledFormats.has(formatPath) && (compileAllFormats || compiledFormats.size === 0)) {
         const bundle = makeEntryPointBundle(
-            entryPoint.path, formatPath, entryPoint.typings, isCore, format,
+            entryPoint.path, formatPath, entryPoint.typings, isCore, property, format,
             compiledFormats.size === 0);
         if (bundle) {
           console.warn(`Compiling ${entryPoint.name} : ${property} as ${format}`);
@@ -144,6 +149,6 @@ export function mainNgcc({basePath, targetEntryPointPath,
   });
 }
 
-function getFileWriter(): FileWriter {
-  return new InPlaceFileWriter();
+function getFileWriter(createNewEntryPointFormats: boolean): FileWriter {
+  return createNewEntryPointFormats ? new NewEntryPointFileWriter() : new InPlaceFileWriter();
 }
