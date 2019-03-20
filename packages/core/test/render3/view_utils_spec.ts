@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createLContainer, createLView, createTView} from '@angular/core/src/render3/instructions/all';
+import {createLContainer, createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/all';
 import {createEmptyStylingContext} from '@angular/core/src/render3/styling/util';
 import {isLContainer, isLView, isStylingContext, unwrapLContainer, unwrapLView, unwrapRNode, unwrapStylingContext} from '@angular/core/src/render3/util/view_utils';
 
@@ -15,7 +15,8 @@ describe('view_utils', () => {
     const div = document.createElement('div');
     const tView = createTView(0, null, 0, 0, null, null, null, null);
     const lView = createLView(null, tView, {}, 0, div, null, {} as any, {} as any, null, null);
-    const lContainer = createLContainer(lView, lView, div, true);
+    const tNode = createTNode(null, 3, 0, 'div', []);
+    const lContainer = createLContainer(lView, lView, div, tNode, true);
     const styleContext = createEmptyStylingContext(lContainer, null, null, null);
 
     expect(unwrapRNode(styleContext)).toBe(div);

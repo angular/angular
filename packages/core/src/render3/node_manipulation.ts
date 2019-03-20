@@ -91,7 +91,7 @@ function walkTNodeTree(
   let tNode: TNode|null = rootTNode.child as TNode;
   while (tNode) {
     let nextTNode: TNode|null = null;
-    if (tNode.type === TNodeType.Element) {
+    if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
       executeNodeAction(
           action, renderer, renderParent, getNativeByTNode(tNode, currentView), tNode, beforeNode);
       const nodeOrContainer = currentView[tNode.index];
@@ -99,6 +99,14 @@ function walkTNodeTree(
         // This element has an LContainer, and its comment needs to be handled
         executeNodeAction(
             action, renderer, renderParent, nodeOrContainer[NATIVE], tNode, beforeNode);
+        if (nodeOrContainer[VIEWS].length) {
+          currentView = nodeOrContainer[VIEWS][0];
+          nextTNode = currentView[TVIEW].node;
+
+          // When the walker enters a container, then the beforeNode has to become the local native
+          // comment node.
+          beforeNode = nodeOrContainer[NATIVE];
+        }
       }
     } else if (tNode.type === TNodeType.Container) {
       const lContainer = currentView ![tNode.index] as LContainer;
@@ -133,9 +141,8 @@ function walkTNodeTree(
           nextTNode = currentView[TVIEW].data[head.index] as TNode;
         }
       }
-
     } else {
-      // Otherwise, this is a View or an ElementContainer
+      // Otherwise, this is a View
       nextTNode = tNode.child;
     }
 
@@ -145,7 +152,14 @@ function walkTNodeTree(
         currentView = projectionNodeStack[projectionNodeIndex--] as LView;
         tNode = projectionNodeStack[projectionNodeIndex--] as TNode;
       }
-      nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
+
+      if (tNode.flags & TNodeFlags.isProjected) {
+        nextTNode = tNode.projectionNext;
+      } else if (tNode.type === TNodeType.ElementContainer) {
+        nextTNode = tNode.child || tNode.next;
+      } else {
+        nextTNode = tNode.next;
+      }
 
       /**
        * Find the next node in the TNode tree, taking into account the place where a node is
@@ -172,19 +186,26 @@ function walkTNodeTree(
            * chain until:
            * - we find an lView with a next pointer
            * - or find a tNode with a parent that has a next pointer
+           * - or find a lContainer
            * - or reach root TNode (in which case we exit, since we traversed all nodes)
            */
           while (!currentView[NEXT] && currentView[PARENT] &&
                  !(tNode.parent && tNode.parent.next)) {
             if (tNode === rootTNode) return;
             currentView = currentView[PARENT] as LView;
+            if (isLContainer(currentView)) {
+              tNode = currentView[T_HOST] !;
+              currentView = currentView[PARENT];
+              beforeNode = currentView[tNode.index][NATIVE];
+              break;
+            }
             tNode = currentView[T_HOST] !;
           }
           if (currentView[NEXT]) {
             currentView = currentView[NEXT] as LView;
             nextTNode = currentView[T_HOST];
           } else {
-            nextTNode = tNode.next;
+            nextTNode = tNode.type === TNodeType.ElementContainer && tNode.child || tNode.next;
           }
         } else {
           nextTNode = tNode.next;
