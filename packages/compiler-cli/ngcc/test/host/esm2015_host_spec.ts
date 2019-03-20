@@ -553,7 +553,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
   {name: '/src/module', contents: 'export class ExternalModule {}'},
 ];
 
-describe('Fesm2015ReflectionHost', () => {
+describe('Esm2015ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
     it('should find the decorators on a class', () => {
