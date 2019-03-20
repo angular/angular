@@ -7,35 +7,42 @@
  */
 
 import {resolve} from 'canonical-path';
-import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {EntryPoint, EntryPointFormat} from './entry_point';
+import {writeFileSync} from 'fs';
+
+import {EntryPoint, EntryPointJsonProperty} from './entry_point';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 
-function getMarkerPath(entryPointPath: string, format: EntryPointFormat) {
-  return resolve(entryPointPath, `__modified_by_ngcc_for_${format}__`);
+/**
+ * Check whether there is a build marker for the given entry-point and format property.
+ * @param entryPoint the entry-point to check for a marker.
+ * @param format the property in the package.json of the format for which we are checking for a
+ * marker.
+ * @returns true if the entry-point and format have already been built with this ngcc version.
+ * @throws Error if the entry-point and format have already been built with a different ngcc
+ * version.
+ */
+export function checkMarker(entryPoint: EntryPoint, format: EntryPointJsonProperty): boolean {
+  const pkg = entryPoint.packageJson;
+  const compiledVersion = pkg.__modified_by_ngcc__ && pkg.__modified_by_ngcc__[format];
+  if (compiledVersion && compiledVersion !== NGCC_VERSION) {
+    throw new Error(
+        'The ngcc compiler has changed since the last ngcc build.\n' +
+        'Please completely remove `node_modules` and try again.');
+  }
+  return !!compiledVersion;
 }
 
 /**
- * Check whether there is a build marker for the given entry point and format.
- * @param entryPoint the entry point to check for a marker.
- * @param format the format for which we are checking for a marker.
+ * Write a build marker for the given entry-point and format property, to indicate that it has
+ * been compiled by this version of ngcc.
+ *
+ * @param entryPoint the entry-point to write a marker.
+ * @param format the property in the package.json of the format for which we are writing the marker.
  */
-export function checkMarkerFile(entryPoint: EntryPoint, format: EntryPointFormat): boolean {
-  const markerPath = getMarkerPath(entryPoint.path, format);
-  const markerExists = existsSync(markerPath);
-  if (markerExists) {
-    const previousVersion = readFileSync(markerPath, 'utf8');
-    if (previousVersion !== NGCC_VERSION) {
-      throw new Error(
-          'The ngcc compiler has changed since the last ngcc build.\n' +
-          'Please completely remove `node_modules` and try again.');
-    }
-  }
-  return markerExists;
-}
-
-export function writeMarkerFile(entryPoint: EntryPoint, format: EntryPointFormat) {
-  const markerPath = getMarkerPath(entryPoint.path, format);
-  writeFileSync(markerPath, NGCC_VERSION, 'utf8');
+export function writeMarker(entryPoint: EntryPoint, format: EntryPointJsonProperty) {
+  const pkg = entryPoint.packageJson;
+  if (!pkg.__modified_by_ngcc__) pkg.__modified_by_ngcc__ = {};
+  pkg.__modified_by_ngcc__[format] = NGCC_VERSION;
+  writeFileSync(resolve(entryPoint.path, 'package.json'), JSON.stringify(pkg), 'utf8');
 }
