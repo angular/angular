@@ -68,13 +68,13 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * So we might need to dig around to get hold of the "class" declaration.
    *
    * `node` might be one of:
-   * - A class declaration (from a declaration file).
+   * - A class declaration (from a typings file).
    * - The declaration of the outer variable, which is assigned the result of the IIFE.
    * - The function declaration inside the IIFE, which is eventually returned and assigned to the
    *   outer variable.
    *
-   * The returned declaration is either the class declaration (from the declaration file) or the
-   * outer variable declaration.
+   * The returned declaration is either the class declaration (from the typings file) or the outer
+   * variable declaration.
    *
    * @param node the node that represents the class whose declaration we are finding.
    * @returns the declaration of the class or `undefined` if it is not a "class".

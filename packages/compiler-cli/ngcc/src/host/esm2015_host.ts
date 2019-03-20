@@ -446,10 +446,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Examine a symbol which should be of a class, and return metadata about its members.
    *
-   * @param symbol the `ClassSymbol` representing the class over which to reflect. If the source is
-   * in
-   * ES2015 format, this will be a `ts.ClassDeclaration` node. If the source is in ES5 format, this
-   * might be a `ts.FunctionDeclaration` as classes in ES5 are downleveled to constructor functions.
+   * @param symbol the `ClassSymbol` representing the class over which to reflect.
    * @returns an array of `ClassMember` metadata representing the members of the class.
    */
   protected getMembersOfSymbol(symbol: ClassSymbol): ClassMember[] {
