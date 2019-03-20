@@ -19,23 +19,19 @@ describe('ngcc main()', () => {
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for fesm2015', () => {
-    const format = 'fesm2015';
-    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['fesm2015']})).not.toThrow();
   });
 
   it('should run ngcc without errors for fesm5', () => {
-    const format = 'fesm5';
-    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['fesm5']})).not.toThrow();
   });
 
   it('should run ngcc without errors for esm2015', () => {
-    const format = 'esm2015';
-    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['esm2015']})).not.toThrow();
   });
 
   it('should run ngcc without errors for esm5', () => {
-    const format = 'esm5';
-    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
+    expect(() => mainNgcc({baseSourcePath: '/node_modules', formats: ['esm5']})).not.toThrow();
   });
 });
 
