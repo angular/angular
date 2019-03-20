@@ -44,7 +44,7 @@ export interface IgnoredDependency {
 }
 
 /**
- * The result of sorting the entry-points by their dependencies.
+ * A list of entry-points, sorted by their dependencies.
  *
  * The `entryPoints` array will be ordered so that no entry point depends upon an entry point that
  * appears later in the array.
@@ -67,9 +67,35 @@ export class DependencyResolver {
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
    * @param entryPoints An array entry points to sort.
-   * @returns the result of sorting the entry points.
+   * @param target If provided, only return entry-points depended on by this entry-point.
+   * @returns the result of sorting the entry points by dependency.
    */
-  sortEntryPointsByDependency(entryPoints: EntryPoint[]): SortedEntryPointsInfo {
+  sortEntryPointsByDependency(entryPoints: EntryPoint[], target?: EntryPoint):
+      SortedEntryPointsInfo {
+    const {invalidEntryPoints, ignoredDependencies, graph} = this.createDependencyInfo(entryPoints);
+
+    let sortedEntryPointNodes: string[];
+    if (target) {
+      sortedEntryPointNodes = graph.dependenciesOf(target.path);
+      sortedEntryPointNodes.push(target.path);
+    } else {
+      sortedEntryPointNodes = graph.overallOrder();
+    }
+
+    return {
+      entryPoints: sortedEntryPointNodes.map(path => graph.getNodeData(path)),
+      invalidEntryPoints,
+      ignoredDependencies,
+    };
+  }
+
+  /**
+   * Computes a dependency graph of the given entry-points.
+   *
+   * The graph only holds entry-points that ngcc cares about and whose dependencies
+   * (direct and transitive) all exist.
+   */
+  private createDependencyInfo(entryPoints: EntryPoint[]) {
     const invalidEntryPoints: InvalidEntryPoint[] = [];
     const ignoredDependencies: IgnoredDependency[] = [];
     const graph = new DepGraph<EntryPoint>();
@@ -79,15 +105,10 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     entryPoints.forEach(entryPoint => {
-      const entryPointPath = entryPoint.fesm2015 || entryPoint.esm2015;
-      if (!entryPointPath) {
-        throw new Error(
-            `ESM2015 format (flat and non-flat) missing in '${entryPoint.path}' entry-point.`);
-      }
-
       const dependencies = new Set<string>();
       const missing = new Set<string>();
       const deepImports = new Set<string>();
+      const entryPointPath = getEntryPointPath(entryPoint);
       this.host.computeDependencies(entryPointPath, dependencies, missing, deepImports);
 
       if (missing.size > 0) {
@@ -119,13 +140,7 @@ export class DependencyResolver {
       }
     });
 
-    // The map now only holds entry-points that ngcc cares about and whose dependencies
-    // (direct and transitive) all exist.
-    return {
-      entryPoints: graph.overallOrder().map(path => graph.getNodeData(path)),
-      invalidEntryPoints,
-      ignoredDependencies
-    };
+    return {invalidEntryPoints, ignoredDependencies, graph};
 
     function removeNodes(entryPoint: EntryPoint, missingDependencies: string[]) {
       const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
@@ -135,4 +150,14 @@ export class DependencyResolver {
       });
     }
   }
+}
+
+function getEntryPointPath(entryPoint: EntryPoint): string {
+  const entryPointPath =
+      entryPoint.fesm2015 || entryPoint.fesm5 || entryPoint.esm2015 || entryPoint.esm5;
+  if (!entryPointPath) {
+    throw new Error(
+        `There is no format with import statements in '${entryPoint.path}' entry-point.`);
+  }
+  return entryPointPath;
 }

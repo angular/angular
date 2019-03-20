@@ -24,6 +24,11 @@ export interface NgccOptions {
   formats: EntryPointFormat[];
   /** The path to the node_modules folder where modified files should be written. */
   baseTargetPath?: string;
+  /**
+   * The path, relative to `baseSourcePath` of the primary package to be compiled.
+   * All its dependencies will need to be compiled too.
+   */
+  targetEntryPointPath?: string;
 }
 
 /**
@@ -34,14 +39,14 @@ export interface NgccOptions {
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({baseSourcePath, formats, baseTargetPath = baseSourcePath}: NgccOptions):
-    void {
+export function mainNgcc({baseSourcePath, formats, baseTargetPath = baseSourcePath,
+                          targetEntryPointPath}: NgccOptions): void {
   const transformer = new Transformer(baseSourcePath, baseTargetPath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);
 
-  const {entryPoints} = finder.findEntryPoints(baseSourcePath);
+  const {entryPoints} = finder.findEntryPoints(baseSourcePath, targetEntryPointPath);
   entryPoints.forEach(entryPoint => {
 
     // Are we compiling the Angular core?
