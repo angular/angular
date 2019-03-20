@@ -481,7 +481,7 @@ export function renderConstantPool(
 export function renderDefinitions(
     sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
   const printer = ts.createPrinter();
-  const name = (compiledClass.declaration as ts.NamedDeclaration).name !;
+  const name = compiledClass.declaration.name;
   const translate = (stmt: Statement) =>
       translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
   const definitions =

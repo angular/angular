@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
-
 import {Reference} from '../../imports';
+import {ClassDeclaration} from '../../reflection';
 import {TypeCheckableDirectiveMeta} from '../../typecheck';
 
 /**
@@ -51,6 +50,6 @@ export interface ScopeDirective extends TypeCheckableDirectiveMeta {
  * Metadata for a given pipe within an NgModule's scope.
  */
 export interface ScopePipe {
-  ref: Reference<ts.Declaration>;
+  ref: Reference<ClassDeclaration>;
   name: string;
 }

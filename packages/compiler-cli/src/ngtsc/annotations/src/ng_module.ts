@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
-import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -26,7 +26,7 @@ export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
   ngInjectorDef: R3InjectorMetadata;
   metadataStmt: Statement|null;
-  declarations: Reference<ts.Declaration>[];
+  declarations: Reference<ClassDeclaration>[];
 }
 
 /**
@@ -44,7 +44,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -59,8 +59,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
-    const name = node.name !.text;
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
+    const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
@@ -90,20 +90,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     ]);
 
     // Extract the module declarations, imports, and exports.
-    let declarationRefs: Reference<ts.Declaration>[] = [];
+    let declarationRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
       const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       declarationRefs = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
     }
-    let importRefs: Reference<ts.Declaration>[] = [];
+    let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
       rawImports = ngModule.get('imports') !;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
-    let exportRefs: Reference<ts.Declaration>[] = [];
+    let exportRefs: Reference<ClassDeclaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
       rawExports = ngModule.get('exports') !;
@@ -111,7 +111,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
     }
-    let bootstrapRefs: Reference<ts.Declaration>[] = [];
+    let bootstrapRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
@@ -146,7 +146,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         exports.some(isForwardReference);
 
     const ngModuleDef: R3NgModuleMetadata = {
-      type: new WrappedNodeExpr(node.name !),
+      type: new WrappedNodeExpr(node.name),
       bootstrap,
       declarations,
       exports,
@@ -176,7 +176,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     const ngInjectorDef: R3InjectorMetadata = {
       name,
-      type: new WrappedNodeExpr(node.name !),
+      type: new WrappedNodeExpr(node.name),
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
       providers,
@@ -191,11 +191,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
       },
-      factorySymbolName: node.name !== undefined ? node.name.text : undefined,
+      factorySymbolName: node.name.text,
     };
   }
 
-  resolve(node: ts.Declaration, analysis: NgModuleAnalysis): ResolveResult {
+  resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
     if (scope === null || scope.reexports === null) {
@@ -208,7 +208,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
   }
 
-  compile(node: ts.ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
+  compile(node: ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
     const ngInjectorDef = compileInjector(analysis.ngInjectorDef);
     const ngModuleDef = compileNgModule(analysis.ngModuleDef);
     const ngModuleStatements = ngModuleDef.additionalStatements;
@@ -218,8 +218,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const context = getSourceFile(node);
     for (const decl of analysis.declarations) {
       if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
-        const scope =
-            this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as ts.Declaration);
+        const scope = this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as typeof node);
         if (scope === null) {
           continue;
         }
@@ -340,13 +339,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     return null;
   }
 
+  // Verify that a `ts.Declaration` reference is a `ClassDeclaration` reference.
+  private isClassDeclarationReference(ref: Reference<ts.Declaration>):
+      ref is Reference<ClassDeclaration> {
+    return this.reflector.isClass(ref.node);
+  }
+
   /**
    * Compute a list of `Reference`s from a resolved metadata value.
    */
   private resolveTypeList(
       expr: ts.Node, resolvedList: ResolvedValue, className: string,
-      arrayName: string): Reference<ts.Declaration>[] {
-    const refList: Reference<ts.Declaration>[] = [];
+      arrayName: string): Reference<ClassDeclaration>[] {
+    const refList: Reference<ClassDeclaration>[] = [];
     if (!Array.isArray(resolvedList)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
@@ -364,7 +369,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         // Recurse into nested arrays.
         refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
       } else if (isDeclarationReference(entry)) {
-        if (!this.reflector.isClass(entry.node)) {
+        if (!this.isClassDeclarationReference(entry)) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
               `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a class`);

@@ -9,6 +9,7 @@
 import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {FileToModuleHost, ReferenceEmitStrategy} from './emitter';
 import {ImportMode, Reference} from './references';
 
@@ -18,20 +19,16 @@ const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
 export class AliasGenerator {
   constructor(private fileToModuleHost: FileToModuleHost) {}
 
-  aliasSymbolName(decl: ts.Declaration, context: ts.SourceFile): string {
-    if (!ts.isClassDeclaration(decl)) {
-      throw new Error(`Attempt to write an alias to something which isn't a class`);
-    }
-
+  aliasSymbolName(decl: ClassDeclaration, context: ts.SourceFile): string {
     // The declared module is used to get the name of the alias.
     const declModule =
         this.fileToModuleHost.fileNameToModuleName(decl.getSourceFile().fileName, context.fileName);
 
     const replaced = declModule.replace(CHARS_TO_ESCAPE, '_').replace(/\//g, '$');
-    return 'ɵng$' + replaced + '$$' + decl.name !.text;
+    return 'ɵng$' + replaced + '$$' + decl.name.text;
   }
 
-  aliasTo(decl: ts.Declaration, via: ts.SourceFile): Expression {
+  aliasTo(decl: ClassDeclaration, via: ts.SourceFile): Expression {
     const name = this.aliasSymbolName(decl, via);
     // viaModule is the module it'll actually be imported from.
     const moduleName = this.fileToModuleHost.fileNameToModuleName(via.fileName, via.fileName);
