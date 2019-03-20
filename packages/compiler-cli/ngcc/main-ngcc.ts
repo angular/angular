@@ -9,10 +9,7 @@
 import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
-import {AbsoluteFsPath} from '../src/ngtsc/path';
-
 import {mainNgcc} from './src/main';
-import {EntryPointJsonProperty} from './src/packages/entry_point';
 
 // CLI entry point
 if (require.main === module) {
@@ -21,7 +18,8 @@ if (require.main === module) {
       yargs
           .option('s', {
             alias: 'source',
-            describe: 'A path to the `node_modules` folder to compile.',
+            describe:
+                'A path (relative to the working directory) of the `node_modules` folder to process.',
             default: './node_modules'
           })
           .option('f', {alias: 'formats', hidden: true, array: true})
@@ -29,14 +27,15 @@ if (require.main === module) {
             alias: 'properties',
             array: true,
             describe:
-                'An array of names of properties in package.json (e.g. `module` or `es2015`)\n' +
-                'These properties should hold a path to a bundle-format to compile.\n' +
+                'An array of names of properties in package.json to compile (e.g. `module` or `es2015`)\n' +
+                'Each of these properties should hold the path to a bundle-format.\n' +
                 'If provided, only the specified properties are considered for processing.\n' +
                 'If not provided, all the supported format properties (e.g. fesm2015, fesm5, es2015, esm2015, esm5, main, module) in the package.json are considered.'
           })
           .option('t', {
             alias: 'target',
-            describe: 'A path to a single entry-point to compile (plus its dependencies).',
+            describe:
+                'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).',
           })
           .option('first-only', {
             describe:
@@ -51,13 +50,13 @@ if (require.main === module) {
         'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
     process.exit(1);
   }
-  const baseSourcePath = AbsoluteFsPath.from(path.resolve(options['s'] || './node_modules'));
-  const propertiesToConsider: EntryPointJsonProperty[] = options['p'];
-  const targetEntryPointPath =
-      options['t'] ? AbsoluteFsPath.from(path.resolve(options['t'])) : undefined;
+  const baseSourcePath = path.resolve(options['s'] || './node_modules');
+  const propertiesToConsider: string[] = options['p'];
+  const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
   try {
-    mainNgcc({baseSourcePath, propertiesToConsider, targetEntryPointPath, compileAllFormats});
+    mainNgcc(
+        {basePath: baseSourcePath, propertiesToConsider, targetEntryPointPath, compileAllFormats});
     process.exitCode = 0;
   } catch (e) {
     console.error(e.stack || e.message);
