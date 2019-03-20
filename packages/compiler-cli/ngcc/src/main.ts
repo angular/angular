@@ -80,7 +80,7 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToCons
             compiledFormats.size === 0);
         if (bundle) {
           console.warn(`Compiling ${entryPoint.name} : ${property} as ${format}`);
-          transformer.transform(entryPoint, isCore, bundle);
+          transformer.transform(bundle);
           compiledFormats.add(formatPath);
         } else {
           console.warn(
