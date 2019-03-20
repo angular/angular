@@ -60,11 +60,6 @@ export function isDeclaration(node: ts.Node): node is ts.Declaration {
       ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node);
 }
 
-export function isNamedClassDeclaration(node: ts.Node): node is ts.ClassDeclaration&
-    {name: ts.Identifier} {
-  return ts.isClassDeclaration(node) && (node.name !== undefined);
-}
-
 export function isExported(node: ts.Declaration): boolean {
   let topLevel: ts.Node = node;
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {

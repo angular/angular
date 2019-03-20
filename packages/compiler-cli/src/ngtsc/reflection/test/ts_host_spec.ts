@@ -9,9 +9,9 @@
 import * as ts from 'typescript';
 
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {isNamedClassDeclaration} from '../../util/src/typescript';
 import {CtorParameter} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
+import {isNamedClassDeclaration} from '../src/util';
 
 describe('reflector', () => {
   describe('ctor params', () => {

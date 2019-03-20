@@ -8,12 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMemberKind, ClassSymbol, Import} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMemberKind, ClassSymbol, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
-import {expectTypeValueReferencesForParameters, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from './util';
+import {expectTypeValueReferencesForParameters} from './util';
 
 const SOME_DIRECTIVE_FILE = {
   name: '/some_directive.js',

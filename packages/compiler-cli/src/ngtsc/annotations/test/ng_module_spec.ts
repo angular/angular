@@ -12,10 +12,9 @@ import * as ts from 'typescript';
 
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {isNamedClassDeclaration} from '../../util/src/typescript';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
 import {NoopReferencesRegistry} from '../src/references_registry';
 

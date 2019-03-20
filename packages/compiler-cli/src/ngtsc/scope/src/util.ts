@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMemberKind, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {isNamedClassDeclaration, nodeDebugInfo} from '../../util/src/typescript';
+import {ClassDeclaration, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
+import {nodeDebugInfo} from '../../util/src/typescript';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,

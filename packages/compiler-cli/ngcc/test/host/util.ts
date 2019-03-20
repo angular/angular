@@ -9,7 +9,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, CtorParameter} from '../../../src/ngtsc/reflection';
+import {CtorParameter} from '../../../src/ngtsc/reflection';
 
 /**
  * Check that a given list of `CtorParameter`s has `typeValueReference`s of specific `ts.Identifier`
@@ -28,19 +28,4 @@ export function expectTypeValueReferencesForParameters(
       }
     }
   });
-}
-
-export function isNamedClassDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.ClassDeclaration> {
-  return ts.isClassDeclaration(node) && (node.name !== undefined);
-}
-
-export function isNamedFunctionDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.FunctionDeclaration> {
-  return ts.isFunctionDeclaration(node) && (node.name !== undefined);
-}
-
-export function isNamedVariableDeclaration(node: ts.Node):
-    node is ClassDeclaration<ts.VariableDeclaration> {
-  return ts.isVariableDeclaration(node) && (node.name !== undefined);
 }

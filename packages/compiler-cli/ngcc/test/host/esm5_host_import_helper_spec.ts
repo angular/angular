@@ -8,11 +8,11 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {convertToDirectTsLibImport, getDeclaration, makeTestProgram} from '../helpers/utils';
 
-import {expectTypeValueReferencesForParameters, isNamedVariableDeclaration} from './util';
+import {expectTypeValueReferencesForParameters} from './util';
 
 const FILES = [
   {
