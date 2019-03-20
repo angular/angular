@@ -714,6 +714,7 @@
   "dennispbrown": {
     "name": "Denny Brown",
     "picture": "denny.jpg",
+    "bio": "Denny is founder of Expert Support, a professional services firm specializing in technical communication, and leads the Angular technical writing team. His lifelong passion has been to reduce the time and effort required to understand complex technical information. Early on, he was Associate Chairman of the Computer Science Department at Stanford, where he taught introductory courses in programming. He also plays old-timers baseball in local leagues and national tournaments.",
     "group": "Angular",
     "lead": "bradlygreen"
   },
