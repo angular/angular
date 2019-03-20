@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMemberKind, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {isNamedClassDeclaration, nodeDebugInfo} from '../../util/src/typescript';
+import {ClassDeclaration, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
+import {nodeDebugInfo} from '../../util/src/typescript';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
@@ -77,7 +77,7 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
 }
 
 
-export function extractDirectiveGuards(node: ts.Declaration, reflector: ReflectionHost): {
+export function extractDirectiveGuards(node: ClassDeclaration, reflector: ReflectionHost): {
   ngTemplateGuards: string[],
   hasNgTemplateContextGuard: boolean,
 } {
@@ -88,7 +88,7 @@ export function extractDirectiveGuards(node: ts.Declaration, reflector: Reflecti
   return {hasNgTemplateContextGuard, ngTemplateGuards};
 }
 
-function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost): string[] {
+function nodeStaticMethodNames(node: ClassDeclaration, reflector: ReflectionHost): string[] {
   return reflector.getMembersOfClass(node)
       .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
       .map(member => member.name);

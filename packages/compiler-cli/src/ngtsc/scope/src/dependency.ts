@@ -139,7 +139,8 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
    *
    * @param ref `Reference` to the class of interest, with the context of how it was obtained.
    */
-  private readModuleMetadataFromClass(ref: Reference<ts.Declaration>): RawDependencyMetadata|null {
+  private readModuleMetadataFromClass(ref: Reference<ClassDeclaration>): RawDependencyMetadata
+      |null {
     const clazz = ref.node;
     const resolutionContext = clazz.getSourceFile().fileName;
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.

@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, isDefined} from '../utils';
 
@@ -79,16 +79,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Examine a declaration which should be of a class, and return metadata about the members of the
    * class.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `ClassMember` metadata representing the members of the class.
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getMembersOfClass(clazz: ts.Declaration): ClassMember[] {
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
     const members: ClassMember[] = [];
     const symbol = this.getClassSymbol(clazz);
     if (!symbol) {
@@ -170,10 +167,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * This method only looks at the constructor of a class directly and not at any inherited
    * constructors.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `Parameter` metadata representing the parameters of the constructor, if
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
@@ -181,7 +175,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getConstructorParameters(clazz: ts.Declaration): CtorParameter[]|null {
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(
@@ -325,10 +319,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Get the number of generic type parameters of a given class.
    *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
+   *
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ts.Declaration): number|null {
+  getGenericArityOfClass(clazz: ClassDeclaration): number|null {
     const dtsDeclaration = this.getDtsDeclaration(clazz);
     if (dtsDeclaration && ts.isClassDeclaration(dtsDeclaration)) {
       return dtsDeclaration.typeParameters ? dtsDeclaration.typeParameters.length : 0;
@@ -396,7 +392,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
   ///////////// Protected Helpers /////////////
 
-  protected getDecoratorsOfSymbol(symbol: ts.Symbol): Decorator[]|null {
+  protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
     const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
     if (decoratorsProperty) {
       return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
@@ -443,7 +439,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
-  protected getStaticProperty(symbol: ts.Symbol, propertyName: ts.__String): ts.Symbol|undefined {
+  protected getStaticProperty(symbol: ClassSymbol, propertyName: ts.__String): ts.Symbol|undefined {
     return symbol.exports && symbol.exports.get(propertyName);
   }
 
@@ -489,7 +485,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param symbol the class whose decorators we want to get.
    * @returns an array of decorators or null if none where found.
    */
-  protected getClassDecoratorsFromHelperCall(symbol: ts.Symbol): Decorator[]|null {
+  protected getClassDecoratorsFromHelperCall(symbol: ClassSymbol): Decorator[]|null {
     const decorators: Decorator[] = [];
     const helperCalls = this.getHelperCallsForClass(symbol, '__decorate');
     helperCalls.forEach(helperCall => {
@@ -507,7 +503,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns a map whose keys are the name of the members and whose values are collections of
    * decorators for the given member.
    */
-  protected getMemberDecorators(classSymbol: ts.Symbol): Map<string, Decorator[]> {
+  protected getMemberDecorators(classSymbol: ClassSymbol): Map<string, Decorator[]> {
     const decoratorsProperty = this.getStaticProperty(classSymbol, PROP_DECORATORS);
     if (decoratorsProperty) {
       return this.getMemberDecoratorsFromStaticProperty(decoratorsProperty);
@@ -563,7 +559,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns a map whose keys are the name of the members and whose values are collections of
    * decorators for the given member.
    */
-  protected getMemberDecoratorsFromHelperCalls(classSymbol: ts.Symbol): Map<string, Decorator[]> {
+  protected getMemberDecoratorsFromHelperCalls(classSymbol: ClassSymbol): Map<string, Decorator[]> {
     const memberDecoratorMap = new Map<string, Decorator[]>();
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
@@ -862,7 +858,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol):
+  protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
       ts.ParameterDeclaration[]|null {
     const constructorSymbol = classSymbol.members && classSymbol.members.get(CONSTRUCTOR);
     if (constructorSymbol) {
@@ -891,7 +887,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of constructor parameter info objects.
    */
   protected getConstructorParamInfo(
-      classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+      classSymbol: ClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
     const paramsProperty = this.getStaticProperty(classSymbol, CONSTRUCTOR_PARAMS);
     const paramInfo: ParamInfo[]|null = paramsProperty ?
         this.getParamInfoFromStaticProperty(paramsProperty) :
@@ -965,7 +961,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of objects containing the type and decorators for each parameter.
    */
   protected getParamInfoFromHelperCall(
-      classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
+      classSymbol: ClassSymbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
     const parameters: ParamInfo[] =
         parameterNodes.map(() => ({typeExpression: null, decorators: null}));
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
@@ -1012,7 +1008,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * in.
    * @returns an array of CallExpression nodes for each matching helper call.
    */
-  protected getHelperCallsForClass(classSymbol: ts.Symbol, helperName: string):
+  protected getHelperCallsForClass(classSymbol: ClassSymbol, helperName: string):
       ts.CallExpression[] {
     return this.getStatementsForClass(classSymbol)
         .map(statement => this.getHelperCall(statement, helperName))
@@ -1028,7 +1024,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param classSymbol the class whose helper calls we are interested in.
    * @returns an array of statements that may contain helper calls.
    */
-  protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
+  protected getStatementsForClass(classSymbol: ClassSymbol): ts.Statement[] {
     return Array.from(classSymbol.valueDeclaration.getSourceFile().statements);
   }
 

@@ -41,12 +41,14 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /**
-   * Determines whether the given declaration has a base class.
+   * Determines whether the given declaration, which should be a "class", has a base "class".
    *
-   * In ES5, we need to determine if the IIFE wrapper takes a `_super` parameter .
+   * In ES5 code, we need to determine if the IIFE wrapper takes a `_super` parameter .
+   *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
-  hasBaseClass(node: ts.Declaration): boolean {
-    const classSymbol = this.getClassSymbol(node);
+  hasBaseClass(clazz: ClassDeclaration): boolean {
+    const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) return false;
 
     const iifeBody = classSymbol.valueDeclaration.parent;
@@ -183,7 +185,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol):
+  protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
       ts.ParameterDeclaration[]|null {
     const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
     if (constructor.parameters.length > 0) {
@@ -310,10 +312,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * to reference the inner identifier inside the IIFE.
    * @returns an array of statements that may contain helper calls.
    */
-  protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
-    const classDeclaration = classSymbol.valueDeclaration;
-    return ts.isBlock(classDeclaration.parent) ? Array.from(classDeclaration.parent.statements) :
-                                                 [];
+  protected getStatementsForClass(classSymbol: ClassSymbol): ts.Statement[] {
+    const classDeclarationParent = classSymbol.valueDeclaration.parent;
+    return ts.isBlock(classDeclarationParent) ? Array.from(classDeclarationParent.statements) : [];
   }
 }
 
