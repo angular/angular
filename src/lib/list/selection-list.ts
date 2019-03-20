@@ -381,8 +381,11 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       .withAllowedModifierKeys(['shiftKey']);
 
     if (this._tempValues) {
-      this._setOptionsFromValues(this._tempValues);
-      this._tempValues = null;
+      // Needs to be wrapped in a promise in order to avoid "changed after checked errors".
+      Promise.resolve().then(() => {
+        this._setOptionsFromValues(this._tempValues!);
+        this._tempValues = null;
+      });
     }
 
     // Sync external changes to the model back to the options.
