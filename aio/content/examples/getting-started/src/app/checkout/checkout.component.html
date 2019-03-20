@@ -1,0 +1,26 @@
+<h2>Checkout</h2>
+<h3>My Shopping Cart</h3>
+
+<div class="cart-item" *ngFor="let item of items">
+  <span>{{ item.quantity }}</span>
+  <span>{{ item.product.name }}</span>
+  <span>{{ item.quantity * item.product.price | currency }}</span>
+</div>
+
+<!-- #docregion submitted -->
+<form *ngIf="!submitted" [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
+  <div>
+    <label>Name</label>
+    <input type="text" formControlName="name">
+  </div>
+
+  <div>
+    <label>Address</label>
+    <input type="text" formControlName="address">
+  </div>
+
+  <button class="button" type="submit">Purchase</button>
+</form>
+
+<span *ngIf="submitted">Your order has been submitted!</span>
+<!-- #enddocregion submitted -->

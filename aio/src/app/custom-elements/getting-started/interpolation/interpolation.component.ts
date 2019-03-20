@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
         siteName = '<input #input (input)="siteName = input.value" [value]="siteName">';
       </ng-container>
 
-      <ng-container class="result"><h1>Welcome to {{ siteName }}</h1></ng-container>
+      <ng-container class="result"><h1 class="no-toc">Welcome to {{ siteName }}</h1></ng-container>
     </aio-gs-container>
   `
 })

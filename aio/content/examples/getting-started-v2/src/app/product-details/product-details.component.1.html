@@ -1,0 +1,15 @@
+<!-- #docplaster -->
+<!-- #docregion input-output -->
+<h2>Product Details</h2>
+
+<!-- #enddocregion input-output -->
+<div *ngIf="product">
+<!-- #docregion input-output -->
+  <h3>{{ product.name }}</h3>
+  <h4>{{ product.price | currency }}</h4>
+  <p>{{ product.description }}</p>
+
+  <button (click)="share.emit()">Share</button>
+<!-- #enddocregion input-output -->
+</div>
+<!-- #docregion input-output -->

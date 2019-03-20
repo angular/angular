@@ -1,0 +1,29 @@
+<h2>Products</h2>
+
+<div *ngFor="let product of products">
+
+<!-- #docregion product-details -->
+  <h3>
+    <a [title]="product.name" (click)="selectProduct(product)">
+      {{ product.name }}
+    </a>
+  </h3>
+<!-- #enddocregion product-details -->
+
+  <p *ngIf="product.description">
+    {{ product.description }}
+  </p>
+
+  <button (click)="share()">
+    Share
+  </button>
+
+</div>
+
+<!-- #docregion product-details -->
+<app-product-details
+  *ngIf="selectedProduct"
+  [product]="selectedProduct"
+  (share)="share()">
+</app-product-details>
+<!-- #enddocregion product-details -->

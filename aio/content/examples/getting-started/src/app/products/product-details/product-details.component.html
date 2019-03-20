@@ -1,0 +1,11 @@
+<!-- #docplaster -->
+<!-- #docregion -->
+<div *ngIf="product | async as productInfo">
+  <h3>{{productInfo.name}}</h3>
+  <h4>${{productInfo.price}}</h4>
+  <p>{{productInfo.description}}</p>
+
+<!-- #docregion buy -->
+  <button (click)="onBuy(productInfo)">Buy</button>
+<!-- #enddocregion -->
+</div>

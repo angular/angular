@@ -1,0 +1,26 @@
+<!-- #docregion header, list, form -->
+<h2>Checkout</h2>
+<h3>My Shopping Cart</h3>
+<!-- #enddocregion header -->
+
+<div class="cart-item" *ngFor="let item of items">
+  <span>{{ item.quantity }}</span>
+  <span>{{ item.product.name }}</span>
+  <span>{{ item.quantity * item.product.price | currency }}</span>
+</div>
+<!-- #enddocregion list -->
+
+<form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
+  <div>
+    <label>Name</label>
+    <input type="text" formControlName="name">
+  </div>
+
+  <div>
+    <label>Address</label>
+    <input type="text" formControlName="address">
+  </div>
+
+  <button class="button" type="submit">Purchase</button>
+</form>
+<!-- #enddocregion form -->
