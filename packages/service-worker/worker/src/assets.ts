@@ -69,8 +69,7 @@ export abstract class AssetGroup {
 
     // Determine the origin from the registration scope. This is used to differentiate between
     // relative and absolute URLs.
-    this.origin =
-        this.adapter.parseUrl(this.scope.registration.scope, this.scope.registration.scope).origin;
+    this.origin = this.adapter.parseUrl(this.scope.registration.scope).origin;
   }
 
   async cacheStatus(url: string): Promise<UpdateCacheStatus> {
