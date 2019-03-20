@@ -31,57 +31,106 @@ describe('ngcc main()', () => {
         .not.toThrow();
   });
 
-  it('should only compile the given package entry-point (and its dependencies)', () => {
-    mainNgcc({
-      baseSourcePath: NODE_MODULES,
-      targetEntryPointPath: AbsoluteFsPath.from(`${NODE_MODULES}/@angular/common/http`)
-    });
+  describe('with targetEntryPointPath', () => {
+    it('should only compile the given package entry-point (and its dependencies).', () => {
+      mainNgcc({
+        baseSourcePath: NODE_MODULES,
+        targetEntryPointPath: AbsoluteFsPath.from('/node_modules/@angular/common/http')
+      });
 
-    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
-      module: '0.0.0-PLACEHOLDER',
-      es2015: '0.0.0-PLACEHOLDER',
-      esm5: '0.0.0-PLACEHOLDER',
-      esm2015: '0.0.0-PLACEHOLDER',
-      fesm5: '0.0.0-PLACEHOLDER',
-      fesm2015: '0.0.0-PLACEHOLDER'
+      expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+        module: '0.0.0-PLACEHOLDER',
+        es2015: '0.0.0-PLACEHOLDER',
+        esm5: '0.0.0-PLACEHOLDER',
+        esm2015: '0.0.0-PLACEHOLDER',
+        fesm5: '0.0.0-PLACEHOLDER',
+        fesm2015: '0.0.0-PLACEHOLDER',
+      });
+      // * `common` is a dependency of `common/http`, so is compiled.
+      expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+        module: '0.0.0-PLACEHOLDER',
+        es2015: '0.0.0-PLACEHOLDER',
+        esm5: '0.0.0-PLACEHOLDER',
+        esm2015: '0.0.0-PLACEHOLDER',
+        fesm5: '0.0.0-PLACEHOLDER',
+        fesm2015: '0.0.0-PLACEHOLDER',
+      });
+      // * `core` is a dependency of `common`, so is compiled.
+      expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+        module: '0.0.0-PLACEHOLDER',
+        es2015: '0.0.0-PLACEHOLDER',
+        esm5: '0.0.0-PLACEHOLDER',
+        esm2015: '0.0.0-PLACEHOLDER',
+        fesm5: '0.0.0-PLACEHOLDER',
+        fesm2015: '0.0.0-PLACEHOLDER',
+      });
+
+      // * `common/testing` is not a dependency of `common/http` so is not compiled.
+      expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toBeUndefined();
     });
-    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
-      module: '0.0.0-PLACEHOLDER',
-      es2015: '0.0.0-PLACEHOLDER',
-      esm5: '0.0.0-PLACEHOLDER',
-      esm2015: '0.0.0-PLACEHOLDER',
-      fesm5: '0.0.0-PLACEHOLDER',
-      fesm2015: '0.0.0-PLACEHOLDER'
-    });
-    expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
-      module: '0.0.0-PLACEHOLDER',
-      es2015: '0.0.0-PLACEHOLDER',
-      esm5: '0.0.0-PLACEHOLDER',
-      esm2015: '0.0.0-PLACEHOLDER',
-      fesm5: '0.0.0-PLACEHOLDER',
-      fesm2015: '0.0.0-PLACEHOLDER'
-    });
-    expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toBeUndefined();
   });
 
-  it('should only build the format properties specified for each entry-point', () => {
-    mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['main', 'esm5', 'module']});
+  describe('with propertiesToConsider', () => {
+    it('should only compile the entry-point formats given in the `propertiesToConsider` list',
+       () => {
+         mainNgcc({
+           baseSourcePath: NODE_MODULES,
+           propertiesToConsider: ['main', 'esm5', 'module', 'fesm5']
+         });
 
-    expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
-      esm5: '0.0.0-PLACEHOLDER',
-      module: '0.0.0-PLACEHOLDER',
-    });
-    expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
-      esm5: '0.0.0-PLACEHOLDER',
-      module: '0.0.0-PLACEHOLDER',
-    });
-    expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
-      esm5: '0.0.0-PLACEHOLDER',
-      module: '0.0.0-PLACEHOLDER',
-    });
-    expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
-      esm5: '0.0.0-PLACEHOLDER',
-      module: '0.0.0-PLACEHOLDER',
+         // * the `main` property is UMD, which is not yet supported.
+         // * none of the ES2015 formats are compiled as they are not on the `propertiesToConsider`
+         // list.
+         expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+           esm5: '0.0.0-PLACEHOLDER',
+           module: '0.0.0-PLACEHOLDER',
+           fesm5: '0.0.0-PLACEHOLDER',
+         });
+         expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+           esm5: '0.0.0-PLACEHOLDER',
+           module: '0.0.0-PLACEHOLDER',
+           fesm5: '0.0.0-PLACEHOLDER',
+         });
+         expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
+           esm5: '0.0.0-PLACEHOLDER',
+           module: '0.0.0-PLACEHOLDER',
+           fesm5: '0.0.0-PLACEHOLDER',
+         });
+         expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+           esm5: '0.0.0-PLACEHOLDER',
+           module: '0.0.0-PLACEHOLDER',
+           fesm5: '0.0.0-PLACEHOLDER',
+         });
+       });
+  });
+
+  describe('with compileAllFormats set to false', () => {
+    it('should only compile the first matching format', () => {
+      mainNgcc({
+        baseSourcePath: NODE_MODULES,
+        propertiesToConsider: ['main', 'module', 'fesm5', 'esm5'],
+        compileAllFormats: false
+      });
+      // * The `main` is UMD, which is not yet supported, and so is not compiled.
+      // * In the Angular packages fesm5 and module have the same underlying format,
+      //   so both are marked as compiled.
+      // * The `esm5` is not compiled because we stopped after the `fesm5` format.
+      expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
+        fesm5: '0.0.0-PLACEHOLDER',
+        module: '0.0.0-PLACEHOLDER',
+      });
+      expect(loadPackage('@angular/common').__modified_by_ngcc__).toEqual({
+        fesm5: '0.0.0-PLACEHOLDER',
+        module: '0.0.0-PLACEHOLDER',
+      });
+      expect(loadPackage('@angular/common/testing').__modified_by_ngcc__).toEqual({
+        fesm5: '0.0.0-PLACEHOLDER',
+        module: '0.0.0-PLACEHOLDER',
+      });
+      expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
+        fesm5: '0.0.0-PLACEHOLDER',
+        module: '0.0.0-PLACEHOLDER',
+      });
     });
   });
 });
@@ -135,6 +184,12 @@ interface Directory {
   [pathSegment: string]: string|Directory;
 }
 
+/**
+ * A mock implementation of the node.js Module._resolveFilename function,
+ * which we are spying on to support mocking out the file-system in these tests.
+ *
+ * @param request the path to a module that needs resolving.
+ */
 function mockResolve(request: string): string|null {
   if (existsSync(request)) {
     const stat = statSync(request);
