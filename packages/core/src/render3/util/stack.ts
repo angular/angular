@@ -1,3 +1,5 @@
+import {assertGreaterThan} from '../../util/assert';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -23,7 +25,7 @@ export class Stack<T> {
    * Pushes a value onto the top of the stack
    * @param value the value to push onto the top of the stack
    */
-  push(value: T) {
+  push(value: T): void {
     this._stack[++this._pointer] = value;
     this._current = value;
   }
@@ -33,6 +35,7 @@ export class Stack<T> {
    */
   pop(): T|null {
     const currentPointer = this._pointer;
+    ngDevMode && assertGreaterThan(currentPointer, -1, 'Attempted to pop off of an empty stack');
     if (currentPointer === -1) {
       return null;
     }
@@ -47,5 +50,5 @@ export class Stack<T> {
   /**
    * The current top of the stack
    */
-  get current() { return this._current; }
+  peek(): T|null { return this._current; }
 }

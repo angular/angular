@@ -401,7 +401,7 @@ function i18nStartFirstPass(
         // The value represents a placeholder that we move to the designated index
         createOpCodes.push(
             phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-            parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+            parentIndexStack.peek() ! << I18nMutateOpCode.SHIFT_PARENT |
                 I18nMutateOpCode.AppendChild);
 
         if (value.charAt(0) === '#') {
@@ -418,7 +418,7 @@ function i18nStartFirstPass(
           const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
-              parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+              parentIndexStack.peek() ! << I18nMutateOpCode.SHIFT_PARENT |
                   I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
@@ -444,7 +444,7 @@ function i18nStartFirstPass(
           createOpCodes.push(
               // If there is a binding, the value will be set during update
               hasBinding ? '' : text, textNodeIndex,
-              parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+              parentIndexStack.peek() ! << I18nMutateOpCode.SHIFT_PARENT |
                   I18nMutateOpCode.AppendChild);
 
           if (hasBinding) {
