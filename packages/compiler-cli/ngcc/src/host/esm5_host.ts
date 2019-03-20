@@ -39,7 +39,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   isClass(node: ts.Node): node is ClassDeclaration { return !!this.getClassDeclaration(node); }
 
   /**
-   * Determines whether the given declaration, which should be a class, has a base class.
+   * Determines whether the given declaration, which should be a "class", has a base "class".
    *
    * In ES5 code, we need to determine if the IIFE wrapper takes a `_super` parameter .
    *
