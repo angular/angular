@@ -175,7 +175,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }, new MockHeaders());
   }
 
-  parseUrl(url: string, relativeTo: string): {origin: string, path: string} {
+  parseUrl(url: string, relativeTo?: string): {origin: string, path: string} {
     if (typeof URL === 'function') {
       const obj = new URL(url, relativeTo);
       return {origin: obj.origin, path: obj.pathname};
