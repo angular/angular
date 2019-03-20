@@ -581,16 +581,22 @@ jobs:
           command: ./scripts/ci/clone_angular_material_repo.sh
       - restore_cache:
           keys:
-            - v1-angular-material-{{ checksum "material_repo_sha" }}
-            - v1-angular-material-
+            - v2-angular-material-{{ checksum "material_repo_sha" }}
+            - v2-angular-material-
       - run:
-          name: "Running Material unit tests"
-          command: ./scripts/ci/run_angular_material_unit_tests.sh
+          name: Installing Material dependencies.
+          command: yarn --cwd ${MATERIAL_REPO_TMP_DIR} install --frozen-lockfile --non-interactive
+      # Save the cache before we run the Material unit tests script. This is necessary
+      # because we don't want to cache the node modules which have been modified to contain
+      # the attached Ivy package output.
       - save_cache:
-          key: v1-angular-material-{{ checksum "material_repo_sha" }}
+          key: v2-angular-material-{{ checksum "material_repo_sha" }}
           paths:
             # Needs to be hardcoded because environment variables are not interpolated here.
             - "/tmp/material2/node_modules"
+      - run:
+          name: "Running Material unit tests"
+          command: ./scripts/ci/run_angular_material_unit_tests.sh
 
 workflows:
   version: 2
