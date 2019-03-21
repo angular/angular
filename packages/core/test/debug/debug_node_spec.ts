@@ -7,7 +7,7 @@
  */
 
 
-import {Component, Directive, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Directive, EmbeddedViewRef, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA, TemplateRef, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -377,6 +377,56 @@ class TestCmpt {
       fixture.detectChanges();
 
       const debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+      expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
+    });
+
+    it('should query directives on views moved in the DOM - FW-1059', () => {
+      @Directive({selector: '[text]'})
+      class TextDirective {
+        @Input() text: string|undefined;
+      }
+
+      @Directive({selector: '[moveView]'})
+      class ViewManipulatingDirective {
+        constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<any>) {}
+
+        insert() { this._vcRef.createEmbeddedView(this._tplRef); }
+
+        removeFromTheDom() {
+          const viewRef = this._vcRef.get(0) as EmbeddedViewRef<any>;
+          viewRef.rootNodes.forEach(rootNode => { rootNode.remove(); });
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TextDirective, ViewManipulatingDirective]});
+      TestBed.overrideTemplate(
+          TestApp, `<ng-template text="first" moveView><div text="second"></div></ng-template>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const viewMover =
+          fixture.debugElement.queryAllNodes(By.directive(ViewManipulatingDirective))[0]
+              .injector.get(ViewManipulatingDirective);
+
+      let debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+
+      // we've got just one directive on <ng-template>
+      expect(debugNodes.length).toBe(1);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+
+      // insert a view - now we expect to find 2 directive instances
+      viewMover.insert();
+      fixture.detectChanges();
+      debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+
+      // remove a view from the DOM (equivalent to moving it around)
+      // the logical tree is the same but DOM have changed
+      viewMover.removeFromTheDom();
+      debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
       expect(debugNodes.length).toBe(2);
       expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
       expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
