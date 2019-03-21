@@ -29,11 +29,6 @@ export class TypeCheckContext {
   constructor(private refEmitter: ReferenceEmitter) {}
 
   /**
-   * A `Set` of classes which will be used to generate type constructors.
-   */
-  private typeCtors = new Set<ts.ClassDeclaration>();
-
-  /**
    * A `Map` of `ts.SourceFile`s that the context has seen to the operations (additions of methods
    * or type-check blocks) that need to be eventually performed on that file.
    */
@@ -83,9 +78,6 @@ export class TypeCheckContext {
    * Record a type constructor for the given `node` with the given `ctorMetadata`.
    */
   addTypeCtor(sf: ts.SourceFile, node: ts.ClassDeclaration, ctorMeta: TypeCtorMetadata): void {
-    if (this.hasTypeCtor(node)) {
-      return;
-    }
     // Lazily construct the operation map.
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
@@ -142,11 +134,6 @@ export class TypeCheckContext {
     // Parse the new source file and return it.
     return ts.createSourceFile(sf.fileName, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
-
-  /**
-   * Whether the given `node` has a type constructor already.
-   */
-  private hasTypeCtor(node: ts.ClassDeclaration): boolean { return this.typeCtors.has(node); }
 
   private addTypeCheckBlock(
       sf: ts.SourceFile, node: ts.ClassDeclaration, tcbMeta: TypeCheckBlockMetadata): void {
