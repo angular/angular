@@ -777,18 +777,28 @@ class CompWithUrlTemplate {
       describe('setting up the compiler', () => {
 
         describe('providers', () => {
-          beforeEach(() => {
-            const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
-                                          .and.returnValue(Promise.resolve('Hello world!'));
-            TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-            TestBed.configureCompiler(
-                {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
-          });
 
           it('should use set up providers', fakeAsync(() => {
+               // Keeping this component inside the test is needed to make sure it's not resolved
+               // prior to this test, thus having ngComponentDef and a reference in resource
+               // resolution queue. This is done to check external resoution logic in isolation by
+               // configuring TestBed with the necessary ResourceLoader instance.
+               @Component({
+                 selector: 'comp',
+                 templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+               })
+               class InternalCompWithUrlTemplate {
+               }
+
+               const resourceLoaderGet = jasmine.createSpy('resourceLoaderGet')
+                                             .and.returnValue(Promise.resolve('Hello world!'));
+               TestBed.configureTestingModule({declarations: [InternalCompWithUrlTemplate]});
+               TestBed.configureCompiler(
+                   {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
+
                TestBed.compileComponents();
                tick();
-               const compFixture = TestBed.createComponent(CompWithUrlTemplate);
+               const compFixture = TestBed.createComponent(InternalCompWithUrlTemplate);
                expect(compFixture.nativeElement).toHaveText('Hello world!');
              }));
         });
