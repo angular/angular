@@ -45,8 +45,7 @@ let lastCreatedRenderer: Renderer2;
       // UI side
       uiRenderStore = new RenderStore();
       const uiInjector = new TestBed();
-      uiInjector.platform = platformBrowserDynamicTesting();
-      uiInjector.ngModule = BrowserTestingModule;
+      uiInjector.initTestEnvironment(BrowserTestingModule, platformBrowserDynamicTesting());
       uiInjector.configureTestingModule({
         providers: [
           Serializer,
