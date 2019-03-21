@@ -267,7 +267,7 @@ export class NgtscProgram implements api.Program {
     const writeFile: ts.WriteFileCallback =
         (fileName: string, data: string, writeByteOrderMark: boolean,
          onError: ((message: string) => void) | undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>) => {
+         sourceFiles: ReadonlyArray<ts.SourceFile>| undefined) => {
           if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
             data = nocollapseHack(data);
           }
