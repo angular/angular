@@ -4,8 +4,12 @@ set -x -u -e -o pipefail
 
 readonly currentDir=$(cd $(dirname $0); pwd)
 
-# Command arguments that will be passed to sauce-connect.
-sauceArgs=""
+# Command arguments that will be passed to sauce-connect. By default we disable SSL bumping for
+# all requests. This is because SSL bumping is not needed for our test setup and in order
+# to perform the SSL bumping, Saucelabs intercepts all HTTP requests in the tunnel VM and modifies
+# them. This can cause flakiness as it makes all requests dependent on the SSL bumping middleware.
+# See: https://wiki.saucelabs.com/display/DOCS/Troubleshooting+Sauce+Connect#TroubleshootingSauceConnect-DisablingSSLBumping
+sauceArgs="--no-ssl-bump-domains all"
 
 if [[ ! -z "${SAUCE_LOG_FILE:-}" ]]; then
   mkdir -p $(dirname ${SAUCE_LOG_FILE})
