@@ -79,7 +79,7 @@ describe('Query API', () => {
       const q = view.debugElement.children[0].references !['q'];
       view.detectChanges();
       expect(q.textDirChildren.length).toEqual(1);
-      expect(q.numberOfChildrenAfterContentInit).toEqual(1);
+      expect(q.numberOfChildrenAfterContentInit).toEqual(2);
     });
 
     it('should contain the first content child', () => {
@@ -109,7 +109,7 @@ describe('Query API', () => {
          expect(q.child.text).toEqual('foo');
          const directive: DirectiveNeedsContentChild =
              view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
-         expect(directive.child.text).toEqual('foo');
+         expect(directive.child.text).toEqual('not foo');
        });
 
     it('should contain the first view child', () => {
