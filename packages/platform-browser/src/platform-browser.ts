@@ -1,3 +1,5 @@
+import {TRUSTED_TYPE_POLICY_NAME} from './security/trusted_types_policy';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -16,6 +18,6 @@ export {DOCUMENT} from './dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader} from './dom/events/hammer_gestures';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
-
+export {TRUSTED_TYPE_POLICY_NAME} from './security/trusted_types_policy';
 export * from './private_export';
 export {VERSION} from './version';

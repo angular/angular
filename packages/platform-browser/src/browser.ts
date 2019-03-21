@@ -21,12 +21,19 @@ import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesture
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+import {TRUSTED_TYPE_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
   {provide: PlatformLocation, useClass: BrowserPlatformLocation, deps: [DOCUMENT]},
   {provide: DOCUMENT, useFactory: _document, deps: []},
+  {
+    provide: TrustedTypePolicyAdapter,
+    useClass: TrustedTypePolicyAdapterImpl,
+    deps: [TRUSTED_TYPE_POLICY_NAME]
+  },
+  {provide: TRUSTED_TYPE_POLICY_NAME, useValue: '@angular/platform-browser'},
 ];
 
 /**
@@ -37,7 +44,7 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
  */
 export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
   {provide: Sanitizer, useExisting: DomSanitizer},
-  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
+  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT, TrustedTypePolicyAdapter]},
 ];
 
 /**
@@ -80,7 +87,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
-    deps: [EventManager, DomSharedStylesHost]
+    deps: [EventManager, DomSharedStylesHost, TrustedTypePolicyAdapter]
   },
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
