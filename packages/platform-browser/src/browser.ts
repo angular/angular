@@ -19,11 +19,18 @@ import {HAMMER_PROVIDERS} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+import {TRUSTED_TYPE_POLICY_NAME, TrustedTypePolicyAdapter, TrustedTypePolicyAdapterImpl} from './security/trusted_types_policy';
 
 export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
   {provide: DOCUMENT, useFactory: _document, deps: []},
+  {
+    provide: TrustedTypePolicyAdapter,
+    useClass: TrustedTypePolicyAdapterImpl,
+    deps: [TRUSTED_TYPE_POLICY_NAME]
+  },
+  {provide: TRUSTED_TYPE_POLICY_NAME, useValue: '@angular/platform-browser'},
 ];
 
 const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
@@ -39,7 +46,14 @@ export const BROWSER_SANITIZATION_PROVIDERS__POST_R3__ = [];
  * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
  * @publicApi
  */
+<<<<<<< HEAD
 export const BROWSER_SANITIZATION_PROVIDERS = BROWSER_SANITIZATION_PROVIDERS__PRE_R3__;
+=======
+export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
+  {provide: Sanitizer, useExisting: DomSanitizer},
+  {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT, TrustedTypePolicyAdapter]},
+];
+>>>>>>> feat(platform-browser): Trusted Types-related objects are now controllable through DI.
 
 /**
  * @publicApi
@@ -75,7 +89,11 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
+<<<<<<< HEAD
     deps: [EventManager, DomSharedStylesHost, APP_ID]
+=======
+    deps: [EventManager, DomSharedStylesHost, TrustedTypePolicyAdapter]
+>>>>>>> feat(platform-browser): Trusted Types-related objects are now controllable through DI.
   },
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},

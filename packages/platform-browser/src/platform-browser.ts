@@ -1,3 +1,5 @@
+import {TRUSTED_TYPE_POLICY_NAME} from './security/trusted_types_policy';
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -15,7 +17,7 @@ export {By} from './dom/debug/by';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HAMMER_PROVIDERS__POST_R3__ as ɵHAMMER_PROVIDERS__POST_R3__, HammerGestureConfig, HammerLoader, HammerModule} from './dom/events/hammer_gestures';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
-
+export {TRUSTED_TYPE_POLICY_NAME} from './security/trusted_types_policy';
 export * from './private_export';
 export {VERSION} from './version';
 // This must be exported so it doesn't get tree-shaken away prematurely

@@ -1,4 +1,3 @@
-/// <reference types="trusted-types" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -8,7 +7,7 @@
  */
 
 import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, SecurityContext, ViewEncapsulation} from '@angular/core';
-
+import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
 
@@ -75,9 +74,12 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      @Inject(APP_ID) private appId: string) {
-    this.defaultRenderer = new DefaultDomRenderer2(eventManager);
+      private eventManager: EventManager,
+      private sharedStylesHost: DomSharedStylesHost,
+      @Inject(APP_ID) private appId: string,
+      private policyAdapter: TrustedTypePolicyAdapter
+  ) {
+    this.defaultRenderer = new TrustedTypesDomRenderer2(eventManager, policyAdapter);
   }
 
   createRenderer(element: any, type: RendererType2|null): Renderer2 {
@@ -89,7 +91,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationDomRenderer2(
-              this.eventManager, this.sharedStylesHost, type, this.appId);
+              this.eventManager, this.sharedStylesHost, type, this.appId, this.policyAdapter);
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
@@ -97,7 +99,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
       }
       case ViewEncapsulation.Native:
       case ViewEncapsulation.ShadowDom:
-        return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
+        return new ShadowDomRenderer(
+            this.eventManager, this.sharedStylesHost, element, type, this.policyAdapter);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
@@ -251,9 +254,8 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
 }
 
 class TrustedTypesDomRenderer2 extends DefaultDomRenderer2 {
-  private _supportsTrustedTypes: boolean;
-  private _policy: TrustedTypePolicy|undefined;
   // Using SecurityContext for convenience here only.
+  // TODO: Move to TrustedTypePolicyAdapter.
   static TypeMap: {[key: string]: SecurityContext} = {
     // Do not sort.
     'script:src': SecurityContext.RESOURCE_URL,
@@ -264,69 +266,57 @@ class TrustedTypesDomRenderer2 extends DefaultDomRenderer2 {
     '*:innerhtml': SecurityContext.HTML,
     '*:outerhtml': SecurityContext.HTML,
   };
-    constructor(eventManager: EventManager) {
-      super(eventManager);
-      this._supportsTrustedTypes =
-          typeof TrustedTypes !== 'undefined' && Boolean(TrustedTypes.createPolicy);
-      if (this._supportsTrustedTypes) {
-        this._policy = TrustedTypes.createPolicy(
-            'angular-renderer', {
-              createURL: (s: string) => s,
-              createScriptURL: (s: string) => s,
-              createScript: (s: string) => s,
-              createHTML: (s: string) => s
-            },
-            false);
+  constructor(eventManager: EventManager, private _policyAdapter: TrustedTypePolicyAdapter) {
+    super(eventManager);
+  }
+
+  private _getContext(tag: string, attribute: string, namespace?: string): SecurityContext {
+    const lookupCandidates = [
+      tag + ':' + attribute,
+      '*:' + attribute,
+    ];
+    for (let lookup of lookupCandidates)
+      if (lookup in TrustedTypesDomRenderer2.TypeMap) {
+        return TrustedTypesDomRenderer2.TypeMap[lookup];
       }
-    }
+    return SecurityContext.NONE;
+  }
 
-    private _getContext(tag: string, attribute: string, namespace?: string): SecurityContext {
-      const lookupCandidates = [
-        tag + ':' + attribute,
-        '*:' + attribute,
-      ];
-      for (let lookup of lookupCandidates)
-        if (lookup in TrustedTypesDomRenderer2.TypeMap) {
-          return TrustedTypesDomRenderer2.TypeMap[lookup];
-        }
-      return SecurityContext.NONE;
+  private _convertValue(el: any, name: string, value: string): string {
+    if (!this._policyAdapter.supportsTrustedTypes()) {
+      return value;
     }
+    const context = this._getContext((el as Element).tagName.toLowerCase(), name.toLowerCase());
+    let newValue;
+    switch (context) {
+      case SecurityContext.HTML:
+        newValue = this._policyAdapter.maybeCreateTrustedHTML(value);
+        break;
+      case SecurityContext.URL:
+        newValue = this._policyAdapter.maybeCreateTrustedURL(value);
+        break;
+      case SecurityContext.RESOURCE_URL:
+        newValue = this._policyAdapter.maybeCreateTrustedScriptURL(value);
+        break;
+      case SecurityContext.SCRIPT:
+        newValue = this._policyAdapter.maybeCreateTrustedScript(value);
+        break;
+      case SecurityContext.NONE:
+        newValue = value;
+        break;
+    }
+    return newValue as string;
+  }
 
-    private _convertValue(el: any, name: string, value: string): string {
-      if (!this._supportsTrustedTypes || !this._policy) {
-        return value;
-      }
-      const context = this._getContext((el as Element).tagName.toLowerCase(), name.toLowerCase());
-      let newValue;
-      switch (context) {
-        case SecurityContext.HTML:
-          newValue = this._policy.createHTML(value);
-          break;
-        case SecurityContext.URL:
-          newValue = this._policy.createURL(value);
-          break;
-        case SecurityContext.RESOURCE_URL:
-          newValue = this._policy.createScriptURL(value);
-          break;
-        case SecurityContext.SCRIPT:
-          newValue = this._policy.createScript(value);
-          break;
-        case SecurityContext.NONE:
-          newValue = value;
-          break;
-      }
-      return newValue as string;
-    }
+  setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    const newValue = this._convertValue(el, name, value);
+    super.setAttribute(el, name, newValue, namespace);
+  }
 
-    setAttribute(el: any, name: string, value: string, namespace?: string): void {
-      const newValue = this._convertValue(el, name, value);
-      super.setAttribute(el, name, newValue, namespace);
-    }
-
-    setProperty(el: any, name: string, value: any): void {
-      const newValue = this._convertValue(el, name, value);
-      super.setProperty(el, name, newValue);
-    }
+  setProperty(el: any, name: string, value: any): void {
+    const newValue = this._convertValue(el, name, value);
+    super.setProperty(el, name, newValue);
+  }
 }
 
 class EmulatedEncapsulationDomRenderer2 extends TrustedTypesDomRenderer2 {
@@ -335,8 +325,8 @@ class EmulatedEncapsulationDomRenderer2 extends TrustedTypesDomRenderer2 {
 
   constructor(
       eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2, appId: string) {
-    super(eventManager);
+      private component: RendererType2, appId: string, policyAdapter: TrustedTypePolicyAdapter) {
+    super(eventManager, policyAdapter);
     const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
 
@@ -358,8 +348,9 @@ class ShadowDomRenderer extends TrustedTypesDomRenderer2 {
 
   constructor(
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererType2) {
-    super(eventManager);
+      private hostEl: any, private component: RendererType2,
+      policyAdapter: TrustedTypePolicyAdapter) {
+    super(eventManager, policyAdapter);
     if (component.encapsulation === ViewEncapsulation.ShadowDom) {
       this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     } else {

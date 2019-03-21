@@ -8,7 +8,13 @@
  */
 
 import {DOCUMENT} from '@angular/common';
+<<<<<<< HEAD
 import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+=======
+import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
+import {TrustedTypePolicyAdapter} from './trusted_types_policy';
+
+>>>>>>> feat(platform-browser): Trusted Types-related objects are now controllable through DI.
 
 export {SecurityContext};
 
@@ -150,22 +156,9 @@ export function domSanitizerImplFactory(injector: Injector) {
 
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
-  _supportsTrustedTypes: boolean;
-  _policy: TrustedTypePolicy|undefined;
-  constructor(@Inject(DOCUMENT) private _doc: any) {
+  constructor(
+      @Inject(DOCUMENT) private _doc: any, private _policyAdapter: TrustedTypePolicyAdapter) {
     super();
-    this._supportsTrustedTypes =
-        typeof TrustedTypes !== 'undefined' && Boolean(TrustedTypes.createPolicy);
-    if (this._supportsTrustedTypes) {
-      this._policy = TrustedTypes.createPolicy(
-          'angular-sanitizer', {
-            createURL: (s: string) => s,
-            createScriptURL: (s: string) => s,
-            createScript: (s: string) => s,
-            createHTML: (s: string) => s
-          },
-          false);
-    }
   }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
@@ -176,8 +169,7 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl)
           return value.changingThisBreaksApplicationSecurity as string;
-        if (this._supportsTrustedTypes && value instanceof TrustedHTML &&
-            (TrustedTypes as any).isHTML(value)) {
+        if (this._policyAdapter.isHTML(value)) {
           return value as unknown as string;
         }
         this.checkNotSafeValue(value, 'HTML');
@@ -190,8 +182,7 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.SCRIPT:
         if (value instanceof SafeScriptImpl)
           return value.changingThisBreaksApplicationSecurity as string;
-        if (this._supportsTrustedTypes && value instanceof TrustedScript &&
-            (TrustedTypes as any).isScript(value)) {
+        if (this._policyAdapter.isScript(value)) {
           return value as unknown as string;
         }
         this.checkNotSafeValue(value, 'Script');
@@ -201,8 +192,7 @@ export class DomSanitizerImpl extends DomSanitizer {
           // Allow resource URLs in URL contexts, they are strictly more trusted.
           return value.changingThisBreaksApplicationSecurity as string;
         }
-        if (this._supportsTrustedTypes && value instanceof TrustedURL &&
-            (TrustedTypes as any).isURL(value)) {
+        if (this._policyAdapter.isURL(value)) {
           return value as unknown as string;
         }
         this.checkNotSafeValue(value, 'URL');
@@ -211,8 +201,7 @@ export class DomSanitizerImpl extends DomSanitizer {
         if (value instanceof SafeResourceUrlImpl) {
           return value.changingThisBreaksApplicationSecurity as string;
         }
-        if (this._supportsTrustedTypes && value instanceof TrustedScriptURL &&
-            (TrustedTypes as any).isScriptURL(value)) {
+        if (this._policyAdapter.isScriptURL(value)) {
           return value as unknown as string;
         }
         throw new Error(
@@ -224,16 +213,12 @@ export class DomSanitizerImpl extends DomSanitizer {
 
   private sanitizeURL(value: string): string {
     const sanitized = _sanitizeUrl(value);
-    return this._supportsTrustedTypes && this._policy ?
-        this._policy.createURL(sanitized) as unknown as string :
-        sanitized;
+    return this._policyAdapter.maybeCreateTrustedURL(sanitized);
   }
 
   private sanitizeHTML(value: string): string {
     const sanitized = _sanitizeHtml(this._doc, value);
-    return this._supportsTrustedTypes && this._policy ?
-        this._policy.createHTML(sanitized) as unknown as string :
-        sanitized;
+    return this._policyAdapter.maybeCreateTrustedHTML(sanitized);
   }
 
   private checkNotSafeValue(value: any, expectedType: string) {
@@ -245,17 +230,17 @@ export class DomSanitizerImpl extends DomSanitizer {
   }
 
   bypassSecurityTrustHtml(value: string): SafeHtml {
-    return new SafeHtmlImpl(this._policy ? this._policy.createHTML(value) : value);
+    return new SafeHtmlImpl(this._policyAdapter.maybeCreateTrustedHTML(value));
   }
   bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
   bypassSecurityTrustScript(value: string): SafeScript {
-    return new SafeScriptImpl(this._policy ? this._policy.createScript(value) : value);
+    return new SafeScriptImpl(this._policyAdapter.maybeCreateTrustedScript(value));
   }
   bypassSecurityTrustUrl(value: string): SafeUrl {
-    return new SafeUrlImpl(this._policy ? this._policy.createURL(value) : value);
+    return new SafeUrlImpl(this._policyAdapter.maybeCreateTrustedURL(value));
   }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
-    return new SafeResourceUrlImpl(this._policy ? this._policy.createScriptURL(value) : value);
+    return new SafeResourceUrlImpl(this._policyAdapter.maybeCreateTrustedScriptURL(value));
   }
 }
 
