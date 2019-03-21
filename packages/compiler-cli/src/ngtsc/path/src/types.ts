@@ -74,7 +74,7 @@ export const PathSegment = {
   fromFsPath: function(str: string): PathSegment {
     const normalized = normalizeSeparators(str);
     if (isAbsolutePath(normalized)) {
-      throw new Error(`Internal Error: PathSegment.from(${str}): path is not relative`);
+      throw new Error(`Internal Error: PathSegment.fromFsPath(${str}): path is not relative`);
     }
     return normalized as PathSegment;
   },
