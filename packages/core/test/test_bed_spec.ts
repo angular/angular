@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe} from '@angular/core';
+import {ResourceLoader} from '@angular/compiler';
+import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -319,18 +320,45 @@ describe('TestBed', () => {
 
              class ComponentWithNoAnnotations extends SomeComponent {}
 
-             TestBed.configureTestingModule({declarations: [ComponentWithNoAnnotations]});
+             @Directive({selector: 'some-directive'})
+             class SomeDirective {
+             }
+
+             class DirectiveWithNoAnnotations extends SomeDirective {}
+
+             @Pipe({name: 'some-pipe'})
+             class SomePipe {
+             }
+
+             class PipeWithNoAnnotations extends SomePipe {}
+
+             TestBed.configureTestingModule({
+               declarations: [
+                 ComponentWithNoAnnotations, DirectiveWithNoAnnotations, PipeWithNoAnnotations
+               ]
+             });
              TestBed.createComponent(ComponentWithNoAnnotations);
 
              expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeTruthy();
              expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
 
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+
+             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+
              TestBed.resetTestingModule();
 
+             // ng defs should be removed from classes with no annotations
              expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeFalsy();
+             expect(DirectiveWithNoAnnotations.hasOwnProperty('ngDirectiveDef')).toBeFalsy();
+             expect(PipeWithNoAnnotations.hasOwnProperty('ngPipeDef')).toBeFalsy();
 
-             // ngComponentDef should be preserved on super component
+             // ng defs should be preserved on super types
              expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
+             expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
            });
       });
 });
