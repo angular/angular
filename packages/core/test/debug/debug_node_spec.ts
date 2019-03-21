@@ -362,6 +362,26 @@ class TestCmpt {
       expect(debugElement).toBeTruthy();
     });
 
+    it('should query directives on containers before directives in a view - FW-869', () => {
+      @Directive({selector: '[text]'})
+      class TextDirective {
+        @Input() text: string|undefined;
+      }
+
+      TestBed.configureTestingModule({declarations: [TextDirective]});
+      TestBed.overrideTemplate(
+          TestApp,
+          `<ng-template text="first" [ngIf]="true"><div text="second"></div></ng-template>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
+      expect(debugNodes.length).toBe(2);
+      expect(debugNodes[0].injector.get(TextDirective).text).toBe('first');
+      expect(debugNodes[1].injector.get(TextDirective).text).toBe('second');
+    });
+
     it('should list providerTokens', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
