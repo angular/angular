@@ -147,7 +147,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * to a key in the parent `FormGroup` or `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name !: string;
+  @Input('formControlName') name !: string | number;
 
   /**
    * @description
@@ -238,7 +238,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] { return controlPath(this.name, this._parent !); }
+  get path(): string[] { return controlPath(String(this.name), this._parent !); }
 
   /**
    * @description
