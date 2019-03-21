@@ -13,6 +13,7 @@
     "paths": {
       "@angular/compiler": ["../../dist/packages/compiler"]
     },
+    "strict": true,
     "types": [
       "node"
     ],
