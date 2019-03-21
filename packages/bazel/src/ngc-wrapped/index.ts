@@ -105,6 +105,10 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
 
       angularCompilerOptions.preserveWhitespaces = angularCompilerOptions.preserveWhitespaces ||
           userConfig.angularCompilerOptions.preserveWhitespaces;
+
+      angularCompilerOptions.createExternalSymbolFactoryReexports =
+          angularCompilerOptions.createExternalSymbolFactoryReexports ||
+          userConfig.angularCompilerOptions.createExternalSymbolFactoryReexports;
     }
   }
 
