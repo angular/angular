@@ -275,6 +275,7 @@ def jasmine_node_test(deps = [], **kwargs):
         # Very common dependencies for tests
         "@npm//chokidar",
         "@npm//domino",
+        "@npm//jasmine-core",
         "@npm//mock-fs",
         "@npm//reflect-metadata",
         "@npm//source-map-support",
