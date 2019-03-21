@@ -25,7 +25,7 @@ export interface DtsModuleScopeResolver {
  * of all of the directives/pipes it exports. It does this by reading metadata off of Ivy static
  * fields on directives, components, pipes, and NgModules.
  */
-export class MetadataDtsModuleScopeResolver {
+export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
   /**
    * Cache which holds fully resolved scopes for NgModule classes from .d.ts files.
    */
