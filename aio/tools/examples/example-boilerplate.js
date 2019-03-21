@@ -92,16 +92,11 @@ class ExampleBoilerPlate {
           filePath => this.copyFile(boilerPlateBasePath, exampleFolder, filePath));
 
       // Copy the boilerplate common files
-<<<<<<< HEAD
-      BOILERPLATE_PATHS.common.forEach(
-          filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
-=======
       const useCommonBoilerplate = exampleConfig.useCommonBoilerplate !== false;
       
       if (useCommonBoilerplate) {
         BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
       }
->>>>>>> docs: add new getting started guide
 
       // Copy Ivy specific files
       if (ivy) {

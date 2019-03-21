@@ -122,9 +122,9 @@ app-top-bar h1 {
   margin: 0;
 }
 
-/* Checkout Cart */
+/* Checkout Cart, Shipping Prices */
 
-.cart-item {
+.cart-item, .shipping-item {
   width: 100%;
   max-width: 400px;
   display: flex;

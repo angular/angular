@@ -63,8 +63,40 @@
       "tooltip": "A brief introduction to Angular and Angular CLI essentials."
     },
     {
+      "title": "Getting Started",
+      "tooltip": "Learn the basics by building your first Angular application.",
+      "children": [
+        {
+          "url": "getting-started",
+          "title": "Your First App",
+          "tooltip": "Introduction to Angular's component model, template syntax, and component communication"
+        },
+        {
+          "url": "getting-started/routing",
+          "title": "Routing",
+          "tooltip": "Introduction to routing between components using the browser's URL"
+        },        
+        {
+          "url": "getting-started/data",
+          "title": "Managing Data",
+          "tooltip": "Introduction to services, and accessing external data"
+        },
+        {
+          "url": "getting-started/forms",
+          "title": "Forms",
+          "tooltip": "Learn about fetching and managing data from users with forms"
+        },
+        {
+          "url": "getting-started/deployment",
+          "title": "Deployment",
+          "tooltip": "Share your application with the world by hosting it on Firebase or your own server"
+        }
+      ]
+    },    
+    {
       "title": "Getting Started (Beta 2)",
       "tooltip": "Learn the basics by building your first Angular application.",
+      "hidden": true,
       "children": [
         {
           "url": "getting-started/index-v2",
@@ -91,9 +123,10 @@
     {
       "title": "Getting Started (Beta)",
       "tooltip": "Learn the basics by building your first Angular application.",
+      "hidden": true,
       "children": [
         {
-          "url": "getting-started",
+          "url": "getting-started/index-v1",
           "title": "Your First App",
           "tooltip": "Learn Angular's component model, template syntax, component communication, and services"
         },
@@ -112,6 +145,7 @@
     {
       "title": "Getting Started Outtakes",
       "tooltip": "Learn the basics by building your first Angular application.",
+      "hidden": true,
       "children": [
       {
         "url": "getting-started/getting-started-architecture",

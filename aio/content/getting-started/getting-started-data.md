@@ -36,14 +36,14 @@ Currently, your products data is using the `data` property in the `ProductServic
 
 In the `app.module.ts` file, import `HttpClientModule` from the `@angular/common/http` package.
 
-<code-example header="src/app/app.module.ts (HttpClientModule)" path="getting-started/src/app/app.module.2.ts" region="http-client-module">
+<code-example header="src/app/app.module.ts (HttpClientModule)" path="getting-started-v1/src/app/app.module.2.ts" region="http-client-module">
 </code-example>
 
 #### 2. Register `HttpClientModule`
 
 Add the `HttpClientModule` to the `imports` array of the `AppModule`.
 
-<code-example header="src/app/app.module.ts (HttpClientModule imports)" path="getting-started/src/app/app.module.2.ts" region="http-client-module-imports">
+<code-example header="src/app/app.module.ts (HttpClientModule imports)" path="getting-started-v1/src/app/app.module.2.ts" region="http-client-module-imports">
 </code-example>
 
 #### 3. Create external JSON data file
@@ -54,35 +54,35 @@ Currently, the data for the product list is hard-coded into the `ProductService`
 2. Create a `products.json` file in the `assets` folder to contain the object data is currently hard-coded in the `ProductService`.
 3. Copy the contents from the `data` property in the `ProductService` to the `products.json` file.
 
-<code-example header="src/assets/products.json (Products JSON)" path="getting-started/src/assets/products.json">
+<code-example header="src/assets/products.json (Products JSON)" path="getting-started-v1/src/assets/products.json">
 </code-example>
 
 #### 4. Import HttpClient
 
 Import the HttpClient class from the `@angular/common/http` package into the `product.service.ts` file
 
-<code-example header="src/app/products/product.service.ts (HttpClient import)" path="getting-started/src/app/products/product.service.ts" linenums="false" region="httpclient">
+<code-example header="src/app/products/product.service.ts (HttpClient import)" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="httpclient">
 </code-example>
 
 #### 5. Import RxJS operators
 
 Import the map operator from the RxJS library using the `rxjs/operators` package.
 
-<code-example header="src/app/products/product.service.ts (RxJS map operator)" path="getting-started/src/app/products/product.service.ts" linenums="false" region="rxjs-import">
+<code-example header="src/app/products/product.service.ts (RxJS map operator)" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="rxjs-import">
 </code-example>
 
 #### 6. Inject HttpClient
 
 Inject the `HttpClient` service into the `ProductService` by adding it to the constructor as a private variable.
 
-<code-example header="src/app/products/product.service.ts (HttpClient)" path="getting-started/src/app/products/product.service.ts" linenums="false" region="httpclient-inject">
+<code-example header="src/app/products/product.service.ts (HttpClient)" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="httpclient-inject">
 </code-example>
 
 #### 7. Request and return data from JSON file
 
 Update the `getAll()` method to transform the results of the `HttpClient#get()` method using the `map()` operator to return the products.
 
-<code-example header="src/app/products/product.service.ts (Http.get)" path="getting-started/src/app/products/product.service.ts" linenums="false" region="httpclient-get-all">
+<code-example header="src/app/products/product.service.ts (Http.get)" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="httpclient-get-all">
 </code-example>
 
 - The `HttpClient#get()` method returns an observable of the external request made to fetch the `products`. This observable will not execute until the method is subscribed to. 
@@ -91,7 +91,7 @@ Update the `getAll()` method to transform the results of the `HttpClient#get()` 
 
 Remove the `Observable` and `of` imports from the rxjs package, and the data property in the `ProductService`.
 
-<code-example header="src/app/products/product.service.ts" path="getting-started/src/app/products/product.service.ts" linenums="false" region="complete">
+<code-example header="src/app/products/product.service.ts" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="complete">
 </code-example>
 
 When you reload the page, the product list still displays the same information, but the data can be changed dynamically without changing your code. 
@@ -105,14 +105,14 @@ You've retrieved a list of the products with their associated information. You'l
 Update the `Product` interface in the `product.ts` file with more properties about a given product, 
 such as its price, and categories.
 
-<code-example header="src/app/products/product.ts (Product interface)" path="getting-started/src/app/products/product.ts" linenums="false">
+<code-example header="src/app/products/product.ts (Product interface)" path="getting-started-v1/src/app/products/product.ts" linenums="false">
 </code-example>
 
 You can safely reference these properties as part of a `Product` in your app now.
 
 In the `ProductService`, add a `getOne()` method that takes an `id` and returns an observable of one `product` based on the `productId`.
 
-<code-example header="src/app/products/product.service.ts (getOne())" path="getting-started/src/app/products/product.service.ts" linenums="false" region="httpclient-get-one">
+<code-example header="src/app/products/product.service.ts (getOne())" path="getting-started-v1/src/app/products/product.service.ts" linenums="false" region="httpclient-get-one">
 </code-example>
 
 The `map()` operator takes the existing array of products, and uses the `Array#filter()` method to find the product based on the `productId`. As mentioned earlier, you are transforming a stream of an array of products into a new stream of a single product.
@@ -128,7 +128,7 @@ In the `product-details.component.ts`:
 1. Import the `Observable` type from the `rxjs` package.
 2. Import the `switchMap` operator from the `rxjs/operators` package.
 
-<code-example header="src/app/products/product-details/product-details.component.ts (RxJS imports)" path="getting-started/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="rxjs-imports">
+<code-example header="src/app/products/product-details/product-details.component.ts (RxJS imports)" path="getting-started-v1/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="rxjs-imports">
 </code-example>
 
 #### Import current route information
@@ -137,14 +137,14 @@ To see information provided by the router for a routed component, each routed co
 
 Import the `ActivatedRoute` from the `@angular/router` package
 
-<code-example header="src/app/products/product-details/product-details.component.ts (Router imports)" path="getting-started/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="activated-route-import">
+<code-example header="src/app/products/product-details/product-details.component.ts (Router imports)" path="getting-started-v1/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="activated-route-import">
 </code-example>
 
 #### Import product types
 
 Import the `ProductService` class and `Product` interface.
 
-<code-example header="src/app/products/product-details/product-details.component.ts (Product imports)" path="getting-started/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product-imports">
+<code-example header="src/app/products/product-details/product-details.component.ts (Product imports)" path="getting-started-v1/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product-imports">
 </code-example>
 
 #### Define product property
@@ -153,7 +153,7 @@ To reference the `product` in the component template, you need to define it as a
 
 Create a `product` property in the `ProductDetailsComponent` class with the type of `Observable<Product>`.
 
-<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product">
+<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product">
 </code-example>
 
 #### Retreive the individual product
@@ -171,7 +171,7 @@ The route parameters are provided as an observable you subscribe to. When the pa
 
 </div>
 
-<code-example header="src/app/products/product-details/product-details.component.ts (Product stream)" path="getting-started/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product-details">
+<code-example header="src/app/products/product-details/product-details.component.ts (Product stream)" path="getting-started-v1/src/app/products/product-details/product-details.component.2.ts" linenums="false" region="product-details">
 </code-example>
 
 #### Display the product details in the template
@@ -183,7 +183,7 @@ Update the `ProductDetailsComponent` template to subscribe to `product`.
 1. Use the `AsyncPipe` and assign it to a template variable `productInfo`.
 2. Display the product name, price, description and a button to buy the item.
 
-<code-example header="src/app/products/product-details/product-details.component.html (Product details template)" path="getting-started/src/app/products/product-details/product-details.component.1.html" linenums="false">
+<code-example header="src/app/products/product-details/product-details.component.html (Product details template)" path="getting-started-v1/src/app/products/product-details/product-details.component.1.html" linenums="false">
 </code-example>
 
 In the example above, you assigned the `product` as an `productInfo` in the template. This allows you to reuse the same reference in multiple places, instead of using the `AsyncPipe` multiple times, which creates multiple subscriptions.
@@ -192,22 +192,22 @@ In this section:
 
 <code-tabs>
 
-  <code-pane header="src/app/products/product.ts" path="getting-started/src/app/products/product.ts">
+  <code-pane header="src/app/products/product.ts" path="getting-started-v1/src/app/products/product.ts">
   </code-pane>
 
-  <code-pane header="src/app/products/product.service.ts" path="getting-started/src/app/products/product.service.ts">
+  <code-pane header="src/app/products/product.service.ts" path="getting-started-v1/src/app/products/product.service.ts">
   </code-pane>
 
-  <code-pane header="src/assets/products.json" path="getting-started/src/assets/products.json">
+  <code-pane header="src/assets/products.json" path="getting-started-v1/src/assets/products.json">
   </code-pane>
 
-  <code-pane header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.1.ts">
+  <code-pane header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.1.ts">
   </code-pane>
 
-  <code-pane header="src/app/products/product-details/product-details.component.html" path="getting-started/src/app/products/product-details/product-details.component.1.html">
+  <code-pane header="src/app/products/product-details/product-details.component.html" path="getting-started-v1/src/app/products/product-details/product-details.component.1.html">
   </code-pane>
 
-  <code-pane header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts" region="httpclient">
+  <code-pane header="src/app/app.module.ts" path="getting-started-v1/src/app/app.module.ts" region="httpclient">
   </code-pane>  
 
 </code-tabs>
@@ -222,12 +222,12 @@ The product details includes `Buy` button for each product that you need to capt
 
 Right click on the `app` folder, use the `Angular Generator`, and generate a service named `cart`.
 
-<code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts">
+<code-example header="src/app/cart.service.ts" path="getting-started-v1/src/app/cart.service.1.ts">
 </code-example>
 
 Update the `CartService` file with functionality to add products, and return a list of the products purchased. There are many ways to implement this service, but for this guide you'll only focus on two methods.
 
-<code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts">
+<code-example header="src/app/cart.service.ts" path="getting-started-v1/src/app/cart.service.ts">
 </code-example>
 
 * The `ProductService` is injected into the `CartService` as a dependency to retrieve all products.
@@ -245,26 +245,26 @@ In the `product-details.component.ts` file:
 
 Import the `CartService`.
 
-<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.ts" region="cart-imports">
+<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.ts" region="cart-imports">
 </code-example>
 
 #### Inject CartService
 
 Inject the `CartService` as a dependency to the constructor of the `ProductDetailsComponent`.
 
-<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.ts" region="cart-service">
+<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.ts" region="cart-service">
 </code-example>
 
 #### Add product to cart
 
 Add an `onBuy()` method to the `ProductDetailsComponent` class that calls the `CartService#add()` method with the `product`.
 
-<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.ts" region="buy">
+<code-example header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.ts" region="buy">
 </code-example>
 
 Add a click event listener to the Buy button that calls the `onBuy()` method you defined in the component class.
 
-<code-example header="src/app/products/product-details/product-details.component.html" path="getting-started/src/app/products/product-details/product-details.component.html" region="buy">
+<code-example header="src/app/products/product-details/product-details.component.html" path="getting-started-v1/src/app/products/product-details/product-details.component.html" region="buy">
 </code-example>
 
 Now you refresh the application, click on product details, click the Buy button, and the product is added to the stored list of items in the cart.
@@ -273,13 +273,13 @@ In this section:
 
 <code-tabs>
 
-  <code-pane header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts">
+  <code-pane header="src/app/cart.service.ts" path="getting-started-v1/src/app/cart.service.ts">
   </code-pane>
 
-  <code-pane header="src/app/products/product-details/product-details.component.ts" path="getting-started/src/app/products/product-details/product-details.component.ts">
+  <code-pane header="src/app/products/product-details/product-details.component.ts" path="getting-started-v1/src/app/products/product-details/product-details.component.ts">
   </code-pane>
 
-  <code-pane header="src/app/products/product-details/product-details.component.html" path="getting-started/src/app/products/product-details/product-details.component.html">
+  <code-pane header="src/app/products/product-details/product-details.component.html" path="getting-started-v1/src/app/products/product-details/product-details.component.html">
   </code-pane>  
 
 </code-tabs>
@@ -302,14 +302,14 @@ The products are stored each time the `Buy` button is clicked, but the checkout 
 
 1. Import `ReactiveFormsModule` from the `@angular/forms` package.
 
-<code-example header="src/app/app.module.ts (ReactiveFormsModule imports)" path="getting-started/src/app/app.module.2.ts" region="reactive-forms-module">
+<code-example header="src/app/app.module.ts (ReactiveFormsModule imports)" path="getting-started-v1/src/app/app.module.2.ts" region="reactive-forms-module">
 </code-example>
 
 #### Register ReactiveFormsModule
 
 2. Add `ReactiveFormsModule` to the `imports` array of the `AppModule`.
 
-<code-example header="src/app/app.module.ts (ReactiveFormsModule imports)" path="getting-started/src/app/app.module.2.ts" region="reactive-forms-module-imports">
+<code-example header="src/app/app.module.ts (ReactiveFormsModule imports)" path="getting-started-v1/src/app/app.module.2.ts" region="reactive-forms-module-imports">
 </code-example>
 
 The `ReactiveFormsModule` provides the services and directives to build reactive forms in Angular. Read more about Angular forms in the [Forms Overview](guide/forms-overview).
@@ -326,14 +326,14 @@ To build out the form model, you'll need to import some building blocks from the
 
 Import `FormGroup`, `FormBuilder` from `@angular/forms` package.
 
-<code-example header="src/app/checkout/checkout.component.ts (Reactive forms imports)" path="getting-started/src/app/checkout/checkout.component.ts" region="forms-imports">
+<code-example header="src/app/checkout/checkout.component.ts (Reactive forms imports)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="forms-imports">
 </code-example>
 
 #### Import CartService
 
 Import the `CartService` class, and the `CartItem` interface for type information.
 
-<code-example header="src/app/checkout/checkout.component.ts" path="getting-started/src/app/checkout/checkout.component.ts" region="cart-imports">
+<code-example header="src/app/checkout/checkout.component.ts" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="cart-imports">
 </code-example>
 
 #### Create items property
@@ -342,7 +342,7 @@ To store the cart items locally in the component class, you need to create a cla
 
 Create an `items` property with type `CartItem[]`. You'll reference the items in the class and in the component template.
 
-<code-example header="src/app/checkout/checkout.component.ts (Checkout form)" path="getting-started/src/app/checkout/checkout.component.ts" region="cart-items">
+<code-example header="src/app/checkout/checkout.component.ts (Checkout form)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="cart-items">
 </code-example>
 
 #### Create form property
@@ -351,7 +351,7 @@ In a reactive form, the form model, which is the source of truth for the form va
 
 Create a `checkoutForm` property with type `FormGroup`. You'll create the `FormGroup` in the constructor using the `FormBuilder`.
 
-<code-example header="src/app/checkout/checkout.component.ts (Checkout form)" path="getting-started/src/app/checkout/checkout.component.ts" region="checkout-form">
+<code-example header="src/app/checkout/checkout.component.ts (Checkout form)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="checkout-form">
 </code-example>
 
 The `checkoutForm` property will store the form model for handling input from the user.
@@ -360,7 +360,7 @@ The `checkoutForm` property will store the form model for handling input from th
 
 Inject the `FormBuilder` and `CartService` as dependencies in the constructor of the `CheckoutComponent`.
 
-<code-example header="src/app/checkout/checkout.component.ts" path="getting-started/src/app/checkout/checkout.component.ts" region="cart-service">
+<code-example header="src/app/checkout/checkout.component.ts" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="cart-service">
 </code-example>
 
 The `FormBuilder` is a service provided for easily construction form controls in your component class. The `CartService` you defined earlier is for adding items to the cart.
@@ -371,7 +371,7 @@ The source of truth for the form model for reactive forms is defined in the comp
 
 Use the `FormBuilder#group()` method to create a form group with name and address.
 
-<code-example header="src/app/checkout/checkout.component.ts (Form Builder)" path="getting-started/src/app/checkout/checkout.component.ts" region="formbuilder">
+<code-example header="src/app/checkout/checkout.component.ts (Form Builder)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="formbuilder">
 </code-example>
 
 The `checkoutForm` is defined to handle the name and address input fields from the user. You could also validate that the name and address fields are required using built-in validators for length and other requirements.
@@ -388,7 +388,7 @@ The form model is defined in the `CheckoutComponent` class. The template needs t
 
 1. Use an `NgFor` directive to iterate over the `items`, display each product name and total for the quantity purchased.
 
-<code-example header="src/app/checkout/checkout.component.html (cart items)" path="getting-started/src/app/checkout/checkout.component.1.html" linenums="false" region="list">
+<code-example header="src/app/checkout/checkout.component.html (cart items)" path="getting-started-v1/src/app/checkout/checkout.component.1.html" linenums="false" region="list">
 </code-example>
 
 1. Define a `form` tag in the template and bind the `checkoutForm` from the component class to the `formGroup` attribute on the form. 
@@ -396,12 +396,12 @@ The form model is defined in the `CheckoutComponent` class. The template needs t
 3. Add input fields for name and address using `formControlName` directive.
 4. Add a `submit` button to trigger the form submission.
 
-<code-example header="src/app/checkout/checkout.component.html (checkout form)" path="getting-started/src/app/checkout/checkout.component.1.html" linenums="false" region="form">
+<code-example header="src/app/checkout/checkout.component.html (checkout form)" path="getting-started-v1/src/app/checkout/checkout.component.1.html" linenums="false" region="form">
 </code-example>
 
 Define an `onSubmit()` method to log the customer data when the form is submitted. To go further, you would submit the data to an external API using the `CartService`, but for now you'll log to the browser console.
 
-<code-example header="src/app/checkout/checkout.component.ts (on submit)" path="getting-started/src/app/checkout/checkout.component.ts" region="on-submit">
+<code-example header="src/app/checkout/checkout.component.ts (on submit)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="on-submit">
 </code-example>
 
 #### Populate list of cart items
@@ -410,7 +410,7 @@ The `ngOnInit()` method in  `CheckoutComponent` class is a lifecycle hook. The `
 
 In the `ngOnInit()` method, subscribe to the `CartService#getAll()` method to listen to a stream its values. When the stream outputs a value, you want to store the items on the `items` property in the component class.
 
-<code-example header="src/app/checkout/checkout.component.ts (ngOnInit())" path="getting-started/src/app/checkout/checkout.component.ts" region="on-init">
+<code-example header="src/app/checkout/checkout.component.ts (ngOnInit())" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="on-init">
 </code-example>
 
 The checkout page will display the items that have been added to the card above the checkout form.
@@ -421,17 +421,17 @@ To end the checkout process, you'll want to hide the checkout form upon clicking
 
 1. Add a `submitted` property to the `CheckoutComponent` class that defaults to `false`. 
 
-<code-example header="src/app/checkout/checkout.component.ts (submitted property)" path="getting-started/src/app/checkout/checkout.component.ts" region="submitted">
+<code-example header="src/app/checkout/checkout.component.ts (submitted property)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="submitted">
 </code-example>
 
 2. Add a message to the `CheckoutComponent` template with an attached `NgIf` directive that is based on the `submitted` property. 
 
-<code-example header="src/app/checkout/checkout.component.html (submitted message)" path="getting-started/src/app/checkout/checkout.component.html" region="submitted">
+<code-example header="src/app/checkout/checkout.component.html (submitted message)" path="getting-started-v1/src/app/checkout/checkout.component.html" region="submitted">
 </code-example>
 
 3. Set the `submitted` property to `true` in the `onSubmit()` method.
 
-<code-example header="src/app/checkout/checkout.component.ts (set submitted)" path="getting-started/src/app/checkout/checkout.component.ts" region="set-submitted">
+<code-example header="src/app/checkout/checkout.component.ts (set submitted)" path="getting-started-v1/src/app/checkout/checkout.component.ts" region="set-submitted">
 </code-example>
 
 Now when you complete the user form and click the `Purchase` button, the form is removed from the page and the message is displayed.
@@ -442,12 +442,12 @@ To access the checkout route from your application, it needs to be registered wi
 
 Add a route in the array of routes for the `CheckoutComponent`.
 
-<code-example header="src/app/app.module.ts (checkout route)" path="getting-started/src/app/app.module.ts" linenums="false" region="checkout-route">
+<code-example header="src/app/app.module.ts (checkout route)" path="getting-started-v1/src/app/app.module.ts" linenums="false" region="checkout-route">
 </code-example>
 
 The checkout page route is registered, so you can type the URL in manually. To access the checkout route easily, add a `routerLink` to the `TopBarComponent` template.
 
-<code-example header="src/app/top-bar/top-bar.component.html (checkout link)" path="getting-started/src/app/top-bar/top-bar.component.html" linenums="false" region="checkout-link">
+<code-example header="src/app/top-bar/top-bar.component.html (checkout link)" path="getting-started-v1/src/app/top-bar/top-bar.component.html" linenums="false" region="checkout-link">
 </code-example>
 
 After the user adds items to the cart, fills out the form, and submits the button, the customer data is logged to the browser console. 
@@ -457,16 +457,16 @@ In this section:
 
 <code-tabs>
 
-  <code-pane header="src/app/top-bar/top-bar.component.html" path="getting-started/src/app/top-bar/top-bar.component.html">
+  <code-pane header="src/app/top-bar/top-bar.component.html" path="getting-started-v1/src/app/top-bar/top-bar.component.html">
   </code-pane>  
 
-  <code-pane header="src/app/checkout/checkout.component.ts" path="getting-started/src/app/checkout/checkout.component.ts">
+  <code-pane header="src/app/checkout/checkout.component.ts" path="getting-started-v1/src/app/checkout/checkout.component.ts">
   </code-pane>
 
-  <code-pane header="src/app/checkout/checkout.component.html" path="getting-started/src/app/checkout/checkout.component.html">
+  <code-pane header="src/app/checkout/checkout.component.html" path="getting-started-v1/src/app/checkout/checkout.component.html">
   </code-pane>
 
-  <code-pane header="src/app/app.module.ts" path="getting-started/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="getting-started-v1/src/app/app.module.ts">
   </code-pane>  
 
 </code-tabs>

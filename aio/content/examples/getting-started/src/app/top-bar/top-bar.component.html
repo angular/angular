@@ -1,7 +1,7 @@
-<!-- #docregion home-route -->
-<a [routerLink]="['/']"><h1>{{name}}</h1></a>
-<!-- #enddocregion home-route -->
+<a [routerLink]="['/']">
+  <h1>My Store</h1>
+</a>
 
-<!-- #docregion checkout-link -->
-<a routerLink="checkout" class="button fancy-button"><i class="material-icons">shopping_cart</i>Checkout</a>
-<!-- #enddocregion checkout-link -->
+<a [routerLink]="['/cart']" class="button fancy-button">
+  <i class="material-icons">shopping_cart</i>Checkout
+</a>

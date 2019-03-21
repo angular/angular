@@ -1,50 +1,55 @@
 // #docplaster
-// #docregion httpclient
+// #docregion product-details-route, http-client-module-import, http-client-module
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+// #enddocregion product-details-route
 import { HttpClientModule } from '@angular/common/http';
-
-// #enddocregion httpclient
+// #enddocregion http-client-module-import
+// #docregion product-details-route
 import { ReactiveFormsModule } from '@angular/forms';
 
-// #docregion httpclient
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
-import { SideNavComponent } from './side-nav/side-nav.component';
-import { ProductListComponent } from './products/product-list/product-list.component';
-import { ProductPreviewComponent } from './products/product-preview/product-preview.component';
-import { ProductDetailsComponent } from './products/product-details/product-details.component';
-import { CheckoutComponent } from './checkout/checkout.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductAlertsComponent } from './product-alerts/product-alerts.component';
+import { ProductDetailsComponent } from './product-details/product-details.component';
+// #enddocregion product-details-route, http-client-module
+import { ShippingComponent } from './shipping/shipping.component';
+import { CartComponent } from './cart/cart.component';
+// #docregion product-details-route, http-client-module, shipping-route
 
 @NgModule({
   imports: [
     BrowserModule,
-// #docregion checkout-route
-    RouterModule.forRoot([
-// #enddocregion checkout-route
-      { path: 'products/:productId', component: ProductDetailsComponent },
-// #docregion checkout-route
-      { path: 'checkout', component: CheckoutComponent },
-// #enddocregion checkout-route
-      { path: '', component: ProductListComponent },
-// #docregion checkout-route
-    ]),
-// #enddocregion checkout-route
+    // #enddocregion product-details-route
     HttpClientModule,
-// #enddocregion httpclient
+    // #docregion product-details-route
     ReactiveFormsModule,
-// #docregion httpclient
+    RouterModule.forRoot([
+      { path: '', component: ProductListComponent },
+      { path: 'products/:productId', component: ProductDetailsComponent },
+// #enddocregion product-details-route, http-client-module
+      { path: 'shipping', component: ShippingComponent },
+// #enddocregion shipping-route
+      { path: 'cart', component: CartComponent }
+// #docregion product-details-route, http-client-module, shipping-route
+    ])
   ],
   declarations: [
     AppComponent,
     TopBarComponent,
-    SideNavComponent,
     ProductListComponent,
-    ProductPreviewComponent,
+    ProductAlertsComponent,
     ProductDetailsComponent,
-    CheckoutComponent,
+// #enddocregion product-details-route, http-client-module
+    ShippingComponent,
+// #enddocregion shipping-route
+    CartComponent,
+// #docregion product-details-route, http-client-module, shipping-route
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }
