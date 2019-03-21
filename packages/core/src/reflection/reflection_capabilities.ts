@@ -72,8 +72,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(typeStr) ||
-        INHERITED_CLASS_WITH_DELEGATE_CTOR.exec(typeStr) ||
+    if (DELEGATE_CTOR.exec(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.exec(typeStr) ||
         (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
       return null;
     }
