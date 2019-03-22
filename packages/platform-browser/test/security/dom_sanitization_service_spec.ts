@@ -9,13 +9,20 @@
 import {SecurityContext} from '@angular/core';
 import * as t from '@angular/core/testing/src/testing_internal';
 import {DomSanitizerImpl} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {MockTrustedTypePolicyAdapter} from '@angular/platform-browser/testing/mock_trusted_type_policy';
 
 {
   t.describe('DOM Sanitization Service', () => {
     t.it('accepts resource URL values for resource contexts', () => {
-      const svc = new DomSanitizerImpl(null);
+      const svc = new DomSanitizerImpl(null, new MockTrustedTypePolicyAdapter());
       const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
-      t.expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
+      t.expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toContain('http://hello/world');
+    });
+    t.it('routes resource URL values through trusted type policy adapter', () => {
+      const svc = new DomSanitizerImpl(null, new MockTrustedTypePolicyAdapter());
+      const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
+      t.expect(svc.sanitize(SecurityContext.URL, resourceUrl))
+          .toBe('modified-by-policy-adapter:http://hello/world');
     });
   });
 }

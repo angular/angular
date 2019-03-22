@@ -25,12 +25,6 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
   {provide: DOCUMENT, useFactory: _document, deps: []},
-  {
-    provide: TrustedTypePolicyAdapter,
-    useClass: TrustedTypePolicyAdapterImpl,
-    deps: [TRUSTED_TYPE_POLICY_NAME]
-  },
-  {provide: TRUSTED_TYPE_POLICY_NAME, useValue: '@angular/platform-browser'},
 ];
 
 const BROWSER_SANITIZATION_PROVIDERS__PRE_R3__: StaticProvider[] = [
@@ -98,6 +92,12 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [DOCUMENT]},
+  {
+    provide: TrustedTypePolicyAdapter,
+    useClass: TrustedTypePolicyAdapterImpl,
+    deps: [TRUSTED_TYPE_POLICY_NAME]
+  },
+  {provide: TRUSTED_TYPE_POLICY_NAME, useValue: '@angular/platform-browser'},
   {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   ELEMENT_PROBE_PROVIDERS,
