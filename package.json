@@ -26,7 +26,7 @@
     "publish-release": "ts-node --project tools/release/ tools/release/publish-release.ts",
     "check-release-output": "ts-node --project tools/release tools/release/check-release-output.ts",
     "preinstall": "node ./tools/npm/check-npm.js",
-    "format": "git-clang-format"
+    "format": "git-clang-format HEAD $(git diff HEAD --name-only | grep -v \"\\.d\\.ts\")"
   },
   "version": "7.3.5",
   "requiredAngularVersion": ">=7.0.0",
