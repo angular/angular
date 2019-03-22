@@ -8,13 +8,9 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-<<<<<<< HEAD
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
-=======
-import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
+import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
 import {TrustedTypePolicyAdapter} from './trusted_types_policy';
 
->>>>>>> feat(platform-browser): Trusted Types-related objects are now controllable through DI.
 
 export {SecurityContext};
 

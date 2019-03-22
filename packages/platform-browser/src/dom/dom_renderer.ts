@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, SecurityContext, ViewEncapsulation} from '@angular/core';
+import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, SecurityContext, ViewEncapsulation} from '@angular/core';
 import {TrustedTypePolicyAdapter} from '../security/trusted_types_policy';
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -74,12 +74,9 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager,
-      private sharedStylesHost: DomSharedStylesHost,
-      @Inject(APP_ID) private appId: string,
-      private policyAdapter: TrustedTypePolicyAdapter
-  ) {
-    this.defaultRenderer = new TrustedTypesDomRenderer2(eventManager, policyAdapter);
+      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      private policyAdapter: TrustedTypePolicyAdapter) {
+    this.defaultRenderer = new DefaultDomRenderer2(eventManager, policyAdapter);
   }
 
   createRenderer(element: any, type: RendererType2|null): Renderer2 {
@@ -119,7 +116,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
 class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
-  constructor(private eventManager: EventManager) {}
+  constructor(
+      private eventManager: EventManager, private _policyAdapter: TrustedTypePolicyAdapter) {}
 
   destroy(): void {}
 
@@ -170,18 +168,20 @@ class DefaultDomRenderer2 implements Renderer2 {
   nextSibling(node: any): any { return node.nextSibling; }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    let newValue =
+        this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value, namespace);
     if (namespace) {
       name = namespace + ':' + name;
       // TODO(benlesh): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
-        el.setAttributeNS(namespaceUri, name, value);
+        el.setAttributeNS(namespaceUri, name, newValue);
       } else {
-        el.setAttribute(name, value);
+        el.setAttribute(name, newValue);
       }
     } else {
-      el.setAttribute(name, value);
+      el.setAttribute(name, newValue);
     }
   }
 
@@ -228,7 +228,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setProperty(el: any, name: string, value: any): void {
     NG_DEV_MODE && checkNoSyntheticProp(name, 'property');
-    el[name] = value;
+    let newValue = this._policyAdapter.maybeCreateTrustedValueForAttribute(el, name, value);
+    el[name] = newValue;
   }
 
   setValue(node: any, value: string): void { node.nodeValue = value; }
@@ -253,73 +254,7 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
   }
 }
 
-class TrustedTypesDomRenderer2 extends DefaultDomRenderer2 {
-  // Using SecurityContext for convenience here only.
-  // TODO: Move to TrustedTypePolicyAdapter.
-  static TypeMap: {[key: string]: SecurityContext} = {
-    // Do not sort.
-    'script:src': SecurityContext.RESOURCE_URL,
-    'iframe:srcdoc': SecurityContext.HTML,
-    'object:data': SecurityContext.RESOURCE_URL,
-    'a:href': SecurityContext.URL,
-    '*:src': SecurityContext.URL,
-    '*:innerhtml': SecurityContext.HTML,
-    '*:outerhtml': SecurityContext.HTML,
-  };
-  constructor(eventManager: EventManager, private _policyAdapter: TrustedTypePolicyAdapter) {
-    super(eventManager);
-  }
-
-  private _getContext(tag: string, attribute: string, namespace?: string): SecurityContext {
-    const lookupCandidates = [
-      tag + ':' + attribute,
-      '*:' + attribute,
-    ];
-    for (let lookup of lookupCandidates)
-      if (lookup in TrustedTypesDomRenderer2.TypeMap) {
-        return TrustedTypesDomRenderer2.TypeMap[lookup];
-      }
-    return SecurityContext.NONE;
-  }
-
-  private _convertValue(el: any, name: string, value: string): string {
-    if (!this._policyAdapter.supportsTrustedTypes()) {
-      return value;
-    }
-    const context = this._getContext((el as Element).tagName.toLowerCase(), name.toLowerCase());
-    let newValue;
-    switch (context) {
-      case SecurityContext.HTML:
-        newValue = this._policyAdapter.maybeCreateTrustedHTML(value);
-        break;
-      case SecurityContext.URL:
-        newValue = this._policyAdapter.maybeCreateTrustedURL(value);
-        break;
-      case SecurityContext.RESOURCE_URL:
-        newValue = this._policyAdapter.maybeCreateTrustedScriptURL(value);
-        break;
-      case SecurityContext.SCRIPT:
-        newValue = this._policyAdapter.maybeCreateTrustedScript(value);
-        break;
-      case SecurityContext.NONE:
-        newValue = value;
-        break;
-    }
-    return newValue as string;
-  }
-
-  setAttribute(el: any, name: string, value: string, namespace?: string): void {
-    const newValue = this._convertValue(el, name, value);
-    super.setAttribute(el, name, newValue, namespace);
-  }
-
-  setProperty(el: any, name: string, value: any): void {
-    const newValue = this._convertValue(el, name, value);
-    super.setProperty(el, name, newValue);
-  }
-}
-
-class EmulatedEncapsulationDomRenderer2 extends TrustedTypesDomRenderer2 {
+class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
   private contentAttr: string;
   private hostAttr: string;
 
@@ -343,7 +278,7 @@ class EmulatedEncapsulationDomRenderer2 extends TrustedTypesDomRenderer2 {
   }
 }
 
-class ShadowDomRenderer extends TrustedTypesDomRenderer2 {
+class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
