@@ -17,7 +17,7 @@ import {CompilerFacade, ExportedCompilerFacade} from '@angular/core/src/compiler
 import {getErrorLogger} from '@angular/core/src/errors';
 import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {fixmeIvy, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('jit source mapping', () => {
   let resourceLoader: MockResourceLoader;

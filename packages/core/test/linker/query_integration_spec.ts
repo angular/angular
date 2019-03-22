@@ -10,7 +10,7 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {ElementRef} from '@angular/core/src/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util/stringify';
