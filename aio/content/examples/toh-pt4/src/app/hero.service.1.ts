@@ -17,7 +17,7 @@ export class HeroService {
 
   // #enddocregion new
   // #docregion getHeroes
-  getHeroes(): Hero[] {
+  getHeroes() {
     return HEROES;
   }
   // #enddocregion getHeroes
