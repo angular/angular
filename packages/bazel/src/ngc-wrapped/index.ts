@@ -311,6 +311,31 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
       // File does not exist or parse error. Ignore this case and continue onto the
       // other methods of resolving the module below.
     }
+
+    // It can happen that the ViewEngine compiler needs to write an import in a factory file,
+    // and is using an ngsummary file to get the symbols.
+    // The ngsummary comes from an upstream ng_module rule.
+    // The upstream rule based its imports on ngsummary file which was generated from a
+    // metadata.json file that was published to npm in an Angular library.
+    // However, the ngsummary doesn't propagate the 'importAs' from the original metadata.json
+    // so we would normally not be able to supply the correct module name for it.
+    // For example, if the rootDir-relative filePath is
+    //  node_modules/@angular/material/toolbar/typings/index
+    // we would supply a module name
+    //  @angular/material/toolbar/typings/index
+    // but there is no JavaScript file to load at this path.
+    // This is a workaround for https://github.com/angular/angular/issues/29454
+    if (importedFilePath.indexOf('node_modules') >= 0) {
+      const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
+      if (fs.existsSync(maybeMetadataFile)) {
+        const moduleName =
+            JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})).importAs;
+        if (moduleName) {
+          return moduleName;
+        }
+      }
+    }
+
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
