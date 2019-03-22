@@ -1,5 +1,3 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 
 ts_library(
