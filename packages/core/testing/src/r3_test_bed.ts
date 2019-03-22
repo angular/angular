@@ -630,17 +630,22 @@ export class TestBedRender3 implements Injector, TestBed {
     class RootScopeModule {
     }
 
+    @NgModule({providers: [{provide: ErrorHandler, useClass: R3TestErrorHandler}]})
+    class R3ErrorHandlerModule {
+    }
+
     const ngZone = new NgZone({enableLongStackTrace: true});
     const providers = [
       {provide: NgZone, useValue: ngZone},
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
-      {provide: ErrorHandler, useClass: R3TestErrorHandler},
       ...this._providers,
       ...this._providerOverrides,
     ];
 
+    // We need to provide the `R3ErrorHandlerModule` after the consumer's NgModule so that we can
+    // override the default ErrorHandler, if the consumer didn't pass in a custom one.
+    const imports = [RootScopeModule, this.ngModule, R3ErrorHandlerModule, this._imports];
     const declarations = this._declarations;
-    const imports = [RootScopeModule, this.ngModule, this._imports];
     const schemas = this._schemas;
 
     @NgModule({providers, declarations, imports, schemas, jit: true})
