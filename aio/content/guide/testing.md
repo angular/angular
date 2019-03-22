@@ -289,7 +289,7 @@ written without assistance from Angular testing utilities.
 #### Services with dependencies
 
 Services often depend on other services that Angular injects into the constructor.
-In many cases, it easy to create and _inject_ these dependencies by hand while
+In many cases, it's easy to create and _inject_ these dependencies by hand while
 calling the service's constructor.
 
 The `MasterService` is a simple example:
@@ -318,7 +318,7 @@ Prefer spies as they are usually the easiest way to mock services.
 
 These standard testing techniques are great for unit testing services in isolation.
 
-However, you almost always inject service into application classes using Angular
+However, you almost always inject services into application classes using Angular
 dependency injection and you should have tests that reflect that usage pattern.
 Angular testing utilities make it easy to investigate how injected services behave.
 
