@@ -51,7 +51,7 @@ apiDocsPackage.processor(new EntryPointGrouper());
 
 // Configure the log level of the API docs dgeni package.
 apiDocsPackage.config(function(log: any) {
-  return log.level = 'info';
+  return log.level = 'warning';
 });
 
 // Configure the processor for reading files from the file system.
