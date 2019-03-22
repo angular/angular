@@ -13,6 +13,7 @@ import {LogicalFileSystem} from '../../path';
 import {isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {getRootDirs} from '../../util/src/typescript';
+import {TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {TypeCheckProgramHost} from '../src/host';
 
@@ -22,6 +23,12 @@ const LIB_D_TS = {
     type Partial<T> = { [P in keyof T]?: T[P]; };
     type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
     type NonNullable<T> = T extends null | undefined ? never : T;`
+};
+
+const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
+  applyTemplateContextGuards: true,
+  checkTemplateBodies: true,
+  checkTypeOfBindings: true,
 };
 
 describe('ngtsc typechecking', () => {
@@ -47,7 +54,7 @@ TestClass.ngTypeCtor({value: 'test'});
         new AbsoluteModuleStrategy(program, checker, options, host),
         new LogicalProjectStrategy(checker, logicalFs),
       ]);
-      const ctx = new TypeCheckContext(emitter);
+      const ctx = new TypeCheckContext(ALL_ENABLED_CONFIG, emitter);
       const TestClass = getDeclaration(program, 'main.ts', 'TestClass', isNamedClassDeclaration);
       ctx.addTypeCtor(program.getSourceFile('main.ts') !, TestClass, {
         fnName: 'ngTypeCtor',

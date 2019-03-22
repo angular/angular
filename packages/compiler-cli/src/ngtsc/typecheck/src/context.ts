@@ -13,7 +13,7 @@ import {NoopImportRewriter, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCtorMetadata} from './api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {generateTypeCheckBlock} from './type_check_block';
 import {generateTypeCtor} from './type_constructor';
 
@@ -27,7 +27,7 @@ import {generateTypeCtor} from './type_constructor';
  * checking code.
  */
 export class TypeCheckContext {
-  constructor(private refEmitter: ReferenceEmitter) {}
+  constructor(private config: TypeCheckingConfig, private refEmitter: ReferenceEmitter) {}
 
   /**
    * A `Map` of `ts.SourceFile`s that the context has seen to the operations (additions of methods
@@ -141,7 +141,7 @@ export class TypeCheckContext {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf) !;
-    ops.push(new TcbOp(node, tcbMeta));
+    ops.push(new TcbOp(node, tcbMeta, this.config));
   }
 }
 
@@ -171,8 +171,8 @@ interface Op {
  */
 class TcbOp implements Op {
   constructor(
-      readonly node: ClassDeclaration<ts.ClassDeclaration>, readonly meta: TypeCheckBlockMetadata) {
-  }
+      readonly node: ClassDeclaration<ts.ClassDeclaration>, readonly meta: TypeCheckBlockMetadata,
+      readonly config: TypeCheckingConfig) {}
 
   /**
    * Type check blocks are inserted immediately after the end of the component class.
@@ -181,7 +181,7 @@ class TcbOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
-    const tcb = generateTypeCheckBlock(this.node, this.meta, im, refEmitter);
+    const tcb = generateTypeCheckBlock(this.node, this.meta, this.config, im, refEmitter);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }

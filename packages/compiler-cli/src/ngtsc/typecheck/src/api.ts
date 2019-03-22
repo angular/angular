@@ -54,3 +54,25 @@ export interface TypeCtorMetadata {
    */
   fields: {inputs: string[]; outputs: string[]; queries: string[];};
 }
+
+export interface TypeCheckingConfig {
+  /**
+   * Whether to check the left-hand side type of binding operations.
+   *
+   * For example, if this is `false` then the expression `[input]="expr"` will have `expr` type-
+   * checked, but not the assignment of the resulting type to the `input` property of whichever
+   * directive or component is receiving the binding. If set to `true`, both sides of the assignment
+   * are checked.
+   */
+  checkTypeOfBindings: boolean;
+
+  /**
+   * Whether to narrow the types of template contexts.
+   */
+  applyTemplateContextGuards: boolean;
+
+  /**
+   * Whether to descend into template bodies and check any bindings there.
+   */
+  checkTemplateBodies: boolean;
+}
