@@ -31,7 +31,7 @@ import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator,
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
-import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
+import {TypeCheckContext, TypeCheckProgramHost, TypeCheckingConfig} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath} from './util/src/typescript';
 
@@ -191,7 +191,12 @@ export class NgtscProgram implements api.Program {
     const compilation = this.ensureAnalyzed();
     const diagnostics = [...compilation.diagnostics];
     if (!!this.options.fullTemplateTypeCheck) {
-      const ctx = new TypeCheckContext(this.refEmitter !);
+      const config: TypeCheckingConfig = {
+        applyTemplateContextGuards: true,
+        checkTemplateBodies: true,
+        checkTypeOfBindings: true,
+      };
+      const ctx = new TypeCheckContext(config, this.refEmitter !);
       compilation.typeCheck(ctx);
       diagnostics.push(...this.compileTypeCheckProgram(ctx));
     }
