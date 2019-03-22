@@ -51,10 +51,10 @@ describe('material-nav-schematic', () => {
     }).toThrowError(/required property 'name'/);
   });
 
-  describe('styleext option', () => {
+  describe('style option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'nav', {styleext: 'scss', ...baseOptions}, createTestApp(runner));
+          'nav', {style: 'scss', ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
@@ -99,10 +99,10 @@ describe('material-nav-schematic', () => {
     });
   });
 
-  describe('spec option', () => {
+  describe('skipTests option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'nav', {spec: false, ...baseOptions}, createTestApp(runner));
+          'nav', {skipTests: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });

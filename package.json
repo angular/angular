@@ -47,8 +47,8 @@
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
-    "@angular-devkit/core": "7.1.2",
-    "@angular-devkit/schematics": "7.1.2",
+    "@angular-devkit/core": "7.3.6",
+    "@angular-devkit/schematics": "7.3.6",
     "@angular/bazel": "8.0.0-beta.6",
     "@angular/compiler-cli": "8.0.0-beta.6",
     "@angular/http": "8.0.0-beta.6",
@@ -62,7 +62,7 @@
     "@bazel/typescript": "0.26.0",
     "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "^15.9.4",
-    "@schematics/angular": "7.1.2",
+    "@schematics/angular": "7.3.6",
     "@types/browser-sync": "^0.0.42",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",

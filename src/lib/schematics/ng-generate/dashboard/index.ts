@@ -22,7 +22,7 @@ export default function(options: Schema): Rule {
   return chain([
     buildComponent({...options}, {
       template: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html',
-      stylesheet: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.__styleext__',
+      stylesheet: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.__style__',
     }),
     options.skipImport ? noop() : addNavModulesToModule(options)
   ]);

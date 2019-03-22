@@ -45,10 +45,10 @@ describe('Material address-form schematic', () => {
     }).toThrowError(/required property 'name'/);
   });
 
-  describe('styleext option', () => {
+  describe('style option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {styleext: 'scss', ...baseOptions}, createTestApp(runner));
+          'address-form', {style: 'scss', ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
@@ -93,10 +93,10 @@ describe('Material address-form schematic', () => {
     });
   });
 
-  describe('spec option', () => {
+  describe('skipTests option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {spec: false, ...baseOptions}, createTestApp(runner));
+          'address-form', {skipTests: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });

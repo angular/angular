@@ -55,13 +55,13 @@
       "description": "The prefix to apply to generated selectors.",
       "alias": "p"
     },
-    "styleext": {
+    "style": {
       "description": "The file extension to be used for style files.",
       "type": "string"
     },
-    "spec": {
+    "skipTests": {
       "type": "boolean",
-      "description": "Specifies if a spec file is generated."
+      "description": "When true, does not generate a test file."
     },
     "flat": {
       "type": "boolean",

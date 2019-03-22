@@ -22,7 +22,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import {FileSystemSchematicContext} from '@angular-devkit/schematics/tools';
-import {Schema as ComponentOptions} from '@schematics/angular/component/schema';
+import {Schema as ComponentOptions, Style} from '@schematics/angular/component/schema';
 import {
   addDeclarationToModule,
   addEntryComponentToModule,
@@ -72,7 +72,9 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     const classifiedName = strings.classify(`${options.name}Component`);
 
     const declarationChanges = addDeclarationToModule(
-      source,
+      // TODO: TypeScript version mismatch due to @schematics/angular using a different version
+      // than Material. Cast to any to avoid the type assignment failure.
+      source as any,
       modulePath,
       classifiedName,
       relativePath);
@@ -91,7 +93,9 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 
       const exportRecorder = host.beginUpdate(modulePath);
       const exportChanges = addExportToModule(
-        source,
+        // TODO: TypeScript version mismatch due to @schematics/angular using a different version
+        // than Material. Cast to any to avoid the type assignment failure.
+        source as any,
         modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);
@@ -110,7 +114,9 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 
       const entryComponentRecorder = host.beginUpdate(modulePath);
       const entryComponentChanges = addEntryComponentToModule(
-        source,
+        // TODO: TypeScript version mismatch due to @schematics/angular using a different version
+        // than Material. Cast to any to avoid the type assignment failure.
+        source as any,
         modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);
@@ -205,8 +211,10 @@ export function buildComponent(options: ComponentOptions,
     // we generate the stylesheets with the "css" extension. This ensures that we don't
     // accidentally generate invalid stylesheets (e.g. drag-drop-comp.styl) which will
     // break the Angular CLI project. See: https://github.com/angular/material2/issues/15164
-    if (!supportedCssExtensions.includes(options.styleext!)) {
-      options.styleext = 'css';
+    if (!supportedCssExtensions.includes(options.style!)) {
+      // TODO: Cast is necessary as we can't use the Style enum which has been introduced
+      // within CLI v7.3.0-rc.0. This would break the schematic for older CLI versions.
+      options.style = 'css' as Style;
     }
 
     // Object that will be used as context for the EJS templates.
@@ -230,8 +238,8 @@ export function buildComponent(options: ComponentOptions,
     }
 
     const templateSource = apply(url(schematicFilesUrl), [
-      options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
-      options.inlineStyle ? filter(path => !path.endsWith('.__styleext__')) : noop(),
+      options.skipTests ? filter(path => !path.endsWith('.spec.ts')) : noop(),
+      options.inlineStyle ? filter(path => !path.endsWith('.__style__')) : noop(),
       options.inlineTemplate ? filter(path => !path.endsWith('.html')) : noop(),
       // Treat the template options as any, because the type definition for the template options
       // is made unnecessarily explicit. Every type of object can be used in the EJS template.
