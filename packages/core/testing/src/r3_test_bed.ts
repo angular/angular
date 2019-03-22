@@ -229,7 +229,9 @@ export class TestBedRender3 implements Injector, TestBed {
   resetTestingModule(): void {
     this.checkGlobalCompilationFinished();
     resetCompiledComponents();
-    this.compiler.restoreOriginalState();
+    if (this._compiler !== null) {
+      this.compiler.restoreOriginalState();
+    }
     this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
     this._testModuleRef = null;
     this.destroyActiveFixtures();
