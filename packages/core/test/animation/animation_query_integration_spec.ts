@@ -14,7 +14,7 @@ import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled} from '@angular/private/testing';
 
 import {HostListener} from '../../src/metadata/directives';
 

@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
@@ -511,25 +511,23 @@ describe('projection', () => {
     });
   }
 
-  fixmeIvy('FW-869: debugElement.queryAllNodes returns nodes in the wrong order')
-      .it('should support nested conditionals that contain ng-contents', () => {
-        TestBed.configureTestingModule(
-            {declarations: [ConditionalTextComponent, ManualViewportDirective]});
-        TestBed.overrideComponent(
-            MainComp, {set: {template: `<conditional-text>a</conditional-text>`}});
-        const main = TestBed.createComponent(MainComp);
+  it('should support nested conditionals that contain ng-contents', () => {
+    TestBed.configureTestingModule(
+        {declarations: [ConditionalTextComponent, ManualViewportDirective]});
+    TestBed.overrideComponent(
+        MainComp, {set: {template: `<conditional-text>a</conditional-text>`}});
+    const main = TestBed.createComponent(MainComp);
 
-        expect(main.nativeElement).toHaveText('MAIN()');
+    expect(main.nativeElement).toHaveText('MAIN()');
 
-        let viewportElement =
-            main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
-        viewportElement.injector.get(ManualViewportDirective).show();
-        expect(main.nativeElement).toHaveText('MAIN(FIRST())');
+    let viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
+    viewportElement.injector.get(ManualViewportDirective).show();
+    expect(main.nativeElement).toHaveText('MAIN(FIRST())');
 
-        viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
-        viewportElement.injector.get(ManualViewportDirective).show();
-        expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
-      });
+    viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
+    viewportElement.injector.get(ManualViewportDirective).show();
+    expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+  });
 
   it('should allow to switch the order of nested components via ng-content', () => {
     TestBed.configureTestingModule({declarations: [CmpA, CmpB, CmpD, CmpC]});
@@ -639,49 +637,48 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('ABC');
   });
 
-  fixmeIvy('FW-869: debugElement.queryAllNodes returns nodes in the wrong order')
-      .it('should project filled view containers into a view container', () => {
-        TestBed.configureTestingModule(
-            {declarations: [ConditionalContentComponent, ManualViewportDirective]});
-        TestBed.overrideComponent(MainComp, {
-          set: {
-            template: '<conditional-content>' +
-                '<div class="left">A</div>' +
-                '<ng-template manual class="left">B</ng-template>' +
-                '<div class="left">C</div>' +
-                '<div>D</div>' +
-                '</conditional-content>'
-          }
-        });
-        const main = TestBed.createComponent(MainComp);
+  it('should project filled view containers into a view container', () => {
+    TestBed.configureTestingModule(
+        {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<conditional-content>' +
+            '<div class="left">A</div>' +
+            '<ng-template manual class="left">B</ng-template>' +
+            '<div class="left">C</div>' +
+            '<div>D</div>' +
+            '</conditional-content>'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
 
-        const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
+    const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
 
-        const viewViewportDir =
-            conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-                ManualViewportDirective);
+    const viewViewportDir =
+        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+            ManualViewportDirective);
 
-        expect(main.nativeElement).toHaveText('(, D)');
-        expect(main.nativeElement).toHaveText('(, D)');
+    expect(main.nativeElement).toHaveText('(, D)');
+    expect(main.nativeElement).toHaveText('(, D)');
 
-        viewViewportDir.show();
-        main.detectChanges();
-        expect(main.nativeElement).toHaveText('(AC, D)');
+    viewViewportDir.show();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('(AC, D)');
 
-        const contentViewportDir =
-            conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
-                ManualViewportDirective);
+    const contentViewportDir =
+        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
+            ManualViewportDirective);
 
-        contentViewportDir.show();
-        main.detectChanges();
-        expect(main.nativeElement).toHaveText('(ABC, D)');
+    contentViewportDir.show();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('(ABC, D)');
 
-        // hide view viewport, and test that it also hides
-        // the content viewport's views
-        viewViewportDir.hide();
-        main.detectChanges();
-        expect(main.nativeElement).toHaveText('(, D)');
-      });
+    // hide view viewport, and test that it also hides
+    // the content viewport's views
+    viewViewportDir.hide();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('(, D)');
+  });
 
   describe('projectable nodes', () => {
 

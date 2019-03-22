@@ -11,7 +11,6 @@ import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChil
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {fixmeIvy} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 

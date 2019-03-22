@@ -10,7 +10,7 @@ import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA, ɵivyEnabled
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
-import {fixmeIvy, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 {
   if (ivyEnabled) {
