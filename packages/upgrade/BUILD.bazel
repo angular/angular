@@ -7,14 +7,14 @@ ng_module(
     srcs = glob(
         [
             "*.ts",
-            "src/common/**/*.ts",
-            "src/dynamic/**/*.ts",
+            "dynamic/src/*.ts",
         ],
     ),
     deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "//packages/upgrade/common",
         "@npm//zone.js",
     ],
 )

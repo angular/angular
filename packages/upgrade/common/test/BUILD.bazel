@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/upgrade/common",
+        "//packages/upgrade/common/test/helpers",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test",
+    static_files = [
+        "//:angularjs_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)
