@@ -17,8 +17,6 @@ steps:
     commands:
     # Install dependencies
     - yarn install --frozen-lockfile --non-interactive --network-timeout 100000 --no-progress
-    # Create symlinks needed for Windows.
-    - scripts\windows\create-symlinks.cmd
     # Add Bazel CI config
     - copy .codefresh\bazel.rc %ProgramData%\bazel.bazelrc
     # Run tests
