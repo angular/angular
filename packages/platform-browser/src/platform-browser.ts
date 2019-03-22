@@ -1,5 +1,3 @@
-import {TRUSTED_TYPE_POLICY_NAME} from './security/trusted_types_policy';
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.

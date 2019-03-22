@@ -13,7 +13,7 @@ export class MockTrustedTypePolicyAdapter extends TrustedTypePolicyAdapter {
   maybeCreateTrustedHTML(value: string): string { throw new Error('Method not implemented.'); }
   maybeCreateTrustedScript(value: string): string { throw new Error('Method not implemented.'); }
   maybeCreateTrustedScriptURL(value: string): string {
-    return 'modified-by-policy-adapter:' + value
+    return 'modified-by-policy-adapter:' + value;
   }
   maybeCreateTrustedValueForAttribute(
       el: any, name: string, value: string, namespace?: string|undefined): string {

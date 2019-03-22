@@ -1,4 +1,3 @@
-/// <reference types="trusted-types" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+/// <reference types="trusted-types" />
 
 import {Inject, Injectable, InjectionToken, SecurityContext} from '@angular/core';
 
@@ -42,7 +43,7 @@ const ATTR_TYPE_MAP: {[key: string]: SecurityContext} = {
  * @publicApi
  */
 export abstract class TrustedTypePolicyAdapter {
-  supportsTrustedTypes(): boolean { return false; };
+  supportsTrustedTypes(): boolean { return false; }
   abstract maybeCreateTrustedURL(value: string): string;
   abstract maybeCreateTrustedHTML(value: string): string;
   abstract maybeCreateTrustedScript(value: string): string;
