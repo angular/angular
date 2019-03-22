@@ -20,6 +20,7 @@ const upgradeRules = [
   'check-imports-misc',
   'check-property-names-misc',
   'check-template-misc',
+  'update-angular-material-imports',
 
   // Ripple misc V7
   ['ripple-speed-factor-assignment', TargetVersion.V7],
@@ -44,6 +45,11 @@ export function updateToV6(): Rule {
 /** Entry point for the migration schematics with target of Angular Material v7 */
 export function updateToV7(): Rule {
   return createUpgradeRule(TargetVersion.V7, tslintUpgradeConfig);
+}
+
+/** Entry point for the migration schematics with target of Angular Material v8 */
+export function updateToV8(): Rule {
+  return createUpgradeRule(TargetVersion.V8, tslintUpgradeConfig);
 }
 
 /** Post-update schematic to be called when update is finished. */
