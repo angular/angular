@@ -39,6 +39,7 @@ import * as routerUpgrade from '@angular/router/upgrade';
 import * as serviceWorker from '@angular/service-worker';
 import * as upgrade from '@angular/upgrade';
 import * as upgradeStatic from '@angular/upgrade/static';
+import * as upgradeTesting from '@angular/upgrade/static/testing';
 
 export default {
   animations,
@@ -71,5 +72,6 @@ export default {
   routerUpgrade,
   serviceWorker,
   upgrade,
-  upgradeStatic
+  upgradeStatic,
+  upgradeTesting,
 };

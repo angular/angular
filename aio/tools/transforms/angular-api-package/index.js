@@ -115,6 +115,7 @@ module.exports =
             'service-worker/index.ts',
             'upgrade/index.ts',
             'upgrade/static/index.ts',
+            'upgrade/static/testing/index.ts',
           ];
 
           readFilesProcessor.fileReaders.push(packageContentFileReader);
