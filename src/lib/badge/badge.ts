@@ -15,11 +15,13 @@ import {
   Inject,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   Optional,
   Renderer2,
+  SimpleChanges,
 } from '@angular/core';
-import {ThemePalette, mixinDisabled, CanDisableCtor, CanDisable} from '@angular/material/core';
+import {CanDisable, CanDisableCtor, mixinDisabled, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
@@ -53,7 +55,7 @@ export type MatBadgeSize = 'small' | 'medium' | 'large';
     '[class.mat-badge-disabled]': 'disabled',
   },
 })
-export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisable {
+export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges, CanDisable {
   /** Whether the badge has any content. */
   _hasContent = false;
 
@@ -81,14 +83,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
   @Input('matBadgePosition') position: MatBadgePosition = 'above after';
 
   /** The content for the badge */
-  @Input('matBadge')
-  get content(): string { return this._content; }
-  set content(value: string) {
-    this._content = value;
-    this._hasContent = value != null && `${value}`.trim().length > 0;
-    this._updateTextContent();
-  }
-  private _content: string;
+  @Input('matBadge') content: string;
 
   /** Message used to describe the decorated element via aria-describedby */
   @Input('matBadgeDescription')
@@ -142,6 +137,16 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
   /** Whether the badge is after the host or not */
   isAfter(): boolean {
     return this.position.indexOf('before') === -1;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const contentChange = changes['content'];
+
+    if (contentChange) {
+      const value = contentChange.currentValue;
+      this._hasContent = value != null && `${value}`.trim().length > 0;
+      this._updateTextContent();
+    }
   }
 
   ngOnDestroy() {
