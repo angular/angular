@@ -52,14 +52,6 @@ ts_setup_workspace()
 load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
 rules_karma_dependencies()
 
-# Fetch transitive dependencies which are needed to use the Sass rules.
-load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
-rules_sass_dependencies()
-
-# Setup the Sass rule repositories.
-load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
-sass_repositories()
-
 # Setup web testing. We need to setup a browser because the web testing rules for TypeScript need
 # a reference to a registered browser (ideally that's a hermetic version of a browser)
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
@@ -67,6 +59,14 @@ web_test_repositories()
 
 load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
 browser_repositories()
+
+# Fetch transitive dependencies which are needed to use the Sass rules.
+load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
+rules_sass_dependencies()
+
+# Setup the Sass rule repositories.
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
+sass_repositories()
 
 # Temporarily add Angular sources and its dependencies to consume the ts_api_guardian,
 # remote-build-execution, and protractor stuff.
