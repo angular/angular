@@ -52,7 +52,7 @@ class GiantList {
   selector: 'app',
   providers: [DataListProvider],
   template: `
-      <giant-list><giant-list>
+      <giant-list></giant-list>
     `,
 })
 class App {
@@ -86,7 +86,7 @@ class LiveData {
   providers: [DataProvider],
   template: `
        Live Update: <input type="checkbox" [(ngModel)]="live">
-       <live-data [live]="live"><live-data>
+       <live-data [live]="live"></live-data>
      `,
 })
 
