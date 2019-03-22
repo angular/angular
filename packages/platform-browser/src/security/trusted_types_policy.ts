@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken, SecurityContext} from '@angular/core';
 
 /**
  * The name of the Trusted Type policy to create.
@@ -16,8 +16,29 @@ import {Inject, Injectable, InjectionToken} from '@angular/core';
 export const TRUSTED_TYPE_POLICY_NAME = new InjectionToken<string>('trusted-type-policy-name');
 
 /**
- * Trusted Type Policy Adapter.
- *
+ * This list is used to wrap values passed from DomRenderer2 in types.
+ * Using SecurityContexts just for convenience, as the type contacts match.
+ */
+const ATTR_TYPE_MAP: {[key: string]: SecurityContext} = {
+  // Do not sort.
+  'script:src': SecurityContext.RESOURCE_URL,
+  // Figure out what to do with script.text, shadowroot innerHTML
+  'embed:src': SecurityContext.RESOURCE_URL,
+  'iframe:srcdoc': SecurityContext.HTML,
+  'object:data': SecurityContext.RESOURCE_URL,
+  'object:codebase': SecurityContext.RESOURCE_URL,
+  'a:href': SecurityContext.URL,
+  '*:src': SecurityContext.URL,
+  '*:formaction': SecurityContext.URL,
+  '*:innerhtml': SecurityContext.HTML,
+  '*:outerhtml': SecurityContext.HTML,
+};
+
+/**
+ * Adapter for the Trusted Type Policy. 
+ * Used by the DomRenderer2 and the sanitizer only. 
+ * @see https://wicg.github.io/trusted-types/
+ * 
  * @publicApi
  */
 export abstract class TrustedTypePolicyAdapter {
@@ -26,6 +47,8 @@ export abstract class TrustedTypePolicyAdapter {
   abstract maybeCreateTrustedHTML(value: string): string;
   abstract maybeCreateTrustedScript(value: string): string;
   abstract maybeCreateTrustedScriptURL(value: string): string;
+  abstract maybeCreateTrustedValueForAttribute(
+      el: any, name: string, value: string, namespace?: string): string;
   abstract isHTML(obj: any): boolean;
   abstract isURL(obj: any): boolean;
   abstract isScriptURL(obj: any): boolean;
@@ -81,5 +104,44 @@ export class TrustedTypePolicyAdapterImpl extends TrustedTypePolicyAdapter {
   }
   maybeCreateTrustedScript(s: string): string {
     return this._policy ? this._policy.createScript(s) as unknown as string : s;
+  }
+  maybeCreateTrustedValueForAttribute(el: Element, name: string, value: string, namespace?: string):
+      string {
+    if (!this._policy || !(el instanceof Element)) {
+      return value;
+    }
+    const context = this._getContext(el.tagName.toLowerCase(), name.toLowerCase(), namespace);
+    let newValue;
+    switch (context) {
+      case SecurityContext.HTML:
+        newValue = this.maybeCreateTrustedHTML(value);
+        break;
+      case SecurityContext.URL:
+        newValue = this.maybeCreateTrustedURL(value);
+        break;
+      case SecurityContext.RESOURCE_URL:
+        newValue = this.maybeCreateTrustedScriptURL(value);
+        break;
+      case SecurityContext.SCRIPT:
+        newValue = this.maybeCreateTrustedScript(value);
+        break;
+      case SecurityContext.NONE:
+      default:
+        newValue = value;
+        break;
+    }
+    return newValue as string;
+  }
+
+  private _getContext(tag: string, attribute: string, namespace?: string): SecurityContext {
+    const lookupCandidates = [
+      tag + ':' + attribute,
+      '*:' + attribute,
+    ];
+    for (let lookup of lookupCandidates)
+      if (lookup in ATTR_TYPE_MAP) {
+        return ATTR_TYPE_MAP[lookup];
+      }
+    return SecurityContext.NONE;
   }
 }
