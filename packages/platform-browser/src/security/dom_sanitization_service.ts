@@ -1,4 +1,3 @@
-/// <reference types="trusted-types" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
