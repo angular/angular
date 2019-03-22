@@ -34,6 +34,12 @@ export function assertSame<T>(actual: T, expected: T, msg: string) {
   }
 }
 
+export function assertNotSame<T>(actual: T, expected: T, msg: string) {
+  if (actual === expected) {
+    throwError(msg);
+  }
+}
+
 export function assertLessThan<T>(actual: T, expected: T, msg: string) {
   if (actual >= expected) {
     throwError(msg);
