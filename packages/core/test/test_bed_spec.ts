@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Inject, InjectionToken, NgModule, Optional, Pipe} from '@angular/core';
+import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -254,6 +254,19 @@ describe('TestBed', () => {
     // Intentionally call `createComponent` before `compileComponents` is resolved. We want this to
     // work for components that don't have any async resources (templateUrl, styleUrls).
     TestBed.createComponent(ComponentWithInlineTemplate);
+  });
+
+  it('should be able to override the ErrorHandler via an import', () => {
+    class CustomErrorHandler {}
+
+    @NgModule({providers: [{provide: ErrorHandler, useClass: CustomErrorHandler}]})
+    class ProvidesErrorHandler {
+    }
+
+    getTestBed().resetTestingModule();
+    TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
+
+    expect(TestBed.get(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
   });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
