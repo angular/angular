@@ -8,7 +8,9 @@
       "es2015"
     ],
     "experimentalDecorators": true,
-    "types": []
+    "types": [],
+    "module": "umd",
+    "moduleResolution": "node"
   },
   "include": [
     "node_modules/@angular/**/*"
@@ -16,6 +18,7 @@
   "exclude": [
     "node_modules/@angular/bazel/**",
     "node_modules/@angular/compiler-cli/**",
-    "node_modules/@angular/**/testing/**"
+    "node_modules/@angular/**/testing/**",
+    "node_modules/@angular/router/upgrade*"
   ]
 }
