@@ -9,6 +9,7 @@
     "@angular/core": "packages-dist:core",
     "@angular/platform-browser": "packages-dist:platform-browser",
     "@angular/platform-browser-dynamic": "packages-dist:platform-browser-dynamic",
+    "@angular/router": "packages-dist:router",
     "reflect-metadata": "0.1.12",
     "rxjs": "6.4.0",
     "tslib": "1.9.3",
