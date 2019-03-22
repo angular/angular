@@ -33,7 +33,9 @@
  * console.log(thirdHeaders.get('X-My-Custom-Header')); //'Angular'
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpHeaders](/api/common/http/HttpHeaders),
+ * [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 export class Headers {

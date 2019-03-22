@@ -33,7 +33,9 @@ import {Headers} from './headers';
  * can be accessed many times. There are other differences in the implementation, but this is the
  * most significant.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpResponse](/api/common/http/HttpResponse),
+ * [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 export class Response extends Body {

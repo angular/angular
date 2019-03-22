@@ -52,7 +52,9 @@ import {URLSearchParams} from './url_search_params';
  * });
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpRequest](/api/common/http/HttpRequest),
+ * [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 export class Request extends Body {

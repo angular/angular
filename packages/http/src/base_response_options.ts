@@ -40,7 +40,8 @@ import { ResponseOptionsArgs } from './interfaces';
  * console.log('res.json():', res.json()); // Object {name: "Jeff"}
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpResponse](/api/common/http/HttpResponse),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 export class ResponseOptions {
@@ -160,7 +161,9 @@ export class ResponseOptions {
  * console.log('res.text():', res.text()); // Angular;
  * ```
  *
- * @deprecated see [HttpParams](/api/common/http/HttpResponse), [HttpClient guide](/guide/http)
+ * @deprecated see [HttpResponse](/api/common/http/HttpResponse),
+ * [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 @Injectable()

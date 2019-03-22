@@ -61,12 +61,8 @@ export class HttpModule {
 /**
  * The module that includes jsonp's providers
  *
-<<<<<<< HEAD
- * @deprecated see https://angular.io/api/common/http/HttpClient#jsonp
-=======
- * @deprecated see [HttpClientModule](/api/common/http/HttpClientModule), [HttpClientJsonpModule(/api/common/http/HttpClientJsonpModule),
+ * @deprecated see [HttpClientModule](/api/common/http/HttpClientModule), [HttpClientJsonpModule](/api/common/http/HttpClientJsonpModule),
  * [HttpClient guide](/guide/http)
->>>>>>> docs(http): add cross-reference to apis is common/http package
  * @publicApi
  */
 @NgModule({

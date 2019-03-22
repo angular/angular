@@ -141,7 +141,8 @@ export class JSONPConnection implements Connection {
 /**
  * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [JsonpClientBackend](/api/common/http/JsonpClientBackend),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()

@@ -100,7 +100,7 @@ function mergeOptions(
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClient](/api/common/http/HttpClient)
  * @publicApi
  */
 @Injectable()
@@ -189,7 +189,7 @@ export class Http {
 
 
 /**
- * @deprecated see [http](/api/common/http), [HttpClient guide](/guide/http)
+ * @deprecated see [HttpClient](/api/common/http/HttpClient), [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()

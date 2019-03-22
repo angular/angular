@@ -36,7 +36,8 @@ import {take} from 'rxjs/operators';
  * connection.mockError(new Error('error'));
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpTestingController](/api/common/http/testing/HttpTestingController),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 export class MockConnection implements Connection {
@@ -190,7 +191,8 @@ export class MockConnection implements Connection {
  * });
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpTestingController](/api/common/http/testing/HttpTestingController),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()

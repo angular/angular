@@ -37,7 +37,7 @@ import { URLSearchParams } from './url_search_params';
  * console.log('options.url:', options.url); // https://google.com
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpRequest](/api/common/http/HttpRequest), [HttpClient guide](/guide/http)
  * @publicApi
  */
 export class RequestOptions {
@@ -201,7 +201,8 @@ export class RequestOptions {
  * console.log('req.url:', req.url); // https://google.com
  * ```
  *
- * @deprecated see [HttpParams](/api/common/http/HttpParams), [HttpClient guide](/guide/http)
+ * @deprecated see [HttpRequest](/api/common/http/HttpRequest), [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 @Injectable()

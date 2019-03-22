@@ -17,7 +17,10 @@ import { URLSearchParams } from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpBackend](/api/common/http/HttpBackend),
+ * [HttpXhrBackend](/api/common/http/HttpXhrBackend),
+ * [HttpClient guide](/guide/http)
+ *
  * @publicApi
  */
 export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
@@ -25,7 +28,8 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
 /**
  * Abstract class from which real connections are derived.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpBackend](/api/common/http/HttpBackend),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 export abstract class Connection {
@@ -39,7 +43,8 @@ export abstract class Connection {
 /**
  * An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClientXsrfModule](/api/common/http/HttpClientXsrfModule),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
@@ -48,7 +53,7 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * Interface for options to construct a RequestOptions, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpRequest](/api/common/http/HttpRequest), [HttpClient guide](/guide/http)
  * @publicApi
  */
 export interface RequestOptionsArgs {
@@ -72,7 +77,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string | null; }
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
- * @deprecated see [HttpBackend](/api/common/http/HttpBackend), [HttpClient guide](/guide/http)
+ * @deprecated see [HttpResponse](/api/common/http/HttpResponse), [HttpClient guide](/guide/http)
  * @publicApi
  */
 export interface ResponseOptionsArgs {

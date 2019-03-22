@@ -8,7 +8,7 @@
 
 /**
  * Supported http methods.
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClient](/api/common/http/HttpClient)
  * @publicApi
  */
 export enum RequestMethod {
@@ -40,7 +40,7 @@ export enum ReadyState {
 /**
  * Acceptable response types to be associated with a {@link Response}, based on
  * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClient](/api/commom/http/HttpClient)
  * @publicApi
  */
 export enum ResponseType {
@@ -67,7 +67,7 @@ export enum ContentType {
 
 /**
  * Define which buffer to use to store the response
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClient](/api/commom/http/HttpClient)
  * @publicApi
  */
 export enum ResponseContentType {
