@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ImportMode, Reference, ReferenceEmitStrategy, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../src/api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 
@@ -74,6 +74,66 @@ describe('type check blocks', () => {
     expect(block).not.toContain('.class = ');
     expect(block).not.toContain('.style = ');
   });
+
+  describe('config', () => {
+    const DIRECTIVES: TestDirective[] = [{
+      name: 'Dir',
+      selector: '[dir]',
+      exportAs: ['dir'],
+      inputs: {'dirInput': 'dirInput'},
+      hasNgTemplateContextGuard: true,
+    }];
+    const BASE_CONFIG: TypeCheckingConfig = {
+      applyTemplateContextGuards: true,
+      checkTemplateBodies: true,
+      checkTypeOfBindings: true,
+    };
+
+    describe('config.applyTemplateContextGuards', () => {
+      const TEMPLATE = `<div *dir></div>`;
+      const GUARD_APPLIED = 'if (i0.Dir.ngTemplateContextGuard(';
+
+      it('should apply template context guards when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain(GUARD_APPLIED);
+      });
+      it('should not apply template context guards when disabled', () => {
+        const DISABLED_CONFIG = {...BASE_CONFIG, applyTemplateContextGuards: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).not.toContain(GUARD_APPLIED);
+      });
+    });
+
+    describe('config.checkTemplateBodies', () => {
+      const TEMPLATE = `<ng-template>{{a}}</ng-template>`;
+
+      it('should descend into template bodies when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('ctx.a;');
+      });
+      it('should not descend into template bodies when disabled', () => {
+        const DISABLED_CONFIG = {...BASE_CONFIG, checkTemplateBodies: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).not.toContain('ctx.a;');
+      });
+    });
+
+    describe('config.checkTypeOfBindings', () => {
+      const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="a"></div>`;
+
+      it('should check types of bindings when enabled', () => {
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('i0.Dir.ngTypeCtor({ dirInput: ctx.a })');
+        expect(block).toContain('.nonDirInput = ctx.a;');
+      });
+      it('should not check types of bindings when disabled', () => {
+        const DISABLED_CONFIG = {...BASE_CONFIG, checkTypeOfBindings: false};
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('i0.Dir.ngTypeCtor({ dirInput: (ctx.a as any) })');
+        expect(block).toContain('.nonDirInput = (ctx.a as any);');
+      });
+    });
+  });
 });
 
 it('should generate a circular directive reference correctly', () => {
@@ -128,7 +188,8 @@ type TestDirective =
     Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
     {selector: string, name: string};
 
-function tcb(template: string, directives: TestDirective[] = []): string {
+function tcb(
+    template: string, directives: TestDirective[] = [], config?: TypeCheckingConfig): string {
   const classes = ['Test', ...directives.map(dir => dir.name)];
   const code = classes.map(name => `class ${name} {}`).join('\n');
 
@@ -161,9 +222,15 @@ function tcb(template: string, directives: TestDirective[] = []): string {
     fnName: 'Test_TCB',
   };
 
+  config = config || {
+    applyTemplateContextGuards: true,
+    checkTypeOfBindings: true,
+    checkTemplateBodies: true,
+  };
+
   const im = new ImportManager(undefined, 'i');
-  const tcb =
-      generateTypeCheckBlock(clazz, meta, im, new ReferenceEmitter([new FakeReferenceStrategy()]));
+  const tcb = generateTypeCheckBlock(
+      clazz, meta, config, im, new ReferenceEmitter([new FakeReferenceStrategy()]));
 
   const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tcb, sf);
   return res.replace(/\s+/g, ' ');

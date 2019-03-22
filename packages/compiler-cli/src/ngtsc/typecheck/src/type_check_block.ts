@@ -13,7 +13,7 @@ import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../i
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from './api';
 import {astToTypescript} from './expression';
 
 /**
@@ -29,8 +29,10 @@ import {astToTypescript} from './expression';
  */
 export function generateTypeCheckBlock(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCheckBlockMetadata,
-    importManager: ImportManager, refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
-  const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
+    config: TypeCheckingConfig, importManager: ImportManager,
+    refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
+  const tcb =
+      new Context(config, meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
 
   return ts.createFunctionDeclaration(
@@ -187,7 +189,7 @@ class TcbTemplateBodyOp extends TcbOp {
 
         // The second kind of guard is a template context guard. This guard narrows the template
         // rendering context variable `ctx`.
-        if (dir.hasNgTemplateContextGuard) {
+        if (dir.hasNgTemplateContextGuard && this.tcb.config.applyTemplateContextGuards) {
           const ctx = this.scope.resolve(this.template);
           const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
           directiveGuards.push(guardInvoke);
@@ -288,7 +290,13 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      const expr = tcbExpression(binding.value, this.tcb, this.scope);
+      let expr = tcbExpression(binding.value, this.tcb, this.scope);
+
+      // If checking the type of bindings is disabled, cast the resulting expression to 'any' before
+      // the assignment.
+      if (!this.tcb.config.checkTypeOfBindings) {
+        expr = tsCastToAny(expr);
+      }
 
       if (binding.type === BindingType.Property) {
         if (binding.name !== 'style' && binding.name !== 'class') {
@@ -331,6 +339,7 @@ class Context {
   private nextId = 1;
 
   constructor(
+      readonly config: TypeCheckingConfig,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private sourceFile: ts.SourceFile, private importManager: ImportManager,
       private refEmitter: ReferenceEmitter) {}
@@ -605,9 +614,11 @@ class Scope {
     } else if (node instanceof TmplAstTemplate) {
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfNode(node);
-      const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
-      this.templateCtxOpMap.set(node, ctxIndex);
-      this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
+      if (this.tcb.config.checkTemplateBodies) {
+        const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
+        this.templateCtxOpMap.set(node, ctxIndex);
+        this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
+      }
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
     }
@@ -681,7 +692,7 @@ function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
   // `astToTypescript` actually does the conversion. A special resolver `tcbResolve` is passed which
   // interprets specific expression nodes that interact with the `ImplicitReceiver`. These nodes
   // actually refer to identifiers within the current scope.
-  return astToTypescript(ast, (ast) => tcbResolve(ast, tcb, scope));
+  return astToTypescript(ast, (ast) => tcbResolve(ast, tcb, scope), tcb.config);
 }
 
 /**
@@ -695,7 +706,12 @@ function tcbCallTypeCtor(
 
   // Construct an array of `ts.PropertyAssignment`s for each input of the directive that has a
   // matching binding.
-  const members = bindings.map(b => ts.createPropertyAssignment(b.field, b.expression));
+  const members = bindings.map(({field, expression}) => {
+    if (!tcb.config.checkTypeOfBindings) {
+      expression = tsCastToAny(expression);
+    }
+    return ts.createPropertyAssignment(field, expression);
+  });
 
   // Call the `ngTypeCtor` method on the directive class, with an object literal argument created
   // from the matched inputs.
@@ -873,4 +889,9 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
     // This AST isn't special after all.
     return null;
   }
+}
+
+function tsCastToAny(expr: ts.Expression): ts.Expression {
+  return ts.createParen(
+      ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
 }
