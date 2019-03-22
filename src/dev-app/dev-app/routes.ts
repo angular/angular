@@ -77,8 +77,6 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'tooltip', loadChildren: 'tooltip/tooltip-demo-module#TooltipDemoModule'},
   {path: 'tree', loadChildren: 'tree/tree-demo-module#TreeDemoModule'},
   {path: 'typography', loadChildren: 'typography/typography-demo-module#TypographyDemoModule'},
-  {path: 'expansion', loadChildren: 'expansion/expansion-demo-module#ExpansionDemoModule'},
-  {path: 'stepper', loadChildren: 'stepper/stepper-demo-module#StepperDemoModule'},
   {path: 'screen-type', loadChildren: 'screen-type/screen-type-demo-module#ScreenTypeDemoModule'},
   {
     path: 'connected-overlay',
