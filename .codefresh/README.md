@@ -1,12 +1,14 @@
 # CodeFresh configuration
 
-This folder contains configuration for the [CodeFresh](<https://codefresh.io/> based CI checks for this repository.
+[![Codefresh build status](https://g.codefresh.io/api/badges/pipeline/angular/angular%2Fangular%2Fangular?type=cf-1)](https://g.codefresh.io/public/accounts/angular/pipelines/angular/angular/angular)
+
+This folder contains configuration for the [CodeFresh](<https://codefresh.io/>) based CI checks for this repository.
 
 ## The build pipeline
 
 CodeFresh uses a several pipeline for each repository. The `codefresh.yml` file defines pipeline [build steps](https://codefresh.io/docs/docs/configure-ci-cd-pipeline/introduction-to-codefresh-pipelines/) for this repository.
 
-Run results can be seen in the GitHub checks interface and in the [public pipeline dashboard](https://g.codefresh.io/public/accounts/angular/pipelines/angular/angular/angular).
+Run results can be seen in the GitHub checks interface and in the [public pipeline](https://g.codefresh.io/public/accounts/angular/pipelines/angular/angular/angular)
 
 Although most configuration is done via `pipeline.yml`, some options are only available in the online [pipeline settings](https://g.codefresh.io/pipelines/angular/services?repoOwner=angular&repoName=angular&project=angular%2Fangular&context=github&serviceName=angular%2Fangular), which needs a login to access.
 
