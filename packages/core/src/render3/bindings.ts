@@ -25,7 +25,7 @@ export function updateBinding(lView: LView, bindingIndex: number, value: any): a
 
 /** Gets the current binding value. */
 export function getBinding(lView: LView, bindingIndex: number): any {
-  ngDevMode && assertDataInRange(lView, lView[bindingIndex]);
+  ngDevMode && assertDataInRange(lView, bindingIndex);
   ngDevMode &&
       assertNotEqual(lView[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
   return lView[bindingIndex];
