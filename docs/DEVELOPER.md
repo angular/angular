@@ -59,18 +59,6 @@ Next, install the JavaScript modules needed to build and test Angular:
 yarn install
 ```
 
-## Windows only
-
-In order to create the right symlinks, run **as administrator**:
-```shell
-./scripts/windows/create-symlinks.sh
-```
-
-Before submitting a PR, do not forget to remove them:
-```shell
- ./scripts/windows/remove-symlinks.sh
- ```
-
 ## Building
 
 To build Angular run:

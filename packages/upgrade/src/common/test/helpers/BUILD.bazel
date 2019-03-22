@@ -1,0 +1,16 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//packages/upgrade:__subpackages__"])
+
+ng_module(
+    name = "helpers",
+    testonly = True,
+    srcs = glob([
+        "*.ts",
+    ]),
+    deps = [
+        "//packages/core/testing",
+        "//packages/private/testing",
+        "//packages/upgrade/src/common",
+    ],
+)
