@@ -17,10 +17,6 @@
 // tslint:disable
 
 window.testBlocklist = {
-  "MatBadge should clear any pre-existing badges": {
-    "error": "Error: Expected 2 to be 1.",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode (MatBadge._clearExistingBadges is executed before child nodes of PreExistingBadge are aded to the DOM)"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c380-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
