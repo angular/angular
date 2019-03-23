@@ -19,8 +19,9 @@ import {NgQueryDefinition, QueryTiming, QueryType} from './query-definition';
  * could be used to access such a query statically.
  */
 const STATIC_QUERY_LIFECYCLE_HOOKS = {
-  [QueryType.ViewChild]: ['ngOnInit', 'ngAfterContentInit', 'ngAfterContentChecked'],
-  [QueryType.ContentChild]: ['ngOnInit'],
+  [QueryType.ViewChild]:
+      ['ngOnChanges', 'ngOnInit', 'ngDoCheck', 'ngAfterContentInit', 'ngAfterContentChecked'],
+  [QueryType.ContentChild]: ['ngOnChanges', 'ngOnInit', 'ngDoCheck'],
 };
 
 /**
