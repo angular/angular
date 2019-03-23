@@ -19,6 +19,26 @@ import {generateTypeCheckBlock} from '../src/type_check_block';
 describe('type check blocks', () => {
   it('should generate a basic block for a binding',
      () => { expect(tcb('{{hello}}')).toContain('ctx.hello;'); });
+
+  it('should generate literal map expressions', () => {
+    const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
+    expect(tcb(TEMPLATE)).toContain('ctx.method({ "foo": ctx.a, "bar": ctx.b });');
+  });
+
+  it('should generate literal array expressions', () => {
+    const TEMPLATE = '{{ method([a, b]) }}';
+    expect(tcb(TEMPLATE)).toContain('ctx.method([ctx.a, ctx.b]);');
+  });
+
+  it('should handle non-null assertions', () => {
+    const TEMPLATE = `{{a!}}`;
+    expect(tcb(TEMPLATE)).toContain('ctx.a!;');
+  });
+
+  it('should handle keyed property access', () => {
+    const TEMPLATE = `{{a[b]}}`;
+    expect(tcb(TEMPLATE)).toContain('ctx.a[ctx.b];');
+  });
 });
 
 function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
