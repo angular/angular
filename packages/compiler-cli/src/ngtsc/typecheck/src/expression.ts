@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, Binary, Conditional, Interpolation, LiteralPrimitive, MethodCall, PropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, Binary, Conditional, Interpolation, KeyedRead, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 const BINARY_OPS = new Map<string, ts.SyntaxKind>([
@@ -76,6 +76,22 @@ export function astToTypescript(
     const trueExpr = astToTypescript(ast.trueExp, maybeResolve);
     const falseExpr = astToTypescript(ast.falseExp, maybeResolve);
     return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
+  } else if (ast instanceof LiteralArray) {
+    const elements = ast.expressions.map(expr => astToTypescript(expr, maybeResolve));
+    return ts.createArrayLiteral(elements);
+  } else if (ast instanceof LiteralMap) {
+    const properties = ast.keys.map(({key}, idx) => {
+      const value = astToTypescript(ast.values[idx], maybeResolve);
+      return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
+    });
+    return ts.createObjectLiteral(properties, true);
+  } else if (ast instanceof KeyedRead) {
+    const receiver = astToTypescript(ast.obj, maybeResolve);
+    const key = astToTypescript(ast.key, maybeResolve);
+    return ts.createElementAccess(receiver, key);
+  } else if (ast instanceof NonNullAssert) {
+    const expr = astToTypescript(ast.expression, maybeResolve);
+    return ts.createNonNullExpression(expr);
   } else {
     throw new Error(`Unknown node type: ${Object.getPrototypeOf(ast).constructor}`);
   }
