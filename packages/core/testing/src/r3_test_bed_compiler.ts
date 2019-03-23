@@ -351,11 +351,25 @@ export class R3TestBedCompiler {
 
   private applyProviderOverridesToModule(moduleType: Type<any>): void {
     const def: any = (moduleType as any)[NG_INJECTOR_DEF];
-    if (this.hasProviderOverrides(def.providers)) {
-      this.maybeStoreNgDef(NG_INJECTOR_DEF, moduleType);
+    // Since this function is invoked recursively for all imports defined on injector def and
+    // injector def imports cantain a list of imports and exports from NgModule metadata, we may
+    // face a Type without ngInjectorDef (for example a Component), so we need to guard underlying
+    // logic from these defs.
+    if (def && this.providerOverridesByToken.size > 0) {
+      if (this.hasProviderOverrides(def.providers)) {
+        this.maybeStoreNgDef(NG_INJECTOR_DEF, moduleType);
 
-      this.storeFieldOfDefOnType(moduleType, NG_INJECTOR_DEF, 'providers');
-      def.providers = this.getProviderOverrides(def.providers);
+        this.storeFieldOfDefOnType(moduleType, NG_INJECTOR_DEF, 'providers');
+        def.providers = [
+          ...def.providers,  //
+          ...this.getProviderOverrides(def.providers)
+        ];
+      }
+
+      // Apply provider overrides to imported modules recursively
+      for (const importType of flatten<Type<any>>(def.imports)) {
+        this.applyProviderOverridesToModule(importType);
+      }
     }
   }
 
@@ -520,6 +534,8 @@ export class R3TestBedCompiler {
       providers,
     });
     // clang-format on
+
+    this.applyProviderOverridesToModule(this.testModuleType);
   }
 
   get injector(): Injector {
@@ -558,7 +574,7 @@ export class R3TestBedCompiler {
 
   // TODO(FW-1179): define better types for all Provider-related operations, avoid using `any`.
   private getProviderOverrides(providers: any): any[] {
-    if (!providers || !providers.length) return [];
+    if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
     // There are two flattening operations here. The inner flatten() operates on the metadata's
     // providers and applies a mapping function which retrieves overrides for each incoming
     // provider. The outer flatten() then flattens the produced overrides array. If this is not
