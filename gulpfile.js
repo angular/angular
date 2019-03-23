@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 const engines = require('./package.json').engines;
