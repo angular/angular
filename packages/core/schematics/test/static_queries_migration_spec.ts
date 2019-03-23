@@ -161,6 +161,26 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('dynamic', { static: false }) dynamic: any`);
     });
 
+    it('should mark queries used in "ngOnChanges" as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          ngOnChanges() {
+            this.query.classList.add('test'); 
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should mark queries used in "ngOnInit" as static', () => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
@@ -170,6 +190,26 @@ describe('static-queries migration', () => {
           @${queryType}('test') query: any;
           
           ngOnInit() {
+            this.query.classList.add('test'); 
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should mark queries used in "ngDoCheck" as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          ngDoCheck() {
             this.query.classList.add('test'); 
           }
         }
