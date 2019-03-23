@@ -357,7 +357,7 @@ big chunks of HTML with many data bindings.
 
 
 Try it out. Because the array has four items, the message should appear.
-Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the hero array.
+Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the heroes array.
 The browser should refresh automatically and the message should disappear.
 
 
