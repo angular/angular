@@ -516,15 +516,19 @@ export class R3TestBedCompiler {
     class RootScopeModule {
     }
 
+    @NgModule({providers: [{provide: ErrorHandler, useClass: R3TestErrorHandler}]})
+    class R3ErrorHandlerModule {
+    }
+
     const ngZone = new NgZone({enableLongStackTrace: true});
     const providers: Provider[] = [
       {provide: NgZone, useValue: ngZone},
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
-      {provide: ErrorHandler, useClass: R3TestErrorHandler},
       ...this.providers,
       ...this.providerOverrides,
     ];
-    const imports = [RootScopeModule, this.additionalModuleTypes, this.imports || []];
+    const imports =
+        [RootScopeModule, this.additionalModuleTypes, R3ErrorHandlerModule, this.imports || []];
 
     // clang-format off
     compileNgModuleDefs(this.testModuleType, {
