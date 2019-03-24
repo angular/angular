@@ -565,7 +565,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     contents: `
     var IntermediateModule_1;
     let IntermediateModule = IntermediateModule_1 = class IntermediateModule {
-      static forRoot() { return { ngModule: IntermediateModule_1, providers: [] }; }
+      static forRoot() { return { ngModule: IntermediateModule_1 }; }
     };
     export { IntermediateModule };
     `

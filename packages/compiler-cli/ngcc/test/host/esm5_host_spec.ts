@@ -700,6 +700,19 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     export {SomeService, InternalModule};
     `
   },
+  {
+    name: '/src/intermediate_var.js',
+    contents: `
+    var IntermediateModule = (function() {
+      function IntermediateModule() {}
+      IntermediateModule_1 = IntermediateModule;
+      IntermediateModule.forRoot = function() { return { ngModule: IntermediateModule_1 }; };
+      var IntermediateModule_1;
+      return IntermediateModule;
+    }());
+    export { IntermediateModule };
+    `
+  },
   {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
 
@@ -1871,5 +1884,16 @@ describe('Esm5ReflectionHost', () => {
                ],
              ]);
        });
+
+    // https://github.com/angular/angular/issues/29078
+    it('should resolve intermediate module references to their original declaration', () => {
+      const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+      const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
+      const file = srcProgram.getSourceFile('/src/intermediate_var.js') !;
+      const fn = host.getModuleWithProvidersFunctions(file);
+      expect(fn.map(fn => [fn.declaration.getText(), getNgModuleName(fn.ngModule.node)])).toEqual([
+        ['function() { return { ngModule: IntermediateModule_1 }; }', 'IntermediateModule'],
+      ]);
+    });
   });
 });
