@@ -167,7 +167,7 @@ export class Testability implements PublicTestability {
         // From TaskTrackingZone:
         // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
         creationLocation: (t as any).creationLocation as Error,
-        data: t.data
+        data: t.data !
       };
     });
   }
