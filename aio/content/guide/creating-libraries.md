@@ -4,6 +4,10 @@ You can create and publish new libraries to extend Angular functionality. If you
 
 A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
 
+<div class="alert is-helpful">
+     <p>For more details on how a library project is structured you can refer the <a href="guide/file-structure#library-project-files">Library Project Files</a></p>
+</div>
+
 ## Getting started
 
 Use the Angular CLI to generate a new library skeleton with the following command:
