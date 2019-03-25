@@ -45,8 +45,5 @@ protractor_web_test_suite(
     ],
     on_prepare = ":ts_on_prepare",
     server = "//src:prodserver",
-    # TODO(kyliau): Re-enable once we figure out why rollup complains about
-    # "Dynamic requires are not currently supported by rollup-plugin-commonjs"
-    tags = ["manual"],
     deps = [":e2e"],
 )
