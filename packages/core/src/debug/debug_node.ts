@@ -257,7 +257,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
     const properties = collectPropertyBindings(tNode, lView, tData);
     const hostProperties = collectHostPropertyBindings(tNode, lView, tData);
-    return {...properties, ...hostProperties};
+    const className = collectClassNames(this);
+    const output = {...properties, ...hostProperties};
+
+    if (className) {
+      output['className'] = output['className'] ? output['className'] + ` ${className}` : className;
+    }
+
+    return output;
   }
 
   get attributes(): {[key: string]: string | null;} {
@@ -478,6 +485,20 @@ function collectHostPropertyBindings(
     propMetadata = tData[++hostPropIndex];
   }
   return properties;
+}
+
+
+function collectClassNames(debugElement: DebugElement__POST_R3__): string {
+  const classes = debugElement.classes;
+  let output = '';
+
+  for (const className of Object.keys(classes)) {
+    if (classes[className]) {
+      output = output ? output + ` ${className}` : className;
+    }
+  }
+
+  return output;
 }
 
 
