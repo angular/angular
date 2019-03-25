@@ -22,7 +22,6 @@ import {
   Pipe,
   PlatformRef,
   Provider,
-  StaticProvider,
   Type,
   ɵcompileComponent as compileComponent,
   ɵcompileDirective as compileDirective,
@@ -76,7 +75,7 @@ export class R3TestBedCompiler {
   // Testing module configuration
   private declarations: Type<any>[] = [];
   private imports: Type<any>[] = [];
-  private providers: any[] = [];
+  private providers: Provider[] = [];
   private schemas: any[] = [];
 
   // Queues of components/directives/pipes that should be recompiled.
@@ -103,7 +102,7 @@ export class R3TestBedCompiler {
   private defCleanupOps: CleanupOperation[] = [];
 
   private _injector: Injector|null = null;
-  private compilerProviders: StaticProvider[]|null = null;
+  private compilerProviders: Provider[]|null = null;
 
   private providerOverrides: Provider[] = [];
   private rootProviderOverrides: Provider[] = [];
@@ -117,7 +116,7 @@ export class R3TestBedCompiler {
     this.testModuleType = DynamicTestModule as any;
   }
 
-  setCompilerProviders(providers: StaticProvider[]|null): void {
+  setCompilerProviders(providers: Provider[]|null): void {
     this.compilerProviders = providers;
     this._injector = null;
   }
@@ -272,7 +271,7 @@ export class R3TestBedCompiler {
   /**
    * @internal
    */
-  _getModuleResolver() { return this.resolvers.module; }
+  _getModuleResolver(): Resolver<NgModule> { return this.resolvers.module; }
 
   /**
    * @internal
@@ -337,8 +336,8 @@ export class R3TestBedCompiler {
     const maybeApplyOverrides = (field: string) => (type: Type<any>) => {
       const resolver =
           field === NG_COMPONENT_DEF ? this.resolvers.component : this.resolvers.directive;
-      const metadata = resolver.resolve(type);
-      if (this.hasProviderOverrides(metadata !.providers)) {
+      const metadata = resolver.resolve(type) !;
+      if (this.hasProviderOverrides(metadata.providers)) {
         this.patchDefWithProviderOverrides(type, field);
       }
     };
@@ -348,26 +347,23 @@ export class R3TestBedCompiler {
     this.seenComponents.clear();
     this.seenDirectives.clear();
   }
-
+  // ...
   private applyProviderOverridesToModule(moduleType: Type<any>): void {
-    const def: any = (moduleType as any)[NG_INJECTOR_DEF];
-    // Since this function is invoked recursively for all imports defined on injector def and
-    // injector def imports cantain a list of imports and exports from NgModule metadata, we may
-    // face a Type without ngInjectorDef (for example a Component), so we need to guard underlying
-    // logic from these defs.
-    if (def && this.providerOverridesByToken.size > 0) {
-      if (this.hasProviderOverrides(def.providers)) {
+    const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
+    if (this.providerOverridesByToken.size > 0) {
+      if (this.hasProviderOverrides(injectorDef.providers)) {
         this.maybeStoreNgDef(NG_INJECTOR_DEF, moduleType);
 
         this.storeFieldOfDefOnType(moduleType, NG_INJECTOR_DEF, 'providers');
-        def.providers = [
-          ...def.providers,  //
-          ...this.getProviderOverrides(def.providers)
+        injectorDef.providers = [
+          ...injectorDef.providers,  //
+          ...this.getProviderOverrides(injectorDef.providers)
         ];
       }
 
       // Apply provider overrides to imported modules recursively
-      for (const importType of flatten<Type<any>>(def.imports)) {
+      const moduleDef: any = (moduleType as any)[NG_MODULE_DEF];
+      for (const importType of moduleDef.imports) {
         this.applyProviderOverridesToModule(importType);
       }
     }
@@ -547,7 +543,7 @@ export class R3TestBedCompiler {
       return this._injector;
     }
 
-    const providers: StaticProvider[] = [];
+    const providers: Provider[] = [];
     const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
     compilerOptions.forEach(opts => {
       if (opts.providers) {
@@ -569,15 +565,14 @@ export class R3TestBedCompiler {
   }
 
   // get overrides for a specific provider (if any)
-  private getSingleProviderOverrides(provider: any) {
+  private getSingleProviderOverrides(provider: Provider&{provide?: any}): Provider[] {
     const token = provider && typeof provider === 'object' && provider.hasOwnProperty('provide') ?
         provider.provide :
         provider;
     return this.providerOverridesByToken.get(token) || [];
   }
 
-  // TODO(FW-1179): define better types for all Provider-related operations, avoid using `any`.
-  private getProviderOverrides(providers: any): any[] {
+  private getProviderOverrides(providers?: Provider[]): Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
     // There are two flattening operations here. The inner flatten() operates on the metadata's
     // providers and applies a mapping function which retrieves overrides for each incoming
@@ -585,20 +580,20 @@ export class R3TestBedCompiler {
     // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
     // providers array and contaminate any error messages that might be generated.
     return flatten(
-        flatten(providers, (provider: any) => this.getSingleProviderOverrides(provider)));
+        flatten(providers, (provider: Provider) => this.getSingleProviderOverrides(provider)));
   }
 
-  private hasProviderOverrides(providers: any): boolean {
+  private hasProviderOverrides(providers?: Provider[]): boolean {
     return this.getProviderOverrides(providers).length > 0;
   }
 
-  private patchDefWithProviderOverrides(declaration: Type<any>, field: string) {
+  private patchDefWithProviderOverrides(declaration: Type<any>, field: string): void {
     const def = (declaration as any)[field];
     if (def && def.providersResolver) {
       this.maybeStoreNgDef(field, declaration);
 
       const resolver = def.providersResolver;
-      const processProvidersFn = (providers: any[]) => {
+      const processProvidersFn = (providers: Provider[]) => {
         const overrides = this.getProviderOverrides(providers);
         return [...providers, ...overrides];
       };
