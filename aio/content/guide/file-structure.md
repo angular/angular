@@ -20,9 +20,9 @@ Beginners and intermediate users are encouraged to use `ng new` to create a sepa
 
 Angular also supports workspaces with [multiple projects](#multiple-projects).
 This type of development environment is suitable for advanced users who are developing [shareable libraries](guide/glossary#library),
-and for enterprises that use a "mono-repo" development style, with a single repository and global configuration for all Angular projects.
+and for enterprises that use a "monorepo" development style, with a single repository and global configuration for all Angular projects.
 
-To set up a mono-repo workspace, you should skip the creating the root application.
+To set up a monorepo workspace, you should skip the creating the root application.
 See [Setting up for a multi-project workspace](#multiple-projects) below.
 
 ## Workspace configuration files
@@ -121,7 +121,7 @@ my-app/
 
 ## Multiple projects
 
-A multi-project workspace is suitable for an enterprise that uses a single repository and global configuration for all Angular projects (the "mono-repo" model). A multi-project workspace also supports library development.
+A multi-project workspace is suitable for an enterprise that uses a single repository and global configuration for all Angular projects (the "monorepo" model). A multi-project workspace also supports library development.
 
 ### Setting up for a multi-project workspace
 
@@ -160,5 +160,22 @@ my-workspace/
       src/        --source and support files for library)
 </code-example>
 
+## Library project files
+
+When you generate a library using the CLI (with a command such as `ng generate library my-lib`), the generated files go into the projects/ folder of the workspace. For more information about creating your own libraries, see  [Creating Libraries](https://angular.io/guide/creating-libraries).
+
 Libraries (unlike applications and their associated e2e projects) have their own `package.json` configuration files.
-For more information about the library project structure, see [Creating Libraries](https://angular.io/guide/creating-libraries).
+
+Under the `projects/` folder, the `my-lib` folder contains your library code.
+
+| LIBRARY SOURCE FILES | PURPOSE                                                                      |
+| :------------------- | :----------------------------------------------------------------------------|
+| `src/lib`           |  Contains your library project's logic and data. Like an application project, a library project can contain components, services, modules, directives, and pipes.                                                            |
+| `src/test.ts`       | The main entry point for your unit tests, with some library-specific configuration. You don't typically need to edit this file.                                                                                            |
+| `src/public-api.ts`  | Specifies all files that are exported from your library.                                                                                                                                                                     |
+| `karma.conf.js`      | Library-specific [Karma](https://karma-runner.github.io/2.0/config/configuration-file.html) configuration.                                                                                                                   |
+| `ng-package.json`    | Configuration file used by [ng-packagr](https://github.com/ng-packagr/ng-packagr) for building your library.                                                                                                                 |
+| `package.json`       | Configures [npm package dependencies](guide/npm-packages) that are required for this library.                                                                                                                                |
+| `tsconfig.lib.json`  | Library-specific [TypeScript](https://www.typescriptlang.org/) configuration, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration).            |
+| `tsconfig.spec.json` | [TypeScript](https://www.typescriptlang.org/) configuration for the library tests. See [TypeScript Configuration](guide/typescript-configuration).                                                                     |
+| `tslint.json`        | Library-specific [TSLint](https://palantir.github.io/tslint/) configuration. |
