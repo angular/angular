@@ -24,9 +24,9 @@ You'll find many resources to compliment the Angular docs. Mozilla's MDN docs in
 <live-example name="getting-started" noDownload title="Click here to create your new project in StackBlitz"></live-example>.
 -->
 
-<live-example name="getting-started" noDownload>Click here to create a new Getting Started project in StackBlitz.</live-example> 
+<a href="https://stackblitz.com/angular/mjovpkpbdlg"><img src='generated/images/guide/getting-started/stackblitz-icon.png' alt="Stackblitz logo"></a> <live-example name="getting-started" noDownload>Click here to create a new Getting Started project in StackBlitz.</live-example> 
 
-<a href="https://stackblitz.com/angular/mjovpkpbdlg"><img src='generated/images/guide/getting-started/stackblitz-icon.png' alt="Stackblitz logo"></a>
+
 
     <div class="callout is-critical">
     <header>To Do</header>
@@ -201,44 +201,29 @@ To learn about the full capabilities of Angular's template syntax, see the [Temp
 You've already been working with the product list component. 
 
 A component is comprised of three things: 
-* A component class, which handles data and functionality. In the previous section, the product list data and share event were defined for you in the component class. 
-* An HTML template, which determines what is presented to the user.  In the previous section, you modified the HTML template to display the name, description, and a share button for each product. 
-* Styles that define the look and feel. The product list does not use any component-specific styles.  
+* **A component class,** which handles data and functionality. In the previous section, the product data and the `Share()` method were defined for you in the component class. 
+* **An HTML template,** which determines what is presented to the user. In the previous section, you modified the product list's HTML template to display the name, description, and a share button for each product. 
+* **Component-specific styles** that define the look and feel. The product list does not define any styles.  
 
+<!-- 
+### Class definition
 
-### Component class definition
+Let's take a quick look a the product list component's class definition: 
 
+1. In the `product-list` directory, open `product-list.component.ts`. 
 
+1. Notice the `@Component` decorator. This provides metadata about the component, including its templates, styles, and a selector. 
 
-A component is referred to by its `selector`. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix such as `app-`, followed by the component name. 
+    * The `selector` is used to identify the component. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix such as `app-`, followed by the component name. 
 
-<code-tabs>
+    * The template and style filename also are provided here. By convention each of the component's parts is in a separate file, all in the same directory and with the same prefix. 
 
-  <code-pane header="src/app/top-bar/top-bar.component.ts" path="getting-started/src/app/top-bar/top-bar.component.ts" region="v1">
-  </code-pane>
+1. The component definition also includes an exported class, which handles functionality for the component. This is where the product list data and `Share()` method are defined. 
 
-  <code-pane header="src/app/top-bar/top-bar.component.html" path="getting-started/src/app/top-bar/top-bar.component.1.html" region="initial">
-  </code-pane>
-
-  <code-pane header="src/app/top-bar/top-bar.component.css" path="getting-started/src/app/top-bar/top-bar.component.css">
-  </code-pane>
-
-</code-tabs>
-
-A component definition includes: 
-
- * The `Component` decorator, which provides metadata about the component, including its templates, styles, and a selector.
- * An exported class, which handles functionality for the component.
-
-
-*JAF: By our current definitions, a component also includes the html and css. Is there a term for the collection here, the collection of what's in the .ts file specifically? It comes up in terms of "open the component .ts file" where the other files have names "component template file" and "component style file" that are alternatives to "component .html file" and "component .css file".*
-
-### Component composition
+### Composition
+-->
 
 An Angular application is composed of a tree of components, in which each Angular component has a specific purpose and responsibility. 
-The components at each level of the tree have progressively fewer responsibilities. 
-
-Just like HTML elements, components can be referred to or nested in another component's template. 
 
 Currently, our app has three components: 
 
@@ -250,141 +235,166 @@ Currently, our app has three components:
 * `app-top-bar` is the store name and checkout button.
 * `app-product-list` is the product list that you modified in the previous section. 
 
-In the next section, you'll expand the app's capabilities by adding new component. 
+In the next section, you'll expand the app's capabilities by adding new component for a product alert. You'll add it as a child of the product list component. 
 
     <div class="callout is-critical">
     <header>To Do</header>
-    In the v1 flow, we began by explaining the structure of an app as a hierarchy of components, and then we looked at a single component. In the context of a single component, we talked about the 3 parts of a component (ts, html, css), and then we looked at the component class definition including the `@Component` decorator and the selector with the component name. We followed by changing how a component's template, based on data and events defined in the component class. In v2 we stripped components down, and lost the @Component and selector. We didn't put them back in the v3 flow. 
+    In the v1 flow, we began by explaining the structure of an app as a hierarchy of components, and then we looked at a single component. In the context of a single component, we talked about the 3 parts of a component (ts, html, css), and then we looked at the component class definition including the `@Component` decorator and the selector with the component name. In a desire to simplify and focus on template syntax, these details were largely lost in v2 and weren't in the v3 flow. 
     
-    I think they need to come back, so I've tried inserting the whole story of components here. 
+    I think they need to come back, so I've tried inserting the definition of components and the composition here. I've deferred @Component and selectors to Input, which is when we create a component. Upside: Small bites without a big conceptual thing about components. Downside: Component essentials are scattered a bit. 
 
-    Option 1:
-    1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
+    Alternatives: 
+
+    Option 2:
+    1. Component, focusing on a single pre-defined component: 3 parts of a component. Describe @Component and the selector. Look at product-list.component.ts but don't touch.
     1. Template syntax: HTML focus, changing the view using data defined in that component. 
-    1. Component composition: Introduce idea of parent and child components, before input and output. 
+    1. Component composition: Introduce idea of parent and child components
+    1. Input and output. 
+    
+    Option 3:
+    1. Template syntax: HTML focus, changing the view using data defined in that component. 
+    1. Components and composition:  3 parts of a component. Describe @Component and the selector. Introduce idea of parent and child components. It's all here together. 
+    1. Input. 
+       
+    I like option 2, even though users look (read) a component before they start typing anything. It provides context to what happens in template syntax and keeps the essential aspects of a single component in one place. 
 
-    Option 2: 
-    1. Template syntax: HTML focus, changing the view using data defined in the related component class. 
-    1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
-    1. Component composition: Introduce idea of parent and child components, before input and output. 
+    Terminology challenge: If we don't introduce component before template syntax, we can't define template syntax in terms of what it does for the component. 
 
-    Option 3: Introduce each aspect of a component as users work with it. 
-    Cognitive load appears to be low, but the downside is that this fundamental concept is never explained well.
-
-    In the spirit of trying to do template syntax first, I've tried option 2 here. 
-    Personally, I think option 1 is going to work best. 
+    Terminology challenge: We casually use the word "component" to mean the entire component (ts, html, css), the entire .ts file, just the component class inside the ts file. We also use several things to identify the component: an English phrase ("the product list component"), the selector (app-product-list), the class name (ProductListComponent), and the filename prefix (product-list). We need to be more precise. 
     </div>
 
 
 ## Input
 
-At this point, our app is just a product catalog, displaying a list of products, with names and descriptions. 
-
 <!--
 You might have noticed that the `ProductListComponent` class also defined a price property for each product. We're going to use the anchor on each product name to display a new view with additional product details, including the price. We'll create that product details view as a new component. We'll pass the selected product in to the product details component. 
 -->
 
-You might have noticed that the `ProductListComponent` class also defined a price property for each product. We're going to create a new alert feature. The alert feature will check the price for each product. If the price is greater than $700, the app will display a " Notify Me" button that lets you sign up for notifications if the product goes on sale. 
+Currently, the product list displays the name and description for each product. 
+You might have noticed that product list component also defines a price property for each product. (See the `ProductListComponent` class in `product-list.component.ts`.)
+
+We're going to create a new alert feature. The alert feature will take a product as input. It will then check the product's price, and, if the price is greater than $700, it will display a " Notify Me" button that lets users sign up for notifications when the product goes on sale. 
+
+1. Generate a new product alerts component. 
+
+    1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
+
+        <figure>
+          <img src='generated/images/guide/getting-started/generate-component.png' alt="Stackblitz generate component">
+        </figure>
+
+        The generator creates starter files for all three parts of the component: 
+        * `product-alerts.component.ts`
+        * `product-alerts.component.html`
+        * `product-alerts.component.css`
+
+    1. Open `product-alerts.component.ts`.
+
+    1. Notice the `@Component` decorator. This indicates that the following class is a component. It provides metadata about the component, including its templates, styles, and a selector. 
+
+        * The `selector` is used to identify the component. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix such as `app-`, followed by the component name. 
+
+        * The template and style filenames. These reference the other two files generated for you. 
+
+    1. The component definition also includes an exported class (`ProductAlertsComponent`), which handles functionality for the component. 
+
+1. To set up the component to accept input, import `Inputs` from `@angular/core`:
+
+    <code-example
+      path="getting-started/src/app/product-alerts/product-alerts-component.1.ts"
+      region="imports">
+    </code-example>
+
+    ```
+    import { Component, OnInit } from '@angular/core';
+    import { Input } from '@angular/core';
+    ```
+
+1. Define a property named `product` with an `@Input` decorator. The `@Input` decorator indicates that the property value will be passed in from the component's parent (in this case, the product list component).
+
+    ```
+    export class ProductAlertsComponent {
+      @Input() product;
+    }
+    ```
+
+1. Update the template to define the view for the product alert component. Replace the placeholder paragraph with a "Notify Me" button that appears if the product price is over $700. 
+
+    ```
+    <p *ngIf="product.price > 700">
+      <button>Notify Me</button>
+    </p>
+    ```
+
+1. Display the new product alert as part of (a child of) the existing product list. 
+
+    1. Open `product-list.component.html`.
+
+    1. Below the "Share" button, include the new product alert component. 
+    
+        To include a component, use its selector as you would an element. Pass the current product as input to product-alert. 
+
+        ```
+          <button (click)="share()">
+            Share
+        </button>   
+
+        <app-product-alerts
+          [product]="product">
+        </app-product-alerts>
+        ```
 
 
-1. Generate product alerts component. 
+<figure>
+  <img src='generated/images/guide/getting-started/product-alert-button.png' alt="Product alert button added to products over $700">
+</figure>
 
-1. Import required Angular library. 
+The product alert component takes a product as input from the product list. With that input, the product alert component shows or hides the "Notify Me" button. The Phone XL price is over $700, so the "Notify Me" button appears on that product. 
 
-Import `Inputs` from `@angular/core`: 
-
-<code-example
-  path="getting-started/src/app/product-alerts/product-alerts-component.1.ts"
-  region="imports">
-</code-example>
-
-```
-import { Component, OnInit } from '@angular/core';
-import { Input } from '@angular/core';
-```
-
-1. Define the component class's properties. 
-
-Define a product named `product` in the `product-alerts` component class with an `@Input` decorator. 
-
-```
-export class ProductAlertsComponent {
-  @Input() product;
-}
-```
-
-1. Update the template. 
-
-```
-<p *ngIf="product.price > 700">
-  <button>Notify Me</button>
-</p>
-```
-
-1. Hook the new product alert into our product list. 
-
-    1. Open product-list.component.html
-
-    1. Include product-alert component. Pass the current product as input to product-alert. Put this below the Share button. This makes product-alert a child of product-list. 
-
-      ```
-      <button (click)="share()">
-          Share
-      </button>   
-
-      <app-product-alerts
-        [product]="product">
-      </app-product-alerts>
-      ```
-
-The product alert component takes a product as input from the product list. With that input, the product alert component shows or hides the "Notify Me" button. 
-
-You've also learned how to connect two components through the templates. The product list component includes the product alert component as a child. 
 
 ## Output
 
+The "Notify Me" button doesn't do anything yet. In this section, you'll set up the product alert component so that it emits an event up to the product list when the user clicks Notify Me. You'll define the notification behavior in the product list component. 
 
-1. Import Output and EventEmitter
+1. Open `product-list.component.ts`.
 
-```
-import { Component, OnInit } from '@angular/core';
-import { Input } from '@angular/core';
-import { Output, EventEmitter } from '@angular/core';
-```
+1. Import `Output` and `EventEmitter` from `@angular/core`: 
 
-1. Define an output property named "notify" with an @output decorator and an instance of event emitter:
+    ```
+    import { Component, OnInit } from '@angular/core';
+    import { Input } from '@angular/core';
+    import { Output, EventEmitter } from '@angular/core';
+    ```
 
-```
-export class ProductAlertsComponent {
-  @Input() product;
-  @Output() notify = new EventEmitter();
-  ...
-}
-```
+1. In the component class, define a property named `notify` with an `@Output` decorator and an instance of event emitter. This makes it possible for the product list component to emit an event when the value of the notify property changes.
 
-1. Update the template. 
+    ```
+    export class ProductAlertsComponent {
+      @Input() product;
+      @Output() notify = new EventEmitter();
+      
+    }
+    ```
 
-Inside a paragraph, add a button to the template with an event binding to call the notify.emit()method.
+1. In the product alert template (`product-alert.component.html`), update the "Notify Me" button with an event binding to call the `notify.emit()` method.
 
-```
-<p *ngIf="product.price < 700">
-  <button (click)="notify.emit()">Notify Me</button>
-</p>
-```
+    ```
+    <p *ngIf="product.price < 700">
+      <button (click)="notify.emit()">Notify Me</button>
+    </p>
+    ```
 
-1. Define an onNotify() method in the product-list.component.ts file. 
+1. Next, define the behavior that should happen when the button is clicked. In the `product-list.component.ts` file, define an `onNotify()` method, similar to the `Share()` method: 
 
-```
-  onNotify() {
-    window.alert('You will be notified when the product goes on sale');
-  }
-```
+    ```
+      onNotify() {
+        window.alert('You will be notified when the product goes on sale');
+      }
+    ```
 
-1. Trigger the product alert action from the Notify Me button. 
+1. Finally, update product list component to receive output from the product alerts component. 
 
-    1. Open product-list.component.html
-
-    1. Modify the inclusion of app-product-alerts component to handle output from this button via event binding. Bind the app-product-alerts component (which is what displays the Notify Me button) to the onNotify() method of the product list component. 
+    In `product-list.component.html`, bind the `app-product-alerts` component (which is what displays the Notify Me button) to the `onNotify()` method of the product list component. 
 
       ```
       <button (click)="share()">
@@ -397,12 +407,18 @@ Inside a paragraph, add a button to the template with an event binding to call t
       </app-product-alerts>
       ```
 
+1. Try out the "Notify Me" Button: 
 
+    <figure>
+      <img src='generated/images/guide/getting-started/product-alert-notification.png' alt="Product alert notification confirmation dialog">
+    </figure>
 
 
 ## Next steps
 
 Congratulations! You've completed your first Angular app!
+
+You have a product list, with Share and Notify Me buttons. You've learned about the foundation of Angular: components and template syntax. You've learned how the component class and template interact, and how components communicate with each other. 
 
 To continue exploring Angular, we recommend any of the following options:
 * [Continue to the next Getting Started lesson: Routing](getting-started/routing)
