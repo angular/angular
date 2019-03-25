@@ -12,7 +12,7 @@ ng new shiny-ivy-app --enable-ivy
 ```
 
 The new project is automatically configured for Ivy.
-- The `enableIvy` option is set to `true` in `src/tsconfig.app.json`.
+- The `enableIvy` option is set to `true` in `tsconfig.app.json`.
 - The `"aot": true` option is added to your default build options.
 - A `postinstall` script is provided for the [Angular Compatibility Compiler](#ngcc).
 
@@ -21,16 +21,33 @@ The new project is automatically configured for Ivy.
 
 You can update an existing project to use Ivy by making the following configuration changes.
 
-- Add the `enableIvy` option in the `angularCompilerOptions` in your project's `src/tsconfig.app.json`.
-To use Ivy before version 8 is final, add the `allowEmptyCodegenFiles`as well.
+- Add the `enableIvy` option in the `angularCompilerOptions` in your project's `tsconfig.app.json`.
 ```json
 {
   "compilerOptions": { ... },
   "angularCompilerOptions": {
-    "enableIvy": true,
-    "allowEmptyCodegenFiles": true,
+    "enableIvy": true
   }
 }
+```
+- Set `"module": "esnext"` inside `compilerOptions` in your `tsconfig.json` to support the [ES `import()` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
+```json
+{
+  "compilerOptions": {
+    ...
+    "module": "esnext",
+  }
+}
+```
+- Update your lazy routes to use the `import()` statement. You can use [angular-lazy-routes-fix](https://github.com/phenomnomnominal/angular-lazy-routes-fix) to automatically transform them.
+```typescript
+const routes: Routes = [{
+  path: 'lazy',
+  // The string syntax for loadChildren is not supported in Ivy:
+  //   loadChildren: './lazy/lazy.module#LazyModule'
+  // Instead use the import statement:
+  loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
+}];
 ```
 - In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
 ```json
@@ -67,7 +84,8 @@ npm install
 ## Switching back to the current compiler
 
 To stop using the Ivy compiler you need to undo the steps taken when [updating to use Ivy](#updating).
-- Set `enableIvy` to false in `src/tsconfig.app.json`, or remove it completely.
+- Set `enableIvy` to false in `tsconfig.app.json`, or remove it completely.
+- Add `"experimentalImportFactories": true` to your default build options in `angular.json` to support the import statement in `loadChildren` outside Ivy.
 - Remove `"aot": true` from your default build options if you didn't have it there before.
 - Remove the `postinstall` script.
 - Delete and reinstall your node modules.
