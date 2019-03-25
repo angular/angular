@@ -21,21 +21,21 @@ You'll find many resources to compliment the Angular docs. Mozilla's MDN docs in
 ## Create a new project
 
 <!--
-<live-example name="getting-started-v0" noDownload title="Click here to create your new project in StackBlitz"></live-example>.
+<live-example name="getting-started" noDownload title="Click here to create your new project in StackBlitz"></live-example>.
 -->
 
-<live-example name="getting-started-v0" noDownload>Click here to create a new Getting Started project in StackBlitz.</live-example> 
+<live-example name="getting-started" noDownload>Click here to create a new Getting Started project in StackBlitz.</live-example> 
 
 <a href="https://stackblitz.com/angular/mjovpkpbdlg"><img src='generated/images/guide/getting-started/stackblitz-icon.png' alt="Stackblitz logo"></a>
 
     <div class="callout is-critical">
     <header>To Do</header>
 
-    The Stackblitz link above assumes getting-started-v0 and has never worked for me. I get a page not found in my local running AIO. For review, use https://stackblitz.com/angular/mjovpkpbdlg. 
+    The Stackblitz link above assumed getting-started-v0, but I changed it to getting-started without a version. Also, the link has has never worked for me. I get a page not found in my local running AIO. For review, use https://stackblitz.com/angular/mjovpkpbdlg. 
 
-    The `live-example` tag does not seem to allow for an image to be inside the element at all, but it would be nice to have both text and a clickable icon to open the example. I faked it here using the review URL in the comment above and regular HTML tagging for clickable image.
+    The `live-example` tag does not seem to allow for an image to be inside the element at all, but it would be nice to have both text and a clickable icon to open the example. I faked it here using the review URL in the comment above and regular HTML tagging for clickable image. 
 
-    Alternate icon: 
+    Alternate icons: 
   
     <a href="https://stackblitz.com/angular/mjovpkpbdlg"><img src='generated/images/guide/getting-started/stackblitz-angular-icon.png' alt="Stackblitz and Angular project logo"></a>
 
@@ -198,21 +198,65 @@ To learn about the full capabilities of Angular's template syntax, see the [Temp
 ## Components
 
 *Components* are the building blocks of Angular apps. 
+You've already been working with the product list component. 
 
 A component is comprised of three things: 
-* A *component class*, which handles data and functionality. In the preview section, you used product list data from the component class. 
-* An HTML template, which determines what is presented to the user.  In the previous section, 
-* Styles that define the look and feel 
+* A component class, which handles data and functionality. In the previous section, the product list data and share event were defined for you in the component class. 
+* An HTML template, which determines what is presented to the user.  In the previous section, you modified the HTML template to display the name, description, and a share button for each product. 
+* Styles that define the look and feel. The product list does not use any component-specific styles.  
 
-As you saw, an Angular project typically contains one file for each part of the component:
-    * `product-list-component.ts` contains the component class definition
-    * `product-list-component.html` is the HTML template 
-    * `product-list-component.css` contains component-specific styles
 
+### Component class definition
+
+
+
+A component is referred to by its `selector`. The selector is the name you give the Angular component when it is rendered as an HTML element on the page. By convention, Angular component selectors begin with the prefix such as `app-`, followed by the component name. 
+
+<code-tabs>
+
+  <code-pane header="src/app/top-bar/top-bar.component.ts" path="getting-started/src/app/top-bar/top-bar.component.ts" region="v1">
+  </code-pane>
+
+  <code-pane header="src/app/top-bar/top-bar.component.html" path="getting-started/src/app/top-bar/top-bar.component.1.html" region="initial">
+  </code-pane>
+
+  <code-pane header="src/app/top-bar/top-bar.component.css" path="getting-started/src/app/top-bar/top-bar.component.css">
+  </code-pane>
+
+</code-tabs>
+
+A component definition includes: 
+
+ * The `Component` decorator, which provides metadata about the component, including its templates, styles, and a selector.
+ * An exported class, which handles functionality for the component.
+
+
+*JAF: By our current definitions, a component also includes the html and css. Is there a term for the collection here, the collection of what's in the .ts file specifically? It comes up in terms of "open the component .ts file" where the other files have names "component template file" and "component style file" that are alternatives to "component .html file" and "component .css file".*
+
+### Component composition
+
+An Angular application is composed of a tree of components, in which each Angular component has a specific purpose and responsibility. 
+The components at each level of the tree have progressively fewer responsibilities. 
+
+Just like HTML elements, components can be referred to or nested in another component's template. 
+
+Currently, our app has three components: 
+
+<figure>
+  <img src='generated/images/guide/getting-started/starter-app-components.png' alt="Online store with three components">
+</figure>
+
+* `app-root` is the application shell. This is first component to load, and the parent of all other components. You can think of it as the base page. 
+* `app-top-bar` is the store name and checkout button.
+* `app-product-list` is the product list that you modified in the previous section. 
+
+In the next section, you'll expand the app's capabilities by adding new component. 
 
     <div class="callout is-critical">
-    <header>To Resolve</header>
-    In the v1 flow, we began by explaining the structure of an app as a hierarchy of components, and then we looked at a single component. In the context of a single component, we talked about the 3 parts of a component (ts, html, css), and then we looked at the component class definition including the `@Component` decorator and the selector with the component name. These are essential foundation concepts. We lost them in v2, and in the continued move to reduce what we say about components we didn't put them back in the v3 flow. I think they need to come back. 
+    <header>To Do</header>
+    In the v1 flow, we began by explaining the structure of an app as a hierarchy of components, and then we looked at a single component. In the context of a single component, we talked about the 3 parts of a component (ts, html, css), and then we looked at the component class definition including the `@Component` decorator and the selector with the component name. We followed by changing how a component's template, based on data and events defined in the component class. In v2 we stripped components down, and lost the @Component and selector. We didn't put them back in the v3 flow. 
+    
+    I think they need to come back, so I've tried inserting the whole story of components here. 
 
     Option 1:
     1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
@@ -224,42 +268,143 @@ As you saw, an Angular project typically contains one file for each part of the 
     1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
     1. Component composition: Introduce idea of parent and child components, before input and output. 
 
-    Because Stephen really wants to do template syntax first, I've tried option 2 here. 
+    Option 3: Introduce each aspect of a component as users work with it. 
+    Cognitive load appears to be low, but the downside is that this fundamental concept is never explained well.
+
+    In the spirit of trying to do template syntax first, I've tried option 2 here. 
+    Personally, I think option 1 is going to work best. 
     </div>
-
-{@a component-composition}
-## Component composition
-
-An Angular application is composed of a tree of components, in which each Angular component has a specific purpose and responsibility. 
-
-Our starter app has three components: 
-
-<figure>
-  <img src='generated/images/guide/getting-started/starter-app-components.png' alt="Online store with three components">
-</figure>
-
-* app-root: The application shell. This is first component to load, and the parent of all other components. You can think of it as the base page. 
-* app-top-bar: The top bar for our online store, with the store name and checkout button.
-* app-product-list: The product list for our online store. You modified this component's template in the previous section. 
-
-
 
 
 ## Input
 
 At this point, our app is just a product catalog, displaying a list of products, with names and descriptions. 
 
-You might have noticed that the `ProductListComponent` class also defined a price property for each product. We're going to use the anchor on each product name to display additional product details, which will include the price. We'll create that product details view as a new component. We'll pass the selected product in to the product details component. 
+<!--
+You might have noticed that the `ProductListComponent` class also defined a price property for each product. We're going to use the anchor on each product name to display a new view with additional product details, including the price. We'll create that product details view as a new component. We'll pass the selected product in to the product details component. 
+-->
+
+You might have noticed that the `ProductListComponent` class also defined a price property for each product. We're going to create a new alert feature. The alert feature will check the price for each product. If the price is greater than $700, the app will display a " Notify Me" button that lets you sign up for notifications if the product goes on sale. 
+
+
+1. Generate product alerts component. 
+
+1. Import required Angular library. 
+
+Import `Inputs` from `@angular/core`: 
+
+<code-example
+  path="getting-started/src/app/product-alerts/product-alerts-component.1.ts"
+  region="imports">
+</code-example>
+
+```
+import { Component, OnInit } from '@angular/core';
+import { Input } from '@angular/core';
+```
+
+1. Define the component class's properties. 
+
+Define a product named `product` in the `product-alerts` component class with an `@Input` decorator. 
+
+```
+export class ProductAlertsComponent {
+  @Input() product;
+}
+```
+
+1. Update the template. 
+
+```
+<p *ngIf="product.price > 700">
+  <button>Notify Me</button>
+</p>
+```
+
+1. Hook the new product alert into our product list. 
+
+    1. Open product-list.component.html
+
+    1. Include product-alert component. Pass the current product as input to product-alert. Put this below the Share button. This makes product-alert a child of product-list. 
+
+      ```
+      <button (click)="share()">
+          Share
+      </button>   
+
+      <app-product-alerts
+        [product]="product">
+      </app-product-alerts>
+      ```
+
+The product alert component takes a product as input from the product list. With that input, the product alert component shows or hides the "Notify Me" button. 
+
+You've also learned how to connect two components through the templates. The product list component includes the product alert component as a child. 
 
 ## Output
+
+
+1. Import Output and EventEmitter
+
+```
+import { Component, OnInit } from '@angular/core';
+import { Input } from '@angular/core';
+import { Output, EventEmitter } from '@angular/core';
+```
+
+1. Define an output property named "notify" with an @output decorator and an instance of event emitter:
+
+```
+export class ProductAlertsComponent {
+  @Input() product;
+  @Output() notify = new EventEmitter();
+  ...
+}
+```
+
+1. Update the template. 
+
+Inside a paragraph, add a button to the template with an event binding to call the notify.emit()method.
+
+```
+<p *ngIf="product.price < 700">
+  <button (click)="notify.emit()">Notify Me</button>
+</p>
+```
+
+1. Define an onNotify() method in the product-list.component.ts file. 
+
+```
+  onNotify() {
+    window.alert('You will be notified when the product goes on sale');
+  }
+```
+
+1. Trigger the product alert action from the Notify Me button. 
+
+    1. Open product-list.component.html
+
+    1. Modify the inclusion of app-product-alerts component to handle output from this button via event binding. Bind the app-product-alerts component (which is what displays the Notify Me button) to the onNotify() method of the product list component. 
+
+      ```
+      <button (click)="share()">
+          Share
+      </button>   
+
+      <app-product-alerts
+        [product]="product"
+        (notify)="onNotify()">
+      </app-product-alerts>
+      ```
+
+
+
 
 ## Next steps
 
 Congratulations! You've completed your first Angular app!
 
 To continue exploring Angular, we recommend any of the following options:
-* Do the add-on Getting Started lessons in order: Routing, Managing Data, Forms, Deployment. The add-on modules extend the online store app to be more robust and scalable, introducing more Angular foundation skills. 
-* Skip ahead to the [Deployment](getting-started/deployment) add-on lesson to deploy your app to Firebase or move to local development. 
-
-[Continue to the next Getting Started lesson: Routing.](getting-started/data)
+* [Continue to the next Getting Started lesson: Routing](getting-started/routing)
+* [Skip ahead to the Deployment section](getting-started/deployment) to deploy your app to Firebase or move to local development. 
 
