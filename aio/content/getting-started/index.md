@@ -52,6 +52,7 @@ We've seeded this particular app with a top bar&mdash;containing the store name 
     <img src='generated/images/guide/getting-started/new-app.png' alt="Starter online store app in Stackblitz">
 </figure>
 
+In the next section, you'll modify the app to display a list of products under the "Products" heading. 
 
 <div class="callout is-helpful">
 <header>Stackblitz tips</header>
@@ -62,150 +63,96 @@ We've seeded this particular app with a top bar&mdash;containing the store name 
 
 </div>
 
-<!-- 
- Stackblitz has accelerators that make it easy to develop an Angular application. The accelerators are similar to what is offered by the [Angular CLI](cli) when you are working locally. 
--->
-
-<!-- 
-You develop apps in the context of an Angular workspace. A workspace contains the files for one or more projects. A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. 
--->
-
-
-{@a components}
-## Components
-
-Let's take a quick look at the structure of our app.
-
-*Components* are the building blocks of Angular apps. 
-A component is comprised of three things: 
-* A class that handles data and functionality 
-* An HTML template, which determines what is presented to the user 
-* Styles that define the look and feel 
-
-An Angular application is composed of a tree of components, in which each Angular component has a specific purpose and responsibility. 
-
-Our starter app has three components: 
-
-<figure>
-  <img src='generated/images/guide/getting-started/starter-app-components.png' alt="Online store with three components">
-</figure>
-
-* app-root: The application shell. This is first component to load, and the parent of all other components. You can think of it as the base page. 
-* app-top-bar: The top bar for our online store, with the store name and checkout button.
-* app-product-list: The product list for our online store.. 
-
-Right now, the app displays the title "Products", but it does not display the list of products. In the next section, you'll modify the component's HTML template to display the list of products defined in the component class.
-
-
 {@a template-syntax}
 ## Template syntax
 
+<!-- 
 Angular extends HTML with a template syntax that gives components control over the display of content. 
 This section introduces five things you can do in an Angular template to affect what your user sees, based on the component's state and behavior: 
+-->
 
-* `*ngFor`
-* `*ngIf`
-* Interpolation {{ }}
-* Property binding [ ]
-* Event binding ( ) 
+Angular extends HTML and JavaScript. 
+In this section, you'll learn about Angular's template syntax by enhancing the "Products" section. 
 
-We'll use these to add the product list to the "Products" area of the app. 
+1. In the `product-list` folder, open the template file `product-list-component.html`. 
 
+    Notice that only the "Products" heading is defined. 
 
-1. Open the `product-list` folder. It contains one file for each part of the component: 
-    * `product-list-component.ts` contains the component class definition
-    * `product-list-component.html` is the HTML template 
-    * `product-list-component.css` contains component-specific styles
+1. Modify the app to display a list of product names. 
 
-1. Open the `product-list-component.ts` file. The `ProductListComponent` class defines properties for two products: 
+    The following steps leverage the product data defined in the associated `product-list-component.ts` file. 
 
-    ```ts
-    export class ProductListComponent {
-      products = [
-        {
-          id: 1,
-          name: 'Phone XL',
-          price: 799,
-          description: 'A large phone with one of the best screens'
-        },
-        {
-          id: 2,
-          name: 'Phone Mini',
-          price: 699,
-          description: 'A great phone with one of the best cameras'
-        }
-      ];
-    }
-    ```
+    1. To iterate over the predefined list of products, use the `*ngFor` directive. Put the `*ngFor` directive on a `<div>`, as shown below:  
 
-    We want to display the name and description of these products in our "Products" list. 
+      ```html
+      <h2>Products</h2>
 
-1. Open the component's template file `product-list-component.html`. This is the file we'll modify to display the product list.
+      <!-- ngfor -->
+      <div *ngFor="let product of products">
+      </div>
+      ```
 
+      `*ngFor` repeats the host element for each element in a list. 
+      In this case, the contents of the `<div>` will be repeated for each product in the list. 
 
-1. We want the `<div>` element to appear once for each product in the list. To do that, use the `*ngFor` directive inside the `<div>`, as shown below:  
+      <div class="alert is-helpful">
+      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an * is a structural directive.
+      </div>
 
-    ```html
-    <h2>Products</h2>
+    1. To display the product names, use the interpolation syntax {{ }}. Interpolation renders a property's value as text.  
 
-    <!-- ngfor -->
-    <div *ngFor="let product of products">
-    </div>
-    ```
+      Inside the `<div>`, add an `<h3>` heading with the interpolation of the product's name property: 
 
-    <div class="alert is-helpful">
-    `*ngFor` is a "structural directive". Structural directives change which HTML or components are displayed.  Technically, they shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an * is a structural directive.
-    </div>
+      ```html
+      <h2>Products</h2>
 
-1. Inside the anchor, display the product's name by using the interpolation syntax {{ }}. Interpolation renders a property's value as text.  
+      <!-- ngFor -->
+      <div *ngFor="let product of products">
 
-    ```html
-    <h2>Products</h2>
+        <h3>
+            <!-- interpolation -->
+            {{ product.name }}
+        </h3>
 
-    <!-- ngFor -->
-    <div *ngFor="let product of products">
+      </div>
+      ```
 
-      <h3>
-        <a>
-          <!-- interpolation -->
-          {{ product.name }}
-        </a>
-      </h3>
+      The app now displays the name of each product in the list. 
 
-    </div>
-    ```
+      <figure>
+        <img src='generated/images/guide/getting-started/template-syntax-product-names.png' alt="Product names added to list">
+      </figure>
 
-    The app now displays the name of each product in the list. 
-
-    <figure>
-      <img src='generated/images/guide/getting-started/template-syntax-product-names.png' alt="Product names added to list">
-    </figure>
-
-    <!--
-    The product name anchors are inactive. Later we'll link the displayed names to product details.
-    --> 
-
-    <div class="alert is-helpful">
-    Reminder: You might need to save the project and reload the preview pane to see the changes. 
-    </div>
-
-1. To create hover text for each anchor, we'll use property binding. Bind the anchor's title attribute to the component's product name property by using the property binding syntax [ ]. 
+1. In the final app, each product name will be a link to product details. Add the anchor now, and set the anchor's title to the product name by using property binding [ ], as shown below: 
 
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.2.html">
     </code-example>
 
-    <!-- 
-    JAF: Can we display something different from the name?
-    -->
+    Hover over the product name to see the bound property, which also happens to be the name. 
+    
+    Property binding sets (or binds) a property to the value of a template expression. 
+    In this case, it binds the anchor's title property to the component's name property value. 
+  
+    <div class="alert is-important">
+    JAF: Can we display something different from the name? Normally for anchor hover text, I'd use the name of the page to which we are going, such as Product Name Details, but I couldn't figure out how to concatenate with property binding. Maybe use product description? 
 
-1. Add the product descriptions. On the paragraph tag, use an `*ngIf` directive to show the element if it has a description.
+    Also: I need to figure out how to take screen cap with hover active.
+    </div>
+
+1. Add the product descriptions. On the paragraph tag, use an `*ngIf` directive to show the element only if it has a description.
 
     <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.3.html">
     </code-example>
 
-    <!-- 
-    JAF: This might be more compelling if we had a product without a description. Then we can go add a description later. One idea: add a product property for "in stock" and only display products that are in stock. 
-    -->
+    <div class="alert is-important">
+    JAF: This might be more compelling if we 1) had a product without a description, and 2) hid or showed the entire product based on the ngIf. Right now, all products have descriptions, so ngIf is never false. Right now,  if a product doesn't have a description, the name is displayed without a description...with or without using ngIf. It makes no difference at all. 
+    Ideas, assuming a new "inStock" property: 
+    * If product is in stock, add "in stock" below the description. 
+    * If instock, display price. 
+    * A product property for "in stock" and only display products that are in stock (via another div). 
+    * Only create the anchor if the product is in stock. If not in stock, then no point in going to details. 
+    
+    </div>
 
     The app now displays the name and description of each product in the list, as shown here: 
 
@@ -213,7 +160,7 @@ We'll use these to add the product list to the "Products" area of the app.
       <img src='generated/images/guide/getting-started/template-syntax-product-description.png' alt="Product descriptions added to list">
     </figure>
 
-1. Add a button so users can share a product with friends. The `ProductListComponent` class (in the `product-list.component.ts` file) already defines a `share()` method, which we can bind to the `click` event. Event binding is done by using ( ) around the event. 
+1. Add a button so users can share a product with friends. The `ProductListComponent` class (in the same `product-list.component.ts` file as the product data) already defines a `share()` method, which we can bind to the `click` event. Event binding is done by using ( ) around the event. 
 
     1. Add a button element to the HTML.
     1. Add an event binding for a `click` event to call the `share()` method in the component. 
@@ -225,6 +172,19 @@ We'll use these to add the product list to the "Products" area of the app.
           <img src='generated/images/guide/getting-started/template-syntax-product-share-button.png' alt="Share button added for each product name">
         </figure>
 
+    1. Test the Share button: 
+
+        <figure>
+          <img src='generated/images/guide/getting-started/template-syntax-product-share-alert.png' alt="Alert box indicating product has been shared">
+        </figure>
+
+The app now has a product list and sharing feature. 
+In the process, you've learned to use five common features of Angular's template syntax: 
+* `*ngFor`
+* `*ngIf`
+* Interpolation {{ }}
+* Property binding [ ]
+* Event binding ( ) 
 
 
 <div class="alert is-helpful">
@@ -233,9 +193,57 @@ To learn about the full capabilities of Angular's template syntax, see the [Temp
 
 </div>
 
-<!-- 
-JAF: I want a break here
--->
+
+{@a components}
+## Components
+
+*Components* are the building blocks of Angular apps. 
+
+A component is comprised of three things: 
+* A *component class*, which handles data and functionality. In the preview section, you used product list data from the component class. 
+* An HTML template, which determines what is presented to the user.  In the previous section, 
+* Styles that define the look and feel 
+
+As you saw, an Angular project typically contains one file for each part of the component:
+    * `product-list-component.ts` contains the component class definition
+    * `product-list-component.html` is the HTML template 
+    * `product-list-component.css` contains component-specific styles
+
+
+    <div class="callout is-critical">
+    <header>To Resolve</header>
+    In the v1 flow, we began by explaining the structure of an app as a hierarchy of components, and then we looked at a single component. In the context of a single component, we talked about the 3 parts of a component (ts, html, css), and then we looked at the component class definition including the `@Component` decorator and the selector with the component name. These are essential foundation concepts. We lost them in v2, and in the continued move to reduce what we say about components we didn't put them back in the v3 flow. I think they need to come back. 
+
+    Option 1:
+    1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
+    1. Template syntax: HTML focus, changing the view using data defined in that component. 
+    1. Component composition: Introduce idea of parent and child components, before input and output. 
+
+    Option 2: 
+    1. Template syntax: HTML focus, changing the view using data defined in the related component class. 
+    1. Component: parts of a component, look specifically at component class with the `@Component` decorator and the selector with the component name.
+    1. Component composition: Introduce idea of parent and child components, before input and output. 
+
+    Because Stephen really wants to do template syntax first, I've tried option 2 here. 
+    </div>
+
+{@a component-composition}
+## Component composition
+
+An Angular application is composed of a tree of components, in which each Angular component has a specific purpose and responsibility. 
+
+Our starter app has three components: 
+
+<figure>
+  <img src='generated/images/guide/getting-started/starter-app-components.png' alt="Online store with three components">
+</figure>
+
+* app-root: The application shell. This is first component to load, and the parent of all other components. You can think of it as the base page. 
+* app-top-bar: The top bar for our online store, with the store name and checkout button.
+* app-product-list: The product list for our online store. You modified this component's template in the previous section. 
+
+
+
 
 ## Input
 
