@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
@@ -111,7 +111,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('(A, BC)');
   });
 
-  fixmeIvy(
+  modifiedInIvy(
       'FW-886: `projectableNodes` passed to a componentFactory should be in the order of declaration')
       .it('should support passing projectable nodes via factory function', () => {
 
