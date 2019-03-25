@@ -300,10 +300,7 @@ We're going to create a new alert feature. The alert feature will take a product
 
 1. To set up the component to accept input, import `Inputs` from `@angular/core`:
 
-    <code-example
-      path="getting-started/src/app/product-alerts/product-alerts-component.1.ts"
-      region="imports">
-    </code-example>
+    <code-example path="getting-started/src/app/product-alerts/product-alerts.component.1.ts" region="imports"></code-example>
 
     ```
     import { Component, OnInit } from '@angular/core';
