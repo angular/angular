@@ -9,8 +9,11 @@
     ],
     "experimentalDecorators": true,
     "types": [],
-    "module": "umd",
+    "module": "amd",
     "moduleResolution": "node"
+  },
+  "angularCompilerOptions": {
+    "enableSummariesForJit": true
   },
   "include": [
     "node_modules/@angular/**/*"

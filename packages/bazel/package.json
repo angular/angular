@@ -22,7 +22,6 @@
     "@angular-devkit/architect": "^0.13.4",
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.3.0-rc.0",
-    "@bazel/typescript": "^0.27.7",
     "@microsoft/api-extractor": "^7.0.21",
     "@schematics/angular": "^7.3.5",
     "@types/node": "6.0.84",
@@ -32,6 +31,7 @@
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
+    "@bazel/typescript": "^0.27.8",
     "typescript": ">=3.3.3333 <3.4"
   },
   "repository": {
