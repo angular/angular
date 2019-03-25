@@ -1,6 +1,6 @@
 # Opting into Angular Ivy with Angular CLI
 
-[Starting with Angular version 8](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7) you can opt-in to the new [Angular Ivy compilation and rendering pipeline].
+Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7). Starting with Angular version 8, you can choose to opt in to start using Ivy now, and help in its continuing develpment and tuning.
 
 
 ## Starting a new project using Ivy
@@ -11,17 +11,18 @@ To start a new project with Ivy enabled, use the `--enable-ivy` flag with the [`
 ng new shiny-ivy-app --enable-ivy
 ```
 
-Everything will be configured for you:
-- `enableIvy` set to `true` in `src/tsconfig.app.json`.
-- `"aot": true` added to your default build options.
-- `postinstall` script for the [Angular Compatibility Compiler](#ngcc).
+The new project is automatically configured for Ivy.
+- The `enableIvy` option is set to `true` in `src/tsconfig.app.json`.
+- The `"aot": true` option is added to your default build options.
+- A `postinstall` script is provided for the [Angular Compatibility Compiler](#ngcc).
 
 {@a updating}
 ## Updating an existing project to use Ivy
 
-By configuring a few key files, you can also update your existing project(s) to use Ivy.
+You can update an existing project to use Ivy by making the following configuration changes.
 
-- Add the `allowEmptyCodegenFiles` (needed only before version 8 final) and `enableIvy` options in the `angularCompilerOptions` in your project's `src/tsconfig.app.json`:
+- Add the `enableIvy` option in the `angularCompilerOptions` in your project's `src/tsconfig.app.json`.
+To use Ivy before version 8 is final, add the `allowEmptyCodegenFiles`as well.
 ```json
 {
   "compilerOptions": { ... },
@@ -31,7 +32,7 @@ By configuring a few key files, you can also update your existing project(s) to 
   }
 }
 ```
-- Set the default build options for your project to always use AOT compilation if it isn't already:
+- In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
 ```json
 {
   "projects": {
@@ -48,7 +49,7 @@ By configuring a few key files, you can also update your existing project(s) to 
   }
 }
 ```
-- Add a `postinstall` script to the workspace `package.json` file to run the [Angular Compatibility Compiler](#ngcc):
+- Add a `postinstall` script to the workspace `package.json` file to run the [Angular Compatibility Compiler](#ngcc).
 ```json
 {
   "scripts": {
@@ -57,7 +58,7 @@ By configuring a few key files, you can also update your existing project(s) to 
   }
 }
 ```
-- Reinstall your `package.json` dependencies to run the newly added script:
+- Reinstall your `package.json` dependencies to run the newly added script.
 
 ```
 npm install
@@ -75,16 +76,15 @@ To stop using the Ivy compiler you need to undo the steps taken when [updating t
 {@a ngcc}
 ## The Angular Compatibility Compiler
 
-Your third party libraries also need to be compiled with Ivy for you to use them in your Ivy application.
-That's where the Angular Compatibility (`ngcc`) compiler comes into play.
+The Angular Compatibility (`ngcc`) compiler helps you compile third-party libraries with Ivy so that you can use them in your Ivy application.
+Use a postinstall script in your `package.json` to always run `ngcc` when you install your `package.json` dependencies, so that all projects in the workspace are compiled with Ivy.
 
-We set it as a postinstall script in your `package.json` so that it always runs when you install
-your `package.json` dependencies.
+<div class="alert is-helpful">
 
-Using a postinstall hook to run `ngcc` is just a temporary integration. 
-We expect `ngcc` to be seamlessly integrated into the Angular CLI build pipeline in the future before the full Ivy rollout. 
-Once that's implemented `ngcc` will not be visible to developers.
+  Using a postinstall hook to run `ngcc` is just a temporary integration.
+  We expect `ngcc` to be seamlessly integrated into the Angular CLI build pipeline in the future before the full Ivy rollout.
+  Once that's implemented `ngcc` will not be visible to developers.
+ 
+  Note that there are currently some build-time performance issues with `ngcc`. Please bear with us while we improve the tooling and build integration in the Angular CLI.
 
-Until that happens, opting into Ivy means that all projects in a single CLI workspace will be compiled with Ivy.
-
-Note: we are aware of build-time performance issues with ngcc. Please bear with us while we improve the tooling and build integration in the Angular CLI.
+</div>
