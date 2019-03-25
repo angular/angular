@@ -7,7 +7,7 @@
  */
 
 
-import {Component, Directive, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Directive, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -175,6 +175,12 @@ class TestApp {
 class TestCmpt {
 }
 
+@Component({selector: 'host-class-binding', template: ''})
+class HostClassBindingCmp {
+  @HostBinding('class')
+  hostClasses = 'class-one class-two';
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -195,6 +201,7 @@ class TestCmpt {
           UsingFor,
           BankAccount,
           TestCmpt,
+          HostClassBindingCmp,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -406,6 +413,25 @@ class TestCmpt {
       fixture.debugElement.children[1].triggerEventHandler('myevent', <Event>{});
       expect(fixture.componentInstance.customed).toBe(true);
 
+    });
+
+    it('should include classes in properties.className', () => {
+      fixture = TestBed.createComponent(HostClassBindingCmp);
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement;
+
+      expect(debugElement.properties.className).toBe('class-one class-two');
+
+      fixture.componentInstance.hostClasses = 'class-three';
+      fixture.detectChanges();
+
+      expect(debugElement.properties.className).toBe('class-three');
+
+      fixture.componentInstance.hostClasses = '';
+      fixture.detectChanges();
+
+      expect(debugElement.properties.className).toBeFalsy();
     });
 
     describe('componentInstance on DebugNode', () => {
