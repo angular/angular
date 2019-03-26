@@ -72,6 +72,7 @@ describe('Lifecycle hooks', function () {
       return changeLogEles.count();
     }).then(function(count: number) {
       // one more for each keystroke
+      changeLogEles.map(d => d.getText()).then(d => console.log(d.join('\n')));
       expect(count).toEqual(logCount + 5, 'should add 5 more messages');
       logCount = count;
       return powerInputEle.sendKeys('-bar-');
@@ -133,6 +134,7 @@ describe('Lifecycle hooks', function () {
       expect(commentEle.getText()).toContain('long name');
       return logEles.count();
     }).then(function(count: number) {
+      logEles.map(d => d.getText()).then(d => console.log(d.join('\n')));
       expect(logCount + 5).toEqual(count, '5 additional log messages should have been added');
       logCount = count;
       return buttonEle.click();
