@@ -18,11 +18,18 @@ export type ForeignFunctionResolver =
     (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
      args: ReadonlyArray<ts.Expression>) => ts.Expression | null;
 
+export type VisitedFilesCallback = (sf: ts.SourceFile) => void;
+
 export class PartialEvaluator {
   constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
 
-  evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
-    const interpreter = new StaticInterpreter(this.host, this.checker);
+  evaluate(
+      expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver,
+      visitedFilesCb?: VisitedFilesCallback): ResolvedValue {
+    const interpreter = new StaticInterpreter(this.host, this.checker, visitedFilesCb);
+    if (visitedFilesCb) {
+      visitedFilesCb(expr.getSourceFile());
+    }
     return interpreter.visit(expr, {
       absoluteModuleName: null,
       resolutionContext: expr.getSourceFile().fileName,
