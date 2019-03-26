@@ -2669,6 +2669,21 @@ describe('ngtsc behavioral tests', () => {
       expect(jsContents).toContain('export * from \'./test\';');
     });
 
+    it('should determine the flat module entry-point within multiple root files', () => {
+      env.tsconfig({
+        'flatModuleOutFile': 'flat.js',
+      });
+      env.write('ignored.ts', 'export const TEST = "this is ignored";');
+      env.write('index.ts', 'export const ENTRY = "this is the entry";');
+
+      env.driveMain();
+      const jsContents = env.getContents('flat.js');
+      expect(jsContents)
+          .toContain(
+              'export * from \'./index\';',
+              'Should detect the "index.ts" file as flat module entry-point.');
+    });
+
     it('should generate a flat module with an id', () => {
       env.tsconfig({
         'flatModuleOutFile': 'flat.js',
