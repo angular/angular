@@ -253,8 +253,8 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
  * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
  */
 export function forwardRefResolver(
-    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
-    args: ts.Expression[]): ts.Expression|null {
+    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+    args: ReadonlyArray<ts.Expression>): ts.Expression|null {
   if (!isAngularCoreReference(ref, 'forwardRef') || args.length !== 1) {
     return null;
   }
@@ -266,8 +266,8 @@ export function forwardRefResolver(
  * @param resolvers Resolvers to be combined.
  */
 export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
-  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
-          args: ts.Expression[]): ts.Expression |
+  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+          args: ReadonlyArray<ts.Expression>): ts.Expression |
       null => {
     for (const resolver of resolvers) {
       const resolved = resolver(ref, args);
