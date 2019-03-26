@@ -50,7 +50,7 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
 
   // Pattern matching schematics files to be copied into the output directory.
   const schematicsGlobs = [
-    join(schematicsDir, '**/+(data|files)/**/*'),
+    join(schematicsDir, '**/files/**/*'),
     join(schematicsDir, '**/+(schema|collection|migration).json'),
   ];
 
