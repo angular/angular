@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
+import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
@@ -27,8 +28,8 @@ export interface PipeHandlerData {
 export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -76,7 +77,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
     const ref = new Reference(clazz);
-    this.scopeRegistry.registerPipe({ref, name: pipeName});
+    this.metaRegistry.registerPipeMetadata({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {

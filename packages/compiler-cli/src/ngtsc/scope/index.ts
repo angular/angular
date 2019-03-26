@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ExportScope, ScopeData, ScopeDirective, ScopePipe} from './src/api';
+export {ExportScope, ScopeData} from './src/api';
 export {DtsModuleScopeResolver, MetadataDtsModuleScopeResolver} from './src/dependency';
 export {LocalModuleScope, LocalModuleScopeRegistry, LocalNgModuleData} from './src/local';
-export {extractDirectiveGuards} from './src/util';

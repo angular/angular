@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -40,8 +41,10 @@ describe('DirectiveDecoratorHandler', () => {
     const checker = program.getTypeChecker();
     const reflectionHost = new TestReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const metaReader = new LocalMetadataRegistry();
+    const dtsReader = new DtsMetadataReader(checker, reflectionHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        new MetadataDtsModuleScopeResolver(checker, reflectionHost, null), new ReferenceEmitter([]),
+        metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
         null);
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
