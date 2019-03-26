@@ -129,4 +129,5 @@ ANGULAR_LIBRARY_UMDS = [
   "@npm//node_modules/@angular/platform-browser:bundles/platform-browser-animations.umd.js",
   "@npm//node_modules/@angular/platform-browser:bundles/platform-browser-testing.umd.js",
   "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
+  "@npm//node_modules/@angular/router:bundles/router.umd.js",
 ]

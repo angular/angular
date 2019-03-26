@@ -17,7 +17,7 @@
     "dev-app": "gulp serve:devapp",
     "test": "gulp test",
     "lint": "gulp lint",
-    "e2e": "gulp e2e",
+    "e2e": "bazel test //e2e/...",
     "deploy": "gulp deploy:devapp",
     "webdriver-manager": "webdriver-manager",
     "breaking-changes": "gulp breaking-changes",

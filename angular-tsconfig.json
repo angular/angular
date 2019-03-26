@@ -3,6 +3,8 @@
 // with AOT compilation, NGC needs the "ngsummary.json" files.
 {
   "compilerOptions": {
+    "module": "umd",
+    "moduleResolution": "node",
     "lib": [
       "dom",
       "es2015"

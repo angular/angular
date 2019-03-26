@@ -367,10 +367,8 @@ workflows:
 
   integration_tests:
     jobs:
-      # Temporarily disable e2e tests until https://github.com/angular/angular/issues/29123
-      # is resolved.
-      # - e2e_tests:
-      #     filters: *ignore_presubmit_branch_filter
+      - e2e_tests:
+          filters: *ignore_presubmit_branch_filter
       - prerender_build:
           filters: *ignore_presubmit_branch_filter
 
