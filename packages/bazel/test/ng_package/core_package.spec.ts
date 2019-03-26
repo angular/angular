@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy, ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
+import {ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
 import * as path from 'path';
 import * as shx from 'shelljs';
 

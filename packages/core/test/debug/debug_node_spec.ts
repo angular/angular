@@ -480,7 +480,7 @@ class TestCmpt {
       expect(debugNodes.length).toBe(2);
 
       // remove a view from the DOM (equivalent to moving it around)
-      // the logical tree is the same but DOM have changed
+      // the logical tree is the same but DOM has changed
       viewMover.removeFromTheDom();
       debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
       expect(debugNodes.length).toBe(2);
