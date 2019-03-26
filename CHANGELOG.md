@@ -1,3 +1,11 @@
+<a name="7.2.11"></a>
+## [7.2.11](https://github.com/angular/angular/compare/7.2.10...7.2.11) (2019-03-26)
+
+This release contains various API docs improvements.
+
+
+
+
 <a name="7.2.10"></a>
 ## [7.2.10](https://github.com/angular/angular/compare/7.2.9...7.2.10) (2019-03-20)
 
