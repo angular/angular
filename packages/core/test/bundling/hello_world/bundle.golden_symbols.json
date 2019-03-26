@@ -165,6 +165,9 @@
     "name": "checkView"
   },
   {
+    "name": "clearHostBindingsState"
+  },
+  {
     "name": "componentRefresh"
   },
   {
@@ -231,6 +234,9 @@
     "name": "getBeforeNodeForView"
   },
   {
+    "name": "getBindingRoot"
+  },
+  {
     "name": "getCheckNoChangesMode"
   },
   {
@@ -259,6 +265,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getInterimHostBindingsIndex"
   },
   {
     "name": "getIsParent"
@@ -321,6 +330,12 @@
     "name": "hasParentInjector"
   },
   {
+    "name": "hostBindingRootIndex"
+  },
+  {
+    "name": "hostBindingsModeActive"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -331,6 +346,9 @@
   },
   {
     "name": "instantiateRootComponent"
+  },
+  {
+    "name": "interimHostBindingsIndex"
   },
   {
     "name": "invertObject"
@@ -438,9 +456,6 @@
     "name": "setActiveHost"
   },
   {
-    "name": "setBindingRoot"
-  },
-  {
     "name": "setClass"
   },
   {
@@ -450,13 +465,22 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setHostBindingRoot"
+  },
+  {
     "name": "setHostBindings"
+  },
+  {
+    "name": "setHostBindingsModeActive"
   },
   {
     "name": "setIncludeViewProviders"
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInterimHostBindingsIndex"
   },
   {
     "name": "setIsParent"

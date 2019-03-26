@@ -667,7 +667,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.processStylingInstruction(
           implicit,
           stylingBuilder.buildElementStylingInstruction(element.sourceSpan, this.constantPool),
-          true);
+          true, elementIndex);
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -689,7 +689,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // and assign in the code below.
     stylingBuilder.buildUpdateLevelInstructions(this._valueConverter).forEach(instruction => {
       this._bindingSlots += instruction.allocateBindingSlots;
-      this.processStylingInstruction(implicit, instruction, false);
+      this.processStylingInstruction(implicit, instruction, false, elementIndex);
     });
 
     // the reason why `undefined` is used is because the renderer understands this as a
@@ -978,14 +978,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private processStylingInstruction(
-      implicit: any, instruction: Instruction|null, createMode: boolean) {
+      implicit: any, instruction: Instruction|null, createMode: boolean, elementIndex: number) {
     if (instruction) {
       const paramsFn = () =>
           instruction.buildParams(value => this.convertPropertyBinding(implicit, value, true));
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
-        this.updateInstruction(-1, instruction.sourceSpan, instruction.reference, paramsFn);
+        this.updateInstruction(
+            elementIndex, instruction.sourceSpan, instruction.reference, paramsFn);
       }
     }
   }

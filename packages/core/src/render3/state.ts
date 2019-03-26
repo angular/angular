@@ -237,15 +237,25 @@ export function setCheckNoChangesMode(mode: boolean): void {
  * indices. In component views, this is TView.bindingStartIndex. In a host binding
  * context, this is the TView.expandoStartIndex + any dirs/hostVars before the given dir.
  */
-let bindingRootIndex: number = -1;
+let hostBindingRootIndex: number = -1;
+
+export function setHostBindingRoot(value: number) {
+  hostBindingRootIndex = value;
+}
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)
 export function getBindingRoot() {
-  return bindingRootIndex;
+  if (hostBindingsModeActive && hostBindingRootIndex >= 0) {
+    return hostBindingRootIndex;
+  }
+
+  const tView = getLView()[TVIEW];
+  return hostBindingsModeActive ? tView.expandoStartIndex : tView.bindingStartIndex;
 }
 
-export function setBindingRoot(value: number) {
-  bindingRootIndex = value;
+let hostBindingsModeActive: boolean = false;
+export function setHostBindingsModeActive(active: boolean) {
+  hostBindingsModeActive = active;
 }
 
 /**
@@ -278,10 +288,6 @@ export function setCurrentQueryIndex(value: number): void {
 export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
   ngDevMode && assertLViewOrUndefined(newView);
   const oldView = lView;
-  if (newView) {
-    const tView = newView[TVIEW];
-    bindingRootIndex = tView.bindingStartIndex;
-  }
 
   previousOrParentTNode = hostTNode !;
   isParent = true;
@@ -339,4 +345,36 @@ export function leaveView(newView: LView): void {
     }
   }
   enterView(newView, null);
+}
+
+
+let interimHostBindingsIndex = 0;
+
+/**
+ * Sets the current index cursor value for the tView expandoInstructions array.
+ *
+ * When the `TView.expandoInstructions` array is iterated over, each
+ * underlying host bindings function will be executed up until a certain
+ * element slot index value. If and when the `select(n)` is called, then
+ * the host bindings up until the provided `n` index will be evaluated and
+ * the remaining host bindings (for other elements) will be run later. This
+ * function will set the current index cursor value so that it can be obtained
+ * later.
+ */
+export function setInterimHostBindingsIndex(index?: number | null): void {
+  interimHostBindingsIndex = index || 0;
+}
+
+/**
+ * Returns the current index cursor value for the tView expandoInstructions array.
+ *
+ * See `setInterimHostBindingsIndex`
+ */
+export function getInterimHostBindingsIndex() {
+  return interimHostBindingsIndex;
+}
+
+export function clearHostBindingsState() {
+  setInterimHostBindingsIndex(null);
+  setHostBindingRoot(-1);
 }

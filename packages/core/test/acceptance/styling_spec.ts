@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef, HostBinding} from '@angular/core';
+import {Component, Directive, ElementRef, HostBinding, Input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -153,4 +153,76 @@ describe('acceptance integration tests', () => {
     expect(element.style.width).toEqual('300px');
     expect(element.classList.contains('abc')).toBeFalsy();
   });
+
+  it('should evaluate styling host bindings of a parent component and child component before rendering other components',
+     () => {
+       const log: string[] = [];
+
+       @Component({
+         template: `
+        <div [style]="getStyleDiv1()" dir="1">
+          <child-cmp></child-cmp>
+        </div>
+        <div [style]="getStyleDiv2()" dir="2"></div>
+      `
+       })
+       class ParentCmp {
+         getStyleDiv1() {
+           log.push('getStyle-Div1');
+           return {width: '100px'};
+         }
+         getStyleDiv2() {
+           log.push('getStyle-Div2');
+           return {height: '100px'};
+         }
+       }
+
+       @Component({
+         selector: 'child-cmp',
+         template: `
+        <div [style]="getStyleTemplate()"></div>
+      `
+       })
+       class ChildCmp {
+         @HostBinding('style')
+         get getStyleHost() {
+           log.push('getStyle-ChildHost');
+           return {color: 'red'};
+         }
+
+         getStyleTemplate() {
+           log.push('getStyle-ChildTemplate');
+           return {opacity: '0.5'};
+         }
+       }
+
+       @Directive({
+         selector: '[dir]',
+       })
+       class Dir {
+         @Input('dir')
+         val = '';
+
+         @HostBinding('style')
+         get getStyle() {
+           log.push('getStyle-DivDir' + this.val);
+           return {color: 'red'};
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp, Dir]});
+       const fixture = TestBed.createComponent(ParentCmp);
+       fixture.detectChanges();
+
+       // we cut this in half because of check no changes
+       const items = log.slice(0, log.length / 2);
+       expect(items).toEqual([
+         'getStyle-Div1',
+         'getStyle-DivDir1',
+         'getStyle-ChildHost',
+         'getStyle-Div2',
+         'getStyle-DivDir2',
+         'getStyle-ChildTemplate',
+       ]);
+     });
 });

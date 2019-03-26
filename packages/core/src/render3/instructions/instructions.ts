@@ -37,7 +37,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from '../node_manipulation';
 import {isNodeMatchingSelectorList, matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, enterView, getActiveHostContext, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from '../state';
+import {clearHostBindingsState, decreaseElementDepthCount, enterView, getActiveHostContext, getBindingRoot, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getInterimHostBindingsIndex, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setHostBindingRoot, setHostBindingsModeActive, setInterimHostBindingsIndex, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -83,7 +83,6 @@ export function refreshDescendantViews(lView: LView) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
     executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
-
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
@@ -104,49 +103,89 @@ export function refreshDescendantViews(lView: LView) {
     refreshContentQueries(tView, lView);
   }
 
+  // reset the host bindings index incase embedded views are run right after
+  // and those embedded views might contain select() instructions
+  clearHostBindingsState();
   refreshChildComponents(tView.components);
 }
 
 
-/** Sets the host bindings for the current view. */
-export function setHostBindings(tView: TView, viewData: LView): void {
-  if (tView.expandoInstructions) {
-    let bindingRootIndex = viewData[BINDING_INDEX] = tView.expandoStartIndex;
-    setBindingRoot(bindingRootIndex);
-    let currentDirectiveIndex = -1;
-    let currentElementIndex = -1;
-    for (let i = 0; i < tView.expandoInstructions.length; i++) {
-      const instruction = tView.expandoInstructions[i];
-      if (typeof instruction === 'number') {
-        if (instruction <= 0) {
-          // Negative numbers mean that we are starting new EXPANDO block and need to update
-          // the current element and directive index.
-          currentElementIndex = -instruction;
-          // Injector block and providers are taken into account.
-          const providerCount = (tView.expandoInstructions[++i] as number);
-          bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount;
+/**
+ * Sets the host bindings for the current view.
+ *
+ * This function is designed to run through the collected host binding
+ * functions present within the `expandoInstructions` array present on
+ * the provided `tView` param.
+ *
+ * If the function is provided with a `slotIndex` param then it will
+ * only evaluate host bindings up until that index value is reached.
+ * If the `slotIndex` value is omitted or a large enough slot value
+ * is provided then all host binding functions will be run.
+ */
+export function setHostBindings(tView: TView, viewData: LView, maxSlotIndex?: number): void {
+  const instructions = tView.expandoInstructions !;
+  if (!instructions || instructions.length == 0) return;
 
-          currentDirectiveIndex = bindingRootIndex;
-        } else {
-          // This is either the injector size (so the binding root can skip over directives
-          // and get to the first set of host bindings on this node) or the host var count
-          // (to get to the next set of host bindings on this node).
-          bindingRootIndex += instruction;
-        }
-        setBindingRoot(bindingRootIndex);
+  const formerBindingIndex = viewData[BINDING_INDEX];
+  setHostBindingsModeActive(true);
+  let bindingRootIndex = viewData[BINDING_INDEX] = getBindingRoot();
+
+  // slot index values are stored as negative values within the
+  // expando array. Because of this, we need to convert the provided
+  // slot index value into a negative value so that it can be easily
+  // compared in the loop below.
+  const slotIndexProvided = maxSlotIndex != null;
+  const breakAtSlotIndex = slotIndexProvided ? -(maxSlotIndex !) : 0;
+
+  let currentDirectiveIndex = -1;
+  let currentElementIndex = -1;
+
+  let i = getInterimHostBindingsIndex();
+  while (i < instructions.length) {
+    const instruction = instructions[i];
+    if (typeof instruction === 'number') {
+      if (instruction <= 0) {
+        if (slotIndexProvided && instruction <= breakAtSlotIndex) break;
+
+        // Negative numbers mean that we are starting new EXPANDO block and need to update
+        // the current element and directive index.
+        currentElementIndex = -instruction;
+        // Injector block and providers are taken into account.
+        const providerCount = (instructions[++i] as number);
+        bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount;
+
+        currentDirectiveIndex = bindingRootIndex;
       } else {
-        // If it's not a number, it's a host binding function that needs to be executed.
-        if (instruction !== null) {
-          viewData[BINDING_INDEX] = bindingRootIndex;
-          const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
-          setActiveHost(hostCtx, currentElementIndex);
-          instruction(RenderFlags.Update, hostCtx, currentElementIndex);
-          setActiveHost(null);
-        }
-        currentDirectiveIndex++;
+        // This is either the injector size (so the binding root can skip over directives
+        // and get to the first set of host bindings on this node) or the host var count
+        // (to get to the next set of host bindings on this node).
+        bindingRootIndex += instruction;
       }
+      setHostBindingRoot(bindingRootIndex);
+    } else {
+      // If it's not a number, it's a host binding function that needs to be executed.
+      if (instruction !== null) {
+        viewData[BINDING_INDEX] = bindingRootIndex;
+        const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
+        setActiveHost(hostCtx, currentElementIndex);
+        instruction(RenderFlags.Update, hostCtx, currentElementIndex);
+        setActiveHost(null);
+      }
+      currentDirectiveIndex++;
     }
+    i++;
   }
+
+  const hostBindingsRemain = slotIndexProvided && i < instructions.length;
+  if (hostBindingsRemain) {
+    setInterimHostBindingsIndex(i);
+    setHostBindingRoot(bindingRootIndex);
+  } else {
+    clearHostBindingsState();
+  }
+
+  setHostBindingsModeActive(false);
+  viewData[BINDING_INDEX] = formerBindingIndex;
 }
 
 /** Refreshes content queries for all directives in the given view. */
@@ -1099,7 +1138,9 @@ export function elementEnd(): void {
  */
 export function select(index: number): void {
   const lView = getLView();
-  executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
+  const tView = lView[TVIEW];
+  executePreOrderHooks(lView, tView, getCheckNoChangesMode(), index);
+  setHostBindings(tView, lView, index);
 }
 
 /**
@@ -2129,6 +2170,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     if (current.length < HEADER_OFFSET && current[ACTIVE_INDEX] === -1) {
       const container = current as LContainer;
       for (let i = 0; i < container[VIEWS].length; i++) {
+        clearHostBindingsState();
         const dynamicViewData = container[VIEWS][i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');

@@ -465,6 +465,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "clearHostBindingsState"
+  },
+  {
     "name": "collectNativeNodes"
   },
   {
@@ -645,9 +648,6 @@
     "name": "findViaComponent"
   },
   {
-    "name": "select"
-  },
-  {
     "name": "forwardRef"
   },
   {
@@ -661,6 +661,9 @@
   },
   {
     "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingRoot"
   },
   {
     "name": "getBindingsEnabled"
@@ -742,6 +745,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getInterimHostBindingsIndex"
   },
   {
     "name": "getIsParent"
@@ -897,6 +903,12 @@
     "name": "hasValueChanged"
   },
   {
+    "name": "hostBindingRootIndex"
+  },
+  {
+    "name": "hostBindingsModeActive"
+  },
+  {
     "name": "hyphenate"
   },
   {
@@ -943,6 +955,9 @@
   },
   {
     "name": "instantiateRootComponent"
+  },
+  {
+    "name": "interimHostBindingsIndex"
   },
   {
     "name": "interpolation1"
@@ -1221,10 +1236,10 @@
     "name": "searchTokensOnInjector"
   },
   {
-    "name": "setActiveHost"
+    "name": "select"
   },
   {
-    "name": "setBindingRoot"
+    "name": "setActiveHost"
   },
   {
     "name": "setCheckNoChangesMode"
@@ -1254,7 +1269,13 @@
     "name": "setFlag"
   },
   {
+    "name": "setHostBindingRoot"
+  },
+  {
     "name": "setHostBindings"
+  },
+  {
+    "name": "setHostBindingsModeActive"
   },
   {
     "name": "setIncludeViewProviders"
@@ -1267,6 +1288,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setInterimHostBindingsIndex"
   },
   {
     "name": "setIsParent"

@@ -389,6 +389,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, null, $ctx$.myStyleExp);
               $r3$.ɵelementStylingApply(0);
             }
@@ -454,6 +455,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation1("foo foo-", $ctx$.fooId, ""));
               $r3$.ɵelementStylingApply(0);
             }
@@ -468,6 +470,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
               $r3$.ɵelementStylingApply(0);
             }
@@ -482,6 +485,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $ctx$.exp);
               $r3$.ɵelementStylingApply(0);
             }
@@ -538,11 +542,11 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
+                  $r3$.ɵselect(0);
                   $r3$.ɵelementStylingMap(0, null, $ctx$.myStyleExp);
                   $r3$.ɵelementStyleProp(0, 0, $ctx$.myWidth);
                   $r3$.ɵelementStyleProp(0, 1, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
-                  $r3$.ɵselect(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
               },
@@ -598,6 +602,7 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
+                $r3$.ɵselect(0);
                 $r3$.ɵelementStyleProp(0, 0, ctx.myImage);
                 $r3$.ɵelementStylingApply(0);
               }
@@ -639,6 +644,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStyleProp(0, 0, 12, "px");
               $r3$.ɵelementStylingApply(0);
             }
@@ -680,6 +686,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0,$ctx$.myClassExp);
               $r3$.ɵelementStylingApply(0);
             }
@@ -736,11 +743,11 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
+                  $r3$.ɵselect(0);
                   $r3$.ɵelementStylingMap(0, $ctx$.myClassExp);
                   $r3$.ɵelementClassProp(0, 0, $ctx$.yesToApple);
                   $r3$.ɵelementClassProp(0, 1, $ctx$.yesToOrange);
                   $r3$.ɵelementStylingApply(0);
-                  $r3$.ɵselect(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("banana"));
                 }
               },
@@ -805,6 +812,53 @@ describe('compiler compliance: styling', () => {
   });
 
   describe('[style] mixed with [class]', () => {
+    it('should call select() between styling flush calls', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`
+                    <div [style]="myStyleExp" [class]="myClassExp"></div>
+                    <div [style]="myStyleExp" [class]="myClassExp"></div>
+                  \`
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementStart(1, "div");
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵselect(0);
+              $r3$.ɵelementStylingMap(0, $ctx$.myClassExp, $ctx$.myStyleExp);
+              $r3$.ɵelementStylingApply(0);
+              $r3$.ɵselect(1);
+              $r3$.ɵelementStylingMap(1, $ctx$.myClassExp, $ctx$.myStyleExp);
+              $r3$.ɵelementStylingApply(1);
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
     it('should combine [style] and [class] bindings into a single instruction', () => {
       const files = {
         app: {
@@ -834,6 +888,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $ctx$.myClassExp, $ctx$.myStyleExp);
               $r3$.ɵelementStylingApply(0);
             }
@@ -876,6 +931,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $r3$.ɵpipeBind1(1, 0, $ctx$.myClassExp), $r3$.ɵpipeBind1(2, 2, $ctx$.myStyleExp));
               $r3$.ɵelementStylingApply(0);
             }
@@ -932,6 +988,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementStylingMap(0, $e2_styling$, $r3$.ɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
               $r3$.ɵelementStyleProp(0, 0, $r3$.ɵpipeBind2(2, 4, $ctx$.barExp, 3000));
               $r3$.ɵelementStyleProp(0, 1, $r3$.ɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
@@ -1118,6 +1175,7 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
+                $r3$.ɵselect(0);
                 $r3$.ɵelementStylingMap(0, ctx.myClassExp, ctx.myStyleExp);
                 $r3$.ɵelementStyleProp(0, 0, ctx.myHeightExp, null, true);
                 $r3$.ɵelementClassProp(0, 0, ctx.myBarClassExp, true);
