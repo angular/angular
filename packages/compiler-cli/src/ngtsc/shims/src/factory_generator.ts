@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ImportRewriter} from '../../imports';
-import {normalizeSeparators} from '../../util/src/path';
+import {AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -28,10 +28,10 @@ export class FactoryGenerator implements ShimGenerator {
 
   get factoryFileMap(): Map<string, string> { return this.map; }
 
-  recognize(fileName: string): boolean { return this.map.has(fileName); }
+  recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
-  generate(genFilePath: string, readFile: (fileName: string) => ts.SourceFile | null): ts.SourceFile
-      |null {
+  generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
+      ts.SourceFile|null {
     const originalPath = this.map.get(genFilePath) !;
     const original = readFile(originalPath);
     if (original === null) {
@@ -98,11 +98,13 @@ export class FactoryGenerator implements ShimGenerator {
     return genFile;
   }
 
-  static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
-    const map = new Map<string, string>();
+  static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
+    const map = new Map<AbsoluteFsPath, string>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
-        .map(sourceFile => normalizeSeparators(sourceFile))
-        .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
+        .forEach(
+            sourceFile => map.set(
+                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngfactory.ts')),
+                sourceFile));
     return new FactoryGenerator(map);
   }
 }
