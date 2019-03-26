@@ -61,7 +61,9 @@ export class GitClient {
 
   /** Creates a new commit within the current branch with the given commit message. */
   createNewCommit(message: string): boolean {
-    return this._spawnGitProcess(['commit', '-m', message]).status === 0;
+    // Disable pre-commit hooks when creating a commit. Developers might not have set up
+    // their Git configuration for the "git-clang-format" pre-commit hook.
+    return this._spawnGitProcess(['commit', '--no-verify', '-m', message]).status === 0;
   }
 
   /** Gets the title of a specified commit reference. */
