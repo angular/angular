@@ -65,6 +65,7 @@ export class NgtscProgram implements api.Program {
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
+    const normalizedRootNames = rootNames.map(n => AbsoluteFsPath.from(n));
     this.host = host;
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
@@ -74,10 +75,10 @@ export class NgtscProgram implements api.Program {
     const generators: ShimGenerator[] = [];
     if (shouldGenerateShims) {
       // Summary generation.
-      const summaryGenerator = SummaryGenerator.forRootFiles(rootNames);
+      const summaryGenerator = SummaryGenerator.forRootFiles(normalizedRootNames);
 
       // Factory generation.
-      const factoryGenerator = FactoryGenerator.forRootFiles(rootNames);
+      const factoryGenerator = FactoryGenerator.forRootFiles(normalizedRootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
       this.factoryToSourceInfo = new Map<string, FactoryInfo>();
       this.sourceToFactorySymbols = new Map<string, Set<string>>();
@@ -94,7 +95,7 @@ export class NgtscProgram implements api.Program {
 
     let entryPoint: string|null = null;
     if (options.flatModuleOutFile !== undefined) {
-      entryPoint = findFlatIndexEntryPoint(rootNames);
+      entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
         // This error message talks specifically about having a single .ts file in "files". However
         // the actual logic is a bit more permissive. If a single file exists, that will be taken,
