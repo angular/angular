@@ -217,6 +217,12 @@ export function createRootComponent<T>(
     renderInitialStyles(native, rootTNode.stylingTemplate, componentView[RENDERER]);
   }
 
+  // We want to generate an empty QueryList for root content queries for backwards
+  // compatibility with ViewEngine.
+  if (componentDef.contentQueries) {
+    componentDef.contentQueries(RenderFlags.Create, component, rootView.length - 1);
+  }
+
   return component;
 }
 
