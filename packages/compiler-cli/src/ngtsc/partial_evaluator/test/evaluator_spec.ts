@@ -15,10 +15,6 @@ import {DynamicValue} from '../src/dynamic';
 import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedValue} from '../src/result';
 
-function makeSimpleProgram(contents: string): ts.Program {
-  return makeProgram([{name: 'entry.ts', contents}]).program;
-}
-
 function makeExpression(
     code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): {
   expression: ts.Expression,
@@ -40,12 +36,16 @@ function makeExpression(
   };
 }
 
+function makeEvaluator(checker: ts.TypeChecker): PartialEvaluator {
+  const reflectionHost = new TypeScriptReflectionHost(checker);
+  return new PartialEvaluator(reflectionHost, checker);
+}
+
 function evaluate<T extends ResolvedValue>(
     code: string, expr: string, supportingFiles: {name: string, contents: string}[] = [],
     foreignFunctionResolver?: ForeignFunctionResolver): T {
-  const {expression, checker, program, options, host} = makeExpression(code, expr, supportingFiles);
-  const reflectionHost = new TypeScriptReflectionHost(checker);
-  const evaluator = new PartialEvaluator(reflectionHost, checker);
+  const {expression, checker} = makeExpression(code, expr, supportingFiles);
+  const evaluator = makeEvaluator(checker);
   return evaluator.evaluate(expression, foreignFunctionResolver) as T;
 }
 
@@ -333,6 +333,56 @@ describe('ngtsc metadata', () => {
       return fail('Expected value to have an identity');
     }
     expect(id.text).toEqual('Target');
+  });
+
+  describe('(visited file tracking)', () => {
+    it('should track each time a source file is visited', () => {
+      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const {expression, checker} =
+          makeExpression(`class A { static foo = 42; } function bar() { return A.foo; }`, 'bar()');
+      const evaluator = makeEvaluator(checker);
+      evaluator.evaluate(expression, undefined, visitedFilesSpy);
+      expect(visitedFilesSpy)
+          .toHaveBeenCalledTimes(3);  // The initial expression, followed by two declaration visited
+      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
+        '/entry.ts', '/entry.ts', '/entry.ts'
+      ]);
+    });
+
+    it('should track imported source files', () => {
+      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const {expression, checker} = makeExpression(`import {Y} from './other'; const A = Y;`, 'A', [
+        {name: 'other.ts', contents: `export const Y = 'test';`},
+        {name: 'not-visited.ts', contents: `export const Z = 'nope';`}
+      ]);
+      const evaluator = makeEvaluator(checker);
+      evaluator.evaluate(expression, undefined, visitedFilesSpy);
+      expect(visitedFilesSpy).toHaveBeenCalledTimes(3);
+      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
+        '/entry.ts', '/entry.ts', '/other.ts'
+      ]);
+    });
+
+    it('should track files passed through during re-exports', () => {
+      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const {expression, checker} =
+          makeExpression(`import * as mod from './direct-reexport';`, 'mod.value.property', [
+            {name: 'const.ts', contents: 'export const value = {property: "test"};'},
+            {name: 'def.ts', contents: `import {value} from './const'; export default value;`},
+            {name: 'indirect-reexport.ts', contents: `import value from './def'; export {value};`},
+            {name: 'direct-reexport.ts', contents: `export {value} from './indirect-reexport';`},
+          ]);
+      const evaluator = makeEvaluator(checker);
+      evaluator.evaluate(expression, undefined, visitedFilesSpy);
+      expect(visitedFilesSpy).toHaveBeenCalledTimes(3);
+      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
+        '/entry.ts',
+        '/direct-reexport.ts',
+        // Not '/indirect-reexport.ts' or '/def.ts'.
+        // TS skips through them when finding the original symbol for `value`
+        '/const.ts',
+      ]);
+    });
   });
 });
 
