@@ -14,7 +14,10 @@
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'ChromeBeta': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: false}},
+  // Temporarily disabled because Saucelabs now runs Chrome v74 as beta version. Unfortunately
+  // Saucelabs doesn't provide a Chromedriver version that works for that beta version though.
+  // TODO(FW-1205): Re-enable once Saucelabs supports Chromedriver v74.0.3729.6.
+  'ChromeBeta': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: false}},
   'ChromeDev': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // FirefoxBeta and FirefoxDev should be target:'BS' or target:'SL', and required:true
   // Currently deactivated due to https://github.com/angular/angular/issues/7560
