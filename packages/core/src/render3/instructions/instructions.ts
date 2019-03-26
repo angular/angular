@@ -2769,6 +2769,82 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   return content;
 }
 
+
+/**
+ * Storage for {@link innerInterpolate}
+ */
+const _interpolationParts = new Array<any>(16);
+let _interpolationPartPointer = 0;
+
+/**
+ * Inner implementation of `interpolationX` methods
+ *
+ * Loops over global `_interpolationParts` in order to apply interpolation. This is done in order to
+ * save array allocations, but also reduce the size of the interpolation commands.
+ * @param interpolationCount The number of interpolated values
+ */
+function innerInterpolate(interpolationCount: number) {
+  const lView = getLView();
+  const bindingIndex = lView[BINDING_INDEX];
+  const len = (interpolationCount * 2) + 1;
+  let different = false;
+  lView[BINDING_INDEX] += interpolationCount;
+  const prefix = _interpolationParts[0];
+  const suffix = _interpolationParts[len - 1];
+  const data = storeBindingMetadata(lView, prefix, suffix);
+
+  const tData = data ? lView[TVIEW].data : null;
+  for (let i = 1; i < len - 1; i++) {
+    const part = _interpolationParts[i];
+    if (tData !== null && i % 2 === 0) {
+      tData[bindingIndex + (i / 2)] = part;
+    } else {
+      different = bindingUpdated(lView, bindingIndex, part) || different;
+    }
+  }
+
+  if (different) {
+    let result = prefix;
+    for (let i = 1; i < len; i++) {
+      const part = _interpolationParts[i];
+      if (i % 2 === 0) {
+        result += part;
+      } else {
+        result += renderStringify(part);
+      }
+    }
+    return result;
+  }
+  return NO_CHANGE;
+}
+
+/**
+ * Sets a single value in `_interpolationParts` and increments the pointer.
+ * @param value the value to set
+ */
+function setInterpolationPart(value: any) {
+  _interpolationParts[_interpolationPartPointer++] = value;
+}
+
+/** Sets a two values in `_interpolationParts` and increments the pointer. */
+function setInterpolationPart2(v1: any, v2: any) {
+  setInterpolationPart(v1);
+  setInterpolationPart(v2);
+}
+
+/** Sets a four values in `_interpolationParts` and increments the pointer. */
+function setInterpolationPart4(v1: any, v2: any, v3: any, v4: any) {
+  setInterpolationPart2(v1, v2);
+  setInterpolationPart2(v3, v4);
+}
+
+/** Sets a eight values in `_interpolationParts` and increments the pointer. */
+function setInterpolationPart8(
+    v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) {
+  setInterpolationPart4(v1, v2, v3, v4);
+  setInterpolationPart4(v5, v6, v7, v8);
+}
+
 /**
  * Creates an interpolation binding with 1 expression.
  *
@@ -2786,117 +2862,53 @@ export function interpolation1(prefix: string, v0: any, suffix: string): string|
 /** Creates an interpolation binding with 2 expressions. */
 export function interpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  const different = bindingUpdated2(lView, bindingIndex, v0, v1);
-  lView[BINDING_INDEX] += 2;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    lView[TVIEW].data[bindingIndex] = i0;
-  }
-
-  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + suffix : NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart4(v0, i0, v1, suffix);
+  return innerInterpolate(2);
 }
 
 /** Creates an interpolation binding with 3 expressions. */
 export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  const different = bindingUpdated3(lView, bindingIndex, v0, v1, v2);
-  lView[BINDING_INDEX] += 3;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + suffix :
-      NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart4(v0, i0, v1, i1);
+  setInterpolationPart2(v2, suffix);
+  return innerInterpolate(3);
 }
 
 /** Create an interpolation binding with 4 expressions. */
 export function interpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
-  lView[BINDING_INDEX] += 4;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + suffix :
-      NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart8(v0, i0, v1, i1, v2, i2, v3, suffix);
+  return innerInterpolate(4);
 }
 
 /** Creates an interpolation binding with 5 expressions. */
 export function interpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
-  different = bindingUpdated(lView, bindingIndex + 4, v4) || different;
-  lView[BINDING_INDEX] += 5;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + suffix :
-      NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart8(v0, i0, v1, i1, v2, i2, v3, i3);
+  setInterpolationPart2(v4, suffix);
+  return innerInterpolate(5);
 }
 
 /** Creates an interpolation binding with 6 expressions. */
 export function interpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
-  different = bindingUpdated2(lView, bindingIndex + 4, v4, v5) || different;
-  lView[BINDING_INDEX] += 6;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + suffix :
-      NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart8(v0, i0, v1, i1, v2, i2, v3, i3);
+  setInterpolationPart4(v4, i4, v5, suffix);
+  return innerInterpolate(6);
 }
 
 /** Creates an interpolation binding with 7 expressions. */
@@ -2904,29 +2916,12 @@ export function interpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
-  different = bindingUpdated3(lView, bindingIndex + 4, v4, v5, v6) || different;
-  lView[BINDING_INDEX] += 7;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
-    tData[bindingIndex + 5] = i5;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
-          renderStringify(v6) + suffix :
-      NO_CHANGE;
+  _interpolationPartPointer = 0;
+  setInterpolationPart(prefix);
+  setInterpolationPart8(v0, i0, v1, i1, v2, i2, v3, i3);
+  setInterpolationPart4(v4, i4, v5, i5);
+  setInterpolationPart2(v6, suffix);
+  return innerInterpolate(7);
 }
 
 /** Creates an interpolation binding with 8 expressions. */
@@ -2934,30 +2929,24 @@ export function interpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX];
-  let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
-  different = bindingUpdated4(lView, bindingIndex + 4, v4, v5, v6, v7) || different;
-  lView[BINDING_INDEX] += 8;
-
-  // Only set static strings the first time (data will be null subsequent runs).
-  const data = storeBindingMetadata(lView, prefix, suffix);
-  if (data) {
-    const tData = lView[TVIEW].data;
-    tData[bindingIndex] = i0;
-    tData[bindingIndex + 1] = i1;
-    tData[bindingIndex + 2] = i2;
-    tData[bindingIndex + 3] = i3;
-    tData[bindingIndex + 4] = i4;
-    tData[bindingIndex + 5] = i5;
-    tData[bindingIndex + 6] = i6;
-  }
-
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
-          renderStringify(v6) + i6 + renderStringify(v7) + suffix :
-      NO_CHANGE;
+  _interpolationParts[0] = prefix;
+  _interpolationParts[1] = v0;
+  _interpolationParts[2] = i0;
+  _interpolationParts[3] = v1;
+  _interpolationParts[4] = i1;
+  _interpolationParts[5] = v2;
+  _interpolationParts[6] = i2;
+  _interpolationParts[7] = v3;
+  _interpolationParts[8] = i3;
+  _interpolationParts[9] = v4;
+  _interpolationParts[10] = i4;
+  _interpolationParts[11] = v5;
+  _interpolationParts[12] = i5;
+  _interpolationParts[13] = v6;
+  _interpolationParts[14] = i6;
+  _interpolationParts[15] = v7;
+  _interpolationParts[16] = suffix;
+  return innerInterpolate(8);
 }
 
 /**
