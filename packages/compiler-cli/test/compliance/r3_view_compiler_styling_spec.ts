@@ -227,9 +227,9 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(0, "@foo", $r3$.ɵbind(ctx.exp));
-              $r3$.ɵflushHooksUpTo(1);
+              $r3$.ɵselect(1);
               $r3$.ɵelementProperty(1, "@bar", $r3$.ɵbind(undefined));
-              $r3$.ɵflushHooksUpTo(2);
+              $r3$.ɵselect(2);
               $r3$.ɵelementProperty(2, "@baz", $r3$.ɵbind(undefined));
             }
           },
@@ -932,7 +932,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementStyleProp(0, 1, $r3$.ɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
               $r3$.ɵelementClassProp(0, 0, $r3$.ɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
               $r3$.ɵelementStylingApply(0);
-              $r3$.ɵflushHooksUpTo(5);
+              $r3$.ɵselect(5);
               $r3$.ɵtextBinding(5, $r3$.ɵinterpolation1(" ", $ctx$.item, ""));
             }
           }

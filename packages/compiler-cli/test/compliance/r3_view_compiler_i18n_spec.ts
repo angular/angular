@@ -369,7 +369,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nApply(2);
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
@@ -437,7 +437,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, $outer_r1$)));
             $r3$.ɵi18nApply(3);
           }
@@ -527,7 +527,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nApply(2);
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
@@ -568,7 +568,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, $outer_r1$)));
             $r3$.ɵi18nApply(3);
           }
@@ -734,7 +734,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
             $r3$.ɵi18nApply(1);
           }
@@ -761,7 +761,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
             $r3$.ɵi18nApply(1);
           }
@@ -792,7 +792,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 2, ctx.valueA)));
             $r3$.ɵi18nExp($r3$.ɵbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
             $r3$.ɵi18nApply(1);
@@ -836,13 +836,13 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 3, ctx.two)));
             $r3$.ɵi18nApply(3);
-            $r3$.ɵflushHooksUpTo(6);
+            $r3$.ɵselect(6);
             $r3$.ɵi18nExp($r3$.ɵbind(((ctx.three + ctx.four) + ctx.five)));
             $r3$.ɵi18nApply(6);
           }
@@ -907,10 +907,10 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵflushHooksUpTo(4);
+            $r3$.ɵselect(4);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 3, ctx.two)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
             $r3$.ɵi18nApply(4);
@@ -977,13 +977,13 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
             $r3$.ɵi18nApply(3);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵflushHooksUpTo(7);
+            $r3$.ɵselect(7);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueE));
             $r3$.ɵi18nApply(8);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(6, 5, ctx.valueD)));
@@ -1032,7 +1032,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 2, $ctx_r0$.valueB)));
             $r3$.ɵi18nApply(2);
@@ -1049,7 +1049,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
           }
         }
@@ -1100,9 +1100,9 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
           }
         }
@@ -1166,7 +1166,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵflushHooksUpTo(4);
+            $r3$.ɵselect(4);
             $r3$.ɵelementProperty(4, "ngIf", $r3$.ɵbind($ctx_r0$.exists));
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 3, $ctx_r0$.valueB)));
@@ -1216,9 +1216,9 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(!ctx.visible));
           }
         }
@@ -1250,7 +1250,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
               const $ctx_r0$ = $r3$.ɵnextContext();
-              $r3$.ɵflushHooksUpTo(1);
+              $r3$.ɵselect(1);
               $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
               $r3$.ɵi18nApply(1);
           }
@@ -1335,7 +1335,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
             $r3$.ɵi18nApply(1);
           }
@@ -1424,7 +1424,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 1, ctx.valueA)));
             $r3$.ɵi18nApply(1);
           }
@@ -1509,7 +1509,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 1, ctx.valueB)));
             $r3$.ɵi18nApply(1);
           }
@@ -1555,7 +1555,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
             $r3$.ɵi18nApply(2);
           }
@@ -1677,7 +1677,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
           }
@@ -1821,7 +1821,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
           }
@@ -1902,7 +1902,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
             $r3$.ɵi18nApply(1);
           }
@@ -1924,7 +1924,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵnextContext();
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
             $r3$.ɵi18nApply(2);
@@ -1942,12 +1942,12 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(ctx.available));
           }
         }
@@ -1974,7 +1974,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.other));
             $r3$.ɵi18nApply(1);
@@ -2062,7 +2062,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nExp($r3$.ɵbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
             $r3$.ɵi18nApply(1);
@@ -2104,7 +2104,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
             $r3$.ɵi18nApply(1);
@@ -2176,7 +2176,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(3);
+            $r3$.ɵselect(3);
             $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(ctx.visible));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
@@ -2218,7 +2218,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
@@ -2282,7 +2282,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.ageVisible));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
@@ -2349,7 +2349,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(2);
+            $r3$.ɵselect(2);
             $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.ageVisible));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.weight));
@@ -2392,7 +2392,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵflushHooksUpTo(1);
+            $r3$.ɵselect(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.weight));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.height));

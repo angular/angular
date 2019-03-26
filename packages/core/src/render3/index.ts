@@ -63,7 +63,7 @@ export {
   elementHostClassProp,
   elementHostStylingApply,
 
-  flushHooksUpTo,
+  select,
 
   listener,
   store,
