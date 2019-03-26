@@ -528,7 +528,7 @@ jobs:
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
-            setPublicVar KARMA_JS_BROWSERS $(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
+            setPublicVar KARMA_JS_BROWSERS "SL_ANDROID7,SL_ANDROID7,SL_ANDROID7"
             setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
       - run:
           name: Starting Saucelabs tunnel
