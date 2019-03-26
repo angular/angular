@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {materialModuleSpecifier} from '../../../ng-update/typescript/module-specifiers';
 
 /**
- * Regex for testing file paths against to determinte if the file is from the
+ * Regex for testing file paths against to determine if the file is from the
  * Angular Material library.
  */
 const ANGULAR_MATERIAL_FILEPATH_REGEX = new RegExp(`${materialModuleSpecifier}/(.*?)/`);
@@ -51,17 +51,20 @@ export class Rule extends Lint.Rules.TypedRule {
 
 /**
  * A walker to walk a given source file to check for imports from the
- * @angular/material module.
+ * "@angular/material" module.
  */
 function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
   // The source file to walk.
   const sf = ctx.sourceFile;
+  const printer = ts.createPrinter();
   const cb = (declaration: ts.Node) => {
     // Only look at import declarations.
-    if (!ts.isImportDeclaration(declaration)) {
+    if (!ts.isImportDeclaration(declaration) ||
+        !ts.isStringLiteralLike(declaration.moduleSpecifier)) {
       return;
     }
-    const importLocation = declaration.moduleSpecifier.getText(sf);
+
+    const importLocation = declaration.moduleSpecifier.text;
     // If the import module is not @angular/material, skip check.
     if (importLocation !== materialModuleSpecifier) {
       return;
@@ -85,86 +88,95 @@ function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
       return ctx.addFailureAtNode(declaration, Rule.NO_IMPORT_NAMED_SYMBOLS_FAILURE_STR);
     }
 
-    // Map of submodule locations to arrays of imported symbols.
-    const importMap = new Map<string, Set<string>>();
+    // Map which consists of secondary entry-points and import specifiers which are used
+    // within the current import declaration.
+    const importMap = new Map<string, ts.ImportSpecifier[]>();
 
     // Determine the subpackage each symbol in the namedBinding comes from.
     for (const element of declaration.importClause.namedBindings.elements) {
-      // Confirm the named import is a symbol that can be looked up.
+      // Ensure the import specifier name is statically analyzable.
       if (!ts.isIdentifier(element.name)) {
-        return ctx.addFailureAtNode(
-            element, element.getFullText(sf) + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
+        return ctx.addFailureAtNode(element, element.getText() + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
       }
-      // Get the type for the named binding element.
-      const type = checker.getTypeAtLocation(element.name);
-      // Get the original symbol where it is declared upstream.
-      const symbol = type.getSymbol();
+
+      // Get the symbol for the named binding element. Note that we cannot determine the
+      // value declaration based on the type of the element as types are not necessarily
+      // specific to a given secondary entry-point (e.g. exports with the type of "string")
+      // would resolve to the module types provided by TypeScript itself.
+      const symbol = getDeclarationSymbolOfNode(element.name, checker);
 
       // If the symbol can't be found, add failure saying the symbol
       // can't be found.
       if (!symbol || !symbol.valueDeclaration) {
-        return ctx.addFailureAtNode(
-            element, element.getFullText(sf) + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
-      }
-
-      // If the symbol has no declarations, add failure saying the symbol can't
-      // be found.
-      if (!symbol.declarations || !symbol.declarations.length) {
-        return ctx.addFailureAtNode(
-            element, element.getFullText(sf) + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
+        return ctx.addFailureAtNode(element, element.getText() + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
       }
 
       // The filename for the source file of the node that contains the
-      // first declaration of the symbol.  All symbol declarations must be
+      // first declaration of the symbol. All symbol declarations must be
       // part of a defining node, so parent can be asserted to be defined.
-      const sourceFile = symbol.valueDeclaration.getSourceFile().fileName;
+      const sourceFile: string = symbol.valueDeclaration.getSourceFile().fileName;
+
       // File the module the symbol belongs to from a regex match of the
-      // filename. This will always match since only @angular/material symbols
-      // are being looked at.
-      const [, moduleName] = sourceFile.match(ANGULAR_MATERIAL_FILEPATH_REGEX) || [] as undefined[];
-      if (!moduleName) {
+      // filename. This will always match since only "@angular/material"
+      // elements are analyzed.
+      const matches = sourceFile.match(ANGULAR_MATERIAL_FILEPATH_REGEX);
+      if (!matches) {
         return ctx.addFailureAtNode(
-            element, element.getFullText(sf) + Rule.SYMBOL_FILE_NOT_FOUND_FAILURE_STR);
+            element, element.getText() + Rule.SYMBOL_FILE_NOT_FOUND_FAILURE_STR);
       }
-      // The module name where the symbol is defined e.g. card, dialog.  The
+      const [, moduleName] = matches;
+
+      // The module name where the symbol is defined e.g. card, dialog. The
       // first capture group is contains the module name.
       if (importMap.has(moduleName)) {
-        importMap.get(moduleName)!.add(symbol.getName());
+        importMap.get(moduleName)!.push(element);
       } else {
-        importMap.set(moduleName, new Set([symbol.getName()]));
+        importMap.set(moduleName, [element]);
       }
     }
-    const fix = buildSecondaryImportStatements(importMap);
 
-    // Without a fix to provide, show error message only.
-    if (!fix) {
+    // Transforms the import declaration into multiple import declarations that import
+    // the given symbols from the individual secondary entry-points. For example:
+    // import {MatCardModule, MatCardTitle} from '@angular/material/card';
+    // import {MatRadioModule} from '@angular/material/radio';
+    const newImportStatements =
+        Array.from(importMap.entries())
+            .sort()
+            .map(([name, elements]) => {
+              const newImport = ts.createImportDeclaration(
+                  undefined, undefined,
+                  ts.createImportClause(undefined, ts.createNamedImports(elements)),
+                  ts.createStringLiteral(`${materialModuleSpecifier}/${name}`));
+              return printer.printNode(ts.EmitHint.Unspecified, newImport, sf);
+            })
+            .join('\n');
+
+    // Without any import statements that were generated, we can assume that this was an empty
+    // import declaration. We still want to add a failure in order to make developers aware that
+    // importing from "@angular/material" is deprecated.
+    if (!newImportStatements) {
       return ctx.addFailureAtNode(declaration.moduleSpecifier, Rule.ONLY_SUBPACKAGE_FAILURE_STR);
     }
-    // Mark the lint failure at the module specifier, providing a
-    // recommended fix.
+
+    // Mark the lint failure at the module specifier, providing the replacement that switches
+    // the import to individual secondary entry-point imports.
     ctx.addFailureAtNode(
         declaration.moduleSpecifier, Rule.ONLY_SUBPACKAGE_FAILURE_STR,
-        new Lint.Replacement(declaration.getStart(sf), declaration.getWidth(), fix));
+        new Lint.Replacement(declaration.getStart(), declaration.getWidth(), newImportStatements));
   };
+
   sf.statements.forEach(cb);
 }
 
-/**
- * Builds the recommended fix from a map of the imported symbols found in the
- * import declaration.  Imports declarations are sorted by module, then by
- * symbol within each import declaration.
- *
- * Example of the format:
- *
- * import {MatCardModule, MatCardTitle} from '@angular/material/card';
- * import {MatRadioModule} from '@angular/material/radio';
- */
-function buildSecondaryImportStatements(importMap: Map<string, Set<string>>): string {
-  return Array.from(importMap.entries())
-      .sort((a, b) => a[0] > b[0] ? 1 : -1)
-      .map(entry => {
-        const imports = Array.from(entry[1]).sort((a, b) => a > b ? 1 : -1).join(', ');
-        return `import {${imports}} from '@angular/material/${entry[0]}';\n`;
-      })
-      .join('');
+/** Gets the symbol that contains the value declaration of the given node. */
+function getDeclarationSymbolOfNode(node: ts.Node, checker: ts.TypeChecker) {
+  const symbol = checker.getSymbolAtLocation(node);
+
+  // Symbols can be aliases of the declaration symbol. e.g. in named import specifiers.
+  // We need to resolve the aliased symbol back to the declaration symbol.
+  // tslint:disable-next-line:no-bitwise
+  if (symbol && (symbol.flags & ts.SymbolFlags.Alias) !== 0) {
+    return checker.getAliasedSymbol(symbol);
+  }
+  return symbol;
 }
