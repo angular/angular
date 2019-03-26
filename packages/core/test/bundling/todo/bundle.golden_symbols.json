@@ -645,7 +645,7 @@
     "name": "findViaComponent"
   },
   {
-    "name": "flushHooksUpTo"
+    "name": "select"
   },
   {
     "name": "forwardRef"
