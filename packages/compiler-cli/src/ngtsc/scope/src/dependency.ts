@@ -9,10 +9,10 @@
 import * as ts from 'typescript';
 
 import {AliasGenerator, Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata';
+import {ClassDeclaration} from '../../reflection';
 
-import {ExportScope, ScopeDirective, ScopePipe} from './api';
-import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {ExportScope} from './api';
 
 export interface DtsModuleScopeResolver {
   resolve(ref: Reference<ClassDeclaration>): ExportScope|null;
@@ -31,9 +31,10 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
    */
   private cache = new Map<ClassDeclaration, ExportScope|null>();
 
-  constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private aliasGenerator: AliasGenerator|null) {}
+  /**
+   * @param dtsMetaReader a `MetadataReader` which can read metadata from `.d.ts` files.
+   */
+  constructor(private dtsMetaReader: MetadataReader, private aliasGenerator: AliasGenerator|null) {}
 
   /**
    * Resolve a `Reference`'d NgModule from a .d.ts file and produce a transitive `ExportScope`
@@ -55,10 +56,10 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     }
 
     // Build up the export scope - those directives and pipes made visible by this module.
-    const directives: ScopeDirective[] = [];
-    const pipes: ScopePipe[] = [];
+    const directives: DirectiveMeta[] = [];
+    const pipes: PipeMeta[] = [];
 
-    const meta = this.readModuleMetadataFromClass(ref);
+    const meta = this.dtsMetaReader.getNgModuleMetadata(ref);
     if (meta === null) {
       this.cache.set(clazz, null);
       return null;
@@ -73,7 +74,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     // don't affect the export scope.
     for (const exportRef of meta.exports) {
       // Attempt to process the export as a directive.
-      const directive = this.readScopeDirectiveFromClassWithDef(exportRef);
+      const directive = this.dtsMetaReader.getDirectiveMetadata(exportRef);
       if (directive !== null) {
         if (!declarations.has(exportRef.node)) {
           directives.push(this.maybeAlias(directive, sourceFile));
@@ -84,7 +85,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       }
 
       // Attempt to process the export as a pipe.
-      const pipe = this.readScopePipeFromClassWithDef(exportRef);
+      const pipe = this.dtsMetaReader.getPipeMetadata(exportRef);
       if (pipe !== null) {
         if (!declarations.has(exportRef.node)) {
           pipes.push(this.maybeAlias(pipe, sourceFile));
@@ -133,103 +134,8 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     };
   }
 
-  /**
-   * Read the metadata from a class that has already been compiled somehow (either it's in a .d.ts
-   * file, or in a .ts file with a handwritten definition).
-   *
-   * @param ref `Reference` to the class of interest, with the context of how it was obtained.
-   */
-  private readModuleMetadataFromClass(ref: Reference<ClassDeclaration>): RawDependencyMetadata
-      |null {
-    const clazz = ref.node;
-    const resolutionContext = clazz.getSourceFile().fileName;
-    // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
-    // TODO(alxhub): investigate caching of .d.ts module metadata.
-    const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ngModuleDef' && member.isStatic);
-    if (ngModuleDef === undefined) {
-      return null;
-    } else if (
-        // Validate that the shape of the ngModuleDef type is correct.
-        ngModuleDef.type === null || !ts.isTypeReferenceNode(ngModuleDef.type) ||
-        ngModuleDef.type.typeArguments === undefined ||
-        ngModuleDef.type.typeArguments.length !== 4) {
-      return null;
-    }
-
-    // Read the ModuleData out of the type arguments.
-    const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
-    return {
-      declarations: extractReferencesFromType(
-          this.checker, declarationMetadata, ref.ownedByModuleGuess, resolutionContext),
-      exports: extractReferencesFromType(
-          this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
-      imports: extractReferencesFromType(
-          this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
-    };
-  }
-
-  /**
-   * Read directive (or component) metadata from a referenced class in a .d.ts file.
-   */
-  private readScopeDirectiveFromClassWithDef(ref: Reference<ClassDeclaration>): ScopeDirective
-      |null {
-    const clazz = ref.node;
-    const def = this.reflector.getMembersOfClass(clazz).find(
-        field =>
-            field.isStatic && (field.name === 'ngComponentDef' || field.name === 'ngDirectiveDef'));
-    if (def === undefined) {
-      // No definition could be found.
-      return null;
-    } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
-      // The type metadata was the wrong shape.
-      return null;
-    }
-    const selector = readStringType(def.type.typeArguments[1]);
-    if (selector === null) {
-      return null;
-    }
-
-    return {
-      ref,
-      name: clazz.name.text,
-      isComponent: def.name === 'ngComponentDef', selector,
-      exportAs: readStringArrayType(def.type.typeArguments[2]),
-      inputs: readStringMapType(def.type.typeArguments[3]),
-      outputs: readStringMapType(def.type.typeArguments[4]),
-      queries: readStringArrayType(def.type.typeArguments[5]),
-      ...extractDirectiveGuards(clazz, this.reflector),
-    };
-  }
-
-  /**
-   * Read pipe metadata from a referenced class in a .d.ts file.
-   */
-  private readScopePipeFromClassWithDef(ref: Reference<ClassDeclaration>): ScopePipe|null {
-    const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ngPipeDef');
-    if (def === undefined) {
-      // No definition could be found.
-      return null;
-    } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
-      // The type metadata was the wrong shape.
-      return null;
-    }
-    const type = def.type.typeArguments[1];
-    if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
-      // The type metadata was the wrong type.
-      return null;
-    }
-    const name = type.literal.text;
-    return {ref, name};
-  }
-
-  private maybeAlias<T extends ScopeDirective|ScopePipe>(
-      dirOrPipe: T, maybeAliasFrom: ts.SourceFile): T {
+  private maybeAlias<T extends DirectiveMeta|PipeMeta>(dirOrPipe: T, maybeAliasFrom: ts.SourceFile):
+      T {
     if (this.aliasGenerator === null) {
       return dirOrPipe;
     }
@@ -243,13 +149,4 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       return dirOrPipe;
     }
   }
-}
-
-/**
- * Raw metadata read from the .d.ts info of an ngModuleDef field on a compiled NgModule class.
- */
-interface RawDependencyMetadata {
-  declarations: Reference<ClassDeclaration>[];
-  imports: Reference<ClassDeclaration>[];
-  exports: Reference<ClassDeclaration>[];
 }

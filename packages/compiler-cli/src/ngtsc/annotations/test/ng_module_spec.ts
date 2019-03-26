@@ -11,6 +11,7 @@ import {R3Reference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -55,14 +56,16 @@ describe('NgModuleDecoratorHandler', () => {
     const reflectionHost = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker);
     const referencesRegistry = new NoopReferencesRegistry();
+    const metaRegistry = new LocalMetadataRegistry();
+    const dtsReader = new DtsMetadataReader(checker, reflectionHost);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        new MetadataDtsModuleScopeResolver(checker, reflectionHost, null), new ReferenceEmitter([]),
+        metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
         null);
     const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
 
     const handler = new NgModuleDecoratorHandler(
-        reflectionHost, evaluator, scopeRegistry, referencesRegistry, false, null, refEmitter,
-        NOOP_DEFAULT_IMPORT_RECORDER);
+        reflectionHost, evaluator, metaRegistry, scopeRegistry, referencesRegistry, false, null,
+        refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
     const TestModule = getDeclaration(program, 'entry.ts', 'TestModule', isNamedClassDeclaration);
     const detected =
         handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
