@@ -14,6 +14,7 @@ import * as ts from 'typescript';
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
+import {CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../../src/ngtsc/path';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
@@ -65,6 +66,8 @@ class NgccResourceLoader implements ResourceLoader {
  */
 export class DecorationAnalyzer {
   resourceManager = new NgccResourceLoader();
+  metaRegistry = new LocalMetadataRegistry();
+  dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
   refEmitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(this.program, this.typeChecker, this.options, this.host),
@@ -73,10 +76,11 @@ export class DecorationAnalyzer {
     // on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.typeChecker, new LogicalFileSystem(this.rootDirs)),
   ]);
-  dtsModuleScopeResolver = new MetadataDtsModuleScopeResolver(
-      this.typeChecker, this.reflectionHost, /* aliasGenerator */ null);
+  dtsModuleScopeResolver =
+      new MetadataDtsModuleScopeResolver(this.dtsMetaReader, /* aliasGenerator */ null);
   scopeRegistry = new LocalModuleScopeRegistry(
-      this.dtsModuleScopeResolver, this.refEmitter, /* aliasGenerator */ null);
+      this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, /* aliasGenerator */ null);
+  fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);
@@ -84,20 +88,22 @@ export class DecorationAnalyzer {
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator, this.isCore),
     new ComponentDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
-        this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
-        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
+        this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry, this.isCore,
+        this.resourceManager, this.rootDirs, /* defaultPreserveWhitespaces */ false,
+        /* i18nUseExternalIds */ true, this.moduleResolver, this.cycleAnalyzer, this.refEmitter,
+        NOOP_DEFAULT_IMPORT_RECORDER),
     new DirectiveDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.reflectionHost, this.evaluator, this.fullRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
         /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, this.referencesRegistry,
-        this.isCore, /* routeAnalyzer */ null, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
+        this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
+        this.referencesRegistry, this.isCore, /* routeAnalyzer */ null, this.refEmitter,
+        NOOP_DEFAULT_IMPORT_RECORDER),
     new PipeDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.reflectionHost, this.evaluator, this.metaRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),
   ];
 
