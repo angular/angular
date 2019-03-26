@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertGreaterThan} from '../util/assert';
 
 import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
@@ -339,4 +339,29 @@ export function leaveView(newView: LView): void {
     }
   }
   enterView(newView, null);
+}
+
+let _selectedIndex = -1;
+
+/**
+ * Gets the most recent index passed to {@link select}
+ *
+ * Used with {@link property} instruction (and more in the future) to identify the index in the
+ * current `LView` to act on.
+ */
+export function getSelectedIndex() {
+  ngDevMode &&
+      assertGreaterThan(
+          _selectedIndex, -1, 'select() should be called prior to retrieving the selected index');
+  return _selectedIndex;
+}
+
+/**
+ * Sets the most recent index passed to {@link select}
+ *
+ * Used with {@link property} instruction (and more in the future) to identify the index in the
+ * current `LView` to act on.
+ */
+export function setSelectedIndex(index: number) {
+  _selectedIndex = index;
 }
