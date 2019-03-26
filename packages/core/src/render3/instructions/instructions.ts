@@ -2741,7 +2741,7 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   const tData = lView[TVIEW].data;
   let bindingIndex = lView[BINDING_INDEX];
 
-  if (tData[bindingIndex] == null) {
+  if (tData[bindingIndex] === null) {
     // 2 is the index of the first static interstitial value (ie. not prefix)
     for (let i = 2; i < values.length; i += 2) {
       tData[bindingIndex++] = values[i];
