@@ -62,6 +62,18 @@ describe('type check blocks', () => {
         .toContain(
             'var _t1 = i0.Dir.ngTypeCtor({}); _t1.value; var _t2 = document.createElement("div");');
   });
+
+  it('should handle style and class bindings specially', () => {
+    const TEMPLATE = `
+      <div [style]="a" [class]="b"></div>
+    `;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('ctx.a; ctx.b;');
+
+    // There should be no assignments to the class or style properties.
+    expect(block).not.toContain('.class = ');
+    expect(block).not.toContain('.style = ');
+  });
 });
 
 it('should generate a circular directive reference correctly', () => {
