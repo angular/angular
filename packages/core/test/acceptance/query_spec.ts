@@ -401,6 +401,17 @@ describe('query logic', () => {
 
   });
 
+  // Some root components may have ContentChildren queries if they are also
+  // usable as a child component. We should still generate an empty QueryList
+  // for these queries when they are at root for backwards compatibility with
+  // ViewEngine.
+  it('should generate an empty QueryList for root components', () => {
+    const fixture = TestBed.createComponent(QueryComp);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.contentChildren).toBeAnInstanceOf(QueryList);
+    expect(fixture.componentInstance.contentChildren.length).toBe(0);
+  });
+
   describe('descendants', () => {
 
     it('should match directives on elements that used to be wrapped by a required parent in HTML parser',
