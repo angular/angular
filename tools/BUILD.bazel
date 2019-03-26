@@ -2,7 +2,6 @@ package(default_visibility=["//visibility:public"])
 load("//tools:defaults.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
-
 ts_library(
   name = "sass_bundle_lib",
   srcs = ["sass-bundle.ts"],
