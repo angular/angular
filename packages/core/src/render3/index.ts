@@ -63,7 +63,7 @@ export {
   elementHostClassProp,
   elementHostStylingApply,
 
-  select as select,
+  select,
 
   listener,
   store,
