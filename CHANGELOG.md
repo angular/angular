@@ -1,3 +1,17 @@
+## 7.3.6 "tar-trebuchet" (2019-03-25)
+
+
+### Bug Fixes
+
+* add disabled styling for unchecked pseudo checkbox ([#15405](https://github.com/angular/material2/issues/15405)) ([bd1c973](https://github.com/angular/material2/commit/bd1c973))
+* **autofill:** use static queries to read values used in ngOnInit ([#15516](https://github.com/angular/material2/issues/15516)) ([cb0b025](https://github.com/angular/material2/commit/cb0b025))
+* **form-field:** select value text blending in with the background in high contrast mode ([#15286](https://github.com/angular/material2/issues/15286)) ([bbd30fb](https://github.com/angular/material2/commit/bbd30fb))
+* **icon:** clear user content when svgIcon is bound to falsy value ([#15290](https://github.com/angular/material2/issues/15290)) ([f2f1232](https://github.com/angular/material2/commit/f2f1232))
+* **slide-toggle:** be able to receive focus while disabled on click ([#15501](https://github.com/angular/material2/issues/15501)) ([479618e](https://github.com/angular/material2/commit/479618e))
+* **tooltip:** tooltip sample not working with keyboard navigation. ([#15111](https://github.com/angular/material2/issues/15111)) ([3987b9b](https://github.com/angular/material2/commit/3987b9b))
+
+
+
 ## 7.3.5 "asphalt-lightning" (2019-03-18)
 
 
@@ -572,7 +586,7 @@ Toolbar
 - `$mat-toolbar-height-mobile-portrait` has been deprecated and will be removed without replacement.
 - `$mat-toolbar-height-mobile-landscape` has been deprecated and will be removed without replacement.
 
-**NOTE:** In addition to the specific deprecations listed above, many component constructor methods contain 
+**NOTE:** In addition to the specific deprecations listed above, many component constructor methods contain
 optional parameters which are expected to become required in v8.
 
 
@@ -837,12 +851,12 @@ and then invoke `angular-material-theme` with the `$myTheme` variable.
 ### Highlights
 * Support for drag and drop in `@angular/cdk/drag-drop`!
 * Support for virtual scrolling in `@angular/cdk/scrolling`!
-* You can now use a native `<select>` element in `<mat-form-field>` 
+* You can now use a native `<select>` element in `<mat-form-field>`
 * Updated visuals for 2018 Material Design update (in-progress, not all components are done)
 
 _Note that schematics for v7 are still in-progress._
 
-You can view a beta version of the docs at https://beta-angular-material-io.firebaseapp.com. 
+You can view a beta version of the docs at https://beta-angular-material-io.firebaseapp.com.
 
 ### Bug Fixes
 
