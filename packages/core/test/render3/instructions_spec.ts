@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions/all';
+import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding, select, property} from '../../src/render3/instructions/all';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -19,6 +19,7 @@ import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
+import {setSelectedIndex, getSelectedIndex} from '@angular/core/src/render3/state';
 
 describe('instructions', () => {
   function createAnchor() {
@@ -159,6 +160,98 @@ describe('instructions', () => {
         rendererCreateElement: 1,
         rendererSetAttribute: 2
       });
+    });
+  });
+
+  describe('select', () => {
+    it('should error in DevMode if index is out of range', () => {
+      // Only one constant added, meaning only index `0` is valid.
+      const t = new TemplateFixture(createDiv, () => {}, 1, 0);
+      expect(() => { t.update(() => { select(-1); }); }).toThrow();
+      expect(() => { t.update(() => { select(1); }); }).toThrow();
+      expect(() => { t.update(() => { select(0); }); }).not.toThrow();
+    });
+  });
+
+  describe('property', () => {
+    // TODO(benlesh): Replace with TestBed tests once the instruction is being generated.
+    it('should set properties of the selected element', () => {
+      // <div [title]="title"></div>
+      const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+      t.update(() => {
+        select(0);
+        property('title', 'one');
+      });
+      expect(t.html).toEqual('<div title="one"></div>');
+      t.update(() => {
+        select(0);
+        property('title', 'two');
+      });
+      expect(t.html).toEqual('<div title="two"></div>');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 2,  // 1 for rootView + 1 for the template view
+        rendererCreateElement: 1,
+        rendererSetProperty: 2,
+      });
+    });
+
+    // TODO(benlesh): Replace with TestBed tests once the instruction is being generated.
+    it('should chain', () => {
+      // <div [title]="title" [accesskey]="key"></div>
+      const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+      t.update(() => {
+        select(0);
+        property('title', 'one')('accessKey', 'A');
+      });
+      expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
+      t.update(() => {
+        select(0);
+        property('title', 'two')('accessKey', 'B');
+      });
+      expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 2,  // 1 for rootView + 1 for the template view
+        rendererCreateElement: 1,
+        rendererSetProperty: 4,
+      });
+    });
+
+    // TODO(benlesh): Replace with TestBed tests once the instruction is being generated.
+    it('should diff value changes', () => {
+      // <div [title]="title" [accesskey]="key"></div>
+      const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+      t.update(() => {
+        select(0);
+        property('title', 'one')('accessKey', 'A');
+      });
+      expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
+      t.update(() => {
+        select(0);
+        property('title', 'two')('accessKey', 'A');  // Notice: only changing the title.
+      });
+      expect(t.html).toEqual('<div accesskey="A" title="two"></div>');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 2,  // 1 for rootView + 1 for the template view
+        rendererCreateElement: 1,
+        rendererSetProperty: 3,
+      });
+    });
+
+    it('should error in dev mode if select was not called prior', () => {
+      const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+      expect(() => { t.update(() => { property('title', 'test'); }); }).toThrow();
+      expect(() => {
+        t.update(() => {
+          select(0);
+          property('title', 'test');
+        });
+      }).not.toThrow();
     });
   });
 
