@@ -111,7 +111,7 @@ export {
   elementHostClassProp as ɵelementHostClassProp,
   elementHostStylingApply as ɵelementHostStylingApply,
 
-  flushHooksUpTo as ɵflushHooksUpTo,
+  select as ɵselect,
   textBinding as ɵtextBinding,
   template as ɵtemplate,
   embeddedViewEnd as ɵembeddedViewEnd,
