@@ -11,10 +11,11 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
+import {MetadataRegistry} from '../../metadata';
+import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
-import {extractDirectiveGuards} from '../../scope/src/util';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -30,8 +31,8 @@ export class DirectiveDecoratorHandler implements
     DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
+      private metaRegistry: MetadataRegistry, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -59,7 +60,7 @@ export class DirectiveDecoratorHandler implements
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
       const ref = new Reference(node);
-      this.scopeRegistry.registerDirective({
+      this.metaRegistry.registerDirectiveMetadata({
         ref,
         name: node.name.text,
         selector: analysis.selector,
@@ -68,6 +69,7 @@ export class DirectiveDecoratorHandler implements
         outputs: analysis.outputs,
         queries: analysis.queries.map(query => query.propertyName),
         isComponent: false, ...extractDirectiveGuards(node, this.reflector),
+        baseClass: null,
       });
     }
 

@@ -10,6 +10,7 @@ import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
+import {DtsMetadataReader} from '../../metadata';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing/in_memory_typescript';
 import {ExportScope} from '../src/api';
@@ -54,8 +55,9 @@ function makeTestEnv(
   });
   const {program} = makeProgram(files);
   const checker = program.getTypeChecker();
-  const resolver = new MetadataDtsModuleScopeResolver(
-      checker, new TypeScriptReflectionHost(checker), aliasGenerator);
+  const reflector = new TypeScriptReflectionHost(checker);
+  const resolver =
+      new MetadataDtsModuleScopeResolver(new DtsMetadataReader(checker, reflector), aliasGenerator);
 
   // Resolver for the refs object.
   const get = (target: {}, name: string): Reference<ts.ClassDeclaration> => {

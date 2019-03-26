@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
+import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
@@ -39,7 +40,7 @@ export interface NgModuleAnalysis {
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: LocalModuleScopeRegistry,
+      private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
       private defaultImportRecorder: DefaultImportRecorder) {}
@@ -134,8 +135,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
-    this.scopeRegistry.registerNgModule(
-        node, {declarations: declarationRefs, imports: importRefs, exports: exportRefs});
+    this.metaRegistry.registerNgModuleMetadata({
+      ref: new Reference(node),
+      declarations: declarationRefs,
+      imports: importRefs,
+      exports: exportRefs
+    });
 
     const valueContext = node.getSourceFile();
 

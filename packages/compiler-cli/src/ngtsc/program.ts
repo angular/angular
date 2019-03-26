@@ -19,6 +19,7 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
+import {CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
@@ -413,14 +414,18 @@ export class NgtscProgram implements api.Program {
     }
 
     const evaluator = new PartialEvaluator(this.reflector, checker);
-    const depScopeReader =
-        new MetadataDtsModuleScopeResolver(checker, this.reflector, aliasGenerator);
-    const scopeRegistry =
-        new LocalModuleScopeRegistry(depScopeReader, this.refEmitter, aliasGenerator);
+    const dtsReader = new DtsMetadataReader(checker, this.reflector);
+    const localMetaRegistry = new LocalMetadataRegistry();
+    const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);
+    const scopeRegistry = new LocalModuleScopeRegistry(
+        localMetaRegistry, depScopeReader, this.refEmitter, aliasGenerator);
+    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
 
 
-    // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
-    // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If there
+    // If a flat module entrypoint was specified, then track references via a `ReferenceGraph`
+    // in
+    // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If
+    // there
     // is no flat module entrypoint then don't pay the cost of tracking references.
     let referencesRegistry: ReferencesRegistry;
     if (this.entryPoint !== null) {
@@ -436,20 +441,20 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceManager,
+          this.reflector, evaluator, metaRegistry, scopeRegistry, this.isCore, this.resourceManager,
           this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
           this.refEmitter, this.defaultImportTracker),
       new DirectiveDecoratorHandler(
-          this.reflector, evaluator, scopeRegistry, this.defaultImportTracker, this.isCore),
+          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(
           this.reflector, this.defaultImportTracker, this.isCore,
           this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
-          this.reflector, evaluator, scopeRegistry, referencesRegistry, this.isCore,
+          this.reflector, evaluator, metaRegistry, scopeRegistry, referencesRegistry, this.isCore,
           this.routeAnalyzer, this.refEmitter, this.defaultImportTracker),
       new PipeDecoratorHandler(
-          this.reflector, evaluator, scopeRegistry, this.defaultImportTracker, this.isCore),
+          this.reflector, evaluator, metaRegistry, this.defaultImportTracker, this.isCore),
     ];
 
     return new IvyCompilation(

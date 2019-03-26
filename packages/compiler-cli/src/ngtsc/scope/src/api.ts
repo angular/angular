@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
-import {TypeCheckableDirectiveMeta} from '../../typecheck';
+import {DirectiveMeta, PipeMeta} from '../../metadata';
+
 
 /**
  * Data for one of a given NgModule's scopes (either compilation scope or export scopes).
@@ -17,12 +16,12 @@ export interface ScopeData {
   /**
    * Directives in the exported scope of the module.
    */
-  directives: ScopeDirective[];
+  directives: DirectiveMeta[];
 
   /**
    * Pipes in the exported scope of the module.
    */
-  pipes: ScopePipe[];
+  pipes: PipeMeta[];
 }
 
 /**
@@ -34,22 +33,4 @@ export interface ExportScope {
    * The scope exported by an NgModule, and available for import.
    */
   exported: ScopeData;
-}
-
-/**
- * Metadata for a given directive within an NgModule's scope.
- */
-export interface ScopeDirective extends TypeCheckableDirectiveMeta {
-  /**
-   * Unparsed selector of the directive.
-   */
-  selector: string;
-}
-
-/**
- * Metadata for a given pipe within an NgModule's scope.
- */
-export interface ScopePipe {
-  ref: Reference<ClassDeclaration>;
-  name: string;
 }
