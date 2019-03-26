@@ -1097,7 +1097,7 @@ export function elementEnd(): void {
  *
  * @param index The index of the element in the `LView`
  */
-export function flushHooksUpTo(index: number): void {
+export function select(index: number): void {
   const lView = getLView();
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 }
