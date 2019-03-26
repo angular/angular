@@ -14,7 +14,7 @@ import {Declaration, ReflectionHost} from '../../reflection';
 
 import {ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {ForeignFunctionResolver} from './interface';
+import {ForeignFunctionResolver, VisitedFilesCallback} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 
 
@@ -79,7 +79,9 @@ interface Context {
 }
 
 export class StaticInterpreter {
-  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
+  constructor(
+      private host: ReflectionHost, private checker: ts.TypeChecker,
+      private visitedFilesCb?: VisitedFilesCallback) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {
     return this.visitExpression(node, context);
@@ -231,6 +233,9 @@ export class StaticInterpreter {
   }
 
   private visitDeclaration(node: ts.Declaration, context: Context): ResolvedValue {
+    if (this.visitedFilesCb) {
+      this.visitedFilesCb(node.getSourceFile());
+    }
     if (this.host.isClass(node)) {
       return this.getReference(node, context);
     } else if (ts.isVariableDeclaration(node)) {
