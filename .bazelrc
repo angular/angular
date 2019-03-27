@@ -118,7 +118,7 @@ build --define=compile=legacy
 # Load default settings for Remote Build Execution
 # When updating, the URLs of bazel_toolchains in packages/bazel/package.bzl
 # may also need to be updated (see https://github.com/angular/angular/pull/27935)
-import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.21.0.bazelrc
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.24.0.bazelrc
 
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
