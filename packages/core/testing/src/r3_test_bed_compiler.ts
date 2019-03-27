@@ -87,6 +87,10 @@ export class R3TestBedCompiler {
   private seenComponents = new Set<Type<any>>();
   private seenDirectives = new Set<Type<any>>();
 
+  // Store resolved styles for Components that have template overrides present and `styleUrls`
+  // defined at the same time.
+  private existingComponentStyles = new Map<Type<any>, string[]>();
+
   private resolvers: Resolvers = initResolvers();
 
   private componentToModuleScope = new Map<Type<any>, Type<any>|TESTING_MODULE>();
@@ -194,9 +198,26 @@ export class R3TestBedCompiler {
   }
 
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
-    // In Ivy, compiling a component does not require knowing the module providing the component's
-    // scope, so overrideTemplateUsingTestingModule can be implemented purely via overrideComponent.
-    this.overrideComponent(type, {set: {template}});
+    const def = (type as any)[NG_COMPONENT_DEF];
+    const hasStyleUrls = (): boolean => {
+      const metadata = this.resolvers.component.resolve(type) !as Component;
+      return !!metadata.styleUrls && metadata.styleUrls.length > 0;
+    };
+    const overrideStyleUrls = !!def && !isComponentDefPendingResolution(type) && hasStyleUrls();
+
+    // In Ivy, compiling a component does not require knowing the module providing the
+    // component's scope, so overrideTemplateUsingTestingModule can be implemented purely via
+    // overrideComponent. Important: overriding template requires full Component re-compilation,
+    // which may fail in case styleUrls are also present (thus Component is considered as required
+    // resolution). In order to avoid this, we preemptively set styleUrls to an empty array,
+    // preserve current styles available on Component def and restore styles back once compilation
+    // is complete.
+    const override = overrideStyleUrls ? {template, styles: [], styleUrls: []} : {template};
+    this.overrideComponent(type, {set: override});
+
+    if (overrideStyleUrls && def.styles && def.styles.length > 0) {
+      this.existingComponentStyles.set(type, def.styles);
+    }
 
     // Set the component's scope to be the testing module.
     this.componentToModuleScope.set(type, TESTING_MODULE);
@@ -230,6 +251,10 @@ export class R3TestBedCompiler {
     this.applyTransitiveScopes();
 
     this.applyProviderOverrides();
+
+    // Patch previously stored `styles` Component values (taken from ngComponentDef), in case these
+    // Components have `styleUrls` fields defined and template override was requested.
+    this.patchComponentsWithExistingStyles();
 
     // Clear the componentToModuleScope map, so that future compilations don't reset the scope of
     // every component.
@@ -347,7 +372,7 @@ export class R3TestBedCompiler {
     this.seenComponents.clear();
     this.seenDirectives.clear();
   }
-  // ...
+
   private applyProviderOverridesToModule(moduleType: Type<any>): void {
     const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
     if (this.providerOverridesByToken.size > 0) {
@@ -367,6 +392,12 @@ export class R3TestBedCompiler {
         this.applyProviderOverridesToModule(importType);
       }
     }
+  }
+
+  private patchComponentsWithExistingStyles(): void {
+    this.existingComponentStyles.forEach(
+        (styles, type) => (type as any)[NG_COMPONENT_DEF].styles = styles);
+    this.existingComponentStyles.clear();
   }
 
   private queueTypeArray(arr: any[], moduleType: Type<any>|TESTING_MODULE): void {

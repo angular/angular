@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResourceLoader} from '@angular/compiler';
-import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF} from '@angular/core';
+import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe, ɵdefineComponent as defineComponent, ɵsetClassMetadata as setClassMetadata, ɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -269,6 +268,60 @@ describe('TestBed', () => {
 
     expect(TestBed.get(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
   });
+
+  onlyInIvy('TestBed should handle AOT pre-compiled Components')
+      .describe('AOT pre-compiled components', () => {
+        /**
+         * Function returns a class that represents AOT-compiled version of the following Component:
+         *
+         * @Component({
+         *  selector: 'comp',
+         *  templateUrl: './template.ng.html',
+         *  styleUrls: ['./style.css']
+         * })
+         * class ComponentClass {}
+         *
+         * This is needed to closer match the behavior of AOT pre-compiled components (compiled
+         * outside of TestBed) without changing TestBed state and/or Component metadata to compile
+         * them via TestBed with external resources.
+         */
+        const getAOTCompiledComponent = () => {
+          class ComponentClass {
+            static ngComponentDef = defineComponent({
+              type: ComponentClass,
+              selectors: [['comp']],
+              factory: () => new ComponentClass(),
+              consts: 1,
+              vars: 0,
+              template: (rf: any, ctx: any) => {
+                if (rf & 1) {
+                  text(0, 'Some template');
+                }
+              },
+              styles: ['body { margin: 0; }']
+            });
+          }
+          setClassMetadata(
+              ComponentClass, [{
+                type: Component,
+                args: [{
+                  selector: 'comp',
+                  templateUrl: './template.ng.html',
+                  styleUrls: ['./style.css'],
+                }]
+              }],
+              null, null);
+          return ComponentClass;
+        };
+
+        it('should have an ability to override template', () => {
+          const SomeComponent = getAOTCompiledComponent();
+          TestBed.configureTestingModule({declarations: [SomeComponent]});
+          TestBed.overrideTemplateUsingTestingModule(SomeComponent, 'Template override');
+          const fixture = TestBed.createComponent(SomeComponent);
+          expect(fixture.nativeElement.innerHTML).toBe('Template override');
+        });
+      });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
       .describe('resetting ng defs', () => {
