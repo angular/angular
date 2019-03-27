@@ -211,7 +211,8 @@ export class R3TestBedCompiler {
     this.overrideComponent(type, {set: override});
 
     const def = (type as any)[NG_COMPONENT_DEF];
-    if (hasStyleUrls && def.styles && def.styles.length > 0) {
+    if (hasStyleUrls && !!def && !isComponentDefPendingResolution(type) && def.styles &&
+        def.styles.length > 0) {
       this.existingComponentStyles.set(type, def.styles);
     }
 
@@ -248,9 +249,9 @@ export class R3TestBedCompiler {
 
     this.applyProviderOverrides();
 
-    // Restore previously saved `styles` property value for Components with template overrides and
-    // styleUrls present.
-    this.restoreExistingComponentStyling();
+    // Patch previously stored `styles` Component values (taken from ngComponentDef), in case these
+    // Components have `styleUrls` fields defined and template override was requested.
+    this.patchComponentsWithExistingStyles();
 
     // Clear the componentToModuleScope map, so that future compilations don't reset the scope of
     // every component.
@@ -390,7 +391,7 @@ export class R3TestBedCompiler {
     }
   }
 
-  private restoreExistingComponentStyling(): void {
+  private patchComponentsWithExistingStyles(): void {
     this.existingComponentStyles.forEach(
         (styles, type) => (type as any)[NG_COMPONENT_DEF].styles = styles);
     this.existingComponentStyles.clear();
