@@ -54,7 +54,7 @@ function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>): void {
 }
 
 function wrapOnChanges() {
-  return function(this: OnChanges) {
+  return function wrapOnChangesHook_inPreviousChangesStorage(this: OnChanges) {
     const simpleChangesStore = getSimpleChangesStore(this);
     const current = simpleChangesStore && simpleChangesStore.current;
 
