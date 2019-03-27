@@ -329,8 +329,11 @@ export abstract class Renderer {
    */
   protected renderSourceAndMap(
       sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileInfo[] {
-    const outputPath = resolve(this.targetPath, relative(this.sourcePath, sourceFile.fileName));
+    const outputPath = sourceFile.fileName;
     const outputMapPath = `${outputPath}.map`;
+    const relativeSourcePath = basename(outputPath);
+    const relativeMapPath = `${relativeSourcePath}.map`;
+
     const outputMap = output.generateMap({
       source: outputPath,
       includeContent: true,
@@ -339,7 +342,7 @@ export abstract class Renderer {
     });
 
     // we must set this after generation as magic string does "manipulation" on the path
-    outputMap.file = outputPath;
+    outputMap.file = relativeSourcePath;
 
     const mergedMap =
         mergeSourceMaps(input.map && input.map.toObject(), JSON.parse(outputMap.toString()));
@@ -350,7 +353,7 @@ export abstract class Renderer {
     } else {
       result.push({
         path: outputPath,
-        contents: `${output.toString()}\n${generateMapFileComment(outputMapPath)}`
+        contents: `${output.toString()}\n${generateMapFileComment(relativeMapPath)}`
       });
       result.push({path: outputMapPath, contents: mergedMap.toJSON()});
     }
