@@ -432,6 +432,7 @@
 /packages/platform-browser-dynamic/**                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/platform-webworker/**                                 @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/platform-webworker-dynamic/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/packages/examples/common/**                                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/architecture-components.md                   @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/architecture-modules.md                      @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
