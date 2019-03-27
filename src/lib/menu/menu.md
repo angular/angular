@@ -68,6 +68,8 @@ The position can be changed using the `xPosition` (`before | after`) and `yPosit
 </button>
 ```
 
+<!-- example(menu-position) -->
+
 ### Nested menu
 
 Material supports the ability for an `mat-menu-item` to open a sub-menu. To do so, you have to define
