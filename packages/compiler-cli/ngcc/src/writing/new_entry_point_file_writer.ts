@@ -52,7 +52,8 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
 
   protected writeFile(file: FileInfo, entryPointPath: AbsoluteFsPath, newDir: AbsoluteFsPath):
       void {
-    if (isDtsPath(file.path)) {
+    if (isDtsPath(file.path.replace(/\.map$/, ''))) {
+      // This is either `.d.ts` or `.d.ts.map` file
       super.writeFileAndBackup(file);
     } else {
       const relativePath = relative(entryPointPath, file.path);

@@ -24,8 +24,10 @@ function createMockFileSystem() {
       'package.json':
           '{"module": "./esm5.js", "es2015": "./es2015/index.js", "typings": "./index.d.ts"}',
       'index.d.ts': 'export declare class FooTop {}',
+      'index.d.ts.map': 'ORIGINAL MAPPING DATA',
       'index.metadata.json': '...',
       'esm5.js': 'export function FooTop() {}',
+      'esm5.js.map': 'ORIGINAL MAPPING DATA',
       'es2015': {
         'index.js': 'import {FooTop} from "./foo";',
         'foo.js': 'export class FooTop {}',
@@ -82,14 +84,19 @@ describe('NewEntryPointFileWriter', () => {
       esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
     });
 
-    it('should write the modified file to a new folder', () => {
+    it('should write the modified files to a new folder', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
         {path: '/node_modules/test/esm5.js', contents: 'export function FooTop() {} // MODIFIED'},
+        {path: '/node_modules/test/esm5.js.map', contents: 'MODIFIED MAPPING DATA'},
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/esm5.js', 'utf8'))
           .toEqual('export function FooTop() {} // MODIFIED');
       expect(readFileSync('/node_modules/test/esm5.js', 'utf8'))
           .toEqual('export function FooTop() {}');
+      expect(readFileSync('/node_modules/test/__ivy_ngcc__/esm5.js.map', 'utf8'))
+          .toEqual('MODIFIED MAPPING DATA');
+      expect(readFileSync('/node_modules/test/esm5.js.map', 'utf8'))
+          .toEqual('ORIGINAL MAPPING DATA');
     });
 
     it('should also copy unmodified files in the program', () => {
@@ -129,12 +136,19 @@ describe('NewEntryPointFileWriter', () => {
           path: '/node_modules/test/index.d.ts',
           contents: 'export declare class FooTop {} // MODIFIED'
         },
+        {path: '/node_modules/test/index.d.ts.map', contents: 'MODIFIED MAPPING DATA'},
       ]);
       expect(readFileSync('/node_modules/test/index.d.ts', 'utf8'))
           .toEqual('export declare class FooTop {} // MODIFIED');
       expect(readFileSync('/node_modules/test/index.d.ts.__ivy_ngcc_bak', 'utf8'))
           .toEqual('export declare class FooTop {}');
       expect(existsSync('/node_modules/test/__ivy_ngcc__/index.d.ts')).toBe(false);
+
+      expect(readFileSync('/node_modules/test/index.d.ts.map', 'utf8'))
+          .toEqual('MODIFIED MAPPING DATA');
+      expect(readFileSync('/node_modules/test/index.d.ts.map.__ivy_ngcc_bak', 'utf8'))
+          .toEqual('ORIGINAL MAPPING DATA');
+      expect(existsSync('/node_modules/test/__ivy_ngcc__/index.d.ts.map')).toBe(false);
     });
   });
 
