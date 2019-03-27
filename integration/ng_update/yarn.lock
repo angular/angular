@@ -35,11 +35,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@file:../../dist/packages-dist/http":
-  version "6.0.0-rc.0-b32e6343a3"
-  dependencies:
-    tslib "^1.9.0"
-
 "@angular/language-service@file:../../dist/packages-dist/language-service":
   version "6.0.0-rc.0-b32e6343a3"
 
