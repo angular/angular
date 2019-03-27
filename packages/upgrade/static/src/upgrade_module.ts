@@ -8,9 +8,9 @@
 
 import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
-import {IInjectorService, IIntervalService, IProvideService, ITestabilityService, bootstrap, element as angularElement, module as angularModule} from '../../common/src/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../common/src/constants';
-import {LazyModuleRef, UpgradeAppType, controllerKey} from '../../common/src/util';
+import {IInjectorService, IIntervalService, IProvideService, ITestabilityService, bootstrap, element as angularElement, module as angularModule} from '../../src/common/src/angular1';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
+import {LazyModuleRef, UpgradeAppType, controllerKey} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';

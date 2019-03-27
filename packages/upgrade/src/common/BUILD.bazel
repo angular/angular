@@ -10,7 +10,6 @@ ts_library(
     srcs = glob([
         "src/**/*.ts",
     ]),
-    module_name = "@angular/upgrade/common",
     deps = [
         "//packages/core",
     ],

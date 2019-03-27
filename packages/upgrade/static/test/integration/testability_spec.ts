@@ -12,9 +12,9 @@ import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeModule} from '@angular/upgrade/static';
-import * as angular from '../../../common/src/angular1';
+import * as angular from '../../../src/common/src/angular1';
 
-import {html, withEachNg1Version} from '../../../common/test/helpers/common_test_helpers';
+import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {

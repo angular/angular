@@ -8,8 +8,8 @@
 
 import {NgZone, PlatformRef, Type} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
-import * as angular from '../../../common/src/angular1';
-import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../../common/src/constants';
+import * as angular from '../../../src/common/src/angular1';
+import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../../src/common/src/constants';
 
 export function bootstrap(
     platform: PlatformRef, Ng2Module: Type<{}>, element: Element, ng1Module: angular.IModule) {

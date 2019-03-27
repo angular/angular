@@ -11,9 +11,9 @@ import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import * as angular from '../../../common/src/angular1';
-import {$EXCEPTION_HANDLER, $SCOPE} from '../../../common/src/constants';
-import {html, multiTrim, withEachNg1Version} from '../../../common/test/helpers/common_test_helpers';
+import * as angular from '../../../src/common/src/angular1';
+import {$EXCEPTION_HANDLER, $SCOPE} from '../../../src/common/src/constants';
+import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '../../index';
 
 import {$digest, bootstrap} from './static_test_helpers';

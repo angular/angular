@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Ng1Token} from '../../common/src/angular1';
+import {Ng1Token} from '../../src/common/src/angular1';
 import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTempInjectorRef} from '../src/angular1_providers';
 
 {

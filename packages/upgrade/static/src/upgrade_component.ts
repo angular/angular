@@ -8,10 +8,10 @@
 
 import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../common/src/angular1';
-import {$SCOPE} from '../../common/src/constants';
-import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../common/src/upgrade_helper';
-import {isFunction} from '../../common/src/util';
+import {IAttributes, IAugmentedJQuery, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../src/common/src/angular1';
+import {$SCOPE} from '../../src/common/src/constants';
+import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../src/common/src/upgrade_helper';
+import {isFunction} from '../../src/common/src/util';
 
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 const INITIAL_VALUE = {
