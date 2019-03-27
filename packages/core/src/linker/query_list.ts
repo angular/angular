@@ -9,6 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
+import {flatten} from '../util/array_utils';
 import {getSymbolIterator} from '../util/symbol';
 
 
@@ -110,7 +111,7 @@ export class QueryList<T>/* implements Iterable<T> */ {
    * @param resultsTree The results tree to store
    */
   reset(resultsTree: Array<T|any[]>): void {
-    this._results = depthFirstFlatten(resultsTree);
+    this._results = flatten(resultsTree);
     (this as{dirty: boolean}).dirty = false;
     (this as{length: number}).length = this._results.length;
     (this as{last: T}).last = this._results[this.length - 1];
@@ -130,11 +131,4 @@ export class QueryList<T>/* implements Iterable<T> */ {
     (this.changes as EventEmitter<any>).complete();
     (this.changes as EventEmitter<any>).unsubscribe();
   }
-}
-
-function depthFirstFlatten<T>(list: Array<T|T[]>): T[] {
-  return list.reduce((flat: any[], item: T | T[]): T[] => {
-    const flatItem = Array.isArray(item) ? depthFirstFlatten(item) : item;
-    return (<T[]>flat).concat(flatItem);
-  }, []);
 }
