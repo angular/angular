@@ -1,7 +1,7 @@
+import {DOCUMENT} from '@angular/common';
 import {async, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {PortalModule, CdkPortal} from '@angular/cdk/portal';
-import {DOCUMENT} from '@angular/platform-browser';
 import {Overlay, OverlayContainer, OverlayModule, FullscreenOverlayContainer} from './index';
 
 describe('FullscreenOverlayContainer', () => {
