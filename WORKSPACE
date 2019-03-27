@@ -85,13 +85,28 @@ yarn_install(
     yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
 )
 
-# Bring in bazel_toolchains for RBE stuff.
+# Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
   name = "bazel_toolchains",
-  sha256 = "109a99384f9d08f9e75136d218ebaebc68cc810c56897aea2224c57932052d30",
-  strip_prefix = "bazel-toolchains-94d31935a2c94fe7e7c7379a0f3393e181928ff7",
-  urls = [
-      "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/94d31935a2c94fe7e7c7379a0f3393e181928ff7.tar.gz",
-      "https://github.com/bazelbuild/bazel-toolchains/archive/94d31935a2c94fe7e7c7379a0f3393e181928ff7.tar.gz",
-  ]
+  sha256 = "67335b3563d9b67dc2550b8f27cc689b64fadac491e69ce78763d9ba894cc5cc",
+  strip_prefix = "bazel-toolchains-cddc376d428ada2927ad359211c3e356bd9c9fbb",
+  url = "https://github.com/bazelbuild/bazel-toolchains/archive/cddc376d428ada2927ad359211c3e356bd9c9fbb.tar.gz",
+)
+
+load("@bazel_toolchains//repositories:repositories.bzl", bazel_toolchains_repositories = "repositories")
+bazel_toolchains_repositories()
+
+load("@bazel_toolchains//rules:rbe_repo.bzl", "rbe_autoconfig")
+rbe_autoconfig(
+  name = "rbe_default",
+  # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
+  # a specific Linux kernel that comes with "libx11" in order to run headless browser tests.
+  repository = "asci-toolchain/nosla-ubuntu16_04-webtest",
+  registry = "gcr.io",
+  digest = "sha256:e874885f5e3d9ac0c0d3176e5369cb5969467dbf9ad8d42b862829cec8d84b9b",
+  # Need to specify a base container digest in order to ensure that we can use the checked-in
+  # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
+  # need to pull the image and run it in order determine the toolchain configuration.
+  # See: https://github.com/bazelbuild/bazel-toolchains/blob/master/rules/rbe_repo.bzl#L229
+  base_container_digest = "sha256:da0f21c71abce3bbb92c3a0c44c3737f007a82b60f8bd2930abc55fe64fc2729",
 )

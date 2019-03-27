@@ -21,3 +21,17 @@ nodejs_binary(
   ],
   entry_point = "angular_material/tools/sass-bundle.js",
 )
+
+# Workaround for https://github.com/bazelbuild/bazel-toolchains/issues/356. We need the
+# "SYS_ADMIN" capability in order to run browsers with sandbox enabled.
+platform(
+  name = "rbe_platform",
+  parents = ["@rbe_default//config:platform"],
+    remote_execution_properties = """
+      {PARENT_REMOTE_EXECUTION_PROPERTIES}
+      properties: {
+          name: "dockerAddCapabilities"
+          value: "SYS_ADMIN"
+      }
+    """,
+)

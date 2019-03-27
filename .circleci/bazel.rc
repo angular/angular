@@ -10,18 +10,8 @@ build --repository_cache=/home/circleci/bazel_repository_cache
 # Remote Build Execution support on CI #
 ########################################
 
-# Load default settings for Remote Build Execution.
+# Load base settings for remote build execution.
 import %workspace%/.circleci/base-rbe-bazelrc
-
-# Custom execution platform defined in the Angular repository. See:
-# https://github.com/angular/angular/blob/master/tools/BUILD.bazel#L21
-build:remote --extra_execution_platforms=@angular//tools:rbe_ubuntu1604-angular
-build:remote --host_platform=@angular//tools:rbe_ubuntu1604-angular
-build:remote --platforms=@angular//tools:rbe_ubuntu1604-angular
-
-# Increase the amount of parallel jobs. The default RBE base configuration specifies a low
-# number of parallel jobs, but our build and testing should be parallelizable.
-build:remote --jobs=150
 
 # Use the Angular team internal GCP instance for remote execution.
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
