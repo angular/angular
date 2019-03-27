@@ -78,7 +78,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
    * @description
    * Emits an event when the form submission has been triggered.
    */
-  @Output() ngSubmit = new EventEmitter();
+  @Output() ngSubmit = new EventEmitter<Event>();
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
