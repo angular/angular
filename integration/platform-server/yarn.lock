@@ -37,11 +37,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@file:../../dist/packages-dist/http":
-  version "7.2.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
-
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
   version "7.2.0-rc.0"
   dependencies:

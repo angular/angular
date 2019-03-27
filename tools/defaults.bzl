@@ -29,7 +29,8 @@ ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
     "platform-browser",
     "platform-browser-dynamic",
     "forms",
-    "http",
+    # Current plan for Angular v8 is to not include @angular/http in ng update
+    # "http",
     "platform-server",
     "platform-webworker",
     "platform-webworker-dynamic",
