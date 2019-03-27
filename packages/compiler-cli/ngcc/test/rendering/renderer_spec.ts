@@ -21,7 +21,7 @@ import {makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderer extends Renderer {
   constructor(host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(host, isCore, bundle, '/src', '/dist');
+    super(host, isCore, bundle, '/src');
   }
   addImports(output: MagicString, imports: {specifier: string, qualifier: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
