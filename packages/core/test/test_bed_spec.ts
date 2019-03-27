@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe} from '@angular/core';
-import {defineComponent, setClassMetadata, text} from '@angular/core/src/render3';
+import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe, ɵdefineComponent as defineComponent, ɵsetClassMetadata as setClassMetadata, ɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

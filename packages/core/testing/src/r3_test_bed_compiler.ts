@@ -198,21 +198,24 @@ export class R3TestBedCompiler {
   }
 
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
-    const metadata = this.resolvers.component.resolve(type) !as Component;
-    const hasStyleUrls = metadata.styleUrls && metadata.styleUrls.length > 0;
+    const def = (type as any)[NG_COMPONENT_DEF];
+    const hasStyleUrls = (): boolean => {
+      const metadata = this.resolvers.component.resolve(type) !as Component;
+      return !!metadata.styleUrls && metadata.styleUrls.length > 0;
+    };
+    const overrideStyleUrls = !!def && !isComponentDefPendingResolution(type) && hasStyleUrls();
 
-    // In Ivy, compiling a component does not require knowing the module providing the component's
-    // scope, so overrideTemplateUsingTestingModule can be implemented purely via overrideComponent.
-    // Important: overriding template requires full Component re-compilation, which may fail in case
-    // styleUrls are also present (thus Component is considered as required resolution). In order to
-    // avoid this, we preemptively set styleUrls to an empty array, preserve current styles
-    // available on Component def and restore styles back once compilation is complete.
-    const override = hasStyleUrls ? {template, styles: [], styleUrls: []} : {template};
+    // In Ivy, compiling a component does not require knowing the module providing the
+    // component's scope, so overrideTemplateUsingTestingModule can be implemented purely via
+    // overrideComponent. Important: overriding template requires full Component re-compilation,
+    // which may fail in case styleUrls are also present (thus Component is considered as required
+    // resolution). In order to avoid this, we preemptively set styleUrls to an empty array,
+    // preserve current styles available on Component def and restore styles back once compilation
+    // is complete.
+    const override = overrideStyleUrls ? {template, styles: [], styleUrls: []} : {template};
     this.overrideComponent(type, {set: override});
 
-    const def = (type as any)[NG_COMPONENT_DEF];
-    if (hasStyleUrls && !!def && !isComponentDefPendingResolution(type) && def.styles &&
-        def.styles.length > 0) {
+    if (overrideStyleUrls && def.styles && def.styles.length > 0) {
       this.existingComponentStyles.set(type, def.styles);
     }
 
