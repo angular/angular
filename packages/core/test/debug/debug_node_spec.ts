@@ -190,6 +190,11 @@ class HostClassBindingCmp {
   hostClasses = 'class-one class-two';
 }
 
+@Component({selector: 'test-cmpt-vcref', template: `<div></div>`})
+class TestCmptWithViewContainerRef {
+  constructor(private vcref: ViewContainerRef) {}
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -211,6 +216,7 @@ class HostClassBindingCmp {
           BankAccount,
           TestCmpt,
           HostClassBindingCmp,
+          TestCmptWithViewContainerRef,
           SimpleContentComp,
         ],
         providers: [Logger],
@@ -629,6 +635,13 @@ class HostClassBindingCmp {
       expect(fixture.debugElement.query(By.css('.content'))).toBeTruthy();
 
       getDOM().remove(content);
+    });
+
+    it('should support components with ViewContainerRef', () => {
+      fixture = TestBed.createComponent(TestCmptWithViewContainerRef);
+
+      const divEl = fixture.debugElement.query(By.css('div'));
+      expect(divEl).not.toBeNull();
     });
 
   });

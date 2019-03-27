@@ -403,9 +403,8 @@ function _queryAllR3(
     elementsOnly: boolean) {
   const context = loadLContext(parentElement.nativeNode) !;
   const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  // This the fixture's debug element, so this is always a component view.
-  const lView = context.lView[parentTNode.index];
-  const tNode = lView[TVIEW].firstChild;
+  const lView = getComponentViewByIndex(parentTNode.index, context.lView);
+  const tNode = lView[TVIEW].firstChild !;
   _queryNodeChildrenR3(tNode, lView, predicate, matches, elementsOnly);
 }
 
