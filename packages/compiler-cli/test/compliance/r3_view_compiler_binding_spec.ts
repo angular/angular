@@ -81,6 +81,7 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
+          $i0$.ɵselect(0);
           $i0$.ɵelementProperty(0, "title", $i0$.ɵbind($ctx$.title));
         }
       }`;
@@ -115,6 +116,7 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
+          $i0$.ɵselect(0);
           $i0$.ɵelementProperty(0, "title", $i0$.ɵinterpolation1("Hello ", $ctx$.name, ""));
         }
       }`;
@@ -171,6 +173,7 @@ describe('compiler compliance: bindings', () => {
             $i0$.ɵelement(0, "label", _c0);
         }
         if (rf & 2) {
+            $i0$.ɵselect(0);
             $i0$.ɵelementProperty(0, "for", $i0$.ɵbind(ctx.forValue));
         }
       }`;

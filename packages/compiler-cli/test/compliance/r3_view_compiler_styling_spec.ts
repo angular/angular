@@ -226,6 +226,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelement(2, "div");
             }
             if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementProperty(0, "@foo", $r3$.ɵbind(ctx.exp));
               $r3$.ɵselect(1);
               $r3$.ɵelementProperty(1, "@bar", $r3$.ɵbind(undefined));
@@ -287,6 +288,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div_animation_myAnimation_done_0_listener($event) { return ctx.onDone($event); });
               $r3$.ɵelementEnd();
             } if (rf & 2) {
+              $r3$.ɵselect(0);
               $r3$.ɵelementProperty(0, "@myAnimation", $r3$.ɵbind(ctx.exp));
             }
           },
@@ -540,6 +542,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementStyleProp(0, 0, $ctx$.myWidth);
                   $r3$.ɵelementStyleProp(0, 1, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
+                  $r3$.ɵselect(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
               },
@@ -737,6 +740,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementClassProp(0, 0, $ctx$.yesToApple);
                   $r3$.ɵelementClassProp(0, 1, $ctx$.yesToOrange);
                   $r3$.ɵelementStylingApply(0);
+                  $r3$.ɵselect(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("banana"));
                 }
               },
@@ -786,6 +790,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelement(0, "div", $e0_attrs$);
                 }
                 if (rf & 2) {
+                  $r3$.ɵselect(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("round"));
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("height:100px"), $r3$.ɵsanitizeStyle);
                 }
