@@ -687,6 +687,14 @@
     "mentor": "kyliau",
     "picture": "jbedard.png"
   },
+  "JoostK": {
+    "name": "Joost Koehoorn",
+    "group": "Collaborator",
+    "mentor": "alxhub",
+    "picture": "joostk.jpg",
+    "twitter": "devjoost",
+    "bio": "Joost is a Software Engineer from the Netherlands with an interest in open source software who likes to learn something new every day. He works at Blueriq during the day and contributes to Angular in his spare time, by working on the Angular compiler and runtime. He may review your PR even if you never asked for it ;)"
+  },
   "jschwarty": {
     "name": "Justin Schwartzenberger",
     "picture": "justinschwartzenberger.jpg",
