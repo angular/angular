@@ -51,11 +51,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@file:../../dist/packages-dist/http":
-  version "7.2.0-rc.0"
-  dependencies:
-    tslib "^1.9.0"
-
 "@angular/material@7.0.0-rc.1":
   version "7.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@angular/material/-/material-7.0.0-rc.1.tgz#e9a88c8b6f6b48b87ed3d1da3037d14a0e3e8290"
