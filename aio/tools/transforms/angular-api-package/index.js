@@ -88,8 +88,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'core/testing/index.ts',
       'elements/index.ts',
       'forms/index.ts',
-      'http/index.ts',
-      'http/testing/index.ts',
+      // Current plan for Angular v8 is to hide documentation for the @angular/http package
+      // 'http/index.ts',
+      // 'http/testing/index.ts',
       'platform-browser/index.ts',
       'platform-browser/animations/index.ts',
       'platform-browser/testing/index.ts',
