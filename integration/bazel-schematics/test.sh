@@ -24,7 +24,7 @@ function testBazel() {
   ng version
   rm -rf demo
   # Create project
-  ng new demo --collection=@angular/bazel --defaults --skip-git --skip-install --style=scss
+  ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
   cd demo
   # Do an initial install to ensure packages like node-sass are built.
   yarn

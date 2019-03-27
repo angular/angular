@@ -8,7 +8,9 @@
       "es2015"
     ],
     "experimentalDecorators": true,
-    "types": []
+    "types": [],
+    "module": "amd",
+    "moduleResolution": "node"
   },
   "include": [
     "node_modules/@angular/**/*"
