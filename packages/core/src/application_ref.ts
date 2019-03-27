@@ -630,9 +630,13 @@ export class ApplicationRef {
     const scope = ApplicationRef._tickScope();
     try {
       this._runningTick = true;
-      this._views.forEach((view) => view.detectChanges());
+      for (let view of this._views) {
+        view.detectChanges();
+      }
       if (this._enforceNoNewChanges) {
-        this._views.forEach((view) => view.checkNoChanges());
+        for (let view of this._views) {
+          view.checkNoChanges();
+        }
       }
     } catch (e) {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
