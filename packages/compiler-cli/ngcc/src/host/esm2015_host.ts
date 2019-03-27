@@ -52,23 +52,26 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected dtsDeclarationMap: Map<string, ts.Declaration>|null;
 
   /**
+   * The set of source files that have already been preprocessed.
+   */
+  protected preprocessedSourceFiles = new Set<ts.SourceFile>();
+
+  /**
    * In ES2015, class declarations may have been down-leveled into variable declarations,
-   * initialized using a class expression. In certain scenarios, an intermediate variable
-   * is introduced to that results in code such as:
+   * initialized using a class expression. In certain scenarios, an additional variable
+   * is introduced that represents the class so that results in code such as:
    *
    * ```
    * let MyClass_1; let MyClass = MyClass_1 = class MyClass {};
    * ```
    *
-   * This map tracks those intermediate variables to their original identifier, i.e. the key
+   * This map tracks those aliased variables to their original identifier, i.e. the key
    * corresponds with the declaration of `MyClass_1` and its value becomes the `MyClass` identifier
    * of the variable declaration.
    *
-   * The aliased class declarations are populated up-front per source file, the set
-   * `analyzedSourceFilesForAliasedClasses` tracks which source files have already been processed.
+   * This map is populated during the preprocessing of each source file.
    */
   protected aliasedClassDeclarations = new Map<ts.Declaration, ts.Identifier>();
-  protected analyzedSourceFilesForAliasedClasses = new Set<ts.SourceFile>();
 
   constructor(protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker, dts?: BundleProgram|null) {
     super(checker);
@@ -96,11 +99,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // Recognize a variable declaration of the form `var MyClass = class MyClass {}` or
     // `var MyClass = MyClass_1 = class MyClass {};`
     if (ts.isVariableDeclaration(node) && node.initializer !== undefined) {
-      let targetValue = node.initializer;
-      while (targetValue && isAssignment(targetValue)) {
-        targetValue = targetValue.right;
+      node = node.initializer;
+      while (node && isAssignment(node)) {
+        node = node.right;
       }
-      node = targetValue;
     }
 
     if (!ts.isClassDeclaration(node) && !ts.isClassExpression(node)) {
@@ -214,9 +216,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
-    // The identifier may have been of an intermediate class assignment such as `MyClass_1`
-    // that was present as alias for `MyClass`. If so, resolve such intermediate declarations
-    // to their original declaration.
+    // The identifier may have been of an additional class assignment such as `MyClass_1` that was
+    // present as alias for `MyClass`. If so, resolve such aliases to their original declaration.
     if (superDeclaration) {
       const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
       if (aliasedIdentifier) {
@@ -414,23 +415,39 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   ///////////// Protected Helpers /////////////
 
   /**
-   * Determines if the given declaration corresponds with an intermediately assigned class
-   * declaration, in which case the original identifier of the class is returned.
+   * Finds the identifier of the actual class declaration for a potentially aliased declaration of a
+   * class.
    *
-   * @param declaration The declaration to determine the original
+   * If the given declaration is for an alias of a class, this function will determine an identifier
+   * to the original declaration that represents this class.
+   *
+   * @param declaration The declaration to resolve.
+   * @returns The original identifier that the given class declaration resolves to, or `undefined`
+   * if the declaration does not represent an aliased class.
    */
   protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|undefined {
-    const sourceFile = declaration.getSourceFile();
+    this.ensurePreprocessed(declaration);
+    return this.aliasedClassDeclarations.get(declaration);
+  }
 
-    if (!this.analyzedSourceFilesForAliasedClasses.has(sourceFile)) {
-      this.analyzedSourceFilesForAliasedClasses.add(sourceFile);
+  /**
+   * Ensures that the source file that `node` is part of has been preprocessed.
+   *
+   * During preprocessing, all statements in the source file will be visited such that certain
+   * processing
+   * steps can be done up-front and cached for subsequent usages.
+   *
+   * @param node The node of which its source file needs to have gone through preprocessing.
+   */
+  protected ensurePreprocessed(node: ts.Node): void {
+    const sourceFile = node.getSourceFile();
+    if (!this.preprocessedSourceFiles.has(sourceFile)) {
+      this.preprocessedSourceFiles.add(sourceFile);
 
       for (const statement of sourceFile.statements) {
-        this.analyzeForAliasedClassDeclaration(statement);
+        this.preprocessStatement(statement);
       }
     }
-
-    return this.aliasedClassDeclarations.get(declaration);
   }
 
   /**
@@ -438,9 +455,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * `let MyClass = MyClass_1 = class MyClass {};`. If so, the declaration of `MyClass_1`
    * is associated with the `MyClass` identifier.
    *
-   * @param statement
+   * @param statement The statement that needs to be preprocessed.
    */
-  protected analyzeForAliasedClassDeclaration(statement: ts.Statement): void {
+  protected preprocessStatement(statement: ts.Statement): void {
     if (!ts.isVariableStatement(statement)) {
       return;
     }
@@ -457,13 +474,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return;
     }
 
-    const intermediateIdentifier = initializer.left;
+    const aliasedIdentifier = initializer.left;
 
-    const intermediateDeclaration = this.getDeclarationOfIdentifier(intermediateIdentifier);
-    if (intermediateDeclaration === null) {
-      throw new Error(`Unable to locate declaration of ${intermediateIdentifier.text}`);
+    const aliasedDeclaration = this.getDeclarationOfIdentifier(aliasedIdentifier);
+    if (aliasedDeclaration === null) {
+      throw new Error(
+          `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
     }
-    this.aliasedClassDeclarations.set(intermediateDeclaration.node, declaration.name);
+    this.aliasedClassDeclarations.set(aliasedDeclaration.node, declaration.name);
   }
 
   protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
@@ -617,9 +635,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // }
     // MyClass.staticProperty = ...;
     // ```
-    const outerDeclaration = getOuterVariableDeclarationOfDeclaration(symbol.valueDeclaration);
-    if (outerDeclaration !== undefined) {
-      const variableSymbol = this.checker.getSymbolAtLocation(outerDeclaration.name);
+    const variableDeclaration = getVariableDeclarationOfDeclaration(symbol.valueDeclaration);
+    if (variableDeclaration !== undefined) {
+      const variableSymbol = this.checker.getSymbolAtLocation(variableDeclaration.name);
       if (variableSymbol && variableSymbol.exports) {
         variableSymbol.exports.forEach((value, key) => {
           const decorators = decoratorsMap.get(key as string);
@@ -1291,12 +1309,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected parseForModuleWithProviders(
       name: string, node: ts.Node|null, implementation: ts.Node|null = node,
       container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
-    const declaration = implementation &&
-            (ts.isFunctionDeclaration(implementation) || ts.isMethodDeclaration(implementation) ||
-             ts.isFunctionExpression(implementation)) ?
-        implementation :
-        null;
-    const body = declaration ? this.getDefinitionOfFunction(declaration).body : null;
+    if (!implementation ||
+        (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
+         !ts.isFunctionExpression(implementation))) {
+      return null;
+    }
+    const declaration = implementation;
+
+    const body = this.getDefinitionOfFunction(declaration).body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
         lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
@@ -1321,7 +1341,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           `Cannot find a declaration for NgModule ${ngModuleIdentifier.text} referenced in ${declaration!.getText()}`);
     }
 
-    return declaration && {name, ngModule, declaration, container};
+    return {name, ngModule, declaration, container};
   }
 }
 
@@ -1470,8 +1490,8 @@ function collectExportedDeclarations(
 }
 
 /**
- * Attempt to resolve the outer variable declaration that the given declaration is assigned
- * to. For example, for the following code:
+ * Attempt to resolve the variable declaration that the given declaration is assigned to.
+ * For example, for the following code:
  *
  * ```
  * var MyClass = MyClass_1 = class MyClass {};
@@ -1483,8 +1503,8 @@ function collectExportedDeclarations(
  * @param declaration The declaration for which any variable declaration should be obtained.
  * @returns the outer variable declaration if found, undefined otherwise.
  */
-function getOuterVariableDeclarationOfDeclaration(declaration: ts.Declaration):
-    ts.VariableDeclaration|undefined {
+function getVariableDeclarationOfDeclaration(declaration: ts.Declaration): ts.VariableDeclaration|
+    undefined {
   let node = declaration.parent;
 
   // Detect an intermediary variable assignment and skip over it.

@@ -86,9 +86,10 @@ const SIMPLE_CLASS_FILE = {
 const CLASS_EXPRESSION_FILE = {
   name: '/class_expression.js',
   contents: `
-    var IntermediateAssignmentClass_1;
+    var AliasedClass_1;
     let EmptyClass = class EmptyClass {};
-    let IntermediateAssignmentClass = IntermediateAssignmentClass_1 = class IntermediateAssignmentClass {};
+    let AliasedClass = AliasedClass_1 = class AliasedClass {}
+    let usageOfAliasedClass = AliasedClass_1;
   `,
 };
 
@@ -561,13 +562,13 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     `
   },
   {
-    name: '/src/intermediate_var.js',
+    name: '/src/aliased_class.js',
     contents: `
-    var IntermediateModule_1;
-    let IntermediateModule = IntermediateModule_1 = class IntermediateModule {
-      static forRoot() { return { ngModule: IntermediateModule_1 }; }
+    var AliasedModule_1;
+    let AliasedModule = AliasedModule_1 = class AliasedModule {
+      static forRoot() { return { ngModule: AliasedModule_1 }; }
     };
-    export { IntermediateModule };
+    export { AliasedModule };
     `
   },
   {name: '/src/module.js', contents: 'export class ExternalModule {}'},
@@ -1347,16 +1348,16 @@ describe('Esm2015ReflectionHost', () => {
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
 
-    it('should return the original declaration of an intermediately assigned class', () => {
+    it('should return the original declaration of an aliased class', () => {
       const program = makeTestProgram(CLASS_EXPRESSION_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const node = getDeclaration(
-          program, CLASS_EXPRESSION_FILE.name, 'IntermediateAssignmentClass',
-          ts.isVariableDeclaration);
-      const intermediateIdentifier =
-          (node.initializer as ts.BinaryExpression).left as ts.Identifier;
-      expect(intermediateIdentifier.text).toBe('IntermediateAssignmentClass_1');
-      expect(host.getDeclarationOfIdentifier(intermediateIdentifier) !.node).toBe(node);
+      const classDeclaration = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
+      const usageOfAliasedClass = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'usageOfAliasedClass', ts.isVariableDeclaration);
+      const aliasedClassIdentifier = usageOfAliasedClass.initializer as ts.Identifier;
+      expect(aliasedClassIdentifier.text).toBe('AliasedClass_1');
+      expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier) !.node).toBe(classDeclaration);
     });
   });
 
@@ -1417,8 +1418,7 @@ describe('Esm2015ReflectionHost', () => {
          const program = makeTestProgram(CLASS_EXPRESSION_FILE);
          const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
          const node = getDeclaration(
-             program, CLASS_EXPRESSION_FILE.name, 'IntermediateAssignmentClass',
-             ts.isVariableDeclaration);
+             program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
          expect(host.isClass(node)).toBe(true);
        });
 
@@ -1633,14 +1633,14 @@ describe('Esm2015ReflectionHost', () => {
        });
 
     // https://github.com/angular/angular/issues/29078
-    it('should resolve intermediate module references to their original declaration', () => {
+    it('should resolve aliased module references to their original declaration', () => {
       const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
-      const file = srcProgram.getSourceFile('/src/intermediate_var.js') !;
+      const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
       expect(fn.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
           .toEqual([
-            ['forRoot', 'IntermediateModule'],
+            ['forRoot', 'AliasedModule'],
           ]);
     });
   });

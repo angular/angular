@@ -701,16 +701,16 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     `
   },
   {
-    name: '/src/intermediate_var.js',
+    name: '/src/aliased_class.js',
     contents: `
-    var IntermediateModule = (function() {
-      function IntermediateModule() {}
-      IntermediateModule_1 = IntermediateModule;
-      IntermediateModule.forRoot = function() { return { ngModule: IntermediateModule_1 }; };
-      var IntermediateModule_1;
-      return IntermediateModule;
+    var AliasedModule = (function() {
+      function AliasedModule() {}
+      AliasedModule_1 = AliasedModule;
+      AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
+      var AliasedModule_1;
+      return AliasedModule;
     }());
-    export { IntermediateModule };
+    export { AliasedModule };
     `
   },
   {name: '/src/module.js', contents: 'export class ExternalModule {}'},
@@ -1886,13 +1886,13 @@ describe('Esm5ReflectionHost', () => {
        });
 
     // https://github.com/angular/angular/issues/29078
-    it('should resolve intermediate module references to their original declaration', () => {
+    it('should resolve aliased module references to their original declaration', () => {
       const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
       const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
-      const file = srcProgram.getSourceFile('/src/intermediate_var.js') !;
+      const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
       expect(fn.map(fn => [fn.declaration.getText(), getNgModuleName(fn.ngModule.node)])).toEqual([
-        ['function() { return { ngModule: IntermediateModule_1 }; }', 'IntermediateModule'],
+        ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
       ]);
     });
   });
