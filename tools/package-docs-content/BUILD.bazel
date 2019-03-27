@@ -7,7 +7,6 @@ nodejs_binary(
   name = "package-docs-content",
   entry_point = "angular_material/tools/package-docs-content/package-docs-content.js",
   data = [
-    "@npm//source-map-support",
     ":sources",
   ],
 )

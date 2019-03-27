@@ -17,7 +17,6 @@ nodejs_binary(
   name = "sass_bundle",
   data = [
    "@npm//scss-bundle",
-   "@npm//source-map-support",
     ":sass_bundle_lib",
   ],
   entry_point = "angular_material/tools/sass-bundle.js",

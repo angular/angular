@@ -1,15 +1,9 @@
-import {
-  browser, by, element, ElementFinder, ExpectedConditions
-} from 'protractor';
-import {expectFocusOn, expectToExist} from '../util/asserts';
-import {pressKeys} from '../util/actions';
+import {browser, by, element, ElementFinder, ExpectedConditions} from 'protractor';
 import {Key} from 'selenium-webdriver';
+import {pressKeys} from '../util/actions';
+import {expectFocusOn, expectToExist} from '../util/asserts';
 
-// TODO(mmalerba): These tests are disabled due to an issue with animations.
-// (See https://github.com/angular/material2/issues/15614)
-// Re-enable once the issue is resolved.
-// tslint:disable-next-line:ban
-xdescribe('stepper', () => {
+describe('stepper', () => {
   beforeEach(async () => await browser.get('/stepper'));
 
   it('should render a stepper', async () => {

@@ -86,12 +86,12 @@
     "no-duplicate-imports": true,
 
     // Codelyzer
-    "banana-in-box": true,
-    "contextual-life-cycle": true,
-    "decorator-not-allowed": true,
+    "template-banana-in-box": true,
+    "contextual-lifecycle": true,
+    "contextual-decorator": true,
     "no-output-on-prefix": true,
-    "templates-no-negated-async": true,
-    "use-life-cycle-interface": true,
+    "template-no-negated-async": true,
+    "use-lifecycle-interface": true,
 
     // Custom Rules
     "ts-loader": true,

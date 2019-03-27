@@ -7,7 +7,6 @@ nodejs_binary(
   name = "dgeni",
   entry_point = "angular_material/tools/dgeni/bazel-bin.js",
   data = [
-    "@npm//source-map-support",
     "@npm//dgeni",
     "@npm//dgeni-packages",
     ":sources",

@@ -18,7 +18,6 @@ nodejs_binary(
   entry_point = "angular_material/tools/example-module/bazel-bin.js",
   data = [
     "@npm//typescript",
-    "@npm//source-map-support",
     ":example-module-lib",
     ":example-module.template",
   ],

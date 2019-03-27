@@ -1,11 +1,7 @@
 import {browser} from 'protractor';
 import {expectToExist} from '../util/index';
 
-// TODO(mmalerba): These tests are disabled due to an issue with animations.
-// (See https://github.com/angular/material2/issues/15614)
-// Re-enable once the issue is resolved.
-// tslint:disable-next-line:ban
-xdescribe('list', () => {
+describe('list', () => {
   beforeEach(async () => await browser.get('/list'));
 
   it('should render a list container', async () => {

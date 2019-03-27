@@ -17,7 +17,6 @@ nodejs_binary(
   name = "highlight-files",
   entry_point = "angular_material/tools/highlight-files/highlight-files.js",
   data = [
-    "@npm//source-map-support",
     ":sources",
   ],
 )

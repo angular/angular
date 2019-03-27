@@ -8,11 +8,7 @@ import {
 } from 'protractor';
 import {pressKeys} from '../util/index';
 
-// TODO(mmalerba): These tests are disabled due to an issue with animations.
-// (See https://github.com/angular/material2/issues/15614)
-// Re-enable once the issue is resolved.
-// tslint:disable-next-line:ban
-xdescribe('tabs', () => {
+describe('tabs', () => {
   describe('basic behavior', () => {
     let tabLabels: ElementArrayFinder;
     let tabBodies: ElementArrayFinder;

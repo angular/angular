@@ -75,16 +75,8 @@ def ng_package(name, readme_md = None, **kwargs):
     **kwargs
   )
 
-def jasmine_node_test(deps = [], **kwargs):
-  local_deps = [
-    "@npm//source-map-support",
-  ] + deps
-
-  _jasmine_node_test(
-    deps = local_deps,
-    jasmine = "@npm//jasmine",
-    **kwargs
-  )
+def jasmine_node_test(**kwargs):
+  _jasmine_node_test(**kwargs)
 
 def ng_test_library(deps = [], tsconfig = None, **kwargs):
   local_deps = [
