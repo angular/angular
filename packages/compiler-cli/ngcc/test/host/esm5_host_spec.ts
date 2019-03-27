@@ -1839,17 +1839,13 @@ describe('Esm5ReflectionHost', () => {
   });
 
   describe('getModuleWithProvidersFunctions', () => {
-    function getNgModuleName(ngModule: ts.Declaration & {name?: ts.Identifier}): string {
-      return ngModule.name !.text;
-    }
-
     it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
          const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
-         expect(fns.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+         expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
              .toEqual([
                ['ngModuleIdentifier', 'InternalModule'],
                ['ngModuleWithEmptyProviders', 'InternalModule'],
@@ -1864,25 +1860,24 @@ describe('Esm5ReflectionHost', () => {
          const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
-         expect(fn.map(fn => [fn.declaration.getText(), getNgModuleName(fn.ngModule.node)]))
-             .toEqual([
-               [
-                 'function() { return { ngModule: InternalModule }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: InternalModule, providers: [] }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
-                 'InternalModule',
-               ],
-               [
-                 'function() { return { ngModule: ExternalModule }; }',
-                 'ExternalModule',
-               ],
-             ]);
+         expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+           [
+             'function() { return { ngModule: InternalModule }; }',
+             'InternalModule',
+           ],
+           [
+             'function() { return { ngModule: InternalModule, providers: [] }; }',
+             'InternalModule',
+           ],
+           [
+             'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
+             'InternalModule',
+           ],
+           [
+             'function() { return { ngModule: ExternalModule }; }',
+             'ExternalModule',
+           ],
+         ]);
        });
 
     // https://github.com/angular/angular/issues/29078
@@ -1891,7 +1886,7 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
       const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
-      expect(fn.map(fn => [fn.declaration.getText(), getNgModuleName(fn.ngModule.node)])).toEqual([
+      expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
         ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
       ]);
     });

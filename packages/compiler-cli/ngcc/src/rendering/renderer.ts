@@ -204,7 +204,7 @@ export abstract class Renderer {
       outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void {
     moduleWithProviders.forEach(info => {
-      const ngModuleName = (info.ngModule.node as ts.ClassDeclaration).name !.text;
+      const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = info.declaration.getSourceFile().fileName;
       const ngModuleFile = info.ngModule.node.getSourceFile().fileName;
       const importPath = info.ngModule.viaModule ||

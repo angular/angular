@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {ClassSymbol, Declaration, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassSymbol, Declaration, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecoratedClass} from './decorated_class';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
@@ -40,7 +40,7 @@ export interface ModuleWithProvidersFunction {
    * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
    * refers to.
    */
-  ngModule: Declaration;
+  ngModule: Declaration<ClassDeclaration>;
 }
 
 /**

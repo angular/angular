@@ -1315,7 +1315,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return null;
     }
     const declaration = implementation;
-
     const body = this.getDefinitionOfFunction(declaration).body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
@@ -1335,11 +1334,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return null;
     }
 
-    const ngModule = this.getDeclarationOfIdentifier(ngModuleIdentifier);
-    if (!ngModule) {
+    const ngModuleDeclaration = this.getDeclarationOfIdentifier(ngModuleIdentifier);
+    if (!ngModuleDeclaration) {
       throw new Error(
-          `Cannot find a declaration for NgModule ${ngModuleIdentifier.text} referenced in ${declaration!.getText()}`);
+          `Cannot find a declaration for NgModule ${ngModuleIdentifier.text} referenced in "${declaration!.getText()}"`);
     }
+    if (!hasNameIdentifier(ngModuleDeclaration.node)) {
+      return null;
+    }
+    const ngModule = ngModuleDeclaration as Declaration<ClassDeclaration>;
 
     return {name, ngModule, declaration, container};
   }

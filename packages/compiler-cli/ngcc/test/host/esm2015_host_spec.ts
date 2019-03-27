@@ -1596,10 +1596,6 @@ describe('Esm2015ReflectionHost', () => {
   });
 
   describe('getModuleWithProvidersFunctions()', () => {
-    function getNgModuleName(ngModule: ts.Declaration & {name?: ts.Identifier}): string {
-      return ngModule.name !.text;
-    }
-
     it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
@@ -1607,7 +1603,7 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
-         expect(fns.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+         expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
              .toEqual([
                ['ngModuleIdentifier', 'InternalModule'],
                ['ngModuleWithEmptyProviders', 'InternalModule'],
@@ -1623,7 +1619,7 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
-         expect(fn.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
              .toEqual([
                ['ngModuleIdentifier', 'InternalModule'],
                ['ngModuleWithEmptyProviders', 'InternalModule'],
@@ -1638,10 +1634,9 @@ describe('Esm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
       const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
-      expect(fn.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
-          .toEqual([
-            ['forRoot', 'AliasedModule'],
-          ]);
+      expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text])).toEqual([
+        ['forRoot', 'AliasedModule'],
+      ]);
     });
   });
 });
