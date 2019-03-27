@@ -13,7 +13,7 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertHasParent, assertLContainerOrUndefined, assertLView, assertPreviousIsParent} from '../assert';
@@ -37,7 +37,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from '../node_manipulation';
 import {isNodeMatchingSelectorList, matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, enterView, getActiveHostContext, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {decreaseElementDepthCount, enterView, getActiveHostContext, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -408,10 +408,6 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
       resetPreOrderHookFlags(viewToRender);
       namespaceHTML();
-
-      // Reset the selected index so we can assert that `select` was called later
-      ngDevMode && setSelectedIndex(-1);
-
       tView.template !(getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
       // ngFor loop, all the views will be created together before update mode runs and turns
@@ -457,10 +453,6 @@ function renderComponentOrTemplate<T>(
       // creation mode pass
       if (templateFn) {
         namespaceHTML();
-
-        // Reset the selected index so we can assert that `select` was called later
-        ngDevMode && setSelectedIndex(-1);
-
         templateFn(RenderFlags.Create, context);
       }
 
@@ -1101,30 +1093,11 @@ export function elementEnd(): void {
 
 
 /**
- * Selects an index of an item to act on and flushes lifecycle hooks up to this point
+ * Flushes all the lifecycle hooks for directives up until (and excluding) that node index
  *
- * Used in conjunction with instructions like {@link property} to act on elements with specified
- * indices, for example those created with {@link element} or {@link elementStart}.
- *
- * ```ts
- * (rf: RenderFlags, ctx: any) => {
-  *  if (rf & 1) {
-  *    element(0, 'div');
-  *  }
-  *  if (rf & 2) {
-  *    select(0); // Select the <div/> created above.
-  *    property('title', 'test');
-  *  }
-  * }
-  * ```
-  * @param index the index of the item to act on with the following instructions
-  */
+ * @param index The index of the element in the `LView`
+ */
 export function select(index: number): void {
-  ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
-  ngDevMode &&
-      assertLessThan(
-          index, getLView().length - HEADER_OFFSET, 'Should be within range for the view data');
-  setSelectedIndex(index);
   const lView = getLView();
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 }
@@ -1169,34 +1142,6 @@ export function elementAttribute(
 }
 
 /**
- * Update a property on a selected element.
- *
- * Operates on the element selected by index via the {@link select} instruction.
- *
- * If the property name also exists as an input property on one of the element's directives,
- * the component property will be set instead of the element property. This check must
- * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled
- *
- * @param propName Name of property. Because it is going to DOM, this is not subject to
- *        renaming as part of minification.
- * @param value New value to write.
- * @param sanitizer An optional function used to sanitize the value.
- * @param nativeOnly Whether or not we should only set native properties and skip input check
- * (this is necessary for host property bindings)
- * @returns This function returns itself so that it may be chained
- * (e.g. `property('name', ctx.name)('title', ctx.title)`)
- */
-export function property<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean): typeof property {
-  const index = getSelectedIndex();
-  const bindReconciledValue = bind(value);
-  elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
-  return property;
-}
-
-/**
- * **TODO: Remove this function after `property` is in use**
  * Update a property on an element.
  *
  * If the property name also exists as an input property on one of the element's directives,
@@ -2703,12 +2648,7 @@ export function checkView<T>(hostView: LView, component: T) {
     resetPreOrderHookFlags(hostView);
     namespaceHTML();
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
-
-    // Reset the selected index so we can assert that `select` was called later
-    ngDevMode && setSelectedIndex(-1);
-
     templateFn(getRenderFlags(hostView), component);
-
     refreshDescendantViews(hostView);
     // Only check view queries again in creation mode if there are static view queries
     if (!creationMode || hostTView.staticViewQueries) {
