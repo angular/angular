@@ -45,7 +45,7 @@ import {EntryPointBundle} from './entry_point_bundle';
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class Transformer {
-  constructor(private sourcePath: string, private targetPath: string) {}
+  constructor(private sourcePath: string) {}
 
   /**
    * Transform the source (and typings) files of a bundle.
@@ -84,9 +84,9 @@ export class Transformer {
   getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderer(host, isCore, bundle, this.sourcePath, this.targetPath);
+        return new EsmRenderer(host, isCore, bundle, this.sourcePath);
       case 'esm5':
-        return new Esm5Renderer(host, isCore, bundle, this.sourcePath, this.targetPath);
+        return new Esm5Renderer(host, isCore, bundle, this.sourcePath);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

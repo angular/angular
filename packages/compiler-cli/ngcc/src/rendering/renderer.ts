@@ -81,8 +81,7 @@ export const RedundantDecoratorMap = Map;
 export abstract class Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
-      protected bundle: EntryPointBundle, protected sourcePath: string,
-      protected targetPath: string) {}
+      protected bundle: EntryPointBundle, protected sourcePath: string) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
@@ -333,7 +332,7 @@ export abstract class Renderer {
     const outputPath = resolve(this.targetPath, relative(this.sourcePath, sourceFile.fileName));
     const outputMapPath = `${outputPath}.map`;
     const outputMap = output.generateMap({
-      source: sourceFile.fileName,
+      source: outputPath,
       includeContent: true,
       // hires: true // TODO: This results in accurate but huge sourcemaps. Instead we should fix
       // the merge algorithm.

@@ -28,7 +28,7 @@ function setup(file: {name: string, contents: string}) {
           referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
           .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
-  const renderer = new EsmRenderer(host, false, bundle, dir, dir);
+  const renderer = new EsmRenderer(host, false, bundle, dir);
   return {
     host,
     program: bundle.src.program,
