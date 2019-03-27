@@ -34,7 +34,7 @@ ts_api_guardian_test(
     actual = "angular/packages/upgrade/upgrade.d.ts",
     data = ["//tools/public_api_guard:upgrade/upgrade.d.ts"] + [
         "//packages/upgrade",
-        "//packages/upgrade/common",
+        "//packages/upgrade/src/common",
     ],
     golden = "angular/tools/public_api_guard/upgrade/upgrade.d.ts",
     tags = [
@@ -47,7 +47,7 @@ ts_api_guardian_test(
     actual = "angular/packages/upgrade/static/index.d.ts",
     data = ["//tools/public_api_guard:upgrade/static.d.ts"] + [
         "//packages/upgrade/static",
-        "//packages/upgrade/common",
+        "//packages/upgrade/src/common",
     ],
     golden = "angular/tools/public_api_guard/upgrade/static.d.ts",
     tags = [
