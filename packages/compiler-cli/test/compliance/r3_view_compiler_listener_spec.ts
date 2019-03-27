@@ -163,6 +163,7 @@ describe('compiler compliance: listen()', () => {
             $r3$.ɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", $c0$);
           }
           if (rf & 2) {
+            $i0$.ɵselect(0);
             $i0$.ɵelementProperty(0, "ngIf", $i0$.ɵbind(ctx.showing));
           }
         }

@@ -154,6 +154,7 @@ describe('Renderer', () => {
 A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵtext(0);
     } if (rf & 2) {
+        ɵngcc0.ɵselect(0);
         ɵngcc0.ɵtextBinding(0, ɵngcc0.ɵinterpolation1("", ctx.person.name, ""));
     } }, encapsulation: 2 });`);
     });

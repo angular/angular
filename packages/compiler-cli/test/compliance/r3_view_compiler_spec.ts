@@ -146,6 +146,7 @@ describe('r3_view_compiler', () => {
           $i0$.ɵelement(0, "div");
         }
         if (rf & 2) {
+          $i0$.ɵselect(0);
           $i0$.ɵelementProperty(0, "@attr", …);
           $i0$.ɵelementProperty(0, "@binding", …);
         }
@@ -177,6 +178,7 @@ describe('r3_view_compiler', () => {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           …
+          $i0$.ɵselect(0);
           $i0$.ɵelementProperty(0, "@mySelector", …);
         }
       }`;
