@@ -107,7 +107,7 @@ describe('Renderer', () => {
 
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'file': '/dist/file.js',
+    'file': 'file.js',
     'sources': ['/src/file.js'],
     'sourcesContent': [INPUT_PROGRAM.contents],
     'names': [],
@@ -119,7 +119,7 @@ describe('Renderer', () => {
     'sources': ['/src/file.ts'],
     'names': [],
     'mappings': ';;;;;;;;;;AAAA',
-    'file': '/dist/file.js',
+    'file': 'file.js',
     'sourcesContent': [INPUT_PROGRAM.contents]
   });
 
@@ -131,10 +131,10 @@ describe('Renderer', () => {
          const result = renderer.renderProgram(
              decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
              moduleWithProvidersAnalyses);
-         expect(result[0].path).toEqual('/dist/file.js');
+         expect(result[0].path).toEqual('/src/file.js');
          expect(result[0].contents)
-             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
-         expect(result[1].path).toEqual('/dist/file.js.map');
+             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
+         expect(result[1].path).toEqual('/src/file.js.map');
          expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
        });
 
@@ -237,7 +237,7 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                moduleWithProvidersAnalyses);
-           expect(result[0].path).toEqual('/dist/file.js');
+           expect(result[0].path).toEqual('/src/file.js');
            expect(result[0].contents)
                .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
            expect(result[1]).toBeUndefined();
@@ -257,10 +257,10 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
                moduleWithProvidersAnalyses);
-           expect(result[0].path).toEqual('/dist/file.js');
+           expect(result[0].path).toEqual('/src/file.js');
            expect(result[0].contents)
-               .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
-           expect(result[1].path).toEqual('/dist/file.js.map');
+               .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
+           expect(result[1].path).toEqual('/src/file.js.map');
            expect(result[1].contents).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toJSON());
          });
     });
