@@ -65,7 +65,7 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
 export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false}: NgccOptions): void {
-  const transformer = new Transformer(basePath, basePath);
+  const transformer = new Transformer(basePath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);

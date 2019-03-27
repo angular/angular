@@ -17,9 +17,8 @@ import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 
 export class EsmRenderer extends Renderer {
   constructor(
-      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle, sourcePath: string,
-      targetPath: string) {
-    super(host, isCore, bundle, sourcePath, targetPath);
+      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle, sourcePath: string) {
+    super(host, isCore, bundle, sourcePath);
   }
 
   /**
