@@ -8,7 +8,6 @@ ts_library(
   srcs = glob(["**/*.ts"]),
   deps = [
     "@npm//@types/node",
-    "@npm//highlight.js",
   ],
   tsconfig = ":tsconfig.json",
 )
@@ -17,6 +16,7 @@ nodejs_binary(
   name = "highlight-files",
   entry_point = "angular_material/tools/highlight-files/highlight-files.js",
   data = [
+    "@npm//highlight.js",
     ":sources",
   ],
 )

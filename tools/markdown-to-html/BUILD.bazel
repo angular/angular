@@ -19,6 +19,7 @@ nodejs_binary(
   entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
   data = [
     "@npm//marked",
+    "@npm//highlight.js",
     ":transform-markdown",
   ],
 )
