@@ -644,5 +644,16 @@ class TestCmptWithViewContainerRef {
       expect(divEl).not.toBeNull();
     });
 
+    it('should support querying on any debug element', () => {
+      TestBed.overrideTemplate(TestCmpt, `<span><div id="a"><div id="b"></div></div></span>`);
+      fixture = TestBed.createComponent(TestCmpt);
+
+      const divA = fixture.debugElement.query(By.css('div'));
+      expect(divA.nativeElement.getAttribute('id')).toBe('a');
+
+      const divB = divA.query(By.css('div'));
+      expect(divB.nativeElement.getAttribute('id')).toBe('b');
+    });
+
   });
 }
