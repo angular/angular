@@ -62,7 +62,7 @@ function getInputNamesFromMetadata(
     return null;
   }
 
-  const decoratorCall = decorator.node.expression as ts.CallExpression;
+  const decoratorCall = decorator.node.expression;
 
   // In case the decorator does define any metadata, there is no metadata
   // where inputs could be declared. This is an edge case because there
