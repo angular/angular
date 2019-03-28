@@ -29,6 +29,12 @@ declare global {
     rendererMoveNode: number;
     rendererRemoveNode: number;
     rendererCreateComment: number;
+    stylingMap: number;
+    stylingMapCacheMiss: number;
+    stylingProp: number;
+    stylingPropCacheMiss: number;
+    stylingApply: number;
+    stylingApplyCacheMiss: number;
   }
 }
 
@@ -56,6 +62,12 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererMoveNode: 0,
     rendererRemoveNode: 0,
     rendererCreateComment: 0,
+    stylingMap: 0,
+    stylingMapCacheMiss: 0,
+    stylingProp: 0,
+    stylingPropCacheMiss: 0,
+    stylingApply: 0,
+    stylingApplyCacheMiss: 0,
   };
   // NOTE: Under Ivy we may have both window & global defined in the Node
   //    environment since ensureDocument() in render3.ts sets global.window.

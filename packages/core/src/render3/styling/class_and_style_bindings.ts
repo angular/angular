@@ -514,6 +514,7 @@ export function updateStylingMap(
         BoundPlayerFactory<null|string|{[key: string]: any}>| null,
     stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| null,
     directiveIndex: number = 0): void {
+  ngDevMode && ngDevMode.stylingMap++;
   ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
   classesInput = classesInput || null;
   stylesInput = stylesInput || null;
@@ -600,6 +601,8 @@ export function updateStylingMap(
   if (playerBuildersAreDirty) {
     setContextPlayersDirty(context, true);
   }
+
+  ngDevMode && ngDevMode.stylingMapCacheMiss++;
 }
 
 /**
@@ -904,6 +907,8 @@ function updateSingleStylingValue(
   const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
   const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
 
+  ngDevMode && ngDevMode.stylingProp++;
+
   if (hasValueChanged(currFlag, currValue, value) &&
       (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex))) {
     const isClassBased = (currFlag & StylingFlags.Class) === StylingFlags.Class;
@@ -958,6 +963,8 @@ function updateSingleStylingValue(
     if (playerBuildersAreDirty) {
       setContextPlayersDirty(context, true);
     }
+
+    ngDevMode && ngDevMode.stylingPropCacheMiss++;
   }
 }
 
@@ -986,6 +993,7 @@ export function renderStyling(
     isFirstRender: boolean, classesStore?: BindingStore | null, stylesStore?: BindingStore | null,
     directiveIndex: number = 0): number {
   let totalPlayersQueued = 0;
+  ngDevMode && ngDevMode.stylingApply++;
 
   // this prevents multiple attempts to render style/class values on
   // the same element...
@@ -1000,6 +1008,8 @@ export function renderStyling(
     flushHostInstructionsQueue(context);
 
     if (isContextDirty(context)) {
+      ngDevMode && ngDevMode.stylingApplyCacheMiss++;
+
       // this is here to prevent things like <ng-container [style] [class]>...</ng-container>
       // or if there are any host style or class bindings present in a directive set on
       // a container node
