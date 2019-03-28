@@ -203,6 +203,12 @@ export function createRootComponent<T>(
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
 
+  // We want to generate an empty QueryList for root content queries for backwards
+  // compatibility with ViewEngine.
+  if (componentDef.contentQueries) {
+    componentDef.contentQueries(RenderFlags.Create, component, rootView.length - 1);
+  }
+
   const rootTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const expando = tView.expandoInstructions !;
@@ -215,12 +221,6 @@ export function createRootComponent<T>(
     const native = componentView[HOST] !as RElement;
     renderInitialClasses(native, rootTNode.stylingTemplate, componentView[RENDERER]);
     renderInitialStyles(native, rootTNode.stylingTemplate, componentView[RENDERER]);
-  }
-
-  // We want to generate an empty QueryList for root content queries for backwards
-  // compatibility with ViewEngine.
-  if (componentDef.contentQueries) {
-    componentDef.contentQueries(RenderFlags.Create, component, rootView.length - 1);
   }
 
   return component;
