@@ -194,7 +194,7 @@ To exclude an asset, you can remove it from the assets configuration.
 You can further configure assets to be copied by specifying assets as objects, rather than as simple paths relative to the workspace root.
 A asset specification object can have the following fields.
 
-* `glob`:  A node-glob using `input` as base directory.
+* `glob`:  A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.
 * `input`: A path relative to the workspace root.
 * `output`: A path relative to `outDir` (default is `dist/`*project-name*). Because of the security implications, the CLI never writes files outside of the project output path.
 * `ignore`: A list of globs to exclude.
