@@ -304,7 +304,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     this._applyPosition(fallback!.position, fallback!.originPoint);
   }
 
-  detach() {
+  detach(): void {
     this._clearPanelClasses();
     this._lastPosition = null;
     this._previousPushAmount = null;
@@ -312,7 +312,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Cleanup after the element gets destroyed. */
-  dispose() {
+  dispose(): void {
     if (this._isDisposed) {
       return;
     }
@@ -369,8 +369,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * on reposition we can evaluate if it or the overlay has been clipped or outside view. Every
    * Scrollable must be an ancestor element of the strategy's origin element.
    */
-  withScrollableContainers(scrollables: CdkScrollable[]) {
+  withScrollableContainers(scrollables: CdkScrollable[]): this {
     this.scrollables = scrollables;
+    return this;
   }
 
   /**

@@ -123,7 +123,7 @@ export declare class FlexibleConnectedPositionStrategy implements PositionStrate
     withLockedPosition(isLocked?: boolean): this;
     withPositions(positions: ConnectedPosition[]): this;
     withPush(canPush?: boolean): this;
-    withScrollableContainers(scrollables: CdkScrollable[]): void;
+    withScrollableContainers(scrollables: CdkScrollable[]): this;
     withTransformOriginOn(selector: string): this;
     withViewportMargin(margin: number): this;
 }
