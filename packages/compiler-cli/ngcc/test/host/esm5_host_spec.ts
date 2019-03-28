@@ -1883,7 +1883,7 @@ describe('Esm5ReflectionHost', () => {
     // https://github.com/angular/angular/issues/29078
     it('should resolve aliased module references to their original declaration', () => {
       const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
-      const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
       const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
       expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([

@@ -228,7 +228,8 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
         it('should find static properties on a class that has an intermediate variable assignment',
            () => {
              const program = makeTestProgram(fileSystem.files[2]);
-             const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+             const host =
+                 new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
              const classNode = getDeclaration(
                  program, '/ngmodule.js', 'HttpClientXsrfModule', isNamedVariableDeclaration);
 

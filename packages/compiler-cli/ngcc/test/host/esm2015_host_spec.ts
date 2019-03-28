@@ -1350,7 +1350,7 @@ describe('Esm2015ReflectionHost', () => {
 
     it('should return the original declaration of an aliased class', () => {
       const program = makeTestProgram(CLASS_EXPRESSION_FILE);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classDeclaration = getDeclaration(
           program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
       const usageOfAliasedClass = getDeclaration(
@@ -1407,7 +1407,7 @@ describe('Esm2015ReflectionHost', () => {
 
     it('should return true if a given node is a class expression assigned into a variable', () => {
       const program = makeTestProgram(CLASS_EXPRESSION_FILE);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const node = getDeclaration(
           program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
       expect(host.isClass(node)).toBe(true);
@@ -1416,7 +1416,7 @@ describe('Esm2015ReflectionHost', () => {
     it('should return true if a given node is a class expression assigned into two variables',
        () => {
          const program = makeTestProgram(CLASS_EXPRESSION_FILE);
-         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
          const node = getDeclaration(
              program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
          expect(host.isClass(node)).toBe(true);
@@ -1438,7 +1438,7 @@ describe('Esm2015ReflectionHost', () => {
         contents: `class TestClass {}`,
       };
       const program = makeTestProgram(file);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
       expect(host.hasBaseClass(classNode)).toBe(false);
     });
@@ -1451,7 +1451,7 @@ describe('Esm2015ReflectionHost', () => {
         class TestClass extends BaseClass {}`,
       };
       const program = makeTestProgram(file);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
       expect(host.hasBaseClass(classNode)).toBe(true);
     });
@@ -1465,7 +1465,7 @@ describe('Esm2015ReflectionHost', () => {
         let TestClass = TestClass_1 = class TestClass extends BaseClass {}`,
       };
       const program = makeTestProgram(file);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
       expect(host.hasBaseClass(classNode)).toBe(true);
     });
@@ -1671,7 +1671,7 @@ describe('Esm2015ReflectionHost', () => {
     // https://github.com/angular/angular/issues/29078
     it('should resolve aliased module references to their original declaration', () => {
       const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
       const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
       expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text])).toEqual([
