@@ -1431,6 +1431,46 @@ describe('Esm2015ReflectionHost', () => {
     });
   });
 
+  describe('hasBaseClass()', () => {
+    it('should not consider a class without extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `class TestClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(false);
+    });
+
+    it('should consider a class with extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `
+        class BaseClass {}
+        class TestClass extends BaseClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(true);
+    });
+
+    it('should consider an aliased class with extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `
+        let TestClass_1;
+        class BaseClass {}
+        let TestClass = TestClass_1 = class TestClass extends BaseClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(true);
+    });
+  });
+
   describe('getGenericArityOfClass()', () => {
     it('should properly count type parameters', () => {
       const program = makeTestProgram(ARITY_CLASSES[0]);

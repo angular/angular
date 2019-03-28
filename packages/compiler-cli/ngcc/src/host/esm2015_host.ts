@@ -96,20 +96,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the declaration of the class or `undefined` if it is not a "class".
    */
   getClassDeclaration(node: ts.Node): ClassDeclaration|undefined {
-    // Recognize a variable declaration of the form `var MyClass = class MyClass {}` or
-    // `var MyClass = MyClass_1 = class MyClass {};`
-    if (ts.isVariableDeclaration(node) && node.initializer !== undefined) {
-      node = node.initializer;
-      while (isAssignment(node)) {
-        node = node.right;
-      }
-    }
-
-    if (!ts.isClassDeclaration(node) && !ts.isClassExpression(node)) {
-      return undefined;
-    }
-
-    return hasNameIdentifier(node) ? node : undefined;
+    return getInnerClassDeclaration(node) || undefined;
   }
 
   /**
@@ -188,6 +175,22 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return this.getConstructorParamInfo(classSymbol, parameterNodes);
     }
     return null;
+  }
+
+  hasBaseClass(clazz: ClassDeclaration): boolean {
+    const superHasBaseClass = super.hasBaseClass(clazz);
+    if (superHasBaseClass) {
+      return superHasBaseClass;
+    }
+
+    const innerClassDeclaration = getInnerClassDeclaration(clazz);
+    if (innerClassDeclaration === null) {
+      return false;
+    }
+
+    return innerClassDeclaration.heritageClauses !== undefined &&
+        innerClassDeclaration.heritageClauses.some(
+            clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
   }
 
   /**
@@ -1420,6 +1423,38 @@ function getCalleeName(call: ts.CallExpression): string|null {
 }
 
 ///////////// Internal Helpers /////////////
+
+/**
+ * In ES2015, a class may be declared using a variable declaration of the following structure:
+ *
+ * ```
+ * var MyClass = MyClass_1 = class MyClass {};
+ * ```
+ *
+ * Here, the intermediate `MyClass_1` assignment is optional. In the above example, the
+ * `class MyClass {}` expression is returned as declaration of `MyClass`. Note that if `node`
+ * represents a regular class declaration, it will be returned as-is.
+ *
+ * @param node the node that represents the class whose declaration we are finding.
+ * @returns the declaration of the class or `null` if it is not a "class".
+ */
+function getInnerClassDeclaration(node: ts.Node):
+    ClassDeclaration<ts.ClassDeclaration|ts.ClassExpression>|null {
+  // Recognize a variable declaration of the form `var MyClass = class MyClass {}` or
+  // `var MyClass = MyClass_1 = class MyClass {};`
+  if (ts.isVariableDeclaration(node) && node.initializer !== undefined) {
+    node = node.initializer;
+    while (isAssignment(node)) {
+      node = node.right;
+    }
+  }
+
+  if (!ts.isClassDeclaration(node) && !ts.isClassExpression(node)) {
+    return null;
+  }
+
+  return hasNameIdentifier(node) ? node : null;
+}
 
 function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
   // The arguments of a decorator are held in the `args` property of its declaration object.
