@@ -13,6 +13,14 @@
 
   <!-- FontAwesome for mat-icon demo. -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+  <!-- Angular Elements setup. -->
+  <script>
+    if (window.customElements) {
+      window.customElements.forcePolyfill = true;
+    }
+  </script>
+  <script src="@webcomponents/custom-elements/custom-elements.min.js"></script>
 </head>
 <body>
   <e2e-app>Loading...</e2e-app>

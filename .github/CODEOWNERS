@@ -176,19 +176,26 @@
 /src/e2e-app/*                                     @jelbourn
 /src/e2e-app/block-scroll-strategy/**              @andrewseguin @crisbeto
 /src/e2e-app/button/**                             @jelbourn
+/src/e2e-app/button-toggle/**                      @jelbourn
+/src/e2e-app/card/**                               @jelbourn
 /src/e2e-app/checkbox/**                           @jelbourn @devversion
 /src/e2e-app/dialog/**                             @jelbourn @crisbeto
 /src/e2e-app/e2e-app/**                            @jelbourn
+/src/e2e-app/example-viewer/**                     @andrewseguin
+/src/e2e-app/expansion/**                          @josephperrott
 /src/e2e-app/grid-list/**                          @jelbourn
 /src/e2e-app/icon/**                               @jelbourn
 /src/e2e-app/input/**                              @mmalerba
+/src/e2e-app/list/**                               @jelbourn
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott
 /src/e2e-app/radio/**                              @jelbourn @devversion
 /src/e2e-app/sidenav/**                            @mmalerba
 /src/e2e-app/slide-toggle/**                       @devversion
+/src/e2e-app/stepper/**                            @mmalerba
 /src/e2e-app/tabs/**                               @andrewseguin
+/src/e2e-app/toolbar/**                            @devversion
 /src/e2e-app/virtual-scroll/**                     @mmalerba
 
 # Universal app
