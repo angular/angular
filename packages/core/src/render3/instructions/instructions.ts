@@ -25,7 +25,7 @@ import {executeHooks, executePreOrderHooks, registerPostOrderHooks, registerPreO
 import {ACTIVE_INDEX, LContainer, VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {CssSelectorList} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
 import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
@@ -1102,17 +1102,17 @@ export function elementEnd(): void {
  *
  * ```ts
  * (rf: RenderFlags, ctx: any) => {
-  *  if (rf & 1) {
-  *    element(0, 'div');
-  *  }
-  *  if (rf & 2) {
-  *    select(0); // Select the <div/> created above.
-  *    property('title', 'test');
-  *  }
-  * }
-  * ```
-  * @param index the index of the item to act on with the following instructions
-  */
+ *  if (rf & 1) {
+ *    element(0, 'div');
+ *  }
+ *  if (rf & 2) {
+ *    select(0); // Select the <div/> created above.
+ *    property('title', 'test');
+ *  }
+ * }
+ * ```
+ * @param index the index of the item to act on with the following instructions
+ */
 export function select(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode &&
