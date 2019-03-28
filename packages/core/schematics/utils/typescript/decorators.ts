@@ -7,7 +7,6 @@
  */
 
 import * as ts from 'typescript';
-
 import {Import, getImportOfIdentifier} from './imports';
 
 export function getCallDecoratorImport(

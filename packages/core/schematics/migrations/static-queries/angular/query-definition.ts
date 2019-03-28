@@ -7,8 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {NgDecorator} from './decorators';
-
+import {NgDecorator} from '../../../utils/ng_decorators';
 
 /** Timing of a given query. Either static or dynamic. */
 export enum QueryTiming {

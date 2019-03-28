@@ -11,11 +11,11 @@ import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {analyzeNgQueryUsage} from './angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {getTransformedQueryCallExpr} from './transform';
-import {parseTsconfigFile} from './typescript/tsconfig';
 
 
 /** Entry point for the V8 static-query migration. */

@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {isFunctionLikeDeclaration, unwrapExpression} from '../typescript/functions';
+import {isFunctionLikeDeclaration, unwrapExpression} from '../../../utils/typescript/functions';
 
 /**
  * Class that can be used to determine if a given TypeScript node is used within
