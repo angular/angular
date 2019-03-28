@@ -149,7 +149,7 @@ $mat-card-header-size: 40px !default;
     // As per Material Design specifications, the images exceed the *top* content-box and take
     // up some space. The margin below is necessary because otherwise space of the actual card
     // content will be overlapped.
-    margin: -8px 0 8px 0;
+    margin: -8px 0 8px;
   }
 }
 
