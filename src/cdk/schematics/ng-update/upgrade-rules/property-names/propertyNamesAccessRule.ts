@@ -9,6 +9,8 @@
 import {green, red} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+
+import {PropertyNameUpgradeData} from '../../data';
 import {getUpgradeDataFromWalker} from '../../upgrade-data';
 
 /**
@@ -24,7 +26,7 @@ export class Rule extends Rules.TypedRule {
 export class Walker extends ProgramAwareRuleWalker {
 
   /** Change data that upgrades to the specified target version. */
-  data = getUpgradeDataFromWalker(this, 'propertyNames');
+  data: PropertyNameUpgradeData[] = getUpgradeDataFromWalker(this, 'propertyNames');
 
   visitPropertyAccessExpression(node: ts.PropertyAccessExpression) {
     const hostType = this.getTypeChecker().getTypeAtLocation(node.expression);

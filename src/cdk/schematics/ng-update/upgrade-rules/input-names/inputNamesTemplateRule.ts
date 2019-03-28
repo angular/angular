@@ -9,6 +9,8 @@
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+
+import {InputNameUpgradeData} from '../../data';
 import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../../html-parsing/angular';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
@@ -27,7 +29,7 @@ export class Rule extends Rules.AbstractRule {
 export class Walker extends ComponentWalker {
 
   /** Change data that upgrades to the specified target version. */
-  data = getUpgradeDataFromWalker(this, 'inputNames');
+  data: InputNameUpgradeData[] = getUpgradeDataFromWalker(this, 'inputNames');
 
   visitInlineTemplate(node: ts.StringLiteralLike) {
     this._createReplacementsForContent(node, node.getText()).forEach(data => {

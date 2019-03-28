@@ -9,8 +9,8 @@
 import {getSystemPath, normalize} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {mkdirpSync, readFileSync, writeFileSync, removeSync} from 'fs-extra';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {mkdirpSync, readFileSync, removeSync, writeFileSync} from 'fs-extra';
 import {sync as globSync} from 'glob';
 import {dirname, join, extname, basename, relative, sep} from 'path';
 import {createTestApp, runPostScheduledTasks} from '../testing';
@@ -32,7 +32,7 @@ export function readFileContent(filePath: string): string {
  */
 export function createFileSystemTestApp(runner: SchematicTestRunner) {
   const tempFileSystemHost = new TempScopedNodeJsSyncHost();
-  const appTree = createTestApp(runner, {name: 'cdk-testing'});
+  const appTree: UnitTestTree = createTestApp(runner, {name: 'cdk-testing'});
   const tempPath = getSystemPath(tempFileSystemHost.root);
 
   // Since the TSLint fix task expects all files to be present on the real file system, we

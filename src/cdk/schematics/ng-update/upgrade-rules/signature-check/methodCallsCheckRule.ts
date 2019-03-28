@@ -9,6 +9,8 @@
 import {bold} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+
+import {MethodCallUpgradeData} from '../../data';
 import {getUpgradeDataFromWalker} from '../../upgrade-data';
 
 /**
@@ -24,7 +26,7 @@ export class Rule extends Rules.TypedRule {
 export class Walker extends ProgramAwareRuleWalker {
 
   /** Change data that upgrades to the specified target version. */
-  data = getUpgradeDataFromWalker(this, 'methodCallChecks');
+  data: MethodCallUpgradeData[] = getUpgradeDataFromWalker(this, 'methodCallChecks');
 
   visitCallExpression(node: ts.CallExpression) {
     if (ts.isPropertyAccessExpression(node.expression)) {

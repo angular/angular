@@ -36,4 +36,4 @@ try {
   }
 }
 
-export {ts};
+export {ts, typescript};

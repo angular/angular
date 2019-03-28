@@ -9,6 +9,8 @@
 import {green, red} from 'chalk';
 import {RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
+
+import {ClassNameUpgradeData} from '../../data';
 import {
   isExportSpecifierNode,
   isImportSpecifierNode,
@@ -34,7 +36,7 @@ export class Rule extends Rules.AbstractRule {
 export class Walker extends RuleWalker {
 
   /** Change data that upgrades to the specified target version. */
-  data = getUpgradeDataFromWalker(this, 'classNames');
+  data: ClassNameUpgradeData[] = getUpgradeDataFromWalker(this, 'classNames');
 
   /**
    * List of identifier names that have been imported from `@angular/material` or `@angular/cdk`

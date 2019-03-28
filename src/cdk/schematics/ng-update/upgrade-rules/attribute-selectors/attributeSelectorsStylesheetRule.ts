@@ -9,6 +9,8 @@
 import {green, red} from 'chalk';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+
+import {AttributeSelectorUpgradeData} from '../../data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {findAllSubstringIndices} from '../../typescript/literal';
@@ -28,7 +30,7 @@ export class Rule extends Rules.AbstractRule {
 export class Walker extends ComponentWalker {
 
   /** Change data that upgrades to the specified target version. */
-  data = getUpgradeDataFromWalker(this, 'attributeSelectors');
+  data: AttributeSelectorUpgradeData[] = getUpgradeDataFromWalker(this, 'attributeSelectors');
 
   constructor(sourceFile: ts.SourceFile, options: IOptions) {
     super(sourceFile, options);
