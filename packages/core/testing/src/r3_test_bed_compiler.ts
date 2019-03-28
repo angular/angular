@@ -111,6 +111,7 @@ export class R3TestBedCompiler {
   private providerOverrides: Provider[] = [];
   private rootProviderOverrides: Provider[] = [];
   private providerOverridesByToken = new Map<any, Provider[]>();
+  private moduleProvidersOverridden = new Set<Type<any>>();
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
@@ -374,6 +375,11 @@ export class R3TestBedCompiler {
   }
 
   private applyProviderOverridesToModule(moduleType: Type<any>): void {
+    if (this.moduleProvidersOverridden.has(moduleType)) {
+      return;
+    }
+    this.moduleProvidersOverridden.add(moduleType);
+
     const injectorDef: any = (moduleType as any)[NG_INJECTOR_DEF];
     if (this.providerOverridesByToken.size > 0) {
       if (this.hasProviderOverrides(injectorDef.providers)) {
@@ -530,6 +536,7 @@ export class R3TestBedCompiler {
       }
     });
     this.initialNgDefs.clear();
+    this.moduleProvidersOverridden.clear();
     this.restoreComponentResolutionQueue();
   }
 
