@@ -8,10 +8,12 @@
 import {assertEqual, assertLessThan} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {BINDING_INDEX, TVIEW} from '../interfaces/view';
-import {getLView} from '../state';
+import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
-import {storeBindingMetadata} from './shared';
+
+import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from './shared';
+
 
 /**
  * Create interpolation bindings with a variable number of expressions.
@@ -282,4 +284,424 @@ export function Δinterpolation8(
           renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
           renderStringify(v6) + i6 + renderStringify(v7) + suffix :
       NO_CHANGE;
+}
+
+/////////////////////////////////////////////////////////////////////
+/// NEW INSTRUCTIONS
+/////////////////////////////////////////////////////////////////////
+
+
+/**
+ * Shared reference to a string, used in `ΔpropertyInterpolate`.
+ */
+const EMPTY_STRING = '';
+
+/**
+ *
+ * Update an interpolated property on an element with a lone bound value
+ *
+ * Used when the value passed to a property has 1 interpolated value in it, an no additional text
+ * surrounds that interpolated value:
+ *
+ * ```html
+ * <div title="{{v0}}"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate('title', v0);
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate(propName: string, v0: any): TsickleIssue1009 {
+  ΔpropertyInterpolate1(propName, EMPTY_STRING, v0, EMPTY_STRING);
+  return ΔpropertyInterpolate;
+}
+
+
+/**
+ *
+ * Update an interpolated property on an element with single bound value surrounded by text.
+ *
+ * Used when the value passed to a property has 1 interpolated value in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate1('title', 'prefix', v0, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate1(
+    propName: string, prefix: string, v0: any, suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(index, propName, Δinterpolation1(prefix, v0, suffix));
+  return ΔpropertyInterpolate1;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 2 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 2 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate2('title', 'prefix', v0, '-', v1, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate2(
+    propName: string, prefix: string, v0: any, i0: string, v1: any,
+    suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(index, propName, Δinterpolation2(prefix, v0, i0, v1, suffix));
+  return ΔpropertyInterpolate2;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 3 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 3 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate3(
+ * 'title', 'prefix', v0, '-', v1, '-', v2, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate3(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
+    suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(index, propName, Δinterpolation3(prefix, v0, i0, v1, i1, v2, suffix));
+  return ΔpropertyInterpolate3;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 4 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 4 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate4(
+ * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param i2 Static value used for concatenation only.
+ * @param v3 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate4(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(
+      index, propName, Δinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix));
+  return ΔpropertyInterpolate4;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 5 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 5 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}-{{v4}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate5(
+ * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param i2 Static value used for concatenation only.
+ * @param v3 Value checked for change.
+ * @param i3 Static value used for concatenation only.
+ * @param v4 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate5(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(
+      index, propName, Δinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix));
+  return ΔpropertyInterpolate5;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 6 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 6 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}-{{v4}}-{{v5}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate6(
+ *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param i2 Static value used for concatenation only.
+ * @param v3 Value checked for change.
+ * @param i3 Static value used for concatenation only.
+ * @param v4 Value checked for change.
+ * @param i4 Static value used for concatenation only.
+ * @param v5 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate6(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(
+      index, propName, Δinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
+  return ΔpropertyInterpolate6;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 7 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 7 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}-{{v4}}-{{v5}}-{{v6}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate7(
+ *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param i2 Static value used for concatenation only.
+ * @param v3 Value checked for change.
+ * @param i3 Static value used for concatenation only.
+ * @param v4 Value checked for change.
+ * @param i4 Static value used for concatenation only.
+ * @param v5 Value checked for change.
+ * @param i5 Static value used for concatenation only.
+ * @param v6 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate7(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
+    suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(
+      index, propName,
+      Δinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix));
+  return ΔpropertyInterpolate7;
+}
+
+/**
+ *
+ * Update an interpolated property on an element with 8 bound values surrounded by text.
+ *
+ * Used when the value passed to a property has 8 interpolated values in it:
+ *
+ * ```html
+ * <div title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}-{{v4}}-{{v5}}-{{v6}}-{{v7}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolate8(
+ *  'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, 'suffix');
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update
+ * @param prefix Static value used for concatenation only.
+ * @param v0 Value checked for change.
+ * @param i0 Static value used for concatenation only.
+ * @param v1 Value checked for change.
+ * @param i1 Static value used for concatenation only.
+ * @param v2 Value checked for change.
+ * @param i2 Static value used for concatenation only.
+ * @param v3 Value checked for change.
+ * @param i3 Static value used for concatenation only.
+ * @param v4 Value checked for change.
+ * @param i4 Static value used for concatenation only.
+ * @param v5 Value checked for change.
+ * @param i5 Static value used for concatenation only.
+ * @param v6 Value checked for change.
+ * @param i6 Static value used for concatenation only.
+ * @param v7 Value checked for change.
+ * @param suffix Static value used for concatenation only.
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolate8(
+    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
+    suffix: string): TsickleIssue1009 {
+  const index = getSelectedIndex();
+  elementPropertyInternal(
+      index, propName,
+      Δinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix));
+  return ΔpropertyInterpolate8;
+}
+
+/**
+ * Update an interpolated property on an element with 8 or more bound values surrounded by text.
+ *
+ * Used when the number of interpolated values exceeds 7.
+ *
+ * ```html
+ * <div
+ *  title="prefix{{v0}}-{{v1}}-{{v2}}-{{v3}}-{{v4}}-{{v5}}-{{v6}}-{{v7}}-{{v8}}-{{v9}}suffix"></div>
+ * ```
+ *
+ * Its compiled representation is::
+ *
+ * ```ts
+ * ΔpropertyInterpolateV(
+ *  'title', ['prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, '-', v9,
+ *  'suffix']);
+ * ```
+ *
+ * If the property name also exists as an input property on one of the element's directives,
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
+ *
+ * @param propName The name of the property to update.
+ * @param values The a collection of values and the strings inbetween those values, beginning with a
+ * string prefix and ending with a string suffix.
+ * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
+ * @returns itself, so that it may be chained.
+ */
+export function ΔpropertyInterpolateV(propName: string, values: any[]): TsickleIssue1009 {
+  const index = getSelectedIndex();
+
+  elementPropertyInternal(index, propName, ΔinterpolationV(values));
+  return ΔpropertyInterpolateV;
 }
