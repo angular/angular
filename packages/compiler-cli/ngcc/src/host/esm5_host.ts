@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 import {getNameText, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
@@ -176,7 +177,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    */
   getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
     // Do not follow ES5's resolution logic when the node resides in a .d.ts file.
-    if (clazz.getSourceFile().isDeclarationFile) {
+    if (isFromDtsFile(clazz)) {
       return super.getMembersOfClass(clazz);
     }
 

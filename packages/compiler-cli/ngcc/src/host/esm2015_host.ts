@@ -100,7 +100,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // `var MyClass = MyClass_1 = class MyClass {};`
     if (ts.isVariableDeclaration(node) && node.initializer !== undefined) {
       node = node.initializer;
-      while (node && isAssignment(node)) {
+      while (isAssignment(node)) {
         node = node.right;
       }
     }
@@ -218,9 +218,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // The identifier may have been of an additional class assignment such as `MyClass_1` that was
     // present as alias for `MyClass`. If so, resolve such aliases to their original declaration.
-    if (superDeclaration) {
+    if (superDeclaration !== null) {
       const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
-      if (aliasedIdentifier) {
+      if (aliasedIdentifier !== null) {
         return this.getDeclarationOfIdentifier(aliasedIdentifier);
       }
     }
@@ -425,22 +425,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns The original identifier that the given class declaration resolves to, or `undefined`
    * if the declaration does not represent an aliased class.
    */
-  protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|undefined {
-    this.ensurePreprocessed(declaration);
-    return this.aliasedClassDeclarations.get(declaration);
+  protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|null {
+    this.ensurePreprocessed(declaration.getSourceFile());
+    return this.aliasedClassDeclarations.get(declaration) || null;
   }
 
   /**
    * Ensures that the source file that `node` is part of has been preprocessed.
    *
    * During preprocessing, all statements in the source file will be visited such that certain
-   * processing
-   * steps can be done up-front and cached for subsequent usages.
+   * processing steps can be done up-front and cached for subsequent usages.
    *
-   * @param node The node of which its source file needs to have gone through preprocessing.
+   * @param sourceFile The source file that needs to have gone through preprocessing.
    */
-  protected ensurePreprocessed(node: ts.Node): void {
-    const sourceFile = node.getSourceFile();
+  protected ensurePreprocessed(sourceFile: ts.SourceFile): void {
     if (!this.preprocessedSourceFiles.has(sourceFile)) {
       this.preprocessedSourceFiles.add(sourceFile);
 
@@ -1309,7 +1307,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected parseForModuleWithProviders(
       name: string, node: ts.Node|null, implementation: ts.Node|null = node,
       container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
-    if (!implementation ||
+    if (implementation === null ||
         (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
          !ts.isFunctionExpression(implementation))) {
       return null;
