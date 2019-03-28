@@ -1,12 +1,12 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
 import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
-import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule} from './index';
+import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule, MatChipList} from './index';
 
 
 describe('Chips', () => {
@@ -257,7 +257,19 @@ describe('Chips', () => {
           expect(testComponent.chipSelectionChange).toHaveBeenCalledWith(CHIP_DESELECTED_EVENT);
         });
 
-        it('should have correct aria-selected', () => {
+        it('should have correct aria-selected in single selection mode', () => {
+          expect(chipNativeElement.hasAttribute('aria-selected')).toBe(false);
+
+          testComponent.selected = true;
+          fixture.detectChanges();
+
+          expect(chipNativeElement.getAttribute('aria-selected')).toBe('true');
+        });
+
+        it('should have the correct aria-selected in multi-selection mode', () => {
+          testComponent.chipList.multiple = true;
+          fixture.detectChanges();
+
           expect(chipNativeElement.getAttribute('aria-selected')).toBe('false');
 
           testComponent.selected = true;
@@ -265,6 +277,7 @@ describe('Chips', () => {
 
           expect(chipNativeElement.getAttribute('aria-selected')).toBe('true');
         });
+
       });
 
       describe('when selectable is false', () => {
@@ -390,6 +403,7 @@ describe('Chips', () => {
     </mat-chip-list>`
 })
 class SingleChip {
+  @ViewChild(MatChipList) chipList: MatChipList;
   disabled: boolean = false;
   name: string = 'Test';
   color: string = 'primary';

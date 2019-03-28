@@ -175,6 +175,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   get multiple(): boolean { return this._multiple; }
   set multiple(value: boolean) {
     this._multiple = coerceBooleanProperty(value);
+    this._syncChipsState();
   }
   private _multiple: boolean = false;
 
@@ -267,7 +268,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   get disabled(): boolean { return this.ngControl ? !!this.ngControl.disabled : this._disabled; }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
-    this._syncChipsDisabledState();
+    this._syncChipsState();
   }
   protected _disabled: boolean = false;
 
@@ -371,7 +372,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
         // Since this happens after the content has been
         // checked, we need to defer it to the next tick.
         Promise.resolve().then(() => {
-          this._syncChipsDisabledState();
+          this._syncChipsState();
         });
       }
 
@@ -781,11 +782,12 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     return this.chips.some(chip => chip._hasFocus);
   }
 
-  /** Syncs the list's disabled state with the individual chips. */
-  private _syncChipsDisabledState() {
+  /** Syncs the list's state with the individual chips. */
+  private _syncChipsState() {
     if (this.chips) {
       this.chips.forEach(chip => {
         chip.disabled = this._disabled;
+        chip._chipListMultiple = this.multiple;
       });
     }
   }

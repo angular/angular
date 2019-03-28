@@ -5,6 +5,7 @@ export declare const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & Ca
 export declare const MAT_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatChipsDefaultOptions>;
 
 export declare class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisable, CanDisableRipple, RippleTarget {
+    _chipListMultiple: boolean;
     _elementRef: ElementRef;
     _hasFocus: boolean;
     readonly _onBlur: Subject<MatChipEvent>;

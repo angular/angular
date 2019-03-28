@@ -145,6 +145,9 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Whether the chip list is selectable */
   chipListSelectable: boolean = true;
 
+  /** Whether the chip list is in multi-selection mode. */
+  _chipListMultiple: boolean = false;
+
   /** The chip avatar */
   @ContentChild(MatChipAvatar) avatar: MatChipAvatar;
 
@@ -218,7 +221,10 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 
   /** The ARIA selected applied to the chip. */
   get ariaSelected(): string | null {
-    return this.selectable ? this.selected.toString() : null;
+    // Remove the `aria-selected` when the chip is deselected in single-selection mode, because
+    // it adds noise to NVDA users where "not selected" will be read out for each chip.
+    return this.selectable && (this._chipListMultiple || this.selected) ?
+        this.selected.toString() : null;
   }
 
   constructor(public _elementRef: ElementRef,
