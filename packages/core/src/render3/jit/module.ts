@@ -158,6 +158,7 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
   const errors: string[] = [];
   const declarations = maybeUnwrapFn(ngModuleDef.declarations);
   const imports = maybeUnwrapFn(ngModuleDef.imports);
+  flatten(imports, unwrapModuleWithProvidersImports).forEach(verifySemanticsOfNgModuleDef);
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
   const combinedDeclarations: Type<any>[] = [
