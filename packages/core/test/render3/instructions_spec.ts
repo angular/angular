@@ -7,6 +7,7 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+import {ΔpropertyInterpolate, ΔpropertyInterpolate1, ΔpropertyInterpolate2, ΔpropertyInterpolate3, ΔpropertyInterpolate4, ΔpropertyInterpolate5, ΔpropertyInterpolate6, ΔpropertyInterpolate7, ΔpropertyInterpolate8, ΔpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
 
 import {ΔdefineComponent} from '../../src/render3/definition';
 import {RenderFlags, Δbind, Δelement, ΔelementAttribute, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔelementStyleProp, ΔelementStyling, ΔelementStylingApply, ΔelementStylingMap, Δinterpolation1, Δproperty, Δselect, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/index';
@@ -161,7 +162,7 @@ describe('instructions', () => {
     });
   });
 
-  describe('select', () => {
+  describe('Δselect', () => {
     it('should error in DevMode if index is out of range', () => {
       // Only one constant added, meaning only index `0` is valid.
       const t = new TemplateFixture(createDiv, () => {}, 1, 0);
@@ -173,7 +174,7 @@ describe('instructions', () => {
 
   describe('property', () => {
     // TODO(benlesh): Replace with TestBed tests once the instruction is being generated.
-    it('should set properties of the selected element', () => {
+    it('should set properties of the Δselected element', () => {
       // <div [title]="title"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
       t.update(() => {
@@ -241,7 +242,7 @@ describe('instructions', () => {
       });
     });
 
-    it('should error in dev mode if select was not called prior', () => {
+    it('should error in dev mode if Δselect was not called prior', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
       expect(() => { t.update(() => { Δproperty('title', 'test'); }); }).toThrow();
       expect(() => {
@@ -250,6 +251,724 @@ describe('instructions', () => {
           Δproperty('title', 'test');
         });
       }).not.toThrow();
+    });
+  });
+
+  /**
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   * TODO: REMOVE ALL OF THESE TemplateFixture TESTS FOR TestBed TESTS AFTER COMPILER IS UPDATED
+   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   */
+  describe('ΔpropertyInterpolate instructions', () => {
+    describe('ΔpropertyInterpolate', () => {
+      it('should interpolate one value', () => {
+        // <div title="{{123}}"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate('title', 123);
+        });
+        expect(t.html).toEqual('<div title="123"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate('title', 'abc');
+        });
+        expect(t.html).toEqual('<div title="abc"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="{{123}}" accesskey="{{'A'}}"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate('title', 123)('accessKey', 'A');
+        });
+        expect(t.html).toEqual('<div accesskey="A" title="123"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate('title', 'abc')('accessKey', 'B');
+        });
+        expect(t.html).toEqual('<div accesskey="B" title="abc"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+        expect(() => { t.update(() => { ΔpropertyInterpolate('title', 123); }); }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate('title', 123); });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate1', () => {
+      it('should interpolate one value', () => {
+        // <div title="start{{123}}end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 123, 'end');
+        });
+        expect(t.html).toEqual('<div title="start123end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 'abc', 'end');
+        });
+        expect(t.html).toEqual('<div title="startabcend"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start{{123}}end" data-teststartstart{{'A'}}end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 123, 'end')('accessKey', 'start', 'A', 'end');
+        });
+        expect(t.html).toEqual('<div accesskey="startAend" title="start123end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 'abc', 'end')('accessKey', 'start', 'B', 'end');
+        });
+        expect(t.html).toEqual('<div accesskey="startBend" title="startabcend"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 1);
+        expect(() => {
+          t.update(() => { ΔpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate2', () => {
+      it('should interpolate two values', () => {
+        // <div title="start: {{v0}}, 1: {{v1}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end');
+        });
+        expect(t.html).toEqual('<div title="start: 0, 1: 1, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end');
+        });
+        expect(t.html).toEqual('<div title="start: A, 1: B, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}}, end" accesskey="start: {{v0}}, 1: {{v1}},
+        // end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 4);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, end" title="start: 0, 1: 1, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, end" title="start: A, 1: B, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 2);
+        expect(() => {
+          t.update(() => { ΔpropertyInterpolate2('title', '', '', '', '', ''); });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate2('title', '', '', '', '', ''); });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate3', () => {
+      it('should interpolate three values', () => {
+        // <div title="start: {{v0}}, 1: {{v1}}, 2: {{v2}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 3);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end');
+        });
+        expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end');
+        });
+        expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}}, end" accesskey="start: {{v0}}, 1: {{v1}},
+        // 2: {{v2}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 6);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, end" title="start: 0, 1: 1, 2: 2, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, end" title="start: A, 1: B, 2: C, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 3);
+        expect(() => {
+          t.update(() => { ΔpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
+        }).not.toThrow();
+      });
+    });
+
+
+    describe('ΔpropertyInterpolate4', () => {
+      it('should interpolate four values', () => {
+        // <div title="start: {{v0}}, 1: {{v1}}, 2: {{v2}}, 3: {{v3}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 4);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
+        });
+        expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate4(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end');
+        });
+        expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, 3: D, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}}, end" accesskey="start: {{v0}} 1:
+        // {{v1}} 2: {{v2}} 3: {{v3}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 8);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, end" title="start: 0, 1: 1, 2: 2, 3: 3, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate4(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, end" title="start: A, 1: B, 2: C, 3: D, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 4);
+        expect(() => {
+          t.update(() => { ΔpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate5', () => {
+      it('should interpolate five values', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 5);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate5(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end');
+        });
+        expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate5(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', end');
+        });
+        expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, 3: D, 4: E, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, end" accesskey="start:
+        // {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 10);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate5(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate5(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, 4: E, end" title="start: A, 1: B, 2: C, 3: D, 4: E, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 5);
+        expect(() => {
+          t.update(() => {
+            ΔpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => {
+            ΔpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate6', () => {
+      it('should interpolate six values', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, 5: {{v5}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 6);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate6(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', end');
+        });
+        expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate6(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', end');
+        });
+        expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, 5: {{v5}}, end"
+        // accesskey="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, 5: {{v5}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 12);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate6(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate6(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, end" title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 6);
+        expect(() => {
+          t.update(() => {
+            ΔpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => {
+            ΔpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate7', () => {
+      it('should interpolate seven values', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 7);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate7(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate7(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // 7: {{v7}} end" accesskey="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5:
+        // {{v5}}, 6: {{v6}}, end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 14);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate7(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate7(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, end" title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 7);
+        expect(() => {
+          t.update(() => {
+            ΔpropertyInterpolate7(
+                'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => {
+            ΔpropertyInterpolate7(
+                'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).not.toThrow();
+      });
+    });
+
+    describe('ΔpropertyInterpolate8', () => {
+      it('should interpolate eight values', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // 7: {{v7}} end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 8);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate8(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', 7: ', 7, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate8(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', 7: ', 'H', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // 7: {{v7}} end" accesskey="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5:
+        // {{v5}}, 6: {{v6}}, 7: {{v7}} end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 16);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate8(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', 7: ', 7, ', end')(
+              'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
+              ', 6: ', 6, ', 7: ', 7, ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolate8(
+              'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', 7: ', 'H', ', end')(
+              'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
+              ', 5: ', 'F', ', 6: ', 'G', ', 7: ', 'H', ', end');
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, end" title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 8);
+        expect(() => {
+          t.update(() => {
+            ΔpropertyInterpolate8(
+                'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => {
+            ΔpropertyInterpolate8(
+                'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+          });
+        }).not.toThrow();
+      });
+    });
+
+
+    describe('ΔpropertyInterpolateV', () => {
+      it('should interpolate eight or more values', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // 7: {{v7}}, 8: {{v8}} end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 9);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolateV('title', [
+            'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5, ', 6: ', 6,
+            ', 7: ', 7, ', 8: ', 8, ', end'
+          ]);
+        });
+        expect(t.html).toEqual(
+            '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolateV('title', [
+            'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E', ', 5: ', 'F',
+            ', 6: ', 'G', ', 7: ', 'H', ', 8: ', 'I', ', end'
+          ]);
+        });
+        expect(t.html).toEqual(
+            '<div title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, 8: I, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 2,
+        });
+      });
+
+      it('should chain', () => {
+        // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
+        // 7: {{v7}} end" accesskey="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5:
+        // {{v5}}, 6: {{v6}}, 7: {{v7}}, 8: {{v8}} end"></div>
+        const t = new TemplateFixture(createDiv, () => {}, 1, 18);
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolateV(
+              'title',
+              [
+                'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5, ', 6: ',
+                6, ', 7: ', 7, ', 8: ', 8, ', end'
+              ])(
+              'accessKey', [
+                'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5, ', 6: ',
+                6, ', 7: ', 7, ', 8: ', 8, ', end'
+              ]);
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end"></div>');
+        t.update(() => {
+          Δselect(0);
+          ΔpropertyInterpolateV(
+              'title',
+              [
+                'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E', ', 5: ',
+                'F', ', 6: ', 'G', ', 7: ', 'H', ', 8: ', 'I', ', end'
+              ])(
+              'accessKey', [
+                'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E', ', 5: ',
+                'F', ', 6: ', 'G', ', 7: ', 'H', ', 8: ', 'I', ', end'
+              ]);
+        });
+        expect(t.html).toEqual(
+            '<div accesskey="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, 8: I, end" title="start: A, 1: B, 2: C, 3: D, 4: E, 5: F, 6: G, 7: H, 8: I, end"></div>');
+        expect(ngDevMode).toHaveProperties({
+          firstTemplatePass: 1,
+          tNode: 2,  // 1 for div, 1 for host element
+          tView: 2,  // 1 for rootView + 1 for the template view
+          rendererCreateElement: 1,
+          rendererSetProperty: 4,
+        });
+      });
+
+      it('should error if called without Δselect called first', () => {
+        const t = new TemplateFixture(createDiv, () => {}, 1, 9);
+        expect(() => {
+          t.update(() => {
+            ΔpropertyInterpolateV(
+                'title',
+                ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+          });
+        }).toThrow();
+        expect(() => {
+          Δselect(0);
+          t.update(() => {
+            ΔpropertyInterpolateV(
+                'title',
+                ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+          });
+        }).not.toThrow();
+      });
     });
   });
 
