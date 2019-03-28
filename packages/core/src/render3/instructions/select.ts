@@ -11,7 +11,7 @@ import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
 import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
 
 /**
- * Selects an index of an item to act on and flushes lifecycle hooks up to this point
+ * Selects an element for later binding instructions.
  *
  * Used in conjunction with instructions like {@link property} to act on elements with specified
  * indices, for example those created with {@link element} or {@link elementStart}.
