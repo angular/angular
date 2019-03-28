@@ -345,6 +345,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
     this._animationStarted.complete();
     this._animationEnd.complete();
+    this._modeChanged.complete();
     this._destroyed.next();
     this._destroyed.complete();
   }
@@ -561,6 +562,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   }
 
   ngOnDestroy() {
+    this._contentMarginChanges.complete();
     this._doCheckSubject.complete();
     this._destroyed.next();
     this._destroyed.complete();
