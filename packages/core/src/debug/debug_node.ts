@@ -391,7 +391,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 }
 
 /**
- * Walk the TNode tree to find matches for the predicate, skipping the parent element.
+ * Walk the TNode tree to find matches for the predicate.
  *
  * @param parentElement the element from which the walk is started
  * @param predicate the predicate to match
@@ -403,9 +403,8 @@ function _queryAllR3(
     elementsOnly: boolean) {
   const context = loadLContext(parentElement.nativeNode) !;
   const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
-  const lView = getComponentViewByIndex(parentTNode.index, context.lView);
-  const tNode = lView[TVIEW].firstChild !;
-  _queryNodeChildrenR3(tNode, lView, predicate, matches, elementsOnly);
+  _queryNodeChildrenR3(
+      parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
 }
 
 /**
@@ -416,39 +415,44 @@ function _queryAllR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
+ * @param rootNativeNode the root native node on which prediccate shouold not be matched
  */
 function _queryNodeChildrenR3(
     tNode: TNode, lView: LView, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean) {
+    elementsOnly: boolean, rootNativeNode: any) {
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
-    _addQueryMatchR3(getNativeByTNode(tNode, lView), predicate, matches, elementsOnly);
+    _addQueryMatchR3(
+        getNativeByTNode(tNode, lView), predicate, matches, elementsOnly, rootNativeNode);
     if (isComponent(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
       const componentView = getComponentViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild)
         _queryNodeChildrenR3(
-            componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly);
+            componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,
+            rootNativeNode);
     } else {
       // Otherwise, its children have to be processed.
-      if (tNode.child) _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly);
+      if (tNode.child)
+        _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
     }
     // In all cases, if a dynamic container exists for this node, each view inside it has to be
     // processed.
     const nodeOrContainer = lView[tNode.index];
     if (isLContainer(nodeOrContainer)) {
-      _queryNodeChildrenInContainerR3(nodeOrContainer, predicate, matches, elementsOnly);
+      _queryNodeChildrenInContainerR3(
+          nodeOrContainer, predicate, matches, elementsOnly, rootNativeNode);
     }
   } else if (tNode.type === TNodeType.Container) {
     // Case 2: the TNode is a container
     // The native node has to be checked.
     const lContainer = lView[tNode.index];
-    _addQueryMatchR3(lContainer[NATIVE], predicate, matches, elementsOnly);
+    _addQueryMatchR3(lContainer[NATIVE], predicate, matches, elementsOnly, rootNativeNode);
     // Each view inside the container has to be processed.
-    _queryNodeChildrenInContainerR3(lContainer, predicate, matches, elementsOnly);
+    _queryNodeChildrenInContainerR3(lContainer, predicate, matches, elementsOnly, rootNativeNode);
   } else if (tNode.type === TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
@@ -459,26 +463,27 @@ function _queryNodeChildrenR3(
 
     if (Array.isArray(head)) {
       for (let nativeNode of head) {
-        _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly);
+        _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
       }
     } else {
       if (head) {
         const nextLView = componentView[PARENT] !as LView;
         const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
-        _queryNodeChildrenR3(nextTNode, nextLView, predicate, matches, elementsOnly);
+        _queryNodeChildrenR3(
+            nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
       }
     }
   } else {
     // Case 4: the TNode is a view.
     if (tNode.child) {
-      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly);
+      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
     }
   }
   // To determine the next node to be processed, we need to use the next or the projectionNext link,
   // depending on whether the current node has been projected.
   const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
   if (nextTNode) {
-    _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly);
+    _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
   }
 }
 
@@ -489,13 +494,15 @@ function _queryNodeChildrenR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
+ * @param rootNativeNode the root native node on which prediccate shouold not be matched
  */
 function _queryNodeChildrenInContainerR3(
     lContainer: LContainer, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean) {
+    elementsOnly: boolean, rootNativeNode: any) {
   for (let i = 0; i < lContainer[VIEWS].length; i++) {
     const childView = lContainer[VIEWS][i];
-    _queryNodeChildrenR3(childView[TVIEW].node !, childView, predicate, matches, elementsOnly);
+    _queryNodeChildrenR3(
+        childView[TVIEW].node !, childView, predicate, matches, elementsOnly, rootNativeNode);
   }
 }
 
@@ -506,13 +513,17 @@ function _queryNodeChildrenInContainerR3(
  * @param predicate the predicate to match
  * @param matches the list of positive matches
  * @param elementsOnly whether only elements should be searched
+ * @param rootNativeNode the root native node on which prediccate shouold not be matched
  */
 function _addQueryMatchR3(
-    nativeNode: any, predicate: Predicate<DebugNode>, matches: DebugNode[], elementsOnly: boolean) {
-  const debugNode = getDebugNode(nativeNode);
-  if (debugNode && (elementsOnly ? debugNode instanceof DebugElement__POST_R3__ : true) &&
-      predicate(debugNode)) {
-    matches.push(debugNode);
+    nativeNode: any, predicate: Predicate<DebugNode>, matches: DebugNode[], elementsOnly: boolean,
+    rootNativeNode: any) {
+  if (rootNativeNode !== nativeNode) {
+    const debugNode = getDebugNode(nativeNode);
+    if (debugNode && (elementsOnly ? debugNode instanceof DebugElement__POST_R3__ : true) &&
+        predicate(debugNode)) {
+      matches.push(debugNode);
+    }
   }
 }
 
