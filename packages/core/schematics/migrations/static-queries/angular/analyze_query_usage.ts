@@ -7,12 +7,10 @@
  */
 
 import * as ts from 'typescript';
-
-import {hasPropertyNameText} from '../typescript/property_name';
+import {hasPropertyNameText} from '../../../utils/typescript/property_name';
 import {DeclarationUsageVisitor} from './declaration_usage_visitor';
 import {ClassMetadataMap} from './ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from './query-definition';
-
 
 /**
  * Object that maps a given type of query to a list of lifecycle hooks that
