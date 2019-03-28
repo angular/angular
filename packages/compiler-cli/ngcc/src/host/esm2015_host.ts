@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {Logger} from '../logging/logger';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
 
@@ -73,7 +73,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected aliasedClassDeclarations = new Map<ts.Declaration, ts.Identifier>();
 
-  constructor(protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker, dts?: BundleProgram|null) {
+  constructor(
+      protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker,
+      dts?: BundleProgram|null) {
     super(checker);
     this.dtsDeclarationMap = dts && this.computeDtsDeclarationMap(dts.path, dts.program) || null;
   }
