@@ -1,0 +1,18 @@
+# Onboarding Checklist for Trusted Collaborators
+
+Copy this to your onboarding PRs.
+
+
+- [ ] Get an NDA signed [Manu]
+- [ ] Add to collaborators@angular.io distribution [Manu]
+- [ ] Add to <<sub-team>>@angular.io distribution [Manu]
+- [ ] invite these groups (and not individuals) to the regular sync meetings [Lead]
+- [ ] Add these groups to the meeting notes & other docs [Lead]
+- [ ] Add to Jira [Manu]
+- [ ] Add to Slack & default channels (e.g. caretaker, announcements, sub-team root channel)[Manu]
+- [ ] Add to slack channels based on areas of work [Mentor]
+- [ ] Add to GitHub teams [Lead]
+- [ ] PR to the contributors.json file [Mentor], when this is merged they'll appear on http://next.angular.io/about
+- [ ] Send email to everyone@angular.io introducing the new member [Mentor]
+
+When all of the above steps are completed, the member is fully onboarded.
