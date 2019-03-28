@@ -151,8 +151,8 @@ export abstract class AbstractControl {
   // TODO(issue/24571): remove '!'.
   _updateOn !: FormHooks;
 
-  // TODO(issue/24571): remove '!'.
-  private _parent !: FormGroup | FormArray;
+  private _parent: FormGroup|FormArray|null = null;
+
   private _asyncValidationSubscription: any;
 
   /**
@@ -178,7 +178,7 @@ export abstract class AbstractControl {
   /**
    * The parent control.
    */
-  get parent(): FormGroup|FormArray { return this._parent; }
+  get parent(): FormGroup|FormArray|null { return this._parent; }
 
   /**
    * The validation status of the control. There are four possible
@@ -560,7 +560,7 @@ export abstract class AbstractControl {
   /**
    * @param parent Sets the parent of the control
    */
-  setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
+  setParent(parent: FormGroup|FormArray|null): void { this._parent = parent; }
 
   /**
    * Sets the value of the control. Abstract method (implemented in sub-classes).
@@ -870,8 +870,8 @@ export abstract class AbstractControl {
    * @internal
    */
   private _parentMarkedDirty(onlySelf?: boolean): boolean {
-    const parentDirty = this._parent && this._parent.dirty;
-    return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
+    if (!this._parent) return false;
+    return !onlySelf && this._parent.dirty && !this._parent._anyControlsDirty();
   }
 }
 
@@ -1275,6 +1275,24 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
+   * Unregisters a control from the group's list of controls.
+   *
+   * This method does not update the value or validity of the control.
+   * Use {@link FormGroup#removeControl removeControl} instead.
+   *
+   * @param name The control name to unregister from the collection
+   */
+  unregisterControl(name: string): AbstractControl {
+    const control = this.controls[name];
+    if (control) {
+      control._registerOnCollectionChange(() => {});
+      control.setParent(null);
+    }
+    delete this.controls[name];
+    return control;
+  }
+
+  /**
    * Add a control to this group.
    *
    * This method also updates the value and validity of the control.
@@ -1294,8 +1312,7 @@ export class FormGroup extends AbstractControl {
    * @param name The control name to remove from the collection
    */
   removeControl(name: string): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
+    this.unregisterControl(name);
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -1307,8 +1324,7 @@ export class FormGroup extends AbstractControl {
    * @param control Provides the control for the given name
    */
   setControl(name: string, control: AbstractControl): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
+    this.unregisterControl(name);
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity();
     this._onCollectionChange();

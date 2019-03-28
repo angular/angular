@@ -159,6 +159,15 @@ import {of } from 'rxjs';
         expect(g.valid).toBe(false);
       });
 
+      it('should update parent of added control', () => {
+        const g = new FormGroup({});
+        const c = new FormControl();
+
+        g.addControl('c', c);
+
+        expect(c.parent).toBe(g);
+      });
+
       it('should update value and validity when control is removed', () => {
         const g = new FormGroup(
             {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
@@ -169,6 +178,15 @@ import {of } from 'rxjs';
 
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
+      });
+
+      it('should update parent of removed control', () => {
+        const c = new FormControl();
+        const g = new FormGroup({c: c});
+
+        g.removeControl('c');
+
+        expect(c.parent).toBe(null);
       });
     });
 
