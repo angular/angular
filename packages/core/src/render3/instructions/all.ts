@@ -27,3 +27,4 @@
  */
 export * from './instructions';
 export * from './styling_instructions';
+export * from './property';

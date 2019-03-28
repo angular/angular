@@ -10,12 +10,11 @@ import {InjectFlags, InjectionToken, Injector} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {ErrorHandler} from '../../error_handler';
 import {Type} from '../../interface/type';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
-import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
+import {SchemaMetadata} from '../../metadata/schema';
+import {validateAgainstEventAttributes} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertLessThan, assertNotEqual} from '../../util/assert';
 import {isObservable} from '../../util/lang';
-import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertHasParent, assertLContainerOrUndefined, assertLView, assertPreviousIsParent} from '../assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -26,27 +25,27 @@ import {executeHooks, executePreOrderHooks, registerPostOrderHooks, registerPreO
 import {ACTIVE_INDEX, LContainer, VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {CssSelectorList} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
 import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from '../node_manipulation';
 import {isNodeMatchingSelectorList, matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {applyOnCreateInstructions} from '../node_util';
 import {decreaseElementDepthCount, enterView, getActiveHostContext, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
-import {ANIMATION_PROP_PREFIX, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
+import {getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from '../util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
-import {setInputsForProperty} from './shared';
+import {BindingDirection, elementPropertyInternal, generatePropertyAliases, initializeTNodeInputs, setInputsForProperty} from './shared';
 
 
 
@@ -55,11 +54,6 @@ import {setInputsForProperty} from './shared';
  * clean.
  */
 const _CLEAN_PROMISE = Promise.resolve(null);
-
-const enum BindingDirection {
-  Input,
-  Output,
-}
 
 /**
  * Refreshes the view, executing the following steps in that order:
@@ -1108,17 +1102,17 @@ export function elementEnd(): void {
  *
  * ```ts
  * (rf: RenderFlags, ctx: any) => {
-  *  if (rf & 1) {
-  *    element(0, 'div');
-  *  }
-  *  if (rf & 2) {
-  *    select(0); // Select the <div/> created above.
-  *    property('title', 'test');
-  *  }
-  * }
-  * ```
-  * @param index the index of the item to act on with the following instructions
-  */
+ *  if (rf & 1) {
+ *    element(0, 'div');
+ *  }
+ *  if (rf & 2) {
+ *    select(0); // Select the <div/> created above.
+ *    property('title', 'test');
+ *  }
+ * }
+ * ```
+ * @param index the index of the item to act on with the following instructions
+ */
 export function select(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode &&
@@ -1166,41 +1160,6 @@ export function elementAttribute(
       }
     }
   }
-}
-
-// TODO: Remove this when the issue is resolved.
-/**
- * Tsickle has a bug where it creates an infinite loop for a function returning itself.
- * This is a temporary type that will be removed when the issue is resolved.
- * https://github.com/angular/tsickle/issues/1009)
- */
-export type TsickleIssue1009 = any;
-
-/**
- * Update a property on a selected element.
- *
- * Operates on the element selected by index via the {@link select} instruction.
- *
- * If the property name also exists as an input property on one of the element's directives,
- * the component property will be set instead of the element property. This check must
- * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled
- *
- * @param propName Name of property. Because it is going to DOM, this is not subject to
- *        renaming as part of minification.
- * @param value New value to write.
- * @param sanitizer An optional function used to sanitize the value.
- * @param nativeOnly Whether or not we should only set native properties and skip input check
- * (this is necessary for host property bindings)
- * @returns This function returns itself so that it may be chained
- * (e.g. `property('name', ctx.name)('title', ctx.title)`)
- */
-export function property<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean): TsickleIssue1009 {
-  const index = getSelectedIndex();
-  const bindReconciledValue = bind(value);
-  elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
-  return property;
 }
 
 /**
@@ -1253,124 +1212,6 @@ export function componentHostSyntheticProperty<T>(
 }
 
 /**
- * Mapping between attributes names that don't correspond to their element property names.
- */
-const ATTR_TO_PROP: {[name: string]: string} = {
-  'class': 'className',
-  'for': 'htmlFor',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
-};
-
-function elementPropertyInternal<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean,
-    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
-  if (value === NO_CHANGE) return;
-  const lView = getLView();
-  const element = getNativeByIndex(index, lView) as RElement | RComment;
-  const tNode = getTNode(index, lView);
-  let inputData: PropertyAliases|null|undefined;
-  let dataValue: PropertyAliasValue|undefined;
-  if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
-      (dataValue = inputData[propName])) {
-    setInputsForProperty(lView, dataValue, value);
-    if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
-    if (ngDevMode) {
-      if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        setNgReflectProperties(lView, element, tNode.type, dataValue, value);
-      }
-    }
-  } else if (tNode.type === TNodeType.Element) {
-    propName = ATTR_TO_PROP[propName] || propName;
-
-    if (ngDevMode) {
-      validateAgainstEventProperties(propName);
-      validateAgainstUnknownProperties(lView, element, propName, tNode);
-      ngDevMode.rendererSetProperty++;
-    }
-
-    savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
-
-    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
-    // It is assumed that the sanitizer is only added when the compiler determines that the property
-    // is risky, so sanitization can be done without further checks.
-    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
-    if (isProceduralRenderer(renderer)) {
-      renderer.setProperty(element as RElement, propName, value);
-    } else if (!isAnimationProp(propName)) {
-      (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
-                                          (element as any)[propName] = value;
-    }
-  }
-}
-
-function validateAgainstUnknownProperties(
-    hostView: LView, element: RElement | RComment, propName: string, tNode: TNode) {
-  // If the tag matches any of the schemas we shouldn't throw.
-  if (matchingSchemas(hostView, tNode.tagName)) {
-    return;
-  }
-
-  // If prop is not a known property of the HTML element...
-  if (!(propName in element) &&
-      // and we are in a browser context... (web worker nodes should be skipped)
-      typeof Node === 'function' && element instanceof Node &&
-      // and isn't a synthetic animation property...
-      propName[0] !== ANIMATION_PROP_PREFIX) {
-    // ... it is probably a user error and we should throw.
-    throw new Error(
-        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
-  }
-}
-
-function matchingSchemas(hostView: LView, tagName: string | null): boolean {
-  const schemas = hostView[TVIEW].schemas;
-
-  if (schemas !== null) {
-    for (let i = 0; i < schemas.length; i++) {
-      const schema = schemas[i];
-      if (schema === NO_ERRORS_SCHEMA ||
-          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-/**
- * Stores debugging data for this property binding on first template pass.
- * This enables features like DebugElement.properties.
- */
-function savePropertyDebugData(
-    tNode: TNode, lView: LView, propName: string, tData: TData,
-    nativeOnly: boolean | undefined): void {
-  const lastBindingIndex = lView[BINDING_INDEX] - 1;
-
-  // Bind/interpolation functions save binding metadata in the last binding index,
-  // but leave the property name blank. If the interpolation delimiter is at the 0
-  // index, we know that this is our first pass and the property name still needs to
-  // be set.
-  const bindingMetadata = tData[lastBindingIndex] as string;
-  if (bindingMetadata[0] == INTERPOLATION_DELIMITER) {
-    tData[lastBindingIndex] = propName + bindingMetadata;
-
-    // We don't want to store indices for host bindings because they are stored in a
-    // different part of LView (the expando section).
-    if (!nativeOnly) {
-      if (tNode.propertyMetadataStartIndex == -1) {
-        tNode.propertyMetadataStartIndex = lastBindingIndex;
-      }
-      tNode.propertyMetadataEndIndex = lastBindingIndex + 1;
-    }
-  }
-}
-
-/**
  * Constructs a TNode object from the arguments.
  *
  * @param type The type of the node
@@ -1409,63 +1250,6 @@ export function createTNode(
     projection: null,
     onElementCreationFns: null,
   };
-}
-
-function setNgReflectProperties(
-    lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
-    value: any) {
-  for (let i = 0; i < inputs.length; i += 3) {
-    const renderer = lView[RENDERER];
-    const attrName = normalizeDebugBindingName(inputs[i + 2] as string);
-    const debugValue = normalizeDebugBindingValue(value);
-    if (type === TNodeType.Element) {
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute((element as RElement), attrName, debugValue) :
-          (element as RElement).setAttribute(attrName, debugValue);
-    } else if (value !== undefined) {
-      const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
-      if (isProceduralRenderer(renderer)) {
-        renderer.setValue((element as RComment), value);
-      } else {
-        (element as RComment).textContent = value;
-      }
-    }
-  }
-}
-
-/**
- * Consolidates all inputs or outputs of all directives on this logical node.
- *
- * @param tNodeFlags node flags
- * @param direction whether to consider inputs or outputs
- * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
- */
-function generatePropertyAliases(tNode: TNode, direction: BindingDirection): PropertyAliases|null {
-  const tView = getLView()[TVIEW];
-  let propStore: PropertyAliases|null = null;
-  const start = tNode.directiveStart;
-  const end = tNode.directiveEnd;
-
-  if (end > start) {
-    const isInput = direction === BindingDirection.Input;
-    const defs = tView.data;
-
-    for (let i = start; i < end; i++) {
-      const directiveDef = defs[i] as DirectiveDef<any>;
-      const propertyAliasMap: {[publicName: string]: string} =
-          isInput ? directiveDef.inputs : directiveDef.outputs;
-      for (let publicName in propertyAliasMap) {
-        if (propertyAliasMap.hasOwnProperty(publicName)) {
-          propStore = propStore || {};
-          const internalName = propertyAliasMap[publicName];
-          const hasProperty = propStore.hasOwnProperty(publicName);
-          hasProperty ? propStore[publicName].push(i, publicName, internalName) :
-                        (propStore[publicName] = [i, publicName, internalName]);
-        }
-      }
-    }
-  }
-  return propStore;
 }
 
 /**
@@ -2476,19 +2260,6 @@ export function addToViewTree<T extends LView|LContainer>(lView: LView, lViewOrL
   return lViewOrLContainer;
 }
 
-///////////////////////////////
-//// Change detection
-///////////////////////////////
-
-/** If node is an OnPush component, marks its LView dirty. */
-function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
-  ngDevMode && assertLView(lView);
-  const childComponentLView = getComponentViewByIndex(viewIndex, lView);
-  if (!(childComponentLView[FLAGS] & LViewFlags.CheckAlways)) {
-    childComponentLView[FLAGS] |= LViewFlags.Dirty;
-  }
-}
-
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
  * if applicable.
@@ -2528,6 +2299,7 @@ function wrapListener(
     }
   };
 }
+
 /**
  * Marks current view and all ancestors dirty.
  *
@@ -3129,19 +2901,6 @@ export function injectAttribute(attrNameToInject: string): string|null {
 }
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
-
-function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
-  // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
-  // yet been checked.
-  if (tNode) {
-    if (tNode.inputs === undefined) {
-      // mark inputs as checked
-      tNode.inputs = generatePropertyAliases(tNode, BindingDirection.Input);
-    }
-    return tNode.inputs;
-  }
-  return null;
-}
 
 
 /**
