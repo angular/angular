@@ -7,10 +7,8 @@
  */
 
 import * as ts from 'typescript';
-
+import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
-import {getPropertyNameText} from './typescript/property_name';
-
 
 /**
  * Transforms the given query decorator by explicitly specifying the timing based on the
