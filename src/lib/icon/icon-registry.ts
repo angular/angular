@@ -34,7 +34,7 @@ export function getMatIconNameNotFoundError(iconName: string): Error {
 
 /**
  * Returns an exception to be thrown when the consumer attempts to use
- * `<mat-icon>` without including @angular/http.
+ * `<mat-icon>` without including @angular/common/http.
  * @docs-private
  */
 export function getMatIconNoHttpProviderError(): Error {

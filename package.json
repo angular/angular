@@ -47,10 +47,10 @@
     "zone.js": "^0.9.0"
   },
   "devDependencies": {
-    "@angular-devkit/core": "7.3.6",
-    "@angular-devkit/schematics": "7.3.6",
+    "@angular-devkit/core": "7.3.7",
+    "@angular-devkit/schematics": "7.3.7",
     "@angular/bazel": "8.0.0-beta.10",
-    "@angular/compiler-cli": "8.0.0-beta.8",
+    "@angular/compiler-cli": "8.0.0-beta.10",
     "@angular/http": "8.0.0-beta.10",
     "@angular/platform-browser-dynamic": "8.0.0-beta.10",
     "@angular/platform-server": "8.0.0-beta.10",
@@ -62,7 +62,7 @@
     "@bazel/typescript": "0.27.8",
     "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "^15.9.4",
-    "@schematics/angular": "7.3.6",
+    "@schematics/angular": "7.3.7",
     "@types/browser-sync": "^0.0.42",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",
@@ -137,7 +137,7 @@
     "tsconfig-paths": "^2.3.0",
     "tslint": "^5.13.1",
     "tsutils": "^3.0.0",
-    "typescript": "~3.2.0",
+    "typescript": "~3.3.3333",
     "uglify-js": "^2.8.14"
   }
 }
