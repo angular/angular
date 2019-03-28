@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, InjectionToken} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, InjectionToken, NgModule, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
 describe('component', () => {
@@ -48,5 +49,43 @@ describe('component', () => {
 
       expect(destroyCalls).toBe(1, 'Expected `ngOnDestroy` to only be called once.');
     });
+  });
+
+  it('should support entry components from another module', () => {
+    @Component({selector: 'other-component', template: `bar`})
+    class OtherComponent {
+    }
+
+    @NgModule({
+      declarations: [OtherComponent],
+      exports: [OtherComponent],
+      entryComponents: [OtherComponent]
+    })
+    class OtherModule {
+    }
+
+    @Component({
+      selector: 'test_component',
+      template: `foo|<ng-template #vc></ng-template>`,
+      entryComponents: [OtherComponent]
+    })
+    class TestComponent {
+      @ViewChild('vc', {read: ViewContainerRef}) vcref !: ViewContainerRef;
+
+      constructor(private _cfr: ComponentFactoryResolver) {}
+
+      createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
+        const cf = this._cfr.resolveComponentFactory(cmptType);
+        return this.vcref.createComponent(cf);
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [TestComponent], imports: [OtherModule]});
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.createComponentView(OtherComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement).toHaveText('foo|bar');
   });
 });
