@@ -16,7 +16,7 @@ import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
  */
 export function getTransformedQueryCallExpr(
     query: NgQueryDefinition, timing: QueryTiming): ts.CallExpression|null {
-  const queryExpr = query.decorator.node.expression as ts.CallExpression;
+  const queryExpr = query.decorator.node.expression;
   const queryArguments = queryExpr.arguments;
   const timingPropertyAssignment = ts.createPropertyAssignment(
       'static', timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse());
