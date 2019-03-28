@@ -13,6 +13,7 @@ pubspec.lock
 .idea/
 .settings/
 .vscode/launch.json
+.vscode/settings.json
 *.swo
 modules/.settings
 modules/.vscode
