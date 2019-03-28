@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, HostBinding, HostListener, Input, QueryList, ViewChildren} from '@angular/core';
+import {Component, ContentChild, Directive, HostBinding, HostListener, Input, QueryList, TemplateRef, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -101,5 +101,20 @@ describe('acceptance integration tests', () => {
       fixture = TestBed.createComponent(App);
       fixture.detectChanges();
     }).not.toThrow();
+  });
+
+  it('should support host attribute and @ContentChild on the same component', () => {
+    @Component(
+        {selector: 'test-component', template: `foo`, host: {'[attr.aria-disabled]': 'true'}})
+    class TestComponent {
+      @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+    }
+
+    TestBed.configureTestingModule({declarations: [TestComponent]});
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.tpl).not.toBeNull();
+    expect(fixture.debugElement.nativeElement.getAttribute('aria-disabled')).toBe('true');
   });
 });
