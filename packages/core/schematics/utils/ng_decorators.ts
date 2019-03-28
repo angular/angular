@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {getCallDecoratorImport} from '../typescript/decorators';
+import {getCallDecoratorImport} from './typescript/decorators';
 
 export interface NgDecorator {
   name: string;

@@ -7,10 +7,8 @@
  */
 
 import * as ts from 'typescript';
-
-import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../typescript/class_declaration';
-
-import {getAngularDecorators} from './decorators';
+import {getAngularDecorators} from '../../../utils/ng_decorators';
+import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../../../utils/typescript/class_declaration';
 import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
 

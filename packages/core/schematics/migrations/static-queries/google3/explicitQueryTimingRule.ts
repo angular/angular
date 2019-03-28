@@ -8,7 +8,6 @@
 
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-
 import {analyzeNgQueryUsage} from '../angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
 import {QueryTiming} from '../angular/query-definition';
