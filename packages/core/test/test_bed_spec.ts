@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, InjectionToken, NgModule, Optional, Pipe, ɵdefineComponent as defineComponent, ɵsetClassMetadata as setClassMetadata, ɵtext as text} from '@angular/core';
+import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, NgModule, Optional, Pipe, ɵdefineComponent as defineComponent, ɵsetClassMetadata as setClassMetadata, ɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -412,6 +412,32 @@ describe('TestBed', () => {
              expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
              expect(SomeDirective.hasOwnProperty('ngDirectiveDef')).toBeTruthy();
              expect(SomePipe.hasOwnProperty('ngPipeDef')).toBeTruthy();
+           });
+
+        it('should clean up overridden providers for modules that are imported more than once',
+           () => {
+
+             @Injectable()
+             class Token {
+               name: string = 'real';
+             }
+
+             @NgModule({
+               providers: [Token],
+             })
+             class Module {
+             }
+
+             TestBed.configureTestingModule({imports: [Module, Module]});
+             TestBed.overrideProvider(Token, {useValue: {name: 'fake'}});
+
+             expect(TestBed.get(Token).name).toEqual('fake');
+
+             TestBed.resetTestingModule();
+
+             // The providers for the module should have been restored to the original array, with
+             // no trace of the overridden providers.
+             expect((Module as any).ngInjectorDef.providers).toEqual([Token]);
            });
       });
 });
