@@ -129,5 +129,5 @@ function filterNonAnimatableStyles(styles: {[key: string]: any}) {
 }
 
 function isNonAnimatableStyle(prop: string) {
-  return prop === 'display' || prop === 'position';
+  return prop === 'display' || prop === 'position' || prop === 'zoom';
 }
