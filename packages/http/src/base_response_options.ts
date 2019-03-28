@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { ResponseType } from './enums';
-import { Headers } from './headers';
-import { ResponseOptionsArgs } from './interfaces';
+import {ResponseType} from './enums';
+import {Headers} from './headers';
+import {ResponseOptionsArgs} from './interfaces';
 
 
 /**
@@ -49,27 +49,27 @@ export class ResponseOptions {
   /**
    * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body: string | Object | ArrayBuffer | Blob | null;
+  body: string|Object|ArrayBuffer|Blob|null;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
    */
-  status: number | null;
+  status: number|null;
   /**
    * Response {@link Headers headers}
    */
-  headers: Headers | null;
+  headers: Headers|null;
   /**
    * @internal
    */
-  statusText: string | null;
+  statusText: string|null;
   /**
    * @internal
    */
-  type: ResponseType | null;
-  url: string | null;
+  type: ResponseType|null;
+  url: string|null;
   constructor(opts: ResponseOptionsArgs = {}) {
-    const { body, status, headers, statusText, type, url } = opts;
+    const {body, status, headers, statusText, type, url} = opts;
     this.body = body != null ? body : null;
     this.status = status != null ? status : null;
     this.headers = headers != null ? headers : null;
@@ -169,6 +169,6 @@ export class ResponseOptions {
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {
   constructor() {
-    super({ status: 200, statusText: 'Ok', type: ResponseType.Default, headers: new Headers() });
+    super({status: 200, statusText: 'Ok', type: ResponseType.Default, headers: new Headers()});
   }
 }

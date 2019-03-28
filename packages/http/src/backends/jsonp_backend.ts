@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Injectable } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, Observer} from 'rxjs';
 
-import { ResponseOptions } from '../base_response_options';
-import { ReadyState, RequestMethod, ResponseType } from '../enums';
-import { Connection, ConnectionBackend } from '../interfaces';
-import { Request } from '../static_request';
-import { Response } from '../static_response';
+import {ResponseOptions} from '../base_response_options';
+import {ReadyState, RequestMethod, ResponseType} from '../enums';
+import {Connection, ConnectionBackend} from '../interfaces';
+import {Request} from '../static_request';
+import {Response} from '../static_response';
 
-import { BrowserJsonp } from './browser_jsonp';
+import {BrowserJsonp} from './browser_jsonp';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
@@ -23,7 +23,8 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 /**
  * Base class for an in-flight JSONP request.
  *
- * @deprecated see [JsonpClientBackend](/api/common/http/JsonpClientBackend), [JsonpInterceptor](/api/common/http/JsonpInterceptor),
+ * @deprecated see [JsonpClientBackend](/api/common/http/JsonpClientBackend),
+ * [JsonpInterceptor](/api/common/http/JsonpInterceptor),
  *  [HttpClient](https://angular.io/api/common/http/HttpClient#jsonp)
  * @publicApi
  */
@@ -53,7 +54,7 @@ export class JSONPConnection implements Connection {
 
   /** @internal */
   constructor(
-    req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
+      req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
     if (req.method !== RequestMethod.Get) {
       throw new TypeError(JSONP_ERR_WRONG_METHOD);
     }
@@ -83,7 +84,7 @@ export class JSONPConnection implements Connection {
         _dom.cleanup(script);
         if (!this._finished) {
           let responseOptions =
-            new ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url });
+              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url});
           if (baseResponseOptions) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }
@@ -91,7 +92,7 @@ export class JSONPConnection implements Connection {
           return;
         }
 
-        let responseOptions = new ResponseOptions({ body: this._responseData, url });
+        let responseOptions = new ResponseOptions({body: this._responseData, url});
         if (this.baseResponseOptions) {
           responseOptions = this.baseResponseOptions.merge(responseOptions);
         }
@@ -104,7 +105,7 @@ export class JSONPConnection implements Connection {
         if (this.readyState === ReadyState.Cancelled) return;
         this.readyState = ReadyState.Done;
         _dom.cleanup(script);
-        let responseOptions = new ResponseOptions({ body: error.message, type: ResponseType.Error });
+        let responseOptions = new ResponseOptions({body: error.message, type: ResponseType.Error});
         if (baseResponseOptions) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
