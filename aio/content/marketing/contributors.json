@@ -689,7 +689,7 @@
   },
   "JoostK": {
     "name": "Joost Koehoorn",
-    "group": "Collaborator",
+    "groups": ["Collaborator"],
     "mentor": "alxhub",
     "picture": "joostk.jpg",
     "twitter": "devjoost",
