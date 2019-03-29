@@ -658,12 +658,12 @@
     "twitter": "samjulien",
     "website": "http://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
-    "group": "Collaborator",
+    "group": "Collaborators",
     "mentor": "gkalpak"
   },
   "JiaLiPassion": {
     "name": "JiaLi Passion",
-    "group": "Collaborator",
+    "group": "Collaborators",
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
     "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @sylabs"
@@ -671,19 +671,19 @@
   "cexbrayat": {
     "name": "Cédric Exbrayat",
     "mentor": "petebacondarwin",
-    "group": "Collaborator",
+    "group": "Collaborators",
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
   },
   "CaerusKaru": {
     "name": "Adam Plumer",
-    "group": "Collaborator",
+    "group": "Collaborators",
     "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
   },
   "jbedard": {
     "name": "Jason Bedard",
-    "group": "Collaborator",
+    "group": "Collaborators",
     "mentor": "kyliau",
     "picture": "jbedard.png"
   },
