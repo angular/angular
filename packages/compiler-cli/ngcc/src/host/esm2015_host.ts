@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
 
@@ -49,7 +50,9 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
   protected dtsDeclarationMap: Map<string, ts.Declaration>|null;
-  constructor(protected isCore: boolean, checker: ts.TypeChecker, dts?: BundleProgram|null) {
+  constructor(
+      protected logger: Logger, protected isCore: boolean, checker: ts.TypeChecker,
+      dts?: BundleProgram|null) {
     super(checker);
     this.dtsDeclarationMap = dts && this.computeDtsDeclarationMap(dts.path, dts.program) || null;
   }
@@ -848,7 +851,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     if (kind === null) {
-      console.warn(`Unknown member type: "${node.getText()}`);
+      this.logger.warn(`Unknown member type: "${node.getText()}`);
       return null;
     }
 

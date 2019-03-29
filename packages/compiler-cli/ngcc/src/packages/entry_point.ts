@@ -10,6 +10,7 @@ import * as path from 'canonical-path';
 import * as fs from 'fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {Logger} from '../logging/logger';
 
 
 /**
@@ -67,13 +68,13 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
  * @returns An entry-point if it is valid, `null` otherwise.
  */
 export function getEntryPointInfo(
-    packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPoint|null {
+    logger: Logger, packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = path.resolve(entryPointPath, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return null;
   }
 
-  const entryPointPackageJson = loadEntryPointPackage(packageJsonPath);
+  const entryPointPackageJson = loadEntryPointPackage(logger, packageJsonPath);
   if (!entryPointPackageJson) {
     return null;
   }
@@ -135,12 +136,13 @@ export function getEntryPointFormat(property: string): EntryPointFormat|undefine
  * @param packageJsonPath the absolute path to the package.json file.
  * @returns JSON from the package.json file if it is valid, `null` otherwise.
  */
-function loadEntryPointPackage(packageJsonPath: string): EntryPointPackageJson|null {
+function loadEntryPointPackage(logger: Logger, packageJsonPath: string): EntryPointPackageJson|
+    null {
   try {
     return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   } catch (e) {
     // We may have run into a package.json with unexpected symbols
-    console.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
+    logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
     return null;
   }
 }

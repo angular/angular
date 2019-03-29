@@ -12,11 +12,13 @@ import {NgccReflectionHost} from '../host/ngcc_host';
 import {CompiledClass} from '../analysis/decoration_analyzer';
 import {EsmRenderer} from './esm_renderer';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {Logger} from '../logging/logger';
 
 export class Esm5Renderer extends EsmRenderer {
   constructor(
-      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle, sourcePath: string) {
-    super(host, isCore, bundle, sourcePath);
+      logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle,
+      sourcePath: string) {
+    super(logger, host, isCore, bundle, sourcePath);
   }
 
   /**

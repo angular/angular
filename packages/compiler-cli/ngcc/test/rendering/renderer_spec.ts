@@ -18,10 +18,13 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {RedundantDecoratorMap, Renderer} from '../../src/rendering/renderer';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {Logger} from '../../src/logging/logger';
+import {MockLogger} from '../helpers/mock_logger';
 
 class TestRenderer extends Renderer {
-  constructor(host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(host, isCore, bundle, '/src');
+  constructor(
+      logger: Logger, host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
+    super(logger, host, isCore, bundle, '/src');
   }
   addImports(output: MagicString, imports: {specifier: string, qualifier: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
@@ -49,10 +52,11 @@ class TestRenderer extends Renderer {
 function createTestRenderer(
     packageName: string, files: {name: string, contents: string}[],
     dtsFiles?: {name: string, contents: string}[]) {
+  const logger = new MockLogger();
   const isCore = packageName === '@angular/core';
   const bundle = makeTestEntryPointBundle('es2015', 'esm2015', isCore, files, dtsFiles);
   const typeChecker = bundle.src.program.getTypeChecker();
-  const host = new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
+  const host = new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses = new DecorationAnalyzer(
                                  bundle.src.program, bundle.src.options, bundle.src.host,
@@ -63,7 +67,7 @@ function createTestRenderer(
       new ModuleWithProvidersAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
-  const renderer = new TestRenderer(host, isCore, bundle);
+  const renderer = new TestRenderer(logger, host, isCore, bundle);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();

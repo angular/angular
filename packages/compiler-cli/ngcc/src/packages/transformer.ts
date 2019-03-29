@@ -15,6 +15,7 @@ import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_mar
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {Logger} from '../logging/logger';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
@@ -45,7 +46,7 @@ import {EntryPointBundle} from './entry_point_bundle';
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class Transformer {
-  constructor(private sourcePath: string) {}
+  constructor(private logger: Logger, private sourcePath: string) {}
 
   /**
    * Transform the source (and typings) files of a bundle.
@@ -73,9 +74,9 @@ export class Transformer {
     const typeChecker = bundle.src.program.getTypeChecker();
     switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
+        return new Esm2015ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
       case 'esm5':
-        return new Esm5ReflectionHost(isCore, typeChecker, bundle.dts);
+        return new Esm5ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
@@ -84,9 +85,9 @@ export class Transformer {
   getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderer(host, isCore, bundle, this.sourcePath);
+        return new EsmRenderer(this.logger, host, isCore, bundle, this.sourcePath);
       case 'esm5':
-        return new Esm5Renderer(host, isCore, bundle, this.sourcePath);
+        return new Esm5Renderer(this.logger, host, isCore, bundle, this.sourcePath);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

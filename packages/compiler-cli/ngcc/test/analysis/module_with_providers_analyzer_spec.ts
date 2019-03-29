@@ -11,6 +11,7 @@ import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../sr
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
+import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
 const TEST_PROGRAM = [
@@ -321,7 +322,8 @@ describe('ModuleWithProvidersAnalyzer', () => {
     beforeAll(() => {
       program = makeTestProgram(...TEST_PROGRAM);
       dtsProgram = makeTestBundleProgram(TEST_DTS_PROGRAM);
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsProgram);
+      const host =
+          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dtsProgram);
       referencesRegistry = new NgccReferencesRegistry(host);
 
       const analyzer = new ModuleWithProvidersAnalyzer(host, referencesRegistry);

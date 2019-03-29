@@ -12,6 +12,7 @@ import {Reference} from '../../../src/ngtsc/imports';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
 describe('PrivateDeclarationsAnalyzer', () => {
@@ -222,7 +223,7 @@ type Files = {
 function setup(jsProgram: Files, dtsProgram: Files) {
   const program = makeTestProgram(...jsProgram);
   const dts = makeTestBundleProgram(dtsProgram);
-  const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dts);
+  const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const analyzer = new PrivateDeclarationsAnalyzer(host, referencesRegistry);
   return {program, referencesRegistry, analyzer};
