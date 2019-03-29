@@ -51,6 +51,7 @@ const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
   ['defineInjectable', 'defineInjectable'],
   ['defineInjector', 'defineInjector'],
   ['ɵdefineNgModule', 'defineNgModule'],
+  ['ɵsetNgModuleScope', 'setNgModuleScope'],
   ['inject', 'inject'],
   ['ɵsetClassMetadata', 'setClassMetadata'],
   ['ɵInjectableDef', 'InjectableDef'],

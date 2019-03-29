@@ -26,6 +26,7 @@ export {
   getFactoryOf as ɵgetFactoryOf,
   getInheritedFactory as ɵgetInheritedFactory,
   setComponentScope as ɵsetComponentScope,
+  setNgModuleScope as ɵsetNgModuleScope,
   templateRefExtractor as ɵtemplateRefExtractor,
   ProvidersFeature as ɵProvidersFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
