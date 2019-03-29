@@ -21,6 +21,32 @@ describe('ngtsc module scopes', () => {
 
   describe('diagnostics', () => {
     describe('imports', () => {
+      it('should emit imports in a pure function call', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+  
+          @NgModule({})
+          export class OtherModule {}
+  
+          @NgModule({imports: [OtherModule]})
+          export class TestModule {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
+        expect(jsContents)
+            .toContain(
+                '/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { imports: [OtherModule] });');
+
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents)
+            .toContain(
+                'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
+      });
+
       it('should produce an error when an invalid class is imported', () => {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
@@ -57,6 +83,32 @@ describe('ngtsc module scopes', () => {
     });
 
     describe('exports', () => {
+      it('should emit exports in a pure function call', () => {
+        env.tsconfig();
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+  
+          @NgModule({})
+          export class OtherModule {}
+  
+          @NgModule({exports: [OtherModule]})
+          export class TestModule {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
+        expect(jsContents)
+            .toContain(
+                '/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { exports: [OtherModule] });');
+
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents)
+            .toContain(
+                'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
+      });
+
       it('should produce an error when a non-NgModule class is exported', () => {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
