@@ -117,7 +117,7 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
   }
   private _disabled = false;
 
-  /** Whether starting a dragging sequence from this container is disabled. */
+  /** Whether sorting within this drop list is disabled. */
   @Input('cdkDropListSortingDisabled')
   get sortingDisabled(): boolean { return this._sortingDisabled; }
   set sortingDisabled(value: boolean) {
