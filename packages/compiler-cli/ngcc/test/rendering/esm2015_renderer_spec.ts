@@ -15,12 +15,14 @@ import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderer} from '../../src/rendering/esm_renderer';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {MockLogger} from '../helpers/mock_logger';
 
 function setup(file: {name: string, contents: string}) {
+  const logger = new MockLogger();
   const dir = dirname(file.name);
   const bundle = makeTestEntryPointBundle('es2015', 'esm2015', false, [file]) !;
   const typeChecker = bundle.src.program.getTypeChecker();
-  const host = new Esm2015ReflectionHost(false, typeChecker);
+  const host = new Esm2015ReflectionHost(logger, false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(
@@ -28,7 +30,7 @@ function setup(file: {name: string, contents: string}) {
           referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
           .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
-  const renderer = new EsmRenderer(host, false, bundle, dir);
+  const renderer = new EsmRenderer(logger, host, false, bundle, dir);
   return {
     host,
     program: bundle.src.program,

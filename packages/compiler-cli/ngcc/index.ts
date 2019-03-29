@@ -9,6 +9,8 @@
 import {hasBeenProcessed as _hasBeenProcessed} from './src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson} from './src/packages/entry_point';
 
+export {ConsoleLogger, LogLevel} from './src/logging/console_logger';
+export {Logger} from './src/logging/logger';
 export {NgccOptions, mainNgcc as process} from './src/main';
 
 export function hasBeenProcessed(packageJson: object, format: string) {

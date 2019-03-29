@@ -14,6 +14,7 @@ const Module = require('module');
 import {mainNgcc} from '../../src/main';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
 import {EntryPointPackageJson} from '../../src/packages/entry_point';
+import {Logger} from '../../src/logging/logger';
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
@@ -177,6 +178,21 @@ describe('ngcc main()', () => {
       expect(readFileSync(`/node_modules/@angular/common/common.d.ts`, 'utf8'))
           .toMatch(ANGULAR_CORE_IMPORT_REGEX);
       expect(existsSync(`/node_modules/@angular/common/common.d.ts.__ivy_ngcc_bak`)).toBe(true);
+    });
+  });
+
+  describe('logger', () => {
+    it('should log info message to the console by default', () => {
+      const consoleInfoSpy = spyOn(console, 'info');
+      mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']});
+      expect(consoleInfoSpy)
+          .toHaveBeenCalledWith('Compiling @angular/common/http : esm2015 as esm2015');
+    });
+
+    it('should use a custom logger if provided', () => {
+      const logger: Logger = jasmine.createSpyObj(['debug', 'info', 'warn', 'error']);
+      mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015'], logger});
+      expect(logger.info).toHaveBeenCalled();
     });
   });
 });

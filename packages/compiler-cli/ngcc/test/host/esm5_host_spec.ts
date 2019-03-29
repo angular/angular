@@ -8,9 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, Decorator, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
+import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
@@ -707,7 +708,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getDecoratorsOfDeclaration()', () => {
     it('should find the decorators on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -725,7 +726,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return null if the symbol is not a class', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const functionNode =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(functionNode);
@@ -734,7 +735,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return null if there are no decorators', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode);
@@ -743,7 +744,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore `decorators` if it is not an array literal', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode);
@@ -752,18 +753,18 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore decorator elements that are not object literals', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining<Decorator>({name: 'Directive'}));
     });
 
     it('should ignore decorator elements that have no `type` property', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -774,7 +775,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore decorator elements whose `type` value is not an identifier', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_DECORATORS_FILE.name, 'NotIdentifier', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -789,7 +790,7 @@ describe('Esm5ReflectionHost', () => {
                       .and.returnValue(mockImportInfo);
 
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -804,7 +805,7 @@ describe('Esm5ReflectionHost', () => {
     describe('(returned decorators `args`)', () => {
       it('should be an empty array if decorator has no `args` property', () => {
         const program = makeTestProgram(INVALID_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
             isNamedVariableDeclaration);
@@ -817,7 +818,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if decorator\'s `args` has no property assignment', () => {
         const program = makeTestProgram(INVALID_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
             isNamedVariableDeclaration);
@@ -830,7 +831,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if `args` property value is not an array literal', () => {
         const program = makeTestProgram(INVALID_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
             isNamedVariableDeclaration);
@@ -846,7 +847,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getMembersOfClass()', () => {
     it('should find decorated members on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -864,7 +865,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should find Object.defineProperty members on a class', () => {
       const program = makeTestProgram(ACCESSORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode =
           getDeclaration(program, ACCESSORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -911,7 +912,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should find non decorated properties on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -925,7 +926,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should find static methods on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -939,7 +940,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should find static properties on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -953,7 +954,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should throw if the symbol is not a class', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const functionNode =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(() => {
@@ -963,7 +964,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return an empty array if there are no prop decorators', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -974,7 +975,7 @@ describe('Esm5ReflectionHost', () => {
     it('should not process decorated properties in `propDecorators` if it is not an object literal',
        () => {
          const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
-         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
          const classNode = getDeclaration(
              program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral',
              isNamedVariableDeclaration);
@@ -985,7 +986,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore prop decorator elements that are not object literals', () => {
       const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
           isNamedVariableDeclaration);
@@ -999,7 +1000,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore prop decorator elements that have no `type` property', () => {
       const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -1012,7 +1013,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore prop decorator elements whose `type` value is not an identifier', () => {
       const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -1031,7 +1032,7 @@ describe('Esm5ReflectionHost', () => {
       });
 
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
@@ -1047,7 +1048,7 @@ describe('Esm5ReflectionHost', () => {
     describe('(returned prop decorators `args`)', () => {
       it('should be an empty array if prop decorator has no `args` property', () => {
         const program = makeTestProgram(INVALID_PROP_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
             isNamedVariableDeclaration);
@@ -1062,7 +1063,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if prop decorator\'s `args` has no property assignment', () => {
         const program = makeTestProgram(INVALID_PROP_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
             isNamedVariableDeclaration);
@@ -1077,7 +1078,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if `args` property value is not an array literal', () => {
         const program = makeTestProgram(INVALID_PROP_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
             isNamedVariableDeclaration);
@@ -1094,7 +1095,7 @@ describe('Esm5ReflectionHost', () => {
     it('should ignore the prototype pseudo-static property on class imported from typings files',
        () => {
          const program = makeTestProgram(UNWANTED_PROTOTYPE_EXPORT_FILE);
-         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
          const classNode = getDeclaration(
              program, UNWANTED_PROTOTYPE_EXPORT_FILE.name, 'SomeParam', isNamedClassDeclaration);
          const members = host.getMembersOfClass(classNode);
@@ -1105,7 +1106,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getConstructorParameters()', () => {
     it('should find the decorated constructor parameters', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const parameters = host.getConstructorParameters(classNode);
@@ -1123,7 +1124,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should throw if the symbol is not a class', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const functionNode =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(() => { host.getConstructorParameters(functionNode); })
@@ -1136,7 +1137,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return an array even if there are no decorators', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass',
           isNamedVariableDeclaration);
@@ -1150,7 +1151,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return an empty array if there are no constructor parameters', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters', isNamedVariableDeclaration);
       const parameters = host.getConstructorParameters(classNode);
@@ -1163,7 +1164,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should ignore `ctorParameters` if it does not return an array literal', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral',
           isNamedVariableDeclaration);
@@ -1179,7 +1180,7 @@ describe('Esm5ReflectionHost', () => {
     describe('(returned parameters `decorators`)', () => {
       it('should ignore param decorator elements that are not object literals', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral',
             isNamedVariableDeclaration);
@@ -1198,7 +1199,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should ignore param decorator elements that have no `type` property', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty',
             isNamedVariableDeclaration);
@@ -1211,7 +1212,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should ignore param decorator elements whose `type` value is not an identifier', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier',
             isNamedVariableDeclaration);
@@ -1228,7 +1229,7 @@ describe('Esm5ReflectionHost', () => {
                         .and.returnValue(mockImportInfo);
 
         const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
         const parameters = host.getConstructorParameters(classNode);
@@ -1256,7 +1257,7 @@ describe('Esm5ReflectionHost', () => {
         };
 
         const program = makeTestProgram(file);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode =
             getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
         return host.getConstructorParameters(classNode);
@@ -1324,7 +1325,7 @@ describe('Esm5ReflectionHost', () => {
     describe('(returned parameters `decorators.args`)', () => {
       it('should be an empty array if param decorator has no `args` property', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
             isNamedVariableDeclaration);
@@ -1339,7 +1340,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if param decorator\'s `args` has no property assignment', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
             isNamedVariableDeclaration);
@@ -1353,7 +1354,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('should be an empty array if `args` property value is not an array literal', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATOR_ARGS_FILE);
-        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
             isNamedVariableDeclaration);
@@ -1370,7 +1371,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getDefinitionOfFunction()', () => {
     it('should return an object describing the function declaration passed as an argument', () => {
       const program = makeTestProgram(FUNCTION_BODY_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
 
       const fooNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
@@ -1418,7 +1419,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getImportOfIdentifier()', () => {
     it('should find the import of an identifier', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const variableNode =
           getDeclaration(program, IMPORTS_FILES[1].name, 'b', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1428,7 +1429,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should find the name by which the identifier was exported, not imported', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const variableNode =
           getDeclaration(program, IMPORTS_FILES[1].name, 'c', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1438,7 +1439,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return null if the identifier was not imported', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const variableNode =
           getDeclaration(program, IMPORTS_FILES[1].name, 'd', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
@@ -1450,7 +1451,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getDeclarationOfIdentifier()', () => {
     it('should return the declaration of a locally defined identifier', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const ctrDecorators = host.getConstructorParameters(classNode) !;
@@ -1470,7 +1471,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return the declaration of an externally defined identifier', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -1491,7 +1492,7 @@ describe('Esm5ReflectionHost', () => {
          const superGetDeclarationOfIdentifierSpy =
              spyOn(Esm2015ReflectionHost.prototype, 'getDeclarationOfIdentifier').and.callThrough();
          const program = makeTestProgram(SIMPLE_CLASS_FILE);
-         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
 
          const outerDeclaration = getDeclaration(
              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
@@ -1518,7 +1519,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getExportsOfModule()', () => {
     it('should return a map of all the exports from a given module', () => {
       const program = makeTestProgram(...EXPORTS_FILES);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const file = program.getSourceFile(EXPORTS_FILES[1].name) !;
       const exportDeclarations = host.getExportsOfModule(file);
       expect(exportDeclarations).not.toBe(null);
@@ -1559,7 +1560,7 @@ describe('Esm5ReflectionHost', () => {
   describe('getClassSymbol()', () => {
     it('should return the class symbol for an ES2015 class', () => {
       const program = makeTestProgram(SIMPLE_ES2015_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const node = getDeclaration(
           program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       const classSymbol = host.getClassSymbol(node);
@@ -1570,7 +1571,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const node =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
       const classSymbol = host.getClassSymbol(node);
@@ -1581,7 +1582,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return the class symbol for an ES5 class (inner function declaration)', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const outerNode =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
       const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
@@ -1594,7 +1595,7 @@ describe('Esm5ReflectionHost', () => {
     it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
        () => {
          const program = makeTestProgram(SIMPLE_CLASS_FILE);
-         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
          const outerNode = getDeclaration(
              program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
@@ -1604,7 +1605,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return undefined if node is not an ES5 class', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const node =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       const classSymbol = host.getClassSymbol(node);
@@ -1620,7 +1621,7 @@ describe('Esm5ReflectionHost', () => {
     let superGetClassDeclarationSpy: jasmine.Spy;
 
     beforeEach(() => {
-      host = new Esm5ReflectionHost(false, null as any);
+      host = new Esm5ReflectionHost(new MockLogger(), false, null as any);
       mockNode = {} as any;
 
       getClassDeclarationSpy = spyOn(Esm5ReflectionHost.prototype, 'getClassDeclaration');
@@ -1659,7 +1660,7 @@ describe('Esm5ReflectionHost', () => {
       };
 
       const program = makeTestProgram(file);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
       return host.hasBaseClass(classNode);
     }
@@ -1699,7 +1700,7 @@ describe('Esm5ReflectionHost', () => {
   describe('findDecoratedClasses()', () => {
     it('should return an array of all decorated classes in the given source file', () => {
       const program = makeTestProgram(...DECORATED_FILES);
-      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
 
       const primaryDecoratedClasses = host.findDecoratedClasses(primary);
@@ -1726,7 +1727,8 @@ describe('Esm5ReflectionHost', () => {
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class1 =
           getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isVariableDeclaration);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+      const host =
+          new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class1);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
@@ -1736,7 +1738,8 @@ describe('Esm5ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const mooFn = getDeclaration(srcProgram, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dtsProgram);
+      const host =
+          new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dtsProgram);
 
       const dtsDeclaration = host.getDtsDeclaration(mooFn);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
@@ -1747,7 +1750,8 @@ describe('Esm5ReflectionHost', () => {
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass =
           getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isVariableDeclaration);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+      const host =
+          new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
@@ -1757,7 +1761,8 @@ describe('Esm5ReflectionHost', () => {
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass = getDeclaration(
           srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isVariableDeclaration);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+      const host =
+          new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
@@ -1768,7 +1773,8 @@ describe('Esm5ReflectionHost', () => {
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class1 =
              getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isVariableDeclaration);
-         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+         const host =
+             new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(class1);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
@@ -1779,7 +1785,8 @@ describe('Esm5ReflectionHost', () => {
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class3 =
           getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isVariableDeclaration);
-      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+      const host =
+          new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class3);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
@@ -1791,7 +1798,8 @@ describe('Esm5ReflectionHost', () => {
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const internalClass = getDeclaration(
              srcProgram, '/src/internal.js', 'InternalClass', ts.isVariableDeclaration);
-         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+         const host =
+             new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(internalClass);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
@@ -1805,7 +1813,8 @@ describe('Esm5ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/class2.js', 'Class2', ts.isVariableDeclaration);
          const internalClass2 =
              getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isVariableDeclaration);
-         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+         const host =
+             new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const class2DtsDeclaration = host.getDtsDeclaration(class2);
          expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
@@ -1820,7 +1829,7 @@ describe('Esm5ReflectionHost', () => {
     it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
-         const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
          expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
@@ -1834,7 +1843,7 @@ describe('Esm5ReflectionHost', () => {
     it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
-         const host = new Esm5ReflectionHost(false, srcProgram.getTypeChecker());
+         const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
          expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.text])).toEqual([
