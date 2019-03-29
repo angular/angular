@@ -442,10 +442,9 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
     expect(jsContents)
-        .toContain(
-            'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp], ' +
-            'declarations: [TestCmp] })');
+        .toContain('/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
 
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
@@ -455,6 +454,22 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>');
     expect(dtsContents).not.toContain('__decorate');
+  });
+
+  it('should not emit a setNgModuleScope call when no scope metadata is present', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
+    expect(jsContents).not.toContain('ɵsetNgModuleScope(TestModule,');
   });
 
   it('should compile NgModules with services without errors', () => {
@@ -484,7 +499,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
     expect(jsContents)
         .toContain(
             `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
@@ -525,7 +540,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
     expect(jsContents)
         .toContain(
             `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
@@ -570,7 +585,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
     expect(jsContents)
         .toContain(
             `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
