@@ -11,6 +11,8 @@ import {readFileSync} from 'fs';
 
 import {AbsoluteFsPath} from '../../src/ngtsc/path';
 
+import {ConsoleLogger, LogLevel} from './logging/console_logger';
+import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
@@ -21,6 +23,7 @@ import {Transformer} from './packages/transformer';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
+
 
 
 /**
@@ -50,6 +53,10 @@ export interface NgccOptions {
    * Whether to create new entry-points bundles rather than overwriting the original files.
    */
   createNewEntryPointFormats?: boolean;
+  /**
+   * Provide a logger that will be called with log messages.
+   */
+  logger?: Logger;
 }
 
 const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
@@ -62,13 +69,14 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc(
-    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-     compileAllFormats = true, createNewEntryPointFormats = false}: NgccOptions): void {
-  const transformer = new Transformer(basePath);
+export function mainNgcc({basePath, targetEntryPointPath,
+                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+                          compileAllFormats = true, createNewEntryPointFormats = false,
+                          logger = new ConsoleLogger(LogLevel.info)}: NgccOptions): void {
+  const transformer = new Transformer(logger, basePath);
   const host = new DependencyHost();
-  const resolver = new DependencyResolver(host);
-  const finder = new EntryPointFinder(resolver);
+  const resolver = new DependencyResolver(logger, host);
+  const finder = new EntryPointFinder(logger, resolver);
   const fileWriter = getFileWriter(createNewEntryPointFormats);
 
   const absoluteTargetEntryPointPath = targetEntryPointPath ?
@@ -112,7 +120,7 @@ export function mainNgcc(
 
       if (hasBeenProcessed(entryPointPackageJson, property)) {
         compiledFormats.add(formatPath);
-        console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+        logger.info(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
         continue;
       }
 
@@ -123,16 +131,16 @@ export function mainNgcc(
             entryPoint.path, formatPath, entryPoint.typings, isCore, property, format,
             compiledFormats.size === 0);
         if (bundle) {
-          console.warn(`Compiling ${entryPoint.name} : ${property} as ${format}`);
+          logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
           const transformedFiles = transformer.transform(bundle);
           fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
           compiledFormats.add(formatPath);
         } else {
-          console.warn(
+          logger.warn(
               `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
         }
       } else if (!compileAllFormats) {
-        console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+        logger.info(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
       }
 
       // Either this format was just compiled or its underlying format was compiled because of a

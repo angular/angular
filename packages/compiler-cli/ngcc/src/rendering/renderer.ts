@@ -24,6 +24,7 @@ import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_mar
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {Logger} from '../logging/logger';
 
 interface SourceMapInfo {
   source: string;
@@ -80,7 +81,7 @@ export const RedundantDecoratorMap = Map;
  */
 export abstract class Renderer {
   constructor(
-      protected host: NgccReflectionHost, protected isCore: boolean,
+      protected logger: Logger, protected host: NgccReflectionHost, protected isCore: boolean,
       protected bundle: EntryPointBundle, protected sourcePath: string) {}
 
   renderProgram(
@@ -299,16 +300,16 @@ export abstract class Renderer {
         externalSourceMap = fromMapFileSource(file.text, dirname(file.fileName));
       } catch (e) {
         if (e.code === 'ENOENT') {
-          console.warn(
+          this.logger.warn(
               `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
           const mapPath = file.fileName + '.map';
           if (basename(e.path) !== basename(mapPath) && statSync(mapPath).isFile()) {
-            console.warn(
+            this.logger.warn(
                 `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
             try {
               externalSourceMap = fromObject(JSON.parse(readFileSync(mapPath, 'utf8')));
             } catch (e) {
-              console.error(e);
+              this.logger.error(e);
             }
           }
         }

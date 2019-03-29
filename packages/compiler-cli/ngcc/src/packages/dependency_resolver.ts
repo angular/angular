@@ -10,6 +10,8 @@ import {resolve} from 'canonical-path';
 import {DepGraph} from 'dependency-graph';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {Logger} from '../logging/logger';
+
 import {DependencyHost} from './dependency_host';
 import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat} from './entry_point';
 
@@ -65,7 +67,7 @@ export interface SortedEntryPointsInfo {
  * A class that resolves dependencies between entry-points.
  */
 export class DependencyResolver {
-  constructor(private host: DependencyHost) {}
+  constructor(private logger: Logger, private host: DependencyHost) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -134,7 +136,7 @@ export class DependencyResolver {
 
       if (deepImports.size) {
         const imports = Array.from(deepImports).map(i => `'${i}'`).join(', ');
-        console.warn(
+        this.logger.warn(
             `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
             `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
       }

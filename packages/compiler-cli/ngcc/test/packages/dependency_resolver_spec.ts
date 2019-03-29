@@ -5,13 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {resolve} from 'canonical-path';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyHost} from '../../src/packages/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
+import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
 
@@ -20,7 +18,7 @@ describe('DependencyResolver', () => {
   let resolver: DependencyResolver;
   beforeEach(() => {
     host = new DependencyHost();
-    resolver = new DependencyResolver(host);
+    resolver = new DependencyResolver(new MockLogger(), host);
   });
   describe('sortEntryPointsByDependency()', () => {
     const first = { path: _('/first'), packageJson: {esm5: 'index.ts'} } as EntryPoint;

@@ -14,6 +14,7 @@ import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo}
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
+import {MockLogger} from '../helpers/mock_logger';
 import {loadPackageJson} from '../packages/entry_point_spec';
 
 const _ = AbsoluteFsPath.from;
@@ -79,7 +80,8 @@ describe('NewEntryPointFileWriter', () => {
   describe('writeBundle() [primary entry-point]', () => {
     beforeEach(() => {
       fileWriter = new NewEntryPointFileWriter();
-      entryPoint = getEntryPointInfo(_('/node_modules/test'), _('/node_modules/test')) !;
+      entryPoint =
+          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
       esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
       esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
     });
@@ -155,7 +157,8 @@ describe('NewEntryPointFileWriter', () => {
   describe('writeBundle() [secondary entry-point]', () => {
     beforeEach(() => {
       fileWriter = new NewEntryPointFileWriter();
-      entryPoint = getEntryPointInfo(_('/node_modules/test'), _('/node_modules/test/a')) !;
+      entryPoint =
+          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
       esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
       esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
     });
@@ -219,7 +222,8 @@ describe('NewEntryPointFileWriter', () => {
   describe('writeBundle() [entry-point (with files placed outside entry-point folder)]', () => {
     beforeEach(() => {
       fileWriter = new NewEntryPointFileWriter();
-      entryPoint = getEntryPointInfo(_('/node_modules/test'), _('/node_modules/test/b')) !;
+      entryPoint =
+          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
       esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
       esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
     });
