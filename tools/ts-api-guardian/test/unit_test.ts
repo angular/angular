@@ -357,28 +357,32 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {stripExportPattern: /^__.*/});
   });
 
-  it('should throw on using non-whitelisted module imports in expression position', () => {
-    const input = `
+  it('should throw on using module imports in expression position that were not explicitly allowed',
+     () => {
+       const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
       }
     `;
-    checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
-  });
+       checkThrows(
+           {'file.d.ts': input},
+           'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
+               'Remove it from source or allow it via --allowModuleIdentifiers.');
+     });
 
-  it('should throw on using non-whitelisted module imports in type position', () => {
-    const input = `
+  it('should throw on using module imports in type position that were not explicitly allowed',
+     () => {
+       const input = `
       import * as foo from './foo';
       export type A = foo.A;
     `;
-    checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
-  });
+       checkThrows(
+           {'file.d.ts': input},
+           'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
+               'Remove it from source or allow it via --allowModuleIdentifiers.');
+     });
 
-  it('should not throw on using whitelisted module imports', () => {
+  it('should not throw on using explicitly allowed module imports', () => {
     const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
@@ -391,7 +395,7 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {allowModuleIdentifiers: ['foo']});
   });
 
-  it('should not throw if non-whitelisted module imports are not written', () => {
+  it('should not throw if module imports, that were not explicitly allowed, are not used', () => {
     const input = `
       import * as foo from './foo';
       export declare class A {
