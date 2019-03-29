@@ -5,7 +5,7 @@ export interface ContributorGroup {
 }
 
 export interface Contributor {
-  group: string;
+  groups: string[];
   name: string;
   picture?: string;
   website?: string;

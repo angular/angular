@@ -27,13 +27,10 @@ export class ContributorService {
         const contribMap: { [name: string]: Contributor[]} = {};
         Object.keys(contribs).forEach(key => {
           const contributor = contribs[key];
-          const group = contributor.group;
-          const contribGroup = contribMap[group];
-          if (contribGroup) {
+          contributor.groups.forEach(group => {
+            const contribGroup = contribMap[group] || (contribMap[group] = []);
             contribGroup.push(contributor);
-          } else {
-            contribMap[group] = [contributor];
-          }
+          });
         });
 
         return contribMap;
