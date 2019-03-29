@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '../../metadata';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '../../metadata/schema';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {assertDataInRange} from '../../util/assert';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
