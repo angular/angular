@@ -11,7 +11,7 @@
  * We do this by defining a subset of DOM API to be the renderer and than
  * use that time for rendering.
  *
- * At runtime we can than use the DOM api directly, in server or web-worker
+ * At runtime we can then use the DOM api directly, in server or web-worker
  * it will be easy to implement such API.
  */
 
