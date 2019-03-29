@@ -27,13 +27,12 @@ First, you'll set up the checkout form model. The form model is the source of tr
 
         ```
         export class CartComponent {
-          checkoutForm;
           items;
 
-        constructor(
-          private cartService: CartService,
-          private formBuilder: FormBuilder,
-        ) { }
+          constructor(
+            private cartService: CartService,
+            private formBuilder: FormBuilder,
+          ) { }
         }
         ```
 
@@ -57,19 +56,20 @@ First, you'll set up the checkout form model. The form model is the source of tr
 
     ```
     export class CartComponent {
-      checkoutForm;
       items;
+      checkoutForm;
 
-    constructor(
-      private formBuilder: FormBuilder,
-      private cartService: CartService
-    ) {
-      this.items = this.cartService.getItems();
+      constructor(
+        private formBuilder: FormBuilder,
+        private cartService: CartService
+      ) {
+        this.items = this.cartService.getItems();
 
-      this.checkoutForm = this.formBuilder.group({
-        name: '',
-        address: ''
-      });
+        this.checkoutForm = this.formBuilder.group({
+          name: '',
+          address: ''
+        });
+      }
     ```
     <!-- 
       To do: Replace with docregion  

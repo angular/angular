@@ -45,8 +45,6 @@ function createPackage(changedFile) {
     console.log('Building API docs for', packageName);
     return require('./api-package').createPackage(packageName);
   }
-
-
 }
 
 module.exports = {

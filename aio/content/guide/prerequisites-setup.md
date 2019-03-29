@@ -23,9 +23,6 @@ Angular requires `Node.js` version 8.x or 10.x.
 
 * To get `Node.js`, go to [nodejs.org](https://nodejs.org "Nodejs.org").
 
-Compatible versions are listed in the "engines" section of the [master `package.json` file](https://github.com/angular/angular/blob/master/package.json) for Angular.
-
-
 {@a npm}
 ### npm package manager: npm or yarn
 
@@ -33,10 +30,9 @@ Angular, the Angular CLI, and Angular apps depend on features and functionality 
 
 The following package managers have been verified with Angular: 
 
-* The [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default. To check if you have the npm client installed, run `npm -v` in a terminal/console window. Most of the documentation for Angular assumes the `npm` client. 
+* The [npm client](https://docs.npmjs.com/cli/npm) command line interface, which is installed with `Node.js` by default. To check if you have the npm client installed, run `npm -v` in a terminal/console window. Most of the documentation for Angular assumes the npm client.
 
-* The [yarn client](https://yarnpkg.com/). Compatible versions are listed in the "engines" section of the [master `package.json` file](https://github.com/angular/angular/blob/master/package.json) for Angular.
-
+* The [yarn client](https://yarnpkg.com/) command line interface. 
 
 {@a install-cli}
 
@@ -136,8 +132,6 @@ After the Tutorial and Architecture guide, you'll be ready to continue exploring
 
 Angular assumes specific versions of many related technologies and tools, such as TypeScript, Karma, Protractor, tsickle, zone.js.
 
-For details, see the [master `package.json` file](https://github.com/angular/angular/blob/master/package.json) for Angular.
-
 The `package.json` is organized into two groups of packages:
 
 * [Dependencies](guide/npm-packages#dependencies) are essential to *running* applications.
@@ -150,5 +144,5 @@ These packages are described in more detail in [Workspace dependencies](guide/np
 {@a others}
 ## Managing different development environments
 
-If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm. 
+If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) on Mac or Linux, or [nvm-windows](https://github.com/coreybutler/nvm-windows) on Windows, to manage the multiple versions of Node.js and npm. 
 

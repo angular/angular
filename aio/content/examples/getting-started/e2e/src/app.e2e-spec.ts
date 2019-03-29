@@ -3,43 +3,30 @@
 import { browser, element, by, ExpectedConditions as EC, logging, ElementFinder, ElementArrayFinder } from 'protractor';
 
 describe('Getting Started', () => {
-  let pageElements: {
-    topBarHeader: () => ElementFinder,
-    topBarLinks: () => ElementFinder,
-    topBarCheckoutLink: () => ElementFinder,
-    productListHeader: () => ElementFinder,
-    productListItems: () => ElementArrayFinder,
-    productListLinks: () => ElementArrayFinder,
-    productDetailsPage: () => ElementFinder,
-    cartPage: () => ElementFinder
+  const pageElements = {
+    topBarHeader: element(by.css('app-root app-top-bar h1')),
+    topBarLinks: element(by.css('app-root app-top-bar a')),
+    topBarCheckoutLink: element(by.cssContainingText('app-root app-top-bar a', 'Checkout')),
+    productListHeader: element(by.css('app-root app-product-list h2')),
+    productListItems: element.all(by.css('app-root app-product-list h3')),
+    productListLinks: element.all(by.css('app-root app-product-list a')),
+    productDetailsPage: element(by.css('app-root app-product-details div')),
+    cartPage: element(by.css('app-root app-cart'))
   };
-
-  beforeEach(() => {
-    pageElements = {
-      topBarHeader: () => element(by.css('app-root app-top-bar h1')),
-      topBarLinks: () => element(by.css('app-root app-top-bar a')),
-      topBarCheckoutLink: () => element(by.cssContainingText('app-root app-top-bar a', 'Checkout')),
-      productListHeader: () => element(by.css('app-root app-product-list h2')),
-      productListItems: () => element.all(by.css('app-root app-product-list h3')),
-      productListLinks: () => element.all(by.css('app-root app-product-list a')),
-      productDetailsPage: () => element(by.css('app-root app-product-details div')),
-      cartPage: () => element(by.css('app-root app-cart'))
-    }
-  });
 
   describe('General', () => {
     beforeAll(async() => {
-      browser.get('/');
+      await browser.get('/');
     });
 
     it('should display "My Store"', async() => {
-      const title = await pageElements.topBarHeader().getText();
+      const title = await pageElements.topBarHeader.getText();
 
       expect(title).toEqual('My Store');
     });
 
     it('should display "Products" on the homepage', async() => {
-      const title = await pageElements.productListHeader().getText();
+      const title = await pageElements.productListHeader.getText();
 
       expect(title).toEqual('Products');
     });
@@ -51,27 +38,21 @@ describe('Getting Started', () => {
     });
 
     it('should display 3 items', async() => {
-      const products = await pageElements.productListItems();
+      const products = await pageElements.productListItems;
 
       expect(products.length).toEqual(3);
     });
   });
 
   describe('Product Details', () => {
-    let productLinks: ElementArrayFinder;
-
     beforeEach(async() => {
       await browser.get('/');
     });
 
-    beforeEach(() => {
-      productLinks = pageElements.productListLinks();
-    });
-
     it('should display information for a product', async() => {
-      await productLinks.get(0).click();
+      await pageElements.productListLinks.get(0).click();
 
-      const product = pageElements.productDetailsPage();
+      const product = pageElements.productDetailsPage;
       const productHeader = await product.element(by.css('h3')).getText();
       const productPrice = await product.element(by.css('h4')).getText();
       const productDescription = await product.element(by.css('p')).getText();
@@ -83,11 +64,11 @@ describe('Getting Started', () => {
     });
 
     it('should add the product to the cart', async() => {
-      await productLinks.get(0).click();
+      await pageElements.productListLinks.get(0).click();
 
-      const product = pageElements.productDetailsPage();
+      const product = pageElements.productDetailsPage;
       const buyButton = await product.element(by.css('button'));
-      const checkoutLink = pageElements.topBarCheckoutLink();
+      const checkoutLink = pageElements.topBarCheckoutLink;
 
       await buyButton.click();
       await browser.wait(EC.alertIsPresent(), 1000);
@@ -100,24 +81,19 @@ describe('Getting Started', () => {
   });
 
   describe('Cart', () => {
-    let productLinks: ElementArrayFinder;
 
     beforeEach(async() => {
       await browser.get('/');
     });
 
-    beforeEach(() => {
-      productLinks = pageElements.productListLinks()
-    });
-
     it('should go through the checkout process', async() => {
-      await productLinks.get(0).click();
+      await pageElements.productListLinks.get(0).click();
 
-      const checkoutLink = pageElements.topBarCheckoutLink();
-      const productDetailsPage = pageElements.productDetailsPage();
+      const checkoutLink = pageElements.topBarCheckoutLink;
+      const productDetailsPage = pageElements.productDetailsPage;
       const buyButton = await productDetailsPage.element(by.css('button'));
 
-      const cartPage = pageElements.cartPage();
+      const cartPage = pageElements.cartPage;
       const inputFields = cartPage.all(by.css('form input'));
 
       const purchaseButton = await cartPage.element(by.css('button'));
