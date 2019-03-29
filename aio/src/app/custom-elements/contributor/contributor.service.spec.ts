@@ -49,14 +49,23 @@ describe('ContributorService', () => {
 
     it('should reshape the contributor json to expected result', () => {
       const groupNames = contribs.map(g => g.name).join(',');
-      expect(groupNames).toEqual('Angular,GDE');
+      expect(groupNames).toEqual('Angular,Collaborators,GDE');
     });
 
     it('should have expected "GDE" contribs in order', () => {
-      const gde = contribs[1];
+      const gde = contribs[2];
       const actualAngularNames = gde.contributors.map(l => l.name).join(',');
-      const expectedAngularNames = [testData.jeffcross, testData.kapunahelewong].map(l => l.name).join(',');
+      const expectedAngularNames = [testData.gkalpak, testData.kapunahelewong].map(l => l.name).join(',');
       expect(actualAngularNames).toEqual(expectedAngularNames);
+    });
+
+    it('should support including a contributor in multiple groups', () => {
+      const contributor = testData.gkalpak;
+      const matchedGroups = contribs
+          .filter(group => group.contributors.includes(contributor))
+          .map(group => group.name);
+
+      expect(matchedGroups).toEqual(['Collaborators', 'GDE']);
     });
   });
 
@@ -71,7 +80,7 @@ function getTestContribs() {
       website: 'https://github.com/kapunahelewong',
       twitter: 'kapunahele',
       bio: 'Kapunahele is a front-end developer and contributor to angular.io',
-      group: 'GDE'
+      groups: ['GDE']
     },
     misko: {
       name: 'Miško Hevery',
@@ -79,7 +88,7 @@ function getTestContribs() {
       twitter: 'mhevery',
       website: 'http://misko.hevery.com',
       bio: 'Miško Hevery is the creator of AngularJS framework.',
-      group: 'Angular'
+      groups: ['Angular']
     },
     igor: {
       name: 'Igor Minar',
@@ -87,7 +96,7 @@ function getTestContribs() {
       twitter: 'IgorMinar',
       website: 'https://google.com/+IgorMinar',
       bio: 'Igor is a software engineer at Angular.',
-      group: 'Angular'
+      groups: ['Angular']
     },
     kara: {
       name: 'Kara Erickson',
@@ -95,7 +104,7 @@ function getTestContribs() {
       twitter: 'karaforthewin',
       website: 'https://github.com/kara',
       bio: 'Kara is a software engineer on the Angular team at Angular and a co-organizer of the Angular-SF Meetup. ',
-      group: 'Angular'
+      groups: ['Angular']
     },
     jeffcross: {
       name: 'Jeff Cross',
@@ -103,7 +112,7 @@ function getTestContribs() {
       twitter: 'jeffbcross',
       website: 'https://twitter.com/jeffbcross',
       bio: 'Jeff was one of the earliest core team members on AngularJS.',
-      group: 'GDE'
+      groups: ['Collaborators']
     },
     naomi: {
       name: 'Naomi Black',
@@ -111,7 +120,14 @@ function getTestContribs() {
       twitter: 'naomitraveller',
       website: 'http://google.com/+NaomiBlack',
       bio: 'Naomi is Angular\'s TPM generalist and jack-of-all-trades.',
-      group: 'Angular'
+      groups: ['Angular']
+    },
+    gkalpak: {
+      name: 'George Kalpakas',
+      picture: 'gkalpak.jpg',
+      twitter: 'gkalpakas',
+      bio: 'George wrote this test, so he gets to have his name included here.',
+      groups: ['GDE', 'Collaborators'],
     }
  };
 }
