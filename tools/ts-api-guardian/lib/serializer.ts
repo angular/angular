@@ -38,14 +38,14 @@ export interface SerializationOptions {
    */
   stripExportPattern?: RegExp|RegExp[];
   /**
-   * Whitelists these identifiers as modules in the output. For example,
+   * Allows these identifiers as modules in the output. For example,
    * ```
    * import * as angular from './angularjs';
    *
    * export class Foo extends angular.Bar {}
    * ```
-   * will produce `export class Foo extends angular.Bar {}` and requires
-   * whitelisting angular.
+   * will produce `export class Foo extends angular.Bar {}` and requires explicitly allowing
+   * `angular` as a module identifier.
    */
   allowModuleIdentifiers?: string[];
 
@@ -242,7 +242,7 @@ class ResolvedDeclarationEmitter {
           message: createErrorMessage(
               firstQualifier,
               `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
-                  `from source or whitelist it via --allowModuleIdentifiers.`)
+                  `from source or allow it via --allowModuleIdentifiers.`)
         });
       }
     }
