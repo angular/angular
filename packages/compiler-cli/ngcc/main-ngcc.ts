@@ -10,6 +10,7 @@ import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
 import {mainNgcc} from './src/main';
+import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 
 // CLI entry point
 if (require.main === module) {
@@ -39,8 +40,13 @@ if (require.main === module) {
           })
           .option('first-only', {
             describe:
-                'If specified then only the first matching package.json property will be compiled',
+                'If specified then only the first matching package.json property will be compiled.',
             type: 'boolean'
+          })
+          .option('l', {
+            alias: 'loglevel',
+            describe: 'The lowest severity logging message that should be output.',
+            choices: ['debug', 'info', 'warn', 'error'],
           })
           .help()
           .parse(args);
@@ -54,9 +60,15 @@ if (require.main === module) {
   const propertiesToConsider: string[] = options['p'];
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
+  const logLevel = options['l'] as keyof typeof LogLevel;
   try {
-    mainNgcc(
-        {basePath: baseSourcePath, propertiesToConsider, targetEntryPointPath, compileAllFormats});
+    mainNgcc({
+      basePath: baseSourcePath,
+      propertiesToConsider,
+      targetEntryPointPath,
+      compileAllFormats,
+      logger: new ConsoleLogger(LogLevel[logLevel]),
+    });
     process.exitCode = 0;
   } catch (e) {
     console.error(e.stack || e.message);

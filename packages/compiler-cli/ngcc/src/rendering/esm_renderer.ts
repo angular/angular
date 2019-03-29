@@ -14,11 +14,13 @@ import {RedundantDecoratorMap, Renderer, stripExtension} from './renderer';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
+import {Logger} from '../logging/logger';
 
 export class EsmRenderer extends Renderer {
   constructor(
-      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle, sourcePath: string) {
-    super(host, isCore, bundle, sourcePath);
+      logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle,
+      sourcePath: string) {
+    super(logger, host, isCore, bundle, sourcePath);
   }
 
   /**
