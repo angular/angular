@@ -20,6 +20,7 @@ ts_library(
     "@npm//@types/node",
     "@npm//dgeni",
     "@npm//dgeni-packages",
+    "@npm//highlight.js",
     "//tools/highlight-files:sources",
   ],
   tsconfig = ":tsconfig.json",
