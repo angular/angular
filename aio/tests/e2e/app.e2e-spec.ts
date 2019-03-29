@@ -127,6 +127,46 @@ describe('site App', function() {
     });
   });
 
+  describe('contributors page', () => {
+    const groupButtons = element(by.css('.group-buttons')).all(by.css('.filter-button'));
+    const contributors = element(by.css('.contributor-group')).all(by.css('aio-contributor'));
+
+    beforeAll(() => page.navigateTo('about'));
+
+    it('should have the expected groups', () => {
+      expect(groupButtons.count()).toBe(3);
+
+      const texts = groupButtons.map<string>(btn => btn && btn.getText());
+      expect(texts).toEqual(['ANGULAR', 'COLLABORATORS', 'GDE']);
+    });
+
+    it('should have contributors listed in each group', async () => {
+      const getContributorNames =
+          () => contributors.all(by.css('h3')).map<string>(c => c && c.getText());
+
+      const names1 = getContributorNames();
+      expect(contributors.count()).toBeGreaterThan(1);
+
+      groupButtons.get(1).click();
+      const names2 = getContributorNames();
+      expect(contributors.count()).toBeGreaterThan(1);
+      expect(names2).not.toEqual(names1);
+
+      groupButtons.get(2).click();
+      const names3 = getContributorNames();
+      expect(contributors.count()).toBeGreaterThan(1);
+      expect(names3).not.toEqual(names2);
+      expect(names3).not.toEqual(names1);
+
+      groupButtons.get(0).click();
+      const names4 = getContributorNames();
+      expect(contributors.count()).toBeGreaterThan(1);
+      expect(names4).not.toEqual(names3);
+      expect(names4).not.toEqual(names2);
+      expect(names4).toEqual(names1);
+    });
+  });
+
   describe('google analytics', () => {
 
     it('should call ga with initial URL', done => {
