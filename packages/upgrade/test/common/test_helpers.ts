@@ -56,6 +56,38 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
         return () => methodsToPatch.forEach(method => win[method] = originalMethods[method]);
       }
 
+      function loadScript(scriptUrl: string, retry = 0): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.async = true;
+          script.onerror = (retry > 0) ? () => {
+            // Sometimes (especially on mobile browsers on SauceLabs) the script may fail to load
+            // due to a temporary issue with the internet connection. To avoid flakes on CI when
+            // this happens, we retry the download after some delay.
+            const delay = 5000;
+            win.console.warn(
+                `\n[${new Date().toISOString()}] Retrying to load "${scriptUrl}" in ${delay}ms...`);
+
+            document.body.removeChild(script);
+            setTimeout(() => loadScript(scriptUrl, --retry).then(resolve, reject), delay);
+          } : () => {
+            // Whenever the script failed loading, browsers will just pass an "ErrorEvent" which
+            // does not contain useful information on most browsers we run tests against. In order
+            // to avoid writing logic to convert the event into a readable error and since just
+            // passing the event might cause people to spend unnecessary time debugging the
+            // "ErrorEvent", we create a simple error that doesn't imply that there is a lot of
+            // information within the "ErrorEvent".
+            reject(`An error occurred while loading "${scriptUrl}".`);
+          };
+          script.onload = () => {
+            document.body.removeChild(script);
+            resolve();
+          };
+          script.src = `base/npm/node_modules/${scriptUrl}`;
+          document.body.appendChild(script);
+        });
+      }
+
       beforeAll(done => {
         const restoreJasmineMethods = patchJasmineMethods();
         const onSuccess = () => {
@@ -68,31 +100,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
         };
 
         // Load AngularJS before running tests.
-        files
-            .reduce(
-                (prev, file) => prev.then(() => new Promise<void>((resolve, reject) => {
-                                            const script = document.createElement('script');
-                                            script.async = true;
-                                            script.onerror = () => {
-                                              // Whenever the script failed loading, browsers will
-                                              // just pass an "ErrorEvent" which does not contain
-                                              // useful information on most browsers we run tests
-                                              // against. In order to avoid writing logic to convert
-                                              // the event into a readable error and since just
-                                              // passing the event might cause people to spend
-                                              // unnecessary time debugging the "ErrorEvent", we
-                                              // create a simple error that doesn't imply that there
-                                              // is a lot of information within the "ErrorEvent".
-                                              reject(`An error occurred while loading: "${file}".`);
-                                            };
-                                            script.onload = () => {
-                                              document.body.removeChild(script);
-                                              resolve();
-                                            };
-                                            script.src = `base/npm/node_modules/${file}`;
-                                            document.body.appendChild(script);
-                                          })),
-                Promise.resolve())
+        files.reduce((prev, file) => prev.then(() => loadScript(file, 1)), Promise.resolve())
             .then(() => setNg1(win.angular))
             .then(onSuccess, onError);
 
