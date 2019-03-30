@@ -503,6 +503,8 @@ export class ApplicationRef {
   // TODO(issue/24571): remove '!'.
   public readonly isStable !: Observable<boolean>;
 
+  private pendingTickQueue: any[] = [];
+
   /** @internal */
   constructor(
       private _zone: NgZone, private _console: Console, private _injector: Injector,
@@ -511,8 +513,23 @@ export class ApplicationRef {
       private _initStatus: ApplicationInitStatus) {
     this._enforceNoNewChanges = isDevMode();
 
-    this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+    this._zone.onMicrotaskEmpty.subscribe({
+      next: () => {
+        if (this.pendingTickQueue.length > 1) {
+          // if some tick is already in queue, just return
+          return;
+        }
+        // push something into queue
+        this.pendingTickQueue.push({});
+        // use native requestAnimationFrame to schedule the tick
+        (window as any)['__zone_symbol__requestAnimationFrame'](() => {
+          // pop the tick from queue
+          this.pendingTickQueue.pop();
+          // run tick
+          this._zone.run(function() { this.tick(); });
+        });
+      }
+    });
 
     const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
       this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
