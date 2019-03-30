@@ -28,9 +28,7 @@
     "karma-cli",
     "karma-jasmine",
     "karma-jasmine-html-reporter",
-    "karma-phantomjs-launcher",
     "lodash",
-    "phantomjs-prebuilt",
     "protractor",
     "tslint",
     "typescript"
