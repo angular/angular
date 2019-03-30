@@ -11,7 +11,7 @@ import {getCallDecoratorImport} from './typescript/decorators';
 
 export type CallExpressionDecorator = ts.Decorator & {
   expression: ts.CallExpression;
-}
+};
 
 export interface NgDecorator {
   name: string;
