@@ -780,6 +780,67 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
+    it('should detect static queries used through getter property access', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+                
+          get myProp() {
+            return this.query.myValue;
+          }
+          
+          ngOnInit() {
+            this.myProp.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect static queries used through external getter access', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        import {External} from './external';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          private external = new External(this);
+                
+          get myProp() {
+            return this.query.myValue;
+          }
+          
+          ngOnInit() {
+            console.log(this.external.query);
+          }
+        }
+      `);
+
+      writeFile('/external.ts', `
+        import {MyComp} from './index';
+      
+        export class External {
+          constructor(private comp: MyComp) {}
+          
+          get query() { return this.comp.query; }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should properly handle multiple tsconfig files', () => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
