@@ -191,7 +191,7 @@ export interface R3InjectorMetadata {
   type: o.Expression;
   deps: R3DependencyMetadata[]|null;
   providers: o.Expression;
-  imports: o.Expression;
+  imports: o.Expression[];
 }
 
 export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
@@ -204,7 +204,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression({
     factory: result.factory,
     providers: meta.providers,
-    imports: meta.imports,
+    imports: o.literalArr(meta.imports),
   })]);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));

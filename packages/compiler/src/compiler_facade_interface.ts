@@ -110,8 +110,8 @@ export interface R3InjectorMetadataFacade {
   name: string;
   type: any;
   deps: R3DependencyMetadataFacade[]|null;
-  providers: any;
-  imports: any;
+  providers: any[];
+  imports: any[];
 }
 
 export interface R3DirectiveMetadataFacade {
