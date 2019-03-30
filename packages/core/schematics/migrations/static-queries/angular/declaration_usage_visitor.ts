@@ -74,6 +74,25 @@ export class DeclarationUsageVisitor {
     }
   }
 
+  private visitPropertyAccessExpression(node: ts.PropertyAccessExpression, nodeQueue: ts.Node[]) {
+    const propertySymbol = this.typeChecker.getSymbolAtLocation(node.name);
+
+    if (!propertySymbol || !propertySymbol.valueDeclaration ||
+        this.visitedJumpExprSymbols.has(propertySymbol)) {
+      return;
+    }
+
+    const valueDeclaration = propertySymbol.valueDeclaration;
+
+    // In case the property access expression refers to a get accessor, we need to visit
+    // the body of the get accessor declaration as there could be logic that uses the
+    // given search node synchronously.
+    if (ts.isGetAccessorDeclaration(valueDeclaration) && valueDeclaration.body) {
+      this.visitedJumpExprSymbols.add(propertySymbol);
+      nodeQueue.push(valueDeclaration.body);
+    }
+  }
+
   isSynchronouslyUsedInNode(searchNode: ts.Node): boolean {
     const nodeQueue: ts.Node[] = [searchNode];
     this.visitedJumpExprSymbols.clear();
@@ -95,6 +114,12 @@ export class DeclarationUsageVisitor {
       // constructor declaration of the target class and add it to the node queue.
       if (ts.isNewExpression(node)) {
         this.addNewExpressionToQueue(node, nodeQueue);
+      }
+
+      // Handle property access expressions. These could resolve to get-accessor declarations
+      // which can contain synchronous logic that accesses the search node.
+      if (ts.isPropertyAccessExpression(node)) {
+        this.visitPropertyAccessExpression(node, nodeQueue);
       }
 
       // Do not visit nodes that declare a block of statements but are not executed
