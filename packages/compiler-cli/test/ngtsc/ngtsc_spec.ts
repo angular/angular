@@ -472,6 +472,66 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).not.toContain('ɵsetNgModuleScope(TestModule,');
   });
 
+  it('should filter out directives and pipes from module exports in the injector def', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {NgModule} from '@angular/core';
+      import {RouterComp, RouterModule} from '@angular/router';
+      import {Dir, OtherDir, MyPipe, Comp} from './decls';
+
+      @NgModule({
+        declarations: [OtherDir],
+        exports: [OtherDir],
+      })
+      export class OtherModule {}
+      
+      const EXPORTS = [Dir, MyPipe, Comp, OtherModule, OtherDir, RouterModule, RouterComp];
+
+      @NgModule({
+        declarations: [Dir, MyPipe, Comp],
+        imports: [OtherModule, RouterModule.forRoot()],
+        exports: [EXPORTS],
+      })
+      export class TestModule {}
+    `);
+    env.write(`decls.ts`, `
+      import {Component, Directive, Pipe} from '@angular/core';
+
+      @Directive({selector: '[dir]'})
+      export class Dir {}
+
+      @Directive({selector: '[other]'})
+      export class OtherDir {}
+
+      @Pipe({name:'pipe'})
+      export class MyPipe {}
+
+      @Component({selector: 'test', template: ''})
+      export class Comp {}
+    `);
+    env.write('node_modules/@angular/router/index.d.ts', `
+      import {ɵComponentDefWithMeta, ModuleWithProviders, ɵNgModuleDefWithMeta} from '@angular/core';
+
+      export declare class RouterComp {
+        static ngComponentDef: ɵComponentDefWithMeta<RouterComp, "lib-cmp", never, {}, {}, never>
+      }
+
+      declare class RouterModule {
+        static forRoot(): ModuleWithProviders<RouterModule>;
+        static ngModuleDef: ɵNgModuleDefWithMeta<RouterModule, [typeof RouterComp], never, [typeof RouterComp]>;
+      }
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents)
+        .toContain(
+            'i0.defineInjector({ factory: function TestModule_Factory(t) ' +
+            '{ return new (t || TestModule)(); }, providers: [], ' +
+            'imports: [[OtherModule, RouterModule.forRoot()],\n            OtherModule,\n            RouterModule] });');
+  });
+
   it('should compile NgModules with services without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
