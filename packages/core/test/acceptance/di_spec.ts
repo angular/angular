@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, HostBinding, INJECTOR, Inject, Injectable, Injector, Input, LOCALE_ID, Optional, Output, Pipe, PipeTransform, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, Injector, Input, LOCALE_ID, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
@@ -38,6 +38,7 @@ describe('di', () => {
     @Directive({selector: '[dirB]', exportAs: 'dirB'})
     class DirectiveB {
       @Input() value = 'DirB';
+
       constructor() { log.push(this.value); }
     }
 
@@ -48,11 +49,14 @@ describe('di', () => {
       class DirectiveA {
         value = 'DirA';
       }
+
       @Directive({selector: '[dirC]', exportAs: 'dirC'})
       class DirectiveC {
         value: string;
+
         constructor(dirA: DirectiveA, dirB: DirectiveB) { this.value = dirA.value + dirB.value; }
       }
+
       @Component({
         template: `
         <div dirA>
@@ -62,6 +66,7 @@ describe('di', () => {
       })
       class MyComp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, DirectiveC, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -74,11 +79,14 @@ describe('di', () => {
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         value = 'dirA';
+
         constructor(dirB: DirectiveB) { log.push(`DirA (dep: ${dirB.value})`); }
       }
+
       @Component({template: '<div dirA dirB></div>'})
       class MyComp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -90,14 +98,17 @@ describe('di', () => {
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         value = 'dirA';
+
         constructor(dirB: DirectiveB) { log.push(`DirA (dep: ${dirB.value})`); }
       }
+
       // - dirB is know to the node injectors
       // - then when dirA tries to inject dirB, it will check the node injector first tree
       // - if not found, it will check the module injector tree
       @Component({template: '<div dirB></div><div dirA></div>'})
       class MyComp {
       }
+
       TestBed.configureTestingModule({
         declarations: [DirectiveA, DirectiveB, MyComp],
         providers: [{provide: DirectiveB, useValue: {value: 'module'}}]
@@ -113,9 +124,11 @@ describe('di', () => {
       class MyComp {
         constructor(dirB: DirectiveB) { log.push(`Comp (dep: ${dirB.value})`); }
       }
+
       @Component({template: '<my-comp dirB></my-comp>'})
       class MyApp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveB, MyComp, MyApp]});
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
@@ -128,10 +141,12 @@ describe('di', () => {
       class DirectiveA {
         constructor(dir: DirectiveB) { log.push(`DirA (dep: ${dir.value})`); }
       }
+
       @Component({template: '<div dirA dirB *ngFor="let i of array"></div>'})
       class MyComp {
         array = [1, 2, 3];
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -144,22 +159,28 @@ describe('di', () => {
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         value = 'DirA';
+
         constructor() { log.push(this.value); }
       }
+
       @Directive({selector: '[dirC]'})
       class DirectiveC {
         value = 'DirC';
+
         constructor() { log.push(this.value); }
       }
+
       @Directive({selector: '[dirB]'})
       class DirectiveB {
         constructor(dirA: DirectiveA, dirC: DirectiveC) {
           log.push(`DirB (deps: ${dirA.value} and ${dirC.value})`);
         }
       }
+
       @Component({template: '<div dirA dirB dirC></div>'})
       class MyComp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, DirectiveC, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -171,25 +192,33 @@ describe('di', () => {
       @Directive({selector: '[dirC]'})
       class DirectiveC {
         value = 'DirC';
+
         constructor(dirB: DirectiveB) { log.push(`DirC (dep: ${dirB.value})`); }
       }
+
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         value = 'DirA';
+
         constructor(dirC: DirectiveC) { log.push(`DirA (dep: ${dirC.value})`); }
       }
+
       @Directive({selector: '[dirD]'})
       class DirectiveD {
         value = 'DirD';
+
         constructor(dirA: DirectiveA) { log.push(`DirD (dep: ${dirA.value})`); }
       }
+
       @Component({selector: 'my-comp', template: ''})
       class MyComp {
         constructor(dirD: DirectiveD) { log.push(`Comp (dep: ${dirD.value})`); }
       }
+
       @Component({template: '<my-comp dirA dirB dirC dirD></my-comp>'})
       class MyApp {
       }
+
       TestBed.configureTestingModule(
           {declarations: [DirectiveA, DirectiveB, DirectiveC, DirectiveD, MyComp, MyApp]});
       const fixture = TestBed.createComponent(MyApp);
@@ -204,12 +233,14 @@ describe('di', () => {
       class MyApp {
         value = 'App';
       }
+
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         constructor(dirB: DirectiveB, app: MyApp) {
           log.push(`DirA (deps: ${dirB.value} and ${app.value})`);
         }
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyApp]});
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
@@ -219,24 +250,30 @@ describe('di', () => {
 
     it('should not use a parent when peer dep is available', () => {
       let count = 1;
+
       @Directive({selector: '[dirB]'})
       class DirectiveB {
         count: number;
+
         constructor() {
           log.push(`DirB`);
           this.count = count++;
         }
       }
+
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         constructor(dirB: DirectiveB) { log.push(`DirA (dep: DirB - ${dirB.count})`); }
       }
+
       @Component({selector: 'my-comp', template: '<div dirA dirB></div>'})
       class MyComp {
       }
+
       @Component({template: '<my-comp dirB></my-comp>'})
       class MyApp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
       const fixture = TestBed.createComponent(MyApp);
       fixture.detectChanges();
@@ -249,6 +286,7 @@ describe('di', () => {
       @Directive({selector: '[dirA]', exportAs: 'dirA'})
       class DirectiveA {
         injector: Injector;
+
         constructor(public dirB: DirectiveB, public vcr: ViewContainerRef) {
           this.injector = vcr.injector;
         }
@@ -263,6 +301,7 @@ describe('di', () => {
         @Component({template: '<my-comp dirB></my-comp>'})
         class MyApp {
         }
+
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.detectChanges();
@@ -282,6 +321,7 @@ describe('di', () => {
         class MyApp {
           showing = false;
         }
+
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.componentInstance.showing = true;
@@ -305,6 +345,7 @@ describe('di', () => {
           skipContent = false;
           skipContent2 = false;
         }
+
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.detectChanges();
@@ -317,10 +358,12 @@ describe('di', () => {
         @Directive({selector: '[structuralDir]'})
         class StructuralDirective {
           @Input() tmp !: TemplateRef<any>;
+
           constructor(public vcr: ViewContainerRef) {}
 
           create() { this.vcr.createEmbeddedView(this.tmp); }
         }
+
         @Component({
           template: `<div dirB value="declaration">
            <ng-template #foo>
@@ -336,6 +379,7 @@ describe('di', () => {
         class MyComp {
           @ViewChild(StructuralDirective) structuralDir !: StructuralDirective;
         }
+
         TestBed.configureTestingModule(
             {declarations: [StructuralDirective, DirectiveA, DirectiveB, MyComp]});
         const fixture = TestBed.createComponent(MyComp);
@@ -356,6 +400,7 @@ describe('di', () => {
         })
         class MyApp {
         }
+
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.detectChanges();
@@ -379,6 +424,7 @@ describe('di', () => {
           @ViewChild(HostBindingDirective) hostBindingDir !: HostBindingDirective;
           @ViewChild(DirectiveA) dirA !: DirectiveA;
         }
+
         TestBed.configureTestingModule(
             {declarations: [DirectiveA, DirectiveB, HostBindingDirective, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
@@ -403,13 +449,16 @@ describe('di', () => {
       class DirectiveB {
         constructor() {}
       }
+
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         constructor(siblingDir: DirectiveB) {}
       }
+
       @Component({template: '<div dirA></div>'})
       class MyComp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(/No provider for DirectiveB/);
     });
@@ -419,13 +468,16 @@ describe('di', () => {
       class DirectiveB {
         constructor() {}
       }
+
       @Directive({selector: '[dirA]'})
       class DirectiveA {
         constructor(siblingDir: DirectiveB) {}
       }
+
       @Component({template: '<div dirA></div><div dirB></div>'})
       class MyComp {
       }
+
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(/No provider for DirectiveB/);
     });
@@ -436,13 +488,16 @@ describe('di', () => {
           class DirectiveB {
             constructor(@Inject(forwardRef(() => DirectiveA)) siblingDir: DirectiveA) {}
           }
+
           @Directive({selector: '[dirA]'})
           class DirectiveA {
             constructor(siblingDir: DirectiveB) {}
           }
+
           @Component({template: '<div dirA dirB></div>'})
           class MyComp {
           }
+
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp)).toThrowError(/Circular dep for/);
         });
@@ -453,12 +508,336 @@ describe('di', () => {
           class DirectiveA {
             constructor(siblingDir: DirectiveA) {}
           }
+
           @Component({template: '<div dirA></div>'})
           class MyComp {
           }
+
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp)).toThrowError(/Circular dep for/);
         });
+
+    describe('flags', () => {
+
+      @Directive({selector: '[dirB]'})
+      class DirectiveB {
+        @Input('dirB') value = '';
+      }
+
+      describe('Optional', () => {
+
+        @Directive({selector: '[dirA]'})
+        class DirectiveA {
+          constructor(@Optional() public dirB: DirectiveB) {}
+        }
+
+        it('should not throw if dependency is @Optional (module injector)', () => {
+
+          @Component({template: '<div dirA></div>'})
+          class MyComp {
+            @ViewChild(DirectiveA) dirA !: DirectiveA;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+
+          const dirA = fixture.componentInstance.dirA;
+          expect(dirA.dirB).toBeNull();
+        });
+
+        it('should return null if @Optional dependency has @Self flag', () => {
+
+          @Directive({selector: '[dirC]'})
+          class DirectiveC {
+            constructor(@Optional() @Self() public dirB: DirectiveB) {}
+          }
+
+          @Component({template: '<div dirC></div>'})
+          class MyComp {
+            @ViewChild(DirectiveC) dirC !: DirectiveC;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveC, MyComp]});
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+
+          const dirC = fixture.componentInstance.dirC;
+          expect(dirC.dirB).toBeNull();
+        });
+
+        it('should not throw if dependency is @Optional but defined elsewhere', () => {
+
+          @Directive({selector: '[dirC]'})
+          class DirectiveC {
+            constructor(@Optional() public dirB: DirectiveB) {}
+          }
+
+          @Component({template: '<div dirB></div><div dirC></div>'})
+          class MyComp {
+            @ViewChild(DirectiveC) dirC !: DirectiveC;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveB, DirectiveC, MyComp]});
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+
+          const dirC = fixture.componentInstance.dirC;
+          expect(dirC.dirB).toBeNull();
+        });
+      });
+
+      it('should skip the current node with @SkipSelf', () => {
+
+        @Directive({selector: '[dirA]'})
+        class DirectiveA {
+          constructor(@SkipSelf() public dirB: DirectiveB) {}
+        }
+
+        @Component({selector: 'my-comp', template: '<div dirA dirB="self"></div>'})
+        class MyComp {
+          @ViewChild(DirectiveA) dirA !: DirectiveA;
+        }
+
+        @Component({template: '<my-comp dirB="parent"></my-comp>'})
+        class MyApp {
+          @ViewChild(MyComp) myComp !: MyComp;
+        }
+
+        TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
+        const fixture = TestBed.createComponent(MyApp);
+        fixture.detectChanges();
+
+        const dirA = fixture.componentInstance.myComp.dirA;
+        expect(dirA.dirB.value).toEqual('parent');
+      });
+
+      onlyInIvy('Ivy has different error message when dependency is not found')
+          .it('should check only the current node with @Self', () => {
+
+            @Directive({selector: '[dirA]'})
+            class DirectiveA {
+              constructor(@Self() public dirB: DirectiveB) {}
+            }
+
+            @Component({template: '<div dirB><div dirA></div></div>'})
+            class MyComp {
+            }
+            TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
+            expect(() => TestBed.createComponent(MyComp))
+                .toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+          });
+
+      describe('@Host', () => {
+        @Directive({selector: '[dirA]'})
+        class DirectiveA {
+          constructor(@Host() public dirB: DirectiveB) {}
+        }
+
+        @Directive({selector: '[dirString]'})
+        class DirectiveString {
+          constructor(@Host() public s: String) {}
+        }
+
+        it('should find viewProviders on the host itself', () => {
+          @Component({
+            selector: 'my-comp',
+            template: '<div dirString></div>',
+            viewProviders: [{provide: String, useValue: 'Foo'}]
+          })
+          class MyComp {
+            @ViewChild(DirectiveString) dirString !: DirectiveString;
+          }
+
+          @Component({template: '<my-comp></my-comp>'})
+          class MyApp {
+            @ViewChild(MyComp) myComp !: MyComp;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+
+          const dirString = fixture.componentInstance.myComp.dirString;
+          expect(dirString.s).toBe('Foo');
+        });
+
+        it('should find host component on the host itself', () => {
+          @Directive({selector: '[dirComp]'})
+          class DirectiveComp {
+            constructor(@Inject(forwardRef(() => MyComp)) @Host() public comp: MyComp) {}
+          }
+
+          @Component({selector: 'my-comp', template: '<div dirComp></div>'})
+          class MyComp {
+            @ViewChild(DirectiveComp) dirComp !: DirectiveComp;
+          }
+
+          @Component({template: '<my-comp></my-comp>'})
+          class MyApp {
+            @ViewChild(MyComp) myComp !: MyComp;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+
+          const myComp = fixture.componentInstance.myComp;
+          const dirComp = myComp.dirComp;
+          expect(dirComp.comp).toBe(myComp);
+        });
+
+        onlyInIvy('Ivy has different error message when dependency is not found')
+            .it('should not find providers on the host itself', () => {
+              @Component({
+                selector: 'my-comp',
+                template: '<div dirString></div>',
+                providers: [{provide: String, useValue: 'Foo'}]
+              })
+              class MyComp {
+              }
+
+              @Component({template: '<my-comp></my-comp>'})
+              class MyApp {
+              }
+
+              TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
+              expect(() => TestBed.createComponent(MyApp))
+                  .toThrowError(/NodeInjector: NOT_FOUND \[String]/);
+            });
+
+        onlyInIvy('Ivy has different error message when dependency is not found')
+            .it('should not find other directives on the host itself', () => {
+              @Component({selector: 'my-comp', template: '<div dirA></div>'})
+              class MyComp {
+              }
+
+              @Component({template: '<my-comp dirB></my-comp>'})
+              class MyApp {
+              }
+
+              TestBed.configureTestingModule(
+                  {declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
+              expect(() => TestBed.createComponent(MyApp))
+                  .toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+            });
+
+        onlyInIvy('Ivy has different error message when dependency is not found')
+            .it('should not find providers on the host itself if in inline view', () => {
+              @Component({
+                selector: 'my-comp',
+                template: '<ng-container *ngIf="showing"><div dirA></div></ng-container>'
+              })
+              class MyComp {
+                showing = false;
+              }
+
+              @Component({template: '<my-comp dirB></my-comp>'})
+              class MyApp {
+                @ViewChild(MyComp) myComp !: MyComp;
+              }
+
+              TestBed.configureTestingModule(
+                  {declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
+              const fixture = TestBed.createComponent(MyApp);
+              fixture.detectChanges();
+              expect(() => {
+                fixture.componentInstance.myComp.showing = true;
+                fixture.detectChanges();
+              }).toThrowError(/NodeInjector: NOT_FOUND \[DirectiveB]/);
+            });
+
+        it('should find providers across embedded views if not passing component boundary', () => {
+          @Component({template: '<div dirB><div *ngIf="showing" dirA></div></div>'})
+          class MyApp {
+            showing = false;
+            @ViewChild(DirectiveA) dirA !: DirectiveA;
+            @ViewChild(DirectiveB) dirB !: DirectiveB;
+          }
+
+          TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyApp]});
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+          fixture.componentInstance.showing = true;
+          fixture.detectChanges();
+
+          const dirA = fixture.componentInstance.dirA;
+          const dirB = fixture.componentInstance.dirB;
+          expect(dirA.dirB).toBe(dirB);
+        });
+
+        onlyInIvy('Ivy has different error message when dependency is not found')
+            .it('should not find component above the host', () => {
+              @Directive({selector: '[dirComp]'})
+              class DirectiveComp {
+                constructor(@Inject(forwardRef(() => MyApp)) @Host() public comp: MyApp) {}
+              }
+
+              @Component({selector: 'my-comp', template: '<div dirComp></div>'})
+              class MyComp {
+              }
+
+              @Component({template: '<my-comp></my-comp>'})
+              class MyApp {
+              }
+
+              TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
+              expect(() => TestBed.createComponent(MyApp))
+                  .toThrowError(/NodeInjector: NOT_FOUND \[MyApp]/);
+            });
+
+        describe('regression', () => {
+          // based on https://stackblitz.com/edit/angular-riss8k?file=src/app/app.component.ts
+          it('should allow directives with Host flag to inject view providers from containing component',
+             () => {
+               class ControlContainer {}
+               let controlContainers: ControlContainer[] = [];
+               let injectedControlContainer: ControlContainer|null = null;
+
+               @Directive({
+                 selector: '[group]',
+                 providers: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               class GroupDirective {
+                 constructor() { controlContainers.push(this); }
+               }
+
+               @Directive({selector: '[control]'})
+               class ControlDirective {
+                 constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent:
+                                 ControlContainer) {
+                   injectedControlContainer = parent;
+                 }
+               }
+
+               @Component({
+                 selector: 'my-comp',
+                 template: '<input control>',
+                 viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               class MyComp {
+               }
+
+               @Component({
+                 template: `
+                   <div group>
+                     <my-comp></my-comp>
+                   </div>
+                 `
+               })
+               class MyApp {
+               }
+
+               TestBed.configureTestingModule(
+                   {declarations: [GroupDirective, ControlDirective, MyComp, MyApp]});
+               const fixture = TestBed.createComponent(MyApp);
+               expect(fixture.nativeElement.innerHTML)
+                   .toBe('<div group=""><my-comp><input control=""></my-comp></div>');
+               expect(controlContainers).toEqual([injectedControlContainer !]);
+             });
+        });
+      });
+    });
   });
 
   describe('service injection', () => {
