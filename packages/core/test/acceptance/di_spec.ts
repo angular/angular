@@ -860,6 +860,47 @@ describe('di', () => {
     });
   });
 
+  describe('inject', () => {
+
+    it('should inject from parent view', () => {
+      @Directive({selector: '[parentDir]'})
+      class ParentDirective {
+      }
+
+      @Directive({selector: '[childDir]', exportAs: 'childDir'})
+      class ChildDirective {
+        value: string;
+        constructor(public parent: ParentDirective) { this.value = parent.constructor.name; }
+      }
+
+      @Directive({selector: '[child2Dir]', exportAs: 'child2Dir'})
+      class Child2Directive {
+        value: boolean;
+        constructor(parent: ParentDirective, child: ChildDirective) {
+          this.value = parent === child.parent;
+        }
+      }
+
+      @Component({
+        template: `<div parentDir>
+          <ng-container *ngIf="showing">
+            <span childDir child2Dir #child1="childDir" #child2="child2Dir">{{ child1.value }}-{{ child2.value }}</span>
+          </ng-container>
+        </div>`
+      })
+      class MyComp {
+        showing = true;
+      }
+      TestBed.configureTestingModule(
+          {declarations: [ParentDirective, ChildDirective, Child2Directive, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const divElement = fixture.nativeElement.querySelector('div');
+      expect(divElement.textContent).toBe('ParentDirective-true');
+    });
+  });
+
   describe('Special tokens', () => {
 
     describe('Injector', () => {

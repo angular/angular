@@ -526,6 +526,9 @@ describe('di', () => {
       });
     });
 
+    /**
+     * This test needs to be moved to acceptance/di_spec.ts when Ivy compiler supports inline views.
+     */
     it('should inject from parent view', () => {
       const ParentDirective = createDirective('parentDir');
 
@@ -593,10 +596,6 @@ describe('di', () => {
       expect(fixture.html)
           .toEqual('<div parentdir=""><span child2dir="" childdir="">Directive-true</span></div>');
     });
-
-    it('should inject from module Injector', () => {
-
-                                             });
   });
 
   describe('getOrCreateNodeInjector', () => {
