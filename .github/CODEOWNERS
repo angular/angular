@@ -513,6 +513,7 @@
 /aio/content/guide/module-types.md                              @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 /aio/content/guide/template-syntax.md                           @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/built-in-template-functions/**            @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/event-binding/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/interpolation/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/template-syntax/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -628,6 +629,7 @@
 /packages/service-worker/**                                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-getting-started.md            @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/service-worker-getting-started/**         @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/app-shell.md                                 @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-communications.md             @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-config.md                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/service-worker-devops.md                     @angular/fw-service-worker @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
@@ -784,7 +786,6 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/npm-packages.md                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/browser-support.md                           @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/typescript-configuration.md                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
-/aio/content/examples/quickstart/**                             @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/setup.md                                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/setup/**                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/build.md                                     @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
