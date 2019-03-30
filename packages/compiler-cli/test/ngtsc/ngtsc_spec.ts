@@ -445,6 +445,10 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
     expect(jsContents)
         .toContain('/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
+    expect(jsContents)
+        .toContain(
+            'i0.defineInjector({ factory: ' +
+            'function TestModule_Factory(t) { return new (t || TestModule)(); } });');
 
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
@@ -528,8 +532,8 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents)
         .toContain(
             'i0.defineInjector({ factory: function TestModule_Factory(t) ' +
-            '{ return new (t || TestModule)(); }, providers: [], ' +
-            'imports: [[OtherModule, RouterModule.forRoot()],\n            OtherModule,\n            RouterModule] });');
+            '{ return new (t || TestModule)(); }, imports: [[OtherModule, RouterModule.forRoot()],' +
+            '\n            OtherModule,\n            RouterModule] });');
   });
 
   it('should compile NgModules with services without errors', () => {

@@ -158,10 +158,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       schemas: [],
     };
 
-    const providers: Expression = ngModule.has('providers') ?
-        new WrappedNodeExpr(ngModule.get('providers') !) :
-        new LiteralArrayExpr([]);
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
+    const providers = rawProviders !== null ? new WrappedNodeExpr(rawProviders) : null;
 
     // At this point, only add the module's imports as the injectors' imports. Any exported modules
     // are added during `resolve`, as we need scope information to be able to filter out directives
