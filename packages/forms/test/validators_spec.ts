@@ -199,6 +199,10 @@ import {first, map} from 'rxjs/operators';
           'minlength': {'requiredLength': 2, 'actualLength': 1}
         });
       });
+
+      it('should not error when 0 is checked against minlength 1',
+         () => { expect(Validators.minLength(1)(new FormControl(0))).toBeNull(); });
+
     });
 
     describe('maxLength', () => {
