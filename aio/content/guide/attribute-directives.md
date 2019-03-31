@@ -53,7 +53,7 @@ Create the directive class file in a terminal window with the CLI command [`ng g
 ng generate directive highlight
 </code-example>
 
-The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
+The CLI creates `src/app/highlight.directive.ts`, a corresponding test file `src/app/highlight.directive.spec.ts`, and _declares_ the directive class in the root `AppModule`.
 
 <div class="alert is-helpful">
 
