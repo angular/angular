@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-Zone[Zone.__symbol__('BLACK_LISTED_EVENTS')] = ['scroll'];
+Zone[Zone.__symbol__('UNPATCHED_EVENTS')] = ['scroll'];

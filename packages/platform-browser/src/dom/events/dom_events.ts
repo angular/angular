@@ -36,7 +36,7 @@ const stopSymbol = '__zone_symbol__propagationStopped';
 const stopMethodSymbol = '__zone_symbol__stopImmediatePropagation';
 
 const blackListedEvents: string[] =
-    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
+    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('UNPATCHED_EVENTS')];
 let blackListedMap: {[eventName: string]: string};
 if (blackListedEvents) {
   blackListedMap = {};
