@@ -65,7 +65,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
             // due to a temporary issue with the internet connection. To avoid flakes on CI when
             // this happens, we retry the download after some delay.
             const delay = 5000;
-            win.console.warn(`Retrying to load "${scriptUrl}" in ${delay}ms...`);
+            win.console.warn(`\n[${new Date().toISOString()}] Retrying to load "${scriptUrl}" in ${delay}ms...`);
 
             document.body.removeChild(script);
             setTimeout(() => loadScript(scriptUrl, --retry).then(resolve, reject), delay);
@@ -76,7 +76,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
             // passing the event might cause people to spend unnecessary time debugging the
             // "ErrorEvent", we create a simple error that doesn't imply that there is a lot of
             // information within the "ErrorEvent".
-            reject(`An error occurred while loading: "${scriptUrl}".`);
+            reject(`An error occurred while loading "${scriptUrl}".`);
           };
           script.onload = () => {
             document.body.removeChild(script);
