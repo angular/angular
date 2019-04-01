@@ -70,7 +70,7 @@
           "url": "getting-started/routing",
           "title": "Routing",
           "tooltip": "Introduction to routing between components using the browser's URL"
-        },        
+        },
         {
           "url": "getting-started/data",
           "title": "Managing Data",
@@ -564,6 +564,11 @@
           "url": "guide/ivy",
           "title": "Angular Ivy",
           "tooltip": "Opting into Angular Ivy with Angular CLI."
+        },
+        {
+          "url": "guide/web-worker",
+          "title": "Web Workers",
+          "tooltip": "Using Web Workers with Angular CLI."
         }
       ]
     },
