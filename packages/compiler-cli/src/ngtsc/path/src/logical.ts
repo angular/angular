@@ -81,7 +81,7 @@ export class LogicalFileSystem {
       let logicalFile: LogicalProjectPath|null = null;
       for (const rootDir of this.rootDirs) {
         if (physicalFile.startsWith(rootDir)) {
-          logicalFile = stripExtension(physicalFile.substr(rootDir.length)) as LogicalProjectPath;
+          logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
             logicalFile = null;
@@ -93,5 +93,11 @@ export class LogicalFileSystem {
       this.cache.set(physicalFile, logicalFile);
     }
     return this.cache.get(physicalFile) !;
+  }
+
+  private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
+      LogicalProjectPath {
+    const logicalPath = stripExtension(file.substr(rootDir.length));
+    return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }
 }
