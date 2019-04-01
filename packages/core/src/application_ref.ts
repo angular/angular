@@ -515,7 +515,7 @@ export class ApplicationRef {
 
     this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
-        if (this.pendingTickQueue.length > 1) {
+        if (this.pendingTickQueue.length > 0) {
           // if some tick is already in queue, just return
           return;
         }
