@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
 import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
@@ -88,7 +88,7 @@ export class DtsMetadataReader implements MetadataReader {
       outputs: readStringMapType(def.type.typeArguments[4]),
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveGuards(clazz, this.reflector),
-      baseClass: null,
+      baseClass: readBaseClass(clazz, this.checker, this.reflector),
     };
   }
 
@@ -115,4 +115,34 @@ export class DtsMetadataReader implements MetadataReader {
     const name = type.literal.text;
     return {ref, name};
   }
+}
+
+function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflector: ReflectionHost):
+    Reference<ClassDeclaration>|'dynamic'|null {
+  if (!isNamedClassDeclaration(clazz)) {
+    // Technically this is an error in a .d.ts file, but for the purposes of finding the base class
+    // it's ignored.
+    return reflector.hasBaseClass(clazz) ? 'dynamic' : null;
+  }
+
+  if (clazz.heritageClauses !== undefined) {
+    for (const clause of clazz.heritageClauses) {
+      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+        const baseExpr = clause.types[0].expression;
+        let symbol = checker.getSymbolAtLocation(baseExpr);
+        if (symbol === undefined) {
+          return 'dynamic';
+        } else if (symbol.flags & ts.SymbolFlags.Alias) {
+          symbol = checker.getAliasedSymbol(symbol);
+        }
+        if (symbol.valueDeclaration !== undefined &&
+            isNamedClassDeclaration(symbol.valueDeclaration)) {
+          return new Reference(symbol.valueDeclaration);
+        } else {
+          return 'dynamic';
+        }
+      }
+    }
+  }
+  return null;
 }

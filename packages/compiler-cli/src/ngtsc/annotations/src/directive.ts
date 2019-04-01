@@ -19,7 +19,7 @@ import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression, unwrapForwardRef} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -69,7 +69,7 @@ export class DirectiveDecoratorHandler implements
         outputs: analysis.outputs,
         queries: analysis.queries.map(query => query.propertyName),
         isComponent: false, ...extractDirectiveGuards(node, this.reflector),
-        baseClass: null,
+        baseClass: readBaseClass(node, this.reflector, this.evaluator),
       });
     }
 
