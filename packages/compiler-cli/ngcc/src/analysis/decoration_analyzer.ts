@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
-import {CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../../src/ngtsc/path';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
@@ -68,6 +68,7 @@ export class DecorationAnalyzer {
   resourceManager = new NgccResourceLoader();
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
+  fullMetaReader = new CompoundMetadataReader([this.metaRegistry, this.dtsMetaReader]);
   refEmitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(this.program, this.typeChecker, this.options, this.host),
@@ -88,8 +89,9 @@ export class DecorationAnalyzer {
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator, this.isCore),
     new ComponentDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry, this.isCore,
-        this.resourceManager, this.rootDirs, /* defaultPreserveWhitespaces */ false,
+        this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
+        this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
+        /* defaultPreserveWhitespaces */ false,
         /* i18nUseExternalIds */ true, this.moduleResolver, this.cycleAnalyzer, this.refEmitter,
         NOOP_DEFAULT_IMPORT_RECORDER),
     new DirectiveDecoratorHandler(

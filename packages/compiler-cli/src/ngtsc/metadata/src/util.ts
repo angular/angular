@@ -12,6 +12,8 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
+import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
     resolutionContext: string): Reference<ClassDeclaration>[] {
@@ -92,4 +94,44 @@ function nodeStaticMethodNames(node: ClassDeclaration, reflector: ReflectionHost
   return reflector.getMembersOfClass(node)
       .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
       .map(member => member.name);
+}
+
+/**
+ * A `MetadataReader` that reads from an ordered set of child readers until it obtains the requested
+ * metadata.
+ *
+ * This is used to combine `MetadataReader`s that read from different sources (e.g. from a registry
+ * and from .d.ts files).
+ */
+export class CompoundMetadataReader implements MetadataReader {
+  constructor(private readers: MetadataReader[]) {}
+
+  getDirectiveMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): DirectiveMeta|null {
+    for (const reader of this.readers) {
+      const meta = reader.getDirectiveMetadata(node);
+      if (meta !== null) {
+        return meta;
+      }
+    }
+    return null;
+  }
+
+  getNgModuleMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): NgModuleMeta|null {
+    for (const reader of this.readers) {
+      const meta = reader.getNgModuleMetadata(node);
+      if (meta !== null) {
+        return meta;
+      }
+    }
+    return null;
+  }
+  getPipeMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): PipeMeta|null {
+    for (const reader of this.readers) {
+      const meta = reader.getPipeMetadata(node);
+      if (meta !== null) {
+        return meta;
+      }
+    }
+    return null;
+  }
 }

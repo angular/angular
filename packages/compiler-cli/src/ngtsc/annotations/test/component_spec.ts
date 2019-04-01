@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -54,11 +54,13 @@ describe('ComponentDecoratorHandler', () => {
     const scopeRegistry = new LocalModuleScopeRegistry(
         metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]),
         null);
+    const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
     const refEmitter = new ReferenceEmitter([]);
 
     const handler = new ComponentDecoratorHandler(
-        reflectionHost, evaluator, metaRegistry, scopeRegistry, false, new NoopResourceLoader(),
-        [''], false, true, moduleResolver, cycleAnalyzer, refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
+        reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, false,
+        new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer, refEmitter,
+        NOOP_DEFAULT_IMPORT_RECORDER);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', isNamedClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
