@@ -1067,6 +1067,27 @@ describe('Integration', () => {
        ]);
      })));
 
+  it('should properly set currentNavigation when cancelling in-flight navigations',
+     fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+
+       router.navigateByUrl('/user/init');
+       advance(fixture);
+
+       router.navigateByUrl('/user/victor');
+       expect((router as any).currentNavigation).not.toBe(null);
+       router.navigateByUrl('/user/fedor');
+       // Due to https://github.com/angular/angular/issues/29389, this would be `false`
+       // when running a second navigation.
+       expect((router as any).currentNavigation).not.toBe(null);
+       advance(fixture);
+
+       expect((router as any).currentNavigation).toBe(null);
+       expect(fixture.nativeElement).toHaveText('user fedor');
+     })));
+
   it('should handle failed navigations gracefully', fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
