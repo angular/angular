@@ -17,11 +17,7 @@ import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getRootContext} from '../util/view_traversal_utils';
 import {getTNode} from '../util/view_utils';
-
-import {scheduleTick} from './instructions';
-import {setInputsForProperty} from './shared';
-
-
+import {scheduleTick, setInputsForProperty} from './shared';
 
 /*
  * The contents of this file include the instructions for all styling-related

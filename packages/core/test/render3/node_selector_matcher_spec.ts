@@ -11,7 +11,7 @@ import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
 import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
-import {createTNode} from '@angular/core/src/render3/instructions/all';
+import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null, TNodeType.Element, 0, tagName, attrs);
