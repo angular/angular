@@ -1,0 +1,1607 @@
+# ==================================================================================
+# ==================================================================================
+#                     Angular Configuration for pullapprove.com
+# ==================================================================================
+# ==================================================================================
+#
+#  Configuration of code ownership and review approvals for the angular/angular repo.
+#
+#  More info: https://www.pullapprove.com/docs/ & https://help.github.com/articles/about-codeowners/
+#
+
+version: 3
+pullapprove_conditions:
+  # only review if not marked as work in progress
+  - condition: "'WIP' not in title and 'PR state: WIP' not in labels"
+    unmet_status: pending
+    explanation: "Work in progress"
+
+
+# ================================================
+#  General rules / philosophy
+# ================================================
+#
+#  - we trust that people do the right thing and not approve changes they don't feel confident reviewing
+#  - we use github teams so that we funnel code reviews to the most appropriate reviewer, this is why the team structure is fine-grained
+#  - we enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentally merged
+#  - we delegate approval rights as much as possible so that we can scale better
+#  - each group must have at least one person, but several people are preferable to avoid a single point of failure issues
+#  - most file groups have one or two global approvers groups as fallback:
+#    - @angular/fw-global-approvers: for approving minor changes, large-scale refactorings, and emergency situations.
+#    - @angular/fw-global-approvers-for-docs-only-changes: for approving minor documentation-only changes that don't require engineering review
+#  - a small number of file groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
+#
+#  Configuration nuances:
+#
+#  - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
+#  - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
+#  - Each codeowners team must have write access to the repo, otherwise their reviews won't count.
+#
+#  In the case of emergency, the repo administrators which include angular-caretaker can bypass this requirement.
+
+
+
+# ================================================
+#  GitHub username registry
+#  (just to make this file easier to understand)
+# ================================================
+
+#  alan-agius4 - Alan Agius
+#  alexeagle - Alex Eagle
+#  alxhub - Alex Rickabaugh
+#  AndrewKushnir - Andrew Kushnir
+#  andrewseguin - Andrew Seguin
+#  benlesh - Ben Lesh
+#  brandonroberts - Brandon Roberts
+#  devversion - Paul Gschwendtner
+#  filipesilva - Filipe Silva
+#  gkalpak - George Kalpakas
+#  hansl - Hans Larsen
+#  IgorMinar - Igor Minar
+#  jasonaden - Jason Aden
+#  jenniferfell - Jennifer Fell
+#  kara - Kara Erickson
+#  kyliau - Keen Yee Liau
+#  matsko - Matias Niemelä
+#  mgechev - Minko Gechev
+#  mhevery - Misko Hevery
+#  ocombe - Olivier Combe
+#  petebacondarwin - Pete Bacon Darwin
+#  pkozlowski-opensource - Pawel Kozlowski
+#  robwormald - Rob Wormald
+#  stephenfluin - Stephen Fluin
+#  vikerman - Vikram Subramanian
+
+
+
+######################################################################################################
+#
+#  Team structure and memberships
+#  ------------------------------
+#
+#  This section is here just because the GitHub UI is too hard to navigate and audit.
+#
+#  Any changes to team structure or memberships must first be made in this file and only then
+#  implemented in the GitHub UI.
+#######################################################################################################
+
+
+# ===========================================================
+#  @angular/framework-global-approvers
+# ===========================================================
+#  Used for approving minor changes, large-scale refactorings, and emergency situations.
+#  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
+#
+#   - IgorMinar
+#   - kara
+#   - mhevery
+#   - alexeagle
+
+
+# ===========================================================
+#  @angular/framework-global-approvers-for-docs-only-changes
+# ===========================================================
+#  Used for approving minor documentation-only changes that don't require engineering review.
+#  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
+#
+#   - brandonroberts
+#   - gkalpak
+#   - jenniferfell
+#   - petebacondarwin
+
+
+# ===========================================================
+#  @angular/fw-animations
+# ===========================================================
+#
+#   - matsko
+
+
+# ===========================================================
+#  @angular/tools-bazel
+# ===========================================================
+#
+#   - alexeagle
+#   - kyliau
+#   - IgorMinar
+#   - mgechev
+
+
+# ===========================================================
+#  @angular/tools-cli
+# ===========================================================
+#
+#   - alexeagle
+#   - filipesilva
+#   - hansl
+#   - mgechev
+
+
+# ===========================================================
+#  @angular/fw-compiler
+# ===========================================================
+#
+#   - alxhub
+
+
+# ===========================================================
+#  @angular/fw-ngcc
+# ===========================================================
+#
+#   - alxhub
+#   - gkalpak
+#   - petebacondarwin
+
+
+# ===========================================================
+#  @angular/fw-core
+# ===========================================================
+#
+#   - alxhub
+#   - AndrewKushnir
+#   - kara
+#   - mhevery
+#   - pkozlowski-opensource
+
+
+# ===========================================================
+#  @angular/fw-http
+# ===========================================================
+#
+#   - alxhub
+#   - IgorMinar
+
+
+# ===========================================================
+#  @angular/fw-elements
+# ===========================================================
+#
+#   - andrewseguin
+#   - gkalpak
+#   - robwormald
+
+
+# ===========================================================
+#  @angular/fw-forms
+# ===========================================================
+#
+#   - kara
+
+
+# ===========================================================
+#  @angular/tools-language-service
+# ===========================================================
+#
+#   - kyliau
+
+
+# ===========================================================
+#  @angular/fw-server
+# ===========================================================
+#
+#   - alxhub
+#   - vikerman
+
+
+# ===========================================================
+#  @angular/fw-router
+# ===========================================================
+#
+#   - jasonaden
+
+
+# ===========================================================
+#  @angular/fw-service-worker
+# ===========================================================
+#
+#   - alxhub
+#   - gkalpak
+#   - IgorMinar
+
+
+# ===========================================================
+#  @angular/fw-upgrade
+# ===========================================================
+#
+#   - gkalpak
+#   - petebacondarwin
+
+
+# ===========================================================
+#  @angular/fw-testing
+# ===========================================================
+#
+#   - vikerman
+
+
+# ===========================================================
+#  @angular/fw-i18n
+# ===========================================================
+#
+#   - AndrewKushnir
+#   - mhevery
+#   - ocombe
+#   - vikerman
+
+
+# ===========================================================
+#  @angular/fw-security
+# ===========================================================
+#
+#   - IgorMinar
+#   - mhevery
+
+
+# ===========================================================
+#  @angular/tools-benchpress
+# ===========================================================
+#
+#   - alxhub
+
+
+# ===========================================================
+#  @angular/fw-integration
+# ===========================================================
+#
+#   - alexeagle
+#   - IgorMinar
+#   - mhevery
+
+
+# ===========================================================
+#  @angular/docs-infra
+# ===========================================================
+#
+#   - brandonroberts
+#   - gkalpak
+#   - IgorMinar
+#   - petebacondarwin
+
+
+# ===========================================================
+#  @angular/fw-docs-intro
+# ===========================================================
+#
+#   - brandonroberts
+#   - IgorMinar
+#   - stephenfluin
+
+
+# ===========================================================
+#  @angular/fw-docs-observables
+# ===========================================================
+#
+#   - benlesh
+#   - jasonaden
+
+
+# ===========================================================
+#  @angular/fw-docs-packaging
+# ===========================================================
+#
+#   - alexeagle
+#   - IgorMinar
+
+
+# ===========================================================
+#  @angular/tools-docs-libraries
+# ===========================================================
+#
+#   - alan-agius4
+#   - alexeagle
+#   - hansl
+#   - IgorMinar
+#   - mgechev
+
+
+# ===========================================================
+#  @angular/fw-docs-marketing
+# ===========================================================
+#
+#   - IgorMinar
+#   - stephenfluin
+
+
+# ===========================================================
+#  @angular/fw-public-api
+# ===========================================================
+#
+#   - IgorMinar
+
+
+# ===========================================================
+#  @angular/fw-dev-infra
+# ===========================================================
+#
+#   - alexeagle
+#   - devversion
+#   - filipesilva
+#   - gkalpak
+#   - IgorMinar
+
+
+
+######################################################################################################
+#
+# CODEOWNERS rules
+# -----------------
+#
+# All the following rules are applied in the order specified in this file.
+# The last rule that matches wins!
+# Review groups are only evaluated if all of the pullapprove_conditions are true.
+#
+# See https://git-scm.com/docs/gitignore#_pattern_format for pattern syntax docs.
+#
+######################################################################################################
+
+groups:
+
+
+# ================================================
+#  Default Owners
+# (in case no pattern matches a path in a PR - this should be treated as a bug and result in adding the path to CODEOWNERS)
+# ================================================
+  default:
+    conditions:
+      - "files.include('*')"
+    reviews:
+      required: 0
+      request: 0
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - framework-global-approvers
+
+
+  # ================================================
+  #  @angular/animations
+  # ================================================
+  animations:
+     conditions:
+       - "files.include('/packages/animations/**') or files.include('/packages/platform-browser/animations/**') or files.include('/aio/content/guide/animations.md') or files.include('/aio/content/examples/animations/**') or files.include('/aio/content/images/guide/animations/**') or files.include('/aio/content/guide/complex-animation-sequences.md') or files.include('/aio/content/guide/reusable-animations.md') or files.include('/aio/content/guide/route-animations.md') or files.include('/aio/content/guide/transition-and-triggers.md')"
+     reviews:
+       request_order: given
+       required: 1
+       request: 1
+     reviewers:
+       users:
+         - matsko #primary
+       teams:
+         - fw-animations
+         - framework-global-approvers-for-docs-only-changes
+         - framework-global-approvers
+
+
+  # ================================================
+  #  @angular/bazel
+  # ================================================
+  bazel:
+    conditions:
+      - "files.include('/packages/bazel/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - alexeagle #primary
+        - kyliau #secondary
+        - mgechev
+      teams:
+        - tools-bazel
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/compiler
+  #  @angular/compiler-cli
+  # ================================================
+  compiler:
+    conditions:
+      - "files.include('/packages/compiler/**') or files.include('/packages/compiler-cli/**') or files.include('/aio/content/guide/aot-compiler.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - alxhub #primary
+      teams:
+        - fw-compiler
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  packages/compiler-cli/src/ngcc/
+  # ================================================
+  ngcc:
+    conditions:
+      - "files.include('/packages/compiler-cli/src/ngcc/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - alxhub #primary
+        - petebacondarwin #secondary
+        - gkalpak
+      teams:
+        - fw-ngcc
+        - framework-global-approvers
+
+
+  # ================================================
+  #  Framework/cli integration
+  #
+  #  a rule to control API changes between @angular/compiler-cli and @angular/cli
+  # ================================================
+  fw-cli-integration:
+    conditions:
+      - "files.include('/packages/compiler-cli/src/ngtools/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 4
+    reviewers:
+      users:
+        - alexeagle #primary
+        - hansl #secondary
+        - filipesilva
+        - mgechev
+      teams:
+        - tools-cli
+        - framework-global-approvers
+
+  fw-cli-integration-docs:
+    conditions:
+      - "files.include('/aio/content/guide/ivy.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 4
+    reviewers:
+      users:
+        - alexeagle #primary
+        - hansl #secondary
+        - filipesilva
+        - mgechev
+      teams:
+        - tools-cli
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/core
+  #  @angular/common (except @angular/common/http)
+  #  @angular/platform-browser
+  #  @angular/platform-browser-dynamic
+  #  @angular/platform-webworker
+  #  @angular/platform-webworker-dynamic
+  # ================================================
+  fw-core1:
+    conditions:
+      - "files.include('/packages/core/**') or files.include('/packages/common/**') or files.include('/packages/platform-browser/**') or files.include('/packages/platform-browser-dynamic/**') or files.include('/packages/platform-webworker/**') or files.include('/packages/platform-webworker-dynamic/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-architecture:
+    conditions:
+      - "files.include('/aio/content/guide/architecture-components.md') or files.include('/aio/content/guide/architecture-modules.md') or files.include('/aio/content/guide/architecture-next-steps.md') or files.include('/aio/content/guide/architecture-services.md') or files.include('/aio/content/guide/architecture.md') or files.include('/aio/content/examples/architecture/**') or files.include('/aio/content/images/guide/architecture/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-attribute-directive:
+    conditions:
+      - "files.include('/aio/content/guide/attribute-directives.md') or files.include('/aio/content/examples/attribute-directives/**') or files.include('/aio/content/images/guide/attribute-directives/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-bootstrapping:
+    conditions:
+      - "files.include('/aio/content/guide/bootstrapping.md') or files.include('/aio/content/examples/bootstrapping/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-cheatsheet:
+    conditions:
+      - "files.include('/aio/content/guide/cheatsheet.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-component-interaction:
+    conditions:
+      - "files.include('/aio/content/guide/component-interaction.md') or files.include('/aio/content/examples/component-interaction/**') or files.include('/aio/content/images/guide/component-interaction/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-component-styles:
+    conditions:
+      - "files.include('/aio/content/guide/component-styles.md') or files.include('/aio/content/examples/component-styles/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-dependency-injection:
+    conditions:
+      - "files.include('/aio/content/guide/dependency-injection.md') or files.include('/aio/content/examples/dependency-injection/**') or files.include('/aio/content/images/guide/dependency-injection/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-di-in-action:
+    conditions:
+      - "files.include('/aio/content/guide/dependency-injection-in-action.md') or files.include('/aio/content/examples/dependency-injection-in-action/**') or files.include('/aio/content/images/guide/dependency-injection-in-action/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-di-navtree:
+    conditions:
+      - "files.include('/aio/content/guide/dependency-injection-navtree.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-di-providers:
+    conditions:
+      - "files.include('/aio/content/guide/dependency-injection-providers.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-displaying-data:
+    conditions:
+      - "files.include('/aio/content/guide/displaying-data.md') or files.include('/aio/content/examples/displaying-data/**') or files.include('/aio/content/images/guide/displaying-data/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-dynamic-component-loader:
+    conditions:
+      - "files.include('/aio/content/guide/dynamic-component-loader.md') or files.include('/aio/content/examples/dynamic-component-loader/**') or files.include('/aio/content/images/guide/dynamic-component-loader/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-entry-components:
+    conditions:
+      - "files.include('/aio/content/guide/entry-components.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-feature-modules:
+    conditions:
+      - "files.include('/aio/content/guide/feature-modules.md') or files.include('/aio/content/examples/feature-modules/**') or files.include('/aio/content/images/guide/feature-modules/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-frequent-ngmodules:
+    conditions:
+      - "files.include('/aio/content/guide/frequent-ngmodules.md') or files.include('/aio/content/images/guide/frequent-ngmodules/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-hierarchical-di:
+    conditions:
+      - "files.include('/aio/content/guide/hierarchical-dependency-injection.md') or files.include('/aio/content/examples/hierarchical-dependency-injection/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-lazy-loading-ngmodules:
+    conditions:
+      - "files.include('/aio/content/guide/lazy-loading-ngmodules.md') or files.include('/aio/content/examples/lazy-loading-ngmodules/**') or files.include('/aio/content/images/guide/lazy-loading-ngmodules/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-lifecycle-hooks:
+    conditions:
+      - "files.include('/aio/content/guide/lifecycle-hooks.md') or files.include('/aio/content/examples/lifecycle-hooks/**') or files.include('/aio/content/images/guide/lifecycle-hooks/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-ngcontainer:
+    conditions:
+      - "files.include('/aio/content/examples/ngcontainer/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-ngmodules:
+    conditions:
+      - "files.include('/aio/content/guide/ngmodules.md') or files.include('/aio/content/examples/ngmodules/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-ngmodules-api:
+    conditions:
+      - "files.include('/aio/content/guide/ngmodule-api.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-ngmodule-faq:
+    conditions:
+      - "files.include('/aio/content/guide/ngmodule-faq.md') or files.include('/aio/content/examples/ngmodule-faq/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-ngmodule-vs-jsmodule:
+    conditions:
+      - "files.include('/aio/content/guide/ngmodule-vs-jsmodule.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-module-types:
+    conditions:
+      - "files.include('/aio/content/guide/module-types.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-template-syntax:
+    conditions:
+      - "files.include('/aio/content/guide/template-syntax.md') or files.include('/aio/content/examples/event-binding/**') or files.include('/aio/content/examples/interpolation/**') or files.include('/aio/content/examples/template-syntax/**') or files.include('/aio/content/images/guide/template-syntax/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-pipes:
+    conditions:
+      - "files.include('/aio/content/guide/pipes.md') or files.include('/aio/content/examples/pipes/**') or files.include('/aio/content/images/guide/pipes/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-providers:
+    conditions:
+      - "files.include('/aio/content/guide/providers.md') or files.include('/aio/content/examples/providers/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-singleton-services:
+    conditions:
+      - "files.include('/aio/content/guide/singleton-services.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-set-document-title:
+    conditions:
+      - "files.include('/aio/content/guide/set-document-title.md') or files.include('/aio/content/examples/set-document-title/**') or files.include('/aio/content/images/guide/set-document-title/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-sharing-ngmodules:
+    conditions:
+      - "files.include('/aio/content/guide/sharing-ngmodules.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-structural-directives:
+    conditions:
+      - "files.include('/aio/content/guide/structural-directives.md') or files.include('/aio/content/examples/structural-directives/**') or files.include('/aio/content/images/guide/structural-directives/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+  fw-docs-user-input:
+    conditions:
+      - "files.include('/aio/content/guide/user-input.md') or files.include('/aio/content/examples/user-input/**') or files.include('/aio/content/images/guide/user-input/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - mhevery #primary
+        - kara #secondary
+        - pkozlowski-opensource
+        - alxhub
+        - AndrewKushnir
+      teams:
+        - fw-core
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/common/http
+  #  @angular/http
+  # ================================================
+  http:
+    conditions:
+      - "files.include('/packages/common/http/**') or files.include('/packages/http/**') or files.include('/aio/content/guide/http.md') or files.include('/aio/content/examples/http/**') or files.include('/aio/content/images/guide/http/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - alxhub #primary
+        - IgorMinar #fallback
+      teams:
+        - fw-http
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/elements
+  # ================================================
+  elements:
+    conditions:
+      - "files.include('/packages/elements/**') or files.include('/aio/content/examples/elements/**') or files.include('/aio/content/images/guide/elements/**') or files.include('/aio/content/guide/elements.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - andrewseguin
+        - gkalpak
+        - robwormald
+      teams:
+        - fw-elements
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/forms
+  # ================================================
+  forms:
+    conditions:
+      - "files.include('/packages/forms/**') or files.include('/aio/content/guide/forms.md') or files.include('/aio/content/examples/forms/**') or files.include('/aio/content/images/guide/forms/**') or files.include('/aio/content/guide/forms-overview.md') or files.include('/aio/content/examples/forms-overview/**') or files.include('/aio/content/images/guide/forms-overview/**') or files.include('/aio/content/guide/form-validation.md') or files.include('/aio/content/examples/form-validation/**') or files.include('/aio/content/images/guide/form-validation/**') or files.include('/aio/content/guide/dynamic-form.md') or files.include('/aio/content/examples/dynamic-form/**') or files.include('/aio/content/images/guide/dynamic-form/**') or files.include('/aio/content/guide/reactive-forms.md') or files.include('/aio/content/examples/reactive-forms/**') or files.include('/aio/content/images/guide/reactive-forms/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - kara
+      teams:
+        - fw-forms
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/language-service
+  # ================================================
+  language-service:
+    conditions:
+      - "files.include('/packages/language-service/**') or files.include('/aio/content/guide/language-service.md') or files.include('/aio/content/images/guide/language-service/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - kyliau
+      teams:
+        - tools-language-service
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/platform-server
+  # ================================================
+  platform-server:
+    conditions:
+      - "files.include('/packages/platform-server/**') or files.include('/aio/content/guide/universal.md') or files.include('/aio/content/examples/universal/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - alxhub
+        - vikerman
+      teams:
+        - fw-server
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/router
+  # ================================================
+  router:
+    conditions:
+      - "files.include('/packages/router/**') or files.include('/aio/content/guide/router.md') or files.include('/aio/content/examples/router/**') or files.include('/aio/content/images/guide/router/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - jasonaden
+      teams:
+        - fw-router
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/service-worker
+  # ================================================
+  service-worker:
+    conditions:
+      - "files.include('/packages/service-worker/**') or files.include('/aio/content/guide/service-worker-getting-started.md') or files.include('/aio/content/examples/service-worker-getting-started/**') or files.include('/aio/content/guide/service-worker-communications.md') or files.include('/aio/content/guide/service-worker-config.md') or files.include('/aio/content/guide/service-worker-devops.md') or files.include('/aio/content/guide/service-worker-intro.md') or files.include('/aio/content/images/guide/service-worker/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - alxhub
+        - gkalpak
+        - IgorMinar
+      teams:
+        - fw-service-worker
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/upgrade
+  # ================================================
+  upgrade:
+    conditions:
+      - "files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('') or files.include('')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - gkalpak
+        - petebacondarwin
+      teams:
+        - fw-upgrade
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular/**/testing
+  # ================================================
+  testing:
+    conditions:
+      - "files.include('testing/**') or files.include('/aio/content/guide/testing.md') or files.include('/aio/content/examples/testing/**') or files.include('/aio/content/images/guide/testing/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - vikerman
+      teams:
+        - fw-testing
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular i18n
+  # ================================================
+  i18n:
+    conditions:
+      - "files.include('/packages/core/src/i18n/**') or files.include('/packages/core/src/render3/i18n.ts') or files.include('/packages/core/src/render3/i18n.md') or files.include('/packages/core/src/render3/interfaces/i18n.ts') or files.include('/packages/common/locales/**') or files.include('/packages/common/src/i18n/**') or files.include('/packages/common/src/pipes/date_pipe.ts') or files.include('/packages/common/src/pipes/i18n_plural_pipe.ts') or files.include('/packages/common/src/pipes/i18n_select_pipe.ts') or files.include('/packages/common/src/pipes/number_pipe.ts') or files.include('/packages/compiler/src/i18n/**') or files.include('/packages/compiler/src/render3/view/i18n/**') or files.include('/packages/compiler-cli/src/extract_i18n.ts') or files.include('/aio/content/guide/i18n.md') or files.include('/aio/content/examples/i18n/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 4
+    reviewers:
+      users:
+        - AndrewKushnir
+        - ocombe
+        - mhevery
+        - vikerman
+      teams:
+        - fw-i18n
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  @angular security
+  # ================================================
+  security:
+    conditions:
+      - "files.include('/packages/core/src/sanitization/**') or files.include('/packages/core/test/linker/security_integration_spec.ts') or files.include('/packages/compiler/src/schema/**') or files.include('/packages/platform-browser/src/security/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - IgorMinar
+        - mhevery
+      teams:
+        - fw-security
+
+  security-docs:
+    conditions:
+      - "files.include('/aio/content/guide/security.md') or files.include('/aio/content/examples/security/**') or files.include('/aio/content/images/guide/security/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - IgorMinar
+        - mhevery
+      teams:
+        - fw-security
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  benchpress
+  # ================================================
+  benchpress:
+    conditions:
+      - "files.include('/packages/benchpress/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - alxhub
+      teams:
+        - tools-benchpress
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  /integration/*
+  # ================================================
+  integration:
+    conditions:
+      - "files.include('/integration/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - alexeagle
+        - IgorMinar
+        - mhevery
+      teams:
+        - fw-integration
+        - framework-global-approvers
+
+
+  # ================================================
+  #  docs-infra
+  # ================================================
+  docs-infra:
+    conditions:
+      - "files.include('/aio/*') or files.include('/aio/aio-builds-setup/**') or files.include('/aio/scripts/**') or files.include('/aio/src/**') or files.include('/aio/tests/**') or files.include('/aio/tools/**') or files.include('/aio/content/guide/change-log.md') or files.include('/aio/content/guide/docs-style-guide.md') or files.include('/aio/content/examples/docs-style-guide/**') or files.include('/aio/content/images/guide/docs-style-guide/**') or files.include('/aio/content/guide/visual-studio-2015.md') or files.include('/aio/content/examples/visual-studio-2015/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 4
+    reviewers:
+      users:
+        - brandonroberts
+        - gkalpak
+        - IgorMinar
+        - petebacondarwin
+      teams:
+        - docs-infra
+        - framework-global-approvers
+
+
+  # ================================================
+  #  Docs: getting started & tutorial
+  # ================================================
+  quickstart:
+    conditions:
+      - "files.include('/aio/content/guide/quickstart.md') or files.include('/aio/content/examples/cli-quickstart/**') or files.include('/aio/content/images/guide/cli-quickstart/**') or files.include('/aio/content/tutorial/**') or files.include('/aio/content/images/guide/toh/**') or files.include('/aio/content/examples/toh-pt0/**') or files.include('/aio/content/examples/toh-pt1/**') or files.include('/aio/content/examples/toh-pt2/**') or files.include('/aio/content/examples/toh-pt3/**') or files.include('/aio/content/examples/toh-pt4/**') or files.include('/aio/content/examples/toh-pt5/**') or files.include('/aio/content/examples/toh-pt6/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 3
+    reviewers:
+      users:
+        - brandonroberts
+        - IgorMinar
+        - stephenfluin
+      teams:
+        - fw-docs-intro
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  Docs: observables
+  # ================================================
+  observables:
+    conditions:
+      - "files.include('/aio/content/guide/observables.md') or files.include('/aio/content/examples/observables/**') or files.include('/aio/content/guide/comparing-observables.md') or files.include('/aio/content/guide/observables-in-angular.md') or files.include('/aio/content/examples/observables-in-angular/**') or files.include('/aio/content/guide/practical-observable-usage.md') or files.include('/aio/content/examples/practical-observable-usage/**') or files.include('/aio/content/guide/rx-library.md') or files.include('/aio/content/examples/rx-library/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - benlesh
+        - jasonaden
+      teams:
+        - fw-docs-observables
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  Docs: packaging, tooling, releasing
+  # ================================================
+  packaging-tooling-releasing:
+    conditions:
+      - "files.include('/aio/content/guide/npm-packages.md') or files.include('/aio/content/guide/browser-support.md') or files.include('/aio/content/guide/typescript-configuration.md') or files.include('/aio/content/examples/quickstart/**') or files.include('/aio/content/guide/setup.md') or files.include('/aio/content/examples/setup/**') or files.include('/aio/content/guide/build.md') or files.include('/aio/content/images/guide/build/**') or files.include('/aio/content/guide/deployment.md') or files.include('/aio/content/guide/file-structure.md') or files.include('/aio/content/guide/releases.md') or files.include('/aio/content/guide/updating.md') or files.include('/aio/content/guide/workspace-config.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - alexeagle
+        - IgorMinar
+      teams:
+        - fw-docs-packaging
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  Docs: libraries
+  # ================================================
+  libraries:
+    conditions:
+      - "files.include('/aio/content/guide/creating-libraries.md') or files.include('/aio/content/guide/libraries.md') or files.include('/aio/content/guide/using-libraries.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - alan-agius4
+        - alexeagle
+        - hansl
+        - IgorMinar
+        - mgechev
+      teams:
+        - tools-docs-libraries
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  Docs: marketing
+  # ================================================
+  marketing:
+    conditions:
+      - "files.include('/aio/content/marketing/**') or files.include('/aio/content/images/bios/**') or files.include('/aio/content/images/marketing/**') or files.include('/aio/content/navigation.json') or files.include('/aio/content/license.md')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 2
+    reviewers:
+      users:
+        - IgorMinar
+        - stephenfluin
+      teams:
+        - fw-docs-marketing
+        - framework-global-approvers
+        - framework-global-approvers-for-docs-only-changes
+
+
+  # ================================================
+  #  Build & CI Owners
+  # ================================================
+  build-ci-owners:
+    conditions:
+      - "files.include('/*') or files.include('/.buildkite/**') or files.include('/.circleci/**') or files.include('/.codefresh/**') or files.include('/.github/**') or files.include('/.vscode/**') or files.include('/docs/BAZEL.md') or files.include('/packages/*') or files.include('/scripts/**') or files.include('/third_party/**') or files.include('/tools/build/**') or files.include('/tools/cjs-jasmine/**') or files.include('/tools/gulp-tasks/**') or files.include('/tools/ngcontainer/**') or files.include('/tools/npm/**') or files.include('/tools/npm_workspace/**') or files.include('/tools/public_api_guard/**') or files.include('/tools/rxjs/**') or files.include('/tools/source-map-test/**') or files.include('/tools/symbol-extractor/**') or files.include('/tools/testing/**') or files.include('/tools/ts-api-guardian/**') or files.include('/tools/tslint/**') or files.include('/tools/validate-commit-message/**') or files.include('/tools/yarn/**') or files.include('/tools/*') or files.include('*.bzl')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - alexeagle
+        - devversion
+        - filipesilva
+        - gkalpak
+        - IgorMinar
+      teams:
+        - fw-dev-infra
+
+
+  # ================================================
+  #  Material CI
+  # ================================================
+  material-ci:
+    conditions:
+      - "files.include('/tools/material-ci/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 5
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - kara
+        - mhevery
+        - pkozlowski-opensource
+      teams:
+        - fw-core
+        - framework-global-approvers
+
+
+  # ================================================
+  #  Public API
+  # ================================================
+  public-api:
+    conditions:
+      - "files.include('/tools/public_api_guard/**') or files.include('/aio/content/guide/glossary.md') or files.include('/aio/content/guide/styleguide.md') or files.include('/aio/content/examples/styleguide/**') or files.include('/aio/content/images/guide/styleguide/**')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - fw-public-api
+
+
+  # ================================================
+  #  Pullapprove & CODEOWNERS Owners owners ...
+  # ================================================
+  owner-files:
+    conditions:
+      - "files.include('/.github/CODEOWNERS') or files.include('/.pullapprove.yml')"
+    reviews:
+      request_order: given
+      required: 1
+      request: 1
+    reviewers:
+      users:
+        - IgorMinar
+      teams:
+        - framework-global-approvers
