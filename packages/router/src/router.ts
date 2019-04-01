@@ -452,25 +452,24 @@ export class Router {
               ...t, extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl)
             } as NavigationTransition)),
 
-        // Store the Navigation object
-        tap(t => {
-          this.currentNavigation = {
-            id: t.id,
-            initialUrl: t.currentRawUrl,
-            extractedUrl: t.extractedUrl,
-            trigger: t.source,
-            extras: t.extras,
-            previousNavigation: this.lastSuccessfulNavigation ?
-                {...this.lastSuccessfulNavigation, previousNavigation: null} :
-                null
-          };
-        }),
-
         // Using switchMap so we cancel executing navigations when a new one comes in
         switchMap(t => {
           let completed = false;
           let errored = false;
           return of (t).pipe(
+              // Store the Navigation object
+              tap(t => {
+                this.currentNavigation = {
+                  id: t.id,
+                  initialUrl: t.currentRawUrl,
+                  extractedUrl: t.extractedUrl,
+                  trigger: t.source,
+                  extras: t.extras,
+                  previousNavigation: this.lastSuccessfulNavigation ?
+                      {...this.lastSuccessfulNavigation, previousNavigation: null} :
+                      null
+                };
+              }),
               switchMap(t => {
                 const urlTransition =
                     !this.navigated || t.extractedUrl.toString() !== this.browserUrlTree.toString();
