@@ -414,6 +414,7 @@
 
 /packages/compiler-cli/src/ngtools/**                           @angular/tools-cli @angular/framework-global-approvers
 /aio/content/guide/ivy.md                                       @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/web-worker.md                                @angular/tools-cli @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
