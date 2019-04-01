@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {createLView, createTView} from '@angular/core/src/render3/instructions/shared';
+
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
-import {defineComponent, defineDirective} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementHostAttrs, elementHostClassProp, elementHostStyleProp, elementHostStyling, elementHostStylingApply, elementHostStylingMap, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions/all';
+import {defineComponent, defineDirective, elementClassProp, elementEnd, elementHostClassProp, elementHostStyleProp, elementHostStyling, elementHostStylingApply, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/index';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';

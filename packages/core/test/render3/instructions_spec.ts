@@ -7,19 +7,15 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-
-import {RenderFlags} from '../../src/render3';
+import {RenderFlags, elementStart, elementStyling, elementEnd, element, elementProperty, bind, elementAttribute, select, elementStyleProp, elementStylingApply, elementStylingMap, template, text, textBinding, interpolation1, property} from '../../src/render3/index';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding, select, property} from '../../src/render3/instructions/all';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
-
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
-import {setSelectedIndex, getSelectedIndex} from '@angular/core/src/render3/state';
 
 describe('instructions', () => {
   function createAnchor() {

@@ -25,5 +25,21 @@
  *
  * Jira Issue = FW-1184
  */
-export * from './instructions';
+export * from './alloc_host_vars';
+export * from './change_detection';
+export * from './container';
+export * from './storage';
+export * from './di';
+export * from './element';
+export * from './element_container';
+export * from './embedded_view';
+export * from './get_current_view';
+export * from './listener';
+export * from './namespace';
+export * from './next_context';
+export * from './projection';
+export * from './property';
+export * from './property_interpolation';
+export * from './select';
 export * from './styling_instructions';
+export * from './text';
