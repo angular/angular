@@ -48,5 +48,6 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
  */
 export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
     {name: ts.Identifier} {
-  return ts.isIdentifier((declaration as any).name);
+  const namedDeclaration: ts.Declaration & {name?: ts.Node} = declaration;
+  return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }

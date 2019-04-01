@@ -19,7 +19,7 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
-import {CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from './metadata';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
@@ -56,6 +56,7 @@ export class NgtscProgram implements api.Program {
   private constructionDiagnostics: ts.Diagnostic[] = [];
   private moduleResolver: ModuleResolver;
   private cycleAnalyzer: CycleAnalyzer;
+  private metaReader: MetadataReader|null = null;
 
   private refEmitter: ReferenceEmitter|null = null;
   private fileToModuleHost: FileToModuleHost|null = null;
@@ -421,6 +422,8 @@ export class NgtscProgram implements api.Program {
         localMetaRegistry, depScopeReader, this.refEmitter, aliasGenerator);
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
 
+    this.metaReader = new CompoundMetadataReader([localMetaRegistry, dtsReader]);
+
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph`
     // in
@@ -441,8 +444,8 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, scopeRegistry, this.isCore, this.resourceManager,
-          this.rootDirs, this.options.preserveWhitespaces || false,
+          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
+          this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
           this.refEmitter, this.defaultImportTracker),
       new DirectiveDecoratorHandler(

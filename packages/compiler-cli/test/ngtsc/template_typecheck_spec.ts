@@ -164,4 +164,46 @@ describe('ngtsc type checking', () => {
     expect(diags.length).toBe(1);
     expect(diags[0].messageText).toContain('does_not_exist');
   });
+
+  it('should properly type-check inherited directives', () => {
+    env.write('test.ts', `
+    import {Component, Directive, Input, NgModule} from '@angular/core';
+
+    @Directive({
+      selector: '[base]',
+    })
+    class BaseDir {
+      @Input() fromBase!: string;
+    }
+
+    @Directive({
+      selector: '[child]',
+    })
+    class ChildDir extends BaseDir {
+      @Input() fromChild!: boolean;
+    }
+
+    @Component({
+      selector: 'test',
+      template: '<div child [fromBase]="3" [fromChild]="4"></div>',
+    })
+    class TestCmp {}
+
+    @NgModule({
+      declarations: [TestCmp, ChildDir],
+    })
+    class Module {}
+    `);
+
+    const diags = env.driveDiagnostics();
+    expect(diags.length).toBe(2);
+
+    // Error from the binding to [fromBase].
+    expect(diags[0].messageText)
+        .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
+
+    // Error from the binding to [fromChild].
+    expect(diags[1].messageText)
+        .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+  });
 });
