@@ -99,6 +99,7 @@
     "no-import-spacing": true,
     "no-private-getters": true,
     "setters-after-getters": true,
+    "ng-on-changes-property-access": true,
     "rxjs-imports": true,
     "require-breaking-change-version": true,
     "no-host-decorator-in-concrete": [
