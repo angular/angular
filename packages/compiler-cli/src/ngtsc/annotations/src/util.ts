@@ -11,8 +11,8 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
-import {ForeignFunctionResolver} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference} from '../../reflection';
+import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
+import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -293,4 +293,29 @@ export function isExpressionForwardReference(
 
 export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
   return expr instanceof WrappedNodeExpr;
+}
+
+export function readBaseClass(
+    node: ClassDeclaration, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
+  if (!isNamedClassDeclaration(node)) {
+    // If the node isn't a ts.ClassDeclaration, consider any base class to be dynamic for now.
+    return reflector.hasBaseClass(node) ? 'dynamic' : null;
+  }
+
+  if (node.heritageClauses !== undefined) {
+    for (const clause of node.heritageClauses) {
+      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+        // The class has a base class. Figure out whether it's resolvable or not.
+        const baseClass = evaluator.evaluate(clause.types[0].expression);
+        if (baseClass instanceof Reference && isNamedClassDeclaration(baseClass.node)) {
+          return baseClass as Reference<ClassDeclaration>;
+        } else {
+          return 'dynamic';
+        }
+      }
+    }
+  }
+
+  return null;
 }
