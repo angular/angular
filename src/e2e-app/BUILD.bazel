@@ -15,7 +15,6 @@ ng_module(
     "@npm//@angular/platform-browser",
     "@npm//@angular/router",
     "@npm//@angular/animations",
-    "@npm//@webcomponents/custom-elements",
     "//src/cdk/drag-drop",
     "//src/cdk/overlay",
     "//src/cdk/scrolling",
