@@ -365,3 +365,32 @@ export function getSelectedIndex() {
 export function setSelectedIndex(index: number) {
   _selectedIndex = index;
 }
+
+
+let _currentNamespace: string|null = null;
+
+/**
+ * Sets the namespace used to create elements to `'http://www.w3.org/2000/svg'` in global state.
+ */
+export function namespaceSVG() {
+  _currentNamespace = 'http://www.w3.org/2000/svg';
+}
+
+/**
+ * Sets the namespace used to create elements to `'http://www.w3.org/1998/MathML/'` in global state.
+ */
+export function namespaceMathML() {
+  _currentNamespace = 'http://www.w3.org/1998/MathML/';
+}
+
+/**
+ * Sets the namespace used to create elements no `null`, which forces element creation to use
+ * `createElement` rather than `createElementNS`.
+ */
+export function namespaceHTML() {
+  _currentNamespace = null;
+}
+
+export function getNamespace(): string|null {
+  return _currentNamespace;
+}

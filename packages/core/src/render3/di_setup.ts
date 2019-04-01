@@ -11,11 +11,11 @@ import {resolveForwardRef} from '../di/forward_ref';
 import {ClassProvider, Provider} from '../di/interface/provider';
 import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
 
-import {DirectiveDef} from '.';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
 import {directiveInject} from './instructions/all';
+import {DirectiveDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNodeFlags, TNodeProviderIndexes} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
 import {LView, TData, TVIEW, TView} from './interfaces/view';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {isComponentDef} from './util/view_utils';
