@@ -31,6 +31,16 @@ describe('logical paths', () => {
       expect(fs.logicalPathOfFile(abs('/test/foo.ts'))).toEqual('/foo' as LogicalProjectPath);
       expect(fs.logicalPathOfFile(abs('/test/dist/foo.ts'))).toEqual('/foo' as LogicalProjectPath);
     });
+
+    it('should always return `/` prefixed logical paths', () => {
+      const rootFs = new LogicalFileSystem([abs('/')]);
+      expect(rootFs.logicalPathOfFile(abs('/foo/foo.ts')))
+          .toEqual('/foo/foo' as LogicalProjectPath);
+
+      const nonRootFs = new LogicalFileSystem([abs('/test/')]);
+      expect(nonRootFs.logicalPathOfFile(abs('/test/foo/foo.ts')))
+          .toEqual('/foo/foo' as LogicalProjectPath);
+    });
   });
 
   describe('utilities', () => {
