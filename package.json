@@ -84,7 +84,7 @@
     "browser-sync": "^2.26.3",
     "chalk": "^1.1.3",
     "clang-format": "^1.2.4",
-    "codelyzer": "^5.0.0-beta.2",
+    "codelyzer": "^5.0.0",
     "conventional-changelog": "^3.0.5",
     "dgeni": "^0.4.11",
     "dgeni-packages": "^0.27.1",

@@ -2423,10 +2423,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codelyzer@^5.0.0-beta.2:
-  version "5.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/codelyzer/-/codelyzer-5.0.0-beta.2.tgz#1d112e3b79f45298c5ed589641829bd5a3e63934"
-  integrity sha512-cH5vxszkzhAg92pvuKXFuoDgKIqX3a5hIPv545pfuPc2GKDXuiWACPteny29k3/FGaw9eub1iUlyLVkPpETtsg==
+codelyzer@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/codelyzer/-/codelyzer-5.0.0.tgz#e4032efb23a7c5d4bcfe7321fc1789490c679837"
+  integrity sha512-Bif70XYt8NFf/Q9GPTxmC86OsBRfQZq1dBjdruJ5kZhJ8/jKhJL6MvCLKnYtSOG6Rhiv/44DU0cHk6GYthjy8Q==
   dependencies:
     app-root-path "^2.1.0"
     aria-query "^3.0.0"
