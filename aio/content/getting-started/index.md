@@ -11,7 +11,7 @@ You don't need to install anything: you'll build the app using the [StackBlitz](
 <header>New to web development?</header>
 
 
-You'll find many resources to compliment the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codeacademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics. 
+You'll find many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codeacademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics. 
 
 
 </div> 
@@ -22,7 +22,7 @@ You'll find many resources to compliment the Angular docs. Mozilla's MDN docs in
 ## Create a new project
 
 <h4>
-<live-example name="getting-started-v0" noDownload>Click here to create new project in StackBlitz.</live-example> 
+<live-example name="getting-started-v0" noDownload>Click here to create a new project in StackBlitz.</live-example> 
 </h4>
 
 StackBlitz creates a starter Angular app. 
@@ -183,11 +183,11 @@ Currently, our app has three components:
   <img src="generated/images/guide/getting-started/app-components.png" alt="Online store with three components">
 </figure>
 
-* `app-root` (orange box) is the application shell. This is first component to load, and the parent of all other components. You can think of it as the base page. 
+* `app-root` (orange box) is the application shell. This is the first component to load, and the parent of all other components. You can think of it as the base page. 
 * `app-top-bar` (blue background) is the store name and checkout button.
 * `app-product-list` (purple box) is the product list that you modified in the previous section. 
 
-In the next section, you'll expand the app's capabilities by adding new component for a product alert. You'll add it as a child of the product list component. 
+In the next section, you'll expand the app's capabilities by adding a new component for a product alert. You'll add it as a child of the product list component. 
 
 
 <div class="alert is-helpful">
@@ -200,10 +200,10 @@ Learn more: See [Introduction to Components](guide/architecture-components "Arch
 {@a input}
 ## Input
 
-Currently, the product list displays the name and description for each product. 
-You might have noticed that product list component also defines a `products` property that contains imported data for each product. (See the `products` array in `products.ts`.)
+Currently, the product list displays the name and description of each product. 
+You might have noticed that the product list component also defines a `products` property that contains imported data for each product. (See the `products` array in `products.ts`.)
 
-We're going to create a new alert feature. The alert feature will take a product as input. It will then check the product's price, and, if the price is greater than $700, it will display a "Notify Me" button that lets users sign up for notifications when the product goes on sale. 
+We're going to create a new alert feature. The alert feature will take a product as an input. It will then check the product's price, and, if the price is greater than $700, it will display a "Notify Me" button that lets users sign up for notifications when the product goes on sale. 
 
 1. Create a new product alerts component. 
 
@@ -256,7 +256,7 @@ We're going to create a new alert feature. The alert feature will take a product
 
         <code-example header="src/app/product-list/product-list.component.html" path="getting-started/src/app/product-list/product-list.component.5.html" region="app-product-alerts"></code-example>
 
-The new product alert component takes a product as input from the product list. With that input, the it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product. 
+The new product alert component takes a product as input from the product list. With that input, it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product. 
 
 <figure>
   <img src="generated/images/guide/getting-started/product-alert-button.png" alt="Product alert button added to products over $700">
