@@ -19,7 +19,6 @@ export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
 
-
 // clang-format off
 export {
   allocHostVars,

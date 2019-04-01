@@ -426,7 +426,7 @@
     "name": "baseResolveDirective"
   },
   {
-    "name": "bind"
+    "name": "bind$"
   },
   {
     "name": "bindingUpdated"
@@ -582,7 +582,7 @@
     "name": "elementEnd"
   },
   {
-    "name": "elementProperty"
+    "name": "elementProperty$"
   },
   {
     "name": "elementPropertyInternal"
@@ -643,9 +643,6 @@
   },
   {
     "name": "findViaComponent"
-  },
-  {
-    "name": "select"
   },
   {
     "name": "forwardRef"
@@ -769,6 +766,9 @@
   },
   {
     "name": "getNameOnlyMarkerIndex"
+  },
+  {
+    "name": "getNamespace"
   },
   {
     "name": "getNativeAnchorNode"
@@ -1219,6 +1219,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "select"
   },
   {
     "name": "setActiveHost"

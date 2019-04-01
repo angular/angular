@@ -378,6 +378,9 @@
     "name": "getNameOnlyMarkerIndex"
   },
   {
+    "name": "getNamespace"
+  },
+  {
     "name": "getNativeAnchorNode"
   },
   {
