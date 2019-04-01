@@ -36,10 +36,6 @@ build --verbose_failures=true
 build --action_env=PATH
 test --action_env=PATH --test_env=PATH
 
-# Disable watchfs on Windows as it causes tests to be flaky
-# https://github.com/angular/angular/issues/29541
-build --nowatchfs
-
 # Exclude tests known to not work on Windows.
 
 # Chrome web tests are currently broken.
