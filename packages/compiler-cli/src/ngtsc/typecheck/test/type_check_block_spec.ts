@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
+import {CssSelector, Expression, ExternalExpr, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ImportMode, Reference, ReferenceEmitStrategy, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TypeCheckBlockMetadata} from '../src/api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../src/api';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 
@@ -39,6 +39,67 @@ describe('type check blocks', () => {
     const TEMPLATE = `{{a[b]}}`;
     expect(tcb(TEMPLATE)).toContain('ctx.a[ctx.b];');
   });
+
+  it('should generate a forward element reference correctly', () => {
+    const TEMPLATE = `
+      {{ i.value }}
+      <input #i>
+    `;
+    expect(tcb(TEMPLATE)).toContain('var _t1 = document.createElement("input"); _t1.value;');
+  });
+
+  it('should generate a forward directive reference correctly', () => {
+    const TEMPLATE = `
+      {{d.value}}
+      <div dir #d="dir"></div>
+    `;
+    const DIRECTIVES: TestDirective[] = [{
+      name: 'Dir',
+      selector: '[dir]',
+      exportAs: ['dir'],
+    }];
+    expect(tcb(TEMPLATE, DIRECTIVES))
+        .toContain(
+            'var _t1 = i0.Dir.ngTypeCtor({}); _t1.value; var _t2 = document.createElement("div");');
+  });
+});
+
+it('should generate a circular directive reference correctly', () => {
+  const TEMPLATE = `
+  <div dir #d="dir" [input]="d"></div>
+`;
+  const DIRECTIVES: TestDirective[] = [{
+    name: 'Dir',
+    selector: '[dir]',
+    exportAs: ['dir'],
+    inputs: {input: 'input'},
+  }];
+  expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = i0.Dir.ngTypeCtor({ input: (null!) });');
+});
+
+it('should generate circular references between two directives correctly', () => {
+  const TEMPLATE = `
+    <div #a="dirA" dir-a [inputA]="b">A</div>
+    <div #b="dirB" dir-b [inputB]="a">B</div>
+`;
+  const DIRECTIVES: TestDirective[] = [
+    {
+      name: 'DirA',
+      selector: '[dir-a]',
+      exportAs: ['dirA'],
+      inputs: {inputA: 'inputA'},
+    },
+    {
+      name: 'DirB',
+      selector: '[dir-b]',
+      exportAs: ['dirB'],
+      inputs: {inputA: 'inputB'},
+    }
+  ];
+  expect(tcb(TEMPLATE, DIRECTIVES))
+      .toContain(
+          'var _t3 = i0.DirB.ngTypeCtor({ inputA: (null!) });' +
+          ' var _t2 = i1.DirA.ngTypeCtor({ inputA: _t3 });');
 });
 
 function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
@@ -50,13 +111,36 @@ function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDec
   throw new Error(`Class ${name} not found in file`);
 }
 
+// Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
+type TestDirective =
+    Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
+    {selector: string, name: string};
 
-function tcb(template: string): string {
-  const sf = ts.createSourceFile('synthetic.ts', 'class Test {}', ts.ScriptTarget.Latest, true);
+function tcb(template: string, directives: TestDirective[] = []): string {
+  const classes = ['Test', ...directives.map(dir => dir.name)];
+  const code = classes.map(name => `class ${name} {}`).join('\n');
 
+  const sf = ts.createSourceFile('synthetic.ts', code, ts.ScriptTarget.Latest, true);
   const clazz = getClass(sf, 'Test');
   const {nodes} = parseTemplate(template, 'synthetic.html');
   const matcher = new SelectorMatcher();
+
+  for (const dir of directives) {
+    const selector = CssSelector.parse(dir.selector);
+    const meta: TypeCheckableDirectiveMeta = {
+      name: dir.name,
+      ref: new Reference(getClass(sf, dir.name)),
+      exportAs: dir.exportAs || null,
+      hasNgTemplateContextGuard: dir.hasNgTemplateContextGuard || false,
+      inputs: dir.inputs || {},
+      isComponent: dir.isComponent || false,
+      ngTemplateGuards: dir.ngTemplateGuards || [],
+      outputs: dir.outputs || {},
+      queries: dir.queries || [],
+    };
+    matcher.addSelectables(selector, meta);
+  }
+
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
