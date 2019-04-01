@@ -35,8 +35,9 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # See https://github.com/bazelbuild/bazel/issues/4603
 build --symlink_prefix=dist/
 
-# Performance: avoid stat'ing input files
-build --watchfs
+# Disable watchfs as it causes tests to be flaky on Windows
+# https://github.com/angular/angular/issues/29541
+build --nowatchfs
 
 # Turn off legacy external runfiles
 run --nolegacy_external_runfiles
