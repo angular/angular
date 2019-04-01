@@ -123,10 +123,10 @@
   dependencies:
     tslib "^1.9.0"
 
-"@bazel/karma@0.27.8":
-  version "0.27.8"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.27.8.tgz#e9c4ef4190b2da3c23b01bc7b79830c3985cfb1f"
-  integrity sha512-H6TDIUcP+nW4dvjQeCINAyGLMnEV45maAM0HxModAe0cKfVxBpZrVKwG6ZuKChvQWY2nLDtN3C9K/GGISxP7hg==
+"@bazel/karma@0.27.9":
+  version "0.27.9"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.27.9.tgz#7530f75907afb0e15d5ee2d658a92d83084085fe"
+  integrity sha512-/N8Ez9jmYyMjBG+Iwec2nZeySEJD1R8+52Kdw7GCWZrWcLkktmMC8ynfB3tMPe7cENfEoLKERlOoeOMKOnPzFg==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -140,10 +140,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.27.8":
-  version "0.27.8"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.8.tgz#b9a566e4a95c0425b52961e9e899b59c7b22efcf"
-  integrity sha512-beApzTtgm+lKrhQf5OgPk1amGfi5PJ1DCVVWYbNsbJP/Joi+NgCrgykG55NbaJIzEc+6IQoh8y0QUVMYRt562Q==
+"@bazel/typescript@0.27.9":
+  version "0.27.9"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.9.tgz#6cd6a7162167bec67cfae3a3b973a6bfe8c65f3e"
+  integrity sha512-o/MDGV2YNHMrsxJMpjWHQwezR7jlh7LJ+7FEmzG/LrepRtyYdaDev5bRhVn2XxnD7cPDx8zvyer35NJTnK0hnw==
   dependencies:
     protobufjs "5.0.3"
     semver "5.6.0"
