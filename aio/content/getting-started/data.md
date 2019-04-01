@@ -118,7 +118,7 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
 
 ## Create the cart page
 
-At this point, user can put items in the cart by clicking "Buy", but they can't yet see their cart. 
+At this point, users can put items in the cart by clicking "Buy", but they can't yet see their cart. 
 
 We'll create the cart page in two steps: 
 
@@ -127,7 +127,7 @@ We'll create the cart page in two steps:
 
 ### Set up the component
 
- To create the cart page, you being by following the same steps you did to create the product details component and to set up routing for the new component.
+ To create the cart page, you begin by following the same steps you did to create the product details component and to set up routing for the new component.
 
 1. Generate a cart component, named `cart`. 
 
