@@ -140,25 +140,31 @@ describe('site App', function() {
       expect(texts).toEqual(['ANGULAR', 'COLLABORATORS', 'GDE']);
     });
 
-    it('should have contributors listed in each group', async () => {
+    it('should have contributors listed in each group', () => {
+      // WebDriver calls `scrollIntoView()` on the element to bring it into the visible area of the
+      // browser, before clicking it. By default, this aligns the top of the element to the top of
+      // the window. As a result, the element may end up behing the fixed top menu, thus being
+      // unclickable. To avoid this, we click the element directly using JavaScript instead.
+      const clickButton = (elementFinder: ElementFinder) => elementFinder.getWebElement().then(
+          webElement => browser.executeScript('arguments[0].click()', webElement));
       const getContributorNames =
           () => contributors.all(by.css('h3')).map<string>(c => c && c.getText());
 
       const names1 = getContributorNames();
       expect(contributors.count()).toBeGreaterThan(1);
 
-      groupButtons.get(1).click();
+      clickButton(groupButtons.get(1));
       const names2 = getContributorNames();
       expect(contributors.count()).toBeGreaterThan(1);
       expect(names2).not.toEqual(names1);
 
-      groupButtons.get(2).click();
+      clickButton(groupButtons.get(2));
       const names3 = getContributorNames();
       expect(contributors.count()).toBeGreaterThan(1);
       expect(names3).not.toEqual(names2);
       expect(names3).not.toEqual(names1);
 
-      groupButtons.get(0).click();
+      clickButton(groupButtons.get(0));
       const names4 = getContributorNames();
       expect(contributors.count()).toBeGreaterThan(1);
       expect(names4).not.toEqual(names3);
