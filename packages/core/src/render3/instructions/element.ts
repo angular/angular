@@ -11,20 +11,23 @@ import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
-import {RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, getActiveHostContext, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
+
 import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
+import {getActiveDirectiveStylingIndex} from './styling_instructions';
+
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -256,17 +259,26 @@ export function elementAttribute(
  * @publicApi
  */
 export function elementHostAttrs(attrs: TAttributes) {
-  const tNode = getPreviousOrParentTNode();
+  const hostElementIndex = getSelectedIndex();
   const lView = getLView();
-  const native = getNativeByTNode(tNode, lView) as RElement;
-  const lastAttrIndex = setUpAttributes(native, attrs);
-  const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
-  if (stylingAttrsStartIndex >= 0) {
-    const directive = getActiveHostContext();
-    if (tNode.stylingTemplate) {
-      patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, stylingAttrsStartIndex, directive);
-    } else {
-      tNode.stylingTemplate = initializeStaticContext(attrs, stylingAttrsStartIndex, directive);
+  const tNode = getTNode(hostElementIndex, lView);
+
+  // non-element nodes (e.g. `<ng-container>`) are not rendered as actual
+  // element nodes and adding styles/classes on to them will cause runtime
+  // errors...
+  if (tNode.type === TNodeType.Element) {
+    const native = getNativeByTNode(tNode, lView) as RElement;
+    const lastAttrIndex = setUpAttributes(native, attrs);
+    const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
+    if (stylingAttrsStartIndex >= 0) {
+      const directiveStylingIndex = getActiveDirectiveStylingIndex();
+      if (tNode.stylingTemplate) {
+        patchContextWithStaticAttrs(
+            tNode.stylingTemplate, attrs, stylingAttrsStartIndex, directiveStylingIndex);
+      } else {
+        tNode.stylingTemplate =
+            initializeStaticContext(attrs, stylingAttrsStartIndex, directiveStylingIndex);
+      }
     }
   }
 }

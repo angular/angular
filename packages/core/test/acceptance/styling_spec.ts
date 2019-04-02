@@ -11,12 +11,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
-  onlyInIvy('[style] and [class] bindings are a new feature')
+  onlyInIvy('map-based [style] and [class] bindings are not supported in VE')
       .it('should render host bindings on the root component', () => {
         @Component({template: '...'})
         class MyApp {
-          @HostBinding('style') public myStylesExp = {};
-          @HostBinding('class') public myClassesExp = {};
+          @HostBinding('style') myStylesExp = {};
+          @HostBinding('class') myClassesExp = {};
         }
 
         TestBed.configureTestingModule({declarations: [MyApp]});
@@ -152,5 +152,167 @@ describe('acceptance integration tests', () => {
     const element = fixture.nativeElement.querySelector('div');
     expect(element.style.width).toEqual('300px');
     expect(element.classList.contains('abc')).toBeFalsy();
+  });
+
+  it('should render styling for parent and sub-classed components in order', () => {
+    @Component({
+      template: `
+        <child-and-parent-cmp></child-and-parent-cmp>
+      `
+    })
+    class MyApp {
+    }
+
+    @Component({template: '...'})
+    class ParentCmp {
+      @HostBinding('style.width') width1 = '100px';
+      @HostBinding('style.height') height1 = '100px';
+      @HostBinding('style.opacity') opacity1 = '0.5';
+    }
+
+    @Component({selector: 'child-and-parent-cmp', template: '...'})
+    class ChildCmp extends ParentCmp {
+      @HostBinding('style.width') width2 = '200px';
+      @HostBinding('style.height') height2 = '200px';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, ParentCmp, ChildCmp]});
+    const fixture = TestBed.createComponent(MyApp);
+    const element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    const childElement = element.querySelector('child-and-parent-cmp');
+    expect(childElement.style.width).toEqual('200px');
+    expect(childElement.style.height).toEqual('200px');
+    expect(childElement.style.opacity).toEqual('0.5');
+  });
+
+  onlyInIvy('[style.prop] and [class.name] prioritization is a new feature')
+      .it('should prioritize styling present in the order of directive hostBinding evaluation, but consider sub-classed directive styling to be the most important',
+          () => {
+            const log: string[] = [];
+
+            @Component({template: '<div child-dir sibling-dir></div>'})
+            class MyApp {
+            }
+
+            @Directive({selector: '[parent-dir]'})
+            class ParentDir {
+              @HostBinding('style.width')
+              get width1() { return '100px'; }
+
+              @HostBinding('style.height')
+              get height1() { return '100px'; }
+
+              @HostBinding('style.color')
+              get color1() { return 'red'; }
+            }
+
+            @Directive({selector: '[child-dir]'})
+            class ChildDir extends ParentDir {
+              @HostBinding('style.width')
+              get width2() { return '200px'; }
+
+              @HostBinding('style.height')
+              get height2() { return '200px'; }
+            }
+
+            @Directive({selector: '[sibling-dir]'})
+            class SiblingDir {
+              @HostBinding('style.width')
+              get width3() { return '300px'; }
+
+              @HostBinding('style.height')
+              get height3() { return '300px'; }
+
+              @HostBinding('style.opacity')
+              get opacity3() { return '0.5'; }
+
+              @HostBinding('style.color')
+              get color1() { return 'blue'; }
+            }
+
+            TestBed.configureTestingModule(
+                {declarations: [MyApp, ParentDir, ChildDir, SiblingDir]});
+            const fixture = TestBed.createComponent(MyApp);
+            const element = fixture.nativeElement;
+            fixture.detectChanges();
+
+            const childElement = element.querySelector('div');
+
+            // width/height values were set in all directives, but the sub-class directive
+            // (ChildDir)
+            // had priority over the parent directive (ParentDir) which is why its value won. It
+            // also
+            // won over Dir because the SiblingDir directive was evaluated later on.
+            expect(childElement.style.width).toEqual('200px');
+            expect(childElement.style.height).toEqual('200px');
+
+            // ParentDir styled the color first before Dir
+            expect(childElement.style.color).toEqual('red');
+
+            // Dir was the only directive to style opacity
+            expect(childElement.style.opacity).toEqual('0.5');
+          });
+
+  it('should ensure that static classes are assigned to ng-container elements and picked up for content projection',
+     () => {
+       @Component({
+         template: `
+            <project>
+              outer
+              <ng-container class="inner">
+                inner
+              </ng-container>
+            </project>
+          `
+       })
+       class MyApp {
+       }
+
+       @Component({
+         selector: 'project',
+         template: `
+            <div class="outer-area">
+              <ng-content></ng-content>
+            </div>
+            <div class="inner-area">
+              <ng-content select=".inner"></ng-content>
+            </div>
+          `
+       })
+       class ProjectCmp {
+       }
+
+       TestBed.configureTestingModule({declarations: [MyApp, ProjectCmp]});
+       const fixture = TestBed.createComponent(MyApp);
+       const element = fixture.nativeElement;
+       fixture.detectChanges();
+
+       const inner = element.querySelector('.inner-area');
+       expect(inner.textContent.trim()).toEqual('inner');
+       const outer = element.querySelector('.outer-area');
+       expect(outer.textContent.trim()).toEqual('outer');
+     });
+
+  it('should allow class-bindings to be placed on ng-container elements', () => {
+    @Component({
+      template: `
+        <ng-container [class.foo]="true" dir-that-adds-other-classes>...</ng-container>
+      `
+    })
+    class MyApp {
+    }
+
+    @Directive({selector: '[dir-that-adds-other-classes]'})
+    class DirThatAddsOtherClasses {
+      @HostBinding('class.other-class') bool = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, DirThatAddsOtherClasses]});
+    expect(() => {
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+    }).not.toThrow();
   });
 });
