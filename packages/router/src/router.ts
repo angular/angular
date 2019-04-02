@@ -803,7 +803,7 @@ export class Router {
         // exists, restore the state.
         const state = change.state && change.state.navigationId ? change.state : null;
         setTimeout(
-            () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 0);
+            () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 1);
       });
     }
   }
