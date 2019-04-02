@@ -48,7 +48,7 @@ class MyComponent {
 ```
 
 The built-in breakpoints based on [Google's Material Design
-specification](https://material.io/guidelines/layout/responsive-ui.html#responsive-ui-breakpoints).
+specification](https://material.io/design/layout/responsive-layout-grid.html#breakpoints).
 The available values are:
 * Handset
 * Tablet
