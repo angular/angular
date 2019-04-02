@@ -10,12 +10,12 @@ set('-e');
 
 // Constants
 const ROOT_DIR = resolve(__dirname, '..');
-const TS_CONFIG_PATH = join(ROOT_DIR, 'tsconfig.json');
+const TS_CONFIG_PATH = join(ROOT_DIR, 'src/tsconfig.app.json');
 const NG_COMPILER_OPTS = {
   angularCompilerOptions: {
     // Related Jira issue: FW-737
     allowEmptyCodegenFiles: true,
-    enableIvy: 'ngtsc',
+    enableIvy: true,
   },
 };
 
@@ -23,24 +23,23 @@ const NG_COMPILER_OPTS = {
 _main(process.argv.slice(2));
 
 // Functions - Definitions
-function _main(buildArgs) {
-  console.log('\nModifying `tsconfig.json`...');
+function _main() {
+  // Enable Ivy in TS config.
+  console.log(`\nModifying \`${TS_CONFIG_PATH}\`...`);
   const oldTsConfigStr = readFileSync(TS_CONFIG_PATH, 'utf8');
   const oldTsConfigObj = parse(oldTsConfigStr);
   const newTsConfigObj = extend(true, oldTsConfigObj, NG_COMPILER_OPTS);
   const newTsConfigStr = JSON.stringify(newTsConfigObj, null, 2);
+  console.log(`\nNew config: ${newTsConfigStr}`);
   writeFileSync(TS_CONFIG_PATH, newTsConfigStr);
-  console.log(newTsConfigStr);
 
-  try {
-    const buildArgsStr = buildArgs.join(' ');
+  // Run ngcc.
+  const ngccArgs = '--loglevel debug --properties es2015 module';
+  console.log(`\nRunning ngcc (with args: ${ngccArgs})...`);
+  exec(`yarn ivy-ngcc ${ngccArgs}`);
 
-    console.log(`\nBuilding${buildArgsStr && ` with args \`${buildArgsStr}\``}...`);
-    exec(`yarn ~~build ${buildArgsStr}`, {cwd: ROOT_DIR});
-  } finally {
-    console.log('\nRestoring `tsconfig.json`...');
-    writeFileSync(TS_CONFIG_PATH, oldTsConfigStr);
-  }
-
-  console.log('\nDone!');
+  // Done.
+  console.log('\nReady to build with Ivy!');
+  console.log('(To switch back to ViewEngine (with packages from npm), undo the changes in ' +
+              `\`${TS_CONFIG_PATH}\` and run \`yarn aio-use-npm && yarn example-use-npm\`.)`);
 }
