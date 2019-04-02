@@ -224,6 +224,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Read more about this here: https://github.com/angular/angular/issues/25644.
    */
   createExternalSymbolFactoryReexports?: boolean;
+
+  /**
+   * Turn on template type-checking in the Ivy compiler.
+   *
+   * This is an internal flag being used to roll out template type-checking in ngtsc. Turning it on
+   * by default before it's ready might break other users attempting to test the new compiler's
+   * behavior.
+   *
+   * @internal
+   */
+  ivyTemplateTypeCheck?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
