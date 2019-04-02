@@ -1,10 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
-    "tsconfig.json",
     "LICENSE",
     "protractor-perf.conf.js",
 ])
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
 
 filegroup(
     name = "web_test_bootstrap_scripts",
