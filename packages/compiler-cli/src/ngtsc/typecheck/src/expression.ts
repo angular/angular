@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, Binary, Conditional, Interpolation, KeyedRead, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, Binary, Conditional, Interpolation, KeyedRead, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
+
+const NULL_AS_ANY =
+    ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+const UNDEFINED = ts.createIdentifier('undefined');
+
 const BINARY_OPS = new Map<string, ts.SyntaxKind>([
   ['+', ts.SyntaxKind.PlusToken],
   ['-', ts.SyntaxKind.MinusToken],
@@ -94,6 +99,26 @@ export function astToTypescript(
   } else if (ast instanceof NonNullAssert) {
     const expr = astToTypescript(ast.expression, maybeResolve, config);
     return ts.createNonNullExpression(expr);
+  } else if (ast instanceof PrefixNot) {
+    return ts.createLogicalNot(astToTypescript(ast.expression, maybeResolve, config));
+  } else if (ast instanceof SafePropertyRead) {
+    // A safe property expression a?.b takes the form `(a != null ? a!.b : whenNull)`, where
+    // whenNull is either of type 'any' or or 'undefined' depending on strictness. The non-null
+    // assertion is necessary because in practice 'a' may be a method call expression, which won't
+    // have a narrowed type when repeated in the ternary true branch.
+    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+    const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
+    return safeTernary(receiver, expr, whenNull);
+  } else if (ast instanceof SafeMethodCall) {
+    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    // See the comment in SafePropertyRead above for an explanation of the need for the non-null
+    // assertion here.
+    const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+    const args = ast.args.map(expr => astToTypescript(expr, maybeResolve, config));
+    const expr = ts.createCall(method, undefined, args);
+    const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
+    return safeTernary(receiver, expr, whenNull);
   } else {
     throw new Error(`Unknown node type: ${Object.getPrototypeOf(ast).constructor}`);
   }
@@ -114,4 +139,11 @@ function astArrayToExpression(
       (lhs, ast) => ts.createBinary(
           lhs, ts.SyntaxKind.CommaToken, astToTypescript(ast, maybeResolve, config)),
       astToTypescript(asts.pop() !, maybeResolve, config));
+}
+
+function safeTernary(
+    lhs: ts.Expression, whenNotNull: ts.Expression, whenNull: ts.Expression): ts.Expression {
+  const notNullComp = ts.createBinary(lhs, ts.SyntaxKind.ExclamationEqualsToken, ts.createNull());
+  const ternary = ts.createConditional(notNullComp, whenNotNull, whenNull);
+  return ts.createParen(ternary);
 }

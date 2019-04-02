@@ -195,6 +195,7 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: true,
         checkTemplateBodies: true,
         checkTypeOfBindings: true,
+        strictSafeNavigationTypes: true,
       };
       const ctx = new TypeCheckContext(config, this.refEmitter !);
       compilation.typeCheck(ctx);
