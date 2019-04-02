@@ -15,6 +15,9 @@ For the final sample app with two lazy loaded modules that this page describes, 
 
 ## High level view
 
+By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
+bundle sizes smaller, which in turn helps decrease load times.
+
 There are three main steps to setting up a lazy loaded feature module:
 
 1. Create the feature module.
@@ -66,9 +69,6 @@ ng generate component customers/customer-list
 
 This creates a folder inside of `customers` called `customer-list`
 with the four files that make up the component.
-
-<!-- For more information
-about components, see [Components](). -->
 
 Just like with the routing module, the CLI imports the
 `CustomerListComponent` into the `CustomersModule`.
@@ -217,7 +217,7 @@ knows that the route list is only responsible for providing additional routes an
 
 `forRoot()` contains injector configuration which is global; such as configuring the Router. `forChild()` has no injector configuration, only directives such as `RouterOutlet` and `RouterLink`.
 
-For more information, see the [`forRoot()` deep dive](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
+For more information, see the [`forRoot()` pattern](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
 
 <hr>
 
