@@ -164,6 +164,7 @@ describe('ngcc main()', () => {
            module: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
          });
+         // If ngcc tries to write out the typings files again, this will throw an exception.
          mainNgcc(
              {basePath: '/node_modules', propertiesToConsider: ['esm5'], compileAllFormats: false});
          expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
