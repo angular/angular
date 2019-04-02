@@ -376,8 +376,9 @@ export class NgtscProgram implements api.Program {
   }
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    // Skip template type-checking unless explicitly requested.
-    if (this.options.fullTemplateTypeCheck !== true) {
+    // Skip template type-checking if it's disabled.
+    if (this.options.ivyTemplateTypeCheck === false &&
+        this.options.fullTemplateTypeCheck !== true) {
       return [];
     }
 
