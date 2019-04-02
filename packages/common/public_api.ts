@@ -14,4 +14,10 @@
 export * from './src/common';
 export {registerLocaleData as ɵregisterLocaleData} from './src/i18n/locale_data';
 
+import {ɵChangeDetectorStatus} from '@angular/core';
+
+/**
+ * @alias core/ɵChangeDetectorStatus
+ */
+export const ChangeDetectorStatus = ɵChangeDetectorStatus;
 // This file only reexports content of the `src` folder. Keep it that way.
