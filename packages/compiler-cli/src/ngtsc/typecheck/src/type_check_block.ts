@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -16,6 +16,7 @@ import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {Environment} from './environment';
 import {astToTypescript} from './expression';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
+
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -31,7 +32,7 @@ import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsC
 export function generateTypeCheckBlock(
     env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
     meta: TypeCheckBlockMetadata): ts.FunctionDeclaration {
-  const tcb = new Context(env, meta.boundTarget);
+  const tcb = new Context(env, meta.boundTarget, meta.pipes);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -355,7 +356,8 @@ export class Context {
   private nextId = 1;
 
   constructor(
-      readonly env: Environment, readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>) {}
+      readonly env: Environment, readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
+      private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -364,6 +366,13 @@ export class Context {
    * might change depending on the type of data being stored.
    */
   allocateId(): ts.Identifier { return ts.createIdentifier(`_t${this.nextId++}`); }
+
+  getPipeByName(name: string): ts.Expression {
+    if (!this.pipes.has(name)) {
+      throw new Error(`Missing pipe: ${name}`);
+    }
+    return this.env.pipeInst(this.pipes.get(name) !);
+  }
 }
 
 /**
@@ -793,6 +802,17 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
     // PropertyRead resolved to a variable or reference, and therefore this is a property read on
     // the component context itself.
     return ts.createIdentifier('ctx');
+  } else if (ast instanceof BindingPipe) {
+    const expr = tcbExpression(ast.exp, tcb, scope);
+    let pipe: ts.Expression;
+    if (tcb.env.config.checkTypeOfPipes) {
+      pipe = tcb.getPipeByName(ast.name);
+    } else {
+      pipe = ts.createParen(ts.createAsExpression(
+          ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
+    }
+    const args = ast.args.map(arg => tcbExpression(arg, tcb, scope));
+    return tsCallMethod(pipe, 'transform', [expr, ...args]);
   } else {
     // This AST isn't special after all.
     return null;
