@@ -1281,9 +1281,19 @@ export class FormGroup extends AbstractControl {
    *
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the control is added.
+   *
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is added.
+   * When false, no events are emitted.
    */
-  addControl(name: string, control: AbstractControl): void {
+  addControl(name: string, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     this.registerControl(name, control);
+
+    if (options.emitEvent === false) return;
+
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
@@ -1292,10 +1302,20 @@ export class FormGroup extends AbstractControl {
    * Remove a control from this group.
    *
    * @param name The control name to remove from the collection
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the control is removed.
+   *
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is removed.
+   * When false, no events are emitted.
    */
-  removeControl(name: string): void {
+  removeControl(name: string, options: {emitEvent?: boolean} = {}): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
+
+    if (options.emitEvent === false) return;
+
     this.updateValueAndValidity();
     this._onCollectionChange();
   }
