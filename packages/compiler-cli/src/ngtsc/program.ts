@@ -393,6 +393,7 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: true,
         checkTemplateBodies: true,
         checkTypeOfBindings: true,
+        checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
       };
     } else {
@@ -400,6 +401,7 @@ export class NgtscProgram implements api.Program {
         applyTemplateContextGuards: false,
         checkTemplateBodies: false,
         checkTypeOfBindings: false,
+        checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
       };
     }

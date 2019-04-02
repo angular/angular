@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as ts from 'typescript';
+
 import {NgtscTestEnvironment} from './env';
 
 function setupCommon(env: NgtscTestEnvironment): void {
@@ -23,6 +25,12 @@ export declare class NgForOfContext<T> {
   readonly odd: boolean;
 }
 
+export declare class IndexPipe {
+  transform<T>(value: T[], index: number): T;
+
+  static ngPipeDef: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
+}
+
 export declare class NgForOf<T> {
   ngForOf: T[];
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
@@ -36,7 +44,7 @@ export declare class NgIf {
 }
 
 export declare class CommonModule {
-  static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf], never, [typeof NgIf, typeof NgForOf]>;
+  static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe]>;
 }
 `);
 }
@@ -138,6 +146,57 @@ describe('ngtsc type checking', () => {
     const diags = env.driveDiagnostics();
     expect(diags.length).toBe(1);
     expect(diags[0].messageText).toContain('does_not_exist');
+  });
+
+  it('should report an error with pipe bindings', () => {
+    env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: \`
+        checking the input type to the pipe:
+        {{user | index: 1}}
+
+        checking the return type of the pipe:
+        {{(users | index: 1).does_not_exist}}
+
+        checking the argument type:
+        {{users | index: 'test'}}
+
+        checking the argument count:
+        {{users | index: 1:2}}
+      \`
+    })
+    class TestCmp {
+      user: {name: string};
+      users: {name: string}[];
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    class Module {}
+    `);
+
+    const diags = env.driveDiagnostics();
+    expect(diags.length).toBe(4);
+
+    const allErrors = [
+      `'does_not_exist' does not exist on type '{ name: string; }'`,
+      `Expected 2 arguments, but got 3.`,
+      `Argument of type '"test"' is not assignable to parameter of type 'number'`,
+      `Argument of type '{ name: string; }' is not assignable to parameter of type '{}[]'`,
+    ];
+
+    for (const error of allErrors) {
+      if (!diags.some(
+              diag => ts.flattenDiagnosticMessageText(diag.messageText, '').indexOf(error) > -1)) {
+        fail(`Expected a diagnostic message with text: ${error}`);
+      }
+    }
   });
 
   it('should constrain types using type parameter bounds', () => {
