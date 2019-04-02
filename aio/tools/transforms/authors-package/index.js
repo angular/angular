@@ -22,7 +22,7 @@ function createPackage(changedFile) {
     return require('./tutorial-package').createPackage(tutorialName);
   }
 
-  const gettingStartedMatch = /^aio\/content\/getting-started\/([^.]+)\.md/.exec(changedFile);
+  const gettingStartedMatch = /^aio\/content\/start\/([^.]+)\.md/.exec(changedFile);
   const gettingStartedExampleMatch = /^aio\/content\/examples\/getting-started\/([^\/]+)\//.exec(changedFile);
   if (gettingStartedMatch || gettingStartedExampleMatch) {
     const gettingStartedName = gettingStartedMatch && gettingStartedMatch[1] || 'index';

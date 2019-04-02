@@ -176,7 +176,7 @@ In Angular, a set of related [schematics](#schematic) collected in an [npm packa
 
 The [Angular CLI](cli) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](#workspace) or [project](#project), and to run [schematics](#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
-* To begin using the CLI for a new project, see [Getting Started](guide/quickstart).
+* To begin using the CLI for a new project, see [Local Environment Setup](guide/setup-local "Setting up for Local Development").
 * To learn more about the full capabilities of the CLI, see the [CLI command reference](cli).
 
 See also [Schematics CLI](#schematics-cli).

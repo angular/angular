@@ -1,6 +1,6 @@
 # Forms
 
-At the end of [Managing Data](getting-started/data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
+At the end of [Managing Data](start/data "Getting Started: Managing Data"), the online store application has a product catalog and a shopping cart.
 
 In this section, you'll finish the app by adding a form-based checkout feature. You'll create a form to collect user information as part of checkout. 
 
@@ -75,7 +75,7 @@ Next, you'll add a checkout form at the bottom of the "Cart" page.
 After putting a few items in the cart, users can now review their items, enter name and address, and submit their purchase: 
 
 <figure>
-  <img src='generated/images/guide/getting-started/cart-with-items-and-form.png' alt="Cart page with checkout form">
+  <img src='generated/images/guide/start/cart-with-items-and-form.png' alt="Cart page with checkout form">
 </figure>
 
 
@@ -83,5 +83,5 @@ After putting a few items in the cart, users can now review their items, enter n
 
 Congratulations! You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
 
-[Continue to the "Deployment" section](getting-started/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development. 
+[Continue to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
 
