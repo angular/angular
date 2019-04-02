@@ -31,6 +31,7 @@ System.config({
     'rxjs': 'node_modules/rxjs',
   },
   packages: {
+    '@angular/core/src/render3': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
     '@angular/animations/browser/testing': {main: 'index.js', defaultExtension: 'js'},
