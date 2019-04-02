@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '../../core';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView} from '../assert';
@@ -20,6 +19,7 @@ import {NO_CHANGE} from '../tokens';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {getComponentViewByIndex, getNativeByIndex, getTNode, isComponent} from '../util/view_utils';
 import {TsickleIssue1009, initializeTNodeInputs, loadComponentRenderer, setInputsForProperty, storeBindingMetadata} from './shared';
+import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '../../metadata/schema';
 
 /**
  * Update a property on a selected element.
