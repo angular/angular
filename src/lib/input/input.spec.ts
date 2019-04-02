@@ -394,7 +394,7 @@ describe('MatInput without forms', () => {
 
     let el = fixture.debugElement.query(By.css('label'));
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
+    expect(el.nativeElement.textContent).toMatch(/hello +\*/g);
   }));
 
   it('should hide the required star if input is disabled', () => {
@@ -407,6 +407,7 @@ describe('MatInput without forms', () => {
 
     expect(el).not.toBeNull();
     expect(el.nativeElement.textContent!.trim()).toMatch(/^hello$/);
+    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
   });
 
   it('should hide the required star from screen readers', fakeAsync(() => {
@@ -424,12 +425,13 @@ describe('MatInput without forms', () => {
 
     let el = fixture.debugElement.query(By.css('label'));
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
+    expect(el.nativeElement.textContent).toMatch(/hello +\*/g);
 
     fixture.componentInstance.hideRequiredMarker = true;
     fixture.detectChanges();
 
     expect(el.nativeElement.textContent).toMatch(/hello/g);
+    expect(el.nativeElement.textContent).not.toMatch(/\*/g);
   }));
 
   it('supports the disabled attribute as binding', fakeAsync(() => {
