@@ -426,7 +426,7 @@
     "name": "baseResolveDirective"
   },
   {
-    "name": "bind$"
+    "name": "bind"
   },
   {
     "name": "bindingUpdated"
@@ -582,7 +582,7 @@
     "name": "elementEnd"
   },
   {
-    "name": "elementProperty$"
+    "name": "elementProperty"
   },
   {
     "name": "elementPropertyInternal"
