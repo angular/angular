@@ -61,7 +61,8 @@ export class TypeCheckContext {
    */
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      boundTarget: BoundTarget<TypeCheckableDirectiveMeta>): void {
+      boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
+      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>): void {
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -86,10 +87,10 @@ export class TypeCheckContext {
     if (requiresInlineTypeCheckBlock(ref.node)) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(ref, {boundTarget});
+      this.addInlineTypeCheckBlock(ref, {boundTarget, pipes});
     } else {
       // The class can be type-checked externally as normal.
-      this.typeCheckFile.addTypeCheckBlock(ref, {boundTarget});
+      this.typeCheckFile.addTypeCheckBlock(ref, {boundTarget, pipes});
     }
   }
 
