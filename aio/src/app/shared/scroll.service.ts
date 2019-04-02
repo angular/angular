@@ -171,13 +171,16 @@ export class ScrollService {
     if (this.supportManualScrollRestoration) {
       const currentScrollPosition = this.viewportScroller.getScrollPosition();
       this.location.replaceState(this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
-      window.sessionStorage.setItem('scrollPosition', currentScrollPosition.toString());
+      window.sessionStorage.setItem('scrollPosition', currentScrollPosition.join(','));
     }
   }
 
   getStoredScrollPosition(): ScrollPosition | null {
     const position = window.sessionStorage.getItem('scrollPosition');
-    return position ? JSON.parse('[' + position + ']') : null;
+    if (!position) { return null; }
+
+    const [x, y] = position.split(',');
+    return [+x, +y];
   }
 
   removeStoredScrollPosition() {
