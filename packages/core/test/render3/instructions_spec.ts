@@ -7,7 +7,7 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {RenderFlags, elementStart, elementStyling, elementEnd, element, elementProperty, bind, elementAttribute, select, elementStyleProp, elementStylingApply, elementStylingMap, template, text, textBinding, interpolation1, property} from '../../src/render3';
+import {RenderFlags, elementStart, elementStyling, elementEnd, element, elementProperty, bind, elementAttribute, select, elementStyleProp, elementStylingApply, elementStylingMap, template, text, textBinding, interpolation1, property} from '../../src/render3/index';
 import {defineComponent} from '../../src/render3/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
