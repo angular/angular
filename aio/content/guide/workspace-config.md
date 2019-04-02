@@ -83,9 +83,7 @@ The `architect` section of `angular.json` contains a set of Architect *targets*.
 Many of the targets correspond to the CLI commands that run them.
 Some additional predefined targets can be run using the `ng run` command, and you can define your own targets.
 
-Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs.
-In addition, each target has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
-See the example in [Build target](#build-target) below.
+Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs. In addition, each target has an `options` section that configure default options for the target, and a `configurations` section that names and specifies alternative configurations for the target. See the example in [Build target](#build-target) below.
 
 <code-example format="." language="json" linenums="false">
       "architect": {
