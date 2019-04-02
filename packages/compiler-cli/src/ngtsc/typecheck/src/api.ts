@@ -32,6 +32,11 @@ export interface TypeCheckBlockMetadata {
    * Semantic information about the template of the component.
    */
   boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
+
+  /*
+   * Pipes used in the template of the component.
+   */
+  pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
 }
 
 export interface TypeCtorMetadata {
@@ -61,6 +66,16 @@ export interface TypeCheckingConfig {
    * are checked.
    */
   checkTypeOfBindings: boolean;
+
+  /**
+   * Whether to include type information from pipes in the type-checking operation.
+   *
+   * If this is `true`, then the pipe's type signature for `transform()` will be used to check the
+   * usage of the pipe. If this is `false`, then the result of applying a pipe will be `any`, and
+   * the types of the pipe's value and arguments will not be matched against the `transform()`
+   * method.
+   */
+  checkTypeOfPipes: boolean;
 
   /**
    * Whether to narrow the types of template contexts.

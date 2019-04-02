@@ -14,6 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {tsDeclareVariable} from './ts_util';
 import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
 
 /**
@@ -29,11 +30,15 @@ import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_cons
  */
 export class Environment {
   private nextIds = {
+    pipeInst: 1,
     typeCtor: 1,
   };
 
   private typeCtors = new Map<ClassDeclaration, ts.Expression>();
   protected typeCtorStatements: ts.Statement[] = [];
+
+  private pipeInsts = new Map<ClassDeclaration, ts.Expression>();
+  protected pipeInstStatements: ts.Statement[] = [];
 
   constructor(
       readonly config: TypeCheckingConfig, protected importManager: ImportManager,
@@ -81,6 +86,23 @@ export class Environment {
       this.typeCtors.set(node, fnId);
       return fnId;
     }
+  }
+
+  /*
+   * Get an expression referring to an instance of the given pipe.
+   */
+  pipeInst(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
+    if (this.pipeInsts.has(ref.node)) {
+      return this.pipeInsts.get(ref.node) !;
+    }
+
+    const pipeType = this.referenceType(ref);
+    const pipeInstId = ts.createIdentifier(`_pipe${this.nextIds.pipeInst++}`);
+
+    this.pipeInstStatements.push(tsDeclareVariable(pipeInstId, pipeType));
+    this.pipeInsts.set(ref.node, pipeInstId);
+
+    return pipeInstId;
   }
 
   /**
@@ -131,6 +153,7 @@ export class Environment {
 
   getPreludeStatements(): ts.Statement[] {
     return [
+      ...this.pipeInstStatements,
       ...this.typeCtorStatements,
     ];
   }

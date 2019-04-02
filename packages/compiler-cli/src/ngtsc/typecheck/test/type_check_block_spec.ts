@@ -53,7 +53,8 @@ describe('type check blocks', () => {
       {{d.value}}
       <div dir #d="dir"></div>
     `;
-    const DIRECTIVES: TestDirective[] = [{
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
       name: 'Dir',
       selector: '[dir]',
       exportAs: ['dir'],
@@ -76,7 +77,8 @@ describe('type check blocks', () => {
   });
 
   describe('config', () => {
-    const DIRECTIVES: TestDirective[] = [{
+    const DIRECTIVES: TestDeclaration[] = [{
+      type: 'directive',
       name: 'Dir',
       selector: '[dir]',
       exportAs: ['dir'],
@@ -87,6 +89,7 @@ describe('type check blocks', () => {
       applyTemplateContextGuards: true,
       checkTemplateBodies: true,
       checkTypeOfBindings: true,
+      checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
     };
 
@@ -135,6 +138,26 @@ describe('type check blocks', () => {
       });
     });
 
+
+    describe('config.checkTypeOfPipes', () => {
+      const TEMPLATE = `{{a | test:b:c}}`;
+      const PIPES: TestDeclaration[] = [{
+        type: 'pipe',
+        name: 'TestPipe',
+        pipeName: 'test',
+      }];
+
+      it('should check types of pipes when enabled', () => {
+        const block = tcb(TEMPLATE, PIPES);
+        expect(block).toContain('(null as TestPipe).transform(ctx.a, ctx.b, ctx.c);');
+      });
+      it('should not check types of pipes when disabled', () => {
+        const DISABLED_CONFIG = {...BASE_CONFIG, checkTypeOfPipes: false};
+        const block = tcb(TEMPLATE, PIPES, DISABLED_CONFIG);
+        expect(block).toContain('(null as any).transform(ctx.a, ctx.b, ctx.c);');
+      });
+    });
+
     describe('config.strictSafeNavigationTypes', () => {
       const TEMPLATE = `{{a?.b}} {{a?.method()}}`;
 
@@ -158,6 +181,7 @@ it('should generate a circular directive reference correctly', () => {
   <div dir #d="dir" [input]="d"></div>
 `;
   const DIRECTIVES: TestDirective[] = [{
+    type: 'directive',
     name: 'Dir',
     selector: '[dir]',
     exportAs: ['dir'],
@@ -173,12 +197,14 @@ it('should generate circular references between two directives correctly', () =>
 `;
   const DIRECTIVES: TestDirective[] = [
     {
+      type: 'directive',
       name: 'DirA',
       selector: '[dir-a]',
       exportAs: ['dirA'],
       inputs: {inputA: 'inputA'},
     },
     {
+      type: 'directive',
       name: 'DirB',
       selector: '[dir-b]',
       exportAs: ['dirB'],
@@ -203,11 +229,18 @@ function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDec
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
 type TestDirective =
     Partial<Pick<TypeCheckableDirectiveMeta, Exclude<keyof TypeCheckableDirectiveMeta, 'ref'>>>&
-    {selector: string, name: string};
+    {selector: string, name: string, type: 'directive'};
+type TestPipe = {
+  name: string,
+  pipeName: string,
+  type: 'pipe',
+};
+
+type TestDeclaration = TestDirective | TestPipe;
 
 function tcb(
-    template: string, directives: TestDirective[] = [], config?: TypeCheckingConfig): string {
-  const classes = ['Test', ...directives.map(dir => dir.name)];
+    template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig): string {
+  const classes = ['Test', ...declarations.map(decl => decl.name)];
   const code = classes.map(name => `class ${name}<T extends string> {}`).join('\n');
 
   const sf = ts.createSourceFile('synthetic.ts', code, ts.ScriptTarget.Latest, true);
@@ -215,18 +248,21 @@ function tcb(
   const {nodes} = parseTemplate(template, 'synthetic.html');
   const matcher = new SelectorMatcher();
 
-  for (const dir of directives) {
-    const selector = CssSelector.parse(dir.selector);
+  for (const decl of declarations) {
+    if (decl.type !== 'directive') {
+      continue;
+    }
+    const selector = CssSelector.parse(decl.selector);
     const meta: TypeCheckableDirectiveMeta = {
-      name: dir.name,
-      ref: new Reference(getClass(sf, dir.name)),
-      exportAs: dir.exportAs || null,
-      hasNgTemplateContextGuard: dir.hasNgTemplateContextGuard || false,
-      inputs: dir.inputs || {},
-      isComponent: dir.isComponent || false,
-      ngTemplateGuards: dir.ngTemplateGuards || [],
-      outputs: dir.outputs || {},
-      queries: dir.queries || [],
+      name: decl.name,
+      ref: new Reference(getClass(sf, decl.name)),
+      exportAs: decl.exportAs || null,
+      hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
+      inputs: decl.inputs || {},
+      isComponent: decl.isComponent || false,
+      ngTemplateGuards: decl.ngTemplateGuards || [],
+      outputs: decl.outputs || {},
+      queries: decl.queries || [],
     };
     matcher.addSelectables(selector, meta);
   }
@@ -234,11 +270,19 @@ function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget};
+  const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+  for (const decl of declarations) {
+    if (decl.type === 'pipe') {
+      pipes.set(decl.pipeName, new Reference(getClass(sf, decl.name)));
+    }
+  }
+
+  const meta: TypeCheckBlockMetadata = {boundTarget, pipes};
 
   config = config || {
     applyTemplateContextGuards: true,
     checkTypeOfBindings: true,
+    checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
   };
@@ -255,6 +299,10 @@ class FakeEnvironment /* implements Environment */ {
 
   typeCtorFor(dir: TypeCheckableDirectiveMeta): ts.Expression {
     return ts.createPropertyAccess(ts.createIdentifier(dir.name), 'ngTypeCtor');
+  }
+
+  pipeInst(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
+    return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
   }
 
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
