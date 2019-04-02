@@ -1,5 +1,3 @@
-<h1>Kitchen sink app</h1>
-
 <h2>Autocomplete</h2>
 <mat-autocomplete>
   <mat-option>Grace Hopper</mat-option>
@@ -375,7 +373,7 @@
 
 <h2>Virtual scroll</h2>
 
-<cdk-virtual-scroll-viewport itemSize="50">
+<cdk-virtual-scroll-viewport itemSize="50" class="universal-viewport">
   <div *cdkVirtualFor="let size of virtualScrollData; let i = index" style="height: 50px">
     Item #{{i}}
   </div>

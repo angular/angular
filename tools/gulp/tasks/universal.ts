@@ -32,13 +32,20 @@ task('prerender', ['universal:build'], execTask(
   }
 ));
 
-task('universal:build', sequenceTask(
-  'clean',
-  ['material:build-release', 'cdk:build-release'],
-  ['universal:copy-release', 'universal:copy-files'],
-  ['universal:build-app-ts', 'universal:build-app-scss'],
-  'universal:build-prerender-ts',
-));
+task(
+    'universal:build',
+    sequenceTask(
+        'clean',
+        [
+          'cdk:build-release',
+          'material:build-release',
+          'cdk-experimental:build-release',
+          'material-experimental:build-release',
+        ],
+        ['universal:copy-release', 'universal:copy-files'],
+        ['universal:build-app-ts', 'universal:build-app-scss'],
+        'universal:build-prerender-ts',
+        ));
 
 /** Task that builds the universal app in the output directory. */
 task('universal:build-app-ts', ngcBuildTask(tsconfigAppPath));
@@ -55,6 +62,8 @@ task('universal:build-prerender-ts', tsBuildTask(tsconfigPrerenderPath));
 // As a workaround for https://github.com/angular/angular/issues/12249, we need to
 // copy the Material and CDK ESM output inside of the universal-app output.
 task('universal:copy-release', () => {
-  copySync(join(releasesDir, 'material'), join(outDir, 'material'));
   copySync(join(releasesDir, 'cdk'), join(outDir, 'cdk'));
+  copySync(join(releasesDir, 'material'), join(outDir, 'material'));
+  copySync(join(releasesDir, 'cdk-experimental'), join(outDir, 'cdk-experimental'));
+  copySync(join(releasesDir, 'material-experimental'), join(outDir, 'material-experimental'));
 });

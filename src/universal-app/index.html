@@ -8,8 +8,27 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
   <base href="/">
+
+  <style>
+    /* Make sure bottom sheet doesn't obscure components. */
+    body {
+      padding-bottom: 80px;
+    }
+
+    /*
+     * Hide the overlay so hover styles can be tested,
+     * but show a message so we can see that the overlay is there.
+     */
+    .cdk-overlay-backdrop {
+      bottom: 100vh !important;
+    }
+    .cdk-overlay-backdrop::after {
+      content: 'OVERLAY ACTIVE';
+      background: lime;
+    }
+  </style>
 </head>
 <body>
-  <kitchen-sink>Loading...</kitchen-sink>
+  <kitchen-sink-root>Loading...</kitchen-sink-root>
 </body>
 </html>

@@ -1,23 +1,26 @@
+import 'reflect-metadata';
+import 'zone.js';
+
 import {renderModuleFactory} from '@angular/platform-server';
 import {readFileSync, writeFileSync} from 'fs-extra';
 import {log} from 'gulp-util';
 import {join} from 'path';
-import 'reflect-metadata';
-import 'zone.js';
-import {KitchenSinkServerModuleNgFactory} from './kitchen-sink/kitchen-sink.ngfactory';
+
+import {KitchenSinkRootServerModuleNgFactory} from './kitchen-sink-root.ngfactory';
 
 // Do not enable production mode, because otherwise the `MatCommonModule` won't execute
 // the browser related checks that could cause NodeJS issues.
 
-const result = renderModuleFactory(KitchenSinkServerModuleNgFactory, {
-  document: readFileSync(join(__dirname, 'index.html'), 'utf-8')
-});
+const result = renderModuleFactory(
+    KitchenSinkRootServerModuleNgFactory,
+    {document: readFileSync(join(__dirname, 'index.html'), 'utf-8')});
 
 result
   .then(content => {
     const filename = join(__dirname, 'index-prerendered.html');
 
-    console.log(`Outputting result to ${filename}`);
+    console.log('Inspect pre-rendered page here:');
+    console.log(`file://${filename}`);
     writeFileSync(filename, content, 'utf-8');
     log('Prerender done.');
   })

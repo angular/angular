@@ -23,7 +23,10 @@
     "paths": {
       "@angular/material": ["./material"],
       "@angular/cdk/*": ["./cdk/*"],
-      "@angular/material/*": ["./material/*"]
+      "@angular/material/*": ["./material/*"],
+      "@angular/cdk-experimental": ["./cdk-experimental"],
+      "@angular/cdk-experimental/*": ["./cdk-experimental/*"],
+      "@angular/material-experimental": ["./material-experimental"]
     }
   },
   "files": [
