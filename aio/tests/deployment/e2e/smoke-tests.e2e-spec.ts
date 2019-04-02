@@ -25,7 +25,7 @@ describe(browser.baseUrl, () => {
     describe('(marketing pages)', () => {
       const textPerUrl: { [key: string]: string } = {
         features: 'features & benefits',
-        docs: 'what is angular?',
+        docs: 'introduction to the angular docs',
         events: 'events',
         resources: 'explore angular resources',
       };
@@ -45,9 +45,9 @@ describe(browser.baseUrl, () => {
         api: 'api list',
         'guide/architecture': 'architecture',
         'guide/http': 'httpclient',
-        'guide/quickstart': 'getting started',
         'guide/security': 'security',
         tutorial: 'tutorial',
+        start: 'getting started',
       };
 
       Object.keys(textPerUrl).forEach(url => {
