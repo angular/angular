@@ -16,10 +16,7 @@ import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
 import {resetPreOrderHookFlags} from '../util/view_utils';
-
 import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews} from './shared';
-
-
 
 /**
  * Marks the start of an embedded view.

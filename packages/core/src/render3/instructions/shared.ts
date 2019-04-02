@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
 import {Type} from '../../interface/type';
@@ -27,17 +26,14 @@ import {RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRend
 import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, namespaceHTML, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
-import {initializeStaticContext as initializeStaticStylingContext, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, isCreationMode, leaveView, namespaceHTML, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {NO_CHANGE} from '../tokens';
-import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
+import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByTNode, isComponentDef, isContentQueryHost, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
-
-
 
 /**
  * A permanent marker promise which signifies that the current CD tree is

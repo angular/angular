@@ -12,8 +12,6 @@ import {LView, TVIEW, TView} from '../interfaces/view';
 import {getCurrentDirectiveDef, getLView} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-
-
 /**
  * Allocates the necessary amount of slots for host vars.
  *

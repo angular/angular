@@ -12,10 +12,7 @@ import {appendProjectedNodes} from '../node_manipulation';
 import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {getLView, setIsParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
-
 import {createNodeAtIndex} from './shared';
-
-
 
 /**
  * Instruction to distribute projectable nodes among <ng-content> occurrences in a given template.

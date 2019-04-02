@@ -9,7 +9,6 @@ import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
 import {getContextLView, getLView} from '../state';
 import {loadInternal} from '../util/view_utils';
 
-
 /** Store a value in the `data` at a given `index`. */
 export function store<T>(index: number, value: T): void {
   const lView = getLView();

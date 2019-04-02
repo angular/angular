@@ -10,10 +10,7 @@ import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {CONTEXT, RootContext, RootContextFlags} from '../interfaces/view';
 import {getRootView} from '../util/view_traversal_utils';
-
 import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} from './shared';
-
-
 
 /**
  * Synchronously perform change detection on a component (and possibly its sub-components).

@@ -17,10 +17,7 @@ import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, loadInternal} from '../util/view_utils';
-
 import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAtIndex, createTView} from './shared';
-
-
 
 /**
  * Creates an LContainer for inline views, e.g.

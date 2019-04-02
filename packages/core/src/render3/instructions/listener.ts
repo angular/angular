@@ -15,10 +15,7 @@ import {FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 import {getComponentViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
-
 import {BindingDirection, generatePropertyAliases, getCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
-
-
 
 /**
  * Adds an event listener to the current node.

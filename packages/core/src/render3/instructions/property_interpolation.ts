@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {assertEqual, assertLessThan} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {BINDING_INDEX, TVIEW} from '../interfaces/view';
@@ -13,7 +12,6 @@ import {getLView} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {storeBindingMetadata} from './shared';
-
 
 /**
  * Create interpolation bindings with a variable number of expressions.

@@ -14,10 +14,7 @@ import {getLView, setIsParent} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex} from '../util/view_utils';
-
 import {createNodeAtIndex} from './shared';
-
-
 
 /**
  * Create static text node

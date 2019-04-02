@@ -29,7 +29,7 @@ export * from './alloc_host_vars';
 export * from './change_detection';
 export * from './container';
 export * from './data';
-export * from './dependency_injection';
+export * from './di';
 export * from './element';
 export * from './element_container';
 export * from './embedded_view';

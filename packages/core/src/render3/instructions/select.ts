@@ -5,12 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {assertGreaterThan, assertLessThan} from '../../util/assert';
 import {executePreOrderHooks} from '../hooks';
 import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
 import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
-
 
 /**
  * Selects an index of an item to act on and flushes lifecycle hooks up to this point

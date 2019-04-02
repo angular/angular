@@ -5,14 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
 import {getLView, getPreviousOrParentTNode} from '../state';
-
-
 
 /**
  * Returns the value associated to the given token from the injectors.

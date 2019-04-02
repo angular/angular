@@ -19,10 +19,7 @@ import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {getComponentViewByIndex, getNativeByIndex, getTNode, isComponent} from '../util/view_utils';
-
 import {TsickleIssue1009, initializeTNodeInputs, loadComponentRenderer, setInputsForProperty, storeBindingMetadata} from './shared';
-
-
 
 /**
  * Update a property on a selected element.

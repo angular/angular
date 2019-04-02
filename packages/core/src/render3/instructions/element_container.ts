@@ -14,7 +14,6 @@ import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
-
 import {createDirectivesAndLocals, createNodeAtIndex, executeContentQueries, setNodeStylingTemplate} from './shared';
 
 /**
