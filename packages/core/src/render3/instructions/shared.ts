@@ -27,13 +27,14 @@ import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, isCreationMode, leaveView, namespaceHTML, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTML, resetComponentState, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByTNode, isComponentDef, isContentQueryHost, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+
 
 /**
  * A permanent marker promise which signifies that the current CD tree is
@@ -107,6 +108,8 @@ export function setHostBindings(tView: TView, viewData: LView): void {
           // Negative numbers mean that we are starting new EXPANDO block and need to update
           // the current element and directive index.
           currentElementIndex = -instruction;
+          setActiveHostElement(currentElementIndex);
+
           // Injector block and providers are taken into account.
           const providerCount = (tView.expandoInstructions[++i] as number);
           bindingRootIndex += INJECTOR_BLOOM_PARENT_SIZE + providerCount;
@@ -124,14 +127,20 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
           const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
-          setActiveHost(hostCtx, currentElementIndex);
           instruction(RenderFlags.Update, hostCtx, currentElementIndex);
-          setActiveHost(null);
+
+          // Each directive gets a uniqueId value that is the same for both
+          // create and update calls when the hostBindings function is called. The
+          // directive uniqueId is not set anywhere--it is just incremented between
+          // each hostBindings call and is useful for helping instruction code
+          // uniquely determine which directive is currently active when executed.
+          incrementActiveDirectiveId();
         }
         currentDirectiveIndex++;
       }
     }
   }
+  setActiveHostElement(null);
 }
 
 /** Refreshes content queries for all directives in the given view. */
@@ -897,15 +906,27 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const end = tNode.directiveEnd;
   const expando = tView.expandoInstructions !;
   const firstTemplatePass = tView.firstTemplatePass;
+  const elementIndex = tNode.index - HEADER_OFFSET;
+  setActiveHostElement(elementIndex);
+
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     const directive = viewData[i];
     if (def.hostBindings) {
       invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass);
+
+      // Each directive gets a uniqueId value that is the same for both
+      // create and update calls when the hostBindings function is called. The
+      // directive uniqueId is not set anywhere--it is just incremented between
+      // each hostBindings call and is useful for helping instruction code
+      // uniquely determine which directive is currently active when executed.
+      incrementActiveDirectiveId();
     } else if (firstTemplatePass) {
       expando.push(null);
     }
   }
+
+  setActiveHostElement(null);
 }
 
 export function invokeHostBindingsInCreationMode(
@@ -914,9 +935,7 @@ export function invokeHostBindingsInCreationMode(
   const previousExpandoLength = expando.length;
   setCurrentDirectiveDef(def);
   const elementIndex = tNode.index - HEADER_OFFSET;
-  setActiveHost(directive, elementIndex);
   def.hostBindings !(RenderFlags.Create, directive, elementIndex);
-  setActiveHost(null);
   setCurrentDirectiveDef(null);
   // `hostBindings` function may or may not contain `allocHostVars` call
   // (e.g. it may not if it only contains host listeners), so we need to check whether

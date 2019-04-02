@@ -19,6 +19,7 @@ import {CONTEXT, LView, LViewFlags, RootContext} from '../../../src/render3/inte
 import {addPlayer, getPlayers} from '../../../src/render3/players';
 import {ClassAndStylePlayerBuilder, compareLogSummaries, directiveOwnerPointers, generateConfigSummary, getDirectiveIndexFromEntry, initializeStaticContext, isContextDirty, patchContextWithStaticAttrs, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateContextWithBindings, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
+import {registerHostDirective} from '../../../src/render3/styling/host_instructions_queue';
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
 import {allocStylingContext, createEmptyStylingContext} from '../../../src/render3/styling/util';
 import {defaultStyleSanitizer} from '../../../src/sanitization/sanitization';
@@ -55,7 +56,7 @@ describe('style and class based bindings', () => {
     }
 
     const tpl = initializeStaticContext(attrsWithStyling, 0) !;
-    updateContextWithBindings(tpl, null, classBindings || null, styleBindings || null, sanitizer);
+    updateContextWithBindings(tpl, 0, classBindings || null, styleBindings || null, sanitizer);
     return tpl;
   }
 
@@ -70,7 +71,7 @@ describe('style and class based bindings', () => {
 
   function patchContext(
       context: StylingContext, styles?: string[] | null, classes?: string[] | null,
-      directiveRef?: any) {
+      directiveIndex: number = 0) {
     const attrs: (string | AttributeMarker)[] = [];
     if (classes && classes.length) {
       attrs.push(AttributeMarker.Classes);
@@ -80,7 +81,7 @@ describe('style and class based bindings', () => {
       attrs.push(AttributeMarker.Styles);
       attrs.push(...styles);
     }
-    patchContextWithStaticAttrs(context, attrs, 0, directiveRef || null);
+    patchContextWithStaticAttrs(context, attrs, 0, directiveIndex);
   }
 
   function getRootContextInternal(lView: LView) { return lView[CONTEXT] as RootContext; }
@@ -211,13 +212,14 @@ describe('style and class based bindings', () => {
         const template = createStylingContext();
         assertContext(template, [
           element,
-          masterConfig(9),
-          [null, 2, false, null],
+          masterConfig(10),
+          [2, null],
           [null, null],
           [null, null],
           [0, 0, 0, 0],
-          [0, 0, 9, null, 0],
-          [0, 0, 9, null, 0],
+          [0, 0, 10, null, 0],
+          [0, 0, 10, null, 0],
+          null,
           null,
         ]);
       });
@@ -227,13 +229,14 @@ describe('style and class based bindings', () => {
             createStylingContext(['color', 'red', 'width', '10px'], null, ['foo', 'bar']);
         assertContext(template, [
           element,
-          masterConfig(9),
-          [null, 2, false, null],
+          masterConfig(10),
+          [2, null],
           [null, null, 'color', 'red', 0, 'width', '10px', 0],
           [null, null, 'foo', true, 0, 'bar', true, 0],
           [0, 0, 0, 0],
-          [0, 0, 9, null, 0],
-          [0, 0, 9, null, 0],
+          [0, 0, 10, null, 0],
+          [0, 0, 10, null, 0],
+          null,
           null,
         ]);
       });
@@ -256,7 +259,7 @@ describe('style and class based bindings', () => {
              0,
            ]);
 
-           patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
+           patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], 1);
            expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
              null,
              null,
@@ -330,6 +333,7 @@ describe('style and class based bindings', () => {
              '200px',
              0,
            ]);
+
            expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
              null,
              null,
@@ -341,10 +345,10 @@ describe('style and class based bindings', () => {
              0,
            ]);
 
-           allocStylingContext(element, template);
+           const context = allocStylingContext(element, template);
 
-           patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
-           expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
+           patchContext(context, ['color', 'orange', 'height', '300px'], ['bar', 'foo', 'car']);
+           expect(context[StylingIndex.InitialStyleValuesPosition]).toEqual([
              null,
              null,
              'color',
@@ -354,7 +358,7 @@ describe('style and class based bindings', () => {
              '200px',
              0,
            ]);
-           expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
+           expect(context[StylingIndex.InitialClassValuesPosition]).toEqual([
              null,
              null,
              'foo',
@@ -487,191 +491,190 @@ describe('style and class based bindings', () => {
       it('should initialize a context with a series of styling bindings as well as single property offsets',
          () => {
            const ctx = createEmptyStylingContext();
-           updateContextWithBindings(ctx, null, ['foo'], ['width']);
+           updateContextWithBindings(ctx, 0, ['foo'], ['width']);
 
            assertContext(ctx, [
              null,
-             masterConfig(17, false, false),  //
-             [null, 2, false, null],
+             masterConfig(18, false, false),  //
+             [2, null],
              [null, null, 'width', null, 0],
              [null, null, 'foo', false, 0],
-             [1, 1, 1, 1, 9, 13],
-             [1, 0, 21, null, 1],
-             [1, 0, 17, null, 1],
+             [1, 1, 1, 1, 10, 14],
+             [1, 0, 22, null, 1],
+             [1, 0, 18, null, 1],
+             null,
              null,
 
-             // #9
-             cleanStyle(3, 17),
+             // #10
+             cleanStyle(3, 18),
              'width',
              null,
              0,
 
-             // #13
-             cleanClass(3, 21),
+             // #14
+             cleanClass(3, 22),
              'foo',
              null,
              0,
 
-             // #17
-             cleanStyle(3, 9),
+             // #18
+             cleanStyle(3, 10),
              'width',
              null,
              0,
 
-             // #21
-             cleanClass(3, 13),
+             // #22
+             cleanClass(3, 14),
              'foo',
              null,
              0,
            ]);
 
-           updateContextWithBindings(ctx, 'SOME DIRECTIVE', ['bar'], ['width', 'height']);
+           updateContextWithBindings(ctx, 1, ['bar'], ['width', 'height']);
 
            assertContext(ctx, [
              null,
-             masterConfig(25, false, false),  //
-             [null, 2, false, null, 'SOME DIRECTIVE', 6, false, null],
+             masterConfig(26, false, false),  //
+             [2, null, 6, null],
              [null, null, 'width', null, 0, 'height', null, 1],
              [null, null, 'foo', false, 0, 'bar', false, 1],
-             [2, 2, 1, 1, 9, 17, 2, 1, 9, 13, 21],
-             [2, 0, 33, null, 1, 0, 37, null, 1],
-             [2, 0, 25, null, 1, 0, 29, null, 1],
+             [2, 2, 1, 1, 10, 18, 2, 1, 10, 14, 22],
+             [2, 0, 34, null, 1, 0, 38, null, 1],
+             [2, 0, 26, null, 1, 0, 30, null, 1],
+             null,
              null,
 
-             // #9
-             cleanStyle(3, 25),
+             // #10
+             cleanStyle(3, 26),
              'width',
              null,
              0,
 
-             // #13
-             cleanStyle(6, 29),
+             // #14
+             cleanStyle(6, 30),
              'height',
              null,
              1,
 
-             // #17
-             cleanClass(3, 33),
+             // #18
+             cleanClass(3, 34),
              'foo',
              null,
              0,
 
-             // #21
-             cleanClass(6, 37),
+             // #22
+             cleanClass(6, 38),
              'bar',
              null,
              1,
 
-             // #25
-             cleanStyle(3, 9),
+             // #26
+             cleanStyle(3, 10),
              'width',
              null,
              0,
 
-             // #29
-             cleanStyle(6, 13),
+             // #30
+             cleanStyle(6, 14),
              'height',
              null,
              1,
 
-             // #33
-             cleanClass(3, 17),
+             // #34
+             cleanClass(3, 18),
              'foo',
              null,
              0,
 
-             // #37
-             cleanClass(6, 21),
+             // #38
+             cleanClass(6, 22),
              'bar',
              null,
              1,
            ]);
 
-           updateContextWithBindings(
-               ctx, 'SOME DIRECTIVE 2', ['baz', 'bar', 'foo'], ['opacity', 'width', 'height']);
+           updateContextWithBindings(ctx, 2, ['baz', 'bar', 'foo'], ['opacity', 'width', 'height']);
 
            assertContext(ctx, [
              null,
-             masterConfig(33, false, false),  //
-             [
-               null, 2, false, null, 'SOME DIRECTIVE', 6, false, null, 'SOME DIRECTIVE 2', 11,
-               false, null
-             ],
+             masterConfig(34, false, false),  //
+             [2, null, 6, null, 11, null],
              [null, null, 'width', null, 0, 'height', null, 1, 'opacity', null, 2],
              [null, null, 'foo', false, 0, 'bar', false, 1, 'baz', false, 2],
-             [3, 3, 1, 1, 9, 21, 2, 1, 9, 13, 25, 3, 3, 17, 9, 13, 29, 25, 21],
-             [3, 0, 45, null, 1, 0, 49, null, 1, 0, 53, null, 1],
-             [3, 0, 33, null, 1, 0, 37, null, 1, 0, 41, null, 1],
+             [3, 3, 1, 1, 10, 22, 2, 1, 10, 14, 26, 3, 3, 18, 10, 14, 30, 26, 22],
+             [3, 0, 46, null, 1, 0, 50, null, 1, 0, 54, null, 1],
+             [3, 0, 34, null, 1, 0, 38, null, 1, 0, 42, null, 1],
+             null,
              null,
 
-             // #9
-             cleanStyle(3, 33),
+             // #10
+             cleanStyle(3, 34),
              'width',
              null,
              0,
 
-             // #13
-             cleanStyle(6, 37),
+             // #14
+             cleanStyle(6, 38),
              'height',
              null,
              1,
 
-             // #17
-             cleanStyle(9, 41),
+             // #18
+             cleanStyle(9, 42),
              'opacity',
              null,
              2,
 
-             // #21
-             cleanClass(3, 45),
+             // #22
+             cleanClass(3, 46),
              'foo',
              null,
              0,
 
-             // #25
-             cleanClass(6, 49),
+             // #26
+             cleanClass(6, 50),
              'bar',
              null,
              1,
 
-             // #29
-             cleanClass(9, 53),
+             // #30
+             cleanClass(9, 54),
              'baz',
              null,
              2,
 
-             // #33
-             cleanStyle(3, 9),
+             // #34
+             cleanStyle(3, 10),
              'width',
              null,
              0,
 
-             // #37
-             cleanStyle(6, 13),
+             // #38
+             cleanStyle(6, 14),
              'height',
              null,
              1,
 
-             // #41
-             cleanStyle(9, 17),
+             // #42
+             cleanStyle(9, 18),
              'opacity',
              null,
              2,
 
-             // #45
-             cleanClass(3, 21),
+             // #46
+             cleanClass(3, 22),
              'foo',
              null,
              0,
 
-             // #49
-             cleanClass(6, 25),
+             // #50
+             cleanClass(6, 26),
              'bar',
              null,
              1,
 
-             // #53
-             cleanClass(9, 29),
+             // #54
+             cleanClass(9, 30),
              'baz',
              null,
              2,
@@ -680,17 +683,17 @@ describe('style and class based bindings', () => {
 
       it('should only populate bindings for a given directive once', () => {
         const ctx = createEmptyStylingContext();
-        updateContextWithBindings(ctx, null, ['foo'], ['width']);
-        expect(ctx.length).toEqual(25);
+        updateContextWithBindings(ctx, 0, ['foo'], ['width']);
+        expect(ctx.length).toEqual(26);
 
-        updateContextWithBindings(ctx, null, ['bar'], ['height']);
-        expect(ctx.length).toEqual(25);
+        updateContextWithBindings(ctx, 0, ['bar'], ['height']);
+        expect(ctx.length).toEqual(26);
 
-        updateContextWithBindings(ctx, '1', ['bar'], ['height']);
-        expect(ctx.length).toEqual(41);
+        updateContextWithBindings(ctx, 1, ['bar'], ['height']);
+        expect(ctx.length).toEqual(42);
 
-        updateContextWithBindings(ctx, '1', ['bar'], ['height']);
-        expect(ctx.length).toEqual(41);
+        updateContextWithBindings(ctx, 1, ['bar'], ['height']);
+        expect(ctx.length).toEqual(42);
       });
 
       it('should build a list of multiple styling values', () => {
@@ -822,26 +825,26 @@ describe('style and class based bindings', () => {
         updateStyles(stylingContext, {width: '100px', height: '100px'});
 
         assertContextOnlyValues(stylingContext, [
-          // #9
-          cleanStyle(3, 17),
+          // #10
+          cleanStyle(3, 18),
           'width',
           null,
           0,
 
-          // #13
-          cleanStyle(6, 21),
+          // #14
+          cleanStyle(6, 22),
           'height',
           null,
           0,
 
-          // #17
-          dirtyStyle(3, 9),
+          // #18
+          dirtyStyle(3, 10),
           'width',
           '100px',
           0,
 
-          // #21
-          dirtyStyle(6, 13),
+          // #22
+          dirtyStyle(6, 14),
           'height',
           '100px',
           0,
@@ -851,32 +854,32 @@ describe('style and class based bindings', () => {
         updateStyles(stylingContext, {width: '200px', opacity: '0'});
 
         assertContextOnlyValues(stylingContext, [
-          // #9
-          cleanStyle(3, 17),
+          // #10
+          cleanStyle(3, 18),
           'width',
           null,
           0,
 
-          // #13
-          cleanStyle(6, 25),
+          // #14
+          cleanStyle(6, 26),
           'height',
           null,
           0,
 
-          // #17
-          dirtyStyle(3, 9),
+          // #18
+          dirtyStyle(3, 10),
           'width',
           '200px',
           0,
 
-          // #21
+          // #22
           dirtyStyle(),
           'opacity',
           '0',
           0,
 
-          // #25
-          dirtyStyle(6, 13),
+          // #26
+          dirtyStyle(6, 14),
           'height',
           null,
           0,
@@ -884,32 +887,32 @@ describe('style and class based bindings', () => {
 
         getStyles(stylingContext);
         assertContextOnlyValues(stylingContext, [
-          // #9
-          cleanStyle(3, 17),
+          // #10
+          cleanStyle(3, 18),
           'width',
           null,
           0,
 
-          // #13
-          cleanStyle(6, 25),
+          // #14
+          cleanStyle(6, 26),
           'height',
           null,
           0,
 
-          // #17
-          cleanStyle(3, 9),
+          // #18
+          cleanStyle(3, 10),
           'width',
           '200px',
           0,
 
-          // #21
+          // #22
           cleanStyle(),
           'opacity',
           '0',
           0,
 
           // #23
-          cleanStyle(6, 13),
+          cleanStyle(6, 14),
           'height',
           null,
           0,
@@ -919,32 +922,32 @@ describe('style and class based bindings', () => {
         updateStyleProp(stylingContext, 0, '300px');
 
         assertContextOnlyValues(stylingContext, [
-          // #9
-          dirtyStyle(3, 17),
+          // #10
+          dirtyStyle(3, 18),
           'width',
           '300px',
           0,
 
-          // #13
-          cleanStyle(6, 25),
+          // #14
+          cleanStyle(6, 26),
           'height',
           null,
           0,
 
-          // #17
-          cleanStyle(3, 9),
+          // #18
+          cleanStyle(3, 10),
           'width',
           null,
           0,
 
-          // #21
+          // #22
           dirtyStyle(),
           'opacity',
           null,
           0,
 
           // #23
-          cleanStyle(6, 13),
+          cleanStyle(6, 14),
           'height',
           null,
           0,
@@ -954,32 +957,32 @@ describe('style and class based bindings', () => {
 
         updateStyleProp(stylingContext, 0, null);
         assertContextOnlyValues(stylingContext, [
-          // #9
-          dirtyStyle(3, 17),
+          // #10
+          dirtyStyle(3, 18),
           'width',
           null,
           0,
 
-          // #13
-          cleanStyle(6, 25),
+          // #14
+          cleanStyle(6, 26),
           'height',
           null,
           0,
 
-          // #17
-          cleanStyle(3, 9),
+          // #18
+          cleanStyle(3, 10),
           'width',
           null,
           0,
 
-          // #21
+          // #22
           cleanStyle(),
           'opacity',
           null,
           0,
 
           // #23
-          cleanStyle(6, 13),
+          cleanStyle(6, 14),
           'height',
           null,
           0,
@@ -994,32 +997,32 @@ describe('style and class based bindings', () => {
            updateStyles(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             cleanStyle(3, 25),
+             // #10
+             cleanStyle(3, 26),
              'line-height',
              null,
              0,
 
-             // #13
+             // #14
              dirtyStyle(),
              'width',
              '100px',
              0,
 
-             // #17
+             // #18
              dirtyStyle(),
              'height',
              '100px',
              0,
 
-             // #21
+             // #22
              dirtyStyle(),
              'opacity',
              '0.5',
              0,
 
              // #23
-             cleanStyle(3, 9),
+             cleanStyle(3, 10),
              'line-height',
              null,
              0,
@@ -1029,32 +1032,32 @@ describe('style and class based bindings', () => {
 
            updateStyles(stylingContext, {});
            assertContextOnlyValues(stylingContext, [
-             // #9
-             cleanStyle(3, 25),
+             // #10
+             cleanStyle(3, 26),
              'line-height',
              null,
              0,
 
-             // #13
+             // #14
              dirtyStyle(),
              'width',
              null,
              0,
 
-             // #17
+             // #18
              dirtyStyle(),
              'height',
              null,
              0,
 
-             // #21
+             // #22
              dirtyStyle(),
              'opacity',
              null,
              0,
 
              // #23
-             cleanStyle(3, 9),
+             cleanStyle(3, 10),
              'line-height',
              null,
              0,
@@ -1064,25 +1067,25 @@ describe('style and class based bindings', () => {
            updateStyles(stylingContext, {borderWidth: '5px'});
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             cleanStyle(3, 29),
+             // #10
+             cleanStyle(3, 30),
              'line-height',
              null,
              0,
 
-             // #13
+             // #14
              dirtyStyle(),
              'border-width',
              '5px',
              0,
 
-             // #17
+             // #18
              cleanStyle(),
              'width',
              null,
              0,
 
-             // #21
+             // #22
              cleanStyle(),
              'height',
              null,
@@ -1094,8 +1097,8 @@ describe('style and class based bindings', () => {
              null,
              0,
 
-             // #29
-             cleanStyle(3, 9),
+             // #30
+             cleanStyle(3, 10),
              'line-height',
              null,
              0,
@@ -1104,25 +1107,25 @@ describe('style and class based bindings', () => {
            updateStyleProp(stylingContext, 0, '200px');
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             dirtyStyle(3, 29),
+             // #10
+             dirtyStyle(3, 30),
              'line-height',
              '200px',
              0,
 
-             // #13
+             // #14
              dirtyStyle(),
              'border-width',
              '5px',
              0,
 
-             // #17
+             // #18
              cleanStyle(),
              'width',
              null,
              0,
 
-             // #21
+             // #22
              cleanStyle(),
              'height',
              null,
@@ -1134,8 +1137,8 @@ describe('style and class based bindings', () => {
              null,
              0,
 
-             // #29
-             cleanStyle(3, 9),
+             // #30
+             cleanStyle(3, 10),
              'line-height',
              null,
              0,
@@ -1144,25 +1147,25 @@ describe('style and class based bindings', () => {
            updateStyles(stylingContext, {borderWidth: '15px', borderColor: 'red'});
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             dirtyStyle(3, 33),
+             // #10
+             dirtyStyle(3, 34),
              'line-height',
              '200px',
              0,
 
-             // #13
+             // #14
              dirtyStyle(),
              'border-width',
              '15px',
              0,
 
-             // #17
+             // #18
              dirtyStyle(),
              'border-color',
              'red',
              0,
 
-             // #21
+             // #22
              cleanStyle(),
              'width',
              null,
@@ -1174,14 +1177,14 @@ describe('style and class based bindings', () => {
              null,
              0,
 
-             // #29
+             // #30
              cleanStyle(),
              'opacity',
              null,
              0,
 
-             // #33
-             cleanStyle(3, 9),
+             // #34
+             cleanStyle(3, 10),
              'line-height',
              null,
              0,
@@ -1199,29 +1202,30 @@ describe('style and class based bindings', () => {
 
         assertContext(stylingContext, [
           element,
-          masterConfig(13, true),  //
-          [null, 2, true, null],
+          masterConfig(14, true),  //
+          [2, null],
           [null, null, 'height', null, 0],
           [null, null],
-          [1, 0, 1, 0, 9],
-          [0, 0, 21, null, 0],
-          [1, 0, 13, cachedStyleValue, 1],
+          [1, 0, 1, 0, 10],
+          [0, 0, 22, null, 0],
+          [1, 0, 14, cachedStyleValue, 1],
+          null,
           null,
 
-          // #9
-          dirtyStyle(3, 17),
+          // #10
+          dirtyStyle(3, 18),
           'height',
           '200px',
           0,
 
-          // #13
+          // #14
           dirtyStyle(),
           'width',
           '100px',
           0,
 
-          // #17
-          cleanStyle(3, 9),
+          // #18
+          cleanStyle(3, 10),
           'height',
           null,
           0,
@@ -1231,29 +1235,30 @@ describe('style and class based bindings', () => {
 
         assertContext(stylingContext, [
           element,
-          masterConfig(13, false),  //
-          [null, 2, false, null],
+          masterConfig(14, false),  //
+          [2, null],
           [null, null, 'height', null, 0],
           [null, null],
-          [1, 0, 1, 0, 9],
-          [0, 0, 21, null, 0],
-          [1, 0, 13, cachedStyleValue, 1],
+          [1, 0, 1, 0, 10],
+          [0, 0, 22, null, 0],
+          [1, 0, 14, cachedStyleValue, 1],
+          null,
           null,
 
-          // #9
-          cleanStyle(3, 17),
+          // #10
+          cleanStyle(3, 18),
           'height',
           '200px',
           0,
 
-          // #13
+          // #14
           cleanStyle(),
           'width',
           '100px',
           0,
 
-          // #17
-          cleanStyle(3, 9),
+          // #18
+          cleanStyle(3, 10),
           'height',
           null,
           0,
@@ -1272,26 +1277,26 @@ describe('style and class based bindings', () => {
            updateStyleProp(stylingContext, 1, '100px');
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             dirtyStyleWithSanitization(3, 17),
+             // #10
+             dirtyStyleWithSanitization(3, 18),
              'border-image',
              'url(foo.jpg)',
              0,
 
-             // #13
-             dirtyStyle(6, 21),
+             // #14
+             dirtyStyle(6, 22),
              'border-width',
              '100px',
              0,
 
-             // #17
-             cleanStyleWithSanitization(3, 9),
+             // #18
+             cleanStyleWithSanitization(3, 10),
              'border-image',
              null,
              0,
 
-             // #21
-             cleanStyle(6, 13),
+             // #22
+             cleanStyle(6, 14),
              'border-width',
              null,
              0,
@@ -1300,32 +1305,32 @@ describe('style and class based bindings', () => {
            updateStyles(stylingContext, {'background-image': 'unsafe'});
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             dirtyStyleWithSanitization(3, 21),
+             // #10
+             dirtyStyleWithSanitization(3, 22),
              'border-image',
              'url(foo.jpg)',
              0,
 
-             // #13
-             dirtyStyle(6, 25),
+             // #14
+             dirtyStyle(6, 26),
              'border-width',
              '100px',
              0,
 
-             // #17
+             // #18
              dirtyStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
              0,
 
-             // #21
-             cleanStyleWithSanitization(3, 9),
+             // #22
+             cleanStyleWithSanitization(3, 10),
              'border-image',
              null,
              0,
 
              // #23
-             cleanStyle(6, 13),
+             cleanStyle(6, 14),
              'border-width',
              null,
              0,
@@ -1334,32 +1339,32 @@ describe('style and class based bindings', () => {
            getStyles(stylingContext);
 
            assertContextOnlyValues(stylingContext, [
-             // #9
-             cleanStyleWithSanitization(3, 21),
+             // #10
+             cleanStyleWithSanitization(3, 22),
              'border-image',
              'url(foo.jpg)',
              0,
 
-             // #13
-             cleanStyle(6, 25),
+             // #14
+             cleanStyle(6, 26),
              'border-width',
              '100px',
              0,
 
-             // #17
+             // #18
              cleanStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
              0,
 
-             // #21
-             cleanStyleWithSanitization(3, 9),
+             // #22
+             cleanStyleWithSanitization(3, 10),
              'border-image',
              null,
              0,
 
              // #23
-             cleanStyle(6, 13),
+             cleanStyle(6, 14),
              'border-width',
              null,
              0,
@@ -1370,9 +1375,9 @@ describe('style and class based bindings', () => {
          () => {
            const template = createEmptyStylingContext();
 
-           const dir1 = {};
-           const dir2 = {};
-           const dir3 = {};
+           const dir1 = 1;
+           const dir2 = 2;
+           const dir3 = 3;
 
            updateContextWithBindings(template, dir1, null, ['width', 'height']);
            updateContextWithBindings(template, dir2, null, ['width', 'color']);
@@ -1410,9 +1415,9 @@ describe('style and class based bindings', () => {
          () => {
            const template = createEmptyStylingContext();
 
-           const dir1 = {};
-           const dir2 = {};
-           const dir3 = {};
+           const dir1 = 1;
+           const dir2 = 2;
+           const dir3 = 3;
 
            updateContextWithBindings(template, dir1, null, ['width', 'height']);
            updateContextWithBindings(template, dir2, null, ['width', 'color']);
@@ -1454,11 +1459,11 @@ describe('style and class based bindings', () => {
       it('should only update missing multi styling values for successive directives if null in a former directive',
          () => {
            const template = createEmptyStylingContext();
-           updateContextWithBindings(template, null);
+           updateContextWithBindings(template, 0);
 
-           const dir1 = {};
-           const dir2 = {};
-           const dir3 = {};
+           const dir1 = 1;
+           const dir2 = 2;
+           const dir3 = 3;
            updateContextWithBindings(template, dir1, null, ['width', 'height']);
            updateContextWithBindings(template, dir2);
            updateContextWithBindings(template, dir3);
@@ -1470,35 +1475,51 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, null, s3 = {width: '300px', height: '999px'}, dir3);
 
            expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([
-             3, 0, 17, null, 0, 0, 17, s1, 2, 0, 25, s2, 1, 0, 29, s3, 0
+             3,
+             0,
+             18,
+             null,
+             0,
+             0,
+             18,
+             s1,
+             2,
+             0,
+             26,
+             s2,
+             1,
+             0,
+             30,
+             s3,
+             0,
            ]);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanStyle(3, 17),
+             // #10
+             cleanStyle(3, 18),
              'width',
              null,
              1,
 
-             // #13
-             cleanStyle(6, 21),
+             // #14
+             cleanStyle(6, 22),
              'height',
              null,
              1,
 
-             // #17
-             dirtyStyle(3, 9),
+             // #18
+             dirtyStyle(3, 10),
              'width',
              '100px',
              1,
 
-             // #21
-             dirtyStyle(6, 13),
+             // #22
+             dirtyStyle(6, 14),
              'height',
              '99px',
              1,
 
-             // #25
+             // #26
              dirtyStyle(0, 0),
              'opacity',
              '0.5',
@@ -1510,32 +1531,32 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, null, {width: '300px', height: '999px'}, dir3);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanStyle(3, 21),
+             // #10
+             cleanStyle(3, 22),
              'width',
              null,
              1,
 
-             // #13
-             cleanStyle(6, 25),
+             // #14
+             cleanStyle(6, 26),
              'height',
              null,
              1,
 
-             // #17
+             // #18
              dirtyStyle(0, 0),
              'opacity',
              '0',
              1,
 
-             // #21
-             dirtyStyle(3, 9),
+             // #22
+             dirtyStyle(3, 10),
              'width',
              '200px',
              2,
 
-             // #25
-             dirtyStyle(6, 13),
+             // #26
+             dirtyStyle(6, 14),
              'height',
              '999px',
              3,
@@ -1546,37 +1567,37 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, null, {width: '300px', height: '999px', color: 'red'}, dir3);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanStyle(3, 17),
+             // #10
+             cleanStyle(3, 18),
              'width',
              null,
              1,
 
-             // #13
-             cleanStyle(6, 25),
+             // #14
+             cleanStyle(6, 26),
              'height',
              null,
              1,
 
-             // #17
-             dirtyStyle(3, 9),
+             // #18
+             dirtyStyle(3, 10),
              'width',
              '500px',
              2,
 
-             // #21
+             // #22
              dirtyStyle(0, 0),
              'opacity',
              '0.2',
              2,
 
-             // #25
-             dirtyStyle(6, 13),
+             // #26
+             dirtyStyle(6, 14),
              'height',
              '999px',
              3,
 
-             // #29
+             // #30
              dirtyStyle(0, 0),
              'color',
              'red',
@@ -1587,11 +1608,11 @@ describe('style and class based bindings', () => {
       it('should only update missing multi class values for successive directives if null in a former directive',
          () => {
            const template = createEmptyStylingContext();
-           updateContextWithBindings(template, null);
+           updateContextWithBindings(template, 0);
 
-           const dir1 = {};
-           const dir2 = {};
-           const dir3 = {};
+           const dir1 = 1;
+           const dir2 = 2;
+           const dir3 = 3;
            updateContextWithBindings(template, dir1, ['red', 'green']);
            updateContextWithBindings(template, dir2);
            updateContextWithBindings(template, dir3);
@@ -1603,48 +1624,48 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, c3 = 'silver green', null, dir3);
 
            expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([
-             5, 0, 17, null, 0, 0, 17, c1, 2, 0, 25, c2, 1, 0, 29, c3, 2
+             5, 0, 18, null, 0, 0, 18, c1, 2, 0, 26, c2, 1, 0, 30, c3, 2
            ]);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanClass(3, 17),
+             // #10
+             cleanClass(3, 18),
              'red',
              null,
              1,
 
-             // #13
-             cleanClass(6, 33),
+             // #14
+             cleanClass(6, 34),
              'green',
              null,
              1,
 
-             // #17
-             dirtyClass(3, 9),
+             // #18
+             dirtyClass(3, 10),
              'red',
              true,
              1,
 
-             // #21
+             // #22
              dirtyClass(0, 0),
              'orange',
              true,
              1,
 
-             // #25
+             // #26
              dirtyClass(0, 0),
              'black',
              true,
              2,
 
-             // #29
+             // #30
              dirtyClass(0, 0),
              'silver',
              true,
              3,
 
-             // #33
-             dirtyClass(6, 13),
+             // #34
+             dirtyClass(6, 14),
              'green',
              true,
              3,
@@ -1655,43 +1676,43 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, c3 = 'green', null, dir3);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanClass(3, 25),
+             // #10
+             cleanClass(3, 26),
              'red',
              null,
              1,
 
-             // #13
-             cleanClass(6, 29),
+             // #14
+             cleanClass(6, 30),
              'green',
              null,
              1,
 
-             // #17
+             // #18
              dirtyClass(0, 0),
              'orange',
              true,
              1,
 
-             // #21
+             // #22
              dirtyClass(0, 0),
              'black',
              true,
              2,
 
-             // #25
-             dirtyClass(3, 9),
+             // #26
+             dirtyClass(3, 10),
              'red',
              true,
              2,
 
-             // #29
-             dirtyClass(6, 13),
+             // #30
+             dirtyClass(6, 14),
              'green',
              true,
              3,
 
-             // #33
+             // #34
              dirtyClass(0, 0),
              'silver',
              null,
@@ -1703,43 +1724,43 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, c3 = 'red', null, dir3);
 
            assertContextOnlyValues(ctx, [
-             // #9
-             cleanClass(3, 21),
+             // #10
+             cleanClass(3, 22),
              'red',
              null,
              1,
 
-             // #13
-             cleanClass(6, 17),
+             // #14
+             cleanClass(6, 18),
              'green',
              null,
              1,
 
-             // #17
-             dirtyClass(6, 13),
+             // #18
+             dirtyClass(6, 14),
              'green',
              true,
              1,
 
-             // #21
-             dirtyClass(3, 9),
+             // #22
+             dirtyClass(3, 10),
              'red',
              true,
              3,
 
-             // #25
+             // #26
              dirtyClass(0, 0),
              'black',
              null,
              1,
 
-             // #29
+             // #30
              dirtyClass(0, 0),
              'orange',
              null,
              1,
 
-             // #33
+             // #34
              dirtyClass(0, 0),
              'silver',
              null,
@@ -1758,32 +1779,24 @@ describe('style and class based bindings', () => {
            };
 
            const template = createEmptyStylingContext();
-           const dirWithSanitizer1 = {};
+           const dirWithSanitizer1 = 1;
            const sanitizer1 = makeSanitizer('1');
-           const dirWithSanitizer2 = {};
+           const dirWithSanitizer2 = 2;
            const sanitizer2 = makeSanitizer('2');
-           const dirWithoutSanitizer = {};
+           const dirWithoutSanitizer = 3;
            updateContextWithBindings(template, dirWithSanitizer1, null, ['color'], sanitizer1);
            updateContextWithBindings(template, dirWithSanitizer2, null, ['color'], sanitizer2);
            updateContextWithBindings(template, dirWithoutSanitizer, null, ['color']);
 
            const ctx = allocStylingContext(element, template);
            expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
-             null,                 //
-             -1,                   //
-             false,                //
-             null,                 //
-             dirWithSanitizer1,    //
-             2,                    //
-             false,                //
-             sanitizer1,           //
-             dirWithSanitizer2,    //
-             5,                    //
-             false,                //
-             sanitizer2,           //
-             dirWithoutSanitizer,  //
-             8,                    //
-             false,                //
+             -1,          //
+             null,        //
+             2,           //
+             sanitizer1,  //
+             5,           //
+             sanitizer2,  //
+             8,           //
              null
            ]);
 
@@ -1809,91 +1822,69 @@ describe('style and class based bindings', () => {
            expect(getStyles(ctx, dirWithoutSanitizer)).toEqual({color: 'green'});
          });
 
-      it('should automatically register a styling context with a foreign directive if styling is applied with said directive',
+      it('should not allow a foreign directive index to update values in the styling context unless it has been registered',
          () => {
            const template = createEmptyStylingContext();
-           const knownDir = {};
-           const foreignDir = {};
+           const knownDir = 1;
            updateContextWithBindings(template, knownDir);
 
            const ctx = allocStylingContext(element, template);
            expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
-             null,      //
-             -1,        //
-             false,     //
-             null,      //
-             knownDir,  //
-             2,         //
-             false,     //
-             null,      //
+             -1,    //
+             null,  //
+             2,     //
+             null,  //
            ]);
 
            expect(ctx[StylingIndex.CachedMultiClasses].length)
                .toEqual(template[StylingIndex.CachedMultiClasses].length);
-           expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([0, 0, 9, null, 0, 0, 9, null, 0]);
+           expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([
+             0, 0, 10, null, 0, 0, 10, null, 0
+           ]);
 
            expect(ctx[StylingIndex.CachedMultiStyles].length)
                .toEqual(template[StylingIndex.CachedMultiStyles].length);
-           expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([0, 0, 9, null, 0, 0, 9, null, 0]);
+           expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([0, 0, 10, null, 0, 0, 10, null, 0]);
 
-           updateStylingMap(ctx, 'foo', null, foreignDir);
-           expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
-             null,        //
-             -1,          //
-             false,       //
-             null,        //
-             knownDir,    //
-             2,           //
-             false,       //
-             null,        //
-             foreignDir,  //
-             -1,          //
-             true,        //
-             null,        //
-           ]);
-
-           expect(ctx[StylingIndex.CachedMultiClasses].length)
-               .not.toEqual(template[StylingIndex.CachedMultiClasses].length);
-           expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([
-             1, 0, 9, null, 0, 0, 9, null, 0, 0, 9, 'foo', 1
-           ]);
-
-           expect(ctx[StylingIndex.CachedMultiStyles].length)
-               .not.toEqual(template[StylingIndex.CachedMultiStyles].length);
-           expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([
-             0, 0, 9, null, 0, 0, 9, null, 0, 0, 9, null, 0
-           ]);
+           const foreignDir = 2;
+           expect(() => {
+             updateStylingMap(ctx, 'foo', null, foreignDir);
+           }).toThrowError('The provided directive is not registered with the styling context');
          });
     });
 
-    it('should skip issuing style updates if there is nothing to update upon first render', () => {
-      const stylingContext = createStylingContext(null, ['color']);
-      const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
-      const getStyles = trackStylesFactory(store);
-      const otherDirective = {};
+    it('should always render styling when called regardless of the directive unless the host is set',
+       () => {
+         const stylingContext = createStylingContext(null, ['color']);
+         const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
+         const getStyles = trackStylesFactory(store);
+         const otherDirective = 1;
 
-      let styles: any = {'font-size': ''};
-      updateStyleProp(stylingContext, 0, '');
-      updateStylingMap(stylingContext, null, styles);
-      patchContextWithStaticAttrs(stylingContext, [], 0, otherDirective);
+         let styles: any = {'font-size': ''};
+         updateStyleProp(stylingContext, 0, '');
+         updateStylingMap(stylingContext, null, styles);
 
-      getStyles(stylingContext, otherDirective);
-      expect(store.getValues()).toEqual({});
+         getStyles(stylingContext);
+         expect(store.getValues()).toEqual({'font-size': '', 'color': ''});
 
-      styles = {'font-size': '20px'};
-      updateStyleProp(stylingContext, 0, 'red');
-      updateStylingMap(stylingContext, null, styles);
+         patchContextWithStaticAttrs(stylingContext, [], 0, otherDirective);
+         registerHostDirective(stylingContext, otherDirective);
 
-      getStyles(stylingContext);
-      expect(store.getValues()).toEqual({'font-size': '20px', color: 'red'});
+         updateStyleProp(stylingContext, 0, 'red');
+         updateStylingMap(stylingContext, null, styles = {'font-size': '20px'});
 
-      styles = {};
-      updateStyleProp(stylingContext, 0, '');
-      updateStylingMap(stylingContext, null, styles);
+         getStyles(stylingContext);
+         expect(store.getValues()).toEqual({'font-size': '', 'color': ''});
 
-      getStyles(stylingContext);
-      expect(store.getValues()).toEqual({'font-size': null, color: ''});
-    });
+         getStyles(stylingContext, otherDirective);
+         expect(store.getValues()).toEqual({'font-size': '20px', color: 'red'});
+
+         updateStyleProp(stylingContext, 0, '');
+         updateStylingMap(stylingContext, null, styles = {});
+
+         getStyles(stylingContext, otherDirective);
+         expect(store.getValues()).toEqual({'font-size': null, color: ''});
+       });
   });
 
   describe('classes', () => {
@@ -1901,35 +1892,36 @@ describe('style and class based bindings', () => {
       const template = createStylingContext(null, null, null, ['one', 'two']);
       assertContext(template, [
         element,
-        masterConfig(17, false),  //
-        [null, 2, false, null],
+        masterConfig(18, false),  //
+        [2, null],
         [null, null],
         [null, null, 'one', false, 0, 'two', false, 0],
-        [0, 2, 0, 2, 9, 13],
-        [2, 0, 17, null, 2],
-        [0, 0, 17, null, 0],
+        [0, 2, 0, 2, 10, 14],
+        [2, 0, 18, null, 2],
+        [0, 0, 18, null, 0],
+        null,
         null,
 
-        // #9
-        cleanClass(3, 17),
+        // #10
+        cleanClass(3, 18),
         'one',
         null,
         0,
 
-        // #13
-        cleanClass(6, 21),
+        // #14
+        cleanClass(6, 22),
         'two',
         null,
         0,
 
-        // #17
-        cleanClass(3, 9),
+        // #18
+        cleanClass(3, 10),
         'one',
         null,
         0,
 
-        // #21
-        cleanClass(6, 13),
+        // #22
+        cleanClass(6, 14),
         'two',
         null,
         0,
@@ -1982,59 +1974,60 @@ describe('style and class based bindings', () => {
              ['width', '100px'], ['width', 'height'], ['wide'], ['wide', 'tall']);
          assertContext(stylingContext, [
            element,
-           masterConfig(25, false),  //
-           [null, 2, false, null],
+           masterConfig(26, false),  //
+           [2, null],
            [null, null, 'width', '100px', 0, 'height', null, 0],
            [null, null, 'wide', true, 0, 'tall', false, 0],
-           [2, 2, 2, 2, 9, 13, 17, 21],
-           [2, 0, 33, null, 2],
-           [2, 0, 25, null, 2],
+           [2, 2, 2, 2, 10, 14, 18, 22],
+           [2, 0, 34, null, 2],
+           [2, 0, 26, null, 2],
+           null,
            null,
 
-           // #9
-           cleanStyle(3, 25),
+           // #10
+           cleanStyle(3, 26),
            'width',
            null,
            0,
 
-           // #13
-           cleanStyle(6, 29),
+           // #14
+           cleanStyle(6, 30),
            'height',
            null,
            0,
 
-           // #17
-           cleanClass(3, 33),
+           // #18
+           cleanClass(3, 34),
            'wide',
            null,
            0,
 
-           // #21
-           cleanClass(6, 37),
+           // #22
+           cleanClass(6, 38),
            'tall',
            null,
            0,
 
-           // #25
-           cleanStyle(3, 9),
+           // #26
+           cleanStyle(3, 10),
            'width',
            null,
            0,
 
-           // #29
-           cleanStyle(6, 13),
+           // #30
+           cleanStyle(6, 14),
            'height',
            null,
            0,
 
-           // #33
-           cleanClass(3, 17),
+           // #34
+           cleanClass(3, 18),
            'wide',
            null,
            0,
 
-           // #37
-           cleanClass(6, 21),
+           // #38
+           cleanClass(6, 22),
            'tall',
            null,
            0,
@@ -2046,71 +2039,72 @@ describe('style and class based bindings', () => {
          updateStylingMap(stylingContext, 'tall round', cachedStyleMap);
          assertContext(stylingContext, [
            element,
-           masterConfig(25, true),  //
-           [null, 2, true, null],
+           masterConfig(26, true),  //
+           [2, null],
            [null, null, 'width', '100px', 0, 'height', null, 0],
            [null, null, 'wide', true, 0, 'tall', false, 0],
-           [2, 2, 2, 2, 9, 13, 17, 21],
-           [2, 0, 37, 'tall round', 2],
-           [2, 0, 25, cachedStyleMap, 2],
+           [2, 2, 2, 2, 10, 14, 18, 22],
+           [2, 0, 38, 'tall round', 2],
+           [2, 0, 26, cachedStyleMap, 2],
+           null,
            null,
 
-           // #9
-           cleanStyle(3, 25),
+           // #10
+           cleanStyle(3, 26),
            'width',
            null,
            0,
 
-           // #13
-           cleanStyle(6, 33),
+           // #14
+           cleanStyle(6, 34),
            'height',
            null,
            0,
 
-           // #17
-           cleanClass(3, 45),
+           // #18
+           cleanClass(3, 46),
            'wide',
            null,
            0,
 
-           // #21
-           cleanClass(6, 37),
+           // #22
+           cleanClass(6, 38),
            'tall',
            null,
            0,
 
-           // #25
-           dirtyStyle(3, 9),
+           // #26
+           dirtyStyle(3, 10),
            'width',
            '200px',
            0,
 
-           // #29
+           // #30
            dirtyStyle(0, 0),
            'opacity',
            '0.5',
            0,
 
-           // #33
-           cleanStyle(6, 13),
+           // #34
+           cleanStyle(6, 14),
            'height',
            null,
            0,
 
-           // #37
-           dirtyClass(6, 21),
+           // #38
+           dirtyClass(6, 22),
            'tall',
            true,
            0,
 
-           // #41
+           // #42
            dirtyClass(0, 0),
            'round',
            true,
            0,
 
-           // #45
-           cleanClass(3, 17),
+           // #46
+           cleanClass(3, 18),
            'wide',
            null,
            0,
@@ -2128,70 +2122,71 @@ describe('style and class based bindings', () => {
 
          assertContext(stylingContext, [
            element,
-           masterConfig(25, true),  //
-           [null, 2, true, null],
+           masterConfig(26, true),  //
+           [2, null],
            [null, null, 'width', '100px', 0, 'height', null, 0],
            [null, null, 'wide', true, 0, 'tall', false, 0],
-           [2, 2, 2, 2, 9, 13, 17, 21],
-           [2, 0, 37, cachedClassMap, 2],
-           [1, 0, 25, cachedStyleMap, 1],
+           [2, 2, 2, 2, 10, 14, 18, 22],
+           [2, 0, 38, cachedClassMap, 2],
+           [1, 0, 26, cachedStyleMap, 1],
+           null,
            null,
 
-           // #9
-           dirtyStyle(3, 25),
+           // #10
+           dirtyStyle(3, 26),
            'width',
            '300px',
            0,
 
-           // #13
-           cleanStyle(6, 33),
+           // #14
+           cleanStyle(6, 34),
            'height',
            null,
            0,
 
-           // #17
-           cleanClass(3, 41),
+           // #18
+           cleanClass(3, 42),
            'wide',
            null,
            0,
 
-           // #21
-           cleanClass(6, 37),
+           // #22
+           cleanClass(6, 38),
            'tall',
            null,
            0,
 
-           // #25
-           cleanStyle(3, 9),
+           // #26
+           cleanStyle(3, 10),
            'width',
            '500px',
            0,
 
-           // #29
+           // #30
            dirtyStyle(0, 0),
            'opacity',
            null,
            0,
 
-           // #33
-           cleanStyle(6, 13),
+           // #34
+           cleanStyle(6, 14),
            'height',
            null,
            0,
 
-           // #37
-           cleanClass(6, 21),
+           // #38
+           cleanClass(6, 22),
            'tall',
            true,
            0,
 
-           // #41
-           cleanClass(3, 17),
+           // #42
+           cleanClass(3, 18),
            'wide',
            true,
            0,
 
-           // #45
+           // #46
            dirtyClass(0, 0),
            'round',
            null,
@@ -2224,19 +2219,20 @@ describe('style and class based bindings', () => {
 
          assertContext(stylingContext, [
            element,                    //
-           masterConfig(9, false),     //
-           [null, 2, false, null],     //
+           masterConfig(10, false),    //
+           [2, null],                  //
            [null, null],               //
            [null, null],               //
            [0, 0, 0, 0],               //
-           [1, 0, 13, classesMap, 1],  //
-           [1, 0, 9, stylesMap, 1],    //
+           [1, 0, 14, classesMap, 1],  //
+           [1, 0, 10, stylesMap, 1],   //
+           null,                       //
            null,                       //
 
-           // #9
+           // #10
            cleanStyle(0, 0), 'width', '200px', 0,
 
-           // #13
+           // #14
            cleanClass(0, 0), 'foo', true, 0
          ]);
 
@@ -2250,19 +2246,20 @@ describe('style and class based bindings', () => {
 
          assertContext(stylingContext, [
            element,                    //
-           masterConfig(9, false),     //
-           [null, 2, false, null],     //
+           masterConfig(10, false),    //
+           [2, null],                  //
            [null, null],               //
            [null, null],               //
            [0, 0, 0, 0],               //
-           [1, 0, 13, classesMap, 1],  //
-           [1, 0, 9, stylesMap, 1],    //
+           [1, 0, 14, classesMap, 1],  //
+           [1, 0, 10, stylesMap, 1],   //
+           null,                       //
            null,                       //
 
-           // #9
+           // #10
            cleanStyle(0, 0), 'width', '200px', 0,
 
-           // #13
+           // #14
            cleanClass(0, 0), 'foo', true, 0
          ]);
        });
@@ -2279,36 +2276,37 @@ describe('style and class based bindings', () => {
 
       assertContext(stylingContext, [
         element,
-        masterConfig(9, false),  //
-        [null, 2, false, null],
+        masterConfig(10, false),  //
+        [2, null],
         [null, null],
         [null, null],
         [0, 0, 0, 0],
-        [3, 0, 9, 'apple orange banana', 3],
-        [0, 0, 9, null, 0],
+        [3, 0, 10, 'apple orange banana', 3],
+        [0, 0, 10, null, 0],
+        null,
         null,
 
-        // #9
+        // #10
         cleanClass(0, 0),
         'apple',
         true,
         0,
 
-        // #13
+        // #14
         cleanClass(0, 0),
         'orange',
         true,
         0,
 
-        // #17
+        // #18
         cleanClass(0, 0),
         'banana',
         true,
         0,
       ]);
 
-      stylingContext[13 + StylingIndex.ValueOffset] = false;
-      stylingContext[17 + StylingIndex.ValueOffset] = false;
+      stylingContext[14 + StylingIndex.ValueOffset] = false;
+      stylingContext[18 + StylingIndex.ValueOffset] = false;
       updateStylingMap(stylingContext, classes);
 
       // apply the styles
@@ -2645,35 +2643,36 @@ describe('style and class based bindings', () => {
 
          assertContext(context, [
            element,                         //
-           masterConfig(17, false),         //
-           [null, 2, false, null],          //
+           masterConfig(18, false),         //
+           [2, null],                       //
            [null, null, 'color', null, 0],  //
            [null, null, 'foo', false, 0],   //
-           [1, 1, 1, 1, 9, 13],             //
-           [1, 0, 21, null, 1],             //
-           [1, 0, 17, null, 1],             //
+           [1, 1, 1, 1, 10, 14],            //
+           [1, 0, 22, null, 1],             //
+           [1, 0, 18, null, 1],             //
+           null,                            //
            null,                            //
 
-           // #9
-           cleanStyle(3, 17),
+           // #10
+           cleanStyle(3, 18),
            'color',
            null,
            0,
 
-           // #13
-           cleanClass(3, 21),
+           // #14
+           cleanClass(3, 22),
            'foo',
            null,
            0,
 
-           // #17
-           cleanStyle(3, 9),
+           // #18
+           cleanStyle(3, 10),
            'color',
            null,
            0,
 
-           // #21
-           cleanClass(3, 13),
+           // #22
+           cleanClass(3, 14),
            'foo',
            null,
            0,
@@ -2708,47 +2707,48 @@ describe('style and class based bindings', () => {
 
          assertContext(context, [
            element,                                   //
-           masterConfig(17, false),                   //
-           [null, 2, false, null],                    //
+           masterConfig(18, false),                   //
+           [2, null],                                 //
            [null, null, 'color', null, 0],            //
            [null, null, 'foo', false, 0],             //
-           [1, 1, 1, 1, 9, 13],                       //
-           [1, 0, 25, classMapWithPlayerFactory, 1],  //
-           [1, 0, 17, styleMapWithPlayerFactory, 1],  //
+           [1, 1, 1, 1, 10, 14],                      //
+           [1, 0, 26, classMapWithPlayerFactory, 1],  //
+           [1, 0, 18, styleMapWithPlayerFactory, 1],  //
+           null,                                      //
            playerContext,
 
-           // #9
-           cleanStyle(3, 21),
+           // #10
+           cleanStyle(3, 22),
            'color',
            'red',
            directiveOwnerPointers(0, 5),
 
-           // #13
-           cleanClass(3, 29),
+           // #14
+           cleanClass(3, 30),
            'foo',
            true,
            directiveOwnerPointers(0, 7),
 
-           // #17
+           // #18
            cleanStyle(0, 0),
            'opacity',
            '1',
            directiveOwnerPointers(0, 3),
 
-           // #21
-           cleanStyle(3, 9),
+           // #22
+           cleanStyle(3, 10),
            'color',
            null,
            0,
 
-           // #25
+           // #26
            cleanClass(0, 0),
            'map',
            true,
            directiveOwnerPointers(0, 1),
 
-           // #29
-           cleanClass(3, 13),
+           // #30
+           cleanClass(3, 14),
            'foo',
            null,
            0,
@@ -2769,47 +2769,48 @@ describe('style and class based bindings', () => {
 
          assertContext(context, [
            element,                         //
-           masterConfig(17, false),         //
-           [null, 2, false, null],          //
+           masterConfig(18, false),         //
+           [2, null],                       //
            [null, null, 'color', null, 0],  //
            [null, null, 'foo', false, 0],   //
-           [1, 1, 1, 1, 9, 13],             //
-           [1, 0, 25, cachedClassMap, 1],   //
-           [1, 0, 17, cachedStyleMap, 1],   //
+           [1, 1, 1, 1, 10, 14],            //
+           [1, 0, 26, cachedClassMap, 1],   //
+           [1, 0, 18, cachedStyleMap, 1],   //
+           null,                            //
            playerContext,
 
-           // #9
-           cleanStyle(3, 21),
+           // #10
+           cleanStyle(3, 22),
            'color',
            'blue',
            0,
 
-           // #13
-           cleanClass(3, 29),
+           // #14
+           cleanClass(3, 30),
            'foo',
            false,
            0,
 
-           // #17
+           // #18
            cleanStyle(0, 0),
            'opacity',
            '1',
            0,
 
-           // #21
-           cleanStyle(3, 9),
+           // #22
+           cleanStyle(3, 10),
            'color',
            null,
            0,
 
-           // #25
+           // #26
            cleanClass(0, 0),
            'map',
            true,
            0,
 
-           // #29
-           cleanClass(3, 13),
+           // #30
+           cleanClass(3, 14),
            'foo',
            null,
            0,

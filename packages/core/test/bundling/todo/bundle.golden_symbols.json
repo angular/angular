@@ -45,6 +45,9 @@
     "name": "DECLARATION_VIEW"
   },
   {
+    "name": "DEFAULT_TEMPLATE_DIRECTIVE_INDEX"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -372,6 +375,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "_selectedIndex"
+  },
+  {
     "name": "_symbolIterator"
   },
   {
@@ -399,7 +405,10 @@
     "name": "allocStylingContext"
   },
   {
-    "name": "allocateDirectiveIntoContext"
+    "name": "allocateOrUpdateDirectiveIntoContext"
+  },
+  {
+    "name": "allowFlush"
   },
   {
     "name": "allowValueChange"
@@ -573,9 +582,6 @@
     "name": "elementClassProp"
   },
   {
-    "name": "elementClassPropInternal"
-  },
-  {
     "name": "elementCreate"
   },
   {
@@ -645,6 +651,9 @@
     "name": "findViaComponent"
   },
   {
+    "name": "flushQueue"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -699,12 +708,6 @@
     "name": "getDirectiveIndexFromEntry"
   },
   {
-    "name": "getDirectiveIndexFromRegistry"
-  },
-  {
-    "name": "getDirectiveRegistryValuesIndexOf"
-  },
-  {
     "name": "getElementDepthCount"
   },
   {
@@ -754,9 +757,6 @@
   },
   {
     "name": "getMatchingBindingIndex"
-  },
-  {
-    "name": "getMultiClassesStartIndex"
   },
   {
     "name": "getMultiOrSingleIndex"
@@ -909,6 +909,9 @@
     "name": "increaseElementDepthCount"
   },
   {
+    "name": "incrementActiveDirectiveId"
+  },
+  {
     "name": "initElementStyling"
   },
   {
@@ -982,9 +985,6 @@
   },
   {
     "name": "isDifferent"
-  },
-  {
-    "name": "isDirectiveDirty"
   },
   {
     "name": "isDirty"
@@ -1224,7 +1224,7 @@
     "name": "select"
   },
   {
-    "name": "setActiveHost"
+    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"
@@ -1246,9 +1246,6 @@
   },
   {
     "name": "setCurrentQueryIndex"
-  },
-  {
-    "name": "setDirectiveDirty"
   },
   {
     "name": "setDirty"
@@ -1291,6 +1288,9 @@
   },
   {
     "name": "setSanitizeFlag"
+  },
+  {
+    "name": "setSelectedIndex"
   },
   {
     "name": "setStyle"

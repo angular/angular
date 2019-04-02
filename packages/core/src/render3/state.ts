@@ -119,27 +119,139 @@ export function getLView(): LView {
   return lView;
 }
 
-let activeHostContext: {}|null = null;
-let activeHostElementIndex: number|null = null;
+/**
+ * Used as the starting directive id value.
+ *
+ * All subsequent directives are incremented from this value onwards.
+ * The reason why this value is `1` instead of `0` is because the `0`
+ * value is reserved for the template.
+ */
+const MIN_DIRECTIVE_ID = 1;
+
+let activeDirectiveId = MIN_DIRECTIVE_ID;
 
 /**
- * Sets the active host context (the directive/component instance) and its host element index.
- *
- * @param host the directive/component instance
- * @param index the element index value for the host element where the directive/component instance
- * lives
+ * Position depth (with respect from leaf to root) in a directive sub-class inheritance chain.
  */
-export function setActiveHost(host: {} | null, index: number | null = null) {
-  activeHostContext = host;
-  activeHostElementIndex = index;
+let activeDirectiveSuperClassDepthPosition = 0;
+
+/**
+ * Total count of how many directives are a part of an inheritance chain.
+ *
+ * When directives are sub-classed (extended) from one to another, Angular
+ * needs to keep track of exactly how many were encountered so it can accurately
+ * generate the next directive id (once the next directive id is visited).
+ * Normally the next directive id just a single incremented value from the
+ * previous one, however, if the previous directive is a part of an inheritance
+ * chain (a series of sub-classed directives) then the incremented value must
+ * also take into account the total amount of sub-classed values.
+ *
+ * Note that this value resets back to zero once the next directive is
+ * visited (when `incrementActiveDirectiveId` or `setActiveHostElement`
+ * is called).
+ */
+let activeDirectiveSuperClassHeight = 0;
+
+/**
+ * Sets the active directive host element and resets the directive id value
+ * (when the provided elementIndex value has changed).
+ *
+ * @param elementIndex the element index value for the host element where
+ *                     the directive/component instance lives
+ */
+export function setActiveHostElement(elementIndex: number | null = null) {
+  if (_selectedIndex !== elementIndex) {
+    setSelectedIndex(elementIndex == null ? -1 : elementIndex);
+    activeDirectiveId = MIN_DIRECTIVE_ID;
+    activeDirectiveSuperClassDepthPosition = 0;
+    activeDirectiveSuperClassHeight = 0;
+  }
 }
 
-export function getActiveHostContext() {
-  return activeHostContext;
+/**
+ * Returns the current id value of the current directive.
+ *
+ * For example we have an element that has two directives on it:
+ * <div dir-one dir-two></div>
+ *
+ * dirOne->hostBindings() (id == 1)
+ * dirTwo->hostBindings() (id == 2)
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ *
+ * Note that directive id values are specific to an element (this means that
+ * the same id value could be present on another element with a completely
+ * different set of directives).
+ */
+export function getActiveDirectiveId() {
+  return activeDirectiveId;
 }
 
-export function getActiveHostElementIndex() {
-  return activeHostElementIndex;
+/**
+ * Increments the current directive id value.
+ *
+ * For example we have an element that has two directives on it:
+ * <div dir-one dir-two></div>
+ *
+ * dirOne->hostBindings() (index = 1)
+ * // increment
+ * dirTwo->hostBindings() (index = 2)
+ *
+ * Depending on whether or not a previous directive had any inherited
+ * directives present, that value will be incremented in addition
+ * to the id jumping up by one.
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ *
+ * Note that directive id values are specific to an element (this means that
+ * the same id value could be present on another element with a completely
+ * different set of directives).
+ */
+export function incrementActiveDirectiveId() {
+  activeDirectiveId += 1 + activeDirectiveSuperClassHeight;
+
+  // because we are dealing with a new directive this
+  // means we have exited out of the inheritance chain
+  activeDirectiveSuperClassDepthPosition = 0;
+  activeDirectiveSuperClassHeight = 0;
+}
+
+/**
+ * Set the current super class (reverse inheritance) position depth for a directive.
+ *
+ * For example we have two directives: Child and Other (but Child is a sub-class of Parent)
+ * <div child-dir other-dir></div>
+ *
+ * // increment
+ * parentInstance->hostBindings() (depth = 1)
+ * // decrement
+ * childInstance->hostBindings() (depth = 0)
+ * otherInstance->hostBindings() (depth = 0 b/c it's a different directive)
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ */
+export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
+  activeDirectiveSuperClassDepthPosition += delta;
+
+  // we keep track of the height value so that when the next directive is visited
+  // then Angular knows to generate a new directive id value which has taken into
+  // account how many sub-class directives were a part of the previous directive.
+  activeDirectiveSuperClassHeight =
+      Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
+}
+
+/**
+ * Returns the current super class (reverse inheritance) depth for a directive.
+ *
+ * This is designed to help instruction code distinguish different hostBindings
+ * calls from each other when a directive has extended from another directive.
+ * Normally using the directive id value is enough, but with the case
+ * of parent/sub-class directive inheritance more information is required.
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ */
+export function getActiveDirectiveSuperClassDepth() {
+  return activeDirectiveSuperClassDepthPosition;
 }
 
 /**

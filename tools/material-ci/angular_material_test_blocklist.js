@@ -16,14 +16,5 @@
 // clang-format off
 // tslint:disable
 
-window.testBlocklist = {
-  "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c380-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
-  },
-  "MatSidenav should set fixed bottom and top when in fixed mode": {
-    "error": "Error: Expected '' to be '20px'.",
-    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
-  }
-};
+window.testBlocklist = {};
 // clang-format on

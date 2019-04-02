@@ -19,6 +19,7 @@ import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
 import {getTNode, isStylingContext} from '../util/view_utils';
 
 import {CorePlayerHandler} from './core_player_handler';
+import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from './shared';
 
 export const ANIMATION_PROP_PREFIX = '@';
 
@@ -35,12 +36,13 @@ export function createEmptyStylingContext(
     [0, 0],                          // SinglePropOffsets
     [0],                             // CachedMultiClassValue
     [0],                             // CachedMultiStyleValue
+    null,                            // HostBuffer
     null,                            // PlayerContext
   ];
 
   // whenever a context is created there is always a `null` directive
   // that is registered (which is a placeholder for the "template").
-  allocateDirectiveIntoContext(context, null);
+  allocateOrUpdateDirectiveIntoContext(context, DEFAULT_TEMPLATE_DIRECTIVE_INDEX);
   return context;
 }
 
@@ -60,25 +62,28 @@ export function createEmptyStylingContext(
  * @param directiveRef the directive that will be allocated into the context
  * @returns the index where the directive was inserted into
  */
-export function allocateDirectiveIntoContext(
-    context: StylingContext, directiveRef: any | null): number {
-  // this is a new directive which we have not seen yet.
-  const dirs = context[StylingIndex.DirectiveRegistryPosition];
-  const i = dirs.length;
+export function allocateOrUpdateDirectiveIntoContext(
+    context: StylingContext, directiveIndex: number, singlePropValuesIndex: number = -1,
+    styleSanitizer?: StyleSanitizeFn | null | undefined): void {
+  const directiveRegistry = context[StylingIndex.DirectiveRegistryPosition];
 
+  const index = directiveIndex * DirectiveRegistryValuesIndex.Size;
   // we preemptively make space into the directives array and then
   // assign values slot-by-slot to ensure that if the directive ordering
   // changes then it will still function
-  dirs.push(null, null, null, null);
-  dirs[i + DirectiveRegistryValuesIndex.DirectiveValueOffset] = directiveRef;
-  dirs[i + DirectiveRegistryValuesIndex.DirtyFlagOffset] = false;
-  dirs[i + DirectiveRegistryValuesIndex.StyleSanitizerOffset] = null;
+  const limit = index + DirectiveRegistryValuesIndex.Size;
+  for (let i = directiveRegistry.length; i < limit; i += DirectiveRegistryValuesIndex.Size) {
+    // -1 is used to signal that the directive has been allocated, but
+    // no actual style or class bindings have been registered yet...
+    directiveRegistry.push(-1, null);
+  }
 
-  // -1 is used to signal that the directive has been allocated, but
-  // no actual style or class bindings have been registered yet...
-  dirs[i + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] = -1;
-
-  return i;
+  const propValuesStartPosition = index + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset;
+  if (singlePropValuesIndex >= 0 && directiveRegistry[propValuesStartPosition] === -1) {
+    directiveRegistry[propValuesStartPosition] = singlePropValuesIndex;
+    directiveRegistry[index + DirectiveRegistryValuesIndex.StyleSanitizerOffset] =
+        styleSanitizer || null;
+  }
 }
 
 /**
