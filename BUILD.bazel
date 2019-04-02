@@ -5,12 +5,16 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "karma_web_test")
 
 exports_files([
-    "tsconfig.json",
     "LICENSE",
     "protractor-perf.conf.js",
     "karma-js.conf.js",
     "browser-providers.conf.js",
 ])
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
 
 filegroup(
     name = "web_test_bootstrap_scripts",
