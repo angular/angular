@@ -295,12 +295,6 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
-        # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
-        # package installer picks up the locally built packages from that location.
-        # *Note*: We could also adjust the packages installer, but given we won't have
-        # two different folders of Angular distributions in the future, it's likely not
-        # worth the efforts to change the AIO packages installer.
-      - run: mv dist/packages-dist-ivy-aot dist/packages-dist
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
 
@@ -632,7 +626,7 @@ workflows:
             - build-npm-packages
       - test_aio_local_ivy:
           requires:
-            - build-ivy-npm-packages
+            - build-npm-packages
       - test_aio_tools:
           requires:
             - build-npm-packages
