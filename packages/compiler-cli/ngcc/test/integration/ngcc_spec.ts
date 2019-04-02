@@ -41,6 +41,7 @@ describe('ngcc main()', () => {
         esm2015: '0.0.0-PLACEHOLDER',
         fesm5: '0.0.0-PLACEHOLDER',
         fesm2015: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
       // * `common` is a dependency of `common/http`, so is compiled.
       expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
@@ -50,6 +51,7 @@ describe('ngcc main()', () => {
         esm2015: '0.0.0-PLACEHOLDER',
         fesm5: '0.0.0-PLACEHOLDER',
         fesm2015: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
       // * `core` is a dependency of `common`, so is compiled.
       expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
@@ -59,6 +61,7 @@ describe('ngcc main()', () => {
         esm2015: '0.0.0-PLACEHOLDER',
         fesm5: '0.0.0-PLACEHOLDER',
         fesm2015: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
 
       // * `common/testing` is not a dependency of `common/http` so is not compiled.
@@ -94,21 +97,25 @@ describe('ngcc main()', () => {
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
          });
        });
   });
@@ -127,20 +134,45 @@ describe('ngcc main()', () => {
       expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
       expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
       expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
       expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
         fesm5: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
       });
     });
+
+    it('should cope with compiling the same entry-point multiple times with different formats',
+       () => {
+         mainNgcc({
+           basePath: '/node_modules',
+           propertiesToConsider: ['module'],
+           compileAllFormats: false
+         });
+         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+           module: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
+         });
+         // If ngcc tries to write out the typings files again, this will throw an exception.
+         mainNgcc(
+             {basePath: '/node_modules', propertiesToConsider: ['esm5'], compileAllFormats: false});
+         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+           esm5: '0.0.0-PLACEHOLDER',
+           module: '0.0.0-PLACEHOLDER',
+           typings: '0.0.0-PLACEHOLDER',
+         });
+       });
   });
 
   describe('with createNewEntryPointFormats', () => {
