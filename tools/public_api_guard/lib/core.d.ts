@@ -244,6 +244,7 @@ export declare class MatOption implements AfterViewChecked, OnDestroy {
     value: any;
     readonly viewValue: string;
     constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _parent: MatOptionParentComponent, group: MatOptgroup);
+    _getAriaSelected(): boolean | null;
     _getHostElement(): HTMLElement;
     _getTabIndex(): string;
     _handleKeydown(event: KeyboardEvent): void;

@@ -863,7 +863,7 @@ describe('MatSelect', () => {
       describe('for options', () => {
         let fixture: ComponentFixture<BasicSelect>;
         let trigger: HTMLElement;
-        let options: NodeListOf<HTMLElement>;
+        let options: Array<HTMLElement>;
 
         beforeEach(fakeAsync(() => {
           fixture = TestBed.createComponent(BasicSelect);
@@ -872,8 +872,7 @@ describe('MatSelect', () => {
           trigger.click();
           fixture.detectChanges();
 
-          options =
-              overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
+          options = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
         }));
 
         it('should set the role of mat-option to option', fakeAsync(() => {
@@ -882,10 +881,9 @@ describe('MatSelect', () => {
           expect(options[2].getAttribute('role')).toEqual('option');
         }));
 
-        it('should set aria-selected on each option', fakeAsync(() => {
-          expect(options[0].getAttribute('aria-selected')).toEqual('false');
-          expect(options[1].getAttribute('aria-selected')).toEqual('false');
-          expect(options[2].getAttribute('aria-selected')).toEqual('false');
+        it('should set aria-selected on each option for single select',  fakeAsync(() => {
+          expect(options.every(option => !option.hasAttribute('aria-selected'))).toBe(true,
+            'Expected all unselected single-select options not to have aria-selected set.');
 
           options[1].click();
           fixture.detectChanges();
@@ -894,10 +892,43 @@ describe('MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          expect(options[0].getAttribute('aria-selected')).toEqual('false');
-          expect(options[1].getAttribute('aria-selected')).toEqual('true');
-          expect(options[2].getAttribute('aria-selected')).toEqual('false');
+          expect(options[1].getAttribute('aria-selected')).toEqual('true',
+            'Expected selected single-select option to have aria-selected="true".');
+          options.splice(1, 1);
+          expect(options.every(option => !option.hasAttribute('aria-selected'))).toBe(true,
+            'Expected all unselected single-select options not to have aria-selected set.');
         }));
+
+        it('should set aria-selected on each option for multi-select', fakeAsync(() => {
+          fixture.destroy();
+
+          const multiFixture = TestBed.createComponent(MultiSelect);
+          multiFixture.detectChanges();
+
+          trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+          trigger.click();
+          multiFixture.detectChanges();
+
+          options = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
+
+          expect(options.every(option => option.hasAttribute('aria-selected') &&
+            option.getAttribute('aria-selected') === 'false')).toBe(true,
+            'Expected all unselected multi-select options to have aria-selected="false".');
+
+          options[1].click();
+          multiFixture.detectChanges();
+
+          trigger.click();
+          multiFixture.detectChanges();
+          flush();
+
+          expect(options[1].getAttribute('aria-selected')).toEqual('true',
+            'Expected selected multi-select option to have aria-selected="true".');
+          options.splice(1, 1);
+          expect(options.every(option => option.hasAttribute('aria-selected') &&
+            option.getAttribute('aria-selected') === 'false')).toBe(true,
+            'Expected all unselected multi-select options to have aria-selected="false".');
+          }));
 
         it('should set the tabindex of each option according to disabled state', fakeAsync(() => {
           expect(options[0].getAttribute('tabindex')).toEqual('0');
