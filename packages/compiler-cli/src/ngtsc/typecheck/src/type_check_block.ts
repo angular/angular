@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingType, BoundTarget, DYNAMIC_TYPE, ExpressionType, ExternalExpr, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, Type} from '@angular/compiler';
+import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
+import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
-import {ImportManager, translateExpression, translateType} from '../../translator';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from './api';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
+import {Environment} from './environment';
 import {astToTypescript} from './expression';
+import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -28,22 +29,36 @@ import {astToTypescript} from './expression';
  * @param importManager an `ImportManager` for the file into which the TCB will be written.
  */
 export function generateTypeCheckBlock(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCheckBlockMetadata,
-    config: TypeCheckingConfig, importManager: ImportManager,
-    refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
-  const tcb =
-      new Context(config, meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
+    env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
+    meta: TypeCheckBlockMetadata): ts.FunctionDeclaration {
+  const tcb = new Context(env, meta.boundTarget);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !);
+  const ctxRawType = env.referenceType(ref);
+  if (!ts.isTypeReferenceNode(ctxRawType)) {
+    throw new Error(
+        `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`);
+  }
+  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName)];
+
+  const scopeStatements = scope.render();
+  const innerBody = ts.createBlock([
+    ...env.getPreludeStatements(),
+    ...scopeStatements,
+  ]);
+
+  // Wrap the body in an "if (true)" expression. This is unnecessary but has the effect of causing
+  // the `ts.Printer` to format the type-check block nicely.
+  const body = ts.createBlock([ts.createIf(ts.createTrue(), innerBody, undefined)]);
 
   return ts.createFunctionDeclaration(
       /* decorators */ undefined,
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
-      /* name */ meta.fnName,
-      /* typeParameters */ node.typeParameters,
-      /* parameters */[tcbCtxParam(node)],
+      /* name */ name,
+      /* typeParameters */ ref.node.typeParameters,
+      /* parameters */ paramList,
       /* type */ undefined,
-      /* body */ ts.createBlock([ts.createIf(ts.createTrue(), scope.renderToBlock())]));
+      /* body */ body);
 }
 
 /**
@@ -163,7 +178,8 @@ class TcbTemplateBodyOp extends TcbOp {
     if (directives !== null) {
       for (const dir of directives) {
         const dirInstId = this.scope.resolve(this.template, dir);
-        const dirId = this.tcb.reference(dir.ref);
+        const dirId =
+            this.tcb.env.reference(dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
 
         // There are two kinds of guards. Template guards (ngTemplateGuards) allow type narrowing of
         // the expression passed to an @Input of the directive. Scan the directive to see if it has
@@ -189,7 +205,7 @@ class TcbTemplateBodyOp extends TcbOp {
 
         // The second kind of guard is a template context guard. This guard narrows the template
         // rendering context variable `ctx`.
-        if (dir.hasNgTemplateContextGuard && this.tcb.config.applyTemplateContextGuards) {
+        if (dir.hasNgTemplateContextGuard && this.tcb.env.config.applyTemplateContextGuards) {
           const ctx = this.scope.resolve(this.template);
           const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
           directiveGuards.push(guardInvoke);
@@ -214,7 +230,7 @@ class TcbTemplateBodyOp extends TcbOp {
     // the `if` block is created by rendering the template's `Scope.
     const tmplIf = ts.createIf(
         /* expression */ guard,
-        /* thenStatement */ tmplScope.renderToBlock());
+        /* thenStatement */ ts.createBlock(tmplScope.render()));
     this.scope.addStatement(tmplIf);
     return null;
   }
@@ -258,7 +274,7 @@ class TcbDirectiveOp extends TcbOp {
 
     // Call the type constructor of the directive to infer a type, and assign the directive
     // instance.
-    const typeCtor = tcbCallTypeCtor(this.node, this.dir, this.tcb, this.scope, bindings);
+    const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, bindings);
     this.scope.addStatement(tsCreateVariable(id, typeCtor));
     return id;
   }
@@ -294,7 +310,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
       // If checking the type of bindings is disabled, cast the resulting expression to 'any' before
       // the assignment.
-      if (!this.tcb.config.checkTypeOfBindings) {
+      if (!this.tcb.env.config.checkTypeOfBindings) {
         expr = tsCastToAny(expr);
       }
 
@@ -335,14 +351,11 @@ const INFER_TYPE_FOR_CIRCULAR_OP_EXPR = ts.createNonNullExpression(ts.createNull
  * block. It's responsible for variable name allocation and management of any imports needed. It
  * also contains the template metadata itself.
  */
-class Context {
+export class Context {
   private nextId = 1;
 
   constructor(
-      readonly config: TypeCheckingConfig,
-      readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private sourceFile: ts.SourceFile, private importManager: ImportManager,
-      private refEmitter: ReferenceEmitter) {}
+      readonly env: Environment, readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -351,51 +364,6 @@ class Context {
    * might change depending on the type of data being stored.
    */
   allocateId(): ts.Identifier { return ts.createIdentifier(`_t${this.nextId++}`); }
-
-  /**
-   * Generate a `ts.Expression` that references the given node.
-   *
-   * This may involve importing the node into the file if it's not declared there already.
-   */
-  reference(ref: Reference<ts.Node>): ts.Expression {
-    const ngExpr = this.refEmitter.emit(ref, this.sourceFile);
-
-    // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER);
-  }
-
-  /**
-   * Generate a `ts.TypeNode` that references the given node as a type.
-   *
-   * This may involve importing the node into the file if it's not declared there already.
-   */
-  referenceType(ref: Reference<ts.Node>): ts.TypeNode {
-    const ngExpr = this.refEmitter.emit(ref, this.sourceFile);
-
-    // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
-    return translateType(new ExpressionType(ngExpr), this.importManager);
-  }
-
-  /**
-   * Generate a `ts.TypeNode` that references a given type from '@angular/core'.
-   *
-   * This will involve importing the type into the file, and will also add a number of generic type
-   * parameters (using `any`) as requested.
-   */
-  referenceCoreType(name: string, typeParamCount: number = 0): ts.TypeNode {
-    const external = new ExternalExpr({
-      moduleName: '@angular/core',
-      name,
-    });
-    let typeParams: Type[]|null = null;
-    if (typeParamCount > 0) {
-      typeParams = [];
-      for (let i = 0; i < typeParamCount; i++) {
-        typeParams.push(DYNAMIC_TYPE);
-      }
-    }
-    return translateType(new ExpressionType(external, null, typeParams), this.importManager);
-  }
 }
 
 /**
@@ -529,13 +497,13 @@ class Scope {
   addStatement(stmt: ts.Statement): void { this.statements.push(stmt); }
 
   /**
-   * Get a `ts.Block` containing the statements in this scope.
+   * Get the statements.
    */
-  renderToBlock(): ts.Block {
+  render(): ts.Statement[] {
     for (let i = 0; i < this.opQueue.length; i++) {
       this.executeOp(i);
     }
-    return ts.createBlock(this.statements);
+    return this.statements;
   }
 
   private resolveLocal(
@@ -614,7 +582,7 @@ class Scope {
     } else if (node instanceof TmplAstTemplate) {
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfNode(node);
-      if (this.tcb.config.checkTemplateBodies) {
+      if (this.tcb.env.config.checkTemplateBodies) {
         const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
         this.templateCtxOpMap.set(node, ctxIndex);
         this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
@@ -666,14 +634,15 @@ class Scope {
  * This is a parameter with a type equivalent to the component type, with all generic type
  * parameters listed (without their generic bounds).
  */
-function tcbCtxParam(node: ts.ClassDeclaration): ts.ParameterDeclaration {
+function tcbCtxParam(
+    node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName): ts.ParameterDeclaration {
   let typeArguments: ts.TypeNode[]|undefined = undefined;
   // Check if the component is generic, and pass generic type parameters if so.
   if (node.typeParameters !== undefined) {
     typeArguments =
         node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
   }
-  const type = ts.createTypeReferenceNode(node.name !, typeArguments);
+  const type = ts.createTypeReferenceNode(name, typeArguments);
   return ts.createParameter(
       /* decorators */ undefined,
       /* modifiers */ undefined,
@@ -692,7 +661,7 @@ function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
   // `astToTypescript` actually does the conversion. A special resolver `tcbResolve` is passed which
   // interprets specific expression nodes that interact with the `ImplicitReceiver`. These nodes
   // actually refer to identifiers within the current scope.
-  return astToTypescript(ast, (ast) => tcbResolve(ast, tcb, scope), tcb.config);
+  return astToTypescript(ast, (ast) => tcbResolve(ast, tcb, scope), tcb.env.config);
 }
 
 /**
@@ -700,14 +669,13 @@ function tcbExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
  * the directive instance from any bound inputs.
  */
 function tcbCallTypeCtor(
-    el: TmplAstElement | TmplAstTemplate, dir: TypeCheckableDirectiveMeta, tcb: Context,
-    scope: Scope, bindings: TcbBinding[]): ts.Expression {
-  const dirClass = tcb.reference(dir.ref);
+    dir: TypeCheckableDirectiveMeta, tcb: Context, bindings: TcbBinding[]): ts.Expression {
+  const typeCtor = tcb.env.typeCtorFor(dir);
 
   // Construct an array of `ts.PropertyAssignment`s for each input of the directive that has a
   // matching binding.
   const members = bindings.map(({field, expression}) => {
-    if (!tcb.config.checkTypeOfBindings) {
+    if (!tcb.env.config.checkTypeOfBindings) {
       expression = tsCastToAny(expression);
     }
     return ts.createPropertyAssignment(field, expression);
@@ -715,10 +683,10 @@ function tcbCallTypeCtor(
 
   // Call the `ngTypeCtor` method on the directive class, with an object literal argument created
   // from the matched inputs.
-  return tsCallMethod(
-      /* receiver */ dirClass,
-      /* methodName */ 'ngTypeCtor',
-      /* args */[ts.createObjectLiteral(members)]);
+  return ts.createCall(
+      /* expression */ typeCtor,
+      /* typeArguments */ undefined,
+      /* argumentsArray */[ts.createObjectLiteral(members)]);
 }
 
 interface TcbBinding {
@@ -766,66 +734,6 @@ function tcbGetInputBindingExpressions(
 }
 
 /**
- * Create an expression which instantiates an element by its HTML tagName.
- *
- * Thanks to narrowing of `document.createElement()`, this expression will have its type inferred
- * based on the tag name, including for custom elements that have appropriate .d.ts definitions.
- */
-function tsCreateElement(tagName: string): ts.Expression {
-  const createElement = ts.createPropertyAccess(
-      /* expression */ ts.createIdentifier('document'), 'createElement');
-  return ts.createCall(
-      /* expression */ createElement,
-      /* typeArguments */ undefined,
-      /* argumentsArray */[ts.createLiteral(tagName)]);
-}
-
-/**
- * Create a `ts.VariableStatement` which declares a variable without explicit initialization.
- *
- * The initializer `null!` is used to bypass strict variable initialization checks.
- *
- * Unlike with `tsCreateVariable`, the type of the variable is explicitly specified.
- */
-function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.VariableStatement {
-  const decl = ts.createVariableDeclaration(
-      /* name */ id,
-      /* type */ type,
-      /* initializer */ ts.createNonNullExpression(ts.createNull()));
-  return ts.createVariableStatement(
-      /* modifiers */ undefined,
-      /* declarationList */[decl]);
-}
-
-/**
- * Create a `ts.VariableStatement` that initializes a variable with a given expression.
- *
- * Unlike with `tsDeclareVariable`, the type of the variable is inferred from the initializer
- * expression.
- */
-function tsCreateVariable(id: ts.Identifier, initializer: ts.Expression): ts.VariableStatement {
-  const decl = ts.createVariableDeclaration(
-      /* name */ id,
-      /* type */ undefined,
-      /* initializer */ initializer);
-  return ts.createVariableStatement(
-      /* modifiers */ undefined,
-      /* declarationList */[decl]);
-}
-
-/**
- * Construct a `ts.CallExpression` that calls a method on a receiver.
- */
-function tsCallMethod(
-    receiver: ts.Expression, methodName: string, args: ts.Expression[] = []): ts.CallExpression {
-  const methodAccess = ts.createPropertyAccess(receiver, methodName);
-  return ts.createCall(
-      /* expression */ methodAccess,
-      /* typeArguments */ undefined,
-      /* argumentsArray */ args);
-}
-
-/**
  * Resolve an `AST` expression within the given scope.
  *
  * Some `AST` expressions refer to top-level concepts (references, variables, the component
@@ -858,7 +766,7 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
           // `(null as any as TemplateRef<any>)` is constructed.
           let value: ts.Expression = ts.createNull();
           value = ts.createAsExpression(value, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
-          value = ts.createAsExpression(value, tcb.referenceCoreType('TemplateRef', 1));
+          value = ts.createAsExpression(value, tcb.env.referenceCoreType('TemplateRef', 1));
           value = ts.createParen(value);
           return value;
         } else {
@@ -891,7 +799,17 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
   }
 }
 
-function tsCastToAny(expr: ts.Expression): ts.Expression {
-  return ts.createParen(
-      ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
+export function requiresInlineTypeCheckBlock(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
+  // In order to qualify for a declared TCB (not inline) two conditions must be met:
+  // 1) the class must be exported
+  // 2) it must not have constrained generic types
+  if (!checkIfClassIsExported(node)) {
+    // Condition 1 is false, the class is not exported.
+    return true;
+  } else if (!checkIfGenericTypesAreUnbound(node)) {
+    // Condition 2 is false, the class has constrained generic types
+    return true;
+  } else {
+    return false;
+  }
 }

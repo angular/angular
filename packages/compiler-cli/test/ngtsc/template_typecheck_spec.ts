@@ -124,7 +124,7 @@ describe('ngtsc type checking', () => {
       selector: 'test',
       template: '<div *ngFor="let user of users">{{user.does_not_exist}}</div>',
     })
-    class TestCmp {
+    export class TestCmp {
       users: {name: string}[];
     }
 
@@ -132,7 +132,7 @@ describe('ngtsc type checking', () => {
       declarations: [TestCmp],
       imports: [CommonModule],
     })
-    class Module {}
+    export class Module {}
     `);
 
     const diags = env.driveDiagnostics();

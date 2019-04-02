@@ -313,7 +313,7 @@ export class ComponentDecoratorHandler implements
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
       }
       const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate});
-      ctx.addTemplate(node, bound);
+      ctx.addTemplate(new Reference(node), bound);
     }
   }
 
