@@ -4,15 +4,14 @@
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
 
-This cookbook describes the steps required to set up and use the
-Angular [Getting Started](guide/quickstart) files in Visual Studio 2015 within an ASP.NET 4.x project.
+This cookbook describes the steps required to set up and use Angular app files in Visual Studio 2015 within an ASP.NET 4.x project.
 
 <div class="alert is-helpful">
 
 
 
 There is no *live example* for this cookbook because it describes Visual Studio, not 
-the Angular Getting Started application itself.
+the Angular application itself. It uses the starter Angular application created by the CLI command [`ng new`](cli/new) as an example. 
 
 
 </div>
@@ -48,7 +47,7 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
-See [Getting Started](guide/quickstart) for supported versions and instructions. 
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for supported versions and instructions. 
 
 
 
@@ -114,11 +113,13 @@ restart it to make sure everything is clean.
 
 
 <h2 id='download'>
-  Step 1: Download the Angular Getting Started app
+  Step 1: Create a starter Angular app
 </h2>
 
+ 
+ Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new). 
 
-Go to the final code review in [Getting Started](guide/quickstart) and download the solution app project. These files contain a starter Angular app.
+ 
 
 
 
@@ -150,10 +151,10 @@ no authentication, and no hosting. Pick the template and options appropriate for
 
 
 <h2 id='copy'>
-  Step 3: Copy the Angular Getting Started project files into the ASP.NET project folder
+  Step 3: Copy the Angular project files into the ASP.NET project folder
 </h2>
 
-Copy the files you downloaded from [Getting Started](guide/quickstart) into the folder containing the `.csproj` file.
+Copy files from the starter Angular app into the folder containing the `.csproj` file.
 Include the files in the Visual Studio project as follows:
 
 * Click the `Show All Files` button in Solution Explorer to reveal all of the hidden files in the project.

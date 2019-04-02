@@ -75,7 +75,7 @@ describe('site App', function() {
   it('should show the tutorial index page at `/tutorial` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
     page.navigateTo('tutorial');
-    expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
+    expect(page.getDocViewerText()).toMatch(/Tour of Heroes App and Tutorial/i);
 
     // navigate to a different page
     page.click(page.getTopMenuLink('features'));
@@ -86,8 +86,8 @@ describe('site App', function() {
 
     // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
-    page.click(page.getNavItem(/introduction/i));
-    expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
+    page.click(page.getNavItem(/The Hero Editor/i));
+    expect(page.getDocViewerText()).toMatch(/The Hero Editor/i);
   });
 
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', () => {
