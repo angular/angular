@@ -272,7 +272,9 @@ export declare class FormGroup extends AbstractControl {
     constructor(controls: {
         [key: string]: AbstractControl;
     }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
-    addControl(name: string, control: AbstractControl): void;
+    addControl(name: string, control: AbstractControl, options?: {
+        emitEvent?: boolean;
+    }): void;
     contains(controlName: string): boolean;
     getRawValue(): any;
     patchValue(value: {
@@ -282,7 +284,9 @@ export declare class FormGroup extends AbstractControl {
         emitEvent?: boolean;
     }): void;
     registerControl(name: string, control: AbstractControl): AbstractControl;
-    removeControl(name: string): void;
+    removeControl(name: string, options?: {
+        emitEvent?: boolean;
+    }): void;
     reset(value?: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
