@@ -19,11 +19,8 @@ export class ScrollService {
   private _topOffset: number | null;
   private _topOfPageElement: Element;
 
-  // Whether a `popstate` event has been fired (but the associated scroll position is not yet
-  // restored).
-  popStateFired = false;
   // The scroll position which has to be restored, after a `popstate` event.
-  scrollPosition: ScrollPosition = [0, 0];
+  poppedStateScrollPosition: ScrollPosition | null = null;
   // Whether the browser supports the necessary features for manual scroll restoration.
   supportManualScrollRestoration: boolean =
       !!window && ('scrollTo' in window) && ('scrollX' in window) && ('scrollY' in window) &&
@@ -72,8 +69,7 @@ export class ScrollService {
           this.removeStoredScrollPosition();
           // The `popstate` event is always triggered by a browser action such as clicking the
           // forward/back button. It can be followed by a `hashchange` event.
-          this.popStateFired = true;
-          this.scrollPosition = event.state ? event.state['scrollPosition'] : null;
+          this.poppedStateScrollPosition = event.state ? event.state.scrollPosition : null;
         }
       });
     }
@@ -160,8 +156,10 @@ export class ScrollService {
   }
 
   scrollToPosition() {
-    this.viewportScroller.scrollToPosition(this.scrollPosition);
-    this.popStateFired = false;
+    if (this.poppedStateScrollPosition) {
+      this.viewportScroller.scrollToPosition(this.poppedStateScrollPosition);
+      this.poppedStateScrollPosition = null;
+    }
   }
 
   /**
@@ -191,7 +189,7 @@ export class ScrollService {
    * Check if the scroll position need to be manually fixed after popState event
    */
   needToFixScrollPosition(): boolean {
-    return this.popStateFired && this.scrollPosition && this.supportManualScrollRestoration;
+    return this.supportManualScrollRestoration && !!this.poppedStateScrollPosition;
   }
 
   /**
