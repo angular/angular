@@ -182,17 +182,20 @@ import {of } from 'rxjs';
         expect(g.valid).toBe(true);
       });
 
-      it('should not update value and validity when control is removed with emitEvent false', () => {
-        const g = new FormGroup(
-            {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
-        expect(g.value).toEqual({'one': '1', 'two': '2'});
-        expect(g.valid).toBe(false);
+      it('should not update value and validity when control is removed with emitEvent false',
+         () => {
+           const g = new FormGroup({
+             'one': new FormControl('1'),
+             'two': new FormControl('2', Validators.minLength(10))
+           });
+           expect(g.value).toEqual({'one': '1', 'two': '2'});
+           expect(g.valid).toBe(false);
 
-        g.removeControl('two', {emitEvent: false});
+           g.removeControl('two', {emitEvent: false});
 
-        expect(g.value).toEqual({'one': '1', 'two': '2'});
-        expect(g.valid).toBe(false);
-      });
+           expect(g.value).toEqual({'one': '1', 'two': '2'});
+           expect(g.valid).toBe(false);
+         });
     });
 
     describe('dirty', () => {
