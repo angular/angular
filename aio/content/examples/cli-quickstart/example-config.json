@@ -1,4 +1,0 @@
-{
-  "build": "build:cli",
-  "run": "serve:cli"
-}

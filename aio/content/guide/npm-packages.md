@@ -9,7 +9,7 @@ Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloadi
 
 <div class="alert is-helpful">
 
-See [Getting Started](guide/quickstart#prerequisites) for information about the required versions and installation of Node.js and npm.
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for information about the required versions and installation of `Node.js` and `npm`.
 
 If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm. 
 

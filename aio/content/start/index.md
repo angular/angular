@@ -28,12 +28,9 @@ You'll find many resources to complement the Angular docs. Mozilla's MDN docs in
 StackBlitz creates a starter Angular app. 
 We've seeded this particular app with a top bar&mdash;containing the store name and checkout icon&mdash;and the title for a product list. 
 
-<!-- 
-<img src="generated/images/guide/getting-started/new-project.png" alt="New Angular project in StackBlitz">
--->
 
 <figure>
-    <img src="generated/images/guide/getting-started/new-app.png" alt="Starter online store app">
+    <img src="generated/images/guide/start/new-app.png" alt="Starter online store app">
 </figure>
 
 
@@ -83,7 +80,7 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
       The preview pane immediately updates to display the name of each product in the list. 
 
       <figure>
-        <img src="generated/images/guide/getting-started/template-syntax-product-names.png" alt="Product names added to list">
+        <img src="generated/images/guide/start/template-syntax-product-names.png" alt="Product names added to list">
       </figure>
 
 1. In the final app, each product name will be a link to product details. Add the anchor now, and set the anchor's title to be the product's name by using the property binding [ ] syntax, as shown below: 
@@ -98,7 +95,7 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
     In the preview pane, hover over the displayed product name to see the bound name property value. They are the same. Interpolation {{ }} lets you render the property value as text; property binding [ ] lets you use the property value in a template expression. 
 
     <figure>
-      <img src="generated/images/guide/getting-started/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
+      <img src="generated/images/guide/start/template-syntax-product-anchor.png" alt="Product name anchor text is product name property">
     </figure>
 
   
@@ -110,7 +107,7 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
     The app now displays the name and description of each product in the list, as shown below. Notice that the final product does not have a description paragraph at all. Because the product's description property is empty, the paragraph element&mdash;including the word "Description"&mdash;is not created.  
 
     <figure>
-      <img src="generated/images/guide/getting-started/template-syntax-product-description.png" alt="Product descriptions added to list">
+      <img src="generated/images/guide/start/template-syntax-product-description.png" alt="Product descriptions added to list">
     </figure>
 
 1. Add a button so users can share a product with friends. Bind the button's `click` event to the `share()` event that we defined for you (in `product-list.component.ts`). Event binding is done by using ( ) around the event, as shown below: 
@@ -121,13 +118,13 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
     Each product now has a "Share" button: 
 
     <figure>
-      <img src="generated/images/guide/getting-started/template-syntax-product-share-button.png" alt="Share button added for each product">
+      <img src="generated/images/guide/start/template-syntax-product-share-button.png" alt="Share button added for each product">
     </figure>
 
     Test the "Share" button: 
 
     <figure>
-      <img src="generated/images/guide/getting-started/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
+      <img src="generated/images/guide/start/template-syntax-product-share-alert.png" alt="Alert box indicating product has been shared">
     </figure>
 
 The app now has a product list and sharing feature. 
@@ -180,7 +177,7 @@ An Angular application is composed of a tree of components, in which each Angula
 Currently, our app has three components: 
 
 <figure>
-  <img src="generated/images/guide/getting-started/app-components.png" alt="Online store with three components">
+  <img src="generated/images/guide/start/app-components.png" alt="Online store with three components">
 </figure>
 
 * `app-root` (orange box) is the application shell. This is the first component to load, and the parent of all other components. You can think of it as the base page. 
@@ -210,7 +207,7 @@ We're going to create a new alert feature. The alert feature will take a product
     1. Right click on the `app` folder and use the `Angular Generator` to generate a new component named `product-alerts`.
 
         <figure>
-          <img src="generated/images/guide/getting-started/generate-component.png" alt="StackBlitz command to generate component">
+          <img src="generated/images/guide/start/generate-component.png" alt="StackBlitz command to generate component">
         </figure>
 
         The generator creates starter files for all three parts of the component: 
@@ -259,7 +256,7 @@ We're going to create a new alert feature. The alert feature will take a product
 The new product alert component takes a product as input from the product list. With that input, it shows or hides the "Notify Me" button, based on the price of the product. The Phone XL price is over $700, so the "Notify Me" button appears on that product. 
 
 <figure>
-  <img src="generated/images/guide/getting-started/product-alert-button.png" alt="Product alert button added to products over $700">
+  <img src="generated/images/guide/start/product-alert-button.png" alt="Product alert button added to products over $700">
 </figure>
 
 
@@ -302,7 +299,7 @@ The "Notify Me" button doesn't do anything yet. In this section, you'll set up t
 1. Try out the "Notify Me" button: 
 
     <figure>
-      <img src="generated/images/guide/getting-started/product-alert-notification.png" alt="Product alert notification confirmation dialog">
+      <img src="generated/images/guide/start/product-alert-notification.png" alt="Product alert notification confirmation dialog">
     </figure>
 
 
@@ -323,6 +320,6 @@ You've learned about the foundation of Angular: components and template syntax.
 You've also learned how the component class and template interact, and how components communicate with each other. 
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Routing" section](getting-started/routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern. 
-* [Skip ahead to the "Deployment" section](getting-started/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development. 
+* [Continue to the "Routing" section](start/routing "Getting Started: Routing") to create a product details page that can be accessed by clicking a product name and that has its own URL pattern. 
+* [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
 

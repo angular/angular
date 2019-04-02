@@ -1,6 +1,6 @@
 # Routing
 
-At the end of [Your First App](getting-started "Getting Started: Your First App"), the online store application has a basic product catalog. 
+At the end of [Your First App](start "Getting Started: Your First App"), the online store application has a basic product catalog. 
 The app doesn't have any variable states or navigation. 
 There is one URL, and that URL always displays the "My Store" page with a list of products and their descriptions. 
 
@@ -55,7 +55,7 @@ The app is already set up to use the Angular router and to use routing to naviga
     Notice that the URL in the preview window changes. The final segment is `products/1`.
 
     <figure>
-      <img src="generated/images/guide/getting-started/product-details-works.png" alt="Product details page with updated URL">
+      <img src="generated/images/guide/start/product-details-works.png" alt="Product details page with updated URL">
     </figure>
 
     
@@ -101,7 +101,7 @@ The product details component handles the display of each product. The Angular R
 Now, when the user clicks on a name in the product list, the router navigates you to the distinct URL for the product, swaps out the product list component for the product details component, and displays the product details. 
 
   <figure>
-    <img src="generated/images/guide/getting-started/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
+    <img src="generated/images/guide/start/product-details-routed.png" alt="Product details page with updated URL and full details displayed">
   </figure>
 
 
@@ -121,6 +121,6 @@ Congratulations! You have integrated routing into your online store.
 * Users can click on a product name from the list to see details in a new view, with a distinct URL (route)
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Managing Data" section](getting-started/data "Getting Started: Managing Data") to add the shopping cart feature, using a service to manage the cart data and using HTTP to retrieve external data for shipping prices. 
-* [Skip ahead to the Deployment section](getting-started/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development. 
+* [Continue to the "Managing Data" section](start/data "Getting Started: Managing Data") to add the shopping cart feature, using a service to manage the cart data and using HTTP to retrieve external data for shipping prices. 
+* [Skip ahead to the Deployment section](start/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development. 
 

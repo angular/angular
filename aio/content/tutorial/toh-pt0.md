@@ -12,15 +12,7 @@ In this part of the tutorial, you'll do the following:
 
 ## Set up your environment
 
-To set up your development environment, follow these instructions in [Getting Started](guide/quickstart):
-
-* [Prerequisites](guide/quickstart#prerequisites)
-* [Install the Angular CLI](guide/quickstart#install-cli)
-
-<div class="alert is-helpful">
-
-**Note:** You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
-</div>
+To set up your development environment, follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development").
 
 
 ## Create a new workspace and an initial application

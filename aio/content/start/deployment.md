@@ -6,7 +6,7 @@ To deploy your application, you have to compile it, and then host the JavaScript
 <div class="alert is-helpful">
 
 
-Whether you came here directly from [Your First App](getting-started "Getting Started: Your First App"), or completed the entire online store application through the [Routing](getting-started/routing "Getting Started: Routing"), [Managing Data](getting-started/data "Getting Started: Managing Data"), and [Forms](getting-started/forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section. 
+Whether you came here directly from [Your First App](start "Getting Started: Your First App"), or completed the entire online store application through the [Routing](start/routing "Getting Started: Routing"), [Managing Data](start/data "Getting Started: Managing Data"), and [Forms](start/forms "Getting Started: Forms") sections, you have an application that you can deploy by following the instructions in this section. 
 
 
 </div>
@@ -76,7 +76,7 @@ Learn more about development and distribution of your application in the [Buildi
 
 ## Join our community
 
-You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://next.angular.io/getting-started&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form"). 
+You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://next.angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form"). 
 
 Angular offers many more capabilities, and you now have a foundation that empowers you to build an application and explore those other capabilities:
 

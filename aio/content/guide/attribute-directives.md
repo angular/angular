@@ -15,7 +15,7 @@ There are three kinds of directives in Angular:
 1. Attribute directives&mdash;change the appearance or behavior of an element, component, or another directive.
 
 *Components* are the most common of the three directives.
-You saw a component for the first time in the [Getting Started](guide/quickstart).
+You saw a component for the first time in the [Getting Started](start "Getting Started with Angular") tutorial.
 
 *Structural Directives* change the structure of the view.
 Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).

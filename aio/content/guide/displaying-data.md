@@ -31,8 +31,7 @@ The easiest way to display a component property
 is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Follow the [Getting Started](guide/quickstart) instructions for creating a new project
-named <code>displaying-data</code>.
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
 
 Delete the <code>app.component.html</code> file. It is not needed for this example.
 
