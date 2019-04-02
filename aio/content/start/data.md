@@ -1,6 +1,6 @@
 # Managing Data
 
-At the end of [Routing](getting-started/routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details. 
+At the end of [Routing](start/routing "Getting Started: Routing"), the online store application has a product catalog with two views: a product list and product details. 
 Users can click on a product name from the list to see details in a new view, with a distinct URL (route). 
 
 In this section, you'll create the shopping cart. You'll:
@@ -25,7 +25,7 @@ You'll also set up a cart service to store information about products in the car
 
 <div class="alert is-helpful">
 
-Later, in the [Forms](getting-started/forms "Getting Started: Forms") part of this tutorial, this cart service also will be accessed from the page where the user checks out. 
+Later, in the [Forms](start/forms "Getting Started: Forms") part of this tutorial, this cart service also will be accessed from the page where the user checks out. 
 
 </div>
 
@@ -106,13 +106,13 @@ When the "Buy" button is clicked, you'll use the cart service to add the current
 1. To see the new "Buy" button, refresh the application and click on a product's name to display its details.
 
    <figure>
-     <img src='generated/images/guide/getting-started/product-details-buy.png' alt="Display details for selected product with a Buy button">
+     <img src='generated/images/guide/start/product-details-buy.png' alt="Display details for selected product with a Buy button">
    </figure>
  
  1. Click the "Buy" button. The product is added to the stored list of items in the cart, and a message is displayed. 
 
     <figure>
-      <img src='generated/images/guide/getting-started/buy-alert.png' alt="Display details for selected product with a Buy button">
+      <img src='generated/images/guide/start/buy-alert.png' alt="Display details for selected product with a Buy button">
     </figure>
 
 
@@ -151,7 +151,7 @@ We'll create the cart page in two steps:
     (Note: The "Checkout" button that we provided in the top-bar component was already configured with a `routerLink` for `/cart`.)
 
     <figure>
-      <img src='generated/images/guide/getting-started/cart-works.png' alt="Display cart page before customizing">
+      <img src='generated/images/guide/start/cart-works.png' alt="Display cart page before customizing">
     </figure>
 
 
@@ -205,7 +205,7 @@ Services can be used to share data across components:
     1. To add another product, click "My Store" to return to the product list. Repeat the steps above. 
 
     <figure>
-      <img src='generated/images/guide/getting-started/cart-page-full.png' alt="Cart page with products added">
+      <img src='generated/images/guide/start/cart-page-full.png' alt="Cart page with products added">
     </figure>
 
 
@@ -364,13 +364,13 @@ Now that your app can retrieve shipping data, you'll create a shipping component
     Click on the "Checkout" button to see the updated cart. (Remember that changing the app causes the preview to refresh, which empties the cart.)
 
     <figure>
-      <img src='generated/images/guide/getting-started/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
+      <img src='generated/images/guide/start/cart-empty-with-shipping-prices.png' alt="Cart with link to shipping prices">
     </figure>
 
     Click on the link to navigate to the shipping prices.
 
     <figure>
-      <img src='generated/images/guide/getting-started/shipping-prices.png' alt="Display shipping prices">
+      <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
     </figure>
 
 
@@ -379,7 +379,7 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 Congratulations! You have an online store application with a product catalog and shopping cart. You also have the ability to look up and display shipping prices. 
 
 To continue exploring Angular, choose either of the following options:
-* [Continue to the "Forms" section](getting-started/forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a form-based checkout feature. You'll create a form to collect user information as part of checkout. 
-* [Skip ahead to the "Deployment" section](getting-started/deployment "Getting Started: Deployment") to deploy your app to Firebase or move to local development. 
+* [Continue to the "Forms" section](start/forms "Getting Started: Forms") to finish the app by adding the shopping cart page and a form-based checkout feature. You'll create a form to collect user information as part of checkout. 
+* [Skip ahead to the "Deployment" section](start/deployment "Getting Started: Deployment") to move to local development, or deploy your app to Firebase or your own server. 
 
 
