@@ -1281,22 +1281,40 @@ export class FormGroup extends AbstractControl {
    *
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
+   * @param opts Configuration options determine how the control propagates changes and emits
+   * events after the control is added.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * added. When false, no events are emitted.
    */
-  addControl(name: string, control: AbstractControl): void {
+  addControl(
+      name: string, control: AbstractControl,
+      opts: {emitEvent?: boolean} = {}): void {
     this.registerControl(name, control);
-    this.updateValueAndValidity();
+
+    this.updateValueAndValidity(opts);
     this._onCollectionChange();
   }
 
   /**
    * Remove a control from this group.
    *
+   * This method also updates the value and validity of the control.
+   *
    * @param name The control name to remove from the collection
+   * @param opts Configuration options determine how the control propagates changes and emits
+   * events after the control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
    */
-  removeControl(name: string): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
-    this.updateValueAndValidity();
+  removeControl(name: string, opts: {emitEvent?: boolean} = {}): void {
+    if (this.controls[name]) {
+      this.controls[name]._registerOnCollectionChange(() => {});
+      delete (this.controls[name]);
+    }
+
+    this.updateValueAndValidity(opts);
     this._onCollectionChange();
   }
 

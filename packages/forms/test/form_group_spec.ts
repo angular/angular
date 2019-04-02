@@ -170,6 +170,39 @@ import {of } from 'rxjs';
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
       });
+
+      it('should not emit events when control is added and emitEvent is false', fakeAsync(() => {
+           const g = new FormGroup({'one': new FormControl('1')});
+           expect(g.value).toEqual({'one': '1'});
+           expect(g.valid).toBe(true);
+
+           g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+           g.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+           g.addControl('two', new FormControl('2', Validators.minLength(10)), {emitEvent: false});
+           tick();
+
+           expect(g.value).toEqual({'one': '1', 'two': '2'});
+           expect(g.valid).toBe(false);
+         }));
+
+      it('should not emit events when control is removed and emitEvent is false', fakeAsync(() => {
+           const g = new FormGroup({
+             'one': new FormControl('1'),
+             'two': new FormControl('2', Validators.minLength(10))
+           });
+           expect(g.value).toEqual({'one': '1', 'two': '2'});
+           expect(g.valid).toBe(false);
+
+           g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+           g.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+           g.removeControl('two', {emitEvent: false});
+           tick();
+
+           expect(g.value).toEqual({'one': '1'});
+           expect(g.valid).toBe(true);
+         }));
     });
 
     describe('dirty', () => {
