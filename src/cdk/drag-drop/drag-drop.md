@@ -172,7 +172,7 @@ be allowed into the new container.
 
 <!-- example(cdk-drag-drop-enter-predicate) -->
 
-### Disable dragging
+### Disabled dragging
 If you want to disable dragging for a particular drag item, you can do so by setting the
 `cdkDragDisabled` input on a `cdkDrag` item. Furthermore, you can disable an entire list
 using the `cdkDropListDisabled` input on a `cdkDropList` or a particular handle via
@@ -188,3 +188,13 @@ in addition to preserving the dragged item's initial position in the source list
 decides to return the item.
 
 <!-- example(cdk-drag-drop-disabled-sorting) -->
+
+### Delayed dragging
+By default as soon as the user puts their pointer down on a `cdkDrag`, the dragging sequence will
+be started. This might not be desirable in cases like fullscreen draggable elements on touch
+devices where the user might accidentally trigger a drag as they're scrolling the page. For
+cases like these you can delay the dragging sequence using the `cdkDragStartDelay` input which
+will wait for the user to hold down their pointer for the specified number of milliseconds before
+moving the element.
+
+<!-- example(cdk-drag-drop-delay) -->
