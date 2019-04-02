@@ -15,9 +15,13 @@ module.exports = function addMetadataAliasesProcessor() {
       docs.forEach(doc => {
         switch(doc.docType) {
         case 'directive':
-        case 'component':
-          doc.aliases = doc.aliases.concat(extractSelectors(doc[doc.docType + 'Options'].selector));
+        case 'component': {
+          const selector = doc[doc.docType + 'Options'].selector;
+          if (selector) {
+            doc.aliases = doc.aliases.concat(extractSelectors(selector));
+          }
           break;
+        }
         case 'pipe':
           if (doc.pipeOptions.name) {
             doc.aliases = doc.aliases.concat(stripQuotes(doc.pipeOptions.name));
