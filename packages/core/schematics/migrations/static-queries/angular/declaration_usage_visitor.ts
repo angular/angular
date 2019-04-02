@@ -10,6 +10,21 @@ import * as ts from 'typescript';
 import {isFunctionLikeDeclaration, unwrapExpression} from '../../../utils/typescript/functions';
 
 /**
+ * List of TypeScript syntax tokens that can be used within a binary expression as
+ * compound assignment. These imply a read and write of the left-side expression.
+ */
+const BINARY_COMPOUND_TOKENS = [
+  ts.SyntaxKind.CaretEqualsToken,
+  ts.SyntaxKind.AsteriskEqualsToken,
+  ts.SyntaxKind.AmpersandEqualsToken,
+  ts.SyntaxKind.BarEqualsToken,
+  ts.SyntaxKind.AsteriskAsteriskEqualsToken,
+  ts.SyntaxKind.PlusEqualsToken,
+  ts.SyntaxKind.MinusEqualsToken,
+  ts.SyntaxKind.SlashEqualsToken,
+];
+
+/**
  * Class that can be used to determine if a given TypeScript node is used within
  * other given TypeScript nodes. This is achieved by walking through all children
  * of the given node and checking for usages of the given declaration. The visitor
@@ -18,6 +33,9 @@ import {isFunctionLikeDeclaration, unwrapExpression} from '../../../utils/typesc
 export class DeclarationUsageVisitor {
   /** Set of visited symbols that caused a jump in control flow. */
   private visitedJumpExprSymbols = new Set<ts.Symbol>();
+
+  /** Set of visited accessor nodes that caused a jump in control flow. */
+  private visitedAccessorNodes = new Set<ts.AccessorDeclaration>();
 
   constructor(private declaration: ts.Node, private typeChecker: ts.TypeChecker) {}
 
@@ -74,23 +92,58 @@ export class DeclarationUsageVisitor {
     }
   }
 
-  private visitPropertyAccessExpression(node: ts.PropertyAccessExpression, nodeQueue: ts.Node[]) {
+  private visitPropertyAccessors(
+      node: ts.PropertyAccessExpression, nodeQueue: ts.Node[], checkSetter: boolean,
+      checkGetter: boolean) {
     const propertySymbol = this.typeChecker.getSymbolAtLocation(node.name);
 
-    if (!propertySymbol || !propertySymbol.valueDeclaration ||
-        this.visitedJumpExprSymbols.has(propertySymbol)) {
+    if (!propertySymbol || !propertySymbol.declarations.length ||
+        (propertySymbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
       return;
     }
 
-    const valueDeclaration = propertySymbol.valueDeclaration;
+    // Since we checked the symbol flags and the symbol is describing an accessor, the
+    // declarations are guaranteed to only contain the getters and setters.
+    const accessors = propertySymbol.declarations as ts.AccessorDeclaration[];
 
-    // In case the property access expression refers to a get accessor, we need to visit
-    // the body of the get accessor declaration as there could be logic that uses the
-    // given search node synchronously.
-    if (ts.isGetAccessorDeclaration(valueDeclaration) && valueDeclaration.body) {
-      this.visitedJumpExprSymbols.add(propertySymbol);
-      nodeQueue.push(valueDeclaration.body);
+    accessors
+        .filter(
+            d => (checkSetter && ts.isSetAccessor(d) || checkGetter && ts.isGetAccessor(d)) &&
+                d.body && !this.visitedAccessorNodes.has(d))
+        .forEach(d => {
+          this.visitedAccessorNodes.add(d);
+          nodeQueue.push(d.body !);
+        });
+  }
+
+  private visitBinaryExpression(node: ts.BinaryExpression, nodeQueue: ts.Node[]): boolean {
+    const leftExpr = unwrapExpression(node.left);
+
+    if (!ts.isPropertyAccessExpression(leftExpr)) {
+      return false;
     }
+
+    const symbol = this.typeChecker.getSymbolAtLocation(leftExpr.name);
+
+    if (!symbol || !symbol.declarations.length ||
+        (symbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
+      return false;
+    }
+
+    if (BINARY_COMPOUND_TOKENS.indexOf(node.operatorToken.kind) !== -1) {
+      // Compound assignments always cause the getter and setter to be called.
+      // Therefore we need to check the setter and getter of the property access.
+      this.visitPropertyAccessors(leftExpr, nodeQueue, /* setter */ true, /* getter */ true);
+    } else if (node.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      // Value assignments using the equals token only cause the "setter" to be called.
+      // Therefore we need to analyze the setter declaration of the property access.
+      this.visitPropertyAccessors(leftExpr, nodeQueue, /* setter */ true, /* getter */ false);
+    } else {
+      // If the binary expression is not an assignment, it's a simple property read and
+      // we need to check the getter declaration if present.
+      this.visitPropertyAccessors(leftExpr, nodeQueue, /* setter */ false, /* getter */ true);
+    }
+    return true;
   }
 
   isSynchronouslyUsedInNode(searchNode: ts.Node): boolean {
@@ -116,10 +169,25 @@ export class DeclarationUsageVisitor {
         this.addNewExpressionToQueue(node, nodeQueue);
       }
 
-      // Handle property access expressions. These could resolve to get-accessor declarations
-      // which can contain synchronous logic that accesses the search node.
+      // We also need to handle binary expressions where a value can be either assigned to
+      // the property, or a value is read from a property expression. Depending on the
+      // binary expression operator, setters or getters need to be analyzed.
+      if (ts.isBinaryExpression(node)) {
+        // In case the binary expression contained a property expression on the left side, we
+        // don't want to continue visiting this property expression on its own. This is necessary
+        // because visiting the expression on its own causes a loss of context. e.g. property
+        // access expressions *do not* always cause a value read (e.g. property assignments)
+        if (this.visitBinaryExpression(node, nodeQueue)) {
+          nodeQueue.push(node.right);
+          continue;
+        }
+      }
+
+      // Handle property access expressions. Property expressions which are part of binary
+      // expressions won't be added to the node queue, so these access expressions are
+      // guaranteed to be "read" accesses and we need to check the "getter" declaration.
       if (ts.isPropertyAccessExpression(node)) {
-        this.visitPropertyAccessExpression(node, nodeQueue);
+        this.visitPropertyAccessors(node, nodeQueue, /* setter */ false, /* getter */ true);
       }
 
       // Do not visit nodes that declare a block of statements but are not executed
