@@ -29,6 +29,7 @@ const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   applyTemplateContextGuards: true,
   checkTemplateBodies: true,
   checkTypeOfBindings: true,
+  strictSafeNavigationTypes: true,
 };
 
 describe('ngtsc typechecking', () => {
