@@ -399,10 +399,10 @@
 
 
 # ================================================
-#  packages/compiler-cli/src/ngcc/
+#  packages/compiler-cli/ngcc/
 # ================================================
 
-/packages/compiler-cli/src/ngcc/**                              @angular/fw-ngcc @angular/framework-global-approvers
+/packages/compiler-cli/ngcc/**                                  @angular/fw-ngcc @angular/framework-global-approvers
 
 
 
