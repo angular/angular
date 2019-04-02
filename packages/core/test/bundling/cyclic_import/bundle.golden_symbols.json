@@ -30,6 +30,9 @@
     "name": "DECLARATION_VIEW"
   },
   {
+    "name": "DEFAULT_TEMPLATE_DIRECTIVE_INDEX"
+  },
+  {
     "name": "DepComponent"
   },
   {
@@ -159,6 +162,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "_selectedIndex"
+  },
+  {
     "name": "addComponentLogic"
   },
   {
@@ -171,7 +177,7 @@
     "name": "allocStylingContext"
   },
   {
-    "name": "allocateDirectiveIntoContext"
+    "name": "allocateOrUpdateDirectiveIntoContext"
   },
   {
     "name": "allowValueChange"
@@ -339,9 +345,6 @@
     "name": "getDirectiveDef"
   },
   {
-    "name": "getDirectiveRegistryValuesIndexOf"
-  },
-  {
     "name": "getElementDepthCount"
   },
   {
@@ -448,6 +451,9 @@
   },
   {
     "name": "increaseElementDepthCount"
+  },
+  {
+    "name": "incrementActiveDirectiveId"
   },
   {
     "name": "initNodeFlags"
@@ -627,7 +633,7 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "setActiveHost"
+    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"
@@ -667,6 +673,9 @@
   },
   {
     "name": "setPreviousOrParentTNode"
+  },
+  {
+    "name": "setSelectedIndex"
   },
   {
     "name": "setStyle"
