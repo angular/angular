@@ -7,7 +7,7 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {RenderFlags, elementStart, elementStyling, elementEnd, element, elementProperty, bind, elementAttribute, select, elementStyleProp, elementStylingApply, elementStylingMap, template, text, textBinding, interpolation1} from '../../src/render3';
+import {RenderFlags, elementStart, elementStyling, elementEnd, element, elementProperty, bind, elementAttribute, select, elementStyleProp, elementStylingApply, elementStylingMap, template, text, textBinding, interpolation1, property} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
@@ -16,7 +16,6 @@ import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
-import {property} from '@angular/core/src/render3/instructions/all';
 
 describe('instructions', () => {
   function createAnchor() {
