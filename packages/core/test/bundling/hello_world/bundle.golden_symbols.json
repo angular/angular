@@ -135,6 +135,9 @@
     "name": "_renderCompCount"
   },
   {
+    "name": "_selectedIndex"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -324,6 +327,9 @@
     "name": "includeViewProviders"
   },
   {
+    "name": "incrementActiveDirectiveId"
+  },
+  {
     "name": "initNodeFlags"
   },
   {
@@ -435,7 +441,7 @@
     "name": "resetPreOrderHookFlags"
   },
   {
-    "name": "setActiveHost"
+    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"
@@ -463,6 +469,9 @@
   },
   {
     "name": "setPreviousOrParentTNode"
+  },
+  {
+    "name": "setSelectedIndex"
   },
   {
     "name": "setStyle"

@@ -6,18 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {TNode} from '../interfaces/node';
+import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
 import {FLAGS, HEADER_OFFSET, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
-import {getActiveHostContext, getActiveHostElementIndex, getLView, getPreviousOrParentTNode} from '../state';
+import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getLView, getPreviousOrParentTNode, getSelectedIndex} from '../state';
 import {getInitialClassNameValue, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
+import {ParamsOf, enqueueHostInstruction, registerHostDirective} from '../styling/host_instructions_queue';
 import {BoundPlayerFactory} from '../styling/player_factory';
-import {allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
+import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
+import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getRootContext} from '../util/view_traversal_utils';
 import {getTNode} from '../util/view_utils';
+
 import {scheduleTick, setInputsForProperty} from './shared';
+
+
 
 /*
  * The contents of this file include the instructions for all styling-related
@@ -39,7 +44,6 @@ import {scheduleTick, setInputsForProperty} from './shared';
  * - elementHostClassProp
  * - elementHostStylingApply
  */
-
 
 /**
  * Allocates style and class binding properties on the element during creation mode.
@@ -74,7 +78,9 @@ export function elementStyling(
   // components) then they will be applied at the end of the `elementEnd`
   // instruction (because directives are created first before styling is
   // executed for a new element).
-  initElementStyling(tNode, classBindingNames, styleBindingNames, styleSanitizer, null);
+  initElementStyling(
+      tNode, classBindingNames, styleBindingNames, styleSanitizer,
+      DEFAULT_TEMPLATE_DIRECTIVE_INDEX);
 }
 
 /**
@@ -108,25 +114,28 @@ export function elementHostStyling(
     tNode.stylingTemplate = createEmptyStylingContext();
   }
 
-  const directive = getActiveHostContext();
+  const directiveStylingIndex = getActiveDirectiveStylingIndex();
 
   // despite the binding being applied in a queue (below), the allocation
   // of the directive into the context happens right away. The reason for
   // this is to retain the ordering of the directives (which is important
   // for the prioritization of bindings).
-  allocateDirectiveIntoContext(tNode.stylingTemplate, directive);
+  allocateOrUpdateDirectiveIntoContext(tNode.stylingTemplate, directiveStylingIndex);
 
   const fns = tNode.onElementCreationFns = tNode.onElementCreationFns || [];
-  fns.push(
-      () => initElementStyling(
-          tNode, classBindingNames, styleBindingNames, styleSanitizer, directive));
+  fns.push(() => {
+    initElementStyling(
+        tNode, classBindingNames, styleBindingNames, styleSanitizer, directiveStylingIndex);
+    registerHostDirective(tNode.stylingTemplate !, directiveStylingIndex);
+  });
 }
 
 function initElementStyling(
-    tNode: TNode, classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
-    styleSanitizer?: StyleSanitizeFn | null, directive?: {} | null): void {
+    tNode: TNode, classBindingNames: string[] | null | undefined,
+    styleBindingNames: string[] | null | undefined,
+    styleSanitizer: StyleSanitizeFn | null | undefined, directiveStylingIndex: number): void {
   updateContextWithBindings(
-      tNode.stylingTemplate !, directive || null, classBindingNames, styleBindingNames,
+      tNode.stylingTemplate !, directiveStylingIndex, classBindingNames, styleBindingNames,
       styleSanitizer);
 }
 
@@ -160,7 +169,10 @@ function initElementStyling(
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
-  elementStylePropInternal(null, index, styleIndex, value, suffix, forceOverride);
+  const valueToAdd = resolveStylePropValue(value, suffix);
+  updateElementStyleProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd,
+      DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
 
 /**
@@ -191,15 +203,20 @@ export function elementStyleProp(
 export function elementHostStyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
-  elementStylePropInternal(
-      getActiveHostContext() !, getActiveHostElementIndex() !, styleIndex, value, suffix,
-      forceOverride);
+  const directiveStylingIndex = getActiveDirectiveStylingIndex();
+  const hostElementIndex = getSelectedIndex();
+
+  const lView = getLView();
+  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
+
+  const valueToAdd = resolveStylePropValue(value, suffix);
+  const args: ParamsOf<typeof updateElementStyleProp> =
+      [stylingContext, styleIndex, valueToAdd, directiveStylingIndex, forceOverride];
+  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateElementStyleProp, args);
 }
 
-function elementStylePropInternal(
-    directive: {} | null, index: number, styleIndex: number,
-    value: string | number | String | PlayerFactory | null, suffix?: string | null,
-    forceOverride?: boolean): void {
+function resolveStylePropValue(
+    value: string | number | String | PlayerFactory | null, suffix: string | null | undefined) {
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -214,9 +231,7 @@ function elementStylePropInternal(
       valueToAdd = value as any as string;
     }
   }
-  updateElementStyleProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive,
-      forceOverride);
+  return valueToAdd;
 }
 
 
@@ -241,7 +256,12 @@ function elementStylePropInternal(
 export function elementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory,
     forceOverride?: boolean): void {
-  elementClassPropInternal(null, index, classIndex, value, forceOverride);
+  const input = (value instanceof BoundPlayerFactory) ?
+      (value as BoundPlayerFactory<boolean|null>) :
+      booleanOrNull(value);
+  updateElementClassProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, input,
+      DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
 
 
@@ -265,19 +285,19 @@ export function elementClassProp(
  */
 export function elementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
-  elementClassPropInternal(
-      getActiveHostContext() !, getActiveHostElementIndex() !, classIndex, value, forceOverride);
-}
+  const directiveStylingIndex = getActiveDirectiveStylingIndex();
+  const hostElementIndex = getSelectedIndex();
 
-function elementClassPropInternal(
-    directive: {} | null, index: number, classIndex: number, value: boolean | PlayerFactory,
-    forceOverride?: boolean): void {
+  const lView = getLView();
+  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
+
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
-  updateElementClassProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, input, directive,
-      forceOverride);
+
+  const args: ParamsOf<typeof updateElementClassProp> =
+      [stylingContext, classIndex, input, directiveStylingIndex, forceOverride];
+  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateElementClassProp, args);
 }
 
 function booleanOrNull(value: any): boolean|null {
@@ -309,7 +329,30 @@ function booleanOrNull(value: any): boolean|null {
 export function elementStylingMap(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
-  elementStylingMapInternal(null, index, classes, styles);
+  const lView = getLView();
+  const tNode = getTNode(index, lView);
+  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
+
+  // inputs are only evaluated from a template binding into a directive, therefore,
+  // there should not be a situation where a directive host bindings function
+  // evaluates the inputs (this should only happen in the template function)
+  if (hasClassInput(tNode) && classes !== NO_CHANGE) {
+    const initialClasses = getInitialClassNameValue(stylingContext);
+    const classInputVal =
+        (initialClasses.length ? (initialClasses + ' ') : '') + forceClassesAsString(classes);
+    setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+    classes = NO_CHANGE;
+  }
+
+  if (hasStyleInput(tNode) && styles !== NO_CHANGE) {
+    const initialStyles = getInitialClassNameValue(stylingContext);
+    const styleInputVal =
+        (initialStyles.length ? (initialStyles + ' ') : '') + forceStylesAsString(styles);
+    setInputsForProperty(lView, tNode.inputs !['style'] !, styleInputVal);
+    styles = NO_CHANGE;
+  }
+
+  updateStylingMap(stylingContext, classes, styles);
 }
 
 
@@ -339,39 +382,15 @@ export function elementStylingMap(
 export function elementHostStylingMap(
     classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
-  elementStylingMapInternal(
-      getActiveHostContext() !, getActiveHostElementIndex() !, classes, styles);
-}
+  const directiveStylingIndex = getActiveDirectiveStylingIndex();
+  const hostElementIndex = getSelectedIndex();
 
-function elementStylingMapInternal(
-    directive: {} | null, index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const lView = getLView();
-  const tNode = getTNode(index, lView);
-  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
+  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
 
-  // inputs are only evaluated from a template binding into a directive, therefore,
-  // there should not be a situation where a directive host bindings function
-  // evaluates the inputs (this should only happen in the template function)
-  if (!directive) {
-    if (hasClassInput(tNode) && classes !== NO_CHANGE) {
-      const initialClasses = getInitialClassNameValue(stylingContext);
-      const classInputVal =
-          (initialClasses.length ? (initialClasses + ' ') : '') + forceClassesAsString(classes);
-      setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
-      classes = NO_CHANGE;
-    }
-
-    if (hasStyleInput(tNode) && styles !== NO_CHANGE) {
-      const initialStyles = getInitialClassNameValue(stylingContext);
-      const styleInputVal =
-          (initialStyles.length ? (initialStyles + ' ') : '') + forceStylesAsString(styles);
-      setInputsForProperty(lView, tNode.inputs !['style'] !, styleInputVal);
-      styles = NO_CHANGE;
-    }
-  }
-
-  updateStylingMap(stylingContext, classes, styles, directive);
+  const args: ParamsOf<typeof updateStylingMap> =
+      [stylingContext, classes, styles, directiveStylingIndex];
+  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateStylingMap, args);
 }
 
 
@@ -387,7 +406,7 @@ function elementStylingMapInternal(
  * @publicApi
  */
 export function elementStylingApply(index: number): void {
-  elementStylingApplyInternal(null, index);
+  elementStylingApplyInternal(DEFAULT_TEMPLATE_DIRECTIVE_INDEX, index);
 }
 
 /**
@@ -401,17 +420,33 @@ export function elementStylingApply(index: number): void {
  * @publicApi
  */
 export function elementHostStylingApply(): void {
-  elementStylingApplyInternal(getActiveHostContext() !, getActiveHostElementIndex() !);
+  elementStylingApplyInternal(getActiveDirectiveStylingIndex(), getSelectedIndex());
 }
 
-export function elementStylingApplyInternal(directive: {} | null, index: number): void {
+export function elementStylingApplyInternal(directiveStylingIndex: number, index: number): void {
   const lView = getLView();
+  const tNode = getTNode(index, lView);
+
+  // if a non-element value is being processed then we can't render values
+  // on the element at all therefore by setting the renderer to null then
+  // the styling apply code knows not to actually apply the values...
+  const renderer = tNode.type === TNodeType.Element ? lView[RENDERER] : null;
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
+  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
   const totalPlayersQueued = renderStyling(
-      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender, null,
-      null, directive);
+      stylingContext, renderer, lView, isFirstRender, null, null, directiveStylingIndex);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(lView);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
   }
+}
+
+export function getActiveDirectiveStylingIndex() {
+  // whenever a directive's hostBindings function is called a uniqueId value
+  // is assigned. Normally this is enough to help distinguish one directive
+  // from another for the styling context, but there are situations where a
+  // sub-class directive could inherit and assign styling in concert with a
+  // parent directive. To help the styling code distinguish between a parent
+  // sub-classed directive the inheritance depth is taken into account as well.
+  return getActiveDirectiveId() + getActiveDirectiveSuperClassDepth();
 }

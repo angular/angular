@@ -13,6 +13,7 @@ import {TAttributes, TNodeType} from '../interfaces/node';
 import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
+import {applyOnCreateInstructions} from '../node_util';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
 import {createDirectivesAndLocals, createNodeAtIndex, executeContentQueries, setNodeStylingTemplate} from './shared';
 
@@ -82,6 +83,10 @@ export function elementContainerEnd(): void {
   if (currentQueries) {
     lView[QUERIES] = currentQueries.parent;
   }
+
+  // this is required for all host-level styling-related instructions to run
+  // in the correct order
+  previousOrParentTNode.onElementCreationFns && applyOnCreateInstructions(previousOrParentTNode);
 
   registerPostOrderHooks(tView, previousOrParentTNode);
 }
