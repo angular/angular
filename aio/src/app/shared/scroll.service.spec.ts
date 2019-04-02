@@ -51,7 +51,7 @@ describe('ScrollService', () => {
     spyOn(window, 'scrollBy');
   });
 
-  it('should debounce `updateScrollPositonInHistory()` after 500ms', fakeAsync(() => {
+  it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
 
     window.dispatchEvent(new Event('scroll'));
