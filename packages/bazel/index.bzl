@@ -7,7 +7,7 @@
 Users should not load files under "/src"
 """
 
-load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module")
+load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module_macro")
 load("//packages/bazel/src/ng_package:ng_package.bzl", _ng_package = "ng_package")
 load(
     "//packages/bazel/src/protractor:protractor_web_test.bzl",
