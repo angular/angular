@@ -299,6 +299,9 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _enable_ivy_value(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
+        # TODO(alxhub/arick): template type-checking for Ivy needs to be tested in g3 before it can
+        # be enabled here.
+        "ivyTemplateTypeCheck": False,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
