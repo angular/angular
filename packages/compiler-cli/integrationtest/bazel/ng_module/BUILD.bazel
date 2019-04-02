@@ -21,6 +21,7 @@ ng_module(
     deps = [
         "//packages/core",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 

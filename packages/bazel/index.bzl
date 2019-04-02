@@ -13,7 +13,7 @@ load(
     _protractor_web_test = "protractor_web_test",
     _protractor_web_test_suite = "protractor_web_test_suite",
 )
-load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module")
+load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module_macro")
 
 ng_module = _ng_module
 ng_package = _ng_package
