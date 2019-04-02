@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, Expression, ExternalExpr, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
+import {CssSelector, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ImportMode, Reference, ReferenceEmitStrategy, ReferenceEmitter} from '../../imports';
+import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
-import {ImportManager} from '../../translator';
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {Environment} from '../src/environment';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 
@@ -60,7 +60,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t1 = i0.Dir.ngTypeCtor({}); _t1.value; var _t2 = document.createElement("div");');
+            'var _t1 = Dir.ngTypeCtor({}); _t1.value; var _t2 = document.createElement("div");');
   });
 
   it('should handle style and class bindings specially', () => {
@@ -92,7 +92,7 @@ describe('type check blocks', () => {
 
     describe('config.applyTemplateContextGuards', () => {
       const TEMPLATE = `<div *dir></div>`;
-      const GUARD_APPLIED = 'if (i0.Dir.ngTemplateContextGuard(';
+      const GUARD_APPLIED = 'if (Dir.ngTemplateContextGuard(';
 
       it('should apply template context guards when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
@@ -124,13 +124,13 @@ describe('type check blocks', () => {
 
       it('should check types of bindings when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('i0.Dir.ngTypeCtor({ dirInput: ctx.a })');
+        expect(block).toContain('Dir.ngTypeCtor({ dirInput: ctx.a })');
         expect(block).toContain('.nonDirInput = ctx.a;');
       });
       it('should not check types of bindings when disabled', () => {
         const DISABLED_CONFIG = {...BASE_CONFIG, checkTypeOfBindings: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('i0.Dir.ngTypeCtor({ dirInput: (ctx.a as any) })');
+        expect(block).toContain('Dir.ngTypeCtor({ dirInput: (ctx.a as any) })');
         expect(block).toContain('.nonDirInput = (ctx.a as any);');
       });
     });
@@ -163,7 +163,7 @@ it('should generate a circular directive reference correctly', () => {
     exportAs: ['dir'],
     inputs: {input: 'input'},
   }];
-  expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = i0.Dir.ngTypeCtor({ input: (null!) });');
+  expect(tcb(TEMPLATE, DIRECTIVES)).toContain('var _t2 = Dir.ngTypeCtor({ input: (null!) });');
 });
 
 it('should generate circular references between two directives correctly', () => {
@@ -187,8 +187,8 @@ it('should generate circular references between two directives correctly', () =>
   ];
   expect(tcb(TEMPLATE, DIRECTIVES))
       .toContain(
-          'var _t3 = i0.DirB.ngTypeCtor({ inputA: (null!) });' +
-          ' var _t2 = i1.DirA.ngTypeCtor({ inputA: _t3 });');
+          'var _t3 = DirB.ngTypeCtor({ inputA: (null!) }); ' +
+          'var _t2 = DirA.ngTypeCtor({ inputA: _t3 });');
 });
 
 function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
@@ -208,7 +208,7 @@ type TestDirective =
 function tcb(
     template: string, directives: TestDirective[] = [], config?: TypeCheckingConfig): string {
   const classes = ['Test', ...directives.map(dir => dir.name)];
-  const code = classes.map(name => `class ${name} {}`).join('\n');
+  const code = classes.map(name => `class ${name}<T extends string> {}`).join('\n');
 
   const sf = ts.createSourceFile('synthetic.ts', code, ts.ScriptTarget.Latest, true);
   const clazz = getClass(sf, 'Test');
@@ -234,10 +234,7 @@ function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {
-    boundTarget,
-    fnName: 'Test_TCB',
-  };
+  const meta: TypeCheckBlockMetadata = {boundTarget};
 
   config = config || {
     applyTemplateContextGuards: true,
@@ -246,19 +243,40 @@ function tcb(
     strictSafeNavigationTypes: true,
   };
 
-  const im = new ImportManager(undefined, 'i');
   const tcb = generateTypeCheckBlock(
-      clazz, meta, config, im, new ReferenceEmitter([new FakeReferenceStrategy()]));
+      FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta);
 
   const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tcb, sf);
   return res.replace(/\s+/g, ' ');
 }
 
-class FakeReferenceStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode?: ImportMode): Expression {
-    return new ExternalExpr({
-      moduleName: `types/${ref.debugName}`,
-      name: ref.debugName,
-    });
+class FakeEnvironment /* implements Environment */ {
+  constructor(readonly config: TypeCheckingConfig) {}
+
+  typeCtorFor(dir: TypeCheckableDirectiveMeta): ts.Expression {
+    return ts.createPropertyAccess(ts.createIdentifier(dir.name), 'ngTypeCtor');
+  }
+
+  reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
+    return ref.node.name;
+  }
+
+  referenceType(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.TypeNode {
+    return ts.createTypeReferenceNode(ref.node.name, /* typeArguments */ undefined);
+  }
+
+  referenceCoreType(name: string, typeParamCount: number = 0): ts.TypeNode {
+    const typeArgs: ts.TypeNode[] = [];
+    for (let i = 0; i < typeParamCount; i++) {
+      typeArgs.push(ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    }
+
+    const qName = ts.createQualifiedName(ts.createIdentifier('ng'), name);
+    return ts.createTypeReferenceNode(qName, typeParamCount > 0 ? typeArgs : undefined);
+  }
+  getPreludeStatements(): ts.Statement[] { return []; }
+
+  static newFake(config: TypeCheckingConfig): Environment {
+    return new FakeEnvironment(config) as Environment;
   }
 }

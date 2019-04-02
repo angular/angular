@@ -32,11 +32,6 @@ export interface TypeCheckBlockMetadata {
    * Semantic information about the template of the component.
    */
   boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
-
-  /**
-   * The name of the requested type check block function.
-   */
-  fnName: string;
 }
 
 export interface TypeCtorMetadata {

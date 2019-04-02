@@ -27,11 +27,11 @@ import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
-import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
+import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
-import {TypeCheckContext, TypeCheckProgramHost, TypeCheckingConfig} from './typecheck';
+import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath} from './util/src/typescript';
 
@@ -64,6 +64,7 @@ export class NgtscProgram implements api.Program {
   private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
   private perfTracker: PerfTracker|null = null;
   private incrementalState: IncrementalState;
+  private typeCheckFilePath: AbsoluteFsPath;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -104,6 +105,10 @@ export class NgtscProgram implements api.Program {
       rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
       generators.push(summaryGenerator, factoryGenerator);
     }
+
+    this.typeCheckFilePath = typeCheckFilePath(this.rootDirs);
+    generators.push(new TypeCheckShimGenerator(this.typeCheckFilePath));
+    rootFiles.push(this.typeCheckFilePath);
 
     let entryPoint: string|null = null;
     if (options.flatModuleOutFile !== undefined) {
@@ -189,18 +194,7 @@ export class NgtscProgram implements api.Program {
       fileName?: string|undefined, cancellationToken?: ts.CancellationToken|
                                    undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
     const compilation = this.ensureAnalyzed();
-    const diagnostics = [...compilation.diagnostics];
-    if (!!this.options.fullTemplateTypeCheck) {
-      const config: TypeCheckingConfig = {
-        applyTemplateContextGuards: true,
-        checkTemplateBodies: true,
-        checkTypeOfBindings: true,
-        strictSafeNavigationTypes: true,
-      };
-      const ctx = new TypeCheckContext(config, this.refEmitter !);
-      compilation.typeCheck(ctx);
-      diagnostics.push(...this.compileTypeCheckProgram(ctx));
-    }
+    const diagnostics = [...compilation.diagnostics, ...this.getTemplateDiagnostics()];
     if (this.entryPoint !== null && this.exportReferenceGraph !== null) {
       diagnostics.push(...checkForPrivateExports(
           this.entryPoint, this.tsProgram.getTypeChecker(), this.exportReferenceGraph));
@@ -344,8 +338,11 @@ export class NgtscProgram implements api.Program {
 
     const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
+
+    const typeCheckFile = this.tsProgram.getSourceFile(this.typeCheckFilePath);
+
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
-      if (targetSourceFile.isDeclarationFile) {
+      if (targetSourceFile.isDeclarationFile || targetSourceFile === typeCheckFile) {
         continue;
       }
 
@@ -378,15 +375,47 @@ export class NgtscProgram implements api.Program {
     return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
-  private compileTypeCheckProgram(ctx: TypeCheckContext): ReadonlyArray<ts.Diagnostic> {
-    const host = new TypeCheckProgramHost(this.tsProgram, this.host, ctx);
-    const auxProgram = ts.createProgram({
-      host,
-      rootNames: this.tsProgram.getRootFileNames(),
-      oldProgram: this.tsProgram,
-      options: this.options,
-    });
-    return auxProgram.getSemanticDiagnostics();
+  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+    // Skip template type-checking unless explicitly requested.
+    if (this.options.fullTemplateTypeCheck !== true) {
+      return [];
+    }
+
+    const compilation = this.ensureAnalyzed();
+
+    // Run template type-checking.
+
+    // First select a type-checking configuration, based on whether full template type-checking is
+    // requested.
+    let typeCheckingConfig: TypeCheckingConfig;
+    if (this.options.fullTemplateTypeCheck) {
+      typeCheckingConfig = {
+        applyTemplateContextGuards: true,
+        checkTemplateBodies: true,
+        checkTypeOfBindings: true,
+        strictSafeNavigationTypes: true,
+      };
+    } else {
+      typeCheckingConfig = {
+        applyTemplateContextGuards: false,
+        checkTemplateBodies: false,
+        checkTypeOfBindings: false,
+        strictSafeNavigationTypes: false,
+      };
+    }
+
+    // Execute the typeCheck phase of each decorator in the program.
+    const prepSpan = this.perfRecorder.start('typeCheckPrep');
+    const ctx = new TypeCheckContext(typeCheckingConfig, this.refEmitter !, this.typeCheckFilePath);
+    compilation.typeCheck(ctx);
+    this.perfRecorder.stop(prepSpan);
+
+    // Get the diagnostics.
+    const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
+    const diagnostics = ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
+    this.perfRecorder.stop(typeCheckSpan);
+
+    return diagnostics;
   }
 
   private makeCompilation(): IvyCompilation {

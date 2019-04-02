@@ -9,3 +9,4 @@
 export * from './src/api';
 export {TypeCheckContext} from './src/context';
 export {TypeCheckProgramHost} from './src/host';
+export {typeCheckFilePath} from './src/type_check_file';
