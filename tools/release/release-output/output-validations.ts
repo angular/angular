@@ -1,6 +1,6 @@
 import {existsSync, readFileSync} from 'fs';
 import {sync as glob} from 'glob';
-import {dirname, isAbsolute, join} from 'path';
+import {dirname, isAbsolute, join, basename} from 'path';
 import * as ts from 'typescript';
 
 /** RegExp that matches Angular component inline styles that contain a sourcemap reference. */
@@ -86,4 +86,15 @@ export function checkMaterialPackage(packagePath: string): string[] {
   }
 
   return failures;
+}
+
+/**
+ * Checks whether the prebuilt CDK files are part of the release output.
+ */
+export function checkCdkPackage(packagePath: string): string[] {
+  const prebuiltFiles = glob('*-prebuilt.css', {cwd: packagePath}).map(path => basename(path));
+
+  return ['overlay', 'a11y', 'text-field']
+      .filter(name => !prebuiltFiles.includes(`${name}-prebuilt.css`))
+      .map(name => `Could not find the prebuilt ${name} styles.`);
 }

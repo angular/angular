@@ -2,7 +2,9 @@ import {bold, red, yellow} from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
 import {join} from 'path';
+
 import {
+  checkCdkPackage,
   checkMaterialPackage,
   checkReleaseBundle,
   checkTypeDefinitionFile
@@ -51,8 +53,9 @@ export function checkReleasePackage(releasesPath: string, packageName: string): 
 
   // Special release validation checks for the "material" release package.
   if (packageName === 'material') {
-    checkMaterialPackage(join(releasesPath, packageName))
-      .forEach(message => addFailure(message));
+    checkMaterialPackage(join(releasesPath, packageName)).forEach(message => addFailure(message));
+  } else if (packageName === 'cdk') {
+    checkCdkPackage(join(releasesPath, packageName)).forEach(message => addFailure(message));
   }
 
   if (!existsSync(join(packagePath, 'LICENSE'))) {
