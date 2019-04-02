@@ -189,7 +189,7 @@ export class ScrollService {
    * Check if the scroll position need to be manually fixed after popState event
    */
   needToFixScrollPosition(): boolean {
-    return this.supportManualScrollRestoration && (this.poppedStateScrollPosition !== null);
+    return this.supportManualScrollRestoration && !!this.poppedStateScrollPosition;
   }
 
   /**
