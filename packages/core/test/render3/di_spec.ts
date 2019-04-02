@@ -11,7 +11,7 @@ import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/d
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
+import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExtractor} from '../../src/render3';
 
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions/all';
 import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
