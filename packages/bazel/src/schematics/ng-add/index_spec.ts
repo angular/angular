@@ -246,4 +246,23 @@ describe('ng-add schematic', () => {
     const json = JSON.parse(content);
     expect(json.scripts.postinstall).toBe('ngc -p ./angular-metadata.tsconfig.json');
   });
+
+  it('should work when run on a minimal project (without test and e2e targets)', () => {
+    host.overwrite('angular.json', JSON.stringify({
+      projects: {
+        'demo': {
+          architect: {
+            build: {},
+            serve: {},
+            'extract-i18n': {
+              builder: '@angular-devkit/build-angular:extract-i18n',
+            },
+          },
+        },
+      },
+    }));
+
+    expect(() => schematicRunner.runSchematic('ng-add', defaultOptions, host)).not.toThrowError();
+  });
+
 });

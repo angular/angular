@@ -154,15 +154,18 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
           },
         },
         indent);
-    replacePropertyInAstObject(
-        recorder, architect, 'test', {
-          builder: '@angular/bazel:build',
-          options: {'bazelCommand': 'test', 'targetLabel': '//src/...'},
-        },
-        indent);
+
+    if (findPropertyInAstObject(architect, 'test')) {
+      replacePropertyInAstObject(
+          recorder, architect, 'test', {
+            builder: '@angular/bazel:build',
+            options: {'bazelCommand': 'test', 'targetLabel': '//src/...'},
+          },
+          indent);
+    }
 
     const e2eArchitect = findE2eArchitect(workspaceJsonAst, name);
-    if (e2eArchitect) {
+    if (e2eArchitect && findPropertyInAstObject(e2eArchitect, 'e2e')) {
       replacePropertyInAstObject(
           recorder, e2eArchitect, 'e2e', {
             builder: '@angular/bazel:build',
