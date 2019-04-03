@@ -154,6 +154,10 @@ a [focus trap](https://material.angular.io/cdk/a11y/overview#focustrap) to conta
 within itself. Once a dialog is closed, it will return focus to the element that was focused
 before the dialog was opened.
 
+If you're adding a close button that doesn't have text (e.g. a purely icon-based button), make sure
+that it has a meaningful `aria-label` so that users with assistive technology know what it is used
+for.
+
 #### Focus management
 By default, the first tabbable element within the dialog will receive focus upon open. This can
 be configured by setting the `cdkFocusInitial` attribute on another focusable element.
