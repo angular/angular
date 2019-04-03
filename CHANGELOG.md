@@ -1,3 +1,14 @@
+<a name="7.2.12"></a>
+## [7.2.12](https://github.com/angular/angular/compare/7.2.11...7.2.12) (2019-04-03)
+
+
+### Bug Fixes
+
+* **common:** escape query selector used when anchor scrolling ([#29577](https://github.com/angular/angular/issues/29577)) ([7671c73](https://github.com/angular/angular/commit/7671c73)), closes [#28193](https://github.com/angular/angular/issues/28193)
+* **router:** adjust setting navigationTransition when a new navigation cancels an existing one ([#29636](https://github.com/angular/angular/issues/29636)) ([e884c0c](https://github.com/angular/angular/commit/e884c0c)), closes [#29389](https://github.com/angular/angular/issues/29389) [#29590](https://github.com/angular/angular/issues/29590)
+
+
+
 <a name="8.0.0-beta.10"></a>
 # [8.0.0-beta.10](https://github.com/angular/angular/compare/8.0.0-beta.9...8.0.0-beta.10) (2019-03-26)
 
