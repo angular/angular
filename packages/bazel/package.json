@@ -12,6 +12,13 @@
     "modify_tsconfig": "./src/modify_tsconfig.js"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
+  "bazelBin": {
+    "ngc-wrapped": {
+      "additionalAttributes": {
+        "configuration_env_vars": "[\"compile\"]"
+      }
+    }
+  },
   "bazelWorkspaces": {
     "npm_angular_bazel": {
       "version": "0.0.0-PLACEHOLDER",
