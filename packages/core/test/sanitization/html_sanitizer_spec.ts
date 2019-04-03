@@ -52,6 +52,15 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<main><summary>Works</summary></main>');
     });
 
+    it('supports ARIA attributes', () => {
+      expect(_sanitizeHtml(defaultDoc, '<h1 role="presentation" aria-haspopup="true">Test</h1>'))
+          .toEqual('<h1 role="presentation" aria-haspopup="true">Test</h1>');
+      expect(_sanitizeHtml(defaultDoc, '<i aria-label="Info">Info</i>'))
+          .toEqual('<i aria-label="Info">Info</i>');
+      expect(_sanitizeHtml(defaultDoc, '<img src="pteranodon.jpg" aria-details="details">'))
+          .toEqual('<img src="pteranodon.jpg" aria-details="details">');
+    });
+
     it('sanitizes srcset attributes', () => {
       expect(_sanitizeHtml(defaultDoc, '<img srcset="/foo.png 400px, javascript:evil() 23px">'))
           .toEqual('<img srcset="/foo.png 400px, unsafe:javascript:evil() 23px">');
