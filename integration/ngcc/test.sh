@@ -7,7 +7,9 @@ PATH=$PATH:$(npm bin)
 ivy-ngcc --help
 
 # node --inspect-brk $(npm bin)/ivy-ngcc -f esm2015
-ivy-ngcc
+# Run ngcc and check it logged compilation output as expected
+ivy-ngcc | grep 'Compiling'
+if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it add the appropriate build markers?
 
@@ -60,7 +62,12 @@ ivy-ngcc
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?
-ivy-ngcc
+# And check that it logged skipping compilation as expected
+ivy-ngcc | grep 'Skipping'
+if [[ $? != 0 ]]; then exit 1; fi
+
+# Check that running it with logging level error outputs nothing
+ivy-ngcc -l error | grep '.' && exit 1
 
 # Does running it with --formats fail?
 ivy-ngcc --formats fesm2015 && exit 1
