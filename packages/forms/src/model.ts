@@ -1275,48 +1275,63 @@ export class FormGroup extends AbstractControl {
   }
 
   /**
+   * Unregisters a control with the group's list of controls.
+   *
+   * This method does not update the value or validity of the control.
+   * Use {@link FormGroup#removeControl removeControl} instead.
+   *
+   * @param name The control name to unregister from the collection
+   */
+  unregisterControl(name: string): AbstractControl|null {
+    if (!this.controls[name]) return null;
+    const control = this.controls[name];
+    control._registerOnCollectionChange(() => {});
+    delete (this.controls[name]);
+    return control;
+  }
+
+  /**
    * Add a control to this group.
    *
    * This method also updates the value and validity of the control.
    *
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
-   * @param options Configuration options that determine how the control propagates changes
-   * and emits events after the control is added.
-   *
+   * @param opts Configuration options determine how the control propagates changes and emits
+   * events after the control is added.
+   * * `onlySelf`: When true, only update this control. When false or not supplied,
+   * update all direct ancestors. Default is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges`
-   * observables emit events with the latest status and value when the control is added.
-   * When false, no events are emitted.
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * added. When false, no events are emitted.
    */
-  addControl(name: string, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
+  addControl(
+      name: string, control: AbstractControl,
+      opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this.registerControl(name, control);
 
-    if (options.emitEvent === false) return;
-
-    this.updateValueAndValidity();
+    this.updateValueAndValidity(opts);
     this._onCollectionChange();
   }
 
   /**
    * Remove a control from this group.
    *
-   * @param name The control name to remove from the collection
-   * @param options Configuration options that determine how the control propagates changes
-   * and emits events after the control is removed.
+   * This method also updates the value and validity of the control.
    *
+   * @param name The control name to remove from the collection
+   * @param opts Configuration options determine how the control propagates changes and emits
+   * events after the control is removed.
+   * * `onlySelf`: When true, only update this control. When false or not supplied,
+   * update all direct ancestors. Default is false.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges`
-   * observables emit events with the latest status and value when the control is removed.
-   * When false, no events are emitted.
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
    */
-  removeControl(name: string, options: {emitEvent?: boolean} = {}): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
-    delete (this.controls[name]);
+  removeControl(name: string, opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this.unregisterControl(name);
 
-    if (options.emitEvent === false) return;
-
-    this.updateValueAndValidity();
+    this.updateValueAndValidity(opts);
     this._onCollectionChange();
   }
 

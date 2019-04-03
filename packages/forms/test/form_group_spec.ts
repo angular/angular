@@ -171,19 +171,45 @@ import {of } from 'rxjs';
         expect(g.valid).toBe(true);
       });
 
-      it('should not update value and validity when control is added with emitEvent false', () => {
+      it('should not update value and validity when control is registered', () => {
         const g = new FormGroup({'one': new FormControl('1')});
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
 
-        g.addControl('two', new FormControl('2', Validators.minLength(10)), {emitEvent: false});
+        g.registerControl('two', new FormControl('2', Validators.minLength(10)));
 
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
       });
 
-      it('should not update value and validity when control is removed with emitEvent false',
-         () => {
+      it('should not update value and validity when control is unregistered', () => {
+        const g = new FormGroup(
+            {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
+        expect(g.value).toEqual({'one': '1', 'two': '2'});
+        expect(g.valid).toBe(false);
+
+        g.unregisterControl('two');
+
+        expect(g.value).toEqual({'one': '1', 'two': '2'});
+        expect(g.valid).toBe(false);
+      });
+
+      it('should not emit events when control is added and emitEvent is false', fakeAsync(() => {
+           const g = new FormGroup({'one': new FormControl('1')});
+           expect(g.value).toEqual({'one': '1'});
+           expect(g.valid).toBe(true);
+
+           g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+           g.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+           g.addControl('two', new FormControl('2', Validators.minLength(10)), {emitEvent: false});
+           tick();
+
+           expect(g.value).toEqual({'one': '1', 'two': '2'});
+           expect(g.valid).toBe(false);
+         }));
+
+      it('should not emit events when control is removed and emitEvent is false', fakeAsync(() => {
            const g = new FormGroup({
              'one': new FormControl('1'),
              'two': new FormControl('2', Validators.minLength(10))
@@ -191,11 +217,15 @@ import {of } from 'rxjs';
            expect(g.value).toEqual({'one': '1', 'two': '2'});
            expect(g.valid).toBe(false);
 
-           g.removeControl('two', {emitEvent: false});
+           g.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+           g.statusChanges.subscribe((value) => { throw 'Should not happen'; });
 
-           expect(g.value).toEqual({'one': '1', 'two': '2'});
-           expect(g.valid).toBe(false);
-         });
+           g.removeControl('two', {emitEvent: false});
+           tick();
+
+           expect(g.value).toEqual({'one': '1'});
+           expect(g.valid).toBe(true);
+         }));
     });
 
     describe('dirty', () => {
