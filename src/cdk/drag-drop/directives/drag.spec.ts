@@ -788,6 +788,47 @@ describe('CdkDrag', () => {
           'Expected element to be dragged after all the time has passed.');
     }));
 
+    it('should be able to get the current position', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const dragInstance = fixture.componentInstance.dragInstance;
+
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 0, y: 0});
+
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 50, y: 100});
+
+      dragElementViaMouse(fixture, dragElement, 100, 200);
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 150, y: 300});
+    }));
+
+    it('should be able to set the current position', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.freeDragPosition = {x: 50, y: 100};
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const dragInstance = fixture.componentInstance.dragInstance;
+
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      expect(dragInstance.getFreeDragPosition()).toEqual({x: 50, y: 100});
+    }));
+
+    it('should be able to continue dragging after the current position was set', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.freeDragPosition = {x: 50, y: 100};
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+      dragElementViaMouse(fixture, dragElement, 100, 200);
+
+      expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
+    }));
+
   });
 
   describe('draggable with a handle', () => {
@@ -3187,6 +3228,7 @@ describe('CdkDrag', () => {
         [cdkDragBoundary]="boundarySelector"
         [cdkDragStartDelay]="dragStartDelay"
         [cdkDragConstrainPosition]="constrainPosition"
+        [cdkDragFreeDragPosition]="freeDragPosition"
         (cdkDragStarted)="startedSpy($event)"
         (cdkDragReleased)="releasedSpy($event)"
         (cdkDragEnded)="endedSpy($event)"
@@ -3204,6 +3246,7 @@ class StandaloneDraggable {
   boundarySelector: string;
   dragStartDelay: number | string;
   constrainPosition: (point: Point) => Point;
+  freeDragPosition?: {x: number, y: number};
 }
 
 @Component({

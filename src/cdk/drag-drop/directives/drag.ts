@@ -116,6 +116,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    */
   @Input('cdkDragStartDelay') dragStartDelay: number = 0;
 
+  /**
+   * Sets the position of a `CdkDrag` that is outside of a drop container.
+   * Can be used to restore the element's position for a returning user.
+   */
+  @Input('cdkDragFreeDragPosition') freeDragPosition: {x: number, y: number};
+
   /** Whether starting to drag this element is disabled. */
   @Input('cdkDragDisabled')
   get disabled(): boolean {
@@ -229,6 +235,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     this._dragRef.reset();
   }
 
+  /**
+   * Gets the pixel coordinates of the draggable outside of a drop container.
+   */
+  getFreeDragPosition(): {readonly x: number, readonly y: number} {
+    return this._dragRef.getFreeDragPosition();
+  }
+
   ngAfterViewInit() {
     // We need to wait for the zone to stabilize, in order for the reference
     // element to be in the proper place in the DOM. This is mostly relevant
@@ -260,16 +273,26 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
           const handle = handleInstance.element.nativeElement;
           handleInstance.disabled ? dragRef.disableHandle(handle) : dragRef.enableHandle(handle);
         });
+
+        if (this.freeDragPosition) {
+          this._dragRef.setFreeDragPosition(this.freeDragPosition);
+        }
       });
   }
 
   ngOnChanges(changes: SimpleChanges) {
     const rootSelectorChange = changes['rootElementSelector'];
+    const positionChange = changes['positionChange'];
 
     // We don't have to react to the first change since it's being
     // handled in `ngAfterViewInit` where it needs to be deferred.
     if (rootSelectorChange && !rootSelectorChange.firstChange) {
       this._updateRootElement();
+    }
+
+    // Skip the first change since it's being handled in `ngAfterViewInit`.
+    if (positionChange && !positionChange.firstChange && this.freeDragPosition) {
+      this._dragRef.setFreeDragPosition(this.freeDragPosition);
     }
   }
 
