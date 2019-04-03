@@ -49,6 +49,7 @@ export class DevAppLayout {
     {name: 'Menu', route: '/menu'},
     {name: 'Paginator', route: '/paginator'},
     {name: 'Platform', route: '/platform'},
+    {name: 'Popover Edit', route: '/popover-edit'},
     {name: 'Portal', route: '/portal'},
     {name: 'Progress Bar', route: '/progress-bar'},
     {name: 'Progress Spinner', route: '/progress-spinner'},

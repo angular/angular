@@ -51,6 +51,10 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'menu', loadChildren: 'menu/menu-demo-module#MenuDemoModule'},
   {path: 'paginator', loadChildren: 'paginator/paginator-demo-module#PaginatorDemoModule'},
   {path: 'platform', loadChildren: 'platform/platform-demo-module#PlatformDemoModule'},
+  {
+    path: 'popover-edit',
+    loadChildren: 'popover-edit/popover-edit-demo-module#PopoverEditDemoModule'
+  },
   {path: 'portal', loadChildren: 'portal/portal-demo-module#PortalDemoModule'},
   {
     path: 'progress-bar',

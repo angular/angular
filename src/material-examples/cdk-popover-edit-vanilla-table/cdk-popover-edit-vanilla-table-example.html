@@ -1,0 +1,69 @@
+<table editable class="example-table">
+  <!--
+    This edit lens is specified outside of the cell and must explicitly declare
+    its context. It could be reused in multiple cells.
+  -->
+  <ng-template #weightEdit let-element>
+    <div style="background-color: white;">
+      <form #f="ngForm"
+          cdkEditControl
+          (ngSubmit)="onSubmitWeight(element, f)"
+          [cdkEditControlPreservedFormValue]="preservedWeightValues.get(element)"
+          (cdkEditControlPreservedFormValueChange)="preservedWeightValues.set(element, $event)">
+        Edit b:
+        <input type="number" [ngModel]="element.weight" name="weight" required>
+        <br>
+        <button type="submit">Confirm</button>
+        <button cdkEditRevert>Revert</button>
+        <button cdkEditClose>Close</button>
+      </form>
+    </div>
+  </ng-template>
+  
+  <tr>
+    <th> No. </th>
+    <th> Name </th>
+    <th> Weight </th>
+    <th> Symbol </th>
+  </tr>
+  
+  <tr *ngFor="let element of elements">
+    <td> {{element.position}} </td>
+    
+    <td [cdkPopoverEdit]="nameEdit">
+      {{element.name}}
+      
+      <!-- This edit is defined in the cell and can implicitly access element -->
+      <ng-template #nameEdit>
+        <div style="background-color: white;">
+          <form #f="ngForm"
+              cdkEditControl
+              (ngSubmit)="onSubmitName(element, f)"
+              [cdkEditControlPreservedFormValue]="preservedNameValues.get(element)"
+              (cdkEditControlPreservedFormValueChange)="preservedNameValues.set(element, $event)">
+            Edit a:
+            <input [ngModel]="element.name" name="name" required>
+            <br>
+            <button type="submit">Confirm</button>
+            <button cdkEditRevert>Revert</button>
+            <button cdkEditClose>Close</button>
+          </form>
+        </div>
+      </ng-template>
+
+      <span *cdkRowHoverContent>
+        <button cdkEditOpen>Edit</button>
+      </span>
+    </td>
+
+    <td [cdkPopoverEdit]="weightEdit" [cdkPopoverEditContext]="element">
+      {{element.weight}}
+      
+      <span *cdkRowHoverContent>
+        <button cdkEditOpen>Edit</button>
+      </span>
+    </td>
+
+    <td> {{element.symbol}} </td>
+  </tr>
+</table>
