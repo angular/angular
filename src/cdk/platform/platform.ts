@@ -9,10 +9,20 @@
 import {Inject, Injectable, Optional, PLATFORM_ID} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
-
 // Whether the current platform supports the V8 Break Iterator. The V8 check
 // is necessary to detect all Blink based browsers.
-const hasV8BreakIterator = (typeof Intl !== 'undefined' && (Intl as any).v8BreakIterator);
+let hasV8BreakIterator: boolean;
+
+// We need a try/catch around the reference to `Intl`, because accessing it in some cases can
+// cause IE to throw. These cases are tied to particular versions of Windows and can happen if
+// the consumer is providing a polyfilled `Map`. See:
+// https://github.com/Microsoft/ChakraCore/issues/3189
+// https://github.com/angular/material2/issues/15687
+try {
+  hasV8BreakIterator = (typeof Intl !== 'undefined' && (Intl as any).v8BreakIterator);
+} catch {
+  hasV8BreakIterator = false;
+}
 
 /**
  * Service to detect the current platform by comparing the userAgent strings and
@@ -71,6 +81,6 @@ export class Platform {
    * @breaking-change 8.0.0 remove optional decorator
    */
   constructor(@Optional() @Inject(PLATFORM_ID) private _platformId?: Object) {
-  }
+}
 }
 
