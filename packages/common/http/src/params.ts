@@ -97,24 +97,6 @@ interface Update {
   op: 'a'|'d'|'s';
 }
 
-/** Options used to construct an `HttpParams` instance.
- *
- * @publicApi
- */
-export interface HttpParamsOptions {
-  /**
-   * String representation of the HTTP parameters in URL-query-string format.
-   * Mutually exclusive with `fromObject`.
-   */
-  fromString?: string;
-
-  /** Object map of the HTTP parameters. Mutually exclusive with `fromString`. */
-  fromObject?: {[param: string]: string | string[]};
-
-  /** Encoding codec used to parse and serialize the parameters. */
-  encoder?: HttpParameterCodec;
-}
-
 /**
  * An HTTP request/response body that represents serialized parameters,
  * per the MIME type `application/x-www-form-urlencoded`.
@@ -129,7 +111,19 @@ export class HttpParams {
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
-  constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
+  constructor(options = {} as {
+    /**
+     * String representation of the HTTP parameters in URL-query-string format.
+     * Mutually exclusive with `fromObject`.
+     */
+    fromString?: string;
+
+    /** Object map of the HTTP parameters. Mutally exclusive with `fromString`. */
+    fromObject?: {[param: string]: string | string[]};
+
+    /** Encoding codec used to parse and serialize the parameters. */
+    encoder?: HttpParameterCodec;
+  }) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
     if (!!options.fromString) {
       if (!!options.fromObject) {
@@ -231,7 +225,7 @@ export class HttpParams {
   }
 
   private clone(update: Update): HttpParams {
-    const clone = new HttpParams({ encoder: this.encoder } as HttpParamsOptions);
+    const clone = new HttpParams({encoder: this.encoder});
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;
