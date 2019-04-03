@@ -8,7 +8,7 @@
 
 import {Injectable, OnDestroy, Self} from '@angular/core';
 import {ControlContainer} from '@angular/forms';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 import {EditEventDispatcher} from './edit-event-dispatcher';
@@ -21,7 +21,7 @@ import {EditEventDispatcher} from './edit-event-dispatcher';
 export class EditRef<FormValue> implements OnDestroy {
   /** Emits the final value of this edit instance before closing. */
   private readonly _finalValueSubject = new Subject<FormValue>();
-  readonly finalValue = this._finalValueSubject.asObservable();
+  readonly finalValue: Observable<FormValue> = this._finalValueSubject.asObservable();
 
   /** The value to set the form back to on revert. */
   private _revertFormValue: FormValue;
