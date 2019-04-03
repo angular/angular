@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -56,6 +56,10 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   */
   get(token: any, notFoundValue?: any): any;
 
   execute(tokens: any[], fn: Function, context?: any): any;
@@ -239,8 +243,16 @@ export class TestBedViewEngine implements Injector, TestBed {
     return TestBedViewEngine as any as TestBedStatic;
   }
 
-  static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
-    return _getTestBedViewEngine().get(token, notFoundValue);
+  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @suppress {duplicate}
+   */
+  static get(token: any, notFoundValue?: any): any;
+  static get(
+      token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      flags: InjectFlags = InjectFlags.Default): any {
+    return _getTestBedViewEngine().get(token, notFoundValue, flags);
   }
 
   static createComponent<T>(component: Type<T>): ComponentFixture<T> {
@@ -469,15 +481,21 @@ export class TestBedViewEngine implements Injector, TestBed {
     }
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   */
+  get(token: any, notFoundValue?: any): any;
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      flags: InjectFlags = InjectFlags.Default): any {
     this._initIfNeeded();
     if (token === TestBed) {
       return this;
     }
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
-    const result = this._moduleRef.injector.get(token, UNDEFINED);
-    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue) : result;
+    const result = this._moduleRef.injector.get(token, UNDEFINED, flags);
+    return result === UNDEFINED ? this._compiler.injector.get(token, notFoundValue, flags) : result;
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {
@@ -599,9 +617,11 @@ export class TestBedViewEngine implements Injector, TestBed {
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
     }
 
-    const noNgZone = this.get(ComponentFixtureNoNgZone, false);
-    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
+    // TODO: Don't cast as `any`, proper type is boolean[]
+    const noNgZone = this.get(ComponentFixtureNoNgZone as any, false);
+    // TODO: Don't cast as `any`, proper type is boolean[]
+    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect as any, false);
+    const ngZone: NgZone|null = noNgZone ? null : this.get(NgZone as Type<NgZone|null>, null);
     const testComponentRenderer: TestComponentRenderer = this.get(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
