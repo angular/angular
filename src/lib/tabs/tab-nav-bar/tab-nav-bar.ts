@@ -218,18 +218,11 @@ export class MatTabLink extends _MatTabLinkMixinBase
       !!this.rippleConfig.disabled;
   }
 
-  constructor(private _tabNavBar: MatTabNav,
-              public _elementRef: ElementRef,
-              ngZone: NgZone,
-              platform: Platform,
-              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
-              globalRippleOptions: RippleGlobalOptions | null,
-              @Attribute('tabindex') tabIndex: string,
-              /**
-               * @deprecated
-               * @breaking-change 8.0.0 `_focusMonitor` parameter to be made required.
-               */
-              private _focusMonitor?: FocusMonitor) {
+  constructor(
+      private _tabNavBar: MatTabNav, public _elementRef: ElementRef, ngZone: NgZone,
+      platform: Platform,
+      @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions: RippleGlobalOptions|null,
+      @Attribute('tabindex') tabIndex: string, private _focusMonitor: FocusMonitor) {
     super();
 
     this._tabLinkRipple = new RippleRenderer(this, ngZone, _elementRef, platform);
@@ -237,17 +230,11 @@ export class MatTabLink extends _MatTabLinkMixinBase
     this.rippleConfig = globalRippleOptions || {};
 
     this.tabIndex = parseInt(tabIndex) || 0;
-
-    if (_focusMonitor) {
-      _focusMonitor.monitor(_elementRef);
-    }
+    _focusMonitor.monitor(_elementRef);
   }
 
   ngOnDestroy() {
     this._tabLinkRipple._removeTriggerEvents();
-
-    if (this._focusMonitor) {
-      this._focusMonitor.stopMonitoring(this._elementRef);
-    }
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 }

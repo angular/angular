@@ -20,13 +20,10 @@ import {
   Directive,
   ChangeDetectorRef,
   SkipSelf,
-  Inject,
   AfterContentInit,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
-import {DragDropRegistry} from '../drag-drop-registry';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragSortEvent} from '../drag-events';
 import {CDK_DROP_LIST_CONTAINER, CdkDropListContainer} from '../drop-list-container';
 import {CdkDropListGroup} from './drop-list-group';
@@ -154,28 +151,11 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
   sorted: EventEmitter<CdkDragSortEvent<T>> = new EventEmitter<CdkDragSortEvent<T>>();
 
   constructor(
-    /** Element that the drop list is attached to. */
-    public element: ElementRef<HTMLElement>,
-    dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
-    private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _dir?: Directionality,
-    @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>,
-    @Optional() @Inject(DOCUMENT) _document?: any,
-
-    /**
-     * @deprecated `dragDropRegistry` and `_document` parameters to be removed.
-     * Also `dragDrop` parameter to be made required.
-     * @breaking-change 8.0.0.
-     */
-    dragDrop?: DragDrop) {
-
-    // @breaking-change 8.0.0 Remove null check once `dragDrop` parameter is made required.
-    if (dragDrop) {
-      this._dropListRef = dragDrop.createDropList(element);
-    } else {
-      this._dropListRef = new DropListRef(element, dragDropRegistry, _document || document);
-    }
-
+      /** Element that the drop list is attached to. */
+      public element: ElementRef<HTMLElement>, dragDrop: DragDrop,
+      private _changeDetectorRef: ChangeDetectorRef, @Optional() private _dir?: Directionality,
+      @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>) {
+    this._dropListRef = dragDrop.createDropList(element);
     this._dropListRef.data = this;
     this._dropListRef.enterPredicate = (drag: DragRef<CdkDrag>, drop: DropListRef<CdkDropList>) => {
       return this.enterPredicate(drag.data, drop.data);

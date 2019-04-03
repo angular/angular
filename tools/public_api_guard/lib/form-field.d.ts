@@ -35,7 +35,7 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     hideRequiredMarker: boolean;
     hintLabel: string;
     underlineRef: ElementRef;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, labelOptions: LabelOptions, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform?: Platform | undefined, _ngZone?: NgZone | undefined, _animationMode?: string);
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, labelOptions: LabelOptions, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
     _getDisplayedMessages(): 'error' | 'hint';
     _hasFloatingLabel(): boolean;

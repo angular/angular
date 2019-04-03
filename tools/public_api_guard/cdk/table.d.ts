@@ -154,8 +154,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
         start: number;
         end: number;
     }>;
-    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality,
-    _document?: any, _platform?: Platform | undefined);
+    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform);
     _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[];
     _getRowDefs(data: T, dataIndex: number): CdkRowDef<T>[];
     addColumnDef(columnDef: CdkColumnDef): void;

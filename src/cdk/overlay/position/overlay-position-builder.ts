@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
-import {ElementRef, Inject, Injectable, Optional} from '@angular/core';
+import {ElementRef, Inject, Injectable} from '@angular/core';
+
+import {OverlayContainer} from '../overlay-container';
+
 import {OriginConnectionPosition, OverlayConnectionPosition} from './connected-position';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {
@@ -16,19 +20,14 @@ import {
   FlexibleConnectedPositionStrategyOrigin,
 } from './flexible-connected-position-strategy';
 import {GlobalPositionStrategy} from './global-position-strategy';
-import {Platform} from '@angular/cdk/platform';
-import {OverlayContainer} from '../overlay-container';
 
 
 /** Builder for overlay position strategy. */
 @Injectable({providedIn: 'root'})
 export class OverlayPositionBuilder {
   constructor(
-    private _viewportRuler: ViewportRuler,
-    @Inject(DOCUMENT) private _document: any,
-    // @breaking-change 8.0.0 `_platform` and `_overlayContainer` parameters to be made required.
-    @Optional() private _platform?: Platform,
-    @Optional() private _overlayContainer?: OverlayContainer) { }
+      private _viewportRuler: ViewportRuler, @Inject(DOCUMENT) private _document: any,
+      private _platform: Platform, private _overlayContainer: OverlayContainer) {}
 
   /**
    * Creates a global position strategy.
@@ -49,9 +48,9 @@ export class OverlayPositionBuilder {
       elementRef: ElementRef,
       originPos: OriginConnectionPosition,
       overlayPos: OverlayConnectionPosition): ConnectedPositionStrategy {
-
-    return new ConnectedPositionStrategy(originPos, overlayPos, elementRef, this._viewportRuler,
-        this._document);
+    return new ConnectedPositionStrategy(
+        originPos, overlayPos, elementRef, this._viewportRuler, this._document, this._platform,
+        this._overlayContainer);
   }
 
   /**

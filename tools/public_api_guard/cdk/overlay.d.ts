@@ -75,7 +75,7 @@ export declare class ConnectedPositionStrategy implements PositionStrategy {
     _preferredPositions: ConnectionPositionPair[];
     readonly onPositionChange: Observable<ConnectedOverlayPositionChange>;
     readonly positions: ConnectionPositionPair[];
-    constructor(originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition, connectedTo: ElementRef<HTMLElement>, viewportRuler: ViewportRuler, document: Document, platform?: Platform);
+    constructor(originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition, connectedTo: ElementRef<HTMLElement>, viewportRuler: ViewportRuler, document: Document, platform: Platform, overlayContainer: OverlayContainer);
     apply(): void;
     attach(overlayRef: OverlayReference): void;
     detach(): void;
@@ -109,7 +109,7 @@ export declare class FlexibleConnectedPositionStrategy implements PositionStrate
     _preferredPositions: ConnectionPositionPair[];
     positionChanges: Observable<ConnectedOverlayPositionChange>;
     readonly positions: ConnectionPositionPair[];
-    constructor(connectedTo: FlexibleConnectedPositionStrategyOrigin, _viewportRuler: ViewportRuler, _document: Document, _platform?: Platform | undefined, _overlayContainer?: OverlayContainer | undefined);
+    constructor(connectedTo: FlexibleConnectedPositionStrategyOrigin, _viewportRuler: ViewportRuler, _document: Document, _platform: Platform, _overlayContainer: OverlayContainer);
     apply(): void;
     attach(overlayRef: OverlayReference): void;
     detach(): void;
@@ -215,7 +215,7 @@ export declare class OverlayModule {
 }
 
 export declare class OverlayPositionBuilder {
-    constructor(_viewportRuler: ViewportRuler, _document: any, _platform?: Platform | undefined, _overlayContainer?: OverlayContainer | undefined);
+    constructor(_viewportRuler: ViewportRuler, _document: any, _platform: Platform, _overlayContainer: OverlayContainer);
     connectedTo(elementRef: ElementRef, originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition): ConnectedPositionStrategy;
     flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin): FlexibleConnectedPositionStrategy;
     global(): GlobalPositionStrategy;

@@ -7,9 +7,14 @@
  */
 
 import {Direction} from '@angular/cdk/bidi';
+import {Platform} from '@angular/cdk/platform';
 import {CdkScrollable, ViewportRuler} from '@angular/cdk/scrolling';
 import {ElementRef} from '@angular/core';
 import {Observable} from 'rxjs';
+
+import {OverlayContainer} from '../overlay-container';
+import {OverlayReference} from '../overlay-reference';
+
 import {
   ConnectedOverlayPositionChange,
   ConnectionPositionPair,
@@ -18,8 +23,6 @@ import {
 } from './connected-position';
 import {FlexibleConnectedPositionStrategy} from './flexible-connected-position-strategy';
 import {PositionStrategy} from './position-strategy';
-import {Platform} from '@angular/cdk/platform';
-import {OverlayReference} from '../overlay-reference';
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
@@ -56,23 +59,18 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   constructor(
-      originPos: OriginConnectionPosition,
-      overlayPos: OverlayConnectionPosition,
-      connectedTo: ElementRef<HTMLElement>,
-      viewportRuler: ViewportRuler,
-      document: Document,
-      // @breaking-change 8.0.0 `platform` parameter to be made required.
-      platform?: Platform) {
-
+      originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition,
+      connectedTo: ElementRef<HTMLElement>, viewportRuler: ViewportRuler, document: Document,
+      platform: Platform, overlayContainer: OverlayContainer) {
     // Since the `ConnectedPositionStrategy` is deprecated and we don't want to maintain
     // the extra logic, we create an instance of the positioning strategy that has some
     // defaults that make it behave as the old position strategy and to which we'll
     // proxy all of the API calls.
-    this._positionStrategy =
-      new FlexibleConnectedPositionStrategy(connectedTo, viewportRuler, document, platform)
-        .withFlexibleDimensions(false)
-        .withPush(false)
-        .withViewportMargin(0);
+    this._positionStrategy = new FlexibleConnectedPositionStrategy(
+                                 connectedTo, viewportRuler, document, platform, overlayContainer)
+                                 .withFlexibleDimensions(false)
+                                 .withPush(false)
+                                 .withViewportMargin(0);
 
     this.withFallbackPosition(originPos, overlayPos);
   }

@@ -387,13 +387,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       protected readonly _differs: IterableDiffers,
       protected readonly _changeDetectorRef: ChangeDetectorRef,
       protected readonly _elementRef: ElementRef, @Attribute('role') role: string,
-      @Optional() protected readonly _dir: Directionality,
-      /**
-       * @deprecated
-       * @breaking-change 8.0.0 `_document` and `_platform` to
-       *    be made into a required parameters.
-       */
-      @Inject(DOCUMENT) _document?: any, private _platform?: Platform) {
+      @Optional() protected readonly _dir: Directionality, @Inject(DOCUMENT) _document: any,
+      private _platform: Platform) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -1002,9 +997,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   /** Adds native table sections (e.g. tbody) and moves the row outlets into them. */
   private _applyNativeTableSections() {
-    // @breaking-change 8.0.0 remove the `|| document` once the `_document` is a required param.
-    const documentRef = this._document || document;
-    const documentFragment = documentRef.createDocumentFragment();
+    const documentFragment = this._document.createDocumentFragment();
     const sections = [
       {tag: 'thead', outlet: this._headerRowOutlet},
       {tag: 'tbody', outlet: this._rowOutlet},
@@ -1012,7 +1005,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     ];
 
     for (const section of sections) {
-      const element = documentRef.createElement(section.tag);
+      const element = this._document.createElement(section.tag);
       element.setAttribute('role', 'rowgroup');
       element.appendChild(section.outlet.elementRef.nativeElement);
       documentFragment.appendChild(element);
@@ -1069,9 +1062,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _setupStickyStyler() {
     const direction: Direction = this._dir ? this._dir.value : 'ltr';
     this._stickyStyler = new StickyStyler(
-        this._isNativeHtmlTable,
-        // @breaking-change 8.0.0 remove the null check for `this._platform`.
-        this.stickyCssClass, direction, this._platform ? this._platform.isBrowser : true);
+        this._isNativeHtmlTable, this.stickyCssClass, direction, this._platform.isBrowser);
     (this._dir ? this._dir.change : observableOf<Direction>())
         .pipe(takeUntil(this._onDestroy))
         .subscribe(value => {
