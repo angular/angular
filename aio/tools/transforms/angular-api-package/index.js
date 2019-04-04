@@ -74,7 +74,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
-    readTypeScriptModules.ignoreExportsMatching = [/^[_]|^VERSION$/];
+    readTypeScriptModules.ignoreExportsMatching = [/^[_Δ]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
 
     // NOTE: This list should be in sync with tools/public_api_guard/BUILD.bazel
@@ -204,7 +204,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
 function addMinLengthRules(checkContentRules) {
   const createMinLengthRule = require('./content-rules/minLength');
-  const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+  const paramRuleSet = checkContentRules.docTypeRules['parameter'] =
+      checkContentRules.docTypeRules['parameter'] || {};
   const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
   paramRules.push(createMinLengthRule());
 }
@@ -216,7 +217,8 @@ function addHeadingRules(checkContentRules, API_DOC_TYPES) {
 
   API_DOC_TYPES.forEach(docType => {
     let rules;
-    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+    const ruleSet = checkContentRules.docTypeRules[docType] =
+        checkContentRules.docTypeRules[docType] || {};
 
     rules = ruleSet['description'] = ruleSet['description'] || [];
     rules.push(noMarkdownHeadings);
@@ -231,16 +233,17 @@ function addHeadingRules(checkContentRules, API_DOC_TYPES) {
 
 function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
   API_CONTAINED_DOC_TYPES.forEach(docType => {
-    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+    const ruleSet = checkContentRules.docTypeRules[docType] =
+        checkContentRules.docTypeRules[docType] || {};
 
     const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
-    rules.push((doc, prop, value) =>
-      value &&
-      // methods are allowed to have usage notes
-      !isMethod(doc) &&
-      // options on decorators are allowed to ahve usage notes
-      !(doc.containerDoc && doc.containerDoc.docType === 'decorator') &&
-      `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
+    rules.push(
+        (doc, prop, value) => value &&
+            // methods are allowed to have usage notes
+            !isMethod(doc) &&
+            // options on decorators are allowed to ahve usage notes
+            !(doc.containerDoc && doc.containerDoc.docType === 'decorator') &&
+            `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
   });
 }
 

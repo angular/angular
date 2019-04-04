@@ -1219,7 +1219,7 @@ describe('ngc transformer command-line', () => {
 
         write('test.ts', `
           import {Injectable, NgZone} from '@angular/core';
-        
+
           @Injectable({providedIn: 'root'})
           export class MyService {
             constructor(public ngZone: NgZone) {}
@@ -1285,7 +1285,7 @@ describe('ngc transformer command-line', () => {
       write('lib2/module.ts', `export {Module} from 'lib1_built/module';`);
       write('lib2/class2.ts', `
         import {Class1} from 'lib1_built/class1';
-  
+
         export class Class2 {
           constructor(class1: Class1) {}
         }
@@ -2075,7 +2075,7 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-      expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef = .+\.ΔdefineInjectable\(/);
       expect(source).toMatch(/ngInjectableDef.*token: Service/);
       expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
     });
@@ -2131,7 +2131,7 @@ describe('ngc transformer command-line', () => {
         })
         export class Service {}
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\.inject\(Existing\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\.Δinject\(Existing\)/);
     });
 
     it('compiles a useFactory InjectableDef with optional dep', () => {
@@ -2151,7 +2151,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing|null) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 8\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.Δinject\(Existing, 8\)/);
     });
 
     it('compiles a useFactory InjectableDef with skip-self dep', () => {
@@ -2171,7 +2171,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 4\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.Δinject\(Existing, 4\)/);
     });
 
     it('compiles a service that depends on a token', () => {
@@ -2188,7 +2188,7 @@ describe('ngc transformer command-line', () => {
           constructor(@Inject(TOKEN) value: boolean) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef = .+\.ΔdefineInjectable\(/);
       expect(source).toMatch(/ngInjectableDef.*token: Service/);
       expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
     });
@@ -2215,7 +2215,7 @@ describe('ngc transformer command-line', () => {
           constructor(@Inject(TOKEN) token: any) {}
         }
       `);
-      expect(source).toMatch(/new Service\(i0\.inject\(exports\.TOKEN\)\);/);
+      expect(source).toMatch(/new Service\(i0\.Δinject\(exports\.TOKEN\)\);/);
     });
   });
 

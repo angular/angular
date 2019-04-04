@@ -9,14 +9,16 @@
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
+
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {INJECTOR, Injector, NG_TEMP_TOKEN_PATH, NullInjector, USE_VALUE, catchInjectorError} from './injector';
-import {inject, injectArgs, setCurrentInjector} from './injector_compatibility';
-import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './interface/defs';
+import {injectArgs, setCurrentInjector, Δinject} from './injector_compatibility';
+import {InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef, ΔInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {APP_ROOT} from './scope';
+
 
 
 /**
@@ -354,7 +356,7 @@ export class R3Injector {
     return record.value as T;
   }
 
-  private injectableDefInScope(def: InjectableDef<any>): boolean {
+  private injectableDefInScope(def: ΔInjectableDef<any>): boolean {
     if (!def.providedIn) {
       return false;
     } else if (typeof def.providedIn === 'string') {
@@ -411,7 +413,7 @@ export function providerToFactory(
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
     } else if (isExistingProvider(provider)) {
-      factory = () => inject(resolveForwardRef(provider.useExisting));
+      factory = () => Δinject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else {

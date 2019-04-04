@@ -30,8 +30,10 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * @param unsafeHtml untrusted `html`, typically from the user.
  * @returns `html` string which is safe to display to user, because all of the dangerous javascript
  * and urls have been removed.
+ *
+ * @publicApi
  */
-export function sanitizeHtml(unsafeHtml: any): string {
+export function ΔsanitizeHtml(unsafeHtml: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
@@ -54,8 +56,10 @@ export function sanitizeHtml(unsafeHtml: any): string {
  * @param unsafeStyle untrusted `style`, typically from the user.
  * @returns `style` string which is safe to bind to the `style` properties, because all of the
  * dangerous javascript and urls have been removed.
+ *
+ * @publicApi
  */
-export function sanitizeStyle(unsafeStyle: any): string {
+export function ΔsanitizeStyle(unsafeStyle: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
@@ -79,8 +83,10 @@ export function sanitizeStyle(unsafeStyle: any): string {
  * @param unsafeUrl untrusted `url`, typically from the user.
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * all of the dangerous javascript has been removed.
+ *
+ * @publicApi
  */
-export function sanitizeUrl(unsafeUrl: any): string {
+export function ΔsanitizeUrl(unsafeUrl: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
@@ -99,8 +105,10 @@ export function sanitizeUrl(unsafeUrl: any): string {
  * @param unsafeResourceUrl untrusted `url`, typically from the user.
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * only trusted `url`s have been allowed to pass.
+ *
+ * @publicApi
  */
-export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
+export function ΔsanitizeResourceUrl(unsafeResourceUrl: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
@@ -120,8 +128,10 @@ export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
  * @param unsafeScript untrusted `script`, typically from the user.
  * @returns `url` string which is safe to bind to the `<script>` element such as `<img src>`,
  * because only trusted `scripts` have been allowed to pass.
+ *
+ * @publicApi
  */
-export function sanitizeScript(unsafeScript: any): string {
+export function ΔsanitizeScript(unsafeScript: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
@@ -143,9 +153,9 @@ export function getUrlSanitizer(tag: string, prop: string) {
   if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
                           tag === 'media' || tag === 'script')) ||
       (prop === 'href' && (tag === 'base' || tag === 'link'))) {
-    return sanitizeResourceUrl;
+    return ΔsanitizeResourceUrl;
   }
-  return sanitizeUrl;
+  return ΔsanitizeUrl;
 }
 
 /**
@@ -160,22 +170,26 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @param tag target element tag name.
  * @param prop name of the property that contains the value.
  * @returns `url` string which is safe to bind.
+ *
+ * @publicApi
  */
-export function sanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
+export function ΔsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
   return getUrlSanitizer(tag, prop)(unsafeUrl);
 }
 
 /**
  * The default style sanitizer will handle sanitization for style properties by
  * sanitizing any CSS property that can include a `url` value (usually image-based properties)
+ *
+ * @publicApi
  */
-export const defaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
+export const ΔdefaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
   if (value === undefined) {
     return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
         prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
   }
 
-  return sanitizeStyle(value);
+  return ΔsanitizeStyle(value);
 } as StyleSanitizeFn);
 
 export function validateAgainstEventProperties(name: string) {

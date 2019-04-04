@@ -27,8 +27,10 @@ import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAt
  * % }
  *
  * @param index The index of the container in the data array
+ *
+ * @publicApi
  */
-export function container(index: number): void {
+export function Δcontainer(index: number): void {
   const tNode = containerInternal(index, null, null);
   const lView = getLView();
   if (lView[TVIEW].firstTemplatePass) {
@@ -54,8 +56,10 @@ export function container(index: number): void {
  * @param localRefs A set of local reference bindings on the element.
  * @param localRefExtractor A function which extracts local-refs values from the template.
  *        Defaults to the current element associated with the local-ref.
+ *
+ * @publicApi
  */
-export function template(
+export function Δtemplate(
     index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
@@ -80,8 +84,10 @@ export function template(
  * Sets a container up to receive views.
  *
  * @param index The index of the container in the data array
+ *
+ * @publicApi
  */
-export function containerRefreshStart(index: number): void {
+export function ΔcontainerRefreshStart(index: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   let previousOrParentTNode = loadInternal(tView.data, index) as TNode;
@@ -101,8 +107,10 @@ export function containerRefreshStart(index: number): void {
  * Marks the end of the LContainer.
  *
  * Marking the end of LContainer is the time when to child views get inserted or removed.
+ *
+ * @publicApi
  */
-export function containerRefreshEnd(): void {
+export function ΔcontainerRefreshEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);

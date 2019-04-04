@@ -132,12 +132,6 @@
     "name": "deepForEach"
   },
   {
-    "name": "defineInjectable"
-  },
-  {
-    "name": "defineInjector"
-  },
-  {
     "name": "formatError"
   },
   {
@@ -160,9 +154,6 @@
   },
   {
     "name": "hasOnDestroy"
-  },
-  {
-    "name": "inject"
   },
   {
     "name": "injectArgs"
@@ -229,5 +220,14 @@
   },
   {
     "name": "tryResolveToken"
+  },
+  {
+    "name": "ΔdefineInjectable"
+  },
+  {
+    "name": "ΔdefineInjector"
+  },
+  {
+    "name": "Δinject"
   }
 ]

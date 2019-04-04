@@ -435,9 +435,6 @@
     "name": "baseResolveDirective"
   },
   {
-    "name": "bind"
-  },
-  {
     "name": "bindingUpdated"
   },
   {
@@ -546,15 +543,6 @@
     "name": "defaultScheduler"
   },
   {
-    "name": "defineComponent"
-  },
-  {
-    "name": "defineDirective"
-  },
-  {
-    "name": "defineInjectable"
-  },
-  {
     "name": "destroyLView"
   },
   {
@@ -570,37 +558,16 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "directiveInject"
-  },
-  {
     "name": "directiveOwnerPointers"
   },
   {
     "name": "domRendererFactory3"
   },
   {
-    "name": "elementClassProp"
-  },
-  {
     "name": "elementCreate"
   },
   {
-    "name": "elementEnd"
-  },
-  {
-    "name": "elementProperty"
-  },
-  {
     "name": "elementPropertyInternal"
-  },
-  {
-    "name": "elementStart"
-  },
-  {
-    "name": "elementStyling"
-  },
-  {
-    "name": "elementStylingApply"
   },
   {
     "name": "elementStylingApplyInternal"
@@ -694,9 +661,6 @@
   },
   {
     "name": "getContextLView"
-  },
-  {
-    "name": "getCurrentView"
   },
   {
     "name": "getDebugContext"
@@ -948,9 +912,6 @@
     "name": "instantiateRootComponent"
   },
   {
-    "name": "interpolation1"
-  },
-  {
     "name": "invertObject"
   },
   {
@@ -1032,9 +993,6 @@
     "name": "leaveView"
   },
   {
-    "name": "listener"
-  },
-  {
     "name": "listenerInternal"
   },
   {
@@ -1068,9 +1026,6 @@
     "name": "matchTemplateAttribute"
   },
   {
-    "name": "namespaceHTML"
-  },
-  {
     "name": "nativeAppendChild"
   },
   {
@@ -1090,9 +1045,6 @@
   },
   {
     "name": "nativeRemoveNode"
-  },
-  {
-    "name": "nextContext"
   },
   {
     "name": "nextContextImpl"
@@ -1135,9 +1087,6 @@
   },
   {
     "name": "readPatchedLView"
-  },
-  {
-    "name": "reference"
   },
   {
     "name": "refreshChildComponents"
@@ -1203,9 +1152,6 @@
     "name": "resolveForwardRef"
   },
   {
-    "name": "restoreView"
-  },
-  {
     "name": "saveNameToExportMap"
   },
   {
@@ -1219,9 +1165,6 @@
   },
   {
     "name": "searchTokensOnInjector"
-  },
-  {
-    "name": "select"
   },
   {
     "name": "setActiveHostElement"
@@ -1320,15 +1263,6 @@
     "name": "syncViewWithBlueprint"
   },
   {
-    "name": "template"
-  },
-  {
-    "name": "text"
-  },
-  {
-    "name": "textBinding"
-  },
-  {
     "name": "throwMultipleComponentError"
   },
   {
@@ -1366,5 +1300,71 @@
   },
   {
     "name": "wrapListener"
+  },
+  {
+    "name": "Δbind"
+  },
+  {
+    "name": "ΔdefineComponent"
+  },
+  {
+    "name": "ΔdefineDirective"
+  },
+  {
+    "name": "ΔdefineInjectable"
+  },
+  {
+    "name": "ΔdirectiveInject"
+  },
+  {
+    "name": "ΔelementClassProp"
+  },
+  {
+    "name": "ΔelementEnd"
+  },
+  {
+    "name": "ΔelementProperty"
+  },
+  {
+    "name": "ΔelementStart"
+  },
+  {
+    "name": "ΔelementStyling"
+  },
+  {
+    "name": "ΔelementStylingApply"
+  },
+  {
+    "name": "ΔgetCurrentView"
+  },
+  {
+    "name": "Δinterpolation1"
+  },
+  {
+    "name": "Δlistener"
+  },
+  {
+    "name": "ΔnamespaceHTML"
+  },
+  {
+    "name": "ΔnextContext"
+  },
+  {
+    "name": "Δreference"
+  },
+  {
+    "name": "ΔrestoreView"
+  },
+  {
+    "name": "Δselect"
+  },
+  {
+    "name": "Δtemplate"
+  },
+  {
+    "name": "Δtext"
+  },
+  {
+    "name": "ΔtextBinding"
   }
 ]

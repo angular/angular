@@ -56,65 +56,65 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 
         if (rf & 1) {
-          const $s$ = $i0$.ɵgetCurrentView();
-          $i0$.ɵelementStart(0, "div", $c2$);
-          $i0$.ɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener($event){
-            $i0$.ɵrestoreView($s$);
+          const $s$ = $i0$.ΔgetCurrentView();
+          $i0$.ΔelementStart(0, "div", $c2$);
+          $i0$.Δlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener($event){
+            $i0$.ΔrestoreView($s$);
             const $inner$ = ctx.$implicit;
-            const $middle$ = $i0$.ɵnextContext().$implicit;
-            const $outer$ = $i0$.ɵnextContext().$implicit;
-            const $myComp$ = $i0$.ɵnextContext();
+            const $middle$ = $i0$.ΔnextContext().$implicit;
+            const $outer$ = $i0$.ΔnextContext().$implicit;
+            const $myComp$ = $i0$.ΔnextContext();
             return $myComp$.onClick($outer$, $middle$, $inner$);
           });
-          $i0$.ɵtext(1);
-          $i0$.ɵelementEnd();
+          $i0$.Δtext(1);
+          $i0$.ΔelementEnd();
         }
 
         if (rf & 2) {
           const $inner1$ = ctx.$implicit;
-          const $middle1$ = $i0$.ɵnextContext().$implicit;
-          const $outer1$ = $i0$.ɵnextContext().$implicit;
-          const $myComp1$ = $i0$.ɵnextContext();
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "title", $i0$.ɵbind($myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component)));
-          $r3$.ɵselect(1);
-          $i0$.ɵtextBinding(1, $i0$.ɵinterpolation1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " "));
+          const $middle1$ = $i0$.ΔnextContext().$implicit;
+          const $outer1$ = $i0$.ΔnextContext().$implicit;
+          const $myComp1$ = $i0$.ΔnextContext();
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "title", $i0$.Δbind($myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component)));
+          $r3$.Δselect(1);
+          $i0$.ΔtextBinding(1, $i0$.Δinterpolation1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " "));
         }
       }
 
       function MyComponent_ul_0_li_1_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "li");
-          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_div_1_Template, 2, 2, "div", $c1$);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "li");
+          $i0$.Δtemplate(1, MyComponent_ul_0_li_1_div_1_Template, 2, 2, "div", $c1$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $myComp2$ = $i0$.ɵnextContext(2);
-          $r3$.ɵselect(1);
-          $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($myComp2$.items));
+          const $myComp2$ = $i0$.ΔnextContext(2);
+          $r3$.Δselect(1);
+          $i0$.ΔelementProperty(1, "ngForOf", $i0$.Δbind($myComp2$.items));
         }
       }
 
       function MyComponent_ul_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "ul");
-          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_Template, 2, 1, "li", $c0$);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "ul");
+          $i0$.Δtemplate(1, MyComponent_ul_0_li_1_Template, 2, 1, "li", $c0$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
           const $outer2$ = ctx.$implicit;
-          $r3$.ɵselect(1);
-          $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($outer2$.items));
+          $r3$.Δselect(1);
+          $i0$.ΔelementProperty(1, "ngForOf", $i0$.Δbind($outer2$.items));
         }
       }
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", $c0$);
+          $i0$.Δtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "ngForOf", $i0$.Δbind(ctx.items));
         }
       }`;
 
@@ -152,26 +152,26 @@ describe('compiler compliance: template', () => {
 
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            const $s$ = $r3$.ɵgetCurrentView();
-            $r3$.ɵelementStart(0, "div", $e_attrs$);
-            $r3$.ɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
-              $r3$.ɵrestoreView($s$);
+            const $s$ = $r3$.ΔgetCurrentView();
+            $r3$.ΔelementStart(0, "div", $e_attrs$);
+            $r3$.Δlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+              $r3$.ΔrestoreView($s$);
               const $d$ = ctx.$implicit;
               const $i$ = ctx.index;
-              const $comp$ = $r3$.ɵnextContext();
+              const $comp$ = $r3$.ΔnextContext();
               return $comp$._handleClick($d$, $i$);
             });
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementEnd();
           }
         }
         // ...
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $t0_attrs$);
+            $r3$.Δtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $t0_attrs$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx._data));
+            $r3$.Δselect(0);
+            $r3$.ΔelementProperty(0, "ngForOf", $r3$.Δbind(ctx._data));
           }
         }
         `;
@@ -207,25 +207,25 @@ describe('compiler compliance: template', () => {
 
       function MyComponent_span_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "span");
-          $i0$.ɵtext(1);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "span");
+          $i0$.Δtext(1);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
           const $item$ = ctx.$implicit;
           const $i$ = ctx.index;
-          $r3$.ɵselect(1);
-          $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $i$, " - ", $item$, " "));
+          $r3$.Δselect(1);
+          $i0$.ΔtextBinding(1, $i0$.Δinterpolation2(" ", $i$, " - ", $item$, " "));
         }
       }
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_span_0_Template, 2, 2, "span", _c0);
+          $i0$.Δtemplate(0, MyComponent_span_0_Template, 2, 2, "span", _c0);
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "ngForOf", $i0$.Δbind(ctx.items));
         }
       }`;
 
@@ -263,40 +263,40 @@ describe('compiler compliance: template', () => {
 
       function MyComponent_div_0_span_1_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "span");
-          $i0$.ɵtext(1);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "span");
+          $i0$.Δtext(1);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $div$ = $i0$.ɵnextContext();
+          const $div$ = $i0$.ΔnextContext();
           const $i$ = $div$.index;
           const $item$ = $div$.$implicit;
-          $r3$.ɵselect(1);
-          $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $i$, " - ", $item$, " "));
+          $r3$.Δselect(1);
+          $i0$.ΔtextBinding(1, $i0$.Δinterpolation2(" ", $i$, " - ", $item$, " "));
         }
       }
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_0_span_1_Template, 2, 2, "span", $c1$);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "div");
+          $i0$.Δtemplate(1, MyComponent_div_0_span_1_Template, 2, 2, "span", $c1$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $app$ = $i0$.ɵnextContext();
-          $r3$.ɵselect(1);
-          $i0$.ɵelementProperty(1, "ngIf", $i0$.ɵbind($app$.showing));
+          const $app$ = $i0$.ΔnextContext();
+          $r3$.Δselect(1);
+          $i0$.ΔelementProperty(1, "ngIf", $i0$.Δbind($app$.showing));
         }
       }
 
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
+          $i0$.Δtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "ngForOf", $i0$.Δbind(ctx.items));
         }
       }`;
 
@@ -335,51 +335,51 @@ describe('compiler compliance: template', () => {
       const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
       function MyComponent_div_0_div_1_div_1_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtext(1);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "div");
+          $i0$.Δtext(1);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $middle$ = $i0$.ɵnextContext().$implicit;
-          const $myComp$ = $i0$.ɵnextContext(2);
-          $r3$.ɵselect(1);
-          $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $middle$.value, " - ", $myComp$.name, " "));
+          const $middle$ = $i0$.ΔnextContext().$implicit;
+          const $myComp$ = $i0$.ΔnextContext(2);
+          $r3$.Δselect(1);
+          $i0$.ΔtextBinding(1, $i0$.Δinterpolation2(" ", $middle$.value, " - ", $myComp$.name, " "));
         }
       }
 
       function MyComponent_div_0_div_1_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_div_1_Template, 2, 2, "div", $c0$);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "div");
+          $i0$.Δtemplate(1, MyComponent_div_0_div_1_div_1_Template, 2, 2, "div", $c0$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
           const $middle$ = ctx.$implicit;
-          $r3$.ɵselect(1);
-          $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($middle$.items));
+          $r3$.Δselect(1);
+          $i0$.ΔelementProperty(1, "ngForOf", $i0$.Δbind($middle$.items));
         }
       }
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_Template, 2, 1, "div", $c0$);
-          $i0$.ɵelementEnd();
+          $i0$.ΔelementStart(0, "div");
+          $i0$.Δtemplate(1, MyComponent_div_0_div_1_Template, 2, 1, "div", $c0$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
           const $outer$ = ctx.$implicit;
-          $r3$.ɵselect(1);
-          $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($outer$.items));
+          $r3$.Δselect(1);
+          $i0$.ΔelementProperty(1, "ngForOf", $i0$.Δbind($outer$.items));
         }
       }
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
+          $i0$.Δtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "ngForOf", $i0$.Δbind(ctx.items));
         }
       }`;
 
@@ -414,7 +414,7 @@ describe('compiler compliance: template', () => {
 
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtext(0, " some-content ");
+          $i0$.Δtext(0, " some-content ");
         }
       }
 
@@ -422,11 +422,11 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", $c0$);
+          $i0$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "boundAttr", $i0$.ɵbind(ctx.b));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "boundAttr", $i0$.Δbind(ctx.b));
         }
       }`;
 
@@ -459,7 +459,7 @@ describe('compiler compliance: template', () => {
 
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtext(0, "some-content");
+          $i0$.Δtext(0, "some-content");
         }
       }
 
@@ -467,7 +467,7 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, $t0_refs$, $i0$.ɵtemplateRefExtractor);
+          $i0$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", null, $t0_refs$, $i0$.ΔtemplateRefExtractor);
         }
       }`;
 
@@ -504,8 +504,8 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", $t0_attrs$);
-          $i0$.ɵlistener("outDirective", function MyComponent_Template_ng_template_outDirective_0_listener($event) { return $event.doSth(); });
+          $i0$.Δtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", $t0_attrs$);
+          $i0$.Δlistener("outDirective", function MyComponent_Template_ng_template_outDirective_0_listener($event) { return $event.doSth(); });
         }
       }`;
 
@@ -657,7 +657,7 @@ describe('compiler compliance: template', () => {
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelement(0, "div");
+          $i0$.Δelement(0, "div");
         }
       }
 
@@ -665,11 +665,11 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0$);
-          $i0$.ɵpipe(1, "pipe");
+          $i0$.Δtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0$);
+          $i0$.Δpipe(1, "pipe");
         } if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "ngIf", $i0$.ɵbind($i0$.ɵpipeBind1(1, 1, ctx.val)));
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "ngIf", $i0$.Δbind($i0$.ΔpipeBind1(1, 1, ctx.val)));
         }
       }`;
 

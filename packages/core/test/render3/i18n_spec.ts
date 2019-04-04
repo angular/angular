@@ -7,17 +7,19 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+
 import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
-import {defineComponent, defineDirective} from '../../src/render3/definition';
-import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
+import {ΔdefineComponent, ΔdefineDirective} from '../../src/render3/definition';
+import {getTranslationForTemplate, Δi18n, Δi18nApply, Δi18nAttributes, Δi18nEnd, Δi18nExp, Δi18nPostprocess, Δi18nStart} from '../../src/render3/i18n';
+import {ΔallocHostVars, Δbind, Δelement, ΔelementContainerEnd, ΔelementContainerStart, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔnextContext, Δprojection, ΔprojectionDef, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n} from '../../src/render3/interfaces/i18n';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
-import {NgForOf, NgIf} from './common_with_def';
-import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd, textBinding} from '../../src/render3/instructions/all';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n, IcuType} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
+import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
+
+import {NgForOf, NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 const Component: typeof _Component = function(...args: any[]): any {
@@ -79,7 +81,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `simple text`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
 
       // Check debug
@@ -111,7 +113,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const elementIndex = 2;
       const elementIndex2 = 3;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 5,
@@ -147,7 +149,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect((opCodes as any).update.debug.operations).toEqual([
         {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
@@ -172,7 +174,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0� and �1�, again �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -205,7 +207,7 @@ describe('Runtime i18n', () => {
       let nbConsts = 3;
       let index = 1;
       const firstTextNode = 3;
-      let opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      let opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -235,7 +237,7 @@ describe('Runtime i18n', () => {
       index = 0;
       const spanElement = 1;
       const bElementSubTemplate = 2;
-      opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -262,7 +264,7 @@ describe('Runtime i18n', () => {
       nbConsts = 2;
       index = 0;
       const bElement = 1;
-      opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -287,7 +289,7 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
       const tIcuIndex = 0;
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
@@ -475,7 +477,7 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
       const nestedIcuCommentNodeIndex = index + 3;
@@ -588,9 +590,9 @@ describe('Runtime i18n', () => {
     it('for text', () => {
       const MSG_DIV = `simple text`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18n(1, MSG_DIV);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18n(1, MSG_DIV);
+        ΔelementEnd();
       }, null, 2);
 
       expect(fixture.html).toEqual(`<div>${MSG_DIV}</div>`);
@@ -599,9 +601,9 @@ describe('Runtime i18n', () => {
     it('for bindings', () => {
       const MSG_DIV = `Hello �0�!`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18n(1, MSG_DIV);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18n(1, MSG_DIV);
+        ΔelementEnd();
       }, null, 2);
 
       // Template should be empty because there is no update template function
@@ -615,12 +617,12 @@ describe('Runtime i18n', () => {
     it('for elements', () => {
       const MSG_DIV = `Hello �#3�world�/#3� and �#2�universe�/#2�!`;
       let fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18nStart(1, MSG_DIV);
-        element(2, 'div');
-        element(3, 'span');
-        i18nEnd();
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18nStart(1, MSG_DIV);
+        Δelement(2, 'div');
+        Δelement(3, 'span');
+        Δi18nEnd();
+        ΔelementEnd();
       }, null, 4);
 
       expect(fixture.html).toEqual('<div>Hello <span>world</span> and <div>universe</div>!</div>');
@@ -629,25 +631,25 @@ describe('Runtime i18n', () => {
     it('for translations without top level element', () => {
       // When it's the first node
       let MSG_DIV = `Hello world`;
-      let fixture = prepareFixture(() => { i18n(0, MSG_DIV); }, null, 1);
+      let fixture = prepareFixture(() => { Δi18n(0, MSG_DIV); }, null, 1);
 
       expect(fixture.html).toEqual('Hello world');
 
       // When the first node is a text node
       MSG_DIV = ` world`;
       fixture = prepareFixture(() => {
-        text(0, 'Hello');
-        i18n(1, MSG_DIV);
+        Δtext(0, 'Hello');
+        Δi18n(1, MSG_DIV);
       }, null, 2);
 
       expect(fixture.html).toEqual('Hello world');
 
       // When the first node is an element
       fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        text(1, 'Hello');
-        elementEnd();
-        i18n(2, MSG_DIV);
+        ΔelementStart(0, 'div');
+        Δtext(1, 'Hello');
+        ΔelementEnd();
+        Δi18n(2, MSG_DIV);
       }, null, 3);
 
       expect(fixture.html).toEqual('<div>Hello</div> world');
@@ -655,8 +657,8 @@ describe('Runtime i18n', () => {
       // When there is a node after
       MSG_DIV = `Hello `;
       fixture = prepareFixture(() => {
-        i18n(0, MSG_DIV);
-        text(1, 'world');
+        Δi18n(0, MSG_DIV);
+        Δtext(1, 'world');
       }, null, 2);
 
       expect(fixture.html).toEqual('Hello world');
@@ -665,19 +667,19 @@ describe('Runtime i18n', () => {
     it('for deleted placeholders', () => {
       const MSG_DIV = `Hello �#3�world�/#3�`;
       let fixture = prepareFixture(() => {
-        elementStart(0, 'div');
+        ΔelementStart(0, 'div');
         {
-          i18nStart(1, MSG_DIV);
+          Δi18nStart(1, MSG_DIV);
           {
-            element(2, 'div');  // Will be removed
-            element(3, 'span');
+            Δelement(2, 'div');  // Will be removed
+            Δelement(3, 'span');
           }
-          i18nEnd();
+          Δi18nEnd();
         }
-        elementEnd();
-        elementStart(4, 'div');
-        { text(5, '!'); }
-        elementEnd();
+        ΔelementEnd();
+        ΔelementStart(4, 'div');
+        { Δtext(5, '!'); }
+        ΔelementEnd();
       }, null, 6);
 
       expect(fixture.html).toEqual('<div>Hello <span>world</span></div><div>!</div>');
@@ -690,27 +692,27 @@ describe('Runtime i18n', () => {
 
       function subTemplate_1(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          i18nStart(0, MSG_DIV, 1);
-          elementStart(1, 'div');
-          template(2, subTemplate_2, 2, 0, 'span', [AttributeMarker.Template, 'ngIf']);
-          elementEnd();
-          i18nEnd();
+          Δi18nStart(0, MSG_DIV, 1);
+          ΔelementStart(1, 'div');
+          Δtemplate(2, subTemplate_2, 2, 0, 'span', [AttributeMarker.Template, 'ngIf']);
+          ΔelementEnd();
+          Δi18nEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(2, 'ngIf', bind(true));
+          ΔelementProperty(2, 'ngIf', Δbind(true));
         }
       }
 
       function subTemplate_2(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          i18nStart(0, MSG_DIV, 2);
-          element(1, 'span');
-          i18nEnd();
+          Δi18nStart(0, MSG_DIV, 2);
+          Δelement(1, 'span');
+          Δi18nEnd();
         }
       }
 
       class MyApp {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           directives: [NgIf],
@@ -719,14 +721,14 @@ describe('Runtime i18n', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
-              i18nStart(1, MSG_DIV);
-              template(2, subTemplate_1, 3, 1, 'div', [AttributeMarker.Template, 'ngIf']);
-              i18nEnd();
-              elementEnd();
+              ΔelementStart(0, 'div');
+              Δi18nStart(1, MSG_DIV);
+              Δtemplate(2, subTemplate_1, 3, 1, 'div', [AttributeMarker.Template, 'ngIf']);
+              Δi18nEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(2, 'ngIf', true);
+              ΔelementProperty(2, 'ngIf', true);
             }
           }
         });
@@ -744,9 +746,9 @@ describe('Runtime i18n', () => {
         other {�0� <span title="�1�">emails</span>}
       }`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18n(1, MSG_DIV);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18n(1, MSG_DIV);
+        ΔelementEnd();
       }, null, 2);
 
       // Template should be empty because there is no update template function
@@ -762,9 +764,9 @@ describe('Runtime i18n', () => {
         other {(�0�)}
       }`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18n(1, MSG_DIV);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18n(1, MSG_DIV);
+        ΔelementEnd();
       }, null, 2);
 
       // Template should be empty because there is no update template function
@@ -780,12 +782,12 @@ describe('Runtime i18n', () => {
         other {(�0�)}
       }�/#3�`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18nStart(1, MSG_DIV);
-        element(2, 'span');
-        element(3, 'span');
-        i18nEnd();
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18nStart(1, MSG_DIV);
+        Δelement(2, 'span');
+        Δelement(3, 'span');
+        Δi18nEnd();
+        ΔelementEnd();
       }, null, 4);
 
       // Template should be empty because there is no update template function
@@ -801,15 +803,15 @@ describe('Runtime i18n', () => {
 
       function subTemplate_1(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          i18nStart(0, MSG_DIV, 1);
-          element(1, 'span');
-          i18nEnd();
+          Δi18nStart(0, MSG_DIV, 1);
+          Δelement(1, 'span');
+          Δi18nEnd();
         }
         if (rf & RenderFlags.Update) {
-          const ctx = nextContext();
-          i18nExp(bind(ctx.value0));
-          i18nExp(bind(ctx.value1));
-          i18nApply(0);
+          const ctx = ΔnextContext();
+          Δi18nExp(Δbind(ctx.value0));
+          Δi18nExp(Δbind(ctx.value1));
+          Δi18nApply(0);
         }
       }
 
@@ -817,7 +819,7 @@ describe('Runtime i18n', () => {
         value0 = 0;
         value1 = 'emails label';
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           directives: [NgIf],
@@ -826,14 +828,14 @@ describe('Runtime i18n', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
-              i18nStart(1, MSG_DIV);
-              template(2, subTemplate_1, 2, 2, 'span', [AttributeMarker.Template, 'ngIf']);
-              i18nEnd();
-              elementEnd();
+              ΔelementStart(0, 'div');
+              Δi18nStart(1, MSG_DIV);
+              Δtemplate(2, subTemplate_1, 2, 2, 'span', [AttributeMarker.Template, 'ngIf']);
+              Δi18nEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(2, 'ngIf', true);
+              ΔelementProperty(2, 'ngIf', true);
             }
           }
         });
@@ -859,18 +861,18 @@ describe('Runtime i18n', () => {
       }`;
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
+            ΔelementStart(0, 'div');
             {
-              elementContainerStart(1);
-              { i18n(2, MSG_DIV); }
-              elementContainerEnd();
+              ΔelementContainerStart(1);
+              { Δi18n(2, MSG_DIV); }
+              ΔelementContainerEnd();
             }
-            elementEnd();
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(0));
-            i18nExp(bind('more than one'));
-            i18nApply(2);
+            Δi18nExp(Δbind(0));
+            Δi18nExp(Δbind('more than one'));
+            Δi18nApply(2);
           },
           3, 2);
 
@@ -887,9 +889,9 @@ describe('Runtime i18n', () => {
                      }!}
       }`;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18n(1, MSG_DIV);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18n(1, MSG_DIV);
+        ΔelementEnd();
       }, null, 2);
 
       // Template should be empty because there is no update template function
@@ -904,9 +906,9 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const fixture = prepareFixture(() => {
-        elementStart(0, 'div');
-        i18nAttributes(index, MSG_div_attr);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δi18nAttributes(index, MSG_div_attr);
+        ΔelementEnd();
       }, null, nbConsts, index);
       const tView = fixture.hostView[TVIEW];
       const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
@@ -923,7 +925,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { i18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask
@@ -940,7 +942,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { i18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b11,  // bindings mask
@@ -956,7 +958,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { i18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask
@@ -980,13 +982,13 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18n(1, MSG_DIV);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18n(1, MSG_DIV);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value));
+            Δi18nApply(1);
           },
           2, 1);
 
@@ -1001,13 +1003,13 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18nAttributes(1, MSG_div_attr);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18nAttributes(1, MSG_div_attr);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value));
+            Δi18nApply(1);
           },
           2, 1);
 
@@ -1028,11 +1030,11 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18nAttributes(1, MSG_div_attr);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18nAttributes(1, MSG_div_attr);
+            ΔelementEnd();
           },
-          () => { i18nApply(1); }, 2, 1);
+          () => { Δi18nApply(1); }, 2, 1);
 
       expect(fixture.html).toEqual('<div title="Hello world!"></div>');
 
@@ -1048,14 +1050,14 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18nAttributes(1, MSG_div_attr);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18nAttributes(1, MSG_div_attr);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value0));
-            i18nExp(bind(ctx.value1));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value0));
+            Δi18nExp(Δbind(ctx.value1));
+            Δi18nApply(1);
           },
           2, 2);
 
@@ -1083,13 +1085,13 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18nAttributes(1, MSG_div_attr);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18nAttributes(1, MSG_div_attr);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value));
+            Δi18nApply(1);
           },
           2, 1);
 
@@ -1115,14 +1117,14 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18n(1, MSG_DIV);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18n(1, MSG_DIV);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value0));
-            i18nExp(bind(ctx.value1));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value0));
+            Δi18nExp(Δbind(ctx.value1));
+            Δi18nApply(1);
           },
           2, 2);
       expect(fixture.html).toEqual('<div>no <b title="none">emails</b>!<!--ICU 4--></div>');
@@ -1162,14 +1164,14 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18n(1, MSG_DIV);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18n(1, MSG_DIV);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value0));
-            i18nExp(bind(ctx.value1));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value0));
+            Δi18nExp(Δbind(ctx.value1));
+            Δi18nApply(1);
           },
           2, 2);
       expect(fixture.html)
@@ -1214,17 +1216,17 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18nStart(1, MSG_DIV);
-            element(2, 'span');
-            element(3, 'span');
-            i18nEnd();
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18nStart(1, MSG_DIV);
+            Δelement(2, 'span');
+            Δelement(3, 'span');
+            Δi18nEnd();
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value0));
-            i18nExp(bind(ctx.value1));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value0));
+            Δi18nExp(Δbind(ctx.value1));
+            Δi18nApply(1);
           },
           4, 2);
       expect(fixture.html)
@@ -1275,14 +1277,14 @@ describe('Runtime i18n', () => {
 
       const fixture = prepareFixture(
           () => {
-            elementStart(0, 'div');
-            i18n(1, MSG_DIV);
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δi18n(1, MSG_DIV);
+            ΔelementEnd();
           },
           () => {
-            i18nExp(bind(ctx.value0));
-            i18nExp(bind(ctx.value1));
-            i18nApply(1);
+            Δi18nExp(Δbind(ctx.value0));
+            Δi18nExp(Δbind(ctx.value1));
+            Δi18nApply(1);
           },
           2, 2);
 
@@ -1328,7 +1330,7 @@ describe('Runtime i18n', () => {
         exp1 = '1';
         exp2 = '2';
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
@@ -1336,33 +1338,33 @@ describe('Runtime i18n', () => {
           vars: 2,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
+              ΔelementStart(0, 'div');
               {
-                elementStart(1, 'a');
-                { i18n(2, MSG_DIV_1); }
-                elementEnd();
-                text(3, 'hello');
-                elementStart(4, 'b');
+                ΔelementStart(1, 'a');
+                { Δi18n(2, MSG_DIV_1); }
+                ΔelementEnd();
+                Δtext(3, 'hello');
+                ΔelementStart(4, 'b');
                 {
-                  i18nAttributes(5, MSG_DIV_2_ATTR);
-                  i18nStart(6, MSG_DIV_2);
+                  Δi18nAttributes(5, MSG_DIV_2_ATTR);
+                  Δi18nStart(6, MSG_DIV_2);
                   {
-                    element(7, 'c');
-                    element(8, 'd');  // will be removed
-                    element(9, 'e');  // will be moved before `c`
+                    Δelement(7, 'c');
+                    Δelement(8, 'd');  // will be removed
+                    Δelement(9, 'e');  // will be moved before `c`
                   }
-                  i18nEnd();
+                  Δi18nEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              i18nExp(bind(ctx.exp1));
-              i18nApply(2);
-              i18nExp(bind(ctx.exp1));
-              i18nExp(bind(ctx.exp2));
-              i18nApply(5);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nApply(2);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nExp(Δbind(ctx.exp2));
+              Δi18nApply(5);
             }
           }
         });
@@ -1387,7 +1389,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV_3 = `Section 3`;
 
       class MyApp {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
@@ -1395,24 +1397,24 @@ describe('Runtime i18n', () => {
           vars: 0,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
+              ΔelementStart(0, 'div');
               {
-                elementStart(1, 'div');
-                { i18n(2, MSG_DIV_1); }
-                elementEnd();
-                elementStart(3, 'div');
-                { i18n(4, MSG_DIV_2); }
-                elementEnd();
-                elementStart(5, 'div');
-                { i18n(6, MSG_DIV_3); }
-                elementEnd();
+                ΔelementStart(1, 'div');
+                { Δi18n(2, MSG_DIV_1); }
+                ΔelementEnd();
+                ΔelementStart(3, 'div');
+                { Δi18n(4, MSG_DIV_2); }
+                ΔelementEnd();
+                ΔelementStart(5, 'div');
+                { Δi18n(6, MSG_DIV_3); }
+                ΔelementEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              i18nApply(2);
-              i18nApply(4);
-              i18nApply(6);
+              Δi18nApply(2);
+              Δi18nApply(4);
+              Δi18nApply(6);
             }
           }
         });
@@ -1437,29 +1439,29 @@ describe('Runtime i18n', () => {
 
       function liTemplate(rf: RenderFlags, ctx: NgForOfContext<string>) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'ul');
-          elementStart(1, 'li');
-          { i18n(2, MSG_DIV_1); }
-          elementEnd();
-          elementStart(3, 'li');
-          { i18n(4, MSG_DIV_2); }
-          elementEnd();
-          elementStart(5, 'li');
-          { i18n(6, MSG_DIV_3); }
-          elementEnd();
-          elementEnd();
+          ΔelementStart(0, 'ul');
+          ΔelementStart(1, 'li');
+          { Δi18n(2, MSG_DIV_1); }
+          ΔelementEnd();
+          ΔelementStart(3, 'li');
+          { Δi18n(4, MSG_DIV_2); }
+          ΔelementEnd();
+          ΔelementStart(5, 'li');
+          { Δi18n(6, MSG_DIV_3); }
+          ΔelementEnd();
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          i18nApply(2);
-          i18nApply(4);
-          i18nApply(6);
+          Δi18nApply(2);
+          Δi18nApply(4);
+          Δi18nApply(6);
         }
       }
 
       class MyApp {
         items: string[] = ['1', '2', '3'];
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
@@ -1467,14 +1469,15 @@ describe('Runtime i18n', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
+              ΔelementStart(0, 'div');
               {
-                template(1, liTemplate, 7, 0, 'ul', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
+                Δtemplate(
+                    1, liTemplate, 7, 0, 'ul', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(ctx.items));
+              ΔelementProperty(1, 'ngForOf', Δbind(ctx.items));
             }
           },
           directives: () => [NgForOf]
@@ -1500,7 +1503,7 @@ describe('Runtime i18n', () => {
         exp1 = '1';
         exp2 = '2';
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
@@ -1508,28 +1511,28 @@ describe('Runtime i18n', () => {
           vars: 5,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div');
+              ΔelementStart(0, 'div');
               {
-                i18nAttributes(1, MSG_DIV_1_ATTR_1);
-                i18nStart(2, MSG_DIV_1);
+                Δi18nAttributes(1, MSG_DIV_1_ATTR_1);
+                Δi18nStart(2, MSG_DIV_1);
                 {
-                  elementStart(3, 'b');  // Will be removed
-                  { i18nAttributes(4, MSG_DIV_1_ATTR_1); }
-                  elementEnd();
+                  ΔelementStart(3, 'b');  // Will be removed
+                  { Δi18nAttributes(4, MSG_DIV_1_ATTR_1); }
+                  ΔelementEnd();
                 }
-                i18nEnd();
+                Δi18nEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              i18nExp(bind(ctx.exp1));
-              i18nExp(bind(ctx.exp2));
-              i18nApply(1);
-              i18nExp(bind(ctx.exp1));
-              i18nApply(2);
-              i18nExp(bind(ctx.exp1));
-              i18nExp(bind(ctx.exp2));
-              i18nApply(4);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nExp(Δbind(ctx.exp2));
+              Δi18nApply(1);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nApply(2);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nExp(Δbind(ctx.exp2));
+              Δi18nApply(4);
             }
           }
         });
@@ -1546,7 +1549,7 @@ describe('Runtime i18n', () => {
         // @HostBinding('className')
         klass = 'foo';
 
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
           factory: () => {
@@ -1556,10 +1559,10 @@ describe('Runtime i18n', () => {
           },
           hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
             if (rf & RenderFlags.Create) {
-              allocHostVars(1);
+              ΔallocHostVars(1);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(elementIndex, 'className', bind(ctx.klass), null, true);
+              ΔelementProperty(elementIndex, 'className', Δbind(ctx.klass), null, true);
             }
           }
         });
@@ -1585,7 +1588,7 @@ describe('Runtime i18n', () => {
         exp1 = 1;
         exp2 = 2;
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
@@ -1594,29 +1597,29 @@ describe('Runtime i18n', () => {
           directives: [Directive],
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', [AttributeMarker.Bindings, 'dir']);
+              ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'dir']);
               {
-                i18nAttributes(1, MSG_DIV_1_ATTR_1);
-                i18nStart(2, MSG_DIV_1);
+                Δi18nAttributes(1, MSG_DIV_1_ATTR_1);
+                Δi18nStart(2, MSG_DIV_1);
                 {
-                  elementStart(3, 'b', [AttributeMarker.Bindings, 'dir']);  // Will be removed
-                  { i18nAttributes(4, MSG_DIV_1_ATTR_1); }
-                  elementEnd();
+                  ΔelementStart(3, 'b', [AttributeMarker.Bindings, 'dir']);  // Will be removed
+                  { Δi18nAttributes(4, MSG_DIV_1_ATTR_1); }
+                  ΔelementEnd();
                 }
-                i18nEnd();
+                Δi18nEnd();
               }
-              elementEnd();
-              element(5, 'div', [AttributeMarker.Bindings, 'dir']);
+              ΔelementEnd();
+              Δelement(5, 'div', [AttributeMarker.Bindings, 'dir']);
             }
             if (rf & RenderFlags.Update) {
-              i18nExp(bind(ctx.exp1));
-              i18nExp(bind(ctx.exp2));
-              i18nApply(1);
-              i18nExp(bind(ctx.exp1));
-              i18nApply(2);
-              i18nExp(bind(ctx.exp1));
-              i18nExp(bind(ctx.exp2));
-              i18nApply(4);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nExp(Δbind(ctx.exp2));
+              Δi18nApply(1);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nApply(2);
+              Δi18nExp(Δbind(ctx.exp1));
+              Δi18nExp(Δbind(ctx.exp2));
+              Δi18nApply(4);
             }
           }
         });
@@ -1641,21 +1644,21 @@ describe('Runtime i18n', () => {
     it('should fix the links when adding/moving/removing nodes', () => {
       const MSG_DIV = `�#2��/#2��#8��/#8��#4��/#4��#5��/#5�Hello World�#3��/#3��#7��/#7�`;
       let fixture = prepareFixture(() => {
-        elementStart(0, 'div');
+        ΔelementStart(0, 'div');
         {
-          i18nStart(1, MSG_DIV);
+          Δi18nStart(1, MSG_DIV);
           {
-            element(2, 'div2');
-            element(3, 'div3');
-            element(4, 'div4');
-            element(5, 'div5');
-            element(6, 'div6');
-            element(7, 'div7');
-            element(8, 'div8');
+            Δelement(2, 'div2');
+            Δelement(3, 'div3');
+            Δelement(4, 'div4');
+            Δelement(5, 'div5');
+            Δelement(6, 'div6');
+            Δelement(7, 'div7');
+            Δelement(8, 'div8');
           }
-          i18nEnd();
+          Δi18nEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }, null, 9);
 
       expect(fixture.html)
@@ -1685,7 +1688,7 @@ describe('Runtime i18n', () => {
       it('should project the translations', () => {
         @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             factory: () => new Child(),
@@ -1693,10 +1696,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'p');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'p');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -1729,7 +1732,7 @@ describe('Runtime i18n', () => {
         })
         class Parent {
           name: string = 'Parent';
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Parent,
             selectors: [['parent']],
             directives: [Child],
@@ -1738,32 +1741,32 @@ describe('Runtime i18n', () => {
             vars: 2,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'div');
+                ΔelementStart(0, 'div');
                 {
-                  i18nStart(1, MSG_DIV_SECTION_1);
+                  Δi18nStart(1, MSG_DIV_SECTION_1);
                   {
-                    elementStart(2, 'child');
+                    ΔelementStart(2, 'child');
                     {
-                      elementStart(3, 'b');
+                      ΔelementStart(3, 'b');
                       {
-                        i18nAttributes(4, MSG_ATTR_1);
-                        element(5, 'remove-me-1');
+                        Δi18nAttributes(4, MSG_ATTR_1);
+                        Δelement(5, 'remove-me-1');
                       }
-                      elementEnd();
-                      element(6, 'remove-me-2');
+                      ΔelementEnd();
+                      Δelement(6, 'remove-me-2');
                     }
-                    elementEnd();
-                    element(7, 'remove-me-3');
+                    ΔelementEnd();
+                    Δelement(7, 'remove-me-3');
                   }
-                  i18nEnd();
+                  Δi18nEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                i18nExp(bind(cmp.name));
-                i18nApply(1);
-                i18nExp(bind(cmp.name));
-                i18nApply(4);
+                Δi18nExp(Δbind(cmp.name));
+                Δi18nApply(1);
+                Δi18nExp(Δbind(cmp.name));
+                Δi18nApply(4);
               }
             }
           });
@@ -1781,7 +1784,7 @@ describe('Runtime i18n', () => {
       it('should project a translated i18n block', () => {
         @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             factory: () => new Child(),
@@ -1789,10 +1792,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'p');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'p');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -1822,7 +1825,7 @@ describe('Runtime i18n', () => {
         })
         class Parent {
           name: string = 'Parent';
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Parent,
             selectors: [['parent']],
             directives: [Child],
@@ -1831,28 +1834,28 @@ describe('Runtime i18n', () => {
             vars: 2,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'div');
+                ΔelementStart(0, 'div');
                 {
-                  elementStart(1, 'child');
+                  ΔelementStart(1, 'child');
                   {
-                    element(2, 'any');
-                    elementStart(3, 'b');
+                    Δelement(2, 'any');
+                    ΔelementStart(3, 'b');
                     {
-                      i18nAttributes(4, MSG_ATTR_1);
-                      i18n(5, MSG_DIV_SECTION_1);
+                      Δi18nAttributes(4, MSG_ATTR_1);
+                      Δi18n(5, MSG_DIV_SECTION_1);
                     }
-                    elementEnd();
-                    element(6, 'any');
+                    ΔelementEnd();
+                    Δelement(6, 'any');
                   }
-                  elementEnd();
+                  ΔelementEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                i18nExp(bind(cmp.name));
-                i18nApply(4);
-                i18nExp(bind(cmp.name));
-                i18nApply(5);
+                Δi18nExp(Δbind(cmp.name));
+                Δi18nApply(4);
+                Δi18nExp(Δbind(cmp.name));
+                Δi18nApply(5);
               }
             }
           });
@@ -1884,7 +1887,7 @@ describe('Runtime i18n', () => {
       it('should re-project translations when multiple projections', () => {
         @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
         class GrandChild {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: GrandChild,
             selectors: [['grand-child']],
             factory: () => new GrandChild(),
@@ -1892,10 +1895,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'div');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'div');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -1904,7 +1907,7 @@ describe('Runtime i18n', () => {
         @Component(
             {selector: 'child', template: '<grand-child><ng-content></ng-content></grand-child>'})
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             directives: [GrandChild],
@@ -1913,10 +1916,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'grand-child');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'grand-child');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -1932,7 +1935,7 @@ describe('Runtime i18n', () => {
         })
         class Parent {
           name: string = 'Parent';
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Parent,
             selectors: [['parent']],
             directives: [Child],
@@ -1941,13 +1944,13 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'child');
+                ΔelementStart(0, 'child');
                 {
-                  i18nStart(1, MSG_DIV_SECTION_1);
-                  { element(2, 'b'); }
-                  i18nEnd();
+                  Δi18nStart(1, MSG_DIV_SECTION_1);
+                  { Δelement(2, 'b'); }
+                  Δi18nEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
             }
           });
@@ -1963,7 +1966,7 @@ describe('Runtime i18n', () => {
       xit('should re-project translations when removed placeholders', () => {
         @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
         class GrandChild {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: GrandChild,
             selectors: [['grand-child']],
             factory: () => new GrandChild(),
@@ -1971,10 +1974,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'div');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'div');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -1983,7 +1986,7 @@ describe('Runtime i18n', () => {
         @Component(
             {selector: 'child', template: '<grand-child><ng-content></ng-content></grand-child>'})
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             directives: [GrandChild],
@@ -1992,10 +1995,10 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'grand-child');
-                { projection(1); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'grand-child');
+                { Δprojection(1); }
+                ΔelementEnd();
               }
             }
           });
@@ -2011,7 +2014,7 @@ describe('Runtime i18n', () => {
         })
         class Parent {
           name: string = 'Parent';
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Parent,
             selectors: [['parent']],
             directives: [Child],
@@ -2020,15 +2023,15 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'child');
+                ΔelementStart(0, 'child');
                 {
-                  i18nStart(1, MSG_DIV_SECTION_1);
+                  Δi18nStart(1, MSG_DIV_SECTION_1);
                   {
-                    element(2, 'b');  // will be removed
+                    Δelement(2, 'b');  // will be removed
                   }
-                  i18nEnd();
+                  Δi18nEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
             }
           });
@@ -2047,7 +2050,7 @@ describe('Runtime i18n', () => {
         `
         })
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             factory: () => new Child(),
@@ -2055,8 +2058,8 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                projectionDef([[['span']]], ['span']);
-                projection(0, 1);
+                ΔprojectionDef([[['span']]], ['span']);
+                Δprojection(0, 1);
               }
             }
           });
@@ -2076,7 +2079,7 @@ describe('Runtime i18n', () => {
           // <child i18n><span title="keepMe">Contenu</span></child>
         })
         class Parent {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Parent,
             selectors: [['parent']],
             directives: [Child],
@@ -2085,16 +2088,16 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'child');
+                ΔelementStart(0, 'child');
                 {
-                  i18nStart(1, MSG_DIV_SECTION_1);
+                  Δi18nStart(1, MSG_DIV_SECTION_1);
                   {
-                    element(2, 'span', ['title', 'keepMe']);
-                    element(3, 'span', ['title', 'deleteMe']);
+                    Δelement(2, 'span', ['title', 'keepMe']);
+                    Δelement(3, 'span', ['title', 'deleteMe']);
                   }
-                  i18nEnd();
+                  Δi18nEnd();
                 }
-                elementEnd();
+                ΔelementEnd();
               }
             }
           });
@@ -2182,7 +2185,7 @@ describe('Runtime i18n', () => {
         ],
       ];
       cases.forEach(([input, replacements, output]) => {
-        expect(i18nPostprocess(input as string, replacements as any)).toEqual(output as string);
+        expect(Δi18nPostprocess(input as string, replacements as any)).toEqual(output as string);
       });
     });
 
@@ -2234,7 +2237,7 @@ describe('Runtime i18n', () => {
         �/*3:1�
         �#4� Bonjour - 5 �/#4�
       `;
-      expect(i18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
+      expect(Δi18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
     });
 
     it('should throw in case we have invalid string', () => {
@@ -2252,7 +2255,7 @@ describe('Runtime i18n', () => {
         ['My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}]
       ];
       cases.forEach(([input, replacements, output]) => {
-        expect(() => i18nPostprocess(input as string, replacements as any)).toThrowError();
+        expect(() => Δi18nPostprocess(input as string, replacements as any)).toThrowError();
       });
     });
   });

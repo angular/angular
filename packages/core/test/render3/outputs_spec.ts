@@ -8,8 +8,8 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions/all';
+import {ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
+import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δlistener, Δtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -23,7 +23,7 @@ describe('outputs', () => {
     change = new EventEmitter();
     resetStream = new EventEmitter();
 
-    static ngComponentDef = defineComponent({
+    static ngComponentDef = ΔdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},
@@ -39,7 +39,7 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngDirectiveDef = defineDirective({
+    static ngDirectiveDef = ΔdefineDirective({
       type: OtherDir,
       selectors: [['', 'otherDir', '']],
       factory: () => otherDir = new OtherDir,
@@ -51,7 +51,7 @@ describe('outputs', () => {
     events: string[] = [];
     ngOnDestroy() { this.events.push('destroy'); }
 
-    static ngComponentDef = defineComponent({
+    static ngComponentDef = ΔdefineComponent({
       type: DestroyComp,
       selectors: [['destroy-comp']],
       consts: 0,
@@ -65,7 +65,7 @@ describe('outputs', () => {
   class MyButton {
     click = new EventEmitter();
 
-    static ngDirectiveDef = defineDirective({
+    static ngDirectiveDef = ΔdefineDirective({
       type: MyButton,
       selectors: [['', 'myButton', '']],
       factory: () => buttonDir = new MyButton,
@@ -80,11 +80,11 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button-toggle');
+        ΔelementStart(0, 'button-toggle');
         {
-          listener('change', function() { return ctx.onChange(); });
+          Δlistener('change', function() { return ctx.onChange(); });
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }
 
@@ -103,12 +103,12 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button-toggle');
+        ΔelementStart(0, 'button-toggle');
         {
-          listener('change', function() { return ctx.onChange(); });
-          listener('reset', function() { return ctx.onReset(); });
+          Δlistener('change', function() { return ctx.onChange(); });
+          Δlistener('reset', function() { return ctx.onReset(); });
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }
 
@@ -128,11 +128,11 @@ describe('outputs', () => {
     /** <button-toggle (change)="counter++"></button-toggle> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button-toggle');
+        ΔelementStart(0, 'button-toggle');
         {
-          listener('change', function() { return ctx.counter++; });
+          Δlistener('change', function() { return ctx.counter++; });
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }
 
@@ -155,24 +155,24 @@ describe('outputs', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        container(0);
+        Δcontainer(0);
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(0);
+        ΔcontainerRefreshStart(0);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(0, 1, 0);
+            let rf1 = ΔembeddedViewStart(0, 1, 0);
             if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'button-toggle');
+              ΔelementStart(0, 'button-toggle');
               {
-                listener('change', function() { return ctx.onChange(); });
+                Δlistener('change', function() { return ctx.onChange(); });
               }
-              elementEnd();
+              ΔelementEnd();
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }
 
@@ -201,35 +201,35 @@ describe('outputs', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        container(0);
+        Δcontainer(0);
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(0);
+        ΔcontainerRefreshStart(0);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(0, 1, 0);
+            let rf1 = ΔembeddedViewStart(0, 1, 0);
             if (rf1 & RenderFlags.Create) {
-              container(0);
+              Δcontainer(0);
             }
-            containerRefreshStart(0);
+            ΔcontainerRefreshStart(0);
             {
               if (ctx.condition2) {
-                let rf1 = embeddedViewStart(0, 1, 0);
+                let rf1 = ΔembeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'button-toggle');
+                  ΔelementStart(0, 'button-toggle');
                   {
-                    listener('change', function() { return ctx.onChange(); });
+                    Δlistener('change', function() { return ctx.onChange(); });
                   }
-                  elementEnd();
+                  ΔelementEnd();
                 }
-                embeddedViewEnd();
+                ΔembeddedViewEnd();
               }
             }
-            containerRefreshEnd();
-            embeddedViewEnd();
+            ΔcontainerRefreshEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }
 
@@ -257,31 +257,31 @@ describe('outputs', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        container(0);
+        Δcontainer(0);
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(0);
+        ΔcontainerRefreshStart(0);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(0, 4, 0);
+            let rf1 = ΔembeddedViewStart(0, 4, 0);
             if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'button');
+              ΔelementStart(0, 'button');
               {
-                listener('click', function() { return ctx.onClick(); });
-                text(1, 'Click me');
+                Δlistener('click', function() { return ctx.onClick(); });
+                Δtext(1, 'Click me');
               }
-              elementEnd();
-              elementStart(2, 'button-toggle');
+              ΔelementEnd();
+              ΔelementStart(2, 'button-toggle');
               {
-                listener('change', function() { return ctx.onChange(); });
+                Δlistener('change', function() { return ctx.onChange(); });
               }
-              elementEnd();
-              element(3, 'destroy-comp');
+              ΔelementEnd();
+              Δelement(3, 'destroy-comp');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }
 
@@ -313,11 +313,11 @@ describe('outputs', () => {
   it('should fire event listeners along with outputs if they match', () => {
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button', ['myButton', '']);
+        ΔelementStart(0, 'button', ['myButton', '']);
         {
-          listener('click', function() { return ctx.onClick(); });
+          Δlistener('click', function() { return ctx.onClick(); });
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }
 
@@ -338,11 +338,11 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()" otherDir></button-toggle> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button-toggle', ['otherDir', '']);
+        ΔelementStart(0, 'button-toggle', ['otherDir', '']);
         {
-          listener('change', function() { return ctx.onChange(); });
+          Δlistener('change', function() { return ctx.onChange(); });
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }
 
@@ -363,7 +363,7 @@ describe('outputs', () => {
       // TODO(issue/24571): remove '!'.
       change !: boolean;
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: OtherChangeDir,
         selectors: [['', 'otherChangeDir', '']],
         factory: () => otherDir = new OtherChangeDir,
@@ -374,14 +374,14 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button-toggle', ['otherChangeDir', '']);
+        ΔelementStart(0, 'button-toggle', ['otherChangeDir', '']);
         {
-          listener('change', function() { return ctx.onChange(); });
+          Δlistener('change', function() { return ctx.onChange(); });
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'change', bind(ctx.change));
+        ΔelementProperty(0, 'change', Δbind(ctx.change));
       }
     }
 
@@ -409,39 +409,39 @@ describe('outputs', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'button');
+        ΔelementStart(0, 'button');
         {
-          listener('click', function() { return ctx.onClick(); });
-          text(1, 'Click me');
+          Δlistener('click', function() { return ctx.onClick(); });
+          Δtext(1, 'Click me');
         }
-        elementEnd();
-        container(2);
+        ΔelementEnd();
+        Δcontainer(2);
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(0, 1, 0);
+            let rf1 = ΔembeddedViewStart(0, 1, 0);
             if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'button-toggle');
+              ΔelementStart(0, 'button-toggle');
               {
-                listener('change', function() { return ctx.onChange(); });
+                Δlistener('change', function() { return ctx.onChange(); });
               }
-              elementEnd();
+              ΔelementEnd();
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           } else {
-            if (embeddedViewStart(1, 1, 0)) {
-              elementStart(0, 'div', ['otherDir', '']);
+            if (ΔembeddedViewStart(1, 1, 0)) {
+              ΔelementStart(0, 'div', ['otherDir', '']);
               {
-                listener('change', function() { return ctx.onChange(); });
+                Δlistener('change', function() { return ctx.onChange(); });
               }
-              elementEnd();
+              ΔelementEnd();
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }
 

@@ -201,9 +201,6 @@
     "name": "defaultScheduler"
   },
   {
-    "name": "defineComponent"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
@@ -372,9 +369,6 @@
     "name": "locateHostElement"
   },
   {
-    "name": "namespaceHTML"
-  },
-  {
     "name": "nativeAppendChild"
   },
   {
@@ -483,9 +477,6 @@
     "name": "syncViewWithBlueprint"
   },
   {
-    "name": "text"
-  },
-  {
     "name": "tickRootContext"
   },
   {
@@ -493,5 +484,14 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "ΔdefineComponent"
+  },
+  {
+    "name": "ΔnamespaceHTML"
+  },
+  {
+    "name": "Δtext"
   }
 ]
