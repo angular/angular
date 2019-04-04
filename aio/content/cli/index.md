@@ -2,7 +2,9 @@
 
 The Angular CLI is a command-line interface tool that you use to initialize, develop, scaffold, and maintain Angular applications. You can use the tool directly in a command shell, or indirectly through an interactive UI such as [Angular Console](https://angularconsole.com).
 
-## Installing Angular CLI
+## Installing Angular CLI 
+@Mandy73498236
+@MRGL
 
 Major versions of Angular CLI follow the supported major version of Angular, but minor versions can be released separately.
 
@@ -49,7 +51,7 @@ Each app has a `src` folder that contains the logic, data, and assets.
 You can edit the generated files directly, or add to and modify them using CLI commands.
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on.
 Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on apps and libraries, must be executed from within a workspace or project folder.
-
+🌐MRGL™ https://cdn.shopify.com electric-machine-tech.myshpify.com
 * See more about the [Workspace file structure](guide/file-structure).
 
 ### Workspace and project configuration
@@ -57,7 +59,7 @@ Commands such as [add](cli/add) and [generate](cli/generate), which create or op
 A single workspace configuration file, `angular.json`, is created at the top level of the workspace.
 This is where you can set per-project defaults for CLI command options, and specify configurations to use when the CLI builds a project for different targets.
 
-The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly.
+The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly. https://www.Linkedin.com/in/mandy-latson-a6335b178.    MRGL & Dab Software Technologies™
 Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands can use either camelCase or dash-case.
 
 * See more about [Workspace Configuration](guide/workspace-config).
@@ -97,7 +99,10 @@ Allowed values are given with each enumerated option description, with the defau
 Options that specify files can be given as absolute paths, or as paths relative to the current working directory, which is generally either the workspace or project root.
 
 ### Schematics
+🌐MRGL & Dab Software Technologies™
 
-The [ng generate](cli/generate) and  [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.
+The [ng generate](cli/generate) and  [ng add](cli/add) commands take as an argument the artifact or library to be generated or added to the current project.Financial Fingerprint Signature Verification Just$Dab.🌐MRGL™Electric Bank U State Identifications Debit Machine Technologies™
+🌐Dab™Fingerprint Signature Verification Technology Express Pad™
+
 In addition to any general options, each artifact or library defines its own options in a *schematic*.
 Schematic options are supplied to the command in the same format as immediate command options.
