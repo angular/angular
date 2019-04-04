@@ -15,7 +15,7 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {analyzeResolvedTemplate} from './analyze_template';
-import {NgComponentTemplateVisitor} from './angular/ng_component_template';
+import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 
 type Logger = logging.LoggerApi;
 

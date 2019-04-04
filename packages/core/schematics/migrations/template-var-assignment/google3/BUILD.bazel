@@ -7,6 +7,7 @@ ts_library(
     visibility = ["//packages/core/schematics/test:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/template-var-assignment",
+        "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
     ],
