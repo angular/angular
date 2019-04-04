@@ -76,6 +76,12 @@ describe('type check blocks', () => {
     expect(block).not.toContain('.style = ');
   });
 
+  it('should handle $any casts', () => {
+    const TEMPLATE = `{{$any(a)}}`;
+    const block = tcb(TEMPLATE);
+    expect(block).toContain('(ctx.a as any);');
+  });
+
   describe('config', () => {
     const DIRECTIVES: TestDeclaration[] = [{
       type: 'directive',
