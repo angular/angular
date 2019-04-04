@@ -1,3 +1,18 @@
+## 7.3.7 "herringbone-harpsichord" (2019-04-04)
+
+
+### Bug Fixes
+
+* **bottom-sheet:** unable to reopen same bottom sheet after closing via back button ([#15520](https://github.com/angular/material2/issues/15520)) ([aae6972](https://github.com/angular/material2/commit/aae6972)), closes [#15510](https://github.com/angular/material2/issues/15510)
+* **chips:** remove aria-selected from deselected chip in single selection mode ([#15634](https://github.com/angular/material2/issues/15634)) ([ebbf97e](https://github.com/angular/material2/commit/ebbf97e)), closes [#15617](https://github.com/angular/material2/issues/15617)
+* error when attempting to access Intl API on some versions of Windows ([#15693](https://github.com/angular/material2/issues/15693)) ([c02b09c](https://github.com/angular/material2/commit/c02b09c)), closes [#15687](https://github.com/angular/material2/issues/15687)
+* **dialog:** remove default aria-label from mat-dialog-close ([#15654](https://github.com/angular/material2/issues/15654)) ([307889e](https://github.com/angular/material2/commit/307889e)), closes [#15542](https://github.com/angular/material2/issues/15542)
+* **form-field:** remove nonbreaking space before * for required fields ([#15490](https://github.com/angular/material2/issues/15490)) ([5e7cf22](https://github.com/angular/material2/commit/5e7cf22))
+* **option:** Remove aria-selected='false' in single-selection mode ([#15617](https://github.com/angular/material2/issues/15617)) ([61a608b](https://github.com/angular/material2/commit/61a608b))
+* **schematics:** use ngAfterViewInit instead of ngOnInit in table ([#15446](https://github.com/angular/material2/issues/15446)) ([9c34b97](https://github.com/angular/material2/commit/9c34b97))
+* **sidenav:** some internal subjects not being completed ([#15567](https://github.com/angular/material2/issues/15567)) ([073e542](https://github.com/angular/material2/commit/073e542))
+
+
 ## 7.3.6 "tar-trebuchet" (2019-03-25)
 
 
