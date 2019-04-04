@@ -165,16 +165,18 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
     {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-  elOrTpl.attributes.forEach(a => {
-    if (!isI18nAttribute(a.name)) {
-      attributesMap[a.name] = a.value;
-    }
-  });
-  elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
-  elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
 
-  if (elOrTpl instanceof t.Template) {
+  if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
     elOrTpl.templateAttrs.forEach(a => attributesMap[a.name] = '');
+  } else {
+    elOrTpl.attributes.forEach(a => {
+      if (!isI18nAttribute(a.name)) {
+        attributesMap[a.name] = a.value;
+      }
+    });
+
+    elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
+    elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
   }
 
   return attributesMap;
