@@ -24,6 +24,13 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: {},
     isComponent: false,
   });
+  matcher.addSelectables(CssSelector.parse('[dir]'), {
+    name: 'Dir',
+    exportAs: null,
+    inputs: {},
+    outputs: {},
+    isComponent: false,
+  });
   return matcher;
 }
 
@@ -55,5 +62,20 @@ describe('t2 binding', () => {
     expect(directives).not.toBeNull();
     expect(directives.length).toBe(1);
     expect(directives[0].name).toBe('NgFor');
+  });
+
+  it('should not match directives intended for an element on a microsyntax template', () => {
+    const template = parseTemplate('<div *ngFor="let item of items" dir></div>', '', {});
+    const binder = new R3TargetBinder(makeSelectorMatcher());
+    const res = binder.bind({template: template.nodes});
+    const tmpl = template.nodes[0] as a.Template;
+    const tmplDirectives = res.getDirectivesOfNode(tmpl) !;
+    expect(tmplDirectives).not.toBeNull();
+    expect(tmplDirectives.length).toBe(1);
+    expect(tmplDirectives[0].name).toBe('NgFor');
+    const elDirectives = res.getDirectivesOfNode(tmpl.children[0] as a.Element) !;
+    expect(elDirectives).not.toBeNull();
+    expect(elDirectives.length).toBe(1);
+    expect(elDirectives[0].name).toBe('Dir');
   });
 });
