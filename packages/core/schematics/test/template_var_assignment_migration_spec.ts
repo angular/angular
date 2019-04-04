@@ -161,6 +161,24 @@ describe('template variable assignment migration', () => {
 
     expect(warnOutput.length).toBe(0);
   });
+
+  it('should not warn for bound event assignments to template variable object property', () => {
+    writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+      
+      @Component({
+        templateUrl: './sub_dir/tmpl.html',
+      })
+      export class MyComp {}
+    `);
+
+    writeFile('/sub_dir/tmpl.html', `
+      <button *ngFor="let element of list" (click)="element.value = null">Reset</button>
+    `);
+
+    runMigration();
+
+    expect(warnOutput.length).toBe(0);
   });
 
   it('should not throw an error if a detected template fails parsing', () => {
