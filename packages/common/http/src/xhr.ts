@@ -49,16 +49,6 @@ export class BrowserXhr implements XhrFactory {
 }
 
 /**
- * Tracks a response from the server that does not yet have a body.
- */
-interface PartialResponse {
-  headers: HttpHeaders;
-  status: number;
-  statusText: string;
-  url: string;
-}
-
-/**
  * An `HttpBackend` which uses the XMLHttpRequest API to send
  * requests to a backend server.
  *
@@ -83,7 +73,7 @@ export class HttpXhrBackend implements HttpBackend {
       // Start by setting up the XHR object with request method, URL, and withCredentials flag.
       const xhr = this.xhrFactory.build();
       xhr.open(req.method, req.urlWithParams);
-      if (!!req.withCredentials) {
+      if (req.withCredentials) {
         xhr.withCredentials = true;
       }
 

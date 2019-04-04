@@ -125,7 +125,7 @@ export class JsonpClientBackend implements HttpBackend {
       // if the JSONP script loads successfully. The event itself is unimportant.
       // If something went wrong, onLoad() may run without the response callback
       // having been invoked.
-      const onLoad = (event: Event) => {
+      const onLoad = () => {
         // Do nothing if the request has been cancelled.
         if (cancelled) {
           return;

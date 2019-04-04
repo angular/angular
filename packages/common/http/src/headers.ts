@@ -140,6 +140,7 @@ export class HttpHeaders {
    * header values.
    *
    * @param name The header name for which to append the values.
+   * @param value The value or array of values appends to the header name.
    *
    * @returns A clone of the HTTP header object with the value appended.
    */
@@ -152,7 +153,7 @@ export class HttpHeaders {
    * its value is replaced with the given value.
    *
    * @param name The header name.
-   * @param value Provides the value to set or overide for a given name.
+   * @param value Provides the value to set or override for a given name.
    *
    * @returns A clone of the HTTP header object with the newly set header value.
    */
