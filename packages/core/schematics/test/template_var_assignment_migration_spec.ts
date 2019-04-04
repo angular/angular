@@ -18,7 +18,7 @@ describe('template variable assignment migration', () => {
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
-  let consoleOutput: string[];
+  let warnOutput: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -31,8 +31,12 @@ describe('template variable assignment migration', () => {
       }
     }));
 
-    consoleOutput = [];
-    runner.logger.subscribe(logEntry => consoleOutput.push(logEntry.message));
+    warnOutput = [];
+    runner.logger.subscribe(logEntry => {
+      if (logEntry.level === 'warn') {
+        warnOutput.push(logEntry.message);
+      }
+    });
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -67,8 +71,8 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(1);
-    expect(consoleOutput[0]).toMatch(/^index.ts@5:69: Found assignment/);
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:69: Found assignment/);
   });
 
   it('should warn for two-way data binding assigning to "as" variable', () => {
@@ -89,8 +93,8 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(1);
-    expect(consoleOutput).toMatch(/^tmpl.html@3:31: Found assignment/);
+    expect(warnOutput.length).toBe(1);
+    expect(warnOutput).toMatch(/^⮑ {3}tmpl.html@3:31: Found assignment/);
   });
 
   it('should warn for bound event assignments to "as" variable', () => {
@@ -112,9 +116,9 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(2);
-    expect(consoleOutput[0]).toMatch(/^sub_dir\/tmpl.html@3:25: Found assignment/);
-    expect(consoleOutput[1]).toMatch(/^sub_dir\/tmpl.html@4:25: Found assignment/);
+    expect(warnOutput.length).toBe(2);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@3:25: Found assignment/);
+    expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
   it('should warn for bound event assignments to template "let" variables', () => {
@@ -136,9 +140,9 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(2);
-    expect(consoleOutput[0]).toMatch(/^sub_dir\/tmpl.html@3:25: Found assignment/);
-    expect(consoleOutput[1]).toMatch(/^sub_dir\/tmpl.html@4:25: Found assignment/);
+    expect(warnOutput.length).toBe(2);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@3:25: Found assignment/);
+    expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
   it('should not warn for bound event assignments to component property', () => {
@@ -155,7 +159,8 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(0);
+    expect(warnOutput.length).toBe(0);
+  });
   });
 
   it('should not throw an error if a detected template fails parsing', () => {
@@ -172,6 +177,6 @@ describe('template variable assignment migration', () => {
 
     runMigration();
 
-    expect(consoleOutput.length).toBe(0);
+    expect(warnOutput.length).toBe(0);
   });
 });

@@ -19,6 +19,10 @@ import {NgComponentTemplateVisitor} from './angular/ng_component_template';
 
 type Logger = logging.LoggerApi;
 
+const README_URL =
+    'https://github.com/angular/angular/tree/master/packages/core/schematics/migrations/template-var-assignment/README.md';
+const FAILURE_MESSAGE = `Found assignment to template variable.`;
+
 /** Entry point for the V8 template variable assignment schematic. */
 export default function(): Rule {
   return (tree: Tree, context: SchematicContext) => {
@@ -62,6 +66,7 @@ function runTemplateVariableAssignmentCheck(
   rootSourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
+  const collectedFailures: string[] = [];
 
   // Analyze each resolved template and print a warning for property writes to
   // template variables.
@@ -76,9 +81,18 @@ function runTemplateVariableAssignmentCheck(
 
     nodes.forEach(n => {
       const {line, character} = template.getCharacterAndLineOfPosition(n.start);
-      logger.warn(
-          `${displayFilePath}@${line + 1}:${character + 1}: Found assignment to template ` +
-          `variable. This does not work with Ivy and needs to be updated.`);
+      collectedFailures.push(`${displayFilePath}@${line + 1}:${character + 1}: ${FAILURE_MESSAGE}`);
     });
   });
+
+  if (collectedFailures.length) {
+    logger.info('---- Template Variable Assignment schematic ----');
+    logger.info('Assignments to template variables will no longer work with Ivy as');
+    logger.info('template variables are effectively constants in Ivy. Read more about');
+    logger.info(`this change here: ${README_URL}`);
+    logger.info('');
+    logger.info('The following template assignments were found:');
+    collectedFailures.forEach(failure => logger.warn(`⮑   ${failure}`));
+    logger.info('------------------------------------------------');
+  }
 }
