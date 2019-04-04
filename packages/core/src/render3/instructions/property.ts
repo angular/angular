@@ -38,22 +38,26 @@ import {TsickleIssue1009, initializeTNodeInputs, loadComponentRenderer, setInput
  * (this is necessary for host property bindings)
  * @returns This function returns itself so that it may be chained
  * (e.g. `property('name', ctx.name)('title', ctx.title)`)
+ *
+ * @publicApi
  */
-export function property<T>(
+export function Δproperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const bindReconciledValue = bind(value);
+  const bindReconciledValue = Δbind(value);
   elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
-  return property;
+  return Δproperty;
 }
 
 /**
  * Creates a single value binding.
  *
  * @param value Value to diff
+ *
+ * @publicApi
  */
-export function bind<T>(value: T): T|NO_CHANGE {
+export function Δbind<T>(value: T): T|NO_CHANGE {
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX]++;
   storeBindingMetadata(lView);
@@ -75,8 +79,10 @@ export function bind<T>(value: T): T|NO_CHANGE {
 * @param sanitizer An optional function used to sanitize the value.
 * @param nativeOnly Whether or not we should only set native properties and skip input check
 * (this is necessary for host property bindings)
+ *
+ * @publicApi
 */
-export function elementProperty<T>(
+export function ΔelementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): void {
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
@@ -102,8 +108,10 @@ export function elementProperty<T>(
  * @param sanitizer An optional function used to sanitize the value.
  * @param nativeOnly Whether or not we should only set native properties and skip input check
  * (this is necessary for host property bindings)
+ *
+ * @publicApi
  */
-export function componentHostSyntheticProperty<T>(
+export function ΔcomponentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean) {
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);

@@ -41,8 +41,10 @@ import {getActiveDirectiveStylingIndex} from './styling';
  * Attributes and localRefs are passed as an array of strings where elements with an even index
  * hold an attribute name and elements with an odd index hold an attribute value, ex.:
  * ['id', 'warning5', 'class', 'alert']
+ *
+ * @publicApi
  */
-export function elementStart(
+export function ΔelementStart(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -122,8 +124,12 @@ export function elementStart(
   executeContentQueries(tView, tNode, lView);
 }
 
-/** Mark the end of the element. */
-export function elementEnd(): void {
+/**
+ * Mark the end of the element.
+ *
+ * @publicApi
+ */
+export function ΔelementEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);
@@ -172,11 +178,13 @@ export function elementEnd(): void {
  * @param attrs Statically bound set of attributes, classes, and styles to be written into the DOM
  *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
+ *
+ * @publicApi
  */
-export function element(
+export function Δelement(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
-  elementStart(index, name, attrs, localRefs);
-  elementEnd();
+  ΔelementStart(index, name, attrs, localRefs);
+  ΔelementEnd();
 }
 
 
@@ -189,8 +197,10 @@ export function element(
  *                  Otherwise the attribute value is set to the stringified value.
  * @param sanitizer An optional function used to sanitize the value.
  * @param namespace Optional namespace to use when setting the attribute.
+ *
+ * @publicApi
  */
-export function elementAttribute(
+export function ΔelementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): void {
   if (value !== NO_CHANGE) {
@@ -258,7 +268,7 @@ export function elementAttribute(
  *
  * @publicApi
  */
-export function elementHostAttrs(attrs: TAttributes) {
+export function ΔelementHostAttrs(attrs: TAttributes) {
   const hostElementIndex = getSelectedIndex();
   const lView = getLView();
   const tNode = getTNode(hostElementIndex, lView);

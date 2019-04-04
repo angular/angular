@@ -36,8 +36,10 @@ import {DirectiveDef} from '../interfaces/definition';
  * }
  *
  * @param definition
+ *
+ * @publicApi
  */
-export function ProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
+export function ΔProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
   return (definition: DirectiveDef<T>) => {
     definition.providersResolver =
         (def: DirectiveDef<T>, processProvidersFn?: ProcessProvidersFunction) => {

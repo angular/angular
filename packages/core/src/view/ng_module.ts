@@ -9,7 +9,7 @@
 import {resolveForwardRef} from '../di/forward_ref';
 import {INJECTOR, Injector} from '../di/injector';
 import {setCurrentInjector} from '../di/injector_compatibility';
-import {InjectableDef, getInjectableDef} from '../di/interface/defs';
+import {getInjectableDef, ΔInjectableDef} from '../di/interface/defs';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
@@ -98,7 +98,7 @@ export function resolveNgModuleDep(
         return data;
     }
     const providerDef = data._def.providersByKey[tokenKey];
-    let injectableDef: InjectableDef<any>|null;
+    let injectableDef: ΔInjectableDef<any>|null;
     if (providerDef) {
       let providerInstance = data._providers[providerDef.index];
       if (providerInstance === undefined) {
@@ -132,7 +132,7 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
   return ngModule._def.modules.indexOf(scope) > -1;
 }
 
-function targetsModule(ngModule: NgModuleData, def: InjectableDef<any>): boolean {
+function targetsModule(ngModule: NgModuleData, def: ΔInjectableDef<any>): boolean {
   return def.providedIn != null && (moduleTransitivelyPresent(ngModule, def.providedIn) ||
                                     def.providedIn === 'root' && ngModule._def.isRoot);
 }

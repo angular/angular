@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {AttributeMarker, defineComponent, defineDirective, detectChanges, directiveInject, loadViewQuery, queryRefresh, reference, templateRefExtractor, viewQuery} from '../../src/render3/index';
-
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions/all';
+import {AttributeMarker, detectChanges, ΔdefineComponent, ΔdefineDirective, ΔdirectiveInject, ΔloadViewQuery, ΔqueryRefresh, Δreference, ΔtemplateRefExtractor, ΔviewQuery} from '../../src/render3/index';
+import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementContainerEnd, ΔelementContainerStart, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δprojection, ΔprojectionDef, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {TemplateRef, ViewContainerRef, QueryList} from '@angular/core';
-import {NgIf, NgForOf} from './common_with_def';
+import {NgForOf, NgIf} from './common_with_def';
 import {ComponentFixture, createComponent, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 
 describe('content projection', () => {
@@ -25,10 +24,10 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
@@ -37,9 +36,9 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { text(1, 'content'); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δtext(1, 'content'); }
+        ΔelementEnd();
       }
     }, 2, 0, [Child]);
 
@@ -51,17 +50,17 @@ describe('content projection', () => {
     /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1);
 
     /** <child>content</child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { text(1, 'content'); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δtext(1, 'content'); }
+        ΔelementEnd();
       }
     }, 2, 0, [Child]);
 
@@ -73,8 +72,8 @@ describe('content projection', () => {
     /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1);
 
@@ -87,15 +86,15 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          text(1, 'before');
-          elementStart(2, 'div');
-          { text(3, 'content'); }
-          elementEnd();
-          text(4, 'after');
+          Δtext(1, 'before');
+          ΔelementStart(2, 'div');
+          { Δtext(3, 'content'); }
+          ΔelementEnd();
+          Δtext(4, 'after');
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 5, 0, [Child]);
 
@@ -107,34 +106,34 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
     /** <grand-child><ng-content></ng-content></grand-child> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'grand-child');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'grand-child');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2, 0, [GrandChild]);
 
     /** <child><b>Hello</b>World!</child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'b');
-          text(2, 'Hello');
-          elementEnd();
-          text(3, 'World!');
+          ΔelementStart(1, 'b');
+          Δtext(2, 'Hello');
+          ΔelementEnd();
+          Δtext(3, 'World!');
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 4, 0, [Child]);
 
@@ -148,16 +147,16 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
     const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        text(0, 'content');
+        Δtext(0, 'content');
       }
     }, 1);
 
@@ -168,9 +167,9 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { element(1, 'projected-comp'); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δelement(1, 'projected-comp'); }
+        ΔelementEnd();
       }
     }, 2, 0, [Child, ProjectedComp]);
 
@@ -183,20 +182,20 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
     /** <p><ng-content></ng-content></p> */
     const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'p');
-        projection(1);
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'p');
+        Δprojection(1);
+        ΔelementEnd();
       }
     }, 2);
 
@@ -210,19 +209,19 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'projected-comp');
+          ΔelementStart(1, 'projected-comp');
           {
-            elementStart(2, 'div');
-            text(3, 'Some content');
-            elementEnd();
-            text(4, 'Other content');
+            ΔelementStart(2, 'div');
+            Δtext(3, 'Some content');
+            ΔelementEnd();
+            Δtext(4, 'Other content');
           }
 
-          elementEnd();
+          ΔelementEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 5, 0, [Child, ProjectedComp]);
 
@@ -236,10 +235,10 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
@@ -254,26 +253,26 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          text(1, '(');
-          container(2);
-          text(3, ')');
+          Δtext(1, '(');
+          Δcontainer(2);
+          Δtext(3, ')');
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              text(0, 'content');
+              Δtext(0, 'content');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 4, 0, [Child]);
 
@@ -293,8 +292,8 @@ describe('content projection', () => {
     /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1);
 
@@ -307,22 +306,22 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { container(1); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δcontainer(1); }
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(1);
+        ΔcontainerRefreshStart(1);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              text(0, 'content');
+              Δtext(0, 'content');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 2, 0, [Child]);
 
@@ -342,10 +341,10 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2);
 
@@ -362,31 +361,31 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          text(1, '(');
-          container(2);
-          text(3, ')');
+          Δtext(1, '(');
+          Δcontainer(2);
+          Δtext(3, ')');
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              text(0, 'content');
+              Δtext(0, 'content');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           } else {
-            if (embeddedViewStart(1, 1, 0)) {
-              text(0, 'else');
+            if (ΔembeddedViewStart(1, 1, 0)) {
+              Δtext(0, 'else');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 4, 0, [Child]);
 
@@ -414,25 +413,25 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { container(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δcontainer(1); }
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(1);
+        ΔcontainerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 2, 0);
+            let rf0 = ΔembeddedViewStart(0, 2, 0);
             if (rf0 & RenderFlags.Create) {
-              elementStart(0, 'span');
-              projection(1);
-              elementEnd();
+              ΔelementStart(0, 'span');
+              Δprojection(1);
+              ΔelementEnd();
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 2, 0);
 
@@ -444,14 +443,14 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'div');
-          { text(2, 'text'); }
-          elementEnd();
-          text(3, 'content');
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'text'); }
+          ΔelementEnd();
+          Δtext(3, 'content');
         }
-        elementEnd();
+        ΔelementEnd();
 
         // testing
         childCmptInstance = getDirectiveOnNode(0);
@@ -479,31 +478,31 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { container(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δcontainer(1); }
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(1);
+        ΔcontainerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 2, 0);
+            let rf0 = ΔembeddedViewStart(0, 2, 0);
             if (rf0 & RenderFlags.Create) {
-              projection(0);
-              text(1, 'text');
+              Δprojection(0);
+              Δtext(1, 'text');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 2);
 
     /** <child></child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'child');
+        Δelement(0, 'child');
 
         // testing
         childCmptInstance = getDirectiveOnNode(0);
@@ -531,23 +530,23 @@ describe('content projection', () => {
         */
        const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
          if (rf & RenderFlags.Create) {
-           projectionDef();
-           elementStart(0, 'div');
-           { container(1); }
-           elementEnd();
+           ΔprojectionDef();
+           ΔelementStart(0, 'div');
+           { Δcontainer(1); }
+           ΔelementEnd();
          }
          if (rf & RenderFlags.Update) {
-           containerRefreshStart(1);
+           ΔcontainerRefreshStart(1);
            {
              if (!ctx.skipContent) {
-               let rf0 = embeddedViewStart(0, 1, 0);
+               let rf0 = ΔembeddedViewStart(0, 1, 0);
                if (rf0 & RenderFlags.Create) {
-                 projection(0);
+                 Δprojection(0);
                }
-               embeddedViewEnd();
+               ΔembeddedViewEnd();
              }
            }
-           containerRefreshEnd();
+           ΔcontainerRefreshEnd();
          }
        }, 2);
 
@@ -556,12 +555,12 @@ describe('content projection', () => {
         */
        const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
          if (rf & RenderFlags.Create) {
-           elementStart(0, 'child');
+           ΔelementStart(0, 'child');
            {
              childCmptInstance = getDirectiveOnNode(0);
-             text(1, 'content');
+             Δtext(1, 'content');
            }
-           elementEnd();
+           ΔelementEnd();
          }
        }, 2, 0, [Child]);
 
@@ -585,27 +584,27 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
         {
-          text(1, 'Before (inside)-');
-          container(2);
-          text(3, '-After (inside)');
+          Δtext(1, 'Before (inside)-');
+          Δcontainer(2);
+          Δtext(3, '-After (inside)');
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              projection(0);
+              Δprojection(0);
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 4);
 
@@ -620,26 +619,26 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          text(1, 'Before text-');
-          container(2);
-          text(3, '-After text');
+          Δtext(1, 'Before text-');
+          Δcontainer(2);
+          Δtext(3, '-After text');
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              text(0, 'content');
+              Δtext(0, 'content');
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 4, 0, [Child]);
 
@@ -665,23 +664,23 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { container(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δcontainer(1); }
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(1);
+        ΔcontainerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              projection(0);
+              Δprojection(0);
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 2);
 
@@ -696,27 +695,27 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'child');
+        ΔprojectionDef();
+        ΔelementStart(0, 'child');
         {
-          text(1, 'Before text');
-          container(2);
-          text(3, '-After text');
+          Δtext(1, 'Before text');
+          Δcontainer(2);
+          Δtext(3, '-After text');
         }
-        elementEnd();
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              projection(0);
+              Δprojection(0);
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 4, 0, [Child]);
 
@@ -724,13 +723,13 @@ describe('content projection', () => {
     /** <parent><p>text</p></parent> */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'parent');
+        ΔelementStart(0, 'parent');
         {
-          elementStart(1, 'p');
-          { text(2, 'text'); }
-          elementEnd();
+          ΔelementStart(1, 'p');
+          { Δtext(2, 'text'); }
+          ΔelementEnd();
         }
-        elementEnd();
+        ΔelementEnd();
         // testing
         parent = getDirectiveOnNode(0);
       }
@@ -759,25 +758,25 @@ describe('content projection', () => {
         */
        const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
          if (rf & RenderFlags.Create) {
-           projectionDef();
-           elementStart(0, 'div');
-           { container(1); }
-           elementEnd();
+           ΔprojectionDef();
+           ΔelementStart(0, 'div');
+           { Δcontainer(1); }
+           ΔelementEnd();
          }
          if (rf & RenderFlags.Update) {
-           containerRefreshStart(1);
+           ΔcontainerRefreshStart(1);
            {
              if (!ctx.skipContent) {
-               let rf0 = embeddedViewStart(0, 3, 0);
+               let rf0 = ΔembeddedViewStart(0, 3, 0);
                if (rf0 & RenderFlags.Create) {
-                 text(0, 'before-');
-                 projection(1);
-                 text(2, '-after');
+                 Δtext(0, 'before-');
+                 Δprojection(1);
+                 Δtext(2, '-after');
                }
-               embeddedViewEnd();
+               ΔembeddedViewEnd();
              }
            }
-           containerRefreshEnd();
+           ΔcontainerRefreshEnd();
          }
        }, 2);
 
@@ -786,12 +785,12 @@ describe('content projection', () => {
         */
        const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
          if (rf & RenderFlags.Create) {
-           elementStart(0, 'child');
+           ΔelementStart(0, 'child');
            {
              childCmptInstance = getDirectiveOnNode(0);
-             text(1, 'content');
+             Δtext(1, 'content');
            }
-           elementEnd();
+           ΔelementEnd();
          }
        }, 2, 0, [Child]);
 
@@ -813,20 +812,20 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
-        text(2, '-After');
+        ΔprojectionDef();
+        Δtext(0, 'Before-');
+        Δtemplate(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
+        Δtext(2, '-After');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(1, 'ngIf', bind(ctx.showing));
+        ΔelementProperty(1, 'ngIf', Δbind(ctx.showing));
       }
 
     }, 3, 1, [NgIf]);
 
     function IfTemplate(rf1: RenderFlags, ctx: any) {
       if (rf1 & RenderFlags.Create) {
-        projection(0);
+        Δprojection(0);
       }
     }
 
@@ -839,14 +838,14 @@ describe('content projection', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'div');
-          { text(2, 'A'); }
-          elementEnd();
-          text(3, 'Some text');
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'A'); }
+          ΔelementEnd();
+          Δtext(3, 'Some text');
         }
-        elementEnd();
+        ΔelementEnd();
 
         // testing
         child = getDirectiveOnNode(0);
@@ -877,20 +876,20 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
-        text(2, '-After');
+        ΔprojectionDef();
+        Δtext(0, 'Before-');
+        Δtemplate(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
+        Δtext(2, '-After');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(1, 'ngIf', bind(ctx.showing));
+        ΔelementProperty(1, 'ngIf', Δbind(ctx.showing));
       }
 
     }, 3, 1, [NgIf]);
 
     function IfTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projection(0);
+        Δprojection(0);
       }
     }
 
@@ -903,14 +902,14 @@ describe('content projection', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'div');
-          { text(2, 'A'); }
-          elementEnd();
-          text(3, 'Some text');
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'A'); }
+          ΔelementEnd();
+          Δtext(3, 'Some text');
         }
-        elementEnd();
+        ΔelementEnd();
 
         // testing
         child = getDirectiveOnNode(0);
@@ -942,21 +941,21 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef([[['div']]], ['div']);
-        projection(0);
-        text(1, 'Before-');
-        template(2, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
-        text(3, '-After');
+        ΔprojectionDef([[['div']]], ['div']);
+        Δprojection(0);
+        Δtext(1, 'Before-');
+        Δtemplate(2, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
+        Δtext(3, '-After');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(2, 'ngIf', bind(ctx.showing));
+        ΔelementProperty(2, 'ngIf', Δbind(ctx.showing));
       }
 
     }, 4, 1, [NgIf]);
 
     function IfTemplate(rf1: RenderFlags) {
       if (rf1 & RenderFlags.Create) {
-        projection(0, 1);
+        Δprojection(0, 1);
       }
     }
 
@@ -969,16 +968,16 @@ describe('content projection', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementStart(1, 'div');
-          { text(2, 'A'); }
-          elementEnd();
-          elementStart(3, 'span');
-          { text(4, 'B'); }
-          elementEnd();
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'A'); }
+          ΔelementEnd();
+          ΔelementStart(3, 'span');
+          { Δtext(4, 'B'); }
+          ΔelementEnd();
         }
-        elementEnd();
+        ΔelementEnd();
 
         // testing
         child = getDirectiveOnNode(0);
@@ -1005,7 +1004,7 @@ describe('content projection', () => {
 
        function NgTemplate(rf: RenderFlags, ctx: any) {
          if (rf & RenderFlags.Create) {
-           projection(0);
+           Δprojection(0);
          }
        }
 
@@ -1018,19 +1017,19 @@ describe('content projection', () => {
            'comp',
            (rf: RenderFlags, ctx: any) => {
              if (rf & RenderFlags.Create) {
-               projectionDef();
-               template(1, NgTemplate, 1, 0, 'ng-template', null, null, templateRefExtractor);
+               ΔprojectionDef();
+               Δtemplate(1, NgTemplate, 1, 0, 'ng-template', null, null, ΔtemplateRefExtractor);
              }
            },
            2, 0, [], [],
            function(rf: RenderFlags, ctx: any) {
              /**  @ViewChild(TemplateRef) template: TemplateRef<any>  */
              if (rf & RenderFlags.Create) {
-               viewQuery(TemplateRef as any, true, null);
+               ΔviewQuery(TemplateRef as any, true, null);
              }
              if (rf & RenderFlags.Update) {
                let tmp: any;
-               queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.template = tmp.first);
+               ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) && (ctx.template = tmp.first);
              }
            });
 
@@ -1042,10 +1041,10 @@ describe('content projection', () => {
 
          open() { this.vcr.createEmbeddedView(this.trigger.template); }
 
-         static ngComponentDef = defineDirective({
+         static ngComponentDef = ΔdefineDirective({
            type: Trigger,
            selectors: [['', 'trigger', '']],
-           factory: () => triggerDir = new Trigger(directiveInject(ViewContainerRef as any)),
+           factory: () => triggerDir = new Trigger(ΔdirectiveInject(ViewContainerRef as any)),
            inputs: {trigger: 'trigger'}
          });
        }
@@ -1058,14 +1057,14 @@ describe('content projection', () => {
         */
        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
          if (rf & RenderFlags.Create) {
-           element(0, 'button', [AttributeMarker.Bindings, 'trigger']);
-           elementStart(1, 'comp', null, ['comp', '']);
-           { text(3, 'Some content'); }
-           elementEnd();
+           Δelement(0, 'button', [AttributeMarker.Bindings, 'trigger']);
+           ΔelementStart(1, 'comp', null, ['comp', '']);
+           { Δtext(3, 'Some content'); }
+           ΔelementEnd();
          }
          if (rf & RenderFlags.Update) {
-           const comp = reference(2);
-           elementProperty(0, 'trigger', bind(comp));
+           const comp = Δreference(2);
+           ΔelementProperty(0, 'trigger', Δbind(comp));
          }
        }, 4, 1, [Comp, Trigger]);
 
@@ -1083,13 +1082,13 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'div');
-        { projection(1); }
-        elementEnd();
-        elementStart(2, 'span');
-        { projection(3); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'div');
+        { Δprojection(1); }
+        ΔelementEnd();
+        ΔelementStart(2, 'span');
+        { Δprojection(3); }
+        ΔelementEnd();
       }
     }, 4);
 
@@ -1098,9 +1097,9 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { text(1, 'content'); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δtext(1, 'content'); }
+        ΔelementEnd();
       }
     }, 2, 0, [Child]);
 
@@ -1129,24 +1128,24 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
-        elementStart(1, 'div');
-        { container(2); }
-        elementEnd();
+        ΔprojectionDef();
+        Δprojection(0);
+        ΔelementStart(1, 'div');
+        { Δcontainer(2); }
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        containerRefreshStart(2);
+        ΔcontainerRefreshStart(2);
         {
           if (ctx.show) {
-            let rf0 = embeddedViewStart(0, 1, 0);
+            let rf0 = ΔembeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
-              projection(0);
+              Δprojection(0);
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
     }, 3);
 
@@ -1155,12 +1154,12 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
           childCmptInstance = getDirectiveOnNode(0);
-          text(1, 'content');
+          Δtext(1, 'content');
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 2, 0, [Child]);
 
@@ -1183,23 +1182,23 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        { template(0, ForTemplate, 3, 1, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']); }
+        ΔprojectionDef();
+        { Δtemplate(0, ForTemplate, 3, 1, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']); }
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'ngForOf', bind(items));
+        ΔelementProperty(0, 'ngForOf', Δbind(items));
       }
     }, 1, 1, [NgForOf]);
 
     function ForTemplate(rf1: RenderFlags, ctx: {index: number}) {
       if (rf1 & RenderFlags.Create) {
-        elementStart(0, 'div');
-        text(1);
-        projection(2);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δtext(1);
+        Δprojection(2);
+        ΔelementEnd();
       }
       if (rf1 & RenderFlags.Update) {
-        textBinding(1, interpolation1('(', ctx.index, '):'));
+        ΔtextBinding(1, Δinterpolation1('(', ctx.index, '):'));
       }
     }
 
@@ -1208,9 +1207,9 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        { text(1, 'content'); }
-        elementEnd();
+        ΔelementStart(0, 'child');
+        { Δtext(1, 'content'); }
+        ΔelementEnd();
       }
     }, 2, 0, [Child]);
 
@@ -1221,10 +1220,10 @@ describe('content projection', () => {
   it('should project with multiple instances of a component with projection', () => {
     const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        text(0, 'Before');
-        projection(1);
-        text(2, 'After');
+        ΔprojectionDef();
+        Δtext(0, 'Before');
+        Δprojection(1);
+        Δtext(2, 'After');
       }
     }, 3);
 
@@ -1240,26 +1239,26 @@ describe('content projection', () => {
      */
     const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'projection-comp');
+        ΔelementStart(0, 'projection-comp');
         {
-          elementStart(1, 'div');
-          { text(2, 'A'); }
-          elementEnd();
-          elementStart(3, 'p');
-          { text(4, '123'); }
-          elementEnd();
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'A'); }
+          ΔelementEnd();
+          ΔelementStart(3, 'p');
+          { Δtext(4, '123'); }
+          ΔelementEnd();
         }
-        elementEnd();
-        elementStart(5, 'projection-comp');
+        ΔelementEnd();
+        ΔelementStart(5, 'projection-comp');
         {
-          elementStart(6, 'div');
-          { text(7, 'B'); }
-          elementEnd();
-          elementStart(8, 'p');
-          { text(9, '456'); }
-          elementEnd();
+          ΔelementStart(6, 'div');
+          { Δtext(7, 'B'); }
+          ΔelementEnd();
+          ΔelementStart(8, 'p');
+          { Δtext(9, '456'); }
+          ΔelementEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 10, 0, [ProjectionComp]);
 
@@ -1279,10 +1278,10 @@ describe('content projection', () => {
      */
     const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        text(0, 'Before');
-        projection(1);
-        text(2, 'After');
+        ΔprojectionDef();
+        Δtext(0, 'Before');
+        Δprojection(1);
+        Δtext(2, 'After');
       }
     }, 3);
 
@@ -1299,28 +1298,28 @@ describe('content projection', () => {
      */
     const ProjectionParent = createComponent('parent-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'projection-comp');
+        ΔprojectionDef();
+        ΔelementStart(0, 'projection-comp');
         {
-          elementStart(1, 'div');
-          { text(2, 'A'); }
-          elementEnd();
-          projection(3, 0);
-          elementStart(4, 'p');
-          { text(5, '123'); }
-          elementEnd();
+          ΔelementStart(1, 'div');
+          { Δtext(2, 'A'); }
+          ΔelementEnd();
+          Δprojection(3, 0);
+          ΔelementStart(4, 'p');
+          { Δtext(5, '123'); }
+          ΔelementEnd();
         }
-        elementEnd();
-        elementStart(6, 'projection-comp');
+        ΔelementEnd();
+        ΔelementStart(6, 'projection-comp');
         {
-          elementStart(7, 'div');
-          { text(8, 'B'); }
-          elementEnd();
-          elementStart(9, 'p');
-          { text(10, '456'); }
-          elementEnd();
+          ΔelementStart(7, 'div');
+          { Δtext(8, 'B'); }
+          ΔelementEnd();
+          ΔelementStart(9, 'p');
+          { Δtext(10, '456'); }
+          ΔelementEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 11, 0, [ProjectionComp]);
 
@@ -1334,12 +1333,12 @@ describe('content projection', () => {
      */
     const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'parent-comp');
-        { text(1, '**ABC**'); }
-        elementEnd();
-        elementStart(2, 'parent-comp');
-        { text(3, '**DEF**'); }
-        elementEnd();
+        ΔelementStart(0, 'parent-comp');
+        { Δtext(1, '**ABC**'); }
+        ΔelementEnd();
+        ΔelementStart(2, 'parent-comp');
+        { Δtext(3, '**DEF**'); }
+        ΔelementEnd();
       }
     }, 4, 0, [ProjectionParent]);
 
@@ -1360,8 +1359,8 @@ describe('content projection', () => {
     `<ng-content></ng-content>`;
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1);
 
@@ -1374,17 +1373,17 @@ describe('content projection', () => {
     </child>`;
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementContainerStart(1);
+          ΔelementContainerStart(1);
           {
-            elementContainerStart(2);
-            { text(3, 'content'); }
-            elementContainerEnd();
+            ΔelementContainerStart(2);
+            { Δtext(3, 'content'); }
+            ΔelementContainerEnd();
           }
-          elementContainerEnd();
+          ΔelementContainerEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 4, 0, [Child]);
 
@@ -1397,8 +1396,8 @@ describe('content projection', () => {
     `<ng-content></ng-content>`;
     const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1);
 
@@ -1407,10 +1406,10 @@ describe('content projection', () => {
     </grand-child>`;
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        elementStart(0, 'grand-child');
-        { projection(1); }
-        elementEnd();
+        ΔprojectionDef();
+        ΔelementStart(0, 'grand-child');
+        { Δprojection(1); }
+        ΔelementEnd();
       }
     }, 2, 0, [GrandChild]);
 
@@ -1423,17 +1422,17 @@ describe('content projection', () => {
     </child>`;
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        ΔelementStart(0, 'child');
         {
-          elementContainerStart(1);
+          ΔelementContainerStart(1);
           {
-            elementContainerStart(2);
-            { text(3, 'content'); }
-            elementContainerEnd();
+            ΔelementContainerStart(2);
+            { Δtext(3, 'content'); }
+            ΔelementContainerEnd();
           }
-          elementContainerEnd();
+          ΔelementContainerEnd();
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 4, 0, [Child]);
 
@@ -1445,17 +1444,17 @@ describe('content projection', () => {
     // <div>Child content</div>
     const NestedComp = createComponent('nested-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        text(1, 'Child content');
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δtext(1, 'Child content');
+        ΔelementEnd();
       }
     }, 2, 0, []);
 
     // <ng-content></ng-content>
     const RootComp = createComponent('root-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
-        projection(0);
+        ΔprojectionDef();
+        Δprojection(0);
       }
     }, 1, 0, []);
 
@@ -1466,27 +1465,27 @@ describe('content projection', () => {
     // </root-comp>
     function MyApp_ng_container_1_child_comp_1_Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'nested-comp');
+        Δelement(0, 'nested-comp');
       }
     }
     function MyApp_ng_container_1_Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementContainerStart(0);
-        template(
+        ΔelementContainerStart(0);
+        Δtemplate(
             1, MyApp_ng_container_1_child_comp_1_Template, 1, 0, 'nested-comp',
             [AttributeMarker.Template, 'ngIf']);
-        elementContainerEnd();
+        ΔelementContainerEnd();
       }
       if (rf & RenderFlags.Update) {
         const last_r2 = ctx.last;
-        elementProperty(1, 'ngIf', bind(!last_r2));
+        ΔelementProperty(1, 'ngIf', Δbind(!last_r2));
       }
     }
     let myAppInstance: MyApp;
     class MyApp {
       items = [1, 2];
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: MyApp,
         selectors: [['', 'my-app', '']],
         factory: () => myAppInstance = new MyApp(),
@@ -1494,14 +1493,14 @@ describe('content projection', () => {
         vars: 1,
         template: function MyApp_Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'root-comp');
-            template(
+            ΔelementStart(0, 'root-comp');
+            Δtemplate(
                 1, MyApp_ng_container_1_Template, 2, 1, 'ng-container',
                 [AttributeMarker.Template, 'ngFor', 'ngForOf']);
-            elementEnd();
+            ΔelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(1, 'ngForOf', bind(ctx.items));
+            ΔelementProperty(1, 'ngForOf', Δbind(ctx.items));
           }
         },
         directives: [NgForOf, NgIf, NestedComp, RootComp]
@@ -1532,15 +1531,15 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]],
               ['span[title=toFirst]', 'span[title=toSecond]']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1, 1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3, 2); }
-          elementEnd();
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1, 1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3, 2); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1552,16 +1551,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', ['title', 'toFirst']);
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span', ['title', 'toSecond']);
-            { text(4, '2'); }
-            elementEnd();
+            ΔelementStart(1, 'span', ['title', 'toFirst']);
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span', ['title', 'toSecond']);
+            { Δtext(4, '2'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 5, 0, [Child]);
 
@@ -1578,8 +1577,8 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['', 'title', '']]], ['[title]']);
-          { projection(0, 1); }
+          ΔprojectionDef([[['', 'title', '']]], ['[title]']);
+          { Δprojection(0, 1); }
         }
       }, 1);
 
@@ -1590,16 +1589,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', [AttributeMarker.Bindings, 'title']);
-            { text(2, 'Has title'); }
-            elementEnd();
+            ΔelementStart(1, 'span', [AttributeMarker.Bindings, 'title']);
+            { Δtext(2, 'Has title'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(1, 'title', bind('Some title'));
+          ΔelementProperty(1, 'title', Δbind('Some title'));
         }
       }, 3, 1, [Child]);
 
@@ -1615,18 +1614,18 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [
                 [['span', SelectorFlags.CLASS, 'toFirst']],
                 [['span', SelectorFlags.CLASS, 'toSecond']]
               ],
               ['span.toFirst', 'span.toSecond']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1, 1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3, 2); }
-          elementEnd();
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1, 1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3, 2); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1638,16 +1637,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', ['class', 'toFirst']);
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span', ['class', 'toSecond']);
-            { text(4, '2'); }
-            elementEnd();
+            ΔelementStart(1, 'span', ['class', 'toFirst']);
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span', ['class', 'toSecond']);
+            { Δtext(4, '2'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 5, 0, [Child]);
 
@@ -1664,18 +1663,18 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [
                 [['span', SelectorFlags.CLASS, 'toFirst']],
                 [['span', SelectorFlags.CLASS, 'toSecond']]
               ],
               ['span.toFirst', 'span.toSecond']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1, 1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3, 2); }
-          elementEnd();
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1, 1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3, 2); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1687,16 +1686,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', ['class', 'other toFirst']);
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span', ['class', 'toSecond noise']);
-            { text(4, '2'); }
-            elementEnd();
+            ΔelementStart(1, 'span', ['class', 'other toFirst']);
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span', ['class', 'toSecond noise']);
+            { Δtext(4, '2'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 5, 0, [Child]);
 
@@ -1713,14 +1712,14 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]], ['span', 'span.toSecond']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1, 1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3, 2); }
-          elementEnd();
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1, 1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3, 2); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1732,16 +1731,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', ['class', 'toFirst']);
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span', ['class', 'toSecond']);
-            { text(4, '2'); }
-            elementEnd();
+            ΔelementStart(1, 'span', ['class', 'toFirst']);
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span', ['class', 'toSecond']);
+            { Δtext(4, '2'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 5, 0, [Child]);
 
@@ -1758,13 +1757,13 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]], ['span.toFirst']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1, 1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3); }
-          elementEnd();
+          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]], ['span.toFirst']);
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1, 1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1776,17 +1775,17 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span', ['class', 'toFirst']);
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span');
-            { text(4, 'remaining'); }
-            elementEnd();
-            text(5, 'more remaining');
+            ΔelementStart(1, 'span', ['class', 'toFirst']);
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span');
+            { Δtext(4, 'remaining'); }
+            ΔelementEnd();
+            Δtext(5, 'more remaining');
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 6, 0, [Child]);
 
@@ -1803,13 +1802,13 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]], ['span.toSecond']);
-          elementStart(0, 'div', ['id', 'first']);
-          { projection(1); }
-          elementEnd();
-          elementStart(2, 'div', ['id', 'second']);
-          { projection(3, 1); }
-          elementEnd();
+          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]], ['span.toSecond']);
+          ΔelementStart(0, 'div', ['id', 'first']);
+          { Δprojection(1); }
+          ΔelementEnd();
+          ΔelementStart(2, 'div', ['id', 'second']);
+          { Δprojection(3, 1); }
+          ΔelementEnd();
         }
       }, 4);
 
@@ -1822,17 +1821,17 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span');
-            { text(2, '1'); }
-            elementEnd();
-            elementStart(3, 'span', ['class', 'toSecond']);
-            { text(4, '2'); }
-            elementEnd();
-            text(5, 'remaining');
+            ΔelementStart(1, 'span');
+            { Δtext(2, '1'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'span', ['class', 'toSecond']);
+            { Δtext(4, '2'); }
+            ΔelementEnd();
+            Δtext(5, 'remaining');
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 6, 0, [Child]);
 
@@ -1855,10 +1854,10 @@ describe('content projection', () => {
        */
       const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['span']]], ['span']);
-          projection(0, 1);
-          element(1, 'hr');
-          projection(2);
+          ΔprojectionDef([[['span']]], ['span']);
+          Δprojection(0, 1);
+          Δelement(1, 'hr');
+          Δprojection(2);
         }
       }, 3);
 
@@ -1870,15 +1869,15 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef();
-          elementStart(0, 'grand-child');
+          ΔprojectionDef();
+          ΔelementStart(0, 'grand-child');
           {
-            projection(1);
-            elementStart(2, 'span');
-            { text(3, 'in child template'); }
-            elementEnd();
+            Δprojection(1);
+            ΔelementStart(2, 'span');
+            { Δtext(3, 'in child template'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 4, 0, [GrandChild]);
 
@@ -1891,13 +1890,13 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'span');
-            { text(2, 'parent content'); }
-            elementEnd();
+            ΔelementStart(1, 'span');
+            { Δtext(2, 'parent content'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 3, 0, [Child]);
 
@@ -1916,12 +1915,12 @@ describe('content projection', () => {
        */
       const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
-          projection(0, 1);
-          element(1, 'hr');
-          projection(2, 2);
+          Δprojection(0, 1);
+          Δelement(1, 'hr');
+          Δprojection(2, 2);
         }
       }, 3);
 
@@ -1933,15 +1932,15 @@ describe('content projection', () => {
        */
       const CardWithTitle = createComponent('card-with-title', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef();
-          elementStart(0, 'card');
+          ΔprojectionDef();
+          ΔelementStart(0, 'card');
           {
-            elementStart(1, 'h1', ['card-title', '']);
-            { text(2, 'Title'); }
-            elementEnd();
-            projection(3, 0, ['card-content', '']);
+            ΔelementStart(1, 'h1', ['card-title', '']);
+            { Δtext(2, 'Title'); }
+            ΔelementEnd();
+            Δprojection(3, 0, ['card-content', '']);
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 4, 0, [Card]);
 
@@ -1952,9 +1951,9 @@ describe('content projection', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'card-with-title');
-          { text(1, 'content'); }
-          elementEnd();
+          ΔelementStart(0, 'card-with-title');
+          { Δtext(1, 'content'); }
+          ΔelementEnd();
         }
       }, 2, 0, [CardWithTitle]);
 
@@ -1974,12 +1973,12 @@ describe('content projection', () => {
        */
       const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef(
+          ΔprojectionDef(
               [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
-          projection(0, 1);
-          element(1, 'hr');
-          projection(2, 2);
+          Δprojection(0, 1);
+          Δelement(1, 'hr');
+          Δprojection(2, 2);
         }
       }, 3);
 
@@ -1991,15 +1990,15 @@ describe('content projection', () => {
        */
       const CardWithTitle = createComponent('card-with-title', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef();
-          elementStart(0, 'card');
+          ΔprojectionDef();
+          ΔelementStart(0, 'card');
           {
-            elementStart(1, 'h1', ['ngProjectAs', '[card-title]']);
-            { text(2, 'Title'); }
-            elementEnd();
-            projection(3, 0, ['ngProjectAs', '[card-content]']);
+            ΔelementStart(1, 'h1', ['ngProjectAs', '[card-title]']);
+            { Δtext(2, 'Title'); }
+            ΔelementEnd();
+            Δprojection(3, 0, ['ngProjectAs', '[card-content]']);
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 4, 0, [Card]);
 
@@ -2010,9 +2009,9 @@ describe('content projection', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'card-with-title');
-          { text(1, 'content'); }
-          elementEnd();
+          ΔelementStart(0, 'card-with-title');
+          { Δtext(1, 'content'); }
+          ΔelementEnd();
         }
       }, 2, 0, [CardWithTitle]);
 
@@ -2029,8 +2028,8 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['div']]], ['div']);
-          projection(0, 1);
+          ΔprojectionDef([[['div']]], ['div']);
+          Δprojection(0, 1);
         }
       }, 1);
 
@@ -2042,16 +2041,16 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
+          ΔelementStart(0, 'child');
           {
-            elementStart(1, 'div', ['ngProjectAs', 'span']);
-            { text(2, 'should not project'); }
-            elementEnd();
-            elementStart(3, 'div');
-            { text(4, 'should project'); }
-            elementEnd();
+            ΔelementStart(1, 'div', ['ngProjectAs', 'span']);
+            { Δtext(2, 'should not project'); }
+            ΔelementEnd();
+            ΔelementStart(3, 'div');
+            { Δtext(4, 'should project'); }
+            ΔelementEnd();
           }
-          elementEnd();
+          ΔelementEnd();
         }
       }, 5, 0, [Child]);
 
@@ -2068,18 +2067,18 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          projectionDef([[['div']]], ['div']);
-          elementStart(0, 'span');
-          { projection(1, 1); }
-          elementEnd();
+          ΔprojectionDef([[['div']]], ['div']);
+          ΔelementStart(0, 'span');
+          { Δprojection(1, 1); }
+          ΔelementEnd();
         }
       }, 2);
 
       function IfTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          { text(1, 'content'); }
-          elementEnd();
+          ΔelementStart(0, 'div');
+          { Δtext(1, 'content'); }
+          ΔelementEnd();
         }
       }
 
@@ -2090,12 +2089,12 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'child');
-          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']); }
-          elementEnd();
+          ΔelementStart(0, 'child');
+          { Δtemplate(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']); }
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(1, 'ngIf', bind(ctx.value));
+          ΔelementProperty(1, 'ngIf', Δbind(ctx.value));
         }
       }, 2, 1, [Child, NgIf]);
 

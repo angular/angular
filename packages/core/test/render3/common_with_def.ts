@@ -9,18 +9,18 @@
 import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
 import {IterableDiffers, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {DirectiveType, NgOnChangesFeature, defineDirective, directiveInject} from '../../src/render3/index';
+import {DirectiveType, ΔNgOnChangesFeature, ΔdefineDirective, ΔdirectiveInject} from '../../src/render3/index';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 export const NgIf: DirectiveType<NgIfDef> = NgIfDef as any;
 export const NgTemplateOutlet: DirectiveType<NgTemplateOutletDef> = NgTemplateOutletDef as any;
 
-NgForOf.ngDirectiveDef = defineDirective({
+NgForOf.ngDirectiveDef = ΔdefineDirective({
   type: NgForOfDef,
   selectors: [['', 'ngForOf', '']],
   factory: () => new NgForOfDef(
-               directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any),
-               directiveInject(IterableDiffers)),
+               ΔdirectiveInject(ViewContainerRef as any), ΔdirectiveInject(TemplateRef as any),
+               ΔdirectiveInject(IterableDiffers)),
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',
@@ -28,19 +28,19 @@ NgForOf.ngDirectiveDef = defineDirective({
   }
 });
 
-(NgIf as any).ngDirectiveDef = defineDirective({
+(NgIf as any).ngDirectiveDef = ΔdefineDirective({
   type: NgIfDef,
   selectors: [['', 'ngIf', '']],
   factory: () => new NgIfDef(
-               directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any)),
+               ΔdirectiveInject(ViewContainerRef as any), ΔdirectiveInject(TemplateRef as any)),
   inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
 });
 
-(NgTemplateOutlet as any).ngDirectiveDef = defineDirective({
+(NgTemplateOutlet as any).ngDirectiveDef = ΔdefineDirective({
   type: NgTemplateOutletDef,
   selectors: [['', 'ngTemplateOutlet', '']],
-  factory: () => new NgTemplateOutletDef(directiveInject(ViewContainerRef as any)),
-  features: [NgOnChangesFeature()],
+  factory: () => new NgTemplateOutletDef(ΔdirectiveInject(ViewContainerRef as any)),
+  features: [ΔNgOnChangesFeature()],
   inputs:
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });

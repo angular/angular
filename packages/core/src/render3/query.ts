@@ -18,7 +18,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {load, store} from './instructions/all';
+import {store, Δload} from './instructions/all';
 import {storeCleanupWithContext} from './instructions/shared';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
@@ -369,8 +369,10 @@ export function query<T>(
  *
  * @returns `true` if a query got dirty during change detection or if this is a static query
  * resolving in creation mode, `false` otherwise.
+ *
+ * @publicApi
  */
-export function queryRefresh(queryList: QueryList<any>): boolean {
+export function ΔqueryRefresh(queryList: QueryList<any>): boolean {
   const queryListImpl = (queryList as any as QueryList_<any>);
   const creationMode = isCreationMode();
 
@@ -389,11 +391,13 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
  * @param predicate The type for which the query will search
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
+ *
+ * @publicApi
  */
-export function staticViewQuery<T>(
+export function ΔstaticViewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): void {
-  const queryList = viewQuery(predicate, descend, read) as QueryList_<T>;
+  const queryList = ΔviewQuery(predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
   queryList._static = true;
   if (!tView.staticViewQueries) {
@@ -408,8 +412,10 @@ export function staticViewQuery<T>(
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  * @returns QueryList<T>
+ *
+ * @publicApi
  */
-export function viewQuery<T>(
+export function ΔviewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   const lView = getLView();
@@ -425,12 +431,14 @@ export function viewQuery<T>(
 }
 
 /**
-* Loads current View Query and moves the pointer/index to the next View Query in LView.
-*/
-export function loadViewQuery<T>(): T {
+ * Loads current View Query and moves the pointer/index to the next View Query in LView.
+ *
+ * @publicApi
+ */
+export function ΔloadViewQuery<T>(): T {
   const index = getCurrentQueryIndex();
   setCurrentQueryIndex(index + 1);
-  return load<T>(index - HEADER_OFFSET);
+  return Δload<T>(index - HEADER_OFFSET);
 }
 
 /**
@@ -442,8 +450,10 @@ export function loadViewQuery<T>(): T {
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  * @returns QueryList<T>
+ *
+ * @publicApi
  */
-export function contentQuery<T>(
+export function ΔcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any): QueryList<T> {
@@ -471,12 +481,14 @@ export function contentQuery<T>(
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  * @returns QueryList<T>
+ *
+ * @publicApi
  */
-export function staticContentQuery<T>(
+export function ΔstaticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any): void {
-  const queryList = contentQuery(directiveIndex, predicate, descend, read) as QueryList_<T>;
+  const queryList = ΔcontentQuery(directiveIndex, predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
   queryList._static = true;
   if (!tView.staticContentQueries) {
@@ -484,7 +496,11 @@ export function staticContentQuery<T>(
   }
 }
 
-export function loadContentQuery<T>(): QueryList<T> {
+/**
+ *
+ * @publicApi
+ */
+export function ΔloadContentQuery<T>(): QueryList<T> {
   const lView = getLView();
   ngDevMode &&
       assertDefined(

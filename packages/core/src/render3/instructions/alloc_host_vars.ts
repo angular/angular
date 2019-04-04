@@ -16,8 +16,10 @@ import {NO_CHANGE} from '../tokens';
  * Allocates the necessary amount of slots for host vars.
  *
  * @param count Amount of vars to be allocated
+ *
+ * @publicApi
  */
-export function allocHostVars(count: number): void {
+export function ΔallocHostVars(count: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   if (!tView.firstTemplatePass) return;

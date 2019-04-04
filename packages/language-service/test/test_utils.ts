@@ -278,7 +278,7 @@ function getLocationMarkers(value: string): {[name: string]: number} {
   return result;
 }
 
-const referenceMarker = /«(((\w|\-)+)|([^∆]*∆(\w+)∆.[^»]*))»/g;
+const referenceMarker = /«(((\w|\-)+)|([^Δ]*Δ(\w+)Δ.[^»]*))»/g;
 const definitionMarkerGroup = 1;
 const nameMarkerGroup = 2;
 
@@ -300,7 +300,7 @@ function getReferenceMarkers(value: string): ReferenceResult {
   const text = value.replace(
       referenceMarker, (match: string, text: string, reference: string, _: string,
                         definition: string, definitionName: string, index: number): string => {
-        const result = reference ? text : text.replace(/∆/g, '');
+        const result = reference ? text : text.replace(/Δ/g, '');
         const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
         const markers = reference ? references : definitions;
         const name = reference || definitionName;
@@ -313,7 +313,7 @@ function getReferenceMarkers(value: string): ReferenceResult {
 }
 
 function removeReferenceMarkers(value: string): string {
-  return value.replace(referenceMarker, (match, text) => text.replace(/∆/g, ''));
+  return value.replace(referenceMarker, (match, text) => text.replace(/Δ/g, ''));
 }
 
 export function noDiagnostics(diagnostics: Diagnostics) {

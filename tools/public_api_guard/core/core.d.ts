@@ -259,16 +259,8 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
     onDestroy(): void;
 }
 
-export declare function defineInjectable<T>(opts: {
-    providedIn?: Type<any> | 'root' | 'any' | null;
-    factory: () => T;
-}): never;
-
-export declare function defineInjector(options: {
-    factory: () => any;
-    providers?: any[];
-    imports?: any[];
-}): never;
+/** @deprecated */
+export declare const defineInjectable: typeof ΔdefineInjectable;
 
 export declare function destroyPlatform(): void;
 
@@ -385,8 +377,8 @@ export interface HostListenerDecorator {
     new (eventName: string, args?: string[]): any;
 }
 
-export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
-export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
+/** @deprecated */
+export declare const inject: typeof Δinject;
 
 export interface Inject {
     token: any;
@@ -1051,3 +1043,361 @@ export interface WtfScopeFn {
 }
 
 export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;
+
+export declare function ΔallocHostVars(count: number): void;
+
+export interface ΔBaseDef<T> {
+    /** @deprecated */ readonly declaredInputs: {
+        [P in keyof T]: string;
+    };
+    readonly inputs: {
+        [P in keyof T]: string;
+    };
+    readonly outputs: {
+        [P in keyof T]: string;
+    };
+}
+
+export declare function Δbind<T>(value: T): T | NO_CHANGE;
+
+export declare type ΔComponentDefWithMeta<T, Selector extends String, ExportAs extends string[], InputMap extends {
+    [key: string]: string;
+}, OutputMap extends {
+    [key: string]: string;
+}, QueryFields extends string[]> = ComponentDef<T>;
+
+export declare function ΔcomponentHostSyntheticListener<T>(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
+
+export declare function ΔcomponentHostSyntheticProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
+
+export declare function Δcontainer(index: number): void;
+
+export declare function ΔcontainerRefreshEnd(): void;
+
+export declare function ΔcontainerRefreshStart(index: number): void;
+
+export declare function ΔcontentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;
+
+export declare const ΔdefaultStyleSanitizer: StyleSanitizeFn;
+
+export declare function ΔdefineBase<T>(baseDefinition: {
+    inputs?: {
+        [P in keyof T]?: string | [string, string];
+    };
+    outputs?: {
+        [P in keyof T]?: string;
+    };
+}): ΔBaseDef<T>;
+
+export declare function ΔdefineComponent<T>(componentDefinition: {
+    type: Type<T>;
+    selectors: CssSelectorList;
+    factory: FactoryFn<T>;
+    consts: number;
+    vars: number;
+    inputs?: {
+        [P in keyof T]?: string | [string, string];
+    };
+    outputs?: {
+        [P in keyof T]?: string;
+    };
+    hostBindings?: HostBindingsFunction<T>;
+    contentQueries?: ContentQueriesFunction<T>;
+    exportAs?: string[];
+    template: ComponentTemplate<T>;
+    ngContentSelectors?: string[];
+    viewQuery?: ViewQueriesFunction<T> | null;
+    features?: ComponentDefFeature[];
+    encapsulation?: ViewEncapsulation;
+    data?: {
+        [kind: string]: any;
+    };
+    styles?: string[];
+    changeDetection?: ChangeDetectionStrategy;
+    directives?: DirectiveTypesOrFactory | null;
+    pipes?: PipeTypesOrFactory | null;
+    schemas?: SchemaMetadata[] | null;
+}): never;
+
+export declare const ΔdefineDirective: <T>(directiveDefinition: {
+    type: Type<T>;
+    selectors: (string | SelectorFlags)[][];
+    factory: FactoryFn<T>;
+    inputs?: { [P in keyof T]?: string | [string, string] | undefined; } | undefined;
+    outputs?: { [P in keyof T]?: string | undefined; } | undefined;
+    features?: DirectiveDefFeature[] | undefined;
+    hostBindings?: HostBindingsFunction<T> | undefined;
+    contentQueries?: ContentQueriesFunction<T> | undefined;
+    viewQuery?: ViewQueriesFunction<T> | null | undefined;
+    exportAs?: string[] | undefined;
+}) => never;
+
+export declare function ΔdefineInjectable<T>(opts: {
+    providedIn?: Type<any> | 'root' | 'any' | null;
+    factory: () => T;
+}): never;
+
+export declare function ΔdefineInjector(options: {
+    factory: () => any;
+    providers?: any[];
+    imports?: any[];
+}): never;
+
+export declare function ΔdefineNgModule<T>(def: {
+    type: T;
+    bootstrap?: Type<any>[] | (() => Type<any>[]);
+    declarations?: Type<any>[] | (() => Type<any>[]);
+    imports?: Type<any>[] | (() => Type<any>[]);
+    exports?: Type<any>[] | (() => Type<any>[]);
+    schemas?: SchemaMetadata[] | null;
+}): never;
+
+export declare function ΔdefinePipe<T>(pipeDef: {
+    name: string;
+    type: Type<T>;
+    factory: FactoryFn<T>;
+    pure?: boolean;
+}): never;
+
+export declare type ΔDirectiveDefWithMeta<T, Selector extends string, ExportAs extends string[], InputMap extends {
+    [key: string]: string;
+}, OutputMap extends {
+    [key: string]: string;
+}, QueryFields extends string[]> = DirectiveDef<T>;
+
+export declare function ΔdirectiveInject<T>(token: Type<T> | InjectionToken<T>): T;
+export declare function ΔdirectiveInject<T>(token: Type<T> | InjectionToken<T>, flags: InjectFlags): T;
+
+export declare function ΔdisableBindings(): void;
+
+export declare function Δelement(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+
+export declare function ΔelementAttribute(index: number, name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
+
+export declare function ΔelementClassProp(index: number, classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+
+export declare function ΔelementContainerEnd(): void;
+
+export declare function ΔelementContainerStart(index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+
+export declare function ΔelementEnd(): void;
+
+export declare function ΔelementHostAttrs(attrs: TAttributes): void;
+
+export declare function ΔelementHostClassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+
+export declare function ΔelementHostStyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
+
+export declare function ΔelementHostStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
+
+export declare function ΔelementHostStylingApply(): void;
+
+export declare function ΔelementHostStylingMap(classes: {
+    [key: string]: any;
+} | string | NO_CHANGE | null, styles?: {
+    [styleName: string]: any;
+} | NO_CHANGE | null): void;
+
+export declare function ΔelementProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
+
+export declare function ΔelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+
+export declare function ΔelementStyleProp(index: number, styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
+
+export declare function ΔelementStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
+
+export declare function ΔelementStylingApply(index: number): void;
+
+export declare function ΔelementStylingMap(index: number, classes: {
+    [key: string]: any;
+} | string | NO_CHANGE | null, styles?: {
+    [styleName: string]: any;
+} | NO_CHANGE | null): void;
+
+export declare function ΔembeddedViewEnd(): void;
+
+export declare function ΔembeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags;
+
+export declare function ΔenableBindings(): void;
+
+export declare function ΔgetCurrentView(): OpaqueViewState;
+
+export declare function ΔgetFactoryOf<T>(type: Type<any>): ((type: Type<T> | null) => T) | null;
+
+export declare function ΔgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T;
+
+export declare function Δi18n(index: number, message: string, subTemplateIndex?: number): void;
+
+export declare function Δi18nApply(index: number): void;
+
+export declare function Δi18nAttributes(index: number, values: string[]): void;
+
+export declare function Δi18nEnd(): void;
+
+export declare function Δi18nExp<T>(expression: T | NO_CHANGE): void;
+
+export declare function Δi18nPostprocess(message: string, replacements?: {
+    [key: string]: (string | string[]);
+}): string;
+
+export declare function Δi18nStart(index: number, message: string, subTemplateIndex?: number): void;
+
+export declare function ΔInheritDefinitionFeature(definition: DirectiveDef<any> | ComponentDef<any>): void;
+
+export declare function Δinject<T>(token: Type<T> | InjectionToken<T>): T;
+export declare function Δinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
+
+export interface ΔInjectableDef<T> {
+    factory: () => T;
+    providedIn: InjectorType<any> | 'root' | 'any' | null;
+    value: T | undefined;
+}
+
+export declare function ΔinjectAttribute(attrNameToInject: string): string | null;
+
+export interface ΔInjectorDef<T> {
+    factory: () => T;
+    imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
+    providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
+}
+
+export declare function Δinterpolation1(prefix: string, v0: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation2(prefix: string, v0: any, i0: string, v1: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation3(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation4(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation5(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation6(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation7(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string | NO_CHANGE;
+
+export declare function Δinterpolation8(prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string): string | NO_CHANGE;
+
+export declare function ΔinterpolationV(values: any[]): string | NO_CHANGE;
+
+export declare function Δlistener(eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean, eventTargetResolver?: GlobalTargetResolver): void;
+
+export declare function Δload<T>(index: number): T;
+
+export declare function ΔloadContentQuery<T>(): QueryList<T>;
+
+export declare function ΔloadViewQuery<T>(): T;
+
+export declare function ΔnamespaceHTML(): void;
+
+export declare function ΔnamespaceMathML(): void;
+
+export declare function ΔnamespaceSVG(): void;
+
+export declare function ΔnextContext<T = any>(level?: number): T;
+
+export declare type ΔNgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
+
+export declare function ΔNgOnChangesFeature<T>(): DirectiveDefFeature;
+
+export declare function Δpipe(index: number, pipeName: string): any;
+
+export declare function ΔpipeBind1(index: number, slotOffset: number, v1: any): any;
+
+export declare function ΔpipeBind2(index: number, slotOffset: number, v1: any, v2: any): any;
+
+export declare function ΔpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any;
+
+export declare function ΔpipeBind4(index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any;
+
+export declare function ΔpipeBindV(index: number, slotOffset: number, values: any[]): any;
+
+export declare type ΔPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
+
+export declare function Δprojection(nodeIndex: number, selectorIndex?: number, attrs?: string[]): void;
+
+export declare function ΔprojectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void;
+
+export declare function ΔProvidersFeature<T>(providers: Provider[], viewProviders?: Provider[]): (definition: DirectiveDef<T>) => void;
+
+export declare function ΔpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T;
+
+export declare function ΔpureFunction1(slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any;
+
+export declare function ΔpureFunction2(slotOffset: number, pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any, thisArg?: any): any;
+
+export declare function ΔpureFunction3(slotOffset: number, pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any, thisArg?: any): any;
+
+export declare function ΔpureFunction4(slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any, exp4: any, thisArg?: any): any;
+
+export declare function ΔpureFunction5(slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, thisArg?: any): any;
+
+export declare function ΔpureFunction6(slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any, exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, thisArg?: any): any;
+
+export declare function ΔpureFunction7(slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg?: any): any;
+
+export declare function ΔpureFunction8(slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any, exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any, thisArg?: any): any;
+
+export declare function ΔpureFunctionV(slotOffset: number, pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any;
+
+export declare function ΔqueryRefresh(queryList: QueryList<any>): boolean;
+
+export declare function Δreference<T>(index: number): T;
+
+export declare function ΔresolveBody(element: RElement & {
+    ownerDocument: Document;
+}): {
+    name: string;
+    target: HTMLElement;
+};
+
+export declare function ΔresolveDocument(element: RElement & {
+    ownerDocument: Document;
+}): {
+    name: string;
+    target: Document;
+};
+
+export declare function ΔresolveWindow(element: RElement & {
+    ownerDocument: Document;
+}): {
+    name: string;
+    target: Window | null;
+};
+
+export declare function ΔrestoreView(viewToRestore: OpaqueViewState): void;
+
+export declare function ΔsanitizeHtml(unsafeHtml: any): string;
+
+export declare function ΔsanitizeResourceUrl(unsafeResourceUrl: any): string;
+
+export declare function ΔsanitizeScript(unsafeScript: any): string;
+
+export declare function ΔsanitizeStyle(unsafeStyle: any): string;
+
+export declare function ΔsanitizeUrl(unsafeUrl: any): string;
+
+export declare function ΔsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any;
+
+export declare function Δselect(index: number): void;
+
+export declare function ΔsetComponentScope(type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void;
+
+export declare function ΔsetNgModuleScope(type: any, scope: {
+    declarations?: Type<any>[] | (() => Type<any>[]);
+    imports?: Type<any>[] | (() => Type<any>[]);
+    exports?: Type<any>[] | (() => Type<any>[]);
+}): void;
+
+export declare function ΔstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
+
+export declare function ΔstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
+
+export declare function Δtemplate(index: number, templateFn: ComponentTemplate<any> | null, consts: number, vars: number, tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
+
+export declare function ΔtemplateRefExtractor(tNode: TNode, currentView: LView): ViewEngine_TemplateRef<{}> | null;
+
+export declare function Δtext(index: number, value?: any): void;
+
+export declare function ΔtextBinding<T>(index: number, value: T | NO_CHANGE): void;
+
+export declare function ΔviewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): QueryList<T>;

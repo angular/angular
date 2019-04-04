@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, defineInjector, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef,} from '../../src/core';
+import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ΔdefineInjector, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef,} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
 import {ViewEncapsulation} from '../../src/metadata';
-import {AttributeMarker, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, listener, loadViewQuery, NgOnChangesFeature, queryRefresh, viewQuery,} from '../../src/render3/index';
+import {AttributeMarker, ΔdefineComponent, ΔdefineDirective, ΔdefinePipe, injectComponentFactoryResolver, Δlistener, ΔloadViewQuery, ΔNgOnChangesFeature, ΔqueryRefresh, ΔviewQuery,} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementHostAttrs, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding,} from '../../src/render3/instructions/all';
+import {ΔallocHostVars, Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdirectiveInject, Δelement, ΔelementEnd, ΔelementHostAttrs, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δinterpolation3, ΔnextContext, Δprojection, ΔprojectionDef, Δreference, Δtemplate, Δtext, ΔtextBinding,} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
-import {pipe, pipeBind1} from '../../src/render3/pipe';
+import {Δpipe, ΔpipeBind1} from '../../src/render3/pipe';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
-import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
+import {ΔtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -36,12 +36,12 @@ describe('ViewContainerRef', () => {
   beforeEach(() => directiveInstance = null);
 
   class DirectiveWithVCRef {
-    static ngDirectiveDef = defineDirective({
+    static ngDirectiveDef = ΔdefineDirective({
       type: DirectiveWithVCRef,
       selectors: [['', 'vcref', '']],
       factory: () => directiveInstance = new DirectiveWithVCRef(
 
-                   directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+                   ΔdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
       inputs: {tplRef: 'tplRef', name: 'name'}
     });
 
@@ -61,10 +61,10 @@ describe('ViewContainerRef', () => {
      */
     function embeddedTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        text(0);
+        Δtext(0);
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, bind(ctx.name));
+        ΔtextBinding(0, Δbind(ctx.name));
       }
     }
 
@@ -78,14 +78,14 @@ describe('ViewContainerRef', () => {
      * <p vcref [tplRef]="tplRef"></p>
      */
     function createTemplate() {
-      template(
-          0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''], templateRefExtractor);
-      element(2, 'p', ['vcref', '']);
+      Δtemplate(
+          0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''], ΔtemplateRefExtractor);
+      Δelement(2, 'p', ['vcref', '']);
     }
 
     function updateTemplate() {
-      const tplRef = reference(1);
-      elementProperty(2, 'tplRef', bind(tplRef));
+      const tplRef = Δreference(1);
+      ΔelementProperty(2, 'tplRef', Δbind(tplRef));
     }
 
     describe('createEmbeddedView (incl. insert)', () => {
@@ -96,10 +96,11 @@ describe('ViewContainerRef', () => {
          * <footer></footer>
          */
         function createTemplate() {
-          template(
-              0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''], templateRefExtractor);
-          element(2, 'header', ['vcref', '']);
-          element(3, 'footer');
+          Δtemplate(
+              0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''],
+              ΔtemplateRefExtractor);
+          Δelement(2, 'header', ['vcref', '']);
+          Δelement(3, 'footer');
         }
 
         const fixture =
@@ -133,10 +134,10 @@ describe('ViewContainerRef', () => {
          * <footer></footer>
          */
         function createTemplate() {
-          template(
-              0, embeddedTemplate, 1, 1, 'ng-template', [], ['tplRef', ''], templateRefExtractor);
-          element(2, 'header-cmp', ['vcref', '']);
-          element(3, 'footer');
+          Δtemplate(
+              0, embeddedTemplate, 1, 1, 'ng-template', [], ['tplRef', ''], ΔtemplateRefExtractor);
+          Δelement(2, 'header-cmp', ['vcref', '']);
+          Δelement(3, 'footer');
         }
 
         const fixture = new TemplateFixture(
@@ -170,10 +171,11 @@ describe('ViewContainerRef', () => {
          * <div vcref [tplRef]="tplRef"></div>
          */
         function createTemplate() {
-          template(
-              0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''], templateRefExtractor);
-          element(2, 'div', ['vcref', '']);
-          element(3, 'div', ['vcref', '']);
+          Δtemplate(
+              0, embeddedTemplate, 1, 1, 'ng-template', null, ['tplRef', ''],
+              ΔtemplateRefExtractor);
+          Δelement(2, 'div', ['vcref', '']);
+          Δelement(3, 'div', ['vcref', '']);
 
           // for testing only:
           firstDir = getDirectiveOnNode(2);
@@ -181,9 +183,9 @@ describe('ViewContainerRef', () => {
         }
 
         function update() {
-          const tplRef = reference(1);
-          elementProperty(2, 'tplRef', bind(tplRef));
-          elementProperty(3, 'tplRef', bind(tplRef));
+          const tplRef = Δreference(1);
+          ΔelementProperty(2, 'tplRef', Δbind(tplRef));
+          ΔelementProperty(3, 'tplRef', Δbind(tplRef));
         }
 
         const fixture = new TemplateFixture(createTemplate, update, 4, 2, [DirectiveWithVCRef]);
@@ -201,15 +203,15 @@ describe('ViewContainerRef', () => {
          * <footer></footer>
          */
         function createTemplate() {
-          template(
+          Δtemplate(
               0, embeddedTemplate, 1, 1, 'ng-template', ['vcref', ''], ['tplRef', ''],
-              templateRefExtractor);
-          element(2, 'footer');
+              ΔtemplateRefExtractor);
+          Δelement(2, 'footer');
         }
 
         function updateTemplate() {
-          const tplRef = reference(1);
-          elementProperty(0, 'tplRef', bind(tplRef));
+          const tplRef = Δreference(1);
+          ΔelementProperty(0, 'tplRef', Δbind(tplRef));
         }
 
         const fixture =
@@ -238,12 +240,13 @@ describe('ViewContainerRef', () => {
            let directiveInstances: TestDirective[] = [];
 
            class TestDirective {
-             static ngDirectiveDef = defineDirective({
+             static ngDirectiveDef = ΔdefineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
                factory: () => {
                  const instance = new TestDirective(
-                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any));
+                     ΔdirectiveInject(ViewContainerRef as any),
+                     ΔdirectiveInject(TemplateRef as any));
 
                  directiveInstances.push(instance);
 
@@ -260,13 +263,13 @@ describe('ViewContainerRef', () => {
 
            function EmbeddedTemplateA(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               text(0, 'A');
+               Δtext(0, 'A');
              }
            }
 
            function EmbeddedTemplateB(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               text(0, 'B');
+               Δtext(0, 'B');
              }
            }
 
@@ -279,7 +282,7 @@ describe('ViewContainerRef', () => {
            class TestComponent {
              // TODO(issue/24571): remove '!'.
              testDir !: TestDirective;
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
@@ -288,10 +291,10 @@ describe('ViewContainerRef', () => {
                vars: 0,
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
-                   text(0, 'before|');
-                   template(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
-                   template(2, EmbeddedTemplateB, 1, 0, 'ng-template', ['testdir', '']);
-                   text(3, '|after');
+                   Δtext(0, 'before|');
+                   Δtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
+                   Δtemplate(2, EmbeddedTemplateB, 1, 0, 'ng-template', ['testdir', '']);
+                   Δtext(3, '|after');
                  }
                },
                directives: [TestDirective]
@@ -314,12 +317,12 @@ describe('ViewContainerRef', () => {
            let directiveInstance: TestDirective;
 
            class TestDirective {
-             static ngDirectiveDef = defineDirective({
+             static ngDirectiveDef = ΔdefineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
                factory: () => directiveInstance = new TestDirective(
-                            directiveInject(ViewContainerRef as any),
-                            directiveInject(TemplateRef as any))
+                            ΔdirectiveInject(ViewContainerRef as any),
+                            ΔdirectiveInject(TemplateRef as any))
              });
 
              constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
@@ -336,7 +339,7 @@ describe('ViewContainerRef', () => {
 
            function EmbeddedTemplateA(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               text(0, 'A');
+               Δtext(0, 'A');
              }
            }
 
@@ -352,7 +355,7 @@ describe('ViewContainerRef', () => {
              condition = false;
              // TODO(issue/24571): remove '!'.
              testDir !: TestDirective;
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: TestComponent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
@@ -361,25 +364,25 @@ describe('ViewContainerRef', () => {
                factory: () => new TestComponent(),
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
-                   text(0, 'before|');
-                   template(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
-                   container(2);
-                   text(3, '|after');
+                   Δtext(0, 'before|');
+                   Δtemplate(1, EmbeddedTemplateA, 1, 0, 'ng-template', ['testdir', '']);
+                   Δcontainer(2);
+                   Δtext(3, '|after');
                  }
                  if (rf & RenderFlags.Update) {
-                   containerRefreshStart(2);
+                   ΔcontainerRefreshStart(2);
                    {
                      if (cmp.condition) {
-                       let rf1 = embeddedViewStart(0, 1, 0);
+                       let rf1 = ΔembeddedViewStart(0, 1, 0);
                        {
                          if (rf1 & RenderFlags.Create) {
-                           text(0, 'B');
+                           Δtext(0, 'B');
                          }
                        }
-                       embeddedViewEnd();
+                       ΔembeddedViewEnd();
                      }
                    }
-                   containerRefreshEnd();
+                   ΔcontainerRefreshEnd();
                  }
                },
                directives: [TestDirective]
@@ -414,7 +417,7 @@ describe('ViewContainerRef', () => {
           // TODO(issue/24571): remove '!'.
           name !: string;
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             encapsulation: ViewEncapsulation.None,
             selectors: [['child']],
@@ -423,10 +426,10 @@ describe('ViewContainerRef', () => {
             vars: 1,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                text(0);
+                Δtext(0);
               }
               if (rf & RenderFlags.Update) {
-                textBinding(0, interpolation1('', cmp.name, ''));
+                ΔtextBinding(0, Δinterpolation1('', cmp.name, ''));
               }
             },
             inputs: {name: 'name'}
@@ -437,7 +440,7 @@ describe('ViewContainerRef', () => {
         class StarPipe implements PipeTransform {
           transform(value: any) { return `**${value}**`; }
 
-          static ngPipeDef = definePipe({
+          static ngPipeDef = ΔdefinePipe({
             name: 'starPipe',
             type: StarPipe,
             factory: function StarPipe_Factory() { return new StarPipe(); },
@@ -446,11 +449,11 @@ describe('ViewContainerRef', () => {
 
         function SomeComponent_Template_0(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            element(0, 'child');
-            pipe(1, 'starPipe');
+            Δelement(0, 'child');
+            Δpipe(1, 'starPipe');
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'name', bind(pipeBind1(1, 1, 'C')));
+            ΔelementProperty(0, 'name', Δbind(ΔpipeBind1(1, 1, 'C')));
           }
         }
 
@@ -464,7 +467,7 @@ describe('ViewContainerRef', () => {
           `
         })
         class SomeComponent {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: SomeComponent,
             encapsulation: ViewEncapsulation.None,
             selectors: [['some-comp']],
@@ -473,19 +476,19 @@ describe('ViewContainerRef', () => {
             vars: 7,
             template: (rf: RenderFlags, cmp: SomeComponent) => {
               if (rf & RenderFlags.Create) {
-                template(
+                Δtemplate(
                     0, SomeComponent_Template_0, 2, 3, 'ng-template', [], ['foo', ''],
-                    templateRefExtractor);
-                pipe(2, 'starPipe');
-                element(3, 'child', ['vcref', '']);
-                pipe(4, 'starPipe');
-                element(5, 'child');
+                    ΔtemplateRefExtractor);
+                Δpipe(2, 'starPipe');
+                Δelement(3, 'child', ['vcref', '']);
+                Δpipe(4, 'starPipe');
+                Δelement(5, 'child');
               }
               if (rf & RenderFlags.Update) {
-                const tplRef = reference(1);
-                elementProperty(3, 'tplRef', bind(tplRef));
-                elementProperty(3, 'name', bind(pipeBind1(2, 3, 'A')));
-                elementProperty(5, 'name', bind(pipeBind1(4, 5, 'B')));
+                const tplRef = Δreference(1);
+                ΔelementProperty(3, 'tplRef', Δbind(tplRef));
+                ΔelementProperty(3, 'name', Δbind(ΔpipeBind1(2, 3, 'A')));
+                ΔelementProperty(5, 'name', Δbind(ΔpipeBind1(4, 5, 'B')));
               }
             },
             directives: [Child, DirectiveWithVCRef],
@@ -512,10 +515,10 @@ describe('ViewContainerRef', () => {
 
         constructor(public vcr: ViewContainerRef) {}
 
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: InsertionDir,
           selectors: [['', 'tplDir', '']],
-          factory: () => new InsertionDir(directiveInject(ViewContainerRef as any)),
+          factory: () => new InsertionDir(ΔdirectiveInject(ViewContainerRef as any)),
           inputs: {tplDir: 'tplDir'}
         });
       }
@@ -533,7 +536,7 @@ describe('ViewContainerRef', () => {
              name = 'Child';
              tpl: TemplateRef<any>|null = null;
 
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: Child,
                encapsulation: ViewEncapsulation.None,
                selectors: [['child']],
@@ -542,13 +545,13 @@ describe('ViewContainerRef', () => {
                vars: 2,
                template: function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   elementStart(0, 'div', [AttributeMarker.Bindings, 'tplDir']);
-                   { text(1); }
-                   elementEnd();
+                   ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'tplDir']);
+                   { Δtext(1); }
+                   ΔelementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   elementProperty(0, 'tplDir', bind(ctx.tpl));
-                   textBinding(1, bind(ctx.name));
+                   ΔelementProperty(0, 'tplDir', Δbind(ctx.tpl));
+                   ΔtextBinding(1, Δbind(ctx.name));
                  }
                },
                inputs: {tpl: 'tpl'},
@@ -566,27 +569,27 @@ describe('ViewContainerRef', () => {
             */
            const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
              if (rf & RenderFlags.Create) {
-               template(
-                   0, fooTemplate, 2, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
-               element(2, 'child');
+               Δtemplate(
+                   0, fooTemplate, 2, 1, 'ng-template', null, ['foo', ''], ΔtemplateRefExtractor);
+               Δelement(2, 'child');
              }
 
              if (rf & RenderFlags.Update) {
-               const tplRef = reference(1);
-               elementProperty(2, 'tpl', bind(tplRef));
+               const tplRef = Δreference(1);
+               ΔelementProperty(2, 'tpl', Δbind(tplRef));
              }
 
            }, 3, 1, [Child]);
 
            function fooTemplate(rf1: RenderFlags, ctx: any) {
              if (rf1 & RenderFlags.Create) {
-               elementStart(0, 'div');
-               { text(1); }
-               elementEnd();
+               ΔelementStart(0, 'div');
+               { Δtext(1); }
+               ΔelementEnd();
              }
              if (rf1 & RenderFlags.Update) {
-               const parent = nextContext();
-               textBinding(1, bind(parent.name));
+               const parent = ΔnextContext();
+               ΔtextBinding(1, Δbind(parent.name));
              }
            }
 
@@ -619,7 +622,7 @@ describe('ViewContainerRef', () => {
           // @Input()
           rows !: any[];
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: LoopComp,
             encapsulation: ViewEncapsulation.None,
             selectors: [['loop-comp']],
@@ -628,12 +631,12 @@ describe('ViewContainerRef', () => {
             vars: 2,
             template: function(rf: RenderFlags, loop: any) {
               if (rf & RenderFlags.Create) {
-                template(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngForOf']);
+                Δtemplate(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngForOf']);
               }
 
               if (rf & RenderFlags.Update) {
-                elementProperty(0, 'ngForOf', bind(loop.rows));
-                elementProperty(0, 'ngForTemplate', bind(loop.tpl));
+                ΔelementProperty(0, 'ngForOf', Δbind(loop.rows));
+                ΔelementProperty(0, 'ngForTemplate', Δbind(loop.tpl));
               }
             },
             inputs: {tpl: 'tpl', rows: 'rows'},
@@ -658,48 +661,48 @@ describe('ViewContainerRef', () => {
          */
         const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
           if (rf & RenderFlags.Create) {
-            template(
+            Δtemplate(
                 0, rowTemplate, 3, 2, 'ng-template', null, ['rowTemplate', ''],
-                templateRefExtractor);
-            element(2, 'loop-comp');
+                ΔtemplateRefExtractor);
+            Δelement(2, 'loop-comp');
           }
 
           if (rf & RenderFlags.Update) {
-            const rowTemplateRef = reference(1);
-            elementProperty(2, 'tpl', bind(rowTemplateRef));
-            elementProperty(2, 'rows', bind(parent.rows));
+            const rowTemplateRef = Δreference(1);
+            ΔelementProperty(2, 'tpl', Δbind(rowTemplateRef));
+            ΔelementProperty(2, 'rows', Δbind(parent.rows));
           }
 
         }, 3, 2, [LoopComp]);
 
         function rowTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(
+            Δtemplate(
                 0, cellTemplate, 2, 3, 'ng-template', null, ['cellTemplate', ''],
-                templateRefExtractor);
-            element(2, 'loop-comp');
+                ΔtemplateRefExtractor);
+            Δelement(2, 'loop-comp');
           }
 
           if (rf & RenderFlags.Update) {
             const row = ctx.$implicit as any;
-            const cellTemplateRef = reference(1);
-            elementProperty(2, 'tpl', bind(cellTemplateRef));
-            elementProperty(2, 'rows', bind(row.data));
+            const cellTemplateRef = Δreference(1);
+            ΔelementProperty(2, 'tpl', Δbind(cellTemplateRef));
+            ΔelementProperty(2, 'rows', Δbind(row.data));
           }
         }
 
         function cellTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            { text(1); }
-            elementEnd();
+            ΔelementStart(0, 'div');
+            { Δtext(1); }
+            ΔelementEnd();
           }
 
           if (rf & RenderFlags.Update) {
             const cell = ctx.$implicit as any;
-            const row = nextContext().$implicit as any;
-            const parent = nextContext();
-            textBinding(1, interpolation3('', cell, ' - ', row.value, ' - ', parent.name, ''));
+            const row = ΔnextContext().$implicit as any;
+            const parent = ΔnextContext();
+            ΔtextBinding(1, Δinterpolation3('', cell, ' - ', row.value, ' - ', parent.name, ''));
           }
         }
 
@@ -940,7 +943,7 @@ describe('ViewContainerRef', () => {
         class EmbeddedComponent {
           constructor() {}
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: EmbeddedComponent,
             encapsulation: ViewEncapsulation.None,
             selectors: [['embedded-cmp']],
@@ -950,7 +953,7 @@ describe('ViewContainerRef', () => {
             template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
               templateExecutionCounter++;
               if (rf & RenderFlags.Create) {
-                text(0, 'foo');
+                Δtext(0, 'foo');
               }
             }
           });
@@ -983,24 +986,24 @@ describe('ViewContainerRef', () => {
         class EmbeddedComponent {
           constructor(public s: String) {}
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: EmbeddedComponent,
             encapsulation: ViewEncapsulation.None,
             selectors: [['embedded-cmp']],
-            factory: () => new EmbeddedComponent(directiveInject(String)),
+            factory: () => new EmbeddedComponent(ΔdirectiveInject(String)),
             consts: 1,
             vars: 0,
             template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
               templateExecutionCounter++;
               if (rf & RenderFlags.Create) {
-                text(0, 'foo');
+                Δtext(0, 'foo');
               }
             }
           });
         }
 
         class MyAppModule {
-          static ngInjectorDef = defineInjector({
+          static ngInjectorDef = ΔdefineInjector({
             factory: () => new MyAppModule(),
             imports: [],
             providers: [
@@ -1015,7 +1018,7 @@ describe('ViewContainerRef', () => {
         const ngModuleRef = myAppModuleFactory.create(null);
 
         class SomeModule {
-          static ngInjectorDef = defineInjector({
+          static ngInjectorDef = ΔdefineInjector({
             factory: () => new SomeModule(),
             providers: [
               {provide: NgModuleRef, useValue: ngModuleRef},
@@ -1054,12 +1057,12 @@ describe('ViewContainerRef', () => {
         class AppComp {
           constructor(public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: AppComp,
             selectors: [['app-comp']],
             factory:
                 () => new AppComp(
-                    directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+                    ΔdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
             consts: 0,
             vars: 0,
             template: (rf: RenderFlags, cmp: AppComp) => {}
@@ -1071,7 +1074,7 @@ describe('ViewContainerRef', () => {
 
           ngDoCheck() { this.doCheckCount++; }
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: DynamicComp,
             selectors: [['dynamic-comp']],
             factory: () => dynamicComp = new DynamicComp(),
@@ -1128,7 +1131,7 @@ describe('ViewContainerRef', () => {
       });
 
       class EmbeddedComponentWithNgContent {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: EmbeddedComponentWithNgContent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['embedded-cmp-with-ngcontent']],
@@ -1137,10 +1140,10 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: EmbeddedComponentWithNgContent) => {
             if (rf & RenderFlags.Create) {
-              projectionDef();
-              projection(0, 0);
-              element(1, 'hr');
-              projection(2, 1);
+              ΔprojectionDef();
+              Δprojection(0, 0);
+              Δelement(1, 'hr');
+              Δprojection(2, 1);
             }
           }
         });
@@ -1168,7 +1171,7 @@ describe('ViewContainerRef', () => {
 
       it('should support reprojection of projectable nodes', () => {
         class Reprojector {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Reprojector,
             encapsulation: ViewEncapsulation.None,
             selectors: [['reprojector']],
@@ -1177,10 +1180,10 @@ describe('ViewContainerRef', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Reprojector) => {
               if (rf & RenderFlags.Create) {
-                projectionDef();
-                elementStart(0, 'embedded-cmp-with-ngcontent');
-                { projection(1, 0); }
-                elementEnd();
+                ΔprojectionDef();
+                ΔelementStart(0, 'embedded-cmp-with-ngcontent');
+                { Δprojection(1, 0); }
+                ΔelementEnd();
               }
             },
             directives: [EmbeddedComponentWithNgContent]
@@ -1226,8 +1229,8 @@ describe('ViewContainerRef', () => {
     describe('getters', () => {
       it('should work on elements', () => {
         function createTemplate() {
-          element(0, 'header', ['vcref', '']);
-          element(1, 'footer');
+          Δelement(0, 'header', ['vcref', '']);
+          Δelement(1, 'footer');
         }
 
         new TemplateFixture(createTemplate, undefined, 2, 0, [DirectiveWithVCRef]);
@@ -1245,8 +1248,8 @@ describe('ViewContainerRef', () => {
             createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
         function createTemplate() {
-          element(0, 'header-cmp', ['vcref', '']);
-          element(1, 'footer');
+          Δelement(0, 'header-cmp', ['vcref', '']);
+          Δelement(1, 'footer');
         }
 
         new TemplateFixture(createTemplate, undefined, 2, 0, [HeaderComponent, DirectiveWithVCRef]);
@@ -1261,8 +1264,8 @@ describe('ViewContainerRef', () => {
 
       it('should work on templates', () => {
         function createTemplate() {
-          template(0, embeddedTemplate, 1, 1, 'ng-template', ['vcref', '']);
-          element(1, 'footer');
+          Δtemplate(0, embeddedTemplate, 1, 1, 'ng-template', ['vcref', '']);
+          Δelement(1, 'footer');
         }
 
         new TemplateFixture(createTemplate, () => {}, 2, 0, [DirectiveWithVCRef]);
@@ -1277,19 +1280,19 @@ describe('ViewContainerRef', () => {
   describe('projection', () => {
     function embeddedTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'span');
-        text(1);
-        elementEnd();
+        ΔelementStart(0, 'span');
+        Δtext(1);
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        textBinding(1, ctx.name);
+        ΔtextBinding(1, ctx.name);
       }
     }
 
     it('should project the ViewContainerRef content along its host, in an element', () => {
       @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
       class Child {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: Child,
           encapsulation: ViewEncapsulation.None,
           selectors: [['child']],
@@ -1298,10 +1301,10 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef();
-              elementStart(0, 'div');
-              { projection(1); }
-              elementEnd();
+              ΔprojectionDef();
+              ΔelementStart(0, 'div');
+              { Δprojection(1); }
+              ΔelementEnd();
             }
           }
         });
@@ -1317,7 +1320,7 @@ describe('ViewContainerRef', () => {
       })
       class Parent {
         name: string = 'bar';
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: Parent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['parent']],
@@ -1326,22 +1329,22 @@ describe('ViewContainerRef', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              template(
+              Δtemplate(
                   0, embeddedTemplate, 2, 1, 'ng-template', null, ['foo', ''],
-                  templateRefExtractor);
-              elementStart(2, 'child');
+                  ΔtemplateRefExtractor);
+              ΔelementStart(2, 'child');
               {
-                elementStart(3, 'header', ['vcref', '']);
-                { text(4, 'blah'); }
-                elementEnd();
+                ΔelementStart(3, 'header', ['vcref', '']);
+                { Δtext(4, 'blah'); }
+                ΔelementEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             let tplRef: any;
             if (rf & RenderFlags.Update) {
-              tplRef = reference(1);
-              elementProperty(3, 'tplRef', bind(tplRef));
-              elementProperty(3, 'name', bind(cmp.name));
+              tplRef = Δreference(1);
+              ΔelementProperty(3, 'tplRef', Δbind(tplRef));
+              ΔelementProperty(3, 'name', Δbind(cmp.name));
             }
           },
           directives: [Child, DirectiveWithVCRef]
@@ -1370,7 +1373,7 @@ describe('ViewContainerRef', () => {
       })
       class ChildWithView {
         show: boolean = true;
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: ChildWithView,
           encapsulation: ViewEncapsulation.None,
           selectors: [['child-with-view']],
@@ -1379,21 +1382,21 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: ChildWithView) => {
             if (rf & RenderFlags.Create) {
-              projectionDef();
-              text(0, 'Before (inside)-');
-              container(1);
-              text(2, 'After (inside)');
+              ΔprojectionDef();
+              Δtext(0, 'Before (inside)-');
+              Δcontainer(1);
+              Δtext(2, 'After (inside)');
             }
             if (rf & RenderFlags.Update) {
-              containerRefreshStart(1);
+              ΔcontainerRefreshStart(1);
               if (cmp.show) {
-                let rf0 = embeddedViewStart(0, 1, 0);
+                let rf0 = ΔembeddedViewStart(0, 1, 0);
                 if (rf0 & RenderFlags.Create) {
-                  projection(0);
+                  Δprojection(0);
                 }
-                embeddedViewEnd();
+                ΔembeddedViewEnd();
               }
-              containerRefreshEnd();
+              ΔcontainerRefreshEnd();
             }
           }
         });
@@ -1413,7 +1416,7 @@ describe('ViewContainerRef', () => {
       })
       class Parent {
         name: string = 'bar';
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: Parent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['parent']],
@@ -1422,21 +1425,21 @@ describe('ViewContainerRef', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              template(
+              Δtemplate(
                   0, embeddedTemplate, 2, 1, 'ng-template', undefined, ['foo', ''],
-                  templateRefExtractor);
-              elementStart(2, 'child-with-view');
-              text(3, 'Before projected');
-              elementStart(4, 'header', ['vcref', '']);
-              text(5, 'blah');
-              elementEnd();
-              text(6, 'After projected-');
-              elementEnd();
+                  ΔtemplateRefExtractor);
+              ΔelementStart(2, 'child-with-view');
+              Δtext(3, 'Before projected');
+              ΔelementStart(4, 'header', ['vcref', '']);
+              Δtext(5, 'blah');
+              ΔelementEnd();
+              Δtext(6, 'After projected-');
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = reference(1);
-              elementProperty(4, 'tplRef', bind(tplRef));
-              elementProperty(4, 'name', bind(cmp.name));
+              const tplRef = Δreference(1);
+              ΔelementProperty(4, 'tplRef', Δbind(tplRef));
+              ΔelementProperty(4, 'name', Δbind(cmp.name));
             }
           },
           directives: [ChildWithView, DirectiveWithVCRef]
@@ -1463,7 +1466,7 @@ describe('ViewContainerRef', () => {
           <second><ng-content></ng-content></second>`
       })
       class ChildWithSelector {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: ChildWithSelector,
           encapsulation: ViewEncapsulation.None,
           selectors: [['child-with-selector']],
@@ -1472,13 +1475,13 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: ChildWithSelector) => {
             if (rf & RenderFlags.Create) {
-              projectionDef([[['header']]], ['header']);
-              elementStart(0, 'first');
-              { projection(1, 1); }
-              elementEnd();
-              elementStart(2, 'second');
-              { projection(3); }
-              elementEnd();
+              ΔprojectionDef([[['header']]], ['header']);
+              ΔelementStart(0, 'first');
+              { Δprojection(1, 1); }
+              ΔelementEnd();
+              ΔelementStart(2, 'second');
+              { Δprojection(3); }
+              ΔelementEnd();
             }
           },
           directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1497,7 +1500,7 @@ describe('ViewContainerRef', () => {
            })
            class Parent {
              name: string = 'bar';
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: Parent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['parent']],
@@ -1507,19 +1510,19 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: Parent) => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
-                   template(
+                   Δtemplate(
                        0, embeddedTemplate, 2, 1, 'ng-template', null, ['foo', ''],
-                       templateRefExtractor);
-                   elementStart(2, 'child-with-selector');
-                   elementStart(3, 'header', ['vcref', '']);
-                   text(4, 'blah');
-                   elementEnd();
-                   elementEnd();
+                       ΔtemplateRefExtractor);
+                   ΔelementStart(2, 'child-with-selector');
+                   ΔelementStart(3, 'header', ['vcref', '']);
+                   Δtext(4, 'blah');
+                   ΔelementEnd();
+                   ΔelementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   tplRef = reference(1);
-                   elementProperty(3, 'tplRef', bind(tplRef));
-                   elementProperty(3, 'name', bind(cmp.name));
+                   tplRef = Δreference(1);
+                   ΔelementProperty(3, 'tplRef', Δbind(tplRef));
+                   ΔelementProperty(3, 'name', Δbind(cmp.name));
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1551,7 +1554,7 @@ describe('ViewContainerRef', () => {
            })
            class Parent {
              name: string = 'bar';
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: Parent,
                encapsulation: ViewEncapsulation.None,
                selectors: [['parent']],
@@ -1561,19 +1564,19 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: Parent) => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
-                   template(
+                   Δtemplate(
                        0, embeddedTemplate, 2, 1, 'ng-template', null, ['foo', ''],
-                       templateRefExtractor);
-                   elementStart(2, 'child-with-selector');
-                   elementStart(3, 'footer', ['vcref', '']);
-                   text(4, 'blah');
-                   elementEnd();
-                   elementEnd();
+                       ΔtemplateRefExtractor);
+                   ΔelementStart(2, 'child-with-selector');
+                   ΔelementStart(3, 'footer', ['vcref', '']);
+                   Δtext(4, 'blah');
+                   ΔelementEnd();
+                   ΔelementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   tplRef = reference(1);
-                   elementProperty(3, 'tplRef', bind(tplRef));
-                   elementProperty(3, 'name', bind(cmp.name));
+                   tplRef = Δreference(1);
+                   ΔelementProperty(3, 'tplRef', Δbind(tplRef));
+                   ΔelementProperty(3, 'name', Δbind(cmp.name));
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1619,7 +1622,7 @@ describe('ViewContainerRef', () => {
 
       ngOnDestroy() { this.log('onDestroy-' + this.name); }
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: ComponentWithHooks,
         encapsulation: ViewEncapsulation.None,
         selectors: [['hooks']],
@@ -1628,13 +1631,13 @@ describe('ViewContainerRef', () => {
         vars: 1,
         template: (rf: RenderFlags, cmp: ComponentWithHooks) => {
           if (rf & RenderFlags.Create) {
-            text(0);
+            Δtext(0);
           }
           if (rf & RenderFlags.Update) {
-            textBinding(0, interpolation1('', cmp.name, ''));
+            ΔtextBinding(0, Δinterpolation1('', cmp.name, ''));
           }
         },
-        features: [NgOnChangesFeature()],
+        features: [ΔNgOnChangesFeature()],
         inputs: {name: 'name'}
       });
     }
@@ -1642,10 +1645,10 @@ describe('ViewContainerRef', () => {
     it('should call all hooks in correct order when creating with createEmbeddedView', () => {
       function SomeComponent_Template_0(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          element(0, 'hooks');
+          Δelement(0, 'hooks');
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(0, 'name', bind('C'));
+          ΔelementProperty(0, 'name', Δbind('C'));
         }
       }
 
@@ -1659,7 +1662,7 @@ describe('ViewContainerRef', () => {
         `
       })
       class SomeComponent {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: SomeComponent,
           selectors: [['some-comp']],
           factory: () => new SomeComponent(),
@@ -1667,21 +1670,21 @@ describe('ViewContainerRef', () => {
           vars: 3,
           template: (rf: RenderFlags, cmp: SomeComponent) => {
             if (rf & RenderFlags.Create) {
-              template(
+              Δtemplate(
                   0, SomeComponent_Template_0, 1, 1, 'ng-template', [], ['foo', ''],
-                  templateRefExtractor);
-              element(2, 'hooks', ['vcref', '']);
-              element(3, 'hooks');
+                  ΔtemplateRefExtractor);
+              Δelement(2, 'hooks', ['vcref', '']);
+              Δelement(3, 'hooks');
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = reference(1);
-              elementProperty(2, 'tplRef', bind(tplRef));
-              elementProperty(2, 'name', bind('A'));
-              elementProperty(3, 'name', bind('B'));
+              const tplRef = Δreference(1);
+              ΔelementProperty(2, 'tplRef', Δbind(tplRef));
+              ΔelementProperty(2, 'name', Δbind('A'));
+              ΔelementProperty(3, 'name', Δbind('B'));
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],
-          features: [NgOnChangesFeature()],
+          features: [ΔNgOnChangesFeature()],
         });
       }
 
@@ -1756,7 +1759,7 @@ describe('ViewContainerRef', () => {
         `
       })
       class SomeComponent {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: SomeComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['some-comp']],
@@ -1765,16 +1768,16 @@ describe('ViewContainerRef', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: SomeComponent) => {
             if (rf & RenderFlags.Create) {
-              element(0, 'hooks', ['vcref', '']);
-              element(1, 'hooks');
+              Δelement(0, 'hooks', ['vcref', '']);
+              Δelement(1, 'hooks');
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(0, 'name', bind('A'));
-              elementProperty(1, 'name', bind('B'));
+              ΔelementProperty(0, 'name', Δbind('A'));
+              ΔelementProperty(1, 'name', Δbind('B'));
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],
-          features: [NgOnChangesFeature()],
+          features: [ΔNgOnChangesFeature()],
         });
       }
 
@@ -1853,7 +1856,7 @@ describe('ViewContainerRef', () => {
       class HostBindingCmpt {
         title = 'initial';
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: HostBindingCmpt,
           selectors: [['host-bindings']],
           factory: () => new HostBindingCmpt(),
@@ -1862,11 +1865,11 @@ describe('ViewContainerRef', () => {
           template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
           hostBindings: function(rf: RenderFlags, ctx: HostBindingCmpt, elIndex: number) {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(['id', 'attribute']);
-              allocHostVars(1);
+              ΔelementHostAttrs(['id', 'attribute']);
+              ΔallocHostVars(1);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(elIndex, 'title', bind(ctx.title));
+              ΔelementProperty(elIndex, 'title', Δbind(ctx.title));
             }
           },
         });
@@ -1878,7 +1881,7 @@ describe('ViewContainerRef', () => {
         `
       })
       class AppCmpt {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: AppCmpt,
           selectors: [['app']],
           factory: () => new AppCmpt(),
@@ -1886,7 +1889,7 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: AppCmpt) => {
             if (rf & RenderFlags.Create) {
-              template(0, null, 0, 0, 'ng-template', ['vcref', '']);
+              Δtemplate(0, null, 0, 0, 'ng-template', ['vcref', '']);
             }
           },
           directives: [HostBindingCmpt, DirectiveWithVCRef]
@@ -1913,11 +1916,11 @@ describe('ViewContainerRef', () => {
 
     @Component({selector: 'app', template: ''})
     class AppCmpt {
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: AppCmpt,
         selectors: [['app']],
         factory: () => new AppCmpt(
-                     directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+                     ΔdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
         consts: 0,
         vars: 0,
         template: (rf: RenderFlags, cmp: AppCmpt) => {}
@@ -1941,7 +1944,7 @@ describe('ViewContainerRef', () => {
       const DynamicComponent =
           createComponent('dynamic-cmpt', function(rf: RenderFlags, parent: any) {
             if (rf & RenderFlags.Create) {
-              text(0, 'inserted dynamically');
+              Δtext(0, 'inserted dynamically');
             }
           }, 1, 0);
 
@@ -1981,7 +1984,7 @@ describe('ViewContainerRef', () => {
         ngDoCheck() { this.checkCount++; }
 
         /** check count: {{ checkCount }} */
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: DynamicCompWithBindings,
           selectors: [['dynamic-cmpt-with-bindings']],
           factory: () => new DynamicCompWithBindings(),
@@ -1989,10 +1992,10 @@ describe('ViewContainerRef', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: DynamicCompWithBindings) => {
             if (rf & RenderFlags.Create) {
-              text(0);
+              Δtext(0);
             }
             if (rf & RenderFlags.Update) {
-              textBinding(0, interpolation1('check count: ', ctx.checkCount, ''));
+              ΔtextBinding(0, Δinterpolation1('check count: ', ctx.checkCount, ''));
             }
           }
         });
@@ -2017,19 +2020,19 @@ describe('ViewContainerRef', () => {
       let name = 'text';
       const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          { text(1); }
-          elementEnd();
+          ΔelementStart(0, 'div');
+          { Δtext(1); }
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          textBinding(1, bind(name));
+          ΔtextBinding(1, Δbind(name));
         }
       }, 2, 1);
 
       const DynamicCompWithChildren =
           createComponent('dynamic-cmpt-with-children', (rf: RenderFlags, ctx: any) => {
             if (rf & RenderFlags.Create) {
-              element(0, 'child');
+              Δelement(0, 'child');
             }
           }, 1, 0, [Child]);
 
@@ -2055,7 +2058,7 @@ describe('ViewContainerRef', () => {
         // @ViewChildren('foo')
         foo !: QueryList<any>;
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: DynamicCompWithViewQueries,
           selectors: [['dynamic-cmpt-with-view-queries']],
           factory: () => dynamicComp = new DynamicCompWithViewQueries(),
@@ -2063,18 +2066,18 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
-              element(0, 'div', ['bar', ''], ['foo', '']);
+              Δelement(0, 'div', ['bar', ''], ['foo', '']);
             }
             // testing only
             fooEl = getNativeByIndex(0, getLView()) as RElement;
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['foo'], true, null);
+              ΔviewQuery(['foo'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+              ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                   (ctx.foo = tmp as QueryList<any>);
             }
           }
@@ -2099,7 +2102,7 @@ describe('ViewContainerRef', () => {
 
       ngOnDestroy() { this.viewRef.destroy(); }
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: CompWithListenerThatDestroysItself,
         selectors: [['comp-with-listener-and-on-destroy']],
         consts: 2,
@@ -2107,18 +2110,18 @@ describe('ViewContainerRef', () => {
         /** <button (click)="onClick()"> Click me </button> */
         template: function CompTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'button');
+            ΔelementStart(0, 'button');
             {
-              listener('click', function() { return ctx.onClick(); });
-              text(1, 'Click me');
+              Δlistener('click', function() { return ctx.onClick(); });
+              Δtext(1, 'Click me');
             }
-            elementEnd();
+            ΔelementEnd();
           }
         },
         // We want the ViewRef, so we rely on the knowledge that `ViewRef` is actually given
         // when injecting `ChangeDetectorRef`.
-        factory:
-            () => new CompWithListenerThatDestroysItself(directiveInject(ChangeDetectorRef as any)),
+        factory: () => new CompWithListenerThatDestroysItself(
+                     ΔdirectiveInject(ChangeDetectorRef as any)),
       });
     }
 
@@ -2126,7 +2129,7 @@ describe('ViewContainerRef', () => {
     it('should not error when destroying a view with listeners twice', () => {
       const CompWithChildListener = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          element(0, 'comp-with-listener-and-on-destroy');
+          Δelement(0, 'comp-with-listener-and-on-destroy');
         }
       }, 1, 0, [CompWithListenerThatDestroysItself]);
 

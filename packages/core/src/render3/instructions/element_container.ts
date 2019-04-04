@@ -28,8 +28,10 @@ import {createDirectivesAndLocals, createNodeAtIndex, executeContentQueries, set
  * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
  * the DOM (as a comment node can't have attributes). Attributes are here only for directive
  * matching purposes and setting initial inputs of directives.
+ *
+ * @publicApi
  */
-export function elementContainerStart(
+export function ΔelementContainerStart(
     index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -65,8 +67,12 @@ export function elementContainerStart(
   executeContentQueries(tView, tNode, lView);
 }
 
-/** Mark the end of the <ng-container>. */
-export function elementContainerEnd(): void {
+/**
+ * Mark the end of the <ng-container>.
+ *
+ * @publicApi
+ */
+export function ΔelementContainerEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   const lView = getLView();
   const tView = lView[TVIEW];

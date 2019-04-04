@@ -25,10 +25,10 @@ describe('ngtsc module scopes', () => {
         env.tsconfig();
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class OtherModule {}
-  
+
           @NgModule({imports: [OtherModule]})
           export class TestModule {}
         `);
@@ -36,23 +36,23 @@ describe('ngtsc module scopes', () => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
+        expect(jsContents).toContain('i0.ΔdefineNgModule({ type: TestModule });');
         expect(jsContents)
             .toContain(
-                '/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { imports: [OtherModule] });');
+                '/*@__PURE__*/ i0.ΔsetNgModuleScope(TestModule, { imports: [OtherModule] });');
 
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents)
             .toContain(
-                'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
+                'static ngModuleDef: i0.ΔNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
       });
 
       it('should produce an error when an invalid class is imported', () => {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           class NotAModule {}
-  
+
           @NgModule({imports: [NotAModule]})
           class IsAModule {}
         `);
@@ -69,7 +69,7 @@ describe('ngtsc module scopes', () => {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
           import {NotAClass} from './dep';
-  
+
           @NgModule({imports: [NotAClass]})
           class IsAModule {}
         `);
@@ -87,10 +87,10 @@ describe('ngtsc module scopes', () => {
         env.tsconfig();
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           @NgModule({})
           export class OtherModule {}
-  
+
           @NgModule({exports: [OtherModule]})
           export class TestModule {}
         `);
@@ -98,23 +98,23 @@ describe('ngtsc module scopes', () => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule });');
+        expect(jsContents).toContain('i0.ΔdefineNgModule({ type: TestModule });');
         expect(jsContents)
             .toContain(
-                '/*@__PURE__*/ i0.ɵsetNgModuleScope(TestModule, { exports: [OtherModule] });');
+                '/*@__PURE__*/ i0.ΔsetNgModuleScope(TestModule, { exports: [OtherModule] });');
 
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents)
             .toContain(
-                'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
+                'static ngModuleDef: i0.ΔNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
       });
 
       it('should produce an error when a non-NgModule class is exported', () => {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
-  
+
           class NotAModule {}
-  
+
           @NgModule({exports: [NotAModule]})
           class IsAModule {}
         `);
@@ -131,12 +131,12 @@ describe('ngtsc module scopes', () => {
           import {NgModule} from '@angular/core';
 
           export class NotAModule {}
-  
+
           @NgModule({
             imports: [NotAModule],
           })
           class InvalidModule {}
-  
+
           @NgModule({exports: [InvalidModule]})
           class IsAModule {}
         `);
@@ -157,10 +157,10 @@ describe('ngtsc module scopes', () => {
       it('should produce an error when a non-declared/imported class is re-exported', () => {
         env.write('test.ts', `
           import {Directive, NgModule} from '@angular/core';
-  
+
           @Directive({selector: 'test'})
           class Dir {}
-  
+
           @NgModule({exports: [Dir]})
           class IsAModule {}
         `);

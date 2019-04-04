@@ -143,8 +143,8 @@ export class References {}
 
 @Component({selector: 'test-comp', template: '<div>Testing: {{name}}</div>'})
 export class TestComponent {
-  «@Input('∆tcName∆') name = 'test';»
-  «@Output('∆test∆') testEvent = new EventEmitter();»
+  «@Input('ΔtcNameΔ') name = 'test';»
+  «@Output('ΔtestΔ') testEvent = new EventEmitter();»
 }
 
 @Component({templateUrl: 'test.ng'})
