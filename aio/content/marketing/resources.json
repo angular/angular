@@ -484,6 +484,12 @@
             "rev": true,
             "title": "Nebular",
             "url": "https://akveo.github.io/nebular/"
+          },
+          "carbondesignsystem": {
+            "desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "rev": true,
+            "title": "Carbon Components Angular",
+            "url": "https://angular.carbondesignsystem.com/"
           }
         }
       }
