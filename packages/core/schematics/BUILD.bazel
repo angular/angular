@@ -9,5 +9,8 @@ npm_package(
     name = "npm_package",
     srcs = ["migrations.json"],
     visibility = ["//packages/core:__pkg__"],
-    deps = ["//packages/core/schematics/migrations/static-queries"],
+    deps = [
+        "//packages/core/schematics/migrations/static-queries",
+        "//packages/core/schematics/migrations/template-var-assignment",
+    ],
 )
