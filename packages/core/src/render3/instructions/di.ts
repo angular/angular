@@ -19,22 +19,25 @@ import {getLView, getPreviousOrParentTNode} from '../state';
  *
  * Usage example (in factory function):
  *
+ * ```ts
  * class SomeDirective {
  *   constructor(directive: DirectiveA) {}
  *
- *   static ngDirectiveDef = defineDirective({
+ *   static ngDirectiveDef = ΔdefineDirective({
  *     type: SomeDirective,
- *     factory: () => new SomeDirective(directiveInject(DirectiveA))
+ *     factory: () => new SomeDirective(ΔdirectiveInject(DirectiveA))
  *   });
  * }
- *
+ * ```
  * @param token the type or token to inject
  * @param flags Injection flags
  * @returns the value from the injector or `null` when not found
+ *
+ * @publicApi
  */
-export function directiveInject<T>(token: Type<T>| InjectionToken<T>): T;
-export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
-export function directiveInject<T>(
+export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
+export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
+export function ΔdirectiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   token = resolveForwardRef(token);
   return getOrCreateInjectable<T>(
@@ -44,7 +47,9 @@ export function directiveInject<T>(
 
 /**
  * Facade for the attribute injection from DI.
+ *
+ * @publicApi
  */
-export function injectAttribute(attrNameToInject: string): string|null {
+export function ΔinjectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
 }

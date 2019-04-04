@@ -41,15 +41,27 @@ export const defaultScheduler =
      setTimeout                                                                // everything else
      ).bind(global);
 
-export function resolveWindow(element: RElement & {ownerDocument: Document}) {
+/**
+ *
+ * @publicApi
+ */
+export function ΔresolveWindow(element: RElement & {ownerDocument: Document}) {
   return {name: 'window', target: element.ownerDocument.defaultView};
 }
 
-export function resolveDocument(element: RElement & {ownerDocument: Document}) {
+/**
+ *
+ * @publicApi
+ */
+export function ΔresolveDocument(element: RElement & {ownerDocument: Document}) {
   return {name: 'document', target: element.ownerDocument};
 }
 
-export function resolveBody(element: RElement & {ownerDocument: Document}) {
+/**
+ *
+ * @publicApi
+ */
+export function ΔresolveBody(element: RElement & {ownerDocument: Document}) {
   return {name: 'body', target: element.ownerDocument.body};
 }
 

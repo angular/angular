@@ -10,17 +10,16 @@ import {NgForOfContext} from '@angular/common';
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {AttributeMarker, ProvidersFeature, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
-import {getNativeByIndex} from '../../src/render3/util/view_utils';
-
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, reference, template, text} from '../../src/render3/instructions/all';
+import {AttributeMarker, detectChanges, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
+import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdirectiveInject, Δelement, ΔelementContainerEnd, ΔelementContainerStart, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δload, Δreference, Δtemplate, Δtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {queryRefresh, viewQuery, loadViewQuery, contentQuery, loadContentQuery, query} from '../../src/render3/query';
+import {query, ΔcontentQuery, ΔloadContentQuery, ΔloadViewQuery, ΔqueryRefresh, ΔviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
-import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
+import {ΔtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
-import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent, getDirectiveOnNode} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent} from './render_util';
 
 
 
@@ -71,9 +70,9 @@ describe('query', () => {
            * }
            */
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'child');
-            { element(1, 'child'); }
-            elementEnd();
+            ΔelementStart(0, 'child');
+            { Δelement(1, 'child'); }
+            ΔelementEnd();
           }
           if (rf & RenderFlags.Update) {
             child1 = getDirectiveOnNode(0);
@@ -83,14 +82,14 @@ describe('query', () => {
         2, 0, [Child], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            viewQuery(Child, false, null);
-            viewQuery(Child, true, null);
+            ΔviewQuery(Child, false, null);
+            ΔviewQuery(Child, true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+            ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                 (ctx.query0 = tmp as QueryList<any>);
-            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+            ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                 (ctx.query1 = tmp as QueryList<any>);
           }
         });
@@ -116,18 +115,18 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', '']);
+                Δelement(0, 'div', ['child', '']);
                 elToQuery = getNativeByIndex(0, getLView());
               }
             },
             1, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(Child, false, ElementRef);
+                ΔviewQuery(Child, false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -153,19 +152,19 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'div', ['child', '', 'otherChild', '']);
+                ΔelementStart(0, 'div', ['child', '', 'otherChild', '']);
                 { otherChildInstance = getDirectiveOnNode(0, 1); }
-                elementEnd();
+                ΔelementEnd();
               }
             },
             1, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(Child, false, OtherChild);
+                ΔviewQuery(Child, false, OtherChild);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -189,17 +188,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', '']);
+                Δelement(0, 'div', ['child', '']);
               }
             },
             1, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(Child, false, OtherChild);
+                ΔviewQuery(Child, false, OtherChild);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -220,13 +219,13 @@ describe('query', () => {
       class MyDirective {
         constructor(public service: Service) {}
 
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: MyDirective,
           selectors: [['', 'myDir', '']],
           factory: function MyDirective_Factory() {
-            return directive = new MyDirective(directiveInject(Service));
+            return directive = new MyDirective(ΔdirectiveInject(Service));
           },
-          features: [ProvidersFeature([Service, {provide: Alias, useExisting: Service}])],
+          features: [ΔProvidersFeature([Service, {provide: Alias, useExisting: Service}])],
         });
       }
 
@@ -248,7 +247,7 @@ describe('query', () => {
           service?: Service;
           alias?: Alias;
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: App,
             selectors: [['app']],
             consts: 1,
@@ -256,20 +255,21 @@ describe('query', () => {
             factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['myDir']);
+                Δelement(0, 'div', ['myDir']);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                viewQuery(MyDirective, false, null);
-                viewQuery(Service, false, null);
-                viewQuery(Alias, false, null);
+                ΔviewQuery(MyDirective, false, null);
+                ΔviewQuery(Service, false, null);
+                ΔviewQuery(Alias, false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.directive = tmp.first);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
+                    (ctx.directive = tmp.first);
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
               }
             },
             directives: [MyDirective]
@@ -293,7 +293,7 @@ describe('query', () => {
         class App {
           service?: Service;
 
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: App,
             selectors: [['app']],
             consts: 1,
@@ -301,16 +301,16 @@ describe('query', () => {
             factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['myDir']);
+                Δelement(0, 'div', ['myDir']);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
               let tmp: any;
               if (rf & RenderFlags.Create) {
-                viewQuery(MyDirective, false, Alias);
+                ΔviewQuery(MyDirective, false, Alias);
               }
               if (rf & RenderFlags.Update) {
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
               }
             },
             directives: [MyDirective]
@@ -339,19 +339,19 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', null, ['foo', '']);
+                Δelement(0, 'div', null, ['foo', '']);
                 elToQuery = getNativeByIndex(0, getLView());
-                element(2, 'div');
+                Δelement(2, 'div');
               }
             },
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, null);
+                ΔviewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -377,22 +377,22 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', null, ['foo', '', 'bar', '']);
+                Δelement(0, 'div', null, ['foo', '', 'bar', '']);
                 elToQuery = getNativeByIndex(0, getLView());
-                element(3, 'div');
+                Δelement(3, 'div');
               }
             },
             4, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, null);
-                viewQuery(['bar'], false, null);
+                ΔviewQuery(['foo'], false, null);
+                ΔviewQuery(['bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.fooQuery = tmp as QueryList<any>);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.barQuery = tmp as QueryList<any>);
               }
             });
@@ -424,21 +424,21 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', null, ['foo', '']);
+                Δelement(0, 'div', null, ['foo', '']);
                 el1ToQuery = getNativeByIndex(0, getLView());
-                element(2, 'div');
-                element(3, 'div', null, ['bar', '']);
+                Δelement(2, 'div');
+                Δelement(3, 'div', null, ['bar', '']);
                 el2ToQuery = getNativeByIndex(3, getLView());
               }
             },
             5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], false, null);
+                ΔviewQuery(['foo', 'bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -464,19 +464,19 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', null, ['foo', '']);
+                Δelement(0, 'div', null, ['foo', '']);
                 elToQuery = getNativeByIndex(0, getLView());
-                element(2, 'div');
+                Δelement(2, 'div');
               }
             },
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, null);
+                ΔviewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -501,19 +501,19 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   elementContainerStart(0, null, ['foo', '']);
+                   ΔelementContainerStart(0, null, ['foo', '']);
                    elToQuery = getNativeByIndex(0, getLView());
-                   elementContainerEnd();
+                   ΔelementContainerEnd();
                  }
                },
                2, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], false, ElementRef);
+                   ΔviewQuery(['foo'], false, ElementRef);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -537,19 +537,19 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elementContainerStart(0, null, ['foo', '']);
+                ΔelementContainerStart(0, null, ['foo', '']);
                 elToQuery = getNativeByIndex(0, getLView());
-                elementContainerEnd();
+                ΔelementContainerEnd();
               }
             },
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -599,25 +599,25 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elementContainerStart(0);
+                ΔelementContainerStart(0);
                 {
-                  element(1, 'div', null, ['foo', '']);
+                  Δelement(1, 'div', null, ['foo', '']);
                   elToQuery = getNativeByIndex(3, getLView());
                 }
-                elementContainerEnd();
+                ΔelementContainerEnd();
               }
             },
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, ElementRef);
-                viewQuery(['foo'], false, ElementRef);
+                ΔviewQuery(['foo'], true, ElementRef);
+                ΔviewQuery(['foo'], false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.deep = tmp as QueryList<any>);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.shallow = tmp as QueryList<any>);
               }
             });
@@ -640,17 +640,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', null, ['foo', '']);
+                Δelement(0, 'div', null, ['foo', '']);
               }
             },
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, ViewContainerRef);
+                ΔviewQuery(['foo'], false, ViewContainerRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -672,17 +672,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(0, null, 0, 0, 'ng-template', null, ['foo', '']);
+                Δtemplate(0, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, ViewContainerRef);
+                ΔviewQuery(['foo'], false, ViewContainerRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -705,18 +705,18 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   template(0, null, 0, 0, 'ng-template', null, ['foo', '']);
+                   Δtemplate(0, null, 0, 0, 'ng-template', null, ['foo', '']);
                  }
                },
                2, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
 
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], false, ElementRef);
+                   ΔviewQuery(['foo'], false, ElementRef);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -740,17 +740,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(0, null, 0, 0, 'ng-template', null, ['foo', '']);
+                Δtemplate(0, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, null);
+                ΔviewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -773,17 +773,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(0, null, 0, 0, 'ng-template', null, ['foo', '']);
+                Δtemplate(0, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, TemplateRef);
+                ΔviewQuery(['foo'], false, TemplateRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -808,7 +808,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'child', null, ['foo', '']);
+                Δelement(0, 'child', null, ['foo', '']);
               }
               if (rf & RenderFlags.Update) {
                 childInstance = getDirectiveOnNode(0);
@@ -817,11 +817,11 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -836,7 +836,7 @@ describe('query', () => {
         let childInstance: Child;
 
         class Child {
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Child,
             selectors: [['child']],
             factory: () => childInstance = new Child(),
@@ -857,17 +857,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'child', null, ['foo', 'child']);
+                Δelement(0, 'child', null, ['foo', 'child']);
               }
             },
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -893,7 +893,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   element(0, 'div', ['child', ''], ['foo', 'child']);
+                   Δelement(0, 'div', ['child', ''], ['foo', 'child']);
                  }
                  if (rf & RenderFlags.Update) {
                    childInstance = getDirectiveOnNode(0);
@@ -902,11 +902,11 @@ describe('query', () => {
                2, 0, [Child], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true, null);
+                   ΔviewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -932,7 +932,8 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
+                Δelement(
+                    0, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
               }
               if (rf & RenderFlags.Update) {
                 child1Instance = getDirectiveOnNode(0, 0);
@@ -942,11 +943,11 @@ describe('query', () => {
             3, 0, [Child1, Child2], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], true, null);
+                ΔviewQuery(['foo', 'bar'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -973,7 +974,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
+                Δelement(0, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
               }
               if (rf & RenderFlags.Update) {
                 childInstance = getDirectiveOnNode(0);
@@ -982,14 +983,14 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
-                viewQuery(['bar'], true, null);
+                ΔviewQuery(['foo'], true, null);
+                ΔviewQuery(['bar'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.fooQuery = tmp as QueryList<any>);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.barQuery = tmp as QueryList<any>);
               }
             });
@@ -1019,18 +1020,18 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', ''], ['foo', 'child']);
+                Δelement(0, 'div', ['child', ''], ['foo', 'child']);
                 div = getNativeByIndex(0, getLView());
               }
             },
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, ElementRef);
+                ΔviewQuery(['foo'], false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1055,7 +1056,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
+                Δelement(0, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
                 div = getNativeByIndex(0, getLView());
               }
               if (rf & RenderFlags.Update) {
@@ -1065,11 +1066,11 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], false, null);
+                ΔviewQuery(['foo', 'bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1094,17 +1095,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['foo', '']);
+                Δelement(0, 'div', ['foo', '']);
               }
             },
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, Child);
+                ΔviewQuery(['foo'], false, Child);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1128,17 +1129,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', '']);
+                Δelement(0, 'div', ['child', '']);
               }
             },
             1, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(Child, false, OtherChild);
+                ΔviewQuery(Child, false, OtherChild);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1162,17 +1163,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', '']);
+                Δelement(0, 'div', ['child', '']);
               }
             },
             1, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(OtherChild, false, Child);
+                ΔviewQuery(OtherChild, false, Child);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1193,17 +1194,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div');
+                Δelement(0, 'div');
               }
             },
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(TemplateRef as any, false, ElementRef);
+                ΔviewQuery(TemplateRef as any, false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1226,17 +1227,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', ''], ['foo', '']);
+                Δelement(0, 'div', ['child', ''], ['foo', '']);
               }
             },
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false, Child);
+                ΔviewQuery(['foo'], false, Child);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1260,17 +1261,17 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                element(0, 'div', ['child', '']);
+                Δelement(0, 'div', ['child', '']);
               }
             },
             1, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(TemplateRef as any, false, null);
+                ΔviewQuery(TemplateRef as any, false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1283,9 +1284,9 @@ describe('query', () => {
       it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
         function Cmpt_Template_1(rf: RenderFlags, ctx1: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            text(1, 'Test');
-            elementEnd();
+            ΔelementStart(0, 'div');
+            Δtext(1, 'Test');
+            ΔelementEnd();
           }
         }
         /**
@@ -1301,28 +1302,28 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(
+                Δtemplate(
                     0, Cmpt_Template_1, 2, 0, 'ng-template', null, ['foo', ''],
-                    templateRefExtractor);
-                template(
+                    ΔtemplateRefExtractor);
+                Δtemplate(
                     2, Cmpt_Template_1, 2, 0, 'ng-template', null, ['bar', ''],
-                    templateRefExtractor);
-                template(
+                    ΔtemplateRefExtractor);
+                Δtemplate(
                     4, Cmpt_Template_1, 2, 0, 'ng-template', null, ['baz', ''],
-                    templateRefExtractor);
+                    ΔtemplateRefExtractor);
               }
             },
             6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(TemplateRef as any, false, null);
-                viewQuery(TemplateRef as any, false, ElementRef);
+                ΔviewQuery(TemplateRef as any, false, null);
+                ΔviewQuery(TemplateRef as any, false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.tmplQuery = tmp as QueryList<any>);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.elemQuery = tmp as QueryList<any>);
               }
             });
@@ -1350,12 +1351,12 @@ describe('query', () => {
       let directiveInstances: ViewContainerManipulatorDirective[] = [];
 
       class ViewContainerManipulatorDirective {
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: ViewContainerManipulatorDirective,
           selectors: [['', 'vc', '']],
           factory: () => {
             const directiveInstance =
-                new ViewContainerManipulatorDirective(directiveInject(ViewContainerRef as any));
+                new ViewContainerManipulatorDirective(ΔdirectiveInject(ViewContainerRef as any));
             directiveInstances.push(directiveInstance);
             return directiveInstance;
           }
@@ -1376,7 +1377,7 @@ describe('query', () => {
 
         function Cmpt_Template_1(rf: RenderFlags, ctx1: any) {
           if (rf & RenderFlags.Create) {
-            element(0, 'div', null, ['foo', '']);
+            Δelement(0, 'div', null, ['foo', '']);
           }
         }
 
@@ -1392,21 +1393,21 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(
+                Δtemplate(
                     0, Cmpt_Template_1, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
               }
               if (rf & RenderFlags.Update) {
-                elementProperty(0, 'ngIf', bind(ctx.value));
+                ΔelementProperty(0, 'ngIf', Δbind(ctx.value));
               }
             },
             2, 1, [NgIf], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1428,10 +1429,10 @@ describe('query', () => {
 
         function Cmpt_Template_1(rf1: RenderFlags, row: NgForOfContext<string>) {
           if (rf1 & RenderFlags.Create) {
-            element(0, 'div', null, ['foo', '']);
+            Δelement(0, 'div', null, ['foo', '']);
           }
           if (rf1 & RenderFlags.Update) {
-            elementProperty(0, 'id', bind(row.$implicit));
+            ΔelementProperty(0, 'id', Δbind(row.$implicit));
           }
         }
 
@@ -1447,7 +1448,7 @@ describe('query', () => {
           // TODO(issue/24571): remove '!'.
           value !: string[];
           query: any;
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Cmpt,
             factory: () => new Cmpt(),
             selectors: [['my-app']],
@@ -1455,19 +1456,19 @@ describe('query', () => {
             vars: 1,
             template: function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(0, Cmpt_Template_1, 2, 1, 'ng-template', ['ngForOf', '']);
+                Δtemplate(0, Cmpt_Template_1, 2, 1, 'ng-template', ['ngForOf', '']);
               }
               if (rf & RenderFlags.Update) {
-                elementProperty(0, 'ngForOf', bind(ctx.value));
+                ΔelementProperty(0, 'ngForOf', Δbind(ctx.value));
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: Cmpt) {
               let tmp: any;
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             },
@@ -1501,19 +1502,19 @@ describe('query', () => {
 
            function Cmpt_Template_1(rf: RenderFlags, ctx: {idx: number}) {
              if (rf & RenderFlags.Create) {
-               element(0, 'div', null, ['foo', '']);
+               Δelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               elementProperty(0, 'id', bind('foo1_' + ctx.idx));
+               ΔelementProperty(0, 'id', Δbind('foo1_' + ctx.idx));
              }
            }
 
            function Cmpt_Template_5(rf: RenderFlags, ctx: {idx: number}) {
              if (rf & RenderFlags.Create) {
-               element(0, 'div', null, ['foo', '']);
+               Δelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               elementProperty(0, 'id', bind('foo2_' + ctx.idx));
+               ΔelementProperty(0, 'id', Δbind('foo2_' + ctx.idx));
              }
            }
 
@@ -1534,30 +1535,30 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   template(
+                   Δtemplate(
                        0, Cmpt_Template_1, 2, 1, 'ng-template', null, ['tpl1', ''],
-                       templateRefExtractor);
-                   element(2, 'div', ['id', 'middle'], ['foo', '']);
-                   template(
+                       ΔtemplateRefExtractor);
+                   Δelement(2, 'div', ['id', 'middle'], ['foo', '']);
+                   Δtemplate(
                        4, Cmpt_Template_5, 2, 1, 'ng-template', null, ['tpl2', ''],
-                       templateRefExtractor);
-                   template(6, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
+                       ΔtemplateRefExtractor);
+                   Δtemplate(6, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
-                   tpl1 = reference(1);
-                   tpl2 = reference(5);
+                   tpl1 = Δreference(1);
+                   tpl2 = Δreference(5);
                  }
 
                },
                8, 0, [ViewContainerManipulatorDirective], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true, null);
+                   ΔviewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -1610,10 +1611,10 @@ describe('query', () => {
 
            function Cmpt_Template_1(rf: RenderFlags, ctx: {idx: number, container_idx: number}) {
              if (rf & RenderFlags.Create) {
-               element(0, 'div', null, ['foo', '']);
+               Δelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               elementProperty(0, 'id', bind('foo_' + ctx.container_idx + '_' + ctx.idx));
+               ΔelementProperty(0, 'id', Δbind('foo_' + ctx.container_idx + '_' + ctx.idx));
              }
            }
 
@@ -1627,7 +1628,7 @@ describe('query', () => {
             */
            class Cmpt {
              query: any;
-             static ngComponentDef = defineComponent({
+             static ngComponentDef = ΔdefineComponent({
                type: Cmpt,
                factory: () => new Cmpt(),
                selectors: [['my-app']],
@@ -1636,25 +1637,25 @@ describe('query', () => {
                template: function(rf: RenderFlags, ctx: any) {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   template(
+                   Δtemplate(
                        0, Cmpt_Template_1, 2, 1, 'ng-template', [], ['tpl', ''],
-                       templateRefExtractor);
-                   template(2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
-                   template(3, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
+                       ΔtemplateRefExtractor);
+                   Δtemplate(2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
+                   Δtemplate(3, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
-                   tpl = reference(1);
+                   tpl = Δreference(1);
                  }
 
                },
                viewQuery: (rf: RenderFlags, cmpt: Cmpt) => {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true, null);
+                   ΔviewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (cmpt.query = tmp as QueryList<any>);
                  }
                },
@@ -1690,14 +1691,14 @@ describe('query', () => {
 
         function MyApp_Template_1(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            element(0, 'span', ['id', 'from_tpl'], ['foo', '']);
+            Δelement(0, 'span', ['id', 'from_tpl'], ['foo', '']);
           }
         }
 
         class MyApp {
           show = false;
           query: any;
-          static ngComponentDef = defineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: MyApp,
             factory: () => new MyApp(),
             selectors: [['my-app']],
@@ -1709,25 +1710,25 @@ describe('query', () => {
              */
             template: (rf: RenderFlags, myApp: MyApp) => {
               if (rf & RenderFlags.Create) {
-                template(
+                Δtemplate(
                     0, MyApp_Template_1, 2, 0, 'ng-template', undefined, ['tpl', ''],
-                    templateRefExtractor);
-                template(
+                    ΔtemplateRefExtractor);
+                Δtemplate(
                     2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
-                const tplRef = reference(1);
-                elementProperty(2, 'ngTemplateOutlet', bind(myApp.show ? tplRef : null));
+                const tplRef = Δreference(1);
+                ΔelementProperty(2, 'ngTemplateOutlet', Δbind(myApp.show ? tplRef : null));
               }
             },
             directives: () => [NgTemplateOutlet],
             viewQuery: (rf: RenderFlags, myApp: MyApp) => {
               let tmp: any;
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (myApp.query = tmp as QueryList<any>);
               }
             }
@@ -1767,33 +1768,33 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(0);
+                Δcontainer(0);
               }
               if (rf & RenderFlags.Update) {
-                containerRefreshStart(0);
+                ΔcontainerRefreshStart(0);
                 {
                   if (ctx.exp) {
-                    let rf1 = embeddedViewStart(1, 2, 0);
+                    let rf1 = ΔembeddedViewStart(1, 2, 0);
                     {
                       if (rf1 & RenderFlags.Create) {
-                        element(0, 'div', null, ['foo', '']);
+                        Δelement(0, 'div', null, ['foo', '']);
                         firstEl = getNativeByIndex(0, getLView());
                       }
                     }
-                    embeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                 }
-                containerRefreshEnd();
+                ΔcontainerRefreshEnd();
               }
             },
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1829,37 +1830,37 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   element(0, 'span', null, ['foo', '']);
+                   Δelement(0, 'span', null, ['foo', '']);
                    firstEl = getNativeByIndex(0, getLView());
-                   container(2);
-                   element(3, 'span', null, ['foo', '']);
+                   Δcontainer(2);
+                   Δelement(3, 'span', null, ['foo', '']);
                    lastEl = getNativeByIndex(3, getLView());
                  }
                  if (rf & RenderFlags.Update) {
-                   containerRefreshStart(2);
+                   ΔcontainerRefreshStart(2);
                    {
                      if (ctx.exp) {
-                       let rf1 = embeddedViewStart(1, 2, 0);
+                       let rf1 = ΔembeddedViewStart(1, 2, 0);
                        {
                          if (rf1 & RenderFlags.Create) {
-                           element(0, 'div', null, ['foo', '']);
+                           Δelement(0, 'div', null, ['foo', '']);
                            viewEl = getNativeByIndex(0, getLView());
                          }
                        }
-                       embeddedViewEnd();
+                       ΔembeddedViewEnd();
                      }
                    }
-                   containerRefreshEnd();
+                   ΔcontainerRefreshEnd();
                  }
                },
                5, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true, null);
+                   ΔviewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
-                   queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                   ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                        (ctx.query = tmp as QueryList<any>);
                  }
                });
@@ -1900,43 +1901,43 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(0);
+                Δcontainer(0);
               }
               if (rf & RenderFlags.Update) {
-                containerRefreshStart(0);
+                ΔcontainerRefreshStart(0);
                 {
                   if (ctx.exp1) {
-                    let rf0 = embeddedViewStart(0, 2, 0);
+                    let rf0 = ΔembeddedViewStart(0, 2, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        element(0, 'div', null, ['foo', '']);
+                        Δelement(0, 'div', null, ['foo', '']);
                         firstEl = getNativeByIndex(0, getLView());
                       }
                     }
-                    embeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                   if (ctx.exp2) {
-                    let rf1 = embeddedViewStart(1, 2, 0);
+                    let rf1 = ΔembeddedViewStart(1, 2, 0);
                     {
                       if (rf1 & RenderFlags.Create) {
-                        element(0, 'span', null, ['foo', '']);
+                        Δelement(0, 'span', null, ['foo', '']);
                         lastEl = getNativeByIndex(0, getLView());
                       }
                     }
-                    embeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                 }
-                containerRefreshEnd();
+                ΔcontainerRefreshEnd();
               }
             },
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -1974,50 +1975,50 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(0);
+                Δcontainer(0);
               }
               if (rf & RenderFlags.Update) {
-                containerRefreshStart(0);
+                ΔcontainerRefreshStart(0);
                 {
                   if (ctx.exp1) {
-                    let rf0 = embeddedViewStart(0, 3, 0);
+                    let rf0 = ΔembeddedViewStart(0, 3, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        element(0, 'div', null, ['foo', '']);
+                        Δelement(0, 'div', null, ['foo', '']);
                         firstEl = getNativeByIndex(0, getLView());
-                        container(2);
+                        Δcontainer(2);
                       }
                       if (rf0 & RenderFlags.Update) {
-                        containerRefreshStart(2);
+                        ΔcontainerRefreshStart(2);
                         {
                           if (ctx.exp2) {
-                            let rf2 = embeddedViewStart(0, 2, 0);
+                            let rf2 = ΔembeddedViewStart(0, 2, 0);
                             {
                               if (rf2) {
-                                element(0, 'span', null, ['foo', '']);
+                                Δelement(0, 'span', null, ['foo', '']);
                                 lastEl = getNativeByIndex(0, getLView());
                               }
                             }
-                            embeddedViewEnd();
+                            ΔembeddedViewEnd();
                           }
                         }
-                        containerRefreshEnd();
+                        ΔcontainerRefreshEnd();
                       }
                     }
-                    embeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                 }
-                containerRefreshEnd();
+                ΔcontainerRefreshEnd();
               }
             },
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.query = tmp as QueryList<any>);
               }
             });
@@ -2059,38 +2060,38 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(0);
-                element(1, 'span', null, ['foo', '']);
+                Δcontainer(0);
+                Δelement(1, 'span', null, ['foo', '']);
               }
               if (rf & RenderFlags.Update) {
-                containerRefreshStart(0);
+                ΔcontainerRefreshStart(0);
                 {
                   if (ctx.exp) {
-                    let rf0 = embeddedViewStart(0, 4, 0);
+                    let rf0 = ΔembeddedViewStart(0, 4, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        elementStart(0, 'div', null, ['foo', '']);
-                        { element(2, 'div', null, ['foo', '']); }
-                        elementEnd();
+                        ΔelementStart(0, 'div', null, ['foo', '']);
+                        { Δelement(2, 'div', null, ['foo', '']); }
+                        ΔelementEnd();
                       }
                     }
-                    embeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                 }
-                containerRefreshEnd();
+                ΔcontainerRefreshEnd();
               }
             },
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true, null);
-                viewQuery(['foo'], false, null);
+                ΔviewQuery(['foo'], true, null);
+                ΔviewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.deep = tmp as QueryList<any>);
-                queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                     (ctx.shallow = tmp as QueryList<any>);
               }
             });
@@ -2129,37 +2130,37 @@ describe('query', () => {
           'some-component-with-query',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              element(0, 'div', null, ['foo', '']);
+              Δelement(0, 'div', null, ['foo', '']);
             }
           },
           2, 0, [], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['foo'], false, null);
+              ΔviewQuery(['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+              ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                   (ctx.query = queryInstance = tmp as QueryList<any>);
             }
           });
 
-      function createTemplate() { container(0); }
+      function createTemplate() { Δcontainer(0); }
 
       function updateTemplate() {
-        containerRefreshStart(0);
+        ΔcontainerRefreshStart(0);
         {
           if (condition) {
-            let rf1 = embeddedViewStart(1, 1, 0);
+            let rf1 = ΔembeddedViewStart(1, 1, 0);
             {
               if (rf1 & RenderFlags.Create) {
-                element(0, 'some-component-with-query');
+                Δelement(0, 'some-component-with-query');
               }
             }
-            embeddedViewEnd();
+            ΔembeddedViewEnd();
           }
         }
-        containerRefreshEnd();
+        ΔcontainerRefreshEnd();
       }
 
       /**
@@ -2186,17 +2187,18 @@ describe('query', () => {
         this.vcr.createEmbeddedView(this.temp);
       }
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SomeDir,
         selectors: [['', 'someDir', '']],
-        factory: () => new SomeDir(
-                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any))
+        factory:
+            () => new SomeDir(
+                ΔdirectiveInject(ViewContainerRef as any), ΔdirectiveInject(TemplateRef as any))
       });
     }
 
     function AppComponent_Template_1(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'div');
+        Δelement(0, 'div');
       }
     }
 
@@ -2208,19 +2210,19 @@ describe('query', () => {
         'app',
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(
+            Δtemplate(
                 0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.Template, 'someDir']);
-            element(1, 'div', null, ['foo', '']);
+            Δelement(1, 'div', null, ['foo', '']);
           }
         },
         3, 0, [SomeDir], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            viewQuery(['foo'], true, null);
+            ΔviewQuery(['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+            ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                 (ctx.query = tmp as QueryList<any>);
           }
         });
@@ -2250,17 +2252,17 @@ describe('query', () => {
         this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
         factory: () => withContentInstance = new WithContentDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], true, null);
+            ΔcontentQuery(dirIndex, ['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+            ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
           }
         }
       });
@@ -2270,7 +2272,7 @@ describe('query', () => {
       // @ContentChildren('foo', {descendants: false})
       foos !: QueryList<ElementRef>;
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: ShallowComp,
         selectors: [['shallow-comp']],
         factory: () => shallowCompInstance = new ShallowComp(),
@@ -2279,11 +2281,11 @@ describe('query', () => {
         vars: 0,
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], false, null);
+            ΔcontentQuery(dirIndex, ['foo'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+            ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
           }
         }
       });
@@ -2297,9 +2299,9 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
-          { element(1, 'span', null, ['foo', '']); }
-          elementEnd();
+          ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
+          { Δelement(1, 'span', null, ['foo', '']); }
+          ΔelementEnd();
         }
       }, 3, 0, [WithContentDirective]);
 
@@ -2328,23 +2330,23 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          container(0);
+          Δcontainer(0);
         }
         if (rf & RenderFlags.Update) {
-          containerRefreshStart(0);
+          ΔcontainerRefreshStart(0);
           {
             for (let i = 0; i < 3; i++) {
-              let rf = embeddedViewStart(1, 3, 0);
+              let rf = ΔembeddedViewStart(1, 3, 0);
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
-                { element(1, 'span', null, ['foo', '']); }
-                elementEnd();
+                ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
+                { Δelement(1, 'span', null, ['foo', '']); }
+                ΔelementEnd();
               }
-              embeddedViewEnd();
+              ΔembeddedViewEnd();
             }
           }
 
-          containerRefreshEnd();
+          ΔcontainerRefreshEnd();
         }
       }, 1, 0, [WithContentDirective]);
 
@@ -2370,7 +2372,7 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          element(0, 'div', ['with-content', ''], ['foo', '']);
+          Δelement(0, 'div', ['with-content', ''], ['foo', '']);
         }
       }, 2, 0, [WithContentDirective]);
 
@@ -2382,7 +2384,7 @@ describe('query', () => {
     it('should match shallow content queries in views inserted / removed by ngIf', () => {
       function IfTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          element(0, 'div', null, ['foo', '']);
+          Δelement(0, 'div', null, ['foo', '']);
         }
       }
 
@@ -2393,12 +2395,12 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'shallow-comp');
-          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngIf', '']); }
-          elementEnd();
+          ΔelementStart(0, 'shallow-comp');
+          { Δtemplate(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngIf', '']); }
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(1, 'ngIf', bind(ctx.showing));
+          ΔelementProperty(1, 'ngIf', Δbind(ctx.showing));
         }
       }, 2, 1, [ShallowComp, NgIf]);
 
@@ -2431,20 +2433,20 @@ describe('query', () => {
           'app-component',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['with-content', '']);
-              { element(1, 'div', null, ['foo', '']); }
-              elementEnd();
-              element(3, 'div', ['id', 'after'], ['bar', '']);
+              ΔelementStart(0, 'div', ['with-content', '']);
+              { Δelement(1, 'div', null, ['foo', '']); }
+              ΔelementEnd();
+              Δelement(3, 'div', ['id', 'after'], ['bar', '']);
             }
           },
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['foo', 'bar'], true, null);
+              ΔviewQuery(['foo', 'bar'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+              ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                   (ctx.foos = tmp as QueryList<any>);
             }
           });
@@ -2472,20 +2474,20 @@ describe('query', () => {
           'app-component',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['with-content', '']);
-              { element(1, 'div', ['id', 'yes'], ['foo', '']); }
-              elementEnd();
-              element(3, 'div', null, ['foo', '']);
+              ΔelementStart(0, 'div', ['with-content', '']);
+              { Δelement(1, 'div', ['id', 'yes'], ['foo', '']); }
+              ΔelementEnd();
+              Δelement(3, 'div', null, ['foo', '']);
             }
           },
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['bar'], true, null);
+              ΔviewQuery(['bar'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+              ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                   (ctx.bars = tmp as QueryList<any>);
             }
           });
@@ -2498,7 +2500,7 @@ describe('query', () => {
     it('should report results to appropriate queries where deep content queries are nested', () => {
       class QueryDirective {
         fooBars: any;
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -2507,11 +2509,11 @@ describe('query', () => {
             // @ContentChildren('foo, bar, baz', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo', 'bar', 'baz'], true, null);
+              ΔcontentQuery(dirIndex, ['foo', 'bar', 'baz'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -2533,19 +2535,19 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', [AttributeMarker.Bindings, 'query'], ['out', 'query']);
+              ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'query'], ['out', 'query']);
               {
-                element(2, 'span', ['id', 'foo'], ['foo', '']);
-                elementStart(4, 'div', [AttributeMarker.Bindings, 'query'], ['in', 'query']);
-                { element(6, 'span', ['id', 'bar'], ['bar', '']); }
-                elementEnd();
-                element(8, 'span', ['id', 'baz'], ['baz', '']);
+                Δelement(2, 'span', ['id', 'foo'], ['foo', '']);
+                ΔelementStart(4, 'div', [AttributeMarker.Bindings, 'query'], ['in', 'query']);
+                { Δelement(6, 'span', ['id', 'bar'], ['bar', '']); }
+                ΔelementEnd();
+                Δelement(8, 'span', ['id', 'baz'], ['baz', '']);
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = load<QueryDirective>(1);
-              inInstance = load<QueryDirective>(5);
+              outInstance = Δload<QueryDirective>(1);
+              inInstance = Δload<QueryDirective>(5);
             }
           },
           10, 0, [QueryDirective]);
@@ -2562,7 +2564,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -2571,11 +2573,11 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo'], false, null);
+              ΔcontentQuery(dirIndex, ['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -2592,17 +2594,17 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['query', ''], ['out', 'query']);
+              ΔelementStart(0, 'div', ['query', ''], ['out', 'query']);
               {
-                elementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
-                { element(5, 'span', ['id', 'bar'], ['foo', '']); }
-                elementEnd();
+                ΔelementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
+                { Δelement(5, 'span', ['id', 'bar'], ['foo', '']); }
+                ΔelementEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = load<QueryDirective>(1);
-              inInstance = load<QueryDirective>(3);
+              outInstance = Δload<QueryDirective>(1);
+              inInstance = Δload<QueryDirective>(3);
             }
           },
           7, 0, [QueryDirective]);
@@ -2618,7 +2620,7 @@ describe('query', () => {
 
       class QueryDirective {
         fooBars: any;
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: ['query'],
@@ -2627,11 +2629,11 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo'], false, null);
+              ΔcontentQuery(dirIndex, ['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
+              ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.fooBars = tmp);
             }
           }
         });
@@ -2648,17 +2650,17 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['query', ''], ['out', 'query']);
+              ΔelementStart(0, 'div', ['query', ''], ['out', 'query']);
               {
-                elementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
-                { element(5, 'span', ['id', 'bar'], ['foo', '']); }
-                elementEnd();
+                ΔelementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
+                { Δelement(5, 'span', ['id', 'bar'], ['foo', '']); }
+                ΔelementEnd();
               }
-              elementEnd();
+              ΔelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = load<QueryDirective>(1);
-              inInstance = load<QueryDirective>(3);
+              outInstance = Δload<QueryDirective>(1);
+              inInstance = Δload<QueryDirective>(3);
             }
           },
           7, 0, [QueryDirective]);
@@ -2678,7 +2680,7 @@ describe('query', () => {
        () => {
          class ShallowQueryDirective {
            foos: any;
-           static ngDirectiveDef = defineDirective({
+           static ngDirectiveDef = ΔdefineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
              exportAs: ['shallow-query'],
@@ -2687,11 +2689,11 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: false})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 contentQuery(dirIndex, ['foo'], false, null);
+                 ΔcontentQuery(dirIndex, ['foo'], false, null);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
-                 queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+                 ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
                }
              }
            });
@@ -2699,7 +2701,7 @@ describe('query', () => {
 
          class DeepQueryDirective {
            foos: any;
-           static ngDirectiveDef = defineDirective({
+           static ngDirectiveDef = ΔdefineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
              exportAs: ['deep-query'],
@@ -2708,11 +2710,11 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: true})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 contentQuery(dirIndex, ['foo'], true, null);
+                 ΔcontentQuery(dirIndex, ['foo'], true, null);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
-                 queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+                 ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
                }
              }
            });
@@ -2733,20 +2735,20 @@ describe('query', () => {
               */
              function(rf: RenderFlags, ctx: any) {
                if (rf & RenderFlags.Create) {
-                 elementStart(
+                 ΔelementStart(
                      0, 'div', [AttributeMarker.Bindings, 'shallow-query', 'deep-query'],
                      ['shallow', 'shallow-query', 'deep', 'deep-query']);
                  {
-                   element(3, 'span', null, ['foo', '']);
-                   elementStart(5, 'div');
-                   { element(6, 'span', null, ['foo', '']); }
-                   elementEnd();
+                   Δelement(3, 'span', null, ['foo', '']);
+                   ΔelementStart(5, 'div');
+                   { Δelement(6, 'span', null, ['foo', '']); }
+                   ΔelementEnd();
                  }
-                 elementEnd();
+                 ΔelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 shallowInstance = load<ShallowQueryDirective>(1);
-                 deepInstance = load<DeepQueryDirective>(2);
+                 shallowInstance = Δload<ShallowQueryDirective>(1);
+                 deepInstance = Δload<DeepQueryDirective>(2);
                }
              },
              8, 0, [ShallowQueryDirective, DeepQueryDirective]);
@@ -2761,7 +2763,7 @@ describe('query', () => {
     class TextDirective {
       value !: string;
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: TextDirective,
         selectors: [['', 'text', '']],
         factory: () => new TextDirective(),
@@ -2776,7 +2778,7 @@ describe('query', () => {
         // @ContentChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngComponentDef = defineDirective({
+        static ngComponentDef = ΔdefineDirective({
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
           factory: () => contentQueryDirective = new ContentQueryDirective(),
@@ -2784,11 +2786,11 @@ describe('query', () => {
             // @ContentChildren(TextDirective, {descendants: true})
             // texts: QueryList<TextDirective>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, TextDirective, true, null);
+              ΔcontentQuery(dirIndex, TextDirective, true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = loadContentQuery<TextDirective>()) && (ctx.texts = tmp);
+              ΔqueryRefresh(tmp = ΔloadContentQuery<TextDirective>()) && (ctx.texts = tmp);
             }
           }
         });
@@ -2809,17 +2811,17 @@ describe('query', () => {
           */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['content-query']);
+              ΔelementStart(0, 'div', ['content-query']);
               {
-                element(1, 'span', ['text', 'A']);
-                elementStart(2, 'div', ['text', 'B']);
-                elementStart(3, 'span', ['text', 'C']);
-                { element(4, 'span', ['text', 'D']); }
-                elementEnd();
-                elementEnd();
-                element(5, 'span', ['text', 'E']);
+                Δelement(1, 'span', ['text', 'A']);
+                ΔelementStart(2, 'div', ['text', 'B']);
+                ΔelementStart(3, 'span', ['text', 'C']);
+                { Δelement(4, 'span', ['text', 'D']); }
+                ΔelementEnd();
+                ΔelementEnd();
+                Δelement(5, 'span', ['text', 'E']);
               }
-              elementEnd();
+              ΔelementEnd();
             }
           },
           6, 0, [TextDirective, ContentQueryDirective]);
@@ -2844,19 +2846,19 @@ describe('query', () => {
         // @ViewChildren(TextDirective)
         texts !: QueryList<TextDirective>;
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: ViewQueryComponent,
           selectors: [['view-query']],
           factory: () => new ViewQueryComponent(),
           template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             if (rf & RenderFlags.Create) {
-              element(0, 'span', ['text', 'A']);
-              elementStart(1, 'div', ['text', 'B']);
-              elementStart(2, 'span', ['text', 'C']);
-              { element(3, 'span', ['text', 'D']); }
-              elementEnd();
-              elementEnd();
-              element(4, 'span', ['text', 'E']);
+              Δelement(0, 'span', ['text', 'A']);
+              ΔelementStart(1, 'div', ['text', 'B']);
+              ΔelementStart(2, 'span', ['text', 'C']);
+              { Δelement(3, 'span', ['text', 'D']); }
+              ΔelementEnd();
+              ΔelementEnd();
+              Δelement(4, 'span', ['text', 'E']);
             }
           },
           consts: 5,
@@ -2864,10 +2866,10 @@ describe('query', () => {
           viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             let tmp: any;
             if (rf & RenderFlags.Create) {
-              viewQuery(TextDirective, true, null);
+              ΔviewQuery(TextDirective, true, null);
             }
             if (rf & RenderFlags.Update) {
-              queryRefresh(tmp = loadViewQuery<QueryList<TextDirective>>()) &&
+              ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<TextDirective>>()) &&
                   (ctx.texts = tmp as QueryList<TextDirective>);
             }
           },

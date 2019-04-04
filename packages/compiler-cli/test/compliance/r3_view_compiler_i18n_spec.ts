@@ -222,33 +222,33 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(2, "div");
-            $r3$.ɵi18nAttributes(3, $_c0$);
-            $r3$.ɵtext(4, "Content B");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(5, "div");
-            $r3$.ɵi18nAttributes(6, $_c1$);
-            $r3$.ɵtext(7, "Content C");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(8, "div");
-            $r3$.ɵi18nAttributes(9, $_c2$);
-            $r3$.ɵtext(10, "Content D");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(11, "div");
-            $r3$.ɵi18nAttributes(12, $_c3$);
-            $r3$.ɵtext(13, "Content E");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(14, "div");
-            $r3$.ɵi18nAttributes(15, $_c4$);
-            $r3$.ɵtext(16, "Content F");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(17, "div");
-            $r3$.ɵi18nAttributes(18, $_c5$);
-            $r3$.ɵtext(19, "Content G");
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(2, "div");
+            $r3$.Δi18nAttributes(3, $_c0$);
+            $r3$.Δtext(4, "Content B");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(5, "div");
+            $r3$.Δi18nAttributes(6, $_c1$);
+            $r3$.Δtext(7, "Content C");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(8, "div");
+            $r3$.Δi18nAttributes(9, $_c2$);
+            $r3$.Δtext(10, "Content D");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(11, "div");
+            $r3$.Δi18nAttributes(12, $_c3$);
+            $r3$.Δtext(13, "Content E");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(14, "div");
+            $r3$.Δi18nAttributes(15, $_c4$);
+            $r3$.Δtext(16, "Content F");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(17, "div");
+            $r3$.Δi18nAttributes(18, $_c5$);
+            $r3$.Δtext(19, "Content G");
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -266,7 +266,7 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelement(0, "div", $_c0$);
+            $r3$.Δelement(0, "div", $_c0$);
           }
         }
       `;
@@ -290,9 +290,9 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c0$);
-            $r3$.ɵi18nAttributes(1, $_c1$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c0$);
+            $r3$.Δi18nAttributes(1, $_c1$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -357,25 +357,25 @@ describe('i18n support in the view compiler', () => {
         vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c0$);
-            $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵi18nAttributes(2, $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(3, "div", $_c2$);
-            $r3$.ɵi18nAttributes(4, $_c3$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c0$);
+            $r3$.Δpipe(1, "uppercase");
+            $r3$.Δi18nAttributes(2, $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(3, "div", $_c2$);
+            $r3$.Δi18nAttributes(4, $_c3$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
-            $r3$.ɵi18nApply(2);
-            $r3$.ɵselect(3);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
-            $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
-            $r3$.ɵi18nApply(4);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
+            $r3$.Δi18nApply(2);
+            $r3$.Δselect(3);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
+            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
+            $r3$.Δi18nApply(4);
           }
         }
       `;
@@ -396,15 +396,15 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵi18nAttributes(2, $_c0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δpipe(1, "uppercase");
+            $r3$.Δi18nAttributes(2, $_c0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
-            $r3$.ɵi18nApply(2);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
+            $r3$.Δi18nApply(2);
           }
         }
       `;
@@ -430,18 +430,18 @@ describe('i18n support in the view compiler', () => {
         const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵpipe(2, "uppercase");
-            $r3$.ɵi18nAttributes(3, $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δpipe(2, "uppercase");
+            $r3$.Δi18nAttributes(3, $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, $outer_r1$)));
-            $r3$.ɵi18nApply(3);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 0, $outer_r1$)));
+            $r3$.Δi18nApply(3);
           }
         }
         …
@@ -449,11 +449,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.Δtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx.items));
+            $r3$.Δselect(0);
+            $r3$.ΔelementProperty(0, "ngForOf", $r3$.Δbind(ctx.items));
           }
         }
       `;
@@ -518,25 +518,25 @@ describe('i18n support in the view compiler', () => {
         vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c0$);
-            $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵi18nAttributes(2, $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(3, "div", $_c2$);
-            $r3$.ɵi18nAttributes(4, $_c3$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c0$);
+            $r3$.Δpipe(1, "uppercase");
+            $r3$.Δi18nAttributes(2, $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(3, "div", $_c2$);
+            $r3$.Δi18nAttributes(4, $_c3$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
-            $r3$.ɵi18nApply(2);
-            $r3$.ɵselect(3);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
-            $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
-            $r3$.ɵi18nApply(4);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
+            $r3$.Δi18nApply(2);
+            $r3$.Δselect(3);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
+            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
+            $r3$.Δi18nApply(4);
           }
         }
       `;
@@ -563,18 +563,18 @@ describe('i18n support in the view compiler', () => {
         const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵpipe(2, "uppercase");
-            $r3$.ɵi18nAttributes(3, $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δpipe(2, "uppercase");
+            $r3$.Δi18nAttributes(3, $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, $outer_r1$)));
-            $r3$.ɵi18nApply(3);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 0, $outer_r1$)));
+            $r3$.Δi18nApply(3);
           }
         }
         …
@@ -582,11 +582,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.Δtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx.items));
+            $r3$.Δselect(0);
+            $r3$.ΔelementProperty(0, "ngForOf", $r3$.Δbind(ctx.items));
           }
         }
       `;
@@ -610,10 +610,10 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nAttributes(1, $_c0$);
-            $r3$.ɵi18n(2, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nAttributes(1, $_c0$);
+            $r3$.Δi18n(2, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -656,9 +656,9 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelement(0, "div");
-            $r3$.ɵelement(1, "div");
-            $r3$.ɵelement(2, "div");
+            $r3$.Δelement(0, "div");
+            $r3$.Δelement(1, "div");
+            $r3$.Δelement(2, "div");
           }
         }
       `;
@@ -698,21 +698,21 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(2, "div");
-            $r3$.ɵtext(3, "My non-i18n block #1");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(4, "div");
-            $r3$.ɵi18n(5, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(6, "div");
-            $r3$.ɵtext(7, "My non-i18n block #2");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(8, "div");
-            $r3$.ɵi18n(9, $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(2, "div");
+            $r3$.Δtext(3, "My non-i18n block #1");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(4, "div");
+            $r3$.Δi18n(5, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(6, "div");
+            $r3$.Δtext(7, "My non-i18n block #2");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(8, "div");
+            $r3$.Δi18n(9, $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -734,14 +734,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -761,14 +761,14 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_6749967533321674787$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_6749967533321674787$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -791,16 +791,16 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$);
-            $r3$.ɵpipe(2, "async");
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$);
+            $r3$.Δpipe(2, "async");
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 2, ctx.valueA)));
-            $r3$.ɵi18nExp($r3$.ɵbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 2, ctx.valueA)));
+            $r3$.Δi18nExp($r3$.Δbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -829,27 +829,27 @@ describe('i18n support in the view compiler', () => {
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(2, "div");
-            $r3$.ɵi18n(3, $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$);
-            $r3$.ɵpipe(4, "uppercase");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(5, "div");
-            $r3$.ɵi18n(6, $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(2, "div");
+            $r3$.Δi18n(3, $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$);
+            $r3$.Δpipe(4, "uppercase");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(5, "div");
+            $r3$.Δi18n(6, $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
-            $r3$.ɵi18nApply(1);
-            $r3$.ɵselect(3);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 3, ctx.two)));
-            $r3$.ɵi18nApply(3);
-            $r3$.ɵselect(6);
-            $r3$.ɵi18nExp($r3$.ɵbind(((ctx.three + ctx.four) + ctx.five)));
-            $r3$.ɵi18nApply(6);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.one));
+            $r3$.Δi18nApply(1);
+            $r3$.Δselect(3);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 3, ctx.two)));
+            $r3$.Δi18nApply(3);
+            $r3$.Δselect(6);
+            $r3$.Δi18nExp($r3$.Δbind(((ctx.three + ctx.four) + ctx.five)));
+            $r3$.Δi18nApply(6);
           }
         }
       `;
@@ -889,36 +889,36 @@ describe('i18n support in the view compiler', () => {
           "closeTagSpan": "\uFFFD/#8\uFFFD",
           "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
         });
-        const $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
+        const $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
         …
         consts: 9,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$);
-            $r3$.ɵelement(2, "span");
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(3, "div");
-            $r3$.ɵi18nStart(4, $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
-            $r3$.ɵpipe(5, "uppercase");
-            $r3$.ɵelementStart(6, "div");
-            $r3$.ɵelementStart(7, "div");
-            $r3$.ɵelement(8, "span");
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$);
+            $r3$.Δelement(2, "span");
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(3, "div");
+            $r3$.Δi18nStart(4, $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
+            $r3$.Δpipe(5, "uppercase");
+            $r3$.ΔelementStart(6, "div");
+            $r3$.ΔelementStart(7, "div");
+            $r3$.Δelement(8, "span");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
-            $r3$.ɵi18nApply(1);
-            $r3$.ɵselect(4);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 3, ctx.two)));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
-            $r3$.ɵi18nApply(4);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.one));
+            $r3$.Δi18nApply(1);
+            $r3$.Δselect(4);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(5, 3, ctx.two)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.nestedInBlockTwo));
+            $r3$.Δi18nApply(4);
           }
         }
       `;
@@ -965,34 +965,34 @@ describe('i18n support in the view compiler', () => {
         vars: 7,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$);
-            $r3$.ɵelementStart(2, "span");
-            $r3$.ɵi18nAttributes(3, $_c0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(4, "div");
-            $r3$.ɵi18nStart(5, $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$);
-            $r3$.ɵpipe(6, "uppercase");
-            $r3$.ɵelementStart(7, "span");
-            $r3$.ɵi18nAttributes(8, $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$);
+            $r3$.ΔelementStart(2, "span");
+            $r3$.Δi18nAttributes(3, $_c0$);
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(4, "div");
+            $r3$.Δi18nStart(5, $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$);
+            $r3$.Δpipe(6, "uppercase");
+            $r3$.ΔelementStart(7, "span");
+            $r3$.Δi18nAttributes(8, $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
-            $r3$.ɵi18nApply(3);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
-            $r3$.ɵi18nApply(1);
-            $r3$.ɵselect(7);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueE));
-            $r3$.ɵi18nApply(8);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(6, 5, ctx.valueD)));
-            $r3$.ɵi18nApply(5);
+            $r3$.Δselect(2);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
+            $r3$.Δi18nApply(3);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
+            $r3$.Δi18nApply(1);
+            $r3$.Δselect(7);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueE));
+            $r3$.Δi18nApply(8);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(6, 5, ctx.valueD)));
+            $r3$.Δi18nApply(5);
           }
         }
       `;
@@ -1026,21 +1026,21 @@ describe('i18n support in the view compiler', () => {
         …
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$);
-            $r3$.ɵelement(3, "div");
-            $r3$.ɵpipe(4, "uppercase");
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δi18nStart(2, $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$);
+            $r3$.Δelement(3, "div");
+            $r3$.Δpipe(4, "uppercase");
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(2);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 2, $ctx_r0$.valueB)));
-            $r3$.ɵi18nApply(2);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(2);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 2, $ctx_r0$.valueB)));
+            $r3$.Δi18nApply(2);
           }
         }
         …
@@ -1048,14 +1048,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵtext(1, " Some content ");
-            $r3$.ɵtemplate(2, MyComponent_div_2_Template, 5, 4, "div", $_c0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δtext(1, " Some content ");
+            $r3$.Δtemplate(2, MyComponent_div_2_Template, 5, 4, "div", $_c0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
           }
         }
       `;
@@ -1076,7 +1076,7 @@ describe('i18n support in the view compiler', () => {
         const $_c2$ = ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"];
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelement(0, "img", $_c0$);
+            $r3$.Δelement(0, "img", $_c0$);
           }
         }
         const $MSG_EXTERNAL_2367729185105559721$ = goog.getMsg("App logo #{$interpolation}", {
@@ -1085,15 +1085,15 @@ describe('i18n support in the view compiler', () => {
         const $_c3$ = ["title", $MSG_EXTERNAL_2367729185105559721$];
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "img", $_c0$);
-            $r3$.ɵi18nAttributes(1, $_c3$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "img", $_c0$);
+            $r3$.Δi18nAttributes(1, $_c3$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.id));
-            $r3$.ɵi18nApply(1);
+            const $ctx_r1$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.id));
+            $r3$.Δi18nApply(1);
           }
         }
         …
@@ -1101,15 +1101,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelement(0, "img", $_c0$);
-            $r3$.ɵtemplate(1, MyComponent_img_1_Template, 1, 0, "img", $_c1$);
-            $r3$.ɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
+            $r3$.Δelement(0, "img", $_c0$);
+            $r3$.Δtemplate(1, MyComponent_img_1_Template, 1, 0, "img", $_c1$);
+            $r3$.Δtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.Δselect(1);
+            $r3$.ΔelementProperty(1, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
           }
         }
       `;
@@ -1146,38 +1146,38 @@ describe('i18n support in the view compiler', () => {
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵelement(2, "div");
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δelement(2, "div");
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r2$ = $r3$.ɵnextContext(2);
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r2$.valueC));
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r2$.valueD));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r2$ = $r3$.ΔnextContext(2);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueC));
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueD));
+            $r3$.Δi18nApply(0);
           }
         }
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 1);
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵelementStart(2, "div");
-            $r3$.ɵpipe(3, "uppercase");
-            $r3$.ɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", $_c1$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 1);
+            $r3$.ΔelementStart(1, "div");
+            $r3$.ΔelementStart(2, "div");
+            $r3$.Δpipe(3, "uppercase");
+            $r3$.Δtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", $_c1$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(4);
-            $r3$.ɵelementProperty(4, "ngIf", $r3$.ɵbind($ctx_r0$.exists));
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 3, $ctx_r0$.valueB)));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(4);
+            $r3$.ΔelementProperty(4, "ngIf", $r3$.Δbind($ctx_r0$.exists));
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(3, 3, $ctx_r0$.valueB)));
+            $r3$.Δi18nApply(0);
           }
         }
         const $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
@@ -1193,22 +1193,22 @@ describe('i18n support in the view compiler', () => {
           "interpolation_4": "\uFFFD0:3\uFFFD",
           "interpolation_5": "\uFFFD1:3\uFFFD"
         });
-        const $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
+        const $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 3);
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵelement(2, "div");
-            $r3$.ɵpipe(3, "uppercase");
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 3);
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δelement(2, "div");
+            $r3$.Δpipe(3, "uppercase");
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 2, $ctx_r1$.valueG)));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r1$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(3, 2, $ctx_r1$.valueG)));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1216,18 +1216,18 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
-            $r3$.ɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
+            $r3$.Δtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
+            $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵselect(3);
-            $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(!ctx.visible));
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.Δselect(3);
+            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(!ctx.visible));
           }
         }
       `;
@@ -1250,17 +1250,17 @@ describe('i18n support in the view compiler', () => {
         …
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-              $r3$.ɵelementStart(0, "div");
-              $r3$.ɵi18nStart(1, $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$);
-              $r3$.ɵelement(2, "span");
-              $r3$.ɵi18nEnd();
-              $r3$.ɵelementEnd();
+              $r3$.ΔelementStart(0, "div");
+              $r3$.Δi18nStart(1, $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$);
+              $r3$.Δelement(2, "span");
+              $r3$.Δi18nEnd();
+              $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-              const $ctx_r0$ = $r3$.ɵnextContext();
-              $r3$.ɵselect(1);
-              $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
-              $r3$.ɵi18nApply(1);
+              const $ctx_r0$ = $r3$.ΔnextContext();
+              $r3$.Δselect(1);
+              $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
+              $r3$.Δi18nApply(1);
           }
         }
         …
@@ -1268,11 +1268,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
+            $r3$.Δtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.Δselect(0);
+            $r3$.ΔelementProperty(0, "ngIf", $r3$.Δbind(ctx.visible));
           }
         }
       `;
@@ -1291,10 +1291,10 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c0$);
-            $r3$.ɵlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c0$);
+            $r3$.Δlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
+            $r3$.Δi18n(1, $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -1314,9 +1314,9 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -1331,7 +1331,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1339,14 +1339,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -1365,16 +1365,16 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$ = goog.getMsg("My i18n block #1");
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$);
           }
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
-            $r3$.ɵelementContainerStart(1);
-            $r3$.ɵi18n(2, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$);
-            $r3$.ɵelementContainerEnd();
+            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
+            $r3$.ΔelementContainerStart(1);
+            $r3$.Δi18n(2, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$);
+            $r3$.ΔelementContainerEnd();
           }
         }
       `;
@@ -1398,12 +1398,12 @@ describe('i18n support in the view compiler', () => {
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "span", $_c0$);
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(2, "span", $_c1$);
-            $r3$.ɵi18n(3, $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "span", $_c0$);
+            $r3$.Δi18n(1, $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementStart(2, "span", $_c1$);
+            $r3$.Δi18n(3, $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$);
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -1427,15 +1427,15 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$);
-            $r3$.ɵpipe(2, "uppercase");
-            $r3$.ɵelementContainerEnd();
+            $r3$.ΔelementContainerStart(0);
+            $r3$.Δi18n(1, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$);
+            $r3$.Δpipe(2, "uppercase");
+            $r3$.ΔelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 1, ctx.valueA)));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 1, ctx.valueA)));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -1454,13 +1454,13 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$);
-            $r3$.ɵpipe(1, "uppercase");
+            $r3$.Δi18n(0, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$);
+            $r3$.Δpipe(1, "uppercase");
           } if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1468,7 +1468,7 @@ describe('i18n support in the view compiler', () => {
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_ng_template_0_Template, 2, 3, "ng-template");
+            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 2, 3, "ng-template");
           }
         }
       `;
@@ -1495,14 +1495,14 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$, 1);
-            $r3$.ɵpipe(1, "uppercase");
+            $r3$.Δi18n(0, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$, 1);
+            $r3$.Δpipe(1, "uppercase");
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1510,19 +1510,19 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
-            $r3$.ɵelementContainerStart(3);
-            $r3$.ɵpipe(4, "uppercase");
-            $r3$.ɵelementContainerEnd();
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$);
+            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
+            $r3$.ΔelementContainerStart(3);
+            $r3$.Δpipe(4, "uppercase");
+            $r3$.ΔelementContainerEnd();
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 1, ctx.valueB)));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 1, ctx.valueB)));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -1538,22 +1538,22 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$);
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.gender));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.gender));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1561,15 +1561,15 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
-            $r3$.ɵelementContainerStart(1);
-            $r3$.ɵi18n(2, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
-            $r3$.ɵelementContainerEnd();
+            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
+            $r3$.ΔelementContainerStart(1);
+            $r3$.Δi18n(2, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.ΔelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nApply(2);
+            $r3$.Δselect(2);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nApply(2);
           }
         }
       `;
@@ -1595,26 +1595,26 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 3);
+            $r3$.Δi18n(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 3);
           }
           if (rf & 2) {
-            const $ctx_r2$ = $r3$.ɵnextContext(3);
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r2$.valueC));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r2$ = $r3$.ΔnextContext(3);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueC));
+            $r3$.Δi18nApply(0);
           }
         }
         function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 2);
-            $r3$.ɵtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 2);
+            $r3$.Δtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ɵnextContext(2);
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.valueB));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r1$ = $r3$.ΔnextContext(2);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.valueB));
+            $r3$.Δi18nApply(0);
           }
         }
         const $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
@@ -1624,19 +1624,19 @@ describe('i18n support in the view compiler', () => {
           "interpolation_1": "\uFFFD0:2\uFFFD",
           "interpolation_2": "\uFFFD0:3\uFFFD"
         });
-        const $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
+        const $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 1);
-            $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 1);
+            $r3$.Δpipe(1, "uppercase");
+            $r3$.Δtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1644,11 +1644,11 @@ describe('i18n support in the view compiler', () => {
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
+            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -1664,22 +1664,22 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$, {
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$);
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -1687,15 +1687,15 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
-            $r3$.ɵelementContainerEnd();
-            $r3$.ɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
+            $r3$.ΔelementContainerStart(0);
+            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.ΔelementContainerEnd();
+            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -1723,20 +1723,20 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$);
-            $r3$.ɵelement(1, "img", $_c0$);
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$);
+            $r3$.Δelement(1, "img", $_c0$);
+            $r3$.Δi18nEnd();
           }
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$);
-            $r3$.ɵelement(2, "img", $_c0$);
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementContainerEnd();
-            $r3$.ɵtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
+            $r3$.ΔelementContainerStart(0);
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$);
+            $r3$.Δelement(2, "img", $_c0$);
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementContainerEnd();
+            $r3$.Δtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
           }
         }
       `;
@@ -1801,13 +1801,13 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtext(0, "\n        ");
-            $r3$.ɵelementStart(1, "div");
-            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$);
-            $r3$.ɵelement(3, "span");
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
-            $r3$.ɵtext(4, "\n      ");
+            $r3$.Δtext(0, "\n        ");
+            $r3$.ΔelementStart(1, "div");
+            $r3$.Δi18nStart(2, $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$);
+            $r3$.Δelement(3, "span");
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
+            $r3$.Δtext(4, "\n      ");
           }
         }
       `;
@@ -1824,7 +1824,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1832,14 +1832,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -1854,7 +1854,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
-        const $I18N_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
       `;
@@ -1869,18 +1869,18 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         consts: 1,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nApply(0);
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nApply(0);
           }
         }
       `;
@@ -1901,50 +1901,50 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = ["title", "icu only", ${AttributeMarker.Template}, "ngIf"];
         const $_c1$ = ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"];
         const $_c2$ = ["title", "icu only"];
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c2$);
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c2$);
+            $r3$.Δi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
-            $r3$.ɵi18nApply(1);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
+            $r3$.Δi18nApply(1);
           }
         }
         const $_c3$ = ["title", "icu and text"];
         const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$, {
+        const $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c3$);
-            $r3$.ɵtext(1, " You have ");
-            $r3$.ɵi18n(2, $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$);
-            $r3$.ɵtext(3, ". ");
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c3$);
+            $r3$.Δtext(1, " You have ");
+            $r3$.Δi18n(2, $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$);
+            $r3$.Δtext(3, ". ");
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(2);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
-            $r3$.ɵi18nApply(2);
+            const $ctx_r1$ = $r3$.ΔnextContext();
+            $r3$.Δselect(2);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.count));
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.count));
+            $r3$.Δi18nApply(2);
           }
         }
         …
@@ -1952,20 +1952,20 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
-            $r3$.ɵtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
-            $r3$.ɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
+            $r3$.Δtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
+            $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵselect(3);
-            $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(ctx.available));
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.Δselect(3);
+            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(ctx.available));
           }
         }
       `;
@@ -1982,19 +1982,19 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_2949673783721159566$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $MSG_EXTERNAL_2949673783721159566$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2949673783721159566$$RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_2949673783721159566$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2949673783721159566$$RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_2949673783721159566$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_2949673783721159566$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.other));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.other));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2019,7 +2019,7 @@ describe('i18n support in the view compiler', () => {
           "startTagDiv": "<div class=\"other\">",
           "closeTagDiv": "</div>"
         });
-        const $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$, {
+        const $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = ["other", 1, "other", true];
@@ -2037,19 +2037,19 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$);
-            $r3$.ɵelement(2, "b");
-            $r3$.ɵelementStart(3, "div");
-            $r3$.ɵelementStyling($_c0$);
-            $r3$.ɵelement(4, "i");
-            $r3$.ɵelementEnd();
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$);
+            $r3$.Δelement(2, "b");
+            $r3$.ΔelementStart(3, "div");
+            $r3$.ΔelementStyling($_c0$);
+            $r3$.Δelement(4, "i");
+            $r3$.ΔelementEnd();
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2066,7 +2066,7 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2074,15 +2074,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nExp($r3$.ɵbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nExp($r3$.Δbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2100,11 +2100,11 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$, {
+        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
@@ -2116,15 +2116,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2147,16 +2147,16 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1$, {
+        const $I18N_APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$, {
+        const $I18N_APP_SPEC_TS_2$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         const $_c3$ = [${AttributeMarker.Template}, "ngIf"];
         const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$, {
+        const $I18N_APP_SPEC_TS__4$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS__4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
@@ -2165,20 +2165,20 @@ describe('i18n support in the view compiler', () => {
           "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
           "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
         });
-        const $I18N_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0$, {
+        const $I18N_APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_0$, {
           "ICU": [$I18N_APP_SPEC_TS_1$, $I18N_APP_SPEC_TS_2$, $I18N_APP_SPEC_TS__4$]
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $I18N_APP_SPEC_TS_0$, 1);
-            $r3$.ɵelement(1, "div");
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $I18N_APP_SPEC_TS_0$, 1);
+            $r3$.Δelement(1, "div");
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.gender));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.gender));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -2186,19 +2186,19 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $I18N_APP_SPEC_TS_0$);
-            $r3$.ɵelement(2, "div");
-            $r3$.ɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $I18N_APP_SPEC_TS_0$);
+            $r3$.Δelement(2, "div");
+            $r3$.Δtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(3);
-            $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(3);
+            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2222,7 +2222,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
-        const $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
@@ -2231,15 +2231,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2262,12 +2262,12 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
+        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
@@ -2278,15 +2278,15 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$, 1);
-            $r3$.ɵelement(1, "span");
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$, 1);
+            $r3$.Δelement(1, "span");
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -2294,17 +2294,17 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$);
+            $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.ageVisible));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.ageVisible));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2327,14 +2327,14 @@ describe('i18n support in the view compiler', () => {
           "interpolation": "\uFFFD1\uFFFD",
           "interpolation_1": "\uFFFD2\uFFFD"
         });
-        const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
+        const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
           "interpolation": "\uFFFD1:1\uFFFD"
         });
-        const $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$, {
+        const $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
@@ -2345,16 +2345,16 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$, 1);
-            $r3$.ɵelement(1, "span");
-            $r3$.ɵi18nEnd();
+            $r3$.Δi18nStart(0, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$, 1);
+            $r3$.Δelement(1, "span");
+            $r3$.Δi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵselect(0);
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
-            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.otherAge));
-            $r3$.ɵi18nApply(0);
+            const $ctx_r0$ = $r3$.ΔnextContext();
+            $r3$.Δselect(0);
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.otherAge));
+            $r3$.Δi18nApply(0);
           }
         }
         …
@@ -2362,19 +2362,19 @@ describe('i18n support in the view compiler', () => {
         vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
-            $r3$.ɵi18nEnd();
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18nStart(1, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$);
+            $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
+            $r3$.Δi18nEnd();
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(2);
-            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.ageVisible));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.weight));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.height));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(2);
+            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.ageVisible));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.weight));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.height));
+            $r3$.Δi18nApply(1);
           }
         }
       `;
@@ -2399,7 +2399,7 @@ describe('i18n support in the view compiler', () => {
           "phB": "\uFFFD2\uFFFD",
           "phC": "\uFFFD3\uFFFD"
         });
-        const $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$, {
+        const $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2407,17 +2407,17 @@ describe('i18n support in the view compiler', () => {
         vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$);
-            $r3$.ɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δi18n(1, $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵselect(1);
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.weight));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.height));
-            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
-            $r3$.ɵi18nApply(1);
+            $r3$.Δselect(1);
+            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.weight));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.height));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
+            $r3$.Δi18nApply(1);
           }
         }
       `;

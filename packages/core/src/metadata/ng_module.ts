@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {InjectorType, defineInjector} from '../di/interface/defs';
+import {InjectorType, ΔdefineInjector} from '../di/interface/defs';
 import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
@@ -32,7 +32,10 @@ export interface NgModuleTransitiveScopes {
   schemas: SchemaMetadata[]|null;
 }
 
-export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
+/**
+ * @publicApi
+ */
+export type ΔNgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
 
 /**
  * Runtime link information for NgModules.
@@ -40,7 +43,7 @@ export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef
  * This is the internal data structure used by the runtime to assemble components, directives,
  * pipes, and injectors.
  *
- * NOTE: Always use `defineNgModule` function to create this object,
+ * NOTE: Always use `ΔdefineNgModule` function to create this object,
  * never create the object directly since the shape of this object
  * can change between versions.
  */
@@ -344,7 +347,7 @@ function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule)
     imports = [...imports, metadata.exports];
   }
 
-  moduleType.ngInjectorDef = defineInjector({
+  moduleType.ngInjectorDef = ΔdefineInjector({
     factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
     providers: metadata && metadata.providers,
     imports: imports,

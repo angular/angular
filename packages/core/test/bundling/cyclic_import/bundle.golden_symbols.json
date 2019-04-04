@@ -258,31 +258,13 @@
     "name": "defaultScheduler"
   },
   {
-    "name": "defineComponent"
-  },
-  {
-    "name": "defineInjector"
-  },
-  {
-    "name": "defineNgModule"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
     "name": "domRendererFactory3"
   },
   {
-    "name": "element"
-  },
-  {
     "name": "elementCreate"
-  },
-  {
-    "name": "elementEnd"
-  },
-  {
-    "name": "elementStart"
   },
   {
     "name": "enterView"
@@ -537,9 +519,6 @@
     "name": "matchTemplateAttribute"
   },
   {
-    "name": "namespaceHTML"
-  },
-  {
     "name": "nativeAppendChild"
   },
   {
@@ -642,9 +621,6 @@
     "name": "setClass"
   },
   {
-    "name": "setComponentScope"
-  },
-  {
     "name": "setCurrentDirectiveDef"
   },
   {
@@ -690,9 +666,6 @@
     "name": "syncViewWithBlueprint"
   },
   {
-    "name": "text"
-  },
-  {
     "name": "throwMultipleComponentError"
   },
   {
@@ -703,5 +676,32 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "ΔdefineComponent"
+  },
+  {
+    "name": "ΔdefineInjector"
+  },
+  {
+    "name": "ΔdefineNgModule"
+  },
+  {
+    "name": "Δelement"
+  },
+  {
+    "name": "ΔelementEnd"
+  },
+  {
+    "name": "ΔelementStart"
+  },
+  {
+    "name": "ΔnamespaceHTML"
+  },
+  {
+    "name": "ΔsetComponentScope"
+  },
+  {
+    "name": "Δtext"
   }
 ]

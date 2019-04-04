@@ -8,16 +8,16 @@
 
 import {ElementRef, QueryList, ViewContainerRef} from '@angular/core';
 
-import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature} from '../../src/render3/index';
-import {allocHostVars, bind, directiveInject, element, elementAttribute, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, elementHostAttrs, elementHostStylingApply, elementHostStyleProp, elementHostStyling} from '../../src/render3/instructions/all';
-import {loadContentQuery, contentQuery, queryRefresh} from '../../src/render3/query';
+import {AttributeMarker, ΔInheritDefinitionFeature, ΔNgOnChangesFeature, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective, Δtemplate} from '../../src/render3/index';
+import {ΔallocHostVars, Δbind, ΔdirectiveInject, Δelement, ΔelementAttribute, ΔelementEnd, ΔelementHostAttrs, ΔelementHostStyleProp, ΔelementHostStyling, ΔelementHostStylingApply, ΔelementProperty, ΔelementStart, ΔelementStyleProp, ΔelementStyling, ΔelementStylingApply, Δlistener, Δload, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
-import {sanitizeUrl, sanitizeUrlOrResourceUrl, sanitizeHtml} from '../../src/sanitization/sanitization';
+import {ΔpureFunction1, ΔpureFunction2} from '../../src/render3/pure_function';
+import {ΔcontentQuery, ΔloadContentQuery, ΔqueryRefresh} from '../../src/render3/query';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
+import {ΔsanitizeHtml, ΔsanitizeUrl, ΔsanitizeUrlOrResourceUrl} from '../../src/sanitization/sanitization';
 
-import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';
 import {NgForOf} from './common_with_def';
+import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';
 
 describe('host bindings', () => {
   let nameComp: NameComp|null;
@@ -32,7 +32,7 @@ describe('host bindings', () => {
   class NameComp {
     names !: string[];
 
-    static ngComponentDef = defineComponent({
+    static ngComponentDef = ΔdefineComponent({
       type: NameComp,
       selectors: [['name-comp']],
       factory: function NameComp_Factory() { return nameComp = new NameComp(); },
@@ -47,16 +47,16 @@ describe('host bindings', () => {
     // @HostBinding()
     id = 'foo';
 
-    static ngDirectiveDef = defineDirective({
+    static ngDirectiveDef = ΔdefineDirective({
       type: HostBindingDir,
       selectors: [['', 'hostBindingDir', '']],
       factory: () => hostBindingDir = new HostBindingDir(),
       hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
         if (rf & RenderFlags.Create) {
-          allocHostVars(1);
+          ΔallocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
+          ΔelementProperty(elementIndex, 'id', Δbind(ctx.id), null, true);
         }
       }
     });
@@ -66,7 +66,7 @@ describe('host bindings', () => {
     // @HostBinding()
     id = 'my-id';
 
-    static ngComponentDef = defineComponent({
+    static ngComponentDef = ΔdefineComponent({
       type: HostBindingComp,
       selectors: [['host-binding-comp']],
       factory: () => new HostBindingComp(),
@@ -74,10 +74,10 @@ describe('host bindings', () => {
       vars: 0,
       hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
         if (rf & RenderFlags.Create) {
-          allocHostVars(1);
+          ΔallocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elIndex, 'id', bind(ctx.id), null, true);
+          ΔelementProperty(elIndex, 'id', Δbind(ctx.id), null, true);
         }
       },
       template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -91,23 +91,23 @@ describe('host bindings', () => {
       // @HostBinding('className')
       klass = 'foo';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => directiveInstance = new Directive,
         hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
           elementIndices.push(elementIndex);
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'className', bind(ctx.klass), null, true);
+            ΔelementProperty(elementIndex, 'className', Δbind(ctx.klass), null, true);
           }
         }
       });
     }
 
-    function Template() { element(0, 'span', [AttributeMarker.Bindings, 'dir']); }
+    function Template() { Δelement(0, 'span', [AttributeMarker.Bindings, 'dir']); }
 
     const fixture = new TemplateFixture(Template, () => {}, 1, 0, [Directive]);
     expect(fixture.html).toEqual('<span class="foo"></span>');
@@ -127,7 +127,7 @@ describe('host bindings', () => {
       // @HostBinding()
       id = 'my-id';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => new HostBindingComp(),
@@ -136,10 +136,10 @@ describe('host bindings', () => {
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           elementIndices.push(elIndex);
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -172,23 +172,23 @@ describe('host bindings', () => {
 
       constructor(public serviceOne: ServiceOne, public serviceTwo: ServiceTwo) {}
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: CompWithProviders,
         selectors: [['comp-with-providers']],
         factory:
-            () => new CompWithProviders(directiveInject(ServiceOne), directiveInject(ServiceTwo)),
+            () => new CompWithProviders(ΔdirectiveInject(ServiceOne), ΔdirectiveInject(ServiceTwo)),
         consts: 0,
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: CompWithProviders, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: CompWithProviders) => {},
-        features: [ProvidersFeature([[ServiceOne], [ServiceTwo]])]
+        features: [ΔProvidersFeature([[ServiceOne], [ServiceTwo]])]
       });
     }
 
@@ -209,7 +209,7 @@ describe('host bindings', () => {
       // @HostBinding()
       title = 'my-title';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostTitleComp,
         selectors: [['host-title-comp']],
         factory: () => new HostTitleComp(),
@@ -217,10 +217,10 @@ describe('host bindings', () => {
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: HostTitleComp, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.title), null, true);
+            ΔelementProperty(elIndex, 'title', Δbind(ctx.title), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostTitleComp) => {}
@@ -234,9 +234,9 @@ describe('host bindings', () => {
      */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['hostBindingDir', '']);
-        element(1, 'div', ['someDir', '']);
-        element(2, 'host-title-comp');
+        Δelement(0, 'div', ['hostBindingDir', '']);
+        Δelement(1, 'div', ['someDir', '']);
+        Δelement(2, 'host-title-comp');
       }
     }, 3, 0, [HostBindingDir, SomeDir, HostTitleComp]);
 
@@ -258,7 +258,7 @@ describe('host bindings', () => {
       // @HostBinding()
       id = 'blue';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => {
@@ -270,10 +270,10 @@ describe('host bindings', () => {
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -286,8 +286,8 @@ describe('host bindings', () => {
      * */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'host-binding-comp');
-        element(1, 'host-binding-comp');
+        Δelement(0, 'host-binding-comp');
+        Δelement(1, 'host-binding-comp');
       }
     }, 2, 0, [HostBindingComp]);
 
@@ -318,7 +318,7 @@ describe('host bindings', () => {
        /** <div someDir hostBindingDir></div> */
        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
          if (rf & RenderFlags.Create) {
-           element(0, 'div', ['someDir', '', 'hostBindingDir', '']);
+           Δelement(0, 'div', ['someDir', '', 'hostBindingDir', '']);
          }
        }, 1, 0, [SomeDir, HostBindingDir]);
 
@@ -350,20 +350,20 @@ describe('host bindings', () => {
         return `${this.inputValue}-${this.changesValue}-${this.initValue}-${this.checkValue}`;
       }
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: InitHookComp,
         selectors: [['init-hook-comp']],
         factory: () => new InitHookComp(),
         template: (rf: RenderFlags, ctx: InitHookComp) => {},
         consts: 0,
         vars: 0,
-        features: [NgOnChangesFeature()],
+        features: [ΔNgOnChangesFeature()],
         hostBindings: (rf: RenderFlags, ctx: InitHookComp, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.value), null, true);
+            ΔelementProperty(elIndex, 'title', Δbind(ctx.value), null, true);
           }
         },
         inputs: {inputValue: 'inputValue'}
@@ -374,16 +374,16 @@ describe('host bindings', () => {
     class App {
       value = 'input';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: App,
         selectors: [['app']],
         factory: () => new App(),
         template: (rf: RenderFlags, ctx: App) => {
           if (rf & RenderFlags.Create) {
-            element(0, 'init-hook-comp');
+            Δelement(0, 'init-hook-comp');
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'inputValue', bind(ctx.value));
+            ΔelementProperty(0, 'inputValue', Δbind(ctx.value));
           }
         },
         consts: 1,
@@ -411,16 +411,16 @@ describe('host bindings', () => {
       // @HostBinding('disabled')
       hostDisabled = false;
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: HostBindingInputDir,
         selectors: [['', 'hostBindingDir', '']],
         factory: () => hostBindingInputDir = new HostBindingInputDir(),
         hostBindings: (rf: RenderFlags, ctx: HostBindingInputDir, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'disabled', bind(ctx.hostDisabled), null, true);
+            ΔelementProperty(elIndex, 'disabled', Δbind(ctx.hostDisabled), null, true);
           }
         },
         inputs: {disabled: 'disabled'}
@@ -431,16 +431,16 @@ describe('host bindings', () => {
     class App {
       isDisabled = true;
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: App,
         selectors: [['app']],
         factory: () => new App(),
         template: (rf: RenderFlags, ctx: App) => {
           if (rf & RenderFlags.Create) {
-            element(0, 'input', ['hostBindingDir', '']);
+            Δelement(0, 'input', ['hostBindingDir', '']);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'disabled', bind(ctx.isDisabled));
+            ΔelementProperty(0, 'disabled', Δbind(ctx.isDisabled));
           }
         },
         consts: 1,
@@ -469,7 +469,7 @@ describe('host bindings', () => {
     /** <div hostBindingDir></div> */
     const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['hostBindingDir', '']);
+        Δelement(0, 'div', ['hostBindingDir', '']);
       }
     }, 1, 0, [HostBindingDir]);
 
@@ -479,8 +479,8 @@ describe('host bindings', () => {
      */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'parent');
-        element(1, 'parent');
+        Δelement(0, 'parent');
+        Δelement(1, 'parent');
       }
     }, 2, 0, [Parent]);
 
@@ -493,9 +493,9 @@ describe('host bindings', () => {
   it('should support host bindings in for loop', () => {
     function NgForTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        { element(1, 'p', ['hostBindingDir', '']); }
-        elementEnd();
+        ΔelementStart(0, 'div');
+        { Δelement(1, 'p', ['hostBindingDir', '']); }
+        ΔelementEnd();
       }
     }
 
@@ -506,10 +506,10 @@ describe('host bindings', () => {
      */
     const App = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        template(0, NgForTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
+        Δtemplate(0, NgForTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'ngForOf', bind(ctx.rows));
+        ΔelementProperty(0, 'ngForOf', Δbind(ctx.rows));
       }
     }, 1, 1, [HostBindingDir, NgForOf]);
 
@@ -532,11 +532,11 @@ describe('host bindings', () => {
      */
     const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'name-comp');
-        element(1, 'host-binding-comp');
+        Δelement(0, 'name-comp');
+        Δelement(1, 'host-binding-comp');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names', bind(pureFunction1(1, ff, ctx.name)));
+        ΔelementProperty(0, 'names', Δbind(ΔpureFunction1(1, ff, ctx.name)));
       }
     }, 2, 3, [HostBindingComp, NameComp]);
 
@@ -584,7 +584,7 @@ describe('host bindings', () => {
       title = 'my title';
       otherTitle = 'other title';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => hostBindingComp = new HostBindingComp(),
@@ -593,13 +593,13 @@ describe('host bindings', () => {
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LView: [..., id, dir, title, ctx.id, pf1, ctx.title, ctx.otherTitle, pf2]
           if (rf & RenderFlags.Create) {
-            allocHostVars(8);
+            ΔallocHostVars(8);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)), null, true);
-            elementProperty(elIndex, 'dir', bind(ctx.dir), null, true);
-            elementProperty(
-                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)), null,
+            ΔelementProperty(elIndex, 'id', Δbind(ΔpureFunction1(3, ff, ctx.id)), null, true);
+            ΔelementProperty(elIndex, 'dir', Δbind(ctx.dir), null, true);
+            ΔelementProperty(
+                elIndex, 'title', Δbind(ΔpureFunction2(5, ff2, ctx.title, ctx.otherTitle)), null,
                 true);
           }
         },
@@ -613,11 +613,11 @@ describe('host bindings', () => {
      */
     const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'name-comp');
-        element(1, 'host-binding-comp');
+        Δelement(0, 'name-comp');
+        Δelement(1, 'host-binding-comp');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names', bind(pureFunction2(1, ff3, ctx.name, ctx.otherName)));
+        ΔelementProperty(0, 'names', Δbind(ΔpureFunction2(1, ff3, ctx.name, ctx.otherName)));
       }
     }, 2, 4, [HostBindingComp, NameComp]);
 
@@ -663,7 +663,7 @@ describe('host bindings', () => {
     class HostBindingComp {
       id = 'blue';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => hostBindingComp = new HostBindingComp(),
@@ -672,10 +672,10 @@ describe('host bindings', () => {
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LView: [..., id, ctx.id, pf1]
           if (rf & RenderFlags.Create) {
-            allocHostVars(3);
+            ΔallocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ΔpureFunction1(1, ff, ctx.id)), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -696,17 +696,18 @@ describe('host bindings', () => {
     class HostBindingDir {
       title = 'my title';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: HostBindingDir,
         selectors: [['', 'hostDir', '']],
         factory: () => hostBindingDir = new HostBindingDir(),
         hostBindings: (rf: RenderFlags, ctx: HostBindingDir, elIndex: number) => {
           // LView: [..., title, ctx.title, pf1]
           if (rf & RenderFlags.Create) {
-            allocHostVars(3);
+            ΔallocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
+            ΔelementProperty(
+                elIndex, 'title', Δbind(ΔpureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -718,7 +719,7 @@ describe('host bindings', () => {
      */
     const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'host-binding-comp', ['hostDir', '']);
+        Δelement(0, 'host-binding-comp', ['hostDir', '']);
       }
     }, 1, 0, [HostBindingComp, HostBindingDir]);
 
@@ -753,17 +754,18 @@ describe('host bindings', () => {
     class HostBindingDir {
       title = 'my title';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: HostBindingDir,
         selectors: [['', 'hostDir', '']],
         factory: () => new HostBindingDir(),
         hostBindings: (rf: RenderFlags, ctx: HostBindingDir, elIndex: number) => {
           // LView [..., title, ctx.title, pf1]
           if (rf & RenderFlags.Create) {
-            allocHostVars(3);
+            ΔallocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
+            ΔelementProperty(
+                elIndex, 'title', Δbind(ΔpureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -773,14 +775,14 @@ describe('host bindings', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
         factory: function HostListenerDir_Factory() { return new HostListenerDir(); },
         hostBindings: function HostListenerDir_HostBindings(
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
-            listener('click', function() { return ctx.onClick(); });
+            Δlistener('click', function() { return ctx.onClick(); });
           }
         }
       });
@@ -788,9 +790,9 @@ describe('host bindings', () => {
 
     // <button hostListenerDir hostDir>Click</button>
     const fixture = new TemplateFixture(() => {
-      elementStart(0, 'button', ['hostListenerDir', '', 'hostDir', '']);
-      text(1, 'Click');
-      elementEnd();
+      ΔelementStart(0, 'button', ['hostListenerDir', '', 'hostDir', '']);
+      Δtext(1, 'Click');
+      ΔelementEnd();
     }, () => {}, 2, 0, [HostListenerDir, HostBindingDir]);
 
     const button = fixture.hostElement.querySelector('button') !;
@@ -821,7 +823,7 @@ describe('host bindings', () => {
       id = 'blue';
       title = 'blue';
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => hostBindingComp = new HostBindingComp(),
@@ -830,15 +832,15 @@ describe('host bindings', () => {
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LView: [..., id, title, ctx.id, pf1, ctx.title, pf1]
           if (rf & RenderFlags.Create) {
-            allocHostVars(6);
+            ΔallocHostVars(6);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(
-                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'), null,
+            ΔelementProperty(
+                elIndex, 'id', Δbind(ctx.condition ? ΔpureFunction1(2, ff, ctx.id) : 'green'), null,
                 true);
-            elementProperty(
+            ΔelementProperty(
                 elIndex, 'title',
-                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'), null,
+                Δbind(ctx.otherCondition ? ΔpureFunction1(4, ff1, ctx.title) : 'other title'), null,
                 true);
           }
         },
@@ -852,11 +854,11 @@ describe('host bindings', () => {
      */
     const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        element(0, 'host-binding-comp');
-        text(1);
+        Δelement(0, 'host-binding-comp');
+        Δtext(1);
       }
       if (rf & RenderFlags.Update) {
-        textBinding(1, bind(ctx.name));
+        ΔtextBinding(1, Δbind(ctx.name));
       }
     }, 2, 1, [HostBindingComp]);
 
@@ -888,15 +890,15 @@ describe('host bindings', () => {
     class SuperDirective {
       id = 'my-id';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
+            ΔelementProperty(elementIndex, 'id', Δbind(ctx.id), null, true);
           }
         },
         factory: () => superDir = new SuperDirective(),
@@ -906,26 +908,26 @@ describe('host bindings', () => {
     class SubDirective extends SuperDirective {
       title = 'my-title';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'title', bind(ctx.title), null, true);
+            ΔelementProperty(elementIndex, 'title', Δbind(ctx.title), null, true);
           }
         },
         factory: () => subDir = new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['subDir', '']);
-        element(1, 'div', ['superDir', '']);
+        Δelement(0, 'div', ['subDir', '']);
+        Δelement(1, 'div', ['superDir', '']);
       }
     }, 2, 0, [SubDirective, SuperDirective]);
 
@@ -962,13 +964,13 @@ describe('host bindings', () => {
     //  'role': 'listbox'
     // }
     class HostAttributeDir {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         selectors: [['', 'hostAttributeDir', '']],
         type: HostAttributeDir,
         factory: () => new HostAttributeDir(),
         hostBindings: function(rf, ctx, elIndex) {
           if (rf & RenderFlags.Create) {
-            elementHostAttrs(['role', 'listbox']);
+            ΔelementHostAttrs(['role', 'listbox']);
           }
         }
       });
@@ -977,7 +979,7 @@ describe('host bindings', () => {
     // <div hostAttributeDir></div>
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['hostAttributeDir', '']);
+        Δelement(0, 'div', ['hostAttributeDir', '']);
       }
     }, 1, 0, [HostAttributeDir]);
 
@@ -995,7 +997,7 @@ describe('host bindings', () => {
       // @ContentChildren('foo')
       foos !: QueryList<any>;
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingWithContentChildren,
         selectors: [['host-binding-comp']],
         factory: () => new HostBindingWithContentChildren(),
@@ -1003,19 +1005,19 @@ describe('host bindings', () => {
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: HostBindingWithContentChildren, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.foos.length), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ctx.foos.length), null, true);
           }
         },
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], false, null);
+            ΔcontentQuery(dirIndex, ['foo'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+            ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
           }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentChildren) => {}
@@ -1030,12 +1032,12 @@ describe('host bindings', () => {
      */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'host-binding-comp');
+        ΔelementStart(0, 'host-binding-comp');
         {
-          element(1, 'div', null, ['foo', '']);
-          element(3, 'div', null, ['foo', '']);
+          Δelement(1, 'div', null, ['foo', '']);
+          Δelement(3, 'div', null, ['foo', '']);
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 5, 0, [HostBindingWithContentChildren]);
 
@@ -1057,7 +1059,7 @@ describe('host bindings', () => {
 
       ngAfterViewInit() { this.myValue = 'after-view'; }
 
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: HostBindingWithContentHooks,
         selectors: [['host-binding-comp']],
         factory: () => new HostBindingWithContentHooks(),
@@ -1065,10 +1067,10 @@ describe('host bindings', () => {
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: HostBindingWithContentHooks, elIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.myValue), null, true);
+            ΔelementProperty(elIndex, 'id', Δbind(ctx.myValue), null, true);
           }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentHooks) => {}
@@ -1078,7 +1080,7 @@ describe('host bindings', () => {
     /** <host-binding-comp></host-binding-comp> */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'host-binding-comp');
+        Δelement(0, 'host-binding-comp');
       }
     }, 1, 0, [HostBindingWithContentHooks]);
 
@@ -1099,7 +1101,7 @@ describe('host bindings', () => {
       class HostBindingToStyles {
         width = 2;
 
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: HostBindingToStyles,
           selectors: [['host-binding-to-styles']],
           factory: () => hostBindingDir = new HostBindingToStyles(),
@@ -1107,11 +1109,11 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementHostStyling(null, ['width']);
+              ΔelementHostStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              elementHostStyleProp(0, ctx.width, 'px');
-              elementHostStylingApply();
+              ΔelementHostStyleProp(0, ctx.width, 'px');
+              ΔelementHostStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: HostBindingToStyles) => {}
@@ -1121,7 +1123,7 @@ describe('host bindings', () => {
       /** <host-binding-to-styles></host-binding-to-styles> */
       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          element(0, 'host-binding-to-styles');
+          Δelement(0, 'host-binding-to-styles');
         }
       }, 1, 0, [HostBindingToStyles]);
 
@@ -1145,17 +1147,17 @@ describe('host bindings', () => {
       class HostBindingToStyles {
         width = 2;
 
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: HostBindingToStyles,
           selectors: [['', 'hostStyles', '']],
           factory: () => hostBindingDir = new HostBindingToStyles(),
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementHostStyling(null, ['width']);
+              ΔelementHostStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              elementHostStyleProp(0, ctx.width, 'px');
-              elementHostStylingApply();
+              ΔelementHostStyleProp(0, ctx.width, 'px');
+              ΔelementHostStylingApply();
             }
           }
         });
@@ -1164,17 +1166,17 @@ describe('host bindings', () => {
       class ContainerDir {
         constructor(public vcr: ViewContainerRef) {}
 
-        static ngDirectiveDef = defineDirective({
+        static ngDirectiveDef = ΔdefineDirective({
           type: ContainerDir,
           selectors: [['', 'containerDir', '']],
-          factory: () => new ContainerDir(directiveInject(ViewContainerRef as any)),
+          factory: () => new ContainerDir(ΔdirectiveInject(ViewContainerRef as any)),
         });
       }
 
       /** <div hostStyles containerDir></div> */
       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          element(0, 'div', ['containerDir', '', 'hostStyles', '']);
+          Δelement(0, 'div', ['containerDir', '', 'hostStyles', '']);
         }
       }, 1, 0, [ContainerDir, HostBindingToStyles]);
 
@@ -1194,7 +1196,7 @@ describe('host bindings', () => {
        * }
        */
       class StaticHostClass {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: StaticHostClass,
           selectors: [['static-host-class']],
           factory: () => new StaticHostClass(),
@@ -1202,11 +1204,11 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs([AttributeMarker.Classes, 'mat-toolbar']);
-              elementHostStyling(['mat-toolbar']);
+              ΔelementHostAttrs([AttributeMarker.Classes, 'mat-toolbar']);
+              ΔelementHostStyling(['mat-toolbar']);
             }
             if (rf & RenderFlags.Update) {
-              elementHostStylingApply();
+              ΔelementHostStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: StaticHostClass) => {}
@@ -1216,7 +1218,7 @@ describe('host bindings', () => {
       /** <static-host-class></static-host-class> */
       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          element(0, 'static-host-class');
+          Δelement(0, 'static-host-class');
         }
       }, 1, 0, [StaticHostClass]);
 
@@ -1234,24 +1236,24 @@ describe('host bindings', () => {
         let hostBindingDir: UnsafeUrlHostBindingDir;
         class UnsafeUrlHostBindingDir {
           // val: any = value;
-          static ngDirectiveDef = defineDirective({
+          static ngDirectiveDef = ΔdefineDirective({
             type: UnsafeUrlHostBindingDir,
             selectors: [['', 'unsafeUrlHostBindingDir', '']],
             factory: () => hostBindingDir = new UnsafeUrlHostBindingDir(),
             hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
               if (rf & RenderFlags.Create) {
-                allocHostVars(1);
+                ΔallocHostVars(1);
               }
               if (rf & RenderFlags.Update) {
-                const fn = isAttribute ? elementAttribute : elementProperty;
-                (fn as any)(elementIndex, prop, bind(ctx[prop]), sanitizeFn, true);
+                const fn = isAttribute ? ΔelementAttribute : ΔelementProperty;
+                (fn as any)(elementIndex, prop, Δbind(ctx[prop]), sanitizeFn, true);
               }
             }
           });
         }
 
         const fixture = new TemplateFixture(() => {
-          element(0, tag, ['unsafeUrlHostBindingDir', '']);
+          Δelement(0, tag, ['unsafeUrlHostBindingDir', '']);
         }, () => {}, 1, 0, [UnsafeUrlHostBindingDir]);
 
         const el = fixture.hostElement.querySelector(tag) !;
@@ -1268,17 +1270,17 @@ describe('host bindings', () => {
     }
 
     verify(
-        'a', 'href', 'javascript:alert(1)', 'unsafe:javascript:alert(1)', sanitizeUrlOrResourceUrl,
+        'a', 'href', 'javascript:alert(1)', 'unsafe:javascript:alert(1)', ΔsanitizeUrlOrResourceUrl,
         bypassSanitizationTrustUrl);
     verify(
         'script', 'src', bypassSanitizationTrustResourceUrl('javascript:alert(2)'),
-        'javascript:alert(2)', sanitizeUrlOrResourceUrl, bypassSanitizationTrustResourceUrl);
+        'javascript:alert(2)', ΔsanitizeUrlOrResourceUrl, bypassSanitizationTrustResourceUrl);
     verify(
-        'blockquote', 'cite', 'javascript:alert(3)', 'unsafe:javascript:alert(3)', sanitizeUrl,
+        'blockquote', 'cite', 'javascript:alert(3)', 'unsafe:javascript:alert(3)', ΔsanitizeUrl,
         bypassSanitizationTrustUrl);
     verify(
         'b', 'innerHTML', '<img src="javascript:alert(4)">',
-        '<img src="unsafe:javascript:alert(4)">', sanitizeHtml, bypassSanitizationTrustHtml,
+        '<img src="unsafe:javascript:alert(4)">', ΔsanitizeHtml, bypassSanitizationTrustHtml,
         /* isAttribute */ false);
   });
 });

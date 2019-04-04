@@ -14,7 +14,7 @@ import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 
 import {attachPatchData} from './context_discovery';
 import {attachI18nOpCodesDebug} from './debug';
-import {elementAttribute, load, textBinding} from './instructions/all';
+import {ΔelementAttribute, Δload, ΔtextBinding} from './instructions/all';
 import {allocExpando, createNodeAtIndex} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
@@ -346,8 +346,10 @@ const parentIndexStack: number[] = [];
  * @param index A unique index of the translation in the static block.
  * @param message The translation message.
  * @param subTemplateIndex Optional sub-template index in the `message`.
+ *
+ * @publicApi
  */
-export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
+export function Δi18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
@@ -532,9 +534,9 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
  *
  * @returns Transformed string that can be consumed by i18nStart instruction
  *
- * @publicAPI
+ * @publicApi
  */
-export function i18nPostprocess(
+export function Δi18nPostprocess(
     message: string, replacements: {[key: string]: (string | string[])} = {}): string {
   /**
    * Step 1: resolve all multi-value placeholders like [�#5�|�*1:1��#2:1�|�#4:1�]
@@ -627,8 +629,10 @@ export function i18nPostprocess(
 /**
  * Translates a translation block marked by `i18nStart` and `i18nEnd`. It inserts the text/ICU nodes
  * into the render tree, moves the placeholder nodes and removes the deleted nodes.
+ *
+ * @publicApi
  */
-export function i18nEnd(): void {
+export function Δi18nEnd(): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nEndFirstPass(tView);
@@ -736,7 +740,7 @@ function readCreateOpCodes(
           const elementNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
           const attrName = createOpCodes[++i] as string;
           const attrValue = createOpCodes[++i] as string;
-          elementAttribute(elementNodeIndex, attrName, attrValue);
+          ΔelementAttribute(elementNodeIndex, attrName, attrValue);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -813,10 +817,10 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.Attr:
                 const attrName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
-                elementAttribute(nodeIndex, attrName, value, sanitizeFn);
+                ΔelementAttribute(nodeIndex, attrName, value, sanitizeFn);
                 break;
               case I18nUpdateOpCode.Text:
-                textBinding(nodeIndex, value);
+                ΔtextBinding(nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;
@@ -880,7 +884,7 @@ function removeNode(index: number, viewData: LView) {
     nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
 
-  const slotValue = load(index) as RElement | RComment | LContainer | StylingContext;
+  const slotValue = Δload(index) as RElement | RComment | LContainer | StylingContext;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
@@ -914,10 +918,12 @@ function removeNode(index: number, viewData: LView) {
  * @param index A unique index of the translation in the static block.
  * @param message The translation message.
  * @param subTemplateIndex Optional sub-template index in the `message`.
+ *
+ * @publicApi
  */
-export function i18n(index: number, message: string, subTemplateIndex?: number): void {
-  i18nStart(index, message, subTemplateIndex);
-  i18nEnd();
+export function Δi18n(index: number, message: string, subTemplateIndex?: number): void {
+  Δi18nStart(index, message, subTemplateIndex);
+  Δi18nEnd();
 }
 
 /**
@@ -925,8 +931,10 @@ export function i18n(index: number, message: string, subTemplateIndex?: number):
  *
  * @param index A unique index in the static block
  * @param values
+ *
+ * @publicApi
  */
-export function i18nAttributes(index: number, values: string[]): void {
+export function Δi18nAttributes(index: number, values: string[]): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
@@ -958,7 +966,7 @@ function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) 
           addAllToArray(
               generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
         } else {
-          elementAttribute(previousElementIndex, attrName, value);
+          ΔelementAttribute(previousElementIndex, attrName, value);
         }
       }
     }
@@ -975,8 +983,10 @@ let shiftsCounter = 0;
  * update the translated nodes.
  *
  * @param expression The binding's new value or NO_CHANGE
+ *
+ * @publicApi
  */
-export function i18nExp<T>(expression: T | NO_CHANGE): void {
+export function Δi18nExp<T>(expression: T | NO_CHANGE): void {
   if (expression !== NO_CHANGE) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
@@ -988,8 +998,10 @@ export function i18nExp<T>(expression: T | NO_CHANGE): void {
  *
  * @param index Index of either {@link i18nStart} (translation block) or {@link i18nAttributes}
  * (i18n attribute) on which it should update the content.
+ *
+ * @publicApi
  */
-export function i18nApply(index: number) {
+export function Δi18nApply(index: number) {
   if (shiftsCounter) {
     const lView = getLView();
     const tView = lView[TVIEW];

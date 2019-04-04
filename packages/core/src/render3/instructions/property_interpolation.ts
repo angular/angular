@@ -24,8 +24,10 @@ import {storeBindingMetadata} from './shared';
  * - has evaluated expressions at odd indexes.
  *
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ *
+ * @publicApi
  */
-export function interpolationV(values: any[]): string|NO_CHANGE {
+export function ΔinterpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let different = false;
@@ -67,16 +69,22 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
  * @param prefix static value used for concatenation only.
  * @param v0 value checked for change.
  * @param suffix static value used for concatenation only.
+ *
+ * @publicApi
  */
-export function interpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
+export function Δinterpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
   const different = bindingUpdated(lView, lView[BINDING_INDEX]++, v0);
   storeBindingMetadata(lView, prefix, suffix);
   return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 2 expressions. */
-export function interpolation2(
+/**
+ * Creates an interpolation binding with 2 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
@@ -92,8 +100,12 @@ export function interpolation2(
   return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + suffix : NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 3 expressions. */
-export function interpolation3(
+/**
+ * Creates an interpolation binding with 3 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
   const lView = getLView();
@@ -114,8 +126,12 @@ export function interpolation3(
       NO_CHANGE;
 }
 
-/** Create an interpolation binding with 4 expressions. */
-export function interpolation4(
+/**
+ * Create an interpolation binding with 4 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -138,8 +154,12 @@ export function interpolation4(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 5 expressions. */
-export function interpolation5(
+/**
+ * Creates an interpolation binding with 5 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -164,8 +184,12 @@ export function interpolation5(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 6 expressions. */
-export function interpolation6(
+/**
+ * Creates an interpolation binding with 6 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -191,8 +215,12 @@ export function interpolation6(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 7 expressions. */
-export function interpolation7(
+/**
+ * Creates an interpolation binding with 7 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
@@ -221,8 +249,12 @@ export function interpolation7(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 8 expressions. */
-export function interpolation8(
+/**
+ * Creates an interpolation binding with 8 expressions.
+ *
+ * @publicApi
+ */
+export function Δinterpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {

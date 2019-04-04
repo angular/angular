@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, defineInjectable, defineInjector, ɵcreateInjector as createInjector} from '@angular/core';
+import {Injector, ɵcreateInjector as createInjector, ΔdefineInjectable, ΔdefineInjector} from '@angular/core';
 
 export class RootService {
-  static ngInjectableDef = defineInjectable({
+  static ngInjectableDef = ΔdefineInjectable({
     providedIn: 'root',
     factory: () => new RootService(),
   });
 }
 
 export class ScopedService {
-  static ngInjectableDef = defineInjectable({
+  static ngInjectableDef = ΔdefineInjectable({
     providedIn: null,
     factory: () => new ScopedService(),
   });
@@ -28,7 +28,7 @@ export class ScopedService {
 }
 
 export class DefinedInjector {
-  static ngInjectorDef = defineInjector({
+  static ngInjectorDef = ΔdefineInjector({
     factory: () => new DefinedInjector(),
     providers: [ScopedService],
   });

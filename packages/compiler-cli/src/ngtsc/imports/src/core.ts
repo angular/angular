@@ -48,15 +48,15 @@ export class NoopImportRewriter implements ImportRewriter {
  * which they're exported from r3_symbols.
  */
 const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
-  ['defineInjectable', 'defineInjectable'],
-  ['defineInjector', 'defineInjector'],
-  ['ɵdefineNgModule', 'defineNgModule'],
-  ['ɵsetNgModuleScope', 'setNgModuleScope'],
-  ['inject', 'inject'],
+  ['ΔdefineInjectable', 'ΔdefineInjectable'],
+  ['ΔdefineInjector', 'ΔdefineInjector'],
+  ['ΔdefineNgModule', 'ΔdefineNgModule'],
+  ['ΔsetNgModuleScope', 'ΔsetNgModuleScope'],
+  ['Δinject', 'Δinject'],
   ['ɵsetClassMetadata', 'setClassMetadata'],
-  ['ɵInjectableDef', 'InjectableDef'],
-  ['ɵInjectorDef', 'InjectorDef'],
-  ['ɵNgModuleDefWithMeta', 'NgModuleDefWithMeta'],
+  ['ΔInjectableDef', 'ΔInjectableDef'],
+  ['ΔInjectorDef', 'ΔInjectorDef'],
+  ['ΔNgModuleDefWithMeta', 'ΔNgModuleDefWithMeta'],
   ['ɵNgModuleFactory', 'NgModuleFactory'],
 ]);
 

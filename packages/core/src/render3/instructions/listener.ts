@@ -28,8 +28,10 @@ import {BindingDirection, generatePropertyAliases, getCleanup, handleError, load
  * @param useCapture Whether or not to use capture in event listener
  * @param eventTargetResolver Function that returns global target information in case this listener
  * should be attached to a global object like window, document or body
+ *
+ * @publicApi
  */
-export function listener(
+export function Δlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
@@ -53,8 +55,10 @@ export function listener(
 * @param useCapture Whether or not to use capture in event listener
 * @param eventTargetResolver Function that returns global target information in case this listener
 * should be attached to a global object like window, document or body
+ *
+ * @publicApi
 */
-export function componentHostSyntheticListener<T>(
+export function ΔcomponentHostSyntheticListener<T>(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);

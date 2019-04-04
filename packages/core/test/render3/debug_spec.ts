@@ -8,14 +8,14 @@
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {LViewDebug, toDebug} from '../../src/render3/debug';
-import {RenderFlags, defineComponent, elementEnd, elementStart, text} from '../../src/render3/index';
+import {RenderFlags, ΔdefineComponent, ΔelementEnd, ΔelementStart, Δtext} from '../../src/render3/index';
 
 import {ComponentFixture} from './render_util';
 
 describe('Debug Representation', () => {
   it('should generate a human readable version', () => {
     class MyComponent {
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: MyComponent,
         selectors: [['my-comp']],
         vars: 0,
@@ -23,9 +23,9 @@ describe('Debug Representation', () => {
         factory: () => new MyComponent(),
         template: function(rf: RenderFlags, ctx: MyComponent) {
           if (rf == RenderFlags.Create) {
-            elementStart(0, 'div', ['id', '123']);
-            text(1, 'Hello World');
-            elementEnd();
+            ΔelementStart(0, 'div', ['id', '123']);
+            Δtext(1, 'Hello World');
+            ΔelementEnd();
           }
         }
       });

@@ -32,7 +32,7 @@ describe('compiler compliance: dependency injection', () => {
               export class MyComponent {
                 constructor(
                   @Attribute('name') name:string,
-                  s1: MyService, 
+                  s1: MyService,
                   @Host() s2: MyService,
                   @Self() s4: MyService,
                   @SkipSelf() s3: MyService,
@@ -50,13 +50,13 @@ describe('compiler compliance: dependency injection', () => {
     const factory = `
       factory: function MyComponent_Factory(t) {
         return new (t || MyComponent)(
-          $r3$.ɵinjectAttribute('name'),
-          $r3$.ɵdirectiveInject(MyService), 
-          $r3$.ɵdirectiveInject(MyService, 1),
-          $r3$.ɵdirectiveInject(MyService, 2),
-          $r3$.ɵdirectiveInject(MyService, 4),
-          $r3$.ɵdirectiveInject(MyService, 8),
-          $r3$.ɵdirectiveInject(MyService, 10)
+          $r3$.ΔinjectAttribute('name'),
+          $r3$.ΔdirectiveInject(MyService),
+          $r3$.ΔdirectiveInject(MyService, 1),
+          $r3$.ΔdirectiveInject(MyService, 2),
+          $r3$.ΔdirectiveInject(MyService, 4),
+          $r3$.ΔdirectiveInject(MyService, 8),
+          $r3$.ΔdirectiveInject(MyService, 10)
         );
       }`;
 

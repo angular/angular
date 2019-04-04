@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, ɵNgModuleDef as NgModuleDef, ΔdefineComponent as defineComponent, ΔdefineInjectable, ΔdefineInjector, ΔdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {createInjector} from '../../src/di/r3_injector';
-import {defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions/all';
+import {ΔdefineDirective, ΔdefinePipe} from '../../src/render3/definition';
+import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δload, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
+import {Δpipe, ΔpipeBind1, ΔpipeBind3, ΔpipeBind4, ΔpipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
@@ -46,11 +46,11 @@ describe('pipe', () => {
   it('should support interpolation', () => {
     function Template(rf: RenderFlags, person: Person) {
       if (rf & RenderFlags.Create) {
-        text(0);
-        pipe(1, 'countingPipe');
+        Δtext(0);
+        Δpipe(1, 'countingPipe');
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, interpolation1('', pipeBind1(1, 1, person.name), ''));
+        ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, person.name), ''));
       }
     }
 
@@ -61,11 +61,11 @@ describe('pipe', () => {
   it('should throw if pipe is not found', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        text(0);
-        pipe(1, 'randomPipeName');
+        Δtext(0);
+        Δpipe(1, 'randomPipeName');
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, interpolation1('', pipeBind1(1, 1, ctx.value), ''));
+        ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, ctx.value), ''));
       }
     }, 2, 3, [], pipes);
 
@@ -83,7 +83,7 @@ describe('pipe', () => {
 
       constructor() { this.dirProp = ''; }
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: MyDir,
         selectors: [['', 'myDir', '']],
         factory: () => new MyDir(),
@@ -95,7 +95,7 @@ describe('pipe', () => {
     class DoublePipe implements PipeTransform {
       transform(value: any) { return `${value}${value}`; }
 
-      static ngPipeDef = definePipe({
+      static ngPipeDef = ΔdefinePipe({
         name: 'double',
         type: DoublePipe,
         factory: function DoublePipe_Factory() { return new DoublePipe(); },
@@ -104,12 +104,12 @@ describe('pipe', () => {
 
     function Template(rf: RenderFlags, ctx: string) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', ['myDir', '']);
-        pipe(1, 'double');
-        elementEnd();
+        ΔelementStart(0, 'div', ['myDir', '']);
+        Δpipe(1, 'double');
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'elprop', bind(pipeBind1(1, 1, ctx)));
+        ΔelementProperty(0, 'elprop', Δbind(ΔpipeBind1(1, 1, ctx)));
         directive = getDirectiveOnNode(0);
       }
     }
@@ -120,12 +120,13 @@ describe('pipe', () => {
   it('should support arguments in pipes', () => {
     function Template(rf: RenderFlags, person: Person) {
       if (rf & RenderFlags.Create) {
-        text(0);
-        pipe(1, 'multiArgPipe');
+        Δtext(0);
+        Δpipe(1, 'multiArgPipe');
       }
       if (rf & RenderFlags.Update) {
-        textBinding(
-            0, interpolation1('', pipeBind3(1, 1, person.name, 'one', person.address !.city), ''));
+        ΔtextBinding(
+            0,
+            Δinterpolation1('', ΔpipeBind3(1, 1, person.name, 'one', person.address !.city), ''));
       }
     }
 
@@ -136,14 +137,14 @@ describe('pipe', () => {
   it('should support calling pipes with different number of arguments', () => {
     function Template(rf: RenderFlags, person: Person) {
       if (rf & RenderFlags.Create) {
-        text(0);
-        pipe(1, 'multiArgPipe');
-        pipe(2, 'multiArgPipe');
+        Δtext(0);
+        Δpipe(1, 'multiArgPipe');
+        Δpipe(2, 'multiArgPipe');
       }
       if (rf & RenderFlags.Update) {
-        textBinding(
-            0, interpolation1(
-                   '', pipeBind4(2, 5, pipeBindV(1, 1, [person.name, 'a', 'b']), 0, 1, 2), ''));
+        ΔtextBinding(
+            0, Δinterpolation1(
+                   '', ΔpipeBind4(2, 5, ΔpipeBindV(1, 1, [person.name, 'a', 'b']), 0, 1, 2), ''));
       }
     }
 
@@ -156,7 +157,7 @@ describe('pipe', () => {
     class IdentityPipe implements PipeTransform {
       transform(value: any) { return value; }
 
-      static ngPipeDef = definePipe({
+      static ngPipeDef = ΔdefinePipe({
         name: 'identityPipe',
         type: IdentityPipe,
         factory: function IdentityPipe_Factory() { return new IdentityPipe(); },
@@ -165,12 +166,12 @@ describe('pipe', () => {
 
     function Template(rf: RenderFlags, person: Person) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        pipe(1, 'identityPipe');
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δpipe(1, 'identityPipe');
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'id', bind(pipeBind1(1, 1, 'Megatron')));
+        ΔelementProperty(0, 'id', Δbind(ΔpipeBind1(1, 1, 'Megatron')));
       }
     }
 
@@ -185,11 +186,11 @@ describe('pipe', () => {
   it('should support duplicates by using the later entry', () => {
     function Template(rf: RenderFlags, person: Person) {
       if (rf & RenderFlags.Create) {
-        text(0);
-        pipe(1, 'duplicatePipe');
+        Δtext(0);
+        Δpipe(1, 'duplicatePipe');
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, interpolation1('', pipeBind1(1, 1, person.name), ''));
+        ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, person.name), ''));
       }
     }
 
@@ -201,11 +202,11 @@ describe('pipe', () => {
     it('should call pure pipes only if the arguments change', () => {
       function Template(rf: RenderFlags, person: Person) {
         if (rf & RenderFlags.Create) {
-          text(0);
-          pipe(1, 'countingPipe');
+          Δtext(0);
+          Δpipe(1, 'countingPipe');
         }
         if (rf & RenderFlags.Update) {
-          textBinding(0, interpolation1('', pipeBind1(1, 1, person.name), ''));
+          ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, person.name), ''));
         }
       }
 
@@ -230,11 +231,11 @@ describe('pipe', () => {
     it('should call impure pipes on each change detection run', () => {
       function Template(rf: RenderFlags, person: Person) {
         if (rf & RenderFlags.Create) {
-          text(0);
-          pipe(1, 'countingImpurePipe');
+          Δtext(0);
+          Δpipe(1, 'countingImpurePipe');
         }
         if (rf & RenderFlags.Update) {
-          textBinding(0, interpolation1('', pipeBind1(1, 1, person.name), ''));
+          ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, person.name), ''));
         }
       }
 
@@ -246,37 +247,37 @@ describe('pipe', () => {
     it('should not cache impure pipes', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          pipe(1, 'countingImpurePipe');
-          elementEnd();
-          elementStart(2, 'div');
-          pipe(3, 'countingImpurePipe');
-          elementEnd();
-          container(4);
+          ΔelementStart(0, 'div');
+          Δpipe(1, 'countingImpurePipe');
+          ΔelementEnd();
+          ΔelementStart(2, 'div');
+          Δpipe(3, 'countingImpurePipe');
+          ΔelementEnd();
+          Δcontainer(4);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(0, 'id', bind(pipeBind1(1, 2, true)));
-          elementProperty(2, 'id', bind(pipeBind1(3, 4, true)));
-          pipeInstances.push(load<CountingImpurePipe>(1), load(3));
-          containerRefreshStart(4);
+          ΔelementProperty(0, 'id', Δbind(ΔpipeBind1(1, 2, true)));
+          ΔelementProperty(2, 'id', Δbind(ΔpipeBind1(3, 4, true)));
+          pipeInstances.push(Δload<CountingImpurePipe>(1), Δload(3));
+          ΔcontainerRefreshStart(4);
           {
             for (let i of [1, 2]) {
-              let rf1 = embeddedViewStart(1, 2, 3);
+              let rf1 = ΔembeddedViewStart(1, 2, 3);
               {
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'div');
-                  pipe(1, 'countingImpurePipe');
-                  elementEnd();
+                  ΔelementStart(0, 'div');
+                  Δpipe(1, 'countingImpurePipe');
+                  ΔelementEnd();
                 }
                 if (rf1 & RenderFlags.Update) {
-                  elementProperty(0, 'id', bind(pipeBind1(1, 1, true)));
-                  pipeInstances.push(load<CountingImpurePipe>(1));
+                  ΔelementProperty(0, 'id', Δbind(ΔpipeBind1(1, 1, true)));
+                  pipeInstances.push(Δload<CountingImpurePipe>(1));
                 }
               }
-              embeddedViewEnd();
+              ΔembeddedViewEnd();
             }
           }
-          containerRefreshEnd();
+          ΔcontainerRefreshEnd();
         }
       }
 
@@ -300,7 +301,7 @@ describe('pipe', () => {
 
       transform(value: any): any { return null; }
 
-      static ngPipeDef = definePipe({
+      static ngPipeDef = ΔdefinePipe({
         name: 'pipeWithOnDestroy',
         type: PipeWithOnDestroy,
         factory: function PipeWithOnDestroy_Factory() { return new PipeWithOnDestroy(); },
@@ -310,26 +311,26 @@ describe('pipe', () => {
     it('should call ngOnDestroy on pipes', () => {
       function Template(rf: RenderFlags, person: Person) {
         if (rf & RenderFlags.Create) {
-          container(0);
+          Δcontainer(0);
         }
         if (rf & RenderFlags.Update) {
-          containerRefreshStart(0);
+          ΔcontainerRefreshStart(0);
           {
             if (person.age > 20) {
-              let rf1 = embeddedViewStart(1, 2, 3);
+              let rf1 = ΔembeddedViewStart(1, 2, 3);
               {
                 if (rf1 & RenderFlags.Create) {
-                  text(0);
-                  pipe(1, 'pipeWithOnDestroy');
+                  Δtext(0);
+                  Δpipe(1, 'pipeWithOnDestroy');
                 }
                 if (rf & RenderFlags.Update) {
-                  textBinding(0, interpolation1('', pipeBind1(1, 1, person.age), ''));
+                  ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, person.age), ''));
                 }
               }
-              embeddedViewEnd();
+              ΔembeddedViewEnd();
             }
           }
-          containerRefreshEnd();
+          ΔcontainerRefreshEnd();
         }
       }
       const pipes = [PipeWithOnDestroy];
@@ -362,11 +363,11 @@ describe('pipe', () => {
       title = 'ServiceB Title';
 
       static ngInjectableDef =
-          defineInjectable({providedIn: 'root', factory: () => new ServiceB()});
+          ΔdefineInjectable({providedIn: 'root', factory: () => new ServiceB()});
     }
 
     class ModuleA {
-      static ngInjectorDef = defineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
+      static ngInjectorDef = ΔdefineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
       static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
     }
 
@@ -376,7 +377,7 @@ describe('pipe', () => {
 
         transform(value: string): string { return `${value} - ${this.obj.title}`; }
 
-        static ngPipeDef = definePipe({
+        static ngPipeDef = ΔdefinePipe({
           name: 'myConcatPipe',
           type: MyConcatPipe,
           factory: () => new MyConcatPipe(directiveInject(InjectionType)),
@@ -398,11 +399,11 @@ describe('pipe', () => {
           // '{{ title | myConcatPipe }}'
           template: (rf: RenderFlags, ctx: MyComponent) => {
             if (rf & 1) {
-              text(0);
-              pipe(1, 'myConcatPipe');
+              Δtext(0);
+              Δpipe(1, 'myConcatPipe');
             }
             if (rf & 2) {
-              textBinding(0, interpolation1('', pipeBind1(1, 1, ctx.title), ''));
+              ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, ctx.title), ''));
             }
           },
           ...overrides
@@ -438,7 +439,7 @@ describe('pipe', () => {
     class WrappingPipe implements PipeTransform {
       transform(value: any) { return new WrappedValue('Bar'); }
 
-      static ngPipeDef = definePipe({
+      static ngPipeDef = ΔdefinePipe({
         name: 'wrappingPipe',
         type: WrappingPipe,
         factory: function WrappingPipe_Factory() { return new WrappingPipe(); },
@@ -447,11 +448,11 @@ describe('pipe', () => {
     }
 
     function createTemplate() {
-      text(0);
-      pipe(1, 'wrappingPipe');
+      Δtext(0);
+      Δpipe(1, 'wrappingPipe');
     }
 
-    function updateTemplate() { textBinding(0, interpolation1('', pipeBind1(1, 1, null), '')); }
+    function updateTemplate() { ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, null), '')); }
 
     it('should unwrap', () => {
       const fixture =
@@ -480,7 +481,7 @@ class CountingPipe implements PipeTransform {
 
   transform(value: any) { return `${value} state:${this.state++}`; }
 
-  static ngPipeDef = definePipe({
+  static ngPipeDef = ΔdefinePipe({
     name: 'countingPipe',
     type: CountingPipe,
     factory: function CountingPipe_Factory() { return new CountingPipe(); },
@@ -493,7 +494,7 @@ class CountingImpurePipe implements PipeTransform {
 
   transform(value: any) { return `${value} state:${this.state++}`; }
 
-  static ngPipeDef = definePipe({
+  static ngPipeDef = ΔdefinePipe({
     name: 'countingImpurePipe',
     type: CountingImpurePipe,
     factory: function CountingImpurePipe_Factory() { return new CountingImpurePipe(); },
@@ -507,7 +508,7 @@ class MultiArgPipe implements PipeTransform {
     return `${value} ${arg1} ${arg2} ${arg3}`;
   }
 
-  static ngPipeDef = definePipe({
+  static ngPipeDef = ΔdefinePipe({
     name: 'multiArgPipe',
     type: MultiArgPipe,
     factory: function MultiArgPipe_Factory() { return new MultiArgPipe(); },
@@ -518,7 +519,7 @@ class MultiArgPipe implements PipeTransform {
 class DuplicatePipe1 implements PipeTransform {
   transform(value: any) { return `${value} from duplicate 1`; }
 
-  static ngPipeDef = definePipe({
+  static ngPipeDef = ΔdefinePipe({
     name: 'duplicatePipe',
     type: DuplicatePipe1,
     factory: function DuplicatePipe1_Factory() { return new DuplicatePipe1(); },
@@ -529,7 +530,7 @@ class DuplicatePipe1 implements PipeTransform {
 class DuplicatePipe2 implements PipeTransform {
   transform(value: any) { return `${value} from duplicate 2`; }
 
-  static ngPipeDef = definePipe({
+  static ngPipeDef = ΔdefinePipe({
     name: 'duplicatePipe',
     type: DuplicatePipe2,
     factory: function DuplicatePipe2_Factory() { return new DuplicatePipe2(); },

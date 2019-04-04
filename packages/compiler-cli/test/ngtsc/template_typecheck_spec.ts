@@ -26,17 +26,17 @@ export declare class NgForOfContext<T> {
 export declare class NgForOf<T> {
   ngForOf: T[];
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
-  static ngDirectiveDef: i0.ɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
+  static ngDirectiveDef: i0.ΔDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
 export declare class NgIf {
   ngIf: any;
   static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>
-  static ngDirectiveDef: i0.ɵDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
+  static ngDirectiveDef: i0.ΔDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
 export declare class CommonModule {
-  static ngModuleDef: i0.ɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf], never, [typeof NgIf, typeof NgForOf]>;
+  static ngModuleDef: i0.ΔNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf], never, [typeof NgIf, typeof NgForOf]>;
 }
 `);
 }

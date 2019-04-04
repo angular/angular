@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, Inject, InjectionToken, QueryList, ɵAttributeMarker as AttributeMarker} from '../../src/core';
-import {allocHostVars, bind, ComponentDef, contentQuery, defineBase, defineComponent, defineDirective, DirectiveDef, directiveInject, element, elementEnd, elementProperty, elementStart, InheritDefinitionFeature, load, loadContentQuery, loadViewQuery, NgOnChangesFeature, ProvidersFeature, queryRefresh, RenderFlags, viewQuery,} from '../../src/render3/index';
+import {ΔallocHostVars, Δbind, ComponentDef, ΔcontentQuery, ΔdefineBase, ΔdefineComponent, ΔdefineDirective, DirectiveDef, ΔdirectiveInject, Δelement, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔInheritDefinitionFeature, Δload, ΔloadContentQuery, ΔloadViewQuery, ΔNgOnChangesFeature, ΔProvidersFeature, ΔqueryRefresh, RenderFlags, ΔviewQuery,} from '../../src/render3/index';
 
 import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
 
@@ -28,11 +28,11 @@ describe('InheritDefinitionFeature', () => {
       ngAfterViewChecked() {}
       ngDoCheck() {}
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -50,7 +50,7 @@ describe('InheritDefinitionFeature', () => {
 
   it('should inherit inputs', () => {
     class SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         inputs: {
           superFoo: ['foo', 'declaredFoo'],
           superBar: 'bar',
@@ -63,7 +63,7 @@ describe('InheritDefinitionFeature', () => {
     }
 
     class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         inputs: {
           subBaz: 'baz',
@@ -71,7 +71,7 @@ describe('InheritDefinitionFeature', () => {
         },
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -93,7 +93,7 @@ describe('InheritDefinitionFeature', () => {
 
   it('should inherit outputs', () => {
     class SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         outputs: {
           superFoo: 'foo',
           superBar: 'bar',
@@ -106,7 +106,7 @@ describe('InheritDefinitionFeature', () => {
     }
 
     class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         outputs: {
           subBaz: 'baz',
@@ -114,7 +114,7 @@ describe('InheritDefinitionFeature', () => {
         },
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -130,7 +130,7 @@ describe('InheritDefinitionFeature', () => {
 
   it('should detect EMPTY inputs and outputs', () => {
     class SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         inputs: {
           testIn: 'testIn',
         },
@@ -144,11 +144,11 @@ describe('InheritDefinitionFeature', () => {
     }
 
     class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -167,7 +167,7 @@ describe('InheritDefinitionFeature', () => {
     class Class5 {
       input5 = 'data, so data';
 
-      static ngBaseDef = defineBase({
+      static ngBaseDef = ΔdefineBase({
         inputs: {
           input5: 'input5',
         },
@@ -177,14 +177,14 @@ describe('InheritDefinitionFeature', () => {
     class Class4 extends Class5 {
       input4 = 'hehe';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         inputs: {
           input4: 'input4',
         },
         type: Class4,
         selectors: [['', 'superDir', '']],
         factory: () => new Class4(),
-        features: [InheritDefinitionFeature],
+        features: [ΔInheritDefinitionFeature],
       });
     }
 
@@ -193,7 +193,7 @@ describe('InheritDefinitionFeature', () => {
     class Class2 extends Class3 {
       input3 = 'wee';
 
-      static ngBaseDef = defineBase({
+      static ngBaseDef = ΔdefineBase({
         inputs: {
           input3: ['alias3', 'input3'],
         }
@@ -204,7 +204,7 @@ describe('InheritDefinitionFeature', () => {
       input1 = 'test';
       input2 = 'whatever';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: Class1,
         inputs: {
           input1: 'input1',
@@ -212,7 +212,7 @@ describe('InheritDefinitionFeature', () => {
         },
         selectors: [['', 'subDir', '']],
         factory: () => new Class1(),
-        features: [InheritDefinitionFeature],
+        features: [ΔInheritDefinitionFeature],
       });
     }
 
@@ -239,7 +239,7 @@ describe('InheritDefinitionFeature', () => {
     class Class5 {
       output5 = 'data, so data';
 
-      static ngBaseDef = defineBase({
+      static ngBaseDef = ΔdefineBase({
         outputs: {
           output5: 'alias5',
         },
@@ -249,14 +249,14 @@ describe('InheritDefinitionFeature', () => {
     class Class4 extends Class5 {
       output4 = 'hehe';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         outputs: {
           output4: 'alias4',
         },
         type: Class4,
         selectors: [['', 'superDir', '']],
         factory: () => new Class4(),
-        features: [InheritDefinitionFeature],
+        features: [ΔInheritDefinitionFeature],
       });
     }
 
@@ -265,7 +265,7 @@ describe('InheritDefinitionFeature', () => {
     class Class2 extends Class3 {
       output3 = 'wee';
 
-      static ngBaseDef = defineBase({
+      static ngBaseDef = ΔdefineBase({
         outputs: {
           output3: 'alias3',
         }
@@ -276,7 +276,7 @@ describe('InheritDefinitionFeature', () => {
       output1 = 'test';
       output2 = 'whatever';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: Class1,
         outputs: {
           output1: 'alias1',
@@ -284,7 +284,7 @@ describe('InheritDefinitionFeature', () => {
         },
         selectors: [['', 'subDir', '']],
         factory: () => new Class1(),
-        features: [InheritDefinitionFeature],
+        features: [ΔInheritDefinitionFeature],
       });
     }
 
@@ -305,15 +305,15 @@ describe('InheritDefinitionFeature', () => {
     class SuperDirective {
       id = 'my-id';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'id', bind(ctx.id));
+            ΔelementProperty(elementIndex, 'id', Δbind(ctx.id));
           }
         },
         factory: () => new SuperDirective(),
@@ -323,26 +323,26 @@ describe('InheritDefinitionFeature', () => {
     class SubDirective extends SuperDirective {
       title = 'my-title';
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
           if (rf & RenderFlags.Create) {
-            allocHostVars(1);
+            ΔallocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'title', bind(ctx.title));
+            ΔelementProperty(elementIndex, 'title', Δbind(ctx.title));
           }
         },
         factory: () => subDir = new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
 
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['subDir', '']);
+        Δelement(0, 'div', ['subDir', '']);
       }
     }, 1, 0, [SubDirective]);
 
@@ -374,7 +374,7 @@ describe('InheritDefinitionFeature', () => {
      */
     class SuperComponent {
       superQuery?: QueryList<any>;
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: SuperComponent,
         template: () => {},
         consts: 0,
@@ -382,11 +382,11 @@ describe('InheritDefinitionFeature', () => {
         selectors: [['super-comp']],
         viewQuery: <T>(rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            viewQuery(['super'], false, null);
+            ΔviewQuery(['super'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+            ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                 (ctx.superQuery = tmp as QueryList<any>);
           }
         },
@@ -404,13 +404,13 @@ describe('InheritDefinitionFeature', () => {
      */
     class SubComponent extends SuperComponent {
       subQuery?: QueryList<any>;
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: SubComponent,
         template: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            element(0, 'div', ['id', 'sub'], ['sub', '']);
-            element(2, 'div', ['id', 'super'], ['super', '']);
-            element(4, 'some-comp');
+            Δelement(0, 'div', ['id', 'sub'], ['sub', '']);
+            Δelement(2, 'div', ['id', 'super'], ['super', '']);
+            Δelement(4, 'some-comp');
           }
         },
         consts: 5,
@@ -418,16 +418,16 @@ describe('InheritDefinitionFeature', () => {
         selectors: [['sub-comp']],
         viewQuery: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            viewQuery(['sub'], false, null);
+            ΔviewQuery(['sub'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+            ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
                 (ctx.subQuery = tmp as QueryList<any>);
           }
         },
         factory: () => new SubComponent(),
-        features: [InheritDefinitionFeature],
+        features: [ΔInheritDefinitionFeature],
         directives: [SomeComp]
       });
     }
@@ -437,7 +437,7 @@ describe('InheritDefinitionFeature', () => {
       const log: Array<[string, RenderFlags, any]> = [];
 
       class SuperComponent {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: SuperComponent,
           template: () => {},
           consts: 0,
@@ -451,7 +451,7 @@ describe('InheritDefinitionFeature', () => {
       }
 
       class SubComponent extends SuperComponent {
-        static ngComponentDef = defineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: SubComponent,
           template: () => {},
           consts: 0,
@@ -461,7 +461,7 @@ describe('InheritDefinitionFeature', () => {
             log.push(['sub', rf, ctx]);
           },
           factory: () => new SubComponent(),
-          features: [InheritDefinitionFeature]
+          features: [ΔInheritDefinitionFeature]
         });
       }
 
@@ -497,8 +497,8 @@ describe('InheritDefinitionFeature', () => {
 
       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          element(0, 'sub-comp');
-          element(1, 'sub-comp');
+          Δelement(0, 'sub-comp');
+          Δelement(1, 'sub-comp');
         }
         subCompOne = getDirectiveOnNode(0);
         subCompTwo = getDirectiveOnNode(1);
@@ -524,7 +524,7 @@ describe('InheritDefinitionFeature', () => {
     const log: string[] = [];
 
     class SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         contentQueries: () => { log.push('super'); },
@@ -533,12 +533,12 @@ describe('InheritDefinitionFeature', () => {
     }
 
     class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         contentQueries: () => { log.push('sub'); },
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -555,17 +555,17 @@ describe('InheritDefinitionFeature', () => {
       // @ContentChildren('foo')
       foos !: QueryList<ElementRef>;
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SuperDirective,
         selectors: [['', 'super-dir', '']],
         factory: () => new SuperDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], true, null);
+            ΔcontentQuery(dirIndex, ['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+            ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.foos = tmp);
           }
         }
       });
@@ -575,20 +575,20 @@ describe('InheritDefinitionFeature', () => {
       // @ContentChildren('bar')
       bars !: QueryList<ElementRef>;
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'sub-dir', '']],
         factory: () => dirInstance = new SubDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['bar'], true, null);
+            ΔcontentQuery(dirIndex, ['bar'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
-            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.bars = tmp);
+            ΔqueryRefresh(tmp = ΔloadContentQuery<ElementRef>()) && (ctx.bars = tmp);
           }
         },
-        features: [InheritDefinitionFeature]
+        features: [ΔInheritDefinitionFeature]
       });
     }
 
@@ -600,12 +600,12 @@ describe('InheritDefinitionFeature', () => {
      */
     const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', [AttributeMarker.Bindings, 'sub-dir']);
+        ΔelementStart(0, 'div', [AttributeMarker.Bindings, 'sub-dir']);
         {
-          element(1, 'span', null, ['foo', '']);
-          element(3, 'span', null, ['bar', '']);
+          Δelement(1, 'span', null, ['foo', '']);
+          Δelement(3, 'span', null, ['bar', '']);
         }
-        elementEnd();
+        ΔelementEnd();
       }
     }, 5, 0, [SubDirective]);
 
@@ -616,7 +616,7 @@ describe('InheritDefinitionFeature', () => {
 
   it('should throw if inheriting a component from a directive', () => {
     class SuperComponent {
-      static ngComponentDef = defineComponent({
+      static ngComponentDef = ΔdefineComponent({
         type: SuperComponent,
         template: () => {},
         selectors: [['', 'superDir', '']],
@@ -627,11 +627,11 @@ describe('InheritDefinitionFeature', () => {
     }
 
     expect(() => {
-      class SubDirective extends SuperComponent{static ngDirectiveDef = defineDirective({
+      class SubDirective extends SuperComponent{static ngDirectiveDef = ΔdefineDirective({
                                                   type: SubDirective,
                                                   selectors: [['', 'subDir', '']],
                                                   factory: () => new SubDirective(),
-                                                  features: [InheritDefinitionFeature]
+                                                  features: [ΔInheritDefinitionFeature]
                                                 });}
     }).toThrowError('Directives cannot inherit Components');
   });
@@ -643,23 +643,24 @@ describe('InheritDefinitionFeature', () => {
 
     // providers: [{ provide: SOME_DIRS, useClass: SuperDirective, multi: true }]
     class SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         factory: () => new SuperDirective(),
-        features: [ProvidersFeature([{provide: SOME_DIRS, useClass: SuperDirective, multi: true}])],
+        features:
+            [ΔProvidersFeature([{provide: SOME_DIRS, useClass: SuperDirective, multi: true}])],
       });
     }
 
     // providers: [{ provide: SOME_DIRS, useClass: SubDirective, multi: true }]
     class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
         features: [
-          ProvidersFeature([{provide: SOME_DIRS, useClass: SubDirective, multi: true}]),
-          InheritDefinitionFeature
+          ΔProvidersFeature([{provide: SOME_DIRS, useClass: SubDirective, multi: true}]),
+          ΔInheritDefinitionFeature
         ],
       });
     }
@@ -667,17 +668,17 @@ describe('InheritDefinitionFeature', () => {
     class OtherDirective {
       constructor(@Inject(SOME_DIRS) public dirs: any) {}
 
-      static ngDirectiveDef = defineDirective({
+      static ngDirectiveDef = ΔdefineDirective({
         type: OtherDirective,
         selectors: [['', 'otherDir', '']],
-        factory: () => otherDir = new OtherDirective(directiveInject(SOME_DIRS)),
+        factory: () => otherDir = new OtherDirective(ΔdirectiveInject(SOME_DIRS)),
       });
     }
 
     /** <div otherDir subDir></div> */
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div', ['otherDir', '', 'subDir', '']);
+        Δelement(0, 'div', ['otherDir', '', 'subDir', '']);
       }
     }, 1, 0, [OtherDirective, SubDirective, SuperDirective]);
 

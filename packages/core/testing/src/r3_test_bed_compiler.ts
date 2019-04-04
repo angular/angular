@@ -6,44 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// clang-format off
-import {
-  ApplicationInitStatus,
-  COMPILER_OPTIONS,
-  Compiler,
-  Component,
-  Directive,
-  ErrorHandler,
-  ModuleWithComponentFactories,
-  NgModule,
-  NgModuleFactory,
-  NgZone,
-  Injector,
-  Pipe,
-  PlatformRef,
-  Provider,
-  Type,
-  ɵcompileComponent as compileComponent,
-  ɵcompileDirective as compileDirective,
-  ɵcompileNgModuleDefs as compileNgModuleDefs,
-  ɵcompilePipe as compilePipe,
-  ɵgetInjectableDef as getInjectableDef,
-  ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF,
-  ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF,
-  ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF,
-  ɵNG_MODULE_DEF as NG_MODULE_DEF,
-  ɵNG_PIPE_DEF as NG_PIPE_DEF,
-  ɵRender3ComponentFactory as ComponentFactory,
-  ɵRender3NgModuleRef as NgModuleRef,
-  ɵInjectableDef as InjectableDef,
-  ɵNgModuleFactory as R3NgModuleFactory,
-  ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
-  ɵNgModuleType as NgModuleType,
-  ɵDirectiveDef as DirectiveDef,
-  ɵpatchComponentDefWithScope as patchComponentDefWithScope,
-  ɵtransitiveScopesFor as transitiveScopesFor,
-} from '@angular/core';
-// clang-format on
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, ErrorHandler, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgZone, Injector, Pipe, PlatformRef, Provider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ΔInjectableDef as InjectableDef, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵDirectiveDef as DirectiveDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵtransitiveScopesFor as transitiveScopesFor,} from '@angular/core';
 import {ResourceLoader} from '@angular/compiler';
 
 import {clearResolutionOfComponentResourcesQueue, restoreComponentResolutionQueue, resolveComponentResources, isComponentDefPendingResolution} from '../../src/metadata/resource_loading';

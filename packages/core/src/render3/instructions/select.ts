@@ -18,18 +18,20 @@ import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
  *
  * ```ts
  * (rf: RenderFlags, ctx: any) => {
-  *  if (rf & 1) {
-  *    element(0, 'div');
-  *  }
-  *  if (rf & 2) {
-  *    select(0); // Select the <div/> created above.
-  *    property('title', 'test');
-  *  }
-  * }
-  * ```
-  * @param index the index of the item to act on with the following instructions
-  */
-export function select(index: number): void {
+ *   if (rf & 1) {
+ *     element(0, 'div');
+ *   }
+ *   if (rf & 2) {
+ *     select(0); // Select the <div/> created above.
+ *     property('title', 'test');
+ *   }
+ *  }
+ * ```
+ * @param index the index of the item to act on with the following instructions
+ *
+ * @publicApi
+ */
+export function Δselect(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode &&
       assertLessThan(
