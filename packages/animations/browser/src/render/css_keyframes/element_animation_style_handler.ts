@@ -140,8 +140,8 @@ function setAnimationStyle(element: any, name: string, value: string, index?: nu
   element.style[prop] = value;
 }
 
-function getAnimationStyle(element: any, name: string) {
-  return element.style[ANIMATION_PROP + name];
+export function getAnimationStyle(element: any, name: string) {
+  return element.style[ANIMATION_PROP + name] || '';
 }
 
 function countChars(value: string, char: string): number {
