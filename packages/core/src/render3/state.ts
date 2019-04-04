@@ -119,27 +119,131 @@ export function getLView(): LView {
   return lView;
 }
 
-let activeHostContext: {}|null = null;
-let activeHostElementIndex: number|null = null;
+/**
+ * Used as the starting directive id value.
+ *
+ * All subsequent directives are incremented from this value onwards.
+ * The reason why this value is `1` instead of `0` is because the `0`
+ * value is reserved for the template.
+ */
+const MIN_DIRECTIVE_ID = 1;
+
+let activeDirectiveId = MIN_DIRECTIVE_ID;
+let activeDirectiveSuperClassDepthPosition = 0;
+let activeDirectiveSuperClassHeight = 0;
 
 /**
- * Sets the active host context (the directive/component instance) and its host element index.
+ * Sets the active directive host element.
  *
- * @param host the directive/component instance
- * @param index the element index value for the host element where the directive/component instance
- * lives
+ * @param elementIndex the element index value for the host element where
+ *                     the directive/component instance lives
  */
-export function setActiveHost(host: {} | null, index: number | null = null) {
-  activeHostContext = host;
-  activeHostElementIndex = index;
+export function setActiveHostElement(elementIndex: number | null = null) {
+  if (_selectedIndex !== elementIndex) {
+    setSelectedIndex(elementIndex == null ? -1 : elementIndex);
+    activeDirectiveId = MIN_DIRECTIVE_ID;
+    activeDirectiveSuperClassDepthPosition = 0;
+    activeDirectiveSuperClassHeight = 0;
+  }
 }
 
-export function getActiveHostContext() {
-  return activeHostContext;
+/**
+ * Returns the current id value of the current directive.
+ *
+ * For example we have an element that has two directives on it:
+ * <div dir-one dir-two></div>
+ *
+ * dirOne->hostBindings() (id == 1)
+ * dirTwo->hostBindings() (id == 2)
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ *
+ * Note that directive id values are specific to an element (this means that
+ * the same id value could be present on another element with a completely
+ * different set of directives).
+ */
+export function getActiveDirectiveId() {
+  return activeDirectiveId;
 }
 
-export function getActiveHostElementIndex() {
-  return activeHostElementIndex;
+/**
+ * Increments the current directive id value.
+ *
+ * For example we have an element that has two directives on it:
+ * <div dir-one dir-two></div>
+ *
+ * dirOne->hostBindings() (index = 1)
+ * // increment
+ * dirTwo->hostBindings() (index = 2)
+ *
+ * Depending on whether or not a previous directive had any inherited
+ * directives present, that value will be incremented in addition
+ * to the id jumping up by one.
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ *
+ * Note that directive id values are specific to an element (this means that
+ * the same id value could be present on another element with a completely
+ * different set of directives).
+ */
+export function incrementActiveDirectiveId() {
+  activeDirectiveId += 1 + activeDirectiveSuperClassHeight;
+
+  // because we are dealing with a new directive this
+  // means we have exited out of the inheritance chain
+  activeDirectiveSuperClassDepthPosition = 0;
+  activeDirectiveSuperClassHeight = 0;
+}
+
+/**
+ * Increments the current super class (reverse inheritance) depth for a directive.
+ *
+ * For example we have two directives: Parent and Child.
+ * <div child-dir other-dir></div>
+ *
+ * // increment
+ * parentInstance->hostBindings() (depth = 1)
+ * // decrement
+ * childInstance->hostBindings() (depth = 0)
+ * otherInstance->hostBindings() (depth = 0 b/c it's a different directive)
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ */
+export function incrementActiveDirectiveSuperClassDepthPosition() {
+  activeDirectiveSuperClassDepthPosition++;
+  activeDirectiveSuperClassHeight++;
+}
+
+/**
+ * Decrements the current super class (reverse inheritance) depth for a directive.
+ *
+ * For example we have two directives: Parent and Child.
+ * <div child-dir other-dir></div>
+ *
+ * // increment
+ * parentInstance->hostBindings() (depth = 1)
+ * // decrement
+ * childInstance->hostBindings() (depth = 0)
+ * otherInstance->hostBindings() (depth = 0 b/c it's a different directive)
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ */
+export function decrementActiveDirectiveSuperClassDepthPosition() {
+  activeDirectiveSuperClassDepthPosition--;
+}
+
+/**
+ * Returns the current super class (reverse inheritance) depth for a directive.
+ *
+ * This is designed to help instruction code distinguish different hostBindings
+ * calls from each other when a directive has extended from another directive.
+ * Normally using the directive id value is enough, but with the case
+ * of parent/sub-class directive inheritance more information is required.
+ *
+ * Note that this is only active when `hostBinding` functions are being processed.
+ */
+export function getActiveDirectiveSuperClassDepth() {
+  return activeDirectiveSuperClassDepthPosition;
 }
 
 /**

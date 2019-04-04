@@ -23,7 +23,7 @@ import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {applyOnCreateInstructions} from './node_util';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState} from './state';
+import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
 import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
@@ -210,10 +210,15 @@ export function createRootComponent<T>(
 
   const rootTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass && componentDef.hostBindings) {
+    const elementIndex = rootTNode.index - HEADER_OFFSET;
+    setActiveHostElement(elementIndex);
+
     const expando = tView.expandoInstructions !;
     invokeHostBindingsInCreationMode(
         componentDef, expando, component, rootTNode, tView.firstTemplatePass);
     rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
+
+    setActiveHostElement(null);
   }
 
   if (rootTNode.stylingTemplate) {
