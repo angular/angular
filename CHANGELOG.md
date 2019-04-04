@@ -1,3 +1,4 @@
+
 <a name="8.0.0-beta.11"></a>
 # [8.0.0-beta.11](https://github.com/angular/angular/compare/8.0.0-beta.10...8.0.0-beta.11) (2019-04-03)
 
