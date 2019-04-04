@@ -20,7 +20,7 @@
     "shelljs": "^0.8.1",
     "source-map": "^0.6.1",
     "tslib": "^1.9.0",
-    "yargs": "9.0.1"
+    "yargs": "13.1.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
