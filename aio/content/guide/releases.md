@@ -20,7 +20,7 @@ The practices described in this document apply to Angular 2.0 and later. If you 
 
 Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version. 
 
-Angular version numbers have three parts: `major.minor.patch`. For example, version 5.2.9 indicates major version 5, minor version 2, and patch version 9. 
+Angular version numbers have three parts: `major.minor.patch`. For example, version 7.2.11 indicates major version 7, minor version 2, and patch level 11. 
 
 The version number is incremented based on the level of change included in the release. 
 
@@ -30,11 +30,11 @@ The version number is incremented based on the level of change included in the r
 
 * Patch releases are low risk, bug fix releases. No developer assistance is expected during update.
 
-If you are updating within the same major version, then you can skip any intermediate versions and update directly to the targeted version. For example, if you want to update from 5.0.0 to 5.2.9, then you can update directly; you do not need to update from 5.0.0 to 5.1.0 before updating to 5.2.9. 
+If you are updating within the same major version, then you can skip any intermediate versions and update directly to the targeted version. For example, if you want to update from 7.0.0 to 7.2.11, then you can update directly; you do not need to update from 7.0.0 to 7.1.0 before updating to 7.2.11. 
 
-If you are updating from one major version to another, then we recommend that you don't skip major versions. Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 4.x.x to version 6.x.x, we recommend that you update to the latest 5.x.x release first. After successfully updating to 5.x.x, you can then update to 6.x.x. 
+If you are updating from one major version to another, then we recommend that you don't skip major versions. Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 5.x.x to version 7.x.x, we recommend that you update to the latest 6.x.x release first. After successfully updating to 6.x.x, you can then update to 7.x.x. 
 
-Pre-release previews&mdash;such as Beta and Release Candidate versions&mdash;are indicated by appending a dash and a beta or rc identifier, such as version 5.2.9-rc.3.
+Pre-release previews&mdash;such as Beta and Release Candidate versions&mdash;are indicated by appending a dash and a beta or rc identifier, such as version 8.0.0-beta.10.
 
 {@a frequency}
 ## Release frequency
@@ -67,8 +67,8 @@ The following table contains our current target release dates for the next two m
 
  Date                   | Stable Release | Compatibility 
  ---------------------- | -------------- | -------------
- March/April 2019       | 8.0.0          | ^7.0.0
- September/October 2019 | 9.0.0          | ^8.0.0
+ May 2019               | 8.0.0          | ^7.0.0
+ October/November 2019  | 9.0.0          | ^8.0.0
 
  Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
