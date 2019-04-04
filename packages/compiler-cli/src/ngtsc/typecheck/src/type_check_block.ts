@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, ImplicitReceiver, MethodCall, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -813,6 +813,13 @@ function tcbResolve(ast: AST, tcb: Context, scope: Scope): ts.Expression|null {
     }
     const args = ast.args.map(arg => tcbExpression(arg, tcb, scope));
     return tsCallMethod(pipe, 'transform', [expr, ...args]);
+  } else if (
+      ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver &&
+      ast.name === '$any' && ast.args.length === 1) {
+    const expr = tcbExpression(ast.args[0], tcb, scope);
+    const exprAsAny =
+        ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    return ts.createParen(exprAsAny);
   } else {
     // This AST isn't special after all.
     return null;
