@@ -9,7 +9,7 @@
 import {PropertyWrite, parseTemplate} from '@angular/compiler';
 import {Variable, visitAll} from '@angular/compiler/src/render3/r3_ast';
 
-import {ResolvedTemplate} from './angular/ng_component_template';
+import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {PropertyAssignment, PropertyWriteHtmlVisitor} from './angular/property_write_html_visitor';
 
 export interface TemplateVariableAssignment {
