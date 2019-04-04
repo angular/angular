@@ -6,109 +6,107 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe, setComponentScope, setNgModuleScope} from './definition';
-import {InheritDefinitionFeature} from './features/inherit_definition_feature';
-import {NgOnChangesFeature} from './features/ng_onchanges_feature';
-import {ProvidersFeature} from './features/providers_feature';
-import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
+import {ΔdefineBase, ΔdefineComponent, ΔdefineDirective, ΔdefineNgModule, ΔdefinePipe, ΔsetComponentScope, ΔsetNgModuleScope} from './definition';
+import {ΔInheritDefinitionFeature} from './features/inherit_definition_feature';
+import {ΔNgOnChangesFeature} from './features/ng_onchanges_feature';
+import {ΔProvidersFeature} from './features/providers_feature';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ΔBaseDef, ΔComponentDefWithMeta, ΔDirectiveDefWithMeta, ΔPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
-export {getFactoryOf, getInheritedFactory} from './di';
+export {ΔgetFactoryOf, ΔgetInheritedFactory} from './di';
+// clang-format off
+export {
+  detectChanges,
+  markDirty,
+  store,
+  tick,
+  ΔallocHostVars,
+  Δbind,
+  ΔcomponentHostSyntheticListener,
+  ΔcomponentHostSyntheticProperty,
+
+  Δcontainer,
+  ΔcontainerRefreshEnd,
+  ΔcontainerRefreshStart,
+
+  ΔdirectiveInject,
+
+  Δelement,
+  ΔelementAttribute,
+  ΔelementClassProp,
+  ΔelementContainerEnd,
+
+  ΔelementContainerStart,
+  ΔelementEnd,
+
+  ΔelementHostAttrs,
+  ΔelementHostClassProp,
+  ΔelementHostStyleProp,
+  ΔelementHostStyling,
+  ΔelementHostStylingApply,
+  ΔelementHostStylingMap,
+  ΔelementProperty,
+  ΔelementStart,
+  ΔelementStyleProp,
+  ΔelementStyling,
+  ΔelementStylingApply,
+  ΔelementStylingMap,
+  ΔembeddedViewEnd,
+
+  ΔembeddedViewStart,
+
+  ΔgetCurrentView,
+  ΔinjectAttribute,
+
+  Δinterpolation1,
+  Δinterpolation2,
+  Δinterpolation3,
+  Δinterpolation4,
+  Δinterpolation5,
+  Δinterpolation6,
+  Δinterpolation7,
+  Δinterpolation8,
+  ΔinterpolationV,
+
+  Δlistener,
+  Δload,
+
+  ΔnamespaceHTML,
+  ΔnamespaceMathML,
+  ΔnamespaceSVG,
+
+  ΔnextContext,
+
+  Δprojection,
+  ΔprojectionDef,
+  Δproperty,
+
+  Δreference,
+
+  Δselect,
+  Δtemplate,
+
+  Δtext,
+  ΔtextBinding} from './instructions/all';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
-
-// clang-format off
 export {
-  allocHostVars,
-  bind,
-  interpolation1,
-  interpolation2,
-  interpolation3,
-  interpolation4,
-  interpolation5,
-  interpolation6,
-  interpolation7,
-  interpolation8,
-  interpolationV,
+  ΔrestoreView,
 
-  container,
-  containerRefreshStart,
-  containerRefreshEnd,
-
-  nextContext,
-
-  element,
-  elementAttribute,
-  elementClassProp,
-  elementEnd,
-  elementProperty,
-  componentHostSyntheticProperty,
-  componentHostSyntheticListener,
-  elementStart,
-
-  elementContainerStart,
-  elementContainerEnd,
-  elementStyling,
-  elementStylingMap,
-  elementStyleProp,
-  elementStylingApply,
-
-  elementHostAttrs,
-  elementHostStyling,
-  elementHostStylingMap,
-  elementHostStyleProp,
-  elementHostClassProp,
-  elementHostStylingApply,
-
-  select,
-  property, 
-  
-  listener,
-  store,
-  load,
-
-  namespaceHTML,
-  namespaceMathML,
-  namespaceSVG,
-
-  projection,
-  projectionDef,
-
-  text,
-  textBinding,
-  template,
-
-  reference,
-
-  embeddedViewStart,
-  embeddedViewEnd,
-  detectChanges,
-  markDirty,
-  tick,
-
-  directiveInject,
-  injectAttribute,
-
-  getCurrentView
-} from './instructions/all';
-
-export {
-  restoreView,
-
-  enableBindings,
-  disableBindings,
+  ΔenableBindings,
+  ΔdisableBindings,
 } from './state';
 
 export {
-  i18n,
-  i18nAttributes,
-  i18nExp,
-  i18nStart,
-  i18nEnd,
-  i18nApply,
-  i18nPostprocess
+  Δi18n,
+  Δi18nAttributes,
+  Δi18nExp,
+  Δi18nStart,
+  Δi18nEnd,
+  Δi18nApply,
+  Δi18nPostprocess,
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
@@ -122,71 +120,71 @@ export {
 } from './metadata';
 
 export {
-  pipe,
-  pipeBind1,
-  pipeBind2,
-  pipeBind3,
-  pipeBind4,
-  pipeBindV,
+  Δpipe,
+  ΔpipeBind1,
+  ΔpipeBind2,
+  ΔpipeBind3,
+  ΔpipeBind4,
+  ΔpipeBindV,
 } from './pipe';
 
 export {
-  queryRefresh,
-  viewQuery,
-  staticViewQuery,
-  loadViewQuery,
-  contentQuery,
-  loadContentQuery,
-  staticContentQuery
+  ΔqueryRefresh,
+  ΔviewQuery,
+  ΔstaticViewQuery,
+  ΔloadViewQuery,
+  ΔcontentQuery,
+  ΔloadContentQuery,
+  ΔstaticContentQuery
 } from './query';
 
 export {
-  pureFunction0,
-  pureFunction1,
-  pureFunction2,
-  pureFunction3,
-  pureFunction4,
-  pureFunction5,
-  pureFunction6,
-  pureFunction7,
-  pureFunction8,
-  pureFunctionV,
+  ΔpureFunction0,
+  ΔpureFunction1,
+  ΔpureFunction2,
+  ΔpureFunction3,
+  ΔpureFunction4,
+  ΔpureFunction5,
+  ΔpureFunction6,
+  ΔpureFunction7,
+  ΔpureFunction8,
+  ΔpureFunctionV,
 } from './pure_function';
 
-export {templateRefExtractor} from './view_engine_compatibility_prebound';
+export {ΔtemplateRefExtractor} from './view_engine_compatibility_prebound';
 
-export {resolveWindow, resolveDocument, resolveBody} from './util/misc_utils';
+export {ΔresolveWindow, ΔresolveDocument, ΔresolveBody} from './util/misc_utils';
 
 // clang-format on
 
 export {
-  BaseDef,
+  ΔBaseDef,
   ComponentDef,
-  ComponentDefWithMeta,
+  ΔComponentDefWithMeta,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,
   DirectiveDefFlags,
-  DirectiveDefWithMeta,
+  ΔDirectiveDefWithMeta,
   DirectiveType,
-  NgOnChangesFeature,
-  InheritDefinitionFeature,
-  ProvidersFeature,
+  ΔNgOnChangesFeature,
+  ΔInheritDefinitionFeature,
+  ΔProvidersFeature,
   PipeDef,
-  PipeDefWithMeta,
+  ΔPipeDefWithMeta,
   LifecycleHooksFeature,
-  defineComponent,
-  defineDirective,
-  defineNgModule,
-  defineBase,
-  definePipe,
+  ΔdefineComponent,
+  ΔdefineDirective,
+  ΔdefineNgModule,
+  ΔdefineBase,
+  ΔdefinePipe,
   getHostElement,
   getComponent,
   getDirectives,
   getRenderedText,
   renderComponent,
-  setComponentScope,
-  setNgModuleScope,
+  ΔsetComponentScope,
+  ΔsetNgModuleScope,
   whenRendered,
 };
 

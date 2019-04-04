@@ -9,7 +9,7 @@
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {inject} from '../di/injector_compatibility';
+import {Δinject} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
@@ -66,7 +66,7 @@ function toRefArray(map: {[key: string]: string}): {propName: string; templateNa
  */
 export const ROOT_CONTEXT = new InjectionToken<RootContext>(
     'ROOT_CONTEXT_TOKEN',
-    {providedIn: 'root', factory: () => createRootContext(inject(SCHEDULER))});
+    {providedIn: 'root', factory: () => createRootContext(Δinject(SCHEDULER))});
 
 /**
  * A change detection scheduler token for {@link RootContext}. This token is the default value used

@@ -140,7 +140,7 @@ describe('mock_compiler', () => {
     expectEmit(
         result.source, `
     // TODO: this comment should not be taken into account
-    $r3$.ɵtext(0, "Hello!");
+    $r3$.Δtext(0, "Hello!");
     // TODO: this comment should not be taken into account
     `,
         'todo comments should be ignored');

@@ -12,7 +12,7 @@ import {ClassProvider, Provider} from '../di/interface/provider';
 import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
 
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
-import {directiveInject} from './instructions/all';
+import {ΔdirectiveInject} from './instructions/all';
 import {DirectiveDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
@@ -93,7 +93,7 @@ function resolveProvider(
 
     if (isTypeProvider(provider) || !provider.multi) {
       // Single provider case: the factory is created and pushed immediately
-      const factory = new NodeInjectorFactory(providerFactory, isViewProvider, directiveInject);
+      const factory = new NodeInjectorFactory(providerFactory, isViewProvider, ΔdirectiveInject);
       const existingFactoryIndex = indexOf(
           token, tInjectables, isViewProvider ? beginIndex : beginIndex + cptViewProvidersCount,
           endIndex);
@@ -255,7 +255,7 @@ function multiFactory(
         this: NodeInjectorFactory, _: null, tData: TData, lData: LView, tNode: TElementNode) => any,
     index: number, isViewProvider: boolean, isComponent: boolean,
     f: () => any): NodeInjectorFactory {
-  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, directiveInject);
+  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, ΔdirectiveInject);
   factory.multi = [];
   factory.index = index;
   factory.componentProviders = 0;

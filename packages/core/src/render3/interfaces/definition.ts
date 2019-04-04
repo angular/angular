@@ -85,7 +85,10 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  */
 export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
-export type DirectiveDefWithMeta<
+/**
+ * @publicApi
+ */
+export type ΔDirectiveDefWithMeta<
     T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
@@ -97,8 +100,10 @@ export type DirectiveDefWithMeta<
  * and outputs should be inherited.
  *
  * See: {@link defineBase}
+ *
+ * @publicApi
  */
-export interface BaseDef<T> {
+export interface ΔBaseDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -134,7 +139,7 @@ export interface BaseDef<T> {
  *
  * See: {@link defineDirective}
  */
-export interface DirectiveDef<T> extends BaseDef<T> {
+export interface DirectiveDef<T> extends ΔBaseDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
@@ -194,7 +199,10 @@ export interface DirectiveDef<T> extends BaseDef<T> {
            privateName: string) => void)|null;
 }
 
-export type ComponentDefWithMeta<
+/**
+ * @publicApi
+ */
+export type ΔComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
 
@@ -338,7 +346,10 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-export type PipeDefWithMeta<T, Name extends string> = PipeDef<T>;
+/**
+ * @publicApi
+ */
+export type ΔPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
 export interface DirectiveDefFeature {
   <T>(directiveDef: DirectiveDef<T>): void;

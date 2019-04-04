@@ -46,7 +46,7 @@ describe('compiler compliance: providers', () => {
     const result = compile(files, angularFiles);
     expectEmit(
         result.source,
-        'features: [i0.ɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
+        'features: [i0.ΔProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
         'Incorrect features');
   });
 
@@ -79,7 +79,7 @@ describe('compiler compliance: providers', () => {
     const result = compile(files, angularFiles);
     expectEmit(
         result.source,
-        'features: [i0.ɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
+        'features: [i0.ΔProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
         'Incorrect features');
   });
 
@@ -111,7 +111,7 @@ describe('compiler compliance: providers', () => {
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source, 'features: [i0.ɵProvidersFeature([], [GreeterEN])],', 'Incorrect features');
+        result.source, 'features: [i0.ΔProvidersFeature([], [GreeterEN])],', 'Incorrect features');
   });
 
   it('should not emit the ProvidersFeature feature when no providers', () => {

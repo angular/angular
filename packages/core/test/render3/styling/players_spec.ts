@@ -8,12 +8,12 @@
 import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {defineComponent, getHostElement, loadViewQuery, viewQuery} from '../../../src/render3/index';
-import {element, elementEnd, elementStart, elementStyling, elementStylingApply, markDirty} from '../../../src/render3/instructions/all';
+import {getHostElement, ΔdefineComponent, ΔloadViewQuery, ΔviewQuery} from '../../../src/render3/index';
+import {markDirty, Δelement, ΔelementEnd, ΔelementStart, ΔelementStyling, ΔelementStylingApply} from '../../../src/render3/instructions/all';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {queryRefresh} from '../../../src/render3/query';
+import {ΔqueryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
@@ -228,7 +228,7 @@ function buildElementWithStyling() {
 }
 
 class Comp {
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: Comp,
     exportAs: ['child'],
     selectors: [['child-comp']],
@@ -237,7 +237,7 @@ class Comp {
     vars: 0,
     template: (rf: RenderFlags, ctx: Comp) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'div');
+        Δelement(0, 'div');
       }
       ctx.logger();
     }
@@ -248,7 +248,7 @@ class Comp {
 }
 
 class CompWithStyling {
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: CompWithStyling,
     exportAs: ['child-styled'],
     selectors: [['child-styled-comp']],
@@ -257,12 +257,12 @@ class CompWithStyling {
     vars: 0,
     template: (rf: RenderFlags, ctx: CompWithStyling) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        elementStyling(['fooClass']);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        ΔelementStyling(['fooClass']);
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementStylingApply(0);
+        ΔelementStylingApply(0);
       }
     }
   });
@@ -271,7 +271,7 @@ class CompWithStyling {
 }
 
 class SuperComp {
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: SuperComp,
     selectors: [['super-comp']],
     factory: () => new SuperComp(),
@@ -279,18 +279,19 @@ class SuperComp {
     vars: 0,
     template: (rf: RenderFlags, ctx: SuperComp) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div');
-        element(1, 'child-comp', ['child', ''], ['child', 'child']);
-        elementEnd();
+        ΔelementStart(0, 'div');
+        Δelement(1, 'child-comp', ['child', ''], ['child', 'child']);
+        ΔelementEnd();
       }
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        viewQuery(['child'], true, null);
+        ΔviewQuery(['child'], true, null);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;
-        queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.query = tmp as QueryList<any>);
+        ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
+            (ctx.query = tmp as QueryList<any>);
       }
     },
     directives: [Comp]

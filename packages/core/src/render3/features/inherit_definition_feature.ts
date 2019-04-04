@@ -13,7 +13,7 @@ import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../i
 import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 import {isComponentDef} from '../util/view_utils';
 
-import {NgOnChangesFeature} from './ng_onchanges_feature';
+import {ΔNgOnChangesFeature} from './ng_onchanges_feature';
 
 function getSuperType(type: Type<any>): Type<any>&
     {ngComponentDef?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
@@ -23,8 +23,10 @@ function getSuperType(type: Type<any>): Type<any>&
 /**
  * Merges the definition from a super class to a sub class.
  * @param definition The definition that is a SubClass of another directive of component
+ *
+ * @publicApi
  */
-export function InheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
+export function ΔInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
   while (superType) {
@@ -159,7 +161,7 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
         definition.onInit = definition.onInit || superPrototype.ngOnInit;
 
         if (superPrototype.ngOnChanges) {
-          NgOnChangesFeature()(definition);
+          ΔNgOnChangesFeature()(definition);
         }
       }
     }

@@ -113,7 +113,7 @@ describe('r3_view_compiler', () => {
       };
 
       const bV_call =
-          `$r3$.ɵinterpolationV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
+          `$r3$.ΔinterpolationV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
         " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
         " "])`;
       const result = compile(files, angularFiles);
@@ -143,12 +143,12 @@ describe('r3_view_compiler', () => {
       const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelement(0, "div");
+          $i0$.Δelement(0, "div");
         }
         if (rf & 2) {
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "@attr", …);
-          $i0$.ɵelementProperty(0, "@binding", …);
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "@attr", …);
+          $i0$.ΔelementProperty(0, "@binding", …);
         }
       }`;
       const result = compile(files, angularFiles);
@@ -176,10 +176,10 @@ describe('r3_view_compiler', () => {
       const template = `
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div");
+          $i0$.ΔelementStart(0, "div");
           …
-          $i0$.ɵselect(0);
-          $i0$.ɵelementProperty(0, "@mySelector", …);
+          $i0$.Δselect(0);
+          $i0$.ΔelementProperty(0, "@mySelector", …);
         }
       }`;
       const result = compile(files, angularFiles);

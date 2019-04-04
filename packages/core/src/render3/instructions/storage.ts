@@ -30,13 +30,19 @@ export function store<T>(index: number, value: T): void {
  * with a nextContext() call, which walks up the tree and updates the contextViewData instance.
  *
  * @param index The index of the local ref in contextViewData.
+ *
+ * @publicApi
  */
-export function reference<T>(index: number) {
+export function Δreference<T>(index: number) {
   const contextLView = getContextLView();
   return loadInternal<T>(contextLView, index);
 }
 
-/** Retrieves a value from current `viewData`. */
-export function load<T>(index: number): T {
+/**
+ * Retrieves a value from current `viewData`.
+ *
+ * @publicApi
+ */
+export function Δload<T>(index: number): T {
   return loadInternal<T>(getLView(), index);
 }

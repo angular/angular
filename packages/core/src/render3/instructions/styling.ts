@@ -64,7 +64,7 @@ import {scheduleTick, setInputsForProperty} from './shared';
  *
  * @publicApi
  */
-export function elementStyling(
+export function ΔelementStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -106,7 +106,7 @@ export function elementStyling(
  *
  * @publicApi
  */
-export function elementHostStyling(
+export function ΔelementHostStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -166,7 +166,7 @@ function initElementStyling(
  *
  * @publicApi
  */
-export function elementStyleProp(
+export function ΔelementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const valueToAdd = resolveStylePropValue(value, suffix);
@@ -200,7 +200,7 @@ export function elementStyleProp(
  *
  * @publicApi
  */
-export function elementHostStyleProp(
+export function ΔelementHostStyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
@@ -253,7 +253,7 @@ function resolveStylePropValue(
  *
  * @publicApi
  */
-export function elementClassProp(
+export function ΔelementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory,
     forceOverride?: boolean): void {
   const input = (value instanceof BoundPlayerFactory) ?
@@ -283,7 +283,7 @@ export function elementClassProp(
  *
  * @publicApi
  */
-export function elementHostClassProp(
+export function ΔelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
@@ -326,7 +326,7 @@ function booleanOrNull(value: any): boolean|null {
  *
  * @publicApi
  */
-export function elementStylingMap(
+export function ΔelementStylingMap(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const lView = getLView();
@@ -379,7 +379,7 @@ export function elementStylingMap(
  *
  * @publicApi
  */
-export function elementHostStylingMap(
+export function ΔelementHostStylingMap(
     classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
@@ -405,7 +405,7 @@ export function elementHostStylingMap(
  *
  * @publicApi
  */
-export function elementStylingApply(index: number): void {
+export function ΔelementStylingApply(index: number): void {
   elementStylingApplyInternal(DEFAULT_TEMPLATE_DIRECTIVE_INDEX, index);
 }
 
@@ -419,7 +419,7 @@ export function elementStylingApply(index: number): void {
  *
  * @publicApi
  */
-export function elementHostStylingApply(): void {
+export function ΔelementHostStylingApply(): void {
   elementStylingApplyInternal(getActiveDirectiveStylingIndex(), getSelectedIndex());
 }
 

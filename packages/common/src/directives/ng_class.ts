@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵdefineDirective, ɵelementHostStyling, ɵelementHostStylingApply, ɵelementHostStylingMap} from '@angular/core';
+import {Directive, DoCheck, Input, ɵRenderFlags, ΔdefineDirective, ΔelementHostStyling, ΔelementHostStylingApply, ΔelementHostStylingMap} from '@angular/core';
 
 import {NgClassImpl, NgClassImplProvider} from './ng_class_impl';
 
@@ -29,17 +29,17 @@ export const ngClassDirectiveDef__PRE_R3__ = undefined;
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export const ngClassDirectiveDef__POST_R3__ = ɵdefineDirective({
+export const ngClassDirectiveDef__POST_R3__ = ΔdefineDirective({
   type: function() {} as any,
   selectors: null as any,
   factory: () => {},
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
     if (rf & ɵRenderFlags.Create) {
-      ɵelementHostStyling();
+      ΔelementHostStyling();
     }
     if (rf & ɵRenderFlags.Update) {
-      ɵelementHostStylingMap(ctx.getValue());
-      ɵelementHostStylingApply();
+      ΔelementHostStylingMap(ctx.getValue());
+      ΔelementHostStylingApply();
     }
   }
 });
