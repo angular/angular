@@ -80,6 +80,7 @@ ts_devserver(
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
     scripts = [
+        "@npm//node_modules/tslib:tslib.js",
         ":rxjs_umd_modules",
     ],
     static_files = [
@@ -119,6 +120,9 @@ ts_library(
 
 ts_web_test_suite(
     name = "test",
+    srcs = [
+        "@npm//node_modules/tslib:tslib.js",
+    ],
     runtime_deps = [
         ":initialize_testbed",
     ],
