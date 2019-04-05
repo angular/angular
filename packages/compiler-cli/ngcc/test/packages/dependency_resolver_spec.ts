@@ -9,6 +9,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyHost} from '../../src/packages/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
+import {ModuleResolver} from '../../src/packages/module_resolver';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
@@ -17,7 +18,7 @@ describe('DependencyResolver', () => {
   let host: DependencyHost;
   let resolver: DependencyResolver;
   beforeEach(() => {
-    host = new DependencyHost();
+    host = new DependencyHost(new ModuleResolver());
     resolver = new DependencyResolver(new MockLogger(), host);
   });
   describe('sortEntryPointsByDependency()', () => {

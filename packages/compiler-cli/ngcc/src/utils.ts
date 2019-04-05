@@ -50,3 +50,17 @@ export function hasNameIdentifier(declaration: ts.Declaration): declaration is t
     {name: ts.Identifier} {
   return ts.isIdentifier((declaration as any).name);
 }
+
+export type PathMappings = {
+  baseUrl: string,
+  paths: {[key: string]: string[]}
+};
+
+/**
+ * Test whether a path is "relative".
+ *
+ * Relative paths start with `/`, `./` or `../`; or are simply `.` or `..`.
+ */
+export function isRelativePath(path: string): boolean {
+  return /^\/|^\.\.?($|\/)/.test(path);
+}
