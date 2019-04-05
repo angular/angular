@@ -9,9 +9,9 @@ import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
-import {Declaration} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, Declaration} from '../../../src/ngtsc/reflection';
 import {ModuleWithProvidersFunction, NgccReflectionHost} from '../host/ngcc_host';
-import {isDefined} from '../utils';
+import {hasNameIdentifier, isDefined} from '../utils';
 
 export interface ModuleWithProvidersInfo {
   /**
@@ -23,7 +23,7 @@ export interface ModuleWithProvidersInfo {
   /**
    * The NgModule class declaration (in the .d.ts file) to add as a type parameter.
    */
-  ngModule: Declaration;
+  ngModule: Declaration<ClassDeclaration>;
 }
 
 export type ModuleWithProvidersAnalyses = Map<ts.SourceFile, ModuleWithProvidersInfo[]>;
@@ -44,11 +44,7 @@ export class ModuleWithProvidersAnalyzer {
             null;
         if (!typeParam || isAnyKeyword(typeParam)) {
           // Either we do not have a parameterized type or the type is `any`.
-          let ngModule = this.host.getDeclarationOfIdentifier(fn.ngModule);
-          if (!ngModule) {
-            throw new Error(
-                `Cannot find a declaration for NgModule ${fn.ngModule.text} referenced in ${fn.declaration.getText()}`);
-          }
+          let ngModule = fn.ngModule;
           // For internal (non-library) module references, redirect the module's value declaration
           // to its type declaration.
           if (ngModule.viaModule === null) {
@@ -57,14 +53,12 @@ export class ModuleWithProvidersAnalyzer {
               throw new Error(
                   `No typings declaration can be found for the referenced NgModule class in ${fn.declaration.getText()}.`);
             }
-            if (!ts.isClassDeclaration(dtsNgModule)) {
+            if (!ts.isClassDeclaration(dtsNgModule) || !hasNameIdentifier(dtsNgModule)) {
               throw new Error(
-                  `The referenced NgModule in ${fn.declaration.getText()} is not a class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
+                  `The referenced NgModule in ${fn.declaration.getText()} is not a named class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
             }
             // Record the usage of the internal module as it needs to become an exported symbol
-            const reference = new Reference(ngModule.node);
-            reference.addIdentifier(fn.ngModule);
-            this.referencesRegistry.add(ngModule.node, reference);
+            this.referencesRegistry.add(ngModule.node, new Reference(ngModule.node));
 
             ngModule = {node: dtsNgModule, viaModule: null};
           }

@@ -60,14 +60,14 @@ if (require.main === module) {
   const propertiesToConsider: string[] = options['p'];
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
-  const logLevel = options['l'] as keyof typeof LogLevel;
+  const logLevel = options['l'] as keyof typeof LogLevel | undefined;
   try {
     mainNgcc({
       basePath: baseSourcePath,
       propertiesToConsider,
       targetEntryPointPath,
       compileAllFormats,
-      logger: new ConsoleLogger(LogLevel[logLevel]),
+      logger: logLevel && new ConsoleLogger(LogLevel[logLevel]),
     });
     process.exitCode = 0;
   } catch (e) {

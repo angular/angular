@@ -14,7 +14,7 @@ import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports'
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
-import {LocalModuleScopeRegistry} from '../../scope';
+import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
@@ -27,6 +27,7 @@ export interface NgModuleAnalysis {
   ngInjectorDef: R3InjectorMetadata;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
+  exports: Reference<ClassDeclaration>[];
 }
 
 /**
@@ -157,17 +158,15 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       schemas: [],
     };
 
-    const providers: Expression = ngModule.has('providers') ?
-        new WrappedNodeExpr(ngModule.get('providers') !) :
-        new LiteralArrayExpr([]);
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
+    const providers = rawProviders !== null ? new WrappedNodeExpr(rawProviders) : null;
 
+    // At this point, only add the module's imports as the injectors' imports. Any exported modules
+    // are added during `resolve`, as we need scope information to be able to filter out directives
+    // and pipes from the module exports.
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
       injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
-    }
-    if (ngModule.has('exports')) {
-      injectorImports.push(new WrappedNodeExpr(ngModule.get('exports') !));
     }
 
     if (this.routeAnalyzer !== null) {
@@ -180,7 +179,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
       providers,
-      imports: new LiteralArrayExpr(injectorImports),
+      imports: injectorImports,
     };
 
     return {
@@ -188,6 +187,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         ngModuleDef,
         ngInjectorDef,
         declarations: declarationRefs,
+        exports: exportRefs,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
       },
@@ -198,6 +198,18 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
+
+    // Using the scope information, extend the injector's imports using the modules that are
+    // specified as module exports.
+    if (scope !== null) {
+      const context = getSourceFile(node);
+      for (const exportRef of analysis.exports) {
+        if (isNgModule(exportRef.node, scope.compilation)) {
+          analysis.ngInjectorDef.imports.push(this.refEmitter.emit(exportRef, context));
+        }
+      }
+    }
+
     if (scope === null || scope.reexports === null) {
       return {diagnostics};
     } else {
@@ -392,6 +404,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return refList;
   }
+}
+
+function isNgModule(node: ClassDeclaration, compilation: ScopeData): boolean {
+  return !compilation.directives.some(directive => directive.ref.node === node) &&
+      !compilation.pipes.some(pipe => pipe.ref.node === node);
 }
 
 function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {

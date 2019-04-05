@@ -7,7 +7,6 @@ load("@npm_bazel_typescript//:index.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
-_DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -29,7 +28,8 @@ ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
     "platform-browser",
     "platform-browser-dynamic",
     "forms",
-    "http",
+    # Current plan for Angular v8 is to not include @angular/http in ng update
+    # "http",
     "platform-server",
     "platform-webworker",
     "platform-webworker-dynamic",
@@ -83,11 +83,8 @@ def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None,
         # Match the types[] in //packages:tsconfig-test.json
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
-    if not tsconfig:
-        if testonly:
-            tsconfig = _DEFAULT_TSCONFIG_TEST
-        else:
-            tsconfig = _DEFAULT_TSCONFIG_BUILD
+    if not tsconfig and testonly:
+        tsconfig = _DEFAULT_TSCONFIG_TEST
 
     if not module_name:
         module_name = _default_module_name(testonly)
@@ -107,11 +104,9 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         # Match the types[] in //packages:tsconfig-test.json
         deps.append("@npm//@types/jasmine")
         deps.append("@npm//@types/node")
-    if not tsconfig:
-        if testonly:
-            tsconfig = _DEFAULT_TSCONFIG_TEST
-        else:
-            tsconfig = _DEFAULT_TSCONFIG_BUILD
+    if not tsconfig and testonly:
+        tsconfig = _DEFAULT_TSCONFIG_TEST
+
     if not module_name:
         module_name = _default_module_name(testonly)
     if not entry_point:

@@ -83,6 +83,16 @@ const SIMPLE_CLASS_FILE = {
   `,
 };
 
+const CLASS_EXPRESSION_FILE = {
+  name: '/class_expression.js',
+  contents: `
+    var AliasedClass_1;
+    let EmptyClass = class EmptyClass {};
+    let AliasedClass = AliasedClass_1 = class AliasedClass {}
+    let usageOfAliasedClass = AliasedClass_1;
+  `,
+};
+
 const FOO_FUNCTION_FILE = {
   name: '/foo_function.js',
   contents: `
@@ -551,7 +561,17 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     }
     `
   },
-  {name: '/src/module', contents: 'export class ExternalModule {}'},
+  {
+    name: '/src/aliased_class.js',
+    contents: `
+    var AliasedModule_1;
+    let AliasedModule = AliasedModule_1 = class AliasedModule {
+      static forRoot() { return { ngModule: AliasedModule_1 }; }
+    };
+    export { AliasedModule };
+    `
+  },
+  {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
 
 describe('Esm2015ReflectionHost', () => {
@@ -1327,6 +1347,18 @@ describe('Esm2015ReflectionHost', () => {
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
+
+    it('should return the original declaration of an aliased class', () => {
+      const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classDeclaration = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
+      const usageOfAliasedClass = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'usageOfAliasedClass', ts.isVariableDeclaration);
+      const aliasedClassIdentifier = usageOfAliasedClass.initializer as ts.Identifier;
+      expect(aliasedClassIdentifier.text).toBe('AliasedClass_1');
+      expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier) !.node).toBe(classDeclaration);
+    });
   });
 
   describe('getExportsOfModule()', () => {
@@ -1373,12 +1405,69 @@ describe('Esm2015ReflectionHost', () => {
       expect(host.isClass(node)).toBe(true);
     });
 
+    it('should return true if a given node is a class expression assigned into a variable', () => {
+      const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const node = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+      expect(host.isClass(node)).toBe(true);
+    });
+
+    it('should return true if a given node is a class expression assigned into two variables',
+       () => {
+         const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+         const node = getDeclaration(
+             program, CLASS_EXPRESSION_FILE.name, 'AliasedClass', ts.isVariableDeclaration);
+         expect(host.isClass(node)).toBe(true);
+       });
+
     it('should return false if a given node is a TS function declaration', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const node =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(host.isClass(node)).toBe(false);
+    });
+  });
+
+  describe('hasBaseClass()', () => {
+    it('should not consider a class without extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `class TestClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(false);
+    });
+
+    it('should consider a class with extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `
+        class BaseClass {}
+        class TestClass extends BaseClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(true);
+    });
+
+    it('should consider an aliased class with extends clause as having a base class', () => {
+      const file = {
+        name: '/base_class.js',
+        contents: `
+        let TestClass_1;
+        class BaseClass {}
+        let TestClass = TestClass_1 = class TestClass extends BaseClass {}`,
+      };
+      const program = makeTestProgram(file);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', isNamedVariableDeclaration);
+      expect(host.hasBaseClass(classNode)).toBe(true);
     });
   });
 
@@ -1554,12 +1643,13 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
-         expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
-           ['ngModuleIdentifier', 'InternalModule'],
-           ['ngModuleWithEmptyProviders', 'InternalModule'],
-           ['ngModuleWithProviders', 'InternalModule'],
-           ['externalNgModule', 'ExternalModule'],
-         ]);
+         expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
+             .toEqual([
+               ['ngModuleIdentifier', 'InternalModule'],
+               ['ngModuleWithEmptyProviders', 'InternalModule'],
+               ['ngModuleWithProviders', 'InternalModule'],
+               ['externalNgModule', 'ExternalModule'],
+             ]);
        });
 
     it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
@@ -1569,12 +1659,24 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
-         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.text])).toEqual([
-           ['ngModuleIdentifier', 'InternalModule'],
-           ['ngModuleWithEmptyProviders', 'InternalModule'],
-           ['ngModuleWithProviders', 'InternalModule'],
-           ['externalNgModule', 'ExternalModule'],
-         ]);
+         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
+             .toEqual([
+               ['ngModuleIdentifier', 'InternalModule'],
+               ['ngModuleWithEmptyProviders', 'InternalModule'],
+               ['ngModuleWithProviders', 'InternalModule'],
+               ['externalNgModule', 'ExternalModule'],
+             ]);
        });
+
+    // https://github.com/angular/angular/issues/29078
+    it('should resolve aliased module references to their original declaration', () => {
+      const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
+      const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
+      const fn = host.getModuleWithProvidersFunctions(file);
+      expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text])).toEqual([
+        ['forRoot', 'AliasedModule'],
+      ]);
+    });
   });
 });

@@ -204,7 +204,7 @@ export abstract class Renderer {
       outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
       importManager: ImportManager): void {
     moduleWithProviders.forEach(info => {
-      const ngModuleName = (info.ngModule.node as ts.ClassDeclaration).name !.text;
+      const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = info.declaration.getSourceFile().fileName;
       const ngModuleFile = info.ngModule.node.getSourceFile().fileName;
       const importPath = info.ngModule.viaModule ||
@@ -487,16 +487,15 @@ export function renderDefinitions(
   const name = compiledClass.declaration.name;
   const translate = (stmt: Statement) =>
       translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
-  const definitions =
-      compiledClass.compilation
-          .map(
-              c => c.statements.map(statement => translate(statement))
-                       .concat(translate(createAssignmentStatement(name, c.name, c.initializer)))
-                       .map(
-                           statement =>
-                               printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile))
-                       .join('\n'))
-          .join('\n');
+  const print = (stmt: Statement) =>
+      printer.printNode(ts.EmitHint.Unspecified, translate(stmt), sourceFile);
+  const definitions = compiledClass.compilation
+                          .map(
+                              c => [createAssignmentStatement(name, c.name, c.initializer)]
+                                       .concat(c.statements)
+                                       .map(print)
+                                       .join('\n'))
+                          .join('\n');
   return definitions;
 }
 

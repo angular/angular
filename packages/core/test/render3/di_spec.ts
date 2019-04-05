@@ -9,24 +9,23 @@
 import {Attribute, ChangeDetectorRef, ElementRef, Host, INJECTOR, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
 import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
+import {createInjector} from '../../src/di/r3_injector';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
-
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions/all';
-import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
+import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExtractor, elementStart, text, elementEnd, reference, textBinding, bind, directiveInject, element, container, containerRefreshStart, embeddedViewStart, embeddedViewEnd, containerRefreshEnd, template, allocHostVars, interpolation2, elementContainerStart, elementContainerEnd, projectionDef, projection, injectAttribute} from '../../src/render3/index';
+import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
+import {TNODE} from '../../src/render3/interfaces/injector';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
-import {getNativeByIndex} from '../../src/render3/util/view_utils';
+import {RElement, isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {LViewFlags} from '../../src/render3/interfaces/view';
-import {enterView, leaveView, getLView} from '../../src/render3/state';
+import {enterView, getLView, leaveView} from '../../src/render3/state';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {ViewRef} from '../../src/render3/view_ref';
 
+import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
-import {NgIf} from './common_with_def';
-import {TNODE} from '../../src/render3/interfaces/injector';
-import {createInjector} from '../../src/di/r3_injector';
-import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
+import {createLView, createTView, createNodeAtIndex} from '@angular/core/src/render3/instructions/shared';
 
 describe('di', () => {
   describe('no dependencies', () => {

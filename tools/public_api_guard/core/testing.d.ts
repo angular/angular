@@ -62,15 +62,16 @@ export interface TestBed {
         useValue?: any;
         deps?: any[];
     }): void;
+    deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
     /** @deprecated */ deprecatedOverrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
     }): void;
-    deprecatedOverrideProvider(token: any, provider: {
-        useValue: any;
-    }): void;
     execute(tokens: any[], fn: Function, context?: any): any;
-    get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+    /** @deprecated */ get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
@@ -82,11 +83,11 @@ export interface TestBed {
         deps?: any[];
     }): void;
     overrideProvider(token: any, provider: {
-        useFactory: Function;
-        deps: any[];
+        useValue: any;
     }): void;
     overrideProvider(token: any, provider: {
-        useValue: any;
+        useFactory: Function;
+        deps: any[];
     }): void;
     overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
     resetTestEnvironment(): void;
@@ -116,7 +117,8 @@ export interface TestBedStatic {
         useFactory: Function;
         deps: any[];
     }): void;
-    get(token: any, notFoundValue?: any): any;
+    /** @deprecated */ get(token: any, notFoundValue?: any): any;
+    get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;

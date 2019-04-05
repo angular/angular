@@ -92,7 +92,7 @@ First time setup:
       "type": "node",
       "request": "attach",
       "name": "Attach to Remote",
-      "port": 9229,
+      "port": 9229
     }
 ```
 

@@ -25,7 +25,8 @@ ng_package(
     ],
     entry_point = "packages/http/index.js",
     tags = [
-        "release-with-framework",
+        # Currently the plan for Angular v8 is to exclude @angular/http package from publishing
+        # "release-with-framework",
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.

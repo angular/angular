@@ -36,13 +36,6 @@ ts_devserver(
     entry_module = "bazel_integration_test/src/main",
     index_html = "index.html",
     scripts = [
-        "@npm//node_modules/@angular/common:bundles/common.umd.js",
-        "@npm//node_modules/@angular/common:bundles/common-http.umd.js",
-        "@npm//node_modules/@angular/core:bundles/core.umd.js",
-        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
-        "@npm//node_modules/@angular/router:bundles/router.umd.js",
-        "@npm//node_modules/@angular/router:router.ngfactory.js",
-        "@npm//node_modules/tslib:tslib.js",
         ":rxjs_umd_modules",
     ],
     serving_path = "/bundle.min.js",

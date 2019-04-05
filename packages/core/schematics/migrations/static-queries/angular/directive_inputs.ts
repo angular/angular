@@ -7,9 +7,8 @@
  */
 
 import * as ts from 'typescript';
-
-import {getPropertyNameText, hasPropertyNameText} from '../typescript/property_name';
-import {getAngularDecorators} from './decorators';
+import {getAngularDecorators} from '../../../utils/ng_decorators';
+import {getPropertyNameText, hasPropertyNameText} from '../../../utils/typescript/property_name';
 
 /** Analyzes the given class and resolves the name of all inputs which are declared. */
 export function getInputNamesOfClass(
@@ -63,7 +62,7 @@ function getInputNamesFromMetadata(
     return null;
   }
 
-  const decoratorCall = decorator.node.expression as ts.CallExpression;
+  const decoratorCall = decorator.node.expression;
 
   // In case the decorator does define any metadata, there is no metadata
   // where inputs could be declared. This is an edge case because there

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
+import {Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -130,6 +130,10 @@ export interface TestBedStatic {
     deps?: any[],
   }): TestBedStatic;
 
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   */
   get(token: any, notFoundValue?: any): any;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;

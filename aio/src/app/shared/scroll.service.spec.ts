@@ -51,7 +51,7 @@ describe('ScrollService', () => {
     spyOn(window, 'scrollBy');
   });
 
-  it('should debounce `updateScrollPositonInHistory()` after 500ms', fakeAsync(() => {
+  it('should debounce `updateScrollPositonInHistory()`', fakeAsync(() => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
 
     window.dispatchEvent(new Event('scroll'));
@@ -264,16 +264,14 @@ describe('ScrollService', () => {
         location.go('/initial-url2');
         location.back();
 
-        expect(scrollService.popStateFired).toBe(true);
-        expect(scrollService.scrollPosition).toEqual([2000, 0]);
+        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
         expect(scrollService.needToFixScrollPosition()).toBe(true);
       } else {
         location.go('/initial-url1');
         location.go('/initial-url2');
         location.back();
 
-        expect(scrollService.popStateFired).toBe(false); // popStateFired is always false
-        expect(scrollService.scrollPosition).toEqual([0, 0]); // scrollPosition always equals [0, 0]
+        expect(scrollService.poppedStateScrollPosition).toBe(null);
         expect(scrollService.needToFixScrollPosition()).toBe(false);
       }
 
@@ -289,12 +287,10 @@ describe('ScrollService', () => {
         location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
 
         location.back();
-        scrollService.popStateFired = false;
-        scrollService.scrollPosition = [0, 0];
+        scrollService.poppedStateScrollPosition = [0, 0];
         location.forward();
 
-        expect(scrollService.popStateFired).toBe(true);
-        expect(scrollService.scrollPosition).toEqual([2000, 0]);
+        expect(scrollService.poppedStateScrollPosition).toEqual([2000, 0]);
         expect(scrollService.needToFixScrollPosition()).toBe(true);
       } else {
         location.go('/initial-url1');
@@ -302,8 +298,7 @@ describe('ScrollService', () => {
         location.back();
         location.forward();
 
-        expect(scrollService.popStateFired).toBe(false); // popStateFired is always false
-        expect(scrollService.scrollPosition).toEqual([0, 0]); // scrollPosition always equals [0, 0]
+        expect(scrollService.poppedStateScrollPosition).toBe(null);
         expect(scrollService.needToFixScrollPosition()).toBe(false);
       }
 

@@ -1,3 +1,7 @@
+export interface AbstractType<T> extends Function {
+    prototype: T;
+}
+
 export interface AfterContentChecked {
     ngAfterContentChecked(): void;
 }

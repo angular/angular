@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe, setComponentScope} from './definition';
+import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe, setComponentScope, setNgModuleScope} from './definition';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ProvidersFeature} from './features/providers_feature';
@@ -17,7 +17,6 @@ export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponen
 export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
-
 
 
 // clang-format off
@@ -64,7 +63,8 @@ export {
   elementHostStylingApply,
 
   select,
-
+  property, 
+  
   listener,
   store,
   load,
@@ -186,6 +186,7 @@ export {
   getRenderedText,
   renderComponent,
   setComponentScope,
+  setNgModuleScope,
   whenRendered,
 };
 

@@ -11,24 +11,23 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
-import {assertDefined} from '../util/assert';
 
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions/all';
+import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {applyOnCreateInstructions} from './node_util';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
+import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState} from './state';
 import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
-import {getRootContext, getRootView} from './util/view_traversal_utils';
+import {getRootContext} from './util/view_traversal_utils';
 import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
 
 
