@@ -73,7 +73,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       type: new WrappedNodeExpr(facade.type),
       deps: convertR3DependencyMetadataArray(facade.deps),
       providers: new WrappedNodeExpr(facade.providers),
-      imports: new WrappedNodeExpr(facade.imports),
+      imports: facade.imports.map(i => new WrappedNodeExpr(i)),
     };
     const res = compileInjector(meta);
     return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);

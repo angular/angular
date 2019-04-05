@@ -7,10 +7,8 @@
  */
 
 import * as ts from 'typescript';
-
+import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
-import {getPropertyNameText} from './typescript/property_name';
-
 
 /**
  * Transforms the given query decorator by explicitly specifying the timing based on the
@@ -18,7 +16,7 @@ import {getPropertyNameText} from './typescript/property_name';
  */
 export function getTransformedQueryCallExpr(
     query: NgQueryDefinition, timing: QueryTiming): ts.CallExpression|null {
-  const queryExpr = query.decorator.node.expression as ts.CallExpression;
+  const queryExpr = query.decorator.node.expression;
   const queryArguments = queryExpr.arguments;
   const timingPropertyAssignment = ts.createPropertyAssignment(
       'static', timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse());

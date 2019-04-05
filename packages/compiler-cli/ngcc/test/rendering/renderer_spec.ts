@@ -151,16 +151,17 @@ describe('Renderer', () => {
           moduleWithProvidersAnalyses);
       const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
       expect(addDefinitionsSpy.calls.first().args[2])
-          .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
-        type: Component,
-        args: [{ selector: 'a', template: '{{ person!.name }}' }]
-    }], null, null);
-A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+          .toEqual(
+              `A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵselect(0);
         ɵngcc0.ɵtextBinding(0, ɵngcc0.ɵinterpolation1("", ctx.person.name, ""));
-    } }, encapsulation: 2 });`);
+    } }, encapsulation: 2 });
+/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+        type: Component,
+        args: [{ selector: 'a', template: '{{ person!.name }}' }]
+    }], null, null);`);
     });
 
 
@@ -195,11 +196,12 @@ A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], fact
              decorators: [jasmine.objectContaining({name: 'Directive'})],
            }));
            expect(addDefinitionsSpy.calls.first().args[2])
-               .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+               .toEqual(
+                   `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });
+/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
-    }], null, { foo: [] });
-A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });`);
+    }], null, { foo: [] });`);
          });
 
       it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',

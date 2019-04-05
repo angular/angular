@@ -110,6 +110,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
     const entryPointPackageJson = entryPoint.packageJson;
     const entryPointPackageJsonPath = AbsoluteFsPath.from(resolve(entryPoint.path, 'package.json'));
 
+    const hasProcessedDts = hasBeenProcessed(entryPointPackageJson, 'typings');
+
     for (let i = 0; i < propertiesToConsider.length; i++) {
       const property = propertiesToConsider[i] as EntryPointJsonProperty;
       const formatPath = entryPointPackageJson[property];
@@ -124,12 +126,14 @@ export function mainNgcc({basePath, targetEntryPointPath,
         continue;
       }
 
+      const isFirstFormat = compiledFormats.size === 0;
+      const processDts = !hasProcessedDts && isFirstFormat;
+
       // We don't break if this if statement fails because we still want to mark
       // the property as processed even if its underlying format has been built already.
-      if (!compiledFormats.has(formatPath) && (compileAllFormats || compiledFormats.size === 0)) {
+      if (!compiledFormats.has(formatPath) && (compileAllFormats || isFirstFormat)) {
         const bundle = makeEntryPointBundle(
-            entryPoint.path, formatPath, entryPoint.typings, isCore, property, format,
-            compiledFormats.size === 0);
+            entryPoint.path, formatPath, entryPoint.typings, isCore, property, format, processDts);
         if (bundle) {
           logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
           const transformedFiles = transformer.transform(bundle);
@@ -147,6 +151,9 @@ export function mainNgcc({basePath, targetEntryPointPath,
       // previous property.
       if (compiledFormats.has(formatPath)) {
         markAsProcessed(entryPointPackageJson, entryPointPackageJsonPath, property);
+        if (processDts) {
+          markAsProcessed(entryPointPackageJson, entryPointPackageJsonPath, 'typings');
+        }
       }
     }
 

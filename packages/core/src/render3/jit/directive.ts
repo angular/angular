@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentType} from '..';
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
@@ -18,6 +17,7 @@ import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from
 import {ViewEncapsulation} from '../../metadata/view';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
+import {ComponentType} from '../interfaces/definition';
 import {renderStringify} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';

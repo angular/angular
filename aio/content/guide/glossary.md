@@ -40,6 +40,19 @@ Learn more in [Angular Elements Overview](guide/elements).
 
 A structure that provides metadata for a class. See [decorator](guide/glossary#decorator).
 
+{@a app-shell}
+
+## app-shell
+
+App shell is a way to render a portion of your application via a route at build time.
+This gives users a meaningful first paint of your application that appears quickly because the browser can render static HTML and CSS without the need to initialize JavaScript.
+
+Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
+
+You can use the Angular CLI to [generate](cli/generate#appshell) an app shell.
+This can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
+
+See also [Service Worker and PWA](guide/service-worker-intro).
 
 {@a attribute-directive}
 
@@ -701,6 +714,19 @@ Import a scoped package in the same way that you import a normal package.
 
 </code-example>
 
+{@a server-side-rendering}
+
+## server-side rendering
+
+A technique that generates static application pages on the server, and can generate and serve those pages in response to requests from browsers.
+It can also pre-generate pages as HTML files that you serve later.
+
+This technique can improve performance on mobile and low-powered devices and improve the user experience by showing a static first page quickly while the client-side app is loading.
+The static version can also make your app more visible to web crawlers.
+
+You can easily prepare an app for server-side rendering by using the [CLI](guide/glossary#cli) to run the [Angular Universal](#universal) tool, using the `@nguniversal/express-engine` [schematic](#schematic).
+
+
 {@a service}
 
 ## service
@@ -809,6 +835,16 @@ Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org
 
 
 {@a U}
+
+{@a universal}
+
+## Universal
+
+A tool for implementing [server-side rendering](#server-side-rendering) of an Angular application.
+When integrated with an app, Universal generates and serves static pages on the server in response to requests from browsers.
+The initial static page serves as a fast-loading placeholder while the full application is being prepared for normal execution in the browser.
+
+To learn more, see [Angular Universal: server-side rendering](guide/universal).
 
 {@a V}
 

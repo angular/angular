@@ -46,7 +46,7 @@ merge:
       - "packages/bazel/src/ng_package/**"
       - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
-      - "packages/compiler-cli/src/ngcc/**"
+      - "packages/compiler-cli/ngcc/**"
       - "packages/docs/**"
       - "packages/elements/schematics/**"
       - "packages/examples/**"

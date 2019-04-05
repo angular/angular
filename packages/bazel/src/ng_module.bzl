@@ -736,3 +736,21 @@ This rule extends the [ts_library] rule.
 
 [ts_library]: http://tsetse.info/api/build_defs.html#ts_library
 """
+
+def ng_module_macro(tsconfig = None, **kwargs):
+    """Wraps `ng_module` to set the default for the `tsconfig` attribute.
+
+    This must be a macro so that the string is converted to a label in the context of the
+    workspace that declares the `ng_module` target, rather than the workspace that defines
+    `ng_module`, or the workspace where the build is taking place.
+
+    This macro is re-exported as `ng_module` in the public API.
+
+    Args:
+      tsconfig: the label pointing to a tsconfig.json file
+      **kwargs: remaining args to pass to the ng_module rule
+    """
+    if not tsconfig:
+        tsconfig = "//:tsconfig.json"
+
+    ng_module(tsconfig = tsconfig, **kwargs)

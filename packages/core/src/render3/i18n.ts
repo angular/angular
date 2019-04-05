@@ -13,7 +13,9 @@ import {addAllToArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 
 import {attachPatchData} from './context_discovery';
-import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions/all';
+import {attachI18nOpCodesDebug} from './debug';
+import {elementAttribute, load, textBinding} from './instructions/all';
+import {allocExpando, createNodeAtIndex} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
@@ -456,6 +458,10 @@ function i18nStartFirstPass(
 
   allocExpando(viewData, i18nVarsCount);
 
+  ngDevMode &&
+      attachI18nOpCodesDebug(
+          createOpCodes, updateOpCodes, icuExpressions.length ? icuExpressions : null, viewData);
+
   // NOTE: local var needed to properly assert the type of `TI18n`.
   const tI18n: TI18n = {
     vars: i18nVarsCount,
@@ -463,6 +469,7 @@ function i18nStartFirstPass(
     update: updateOpCodes,
     icus: icuExpressions.length ? icuExpressions : null,
   };
+
   tView.data[index + HEADER_OFFSET] = tI18n;
 }
 

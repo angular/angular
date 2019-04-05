@@ -1318,7 +1318,7 @@ After these steps, the file should look like this.
 
 </code-example>
 
-Next, update the `app.module.ts` file, removing `RouterModule.forRoot()` in
+Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in
 the `imports` array.
 
 <code-example path="router/src/app/app.module.2.ts" header="src/app/app.module.ts">
@@ -1734,7 +1734,7 @@ Accordingly, the _link parameters array_ has *two* items:  the routing _path_ an
 `id` of the selected hero.
 
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 
 </code-example>
 
@@ -2029,7 +2029,7 @@ When navigating to the `HeroDetailComponent` you specified the _required_ `id` o
 *route parameter* and made it the second item of the [_link parameters array_](#link-parameters-array).
 
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array">
 
 </code-example>
 

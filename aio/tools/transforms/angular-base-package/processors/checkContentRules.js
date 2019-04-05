@@ -37,6 +37,8 @@ module.exports = function checkContentRules(log, createDocMessage) {
       const logMessage = this.failOnContentErrors ? log.error.bind(log) : log.warn.bind(log);
       const errors = [];
       docs.forEach(doc => {
+        // Ignore private exports (and members of a private export).
+        if (doc.id && doc.id.indexOf('ɵ') !== -1) return;
         const docErrors = [];
         const rules = this.docTypeRules[doc.docType] || {};
         if (rules) {

@@ -21,8 +21,9 @@ import * as core from '@angular/core';
 import * as coreTesting from '@angular/core/testing';
 import * as elements from '@angular/elements';
 import * as forms from '@angular/forms';
-import * as http from '@angular/http';
-import * as httpTesting from '@angular/http/testing';
+// Current plan for Angular 8 is to stop building the @angular/http package
+// import * as http from '@angular/http';
+// import * as httpTesting from '@angular/http/testing';
 import * as platformBrowser from '@angular/platform-browser';
 import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
 import * as platformBrowserDynamicTesting from '@angular/platform-browser-dynamic/testing';
@@ -53,8 +54,9 @@ export default {
   coreTesting,
   elements,
   forms,
-  http,
-  httpTesting,
+  // See above
+  // http,
+  // httpTesting,
   platformBrowser,
   platformBrowserTesting,
   platformBrowserDynamic,

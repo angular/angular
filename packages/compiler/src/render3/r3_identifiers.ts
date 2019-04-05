@@ -195,6 +195,7 @@ export class Identifiers {
   };
 
   static defineNgModule: o.ExternalReference = {name: 'ɵdefineNgModule', moduleName: CORE};
+  static setNgModuleScope: o.ExternalReference = {name: 'ɵsetNgModuleScope', moduleName: CORE};
 
   static PipeDefWithMeta: o.ExternalReference = {name: 'ɵPipeDefWithMeta', moduleName: CORE};
 

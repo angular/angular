@@ -16,7 +16,7 @@ import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
 import {NgForOf, NgIf} from './common_with_def';
 import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd, textBinding} from '../../src/render3/instructions/all';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
+import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n, IcuType} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
@@ -81,6 +81,17 @@ describe('Runtime i18n', () => {
       const index = 0;
       const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
+
+      // Check debug
+      const debugOps = (opCodes as any).create.debug !.operations;
+      expect(debugOps[0].__raw_opCode).toBe('simple text');
+      expect(debugOps[0].type).toBe('Create Text Node');
+      expect(debugOps[0].nodeIndex).toBe(1);
+      expect(debugOps[0].text).toBe('simple text');
+      expect(debugOps[1].__raw_opCode).toBe(1);
+      expect(debugOps[1].type).toBe('AppendChild');
+      expect(debugOps[1].nodeIndex).toBe(0);
+
       expect(opCodes).toEqual({
         vars: 1,
         create: [
@@ -137,6 +148,10 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(() => { i18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      expect((opCodes as any).update.debug.operations).toEqual([
+        {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
+      ]);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -281,6 +296,79 @@ describe('Runtime i18n', () => {
       const spanElementNodeIndex = index + 3;
       const innerTextNode = index + 4;
       const lastTextNode = index + 5;
+
+      const debugOps = (opCodes as any).update.debug.operations;
+      expect(debugOps[0].__raw_opCode).toBe(6);
+      expect(debugOps[0].checkBit).toBe(1);
+      expect(debugOps[0].type).toBe('IcuSwitch');
+      expect(debugOps[0].nodeIndex).toBe(1);
+      expect(debugOps[0].tIcuIndex).toBe(0);
+      expect(debugOps[0].mainBinding).toBe('�0�');
+
+      expect(debugOps[1].__raw_opCode).toBe(7);
+      expect(debugOps[1].checkBit).toBe(3);
+      expect(debugOps[1].type).toBe('IcuUpdate');
+      expect(debugOps[1].nodeIndex).toBe(1);
+      expect(debugOps[1].tIcuIndex).toBe(0);
+
+      const icuDebugOps = (opCodes as any).icus[0].create[0].debug.operations;
+      let op: any;
+      let i = 0;
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('no ');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(2);
+      expect(op.text).toBe('no ');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toEqual({marker: 'element'});
+      expect(op.type).toBe('ELEMENT_MARKER');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('b');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(3);
+      expect(op.text).toBe('b');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(28);
+      expect(op.type).toBe('Attr');
+      expect(op.nodeIndex).toBe(3);
+      expect(op.attrName).toBe('title');
+      expect(op.attrValue).toBe('none');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('emails');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(4);
+      expect(op.text).toBe('emails');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(393217);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(3);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('!');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(5);
+      expect(op.text).toBe('!');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
 
       expect(opCodes).toEqual({
         vars: 5,
@@ -2168,5 +2256,4 @@ describe('Runtime i18n', () => {
       });
     });
   });
-
 });

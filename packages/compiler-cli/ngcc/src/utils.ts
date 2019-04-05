@@ -44,7 +44,7 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
 /**
  * Does the given declaration have a name which is an identifier?
  * @param declaration The declaration to test.
- * @returns true if the declaration has an identifer for a name.
+ * @returns true if the declaration has an identifier for a name.
  */
 export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
     {name: ts.Identifier} {
