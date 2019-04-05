@@ -423,9 +423,6 @@
     "name": "assertTemplate"
   },
   {
-    "name": "assertValidDirectiveIndex"
-  },
-  {
     "name": "assignTViewNodeToLView"
   },
   {

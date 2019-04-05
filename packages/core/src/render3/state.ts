@@ -129,7 +129,27 @@ export function getLView(): LView {
 const MIN_DIRECTIVE_ID = 1;
 
 let activeDirectiveId = MIN_DIRECTIVE_ID;
+
+/**
+ * Position depth (with respect from leaf to root) in a directive sub-class inheritance chain.
+ */
 let activeDirectiveSuperClassDepthPosition = 0;
+
+/**
+ * Total count of how many directives are a part of an inheritance chain.
+ *
+ * When directives are sub-classed (extended) from one to another, Angular
+ * needs to keep track of exactly how many were encountered so it can accurately
+ * generate the next directive id (once the next directive id is visited).
+ * Normally the next directive id just a single incremented value from the
+ * previous one, however, if the previous directive is a part of an inheritance
+ * chain (a series of sub-classed directives) then the incremented value must
+ * also take into account the total amount of sub-classed values.
+ *
+ * Note that this value resets back to zero once the next directive is
+ * visited (when `incrementActiveDirectiveId` or `setActiveHostElement`
+ * is called).
+ */
 let activeDirectiveSuperClassHeight = 0;
 
 /**
@@ -212,6 +232,10 @@ export function incrementActiveDirectiveId() {
  */
 export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
   activeDirectiveSuperClassDepthPosition += delta;
+
+  // we keep track of the height value so that when the next directive is visited
+  // then Angular knows to generate a new directive id value which has taken into
+  // account how many sub-class directives were a part of the previous directive.
   activeDirectiveSuperClassHeight =
       Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
 }

@@ -514,7 +514,7 @@ export function updateStylingMap(
         BoundPlayerFactory<null|string|{[key: string]: any}>| null,
     stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| null,
     directiveIndex: number = 0): void {
-  assertValidDirectiveIndex(context, directiveIndex);
+  ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
   classesInput = classesInput || null;
   stylesInput = stylesInput || null;
   const ignoreAllClassUpdates = isMultiValueCacheHit(context, true, directiveIndex, classesInput);
@@ -897,7 +897,7 @@ function updateSingleStylingValue(
     context: StylingContext, offset: number,
     input: string | boolean | null | BoundPlayerFactory<string|boolean|null>, isClassBased: boolean,
     directiveIndex: number, forceOverride?: boolean): void {
-  assertValidDirectiveIndex(context, directiveIndex);
+  ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
   const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, isClassBased);
   const currValue = getValue(context, singleIndex);
   const currFlag = getPointers(context, singleIndex);
