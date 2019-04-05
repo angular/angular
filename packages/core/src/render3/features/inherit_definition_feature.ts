@@ -10,7 +10,7 @@ import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
-import {setActiveDirectiveSuperClassDepthPosition} from '../state';
+import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 import {isComponentDef} from '../util/view_utils';
 
 import {NgOnChangesFeature} from './ng_onchanges_feature';
@@ -76,11 +76,11 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
             // The reason why we increment first and then decrement is so that parent
             // hostBindings calls have a higher id value compared to sub-class hostBindings
             // calls (this way the leaf directive is always at a super-class depth of 0).
-            setActiveDirectiveSuperClassDepthPosition(1);
+            adjustActiveDirectiveSuperClassDepthPosition(1);
             try {
               superHostBindings(rf, ctx, elementIndex);
             } finally {
-              setActiveDirectiveSuperClassDepthPosition(-1);
+              adjustActiveDirectiveSuperClassDepthPosition(-1);
             }
             prevHostBindings(rf, ctx, elementIndex);
           };

@@ -210,7 +210,7 @@ export function incrementActiveDirectiveId() {
  *
  * Note that this is only active when `hostBinding` functions are being processed.
  */
-export function setActiveDirectiveSuperClassDepthPosition(delta: number) {
+export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
   activeDirectiveSuperClassDepthPosition += delta;
   activeDirectiveSuperClassHeight =
       Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
