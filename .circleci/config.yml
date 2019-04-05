@@ -170,10 +170,7 @@ jobs:
 
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
-      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-local
-      # Now run RBE incompatible tests locally.
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
+      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
