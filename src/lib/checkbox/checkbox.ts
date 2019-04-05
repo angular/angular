@@ -171,10 +171,10 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   @Input() value: string;
 
   /** The native `<input type="checkbox">` element */
-  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
+  @ViewChild('input', {static: false}) _inputElement: ElementRef<HTMLInputElement>;
 
   /** Reference to the ripple instance of the checkbox. */
-  @ViewChild(MatRipple) ripple: MatRipple;
+  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
 
   /**
    * Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor.

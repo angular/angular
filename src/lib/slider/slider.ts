@@ -445,7 +445,7 @@ export class MatSlider extends _MatSliderMixinBase
   private _valueOnSlideStart: number | null;
 
   /** Reference to the inner slider wrapper element. */
-  @ViewChild('sliderWrapper') private _sliderWrapper: ElementRef;
+  @ViewChild('sliderWrapper', {static: false}) private _sliderWrapper: ElementRef;
 
   /**
    * Whether mouse events should be converted to a slider position by calculating their distance

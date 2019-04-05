@@ -11,7 +11,7 @@ import {take} from 'rxjs/operators';
 export class TextFieldAutosizeTextareaExample {
   constructor(private ngZone: NgZone) {}
 
-  @ViewChild('autosize') autosize: CdkTextareaAutosize;
+  @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 
   triggerResize() {
     // Wait for changes to be applied, then trigger textarea resize.

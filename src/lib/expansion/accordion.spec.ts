@@ -232,7 +232,7 @@ describe('MatAccordion', () => {
     </mat-expansion-panel>
   </mat-accordion>`})
 class SetOfItems {
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  @ViewChild(MatAccordion, {static: false}) accordion: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels: QueryList<MatExpansionPanel>;
   @ViewChildren(MatExpansionPanelHeader) headers: QueryList<MatExpansionPanelHeader>;
 
@@ -250,8 +250,8 @@ class SetOfItems {
     </mat-expansion-panel>
   </mat-accordion>`})
 class NestedPanel {
-  @ViewChild('outerPanel') outerPanel: MatExpansionPanel;
-  @ViewChild('innerPanel') innerPanel: MatExpansionPanel;
+  @ViewChild('outerPanel', {static: false}) outerPanel: MatExpansionPanel;
+  @ViewChild('innerPanel', {static: false}) innerPanel: MatExpansionPanel;
 }
 
 @Component({template: `

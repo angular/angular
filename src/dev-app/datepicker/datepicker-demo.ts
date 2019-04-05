@@ -111,7 +111,7 @@ export class CustomHeader<D> implements OnDestroy {
 })
 export class CustomHeaderNgContent<D> {
 
-  @ViewChild(MatCalendarHeader)
+  @ViewChild(MatCalendarHeader, {static: false})
   header: MatCalendarHeader<D>;
 
   constructor(@Optional() private _dateAdapter: DateAdapter<D>) {}

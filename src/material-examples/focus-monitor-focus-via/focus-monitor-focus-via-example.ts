@@ -16,7 +16,7 @@ import {
   styleUrls: ['focus-monitor-focus-via-example.css']
 })
 export class FocusMonitorFocusViaExample implements OnDestroy, AfterViewInit {
-  @ViewChild('monitored') monitoredEl: ElementRef<HTMLElement>;
+  @ViewChild('monitored', {static: false}) monitoredEl: ElementRef<HTMLElement>;
 
   origin = this.formatOrigin(null);
 

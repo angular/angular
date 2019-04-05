@@ -403,7 +403,7 @@ describe('Chips', () => {
     </mat-chip-list>`
 })
 class SingleChip {
-  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChild(MatChipList, {static: false}) chipList: MatChipList;
   disabled: boolean = false;
   name: string = 'Test';
   color: string = 'primary';

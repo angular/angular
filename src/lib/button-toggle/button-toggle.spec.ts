@@ -938,7 +938,7 @@ class ButtonToggleWithAriaLabelledby {}
   `
 })
 class RepeatedButtonTogglesWithPreselectedValue {
-  @ViewChild(MatButtonToggleGroup) toggleGroup: MatButtonToggleGroup;
+  @ViewChild(MatButtonToggleGroup, {static: false}) toggleGroup: MatButtonToggleGroup;
   @ViewChildren(MatButtonToggle) toggles: QueryList<MatButtonToggle>;
 
   possibleValues = ['One', 'Two', 'Three'];

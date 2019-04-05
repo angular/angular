@@ -728,7 +728,7 @@ describe('MatRipple', () => {
   `,
 })
 class BasicRippleContainer {
-  @ViewChild('ripple') ripple: MatRipple;
+  @ViewChild('ripple', {static: false}) ripple: MatRipple;
 }
 
 @Component({
@@ -752,7 +752,7 @@ class RippleContainerWithInputBindings {
   disabled = false;
   radius = 0;
   color = '';
-  @ViewChild(MatRipple) ripple: MatRipple;
+  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
 }
 
 @Component({
@@ -763,6 +763,6 @@ class RippleContainerWithoutBindings {}
 @Component({ template: `<div id="container" matRipple
                              *ngIf="!isDestroyed"></div>` })
 class RippleContainerWithNgIf {
-  @ViewChild(MatRipple) ripple: MatRipple;
+  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
   isDestroyed = false;
 }

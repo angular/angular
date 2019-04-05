@@ -931,7 +931,9 @@ class DirectiveWithViewContainer {
   template: `<dir-with-view-container *ngIf="childComponentExists"></dir-with-view-container>`,
 })
 class ComponentWithChildViewContainer {
-  @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
+  @ViewChild(DirectiveWithViewContainer, {
+    static: false
+  }) childWithViewContainer: DirectiveWithViewContainer;
 
   childComponentExists: boolean = true;
 
@@ -949,7 +951,7 @@ class ComponentWithChildViewContainer {
   `,
 })
 class ComponentWithTemplateRef {
-  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: false}) templateRef: TemplateRef<any>;
   localValue: string;
 }
 

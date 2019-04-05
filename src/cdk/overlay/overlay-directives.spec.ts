@@ -539,9 +539,9 @@ describe('Overlay directives', () => {
   </ng-template>`,
 })
 class ConnectedOverlayDirectiveTest {
-  @ViewChild(CdkConnectedOverlay) connectedOverlayDirective: CdkConnectedOverlay;
-  @ViewChild('trigger') trigger: CdkOverlayOrigin;
-  @ViewChild('otherTrigger') otherTrigger: CdkOverlayOrigin;
+  @ViewChild(CdkConnectedOverlay, {static: false}) connectedOverlayDirective: CdkConnectedOverlay;
+  @ViewChild('trigger', {static: false}) trigger: CdkOverlayOrigin;
+  @ViewChild('otherTrigger', {static: false}) otherTrigger: CdkOverlayOrigin;
 
   isOpen = false;
   width: number | string;
@@ -574,6 +574,6 @@ class ConnectedOverlayDirectiveTest {
   <ng-template cdk-connected-overlay>Menu content</ng-template>`,
 })
 class ConnectedOverlayPropertyInitOrder {
-  @ViewChild(CdkConnectedOverlay) connectedOverlayDirective: CdkConnectedOverlay;
-  @ViewChild('trigger') trigger: CdkOverlayOrigin;
+  @ViewChild(CdkConnectedOverlay, {static: false}) connectedOverlayDirective: CdkConnectedOverlay;
+  @ViewChild('trigger', {static: false}) trigger: CdkOverlayOrigin;
 }

@@ -1779,7 +1779,7 @@ class MatInputMissingMatInputTestController {}
   `
 })
 class MatInputWithFormErrorMessages {
-  @ViewChild('form') form: NgForm;
+  @ViewChild('form', {static: false}) form: NgForm;
   formControl = new FormControl('', Validators.required);
   renderError = true;
 }
@@ -1821,7 +1821,7 @@ class MatInputWithCustomErrorStateMatcher {
   `
 })
 class MatInputWithFormGroupErrorMessages {
-  @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
+  @ViewChild(FormGroupDirective, {static: false}) formGroupDirective: FormGroupDirective;
   formGroup = new FormGroup({
     name: new FormControl('', Validators.required)
   });
@@ -1902,7 +1902,7 @@ class MatInputWithLabelAndPlaceholder {
   `
 })
 class MatInputWithAppearance {
-  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChild(MatFormField, {static: false}) formField: MatFormField;
   appearance: MatFormFieldAppearance;
 }
 
@@ -1916,7 +1916,7 @@ class MatInputWithAppearance {
   `
 })
 class MatInputWithAppearanceAndLabel {
-  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChild(MatFormField, {static: false}) formField: MatFormField;
   appearance: MatFormFieldAppearance;
   showPrefix: boolean;
   labelContent = 'Label';
@@ -1960,7 +1960,7 @@ const textareaStyleReset = `
 })
 class AutosizeTextareaWithLongPlaceholder {
   placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
-  @ViewChild(MatTextareaAutosize) autosize: MatTextareaAutosize;
+  @ViewChild(MatTextareaAutosize, {static: false}) autosize: MatTextareaAutosize;
 }
 
 @Component({

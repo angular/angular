@@ -228,6 +228,6 @@ class ComponentWithDebouncedListener {
   template: `<div #contentEl>{{text}}</div>`
 })
 class UnobservedComponentWithTextContent {
-  @ViewChild('contentEl') contentEl: ElementRef;
+  @ViewChild('contentEl', {static: false}) contentEl: ElementRef;
   text = '';
 }

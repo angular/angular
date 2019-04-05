@@ -924,8 +924,8 @@ class BasicTooltipDemo {
   message: any = initialTooltipMessage;
   showButton: boolean = true;
   showTooltipClass = false;
-  @ViewChild(MatTooltip) tooltip: MatTooltip;
-  @ViewChild('button') button: ElementRef<HTMLButtonElement>;
+  @ViewChild(MatTooltip, {static: false}) tooltip: MatTooltip;
+  @ViewChild('button', {static: false}) button: ElementRef<HTMLButtonElement>;
 }
 
 @Component({
@@ -945,7 +945,7 @@ class ScrollableTooltipDemo {
  message: string = initialTooltipMessage;
  showButton: boolean = true;
 
- @ViewChild(CdkScrollable) scrollingContainer: CdkScrollable;
+ @ViewChild(CdkScrollable, {static: false}) scrollingContainer: CdkScrollable;
 
  scrollDown() {
      const scrollingContainerEl = this.scrollingContainer.getElementRef().nativeElement;
@@ -1005,8 +1005,8 @@ class DynamicTooltipsDemo {
   `,
 })
 class TooltipOnTextFields {
-  @ViewChild('input') input: ElementRef<HTMLInputElement>;
-  @ViewChild('textarea') textarea: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('input', {static: false}) input: ElementRef<HTMLInputElement>;
+  @ViewChild('textarea', {static: false}) textarea: ElementRef<HTMLTextAreaElement>;
 }
 
 @Component({
@@ -1019,7 +1019,7 @@ class TooltipOnTextFields {
   `,
 })
 class TooltipOnDraggableElement {
-  @ViewChild('button') button: ElementRef;
+  @ViewChild('button', {static: false}) button: ElementRef;
 }
 
 @Component({
@@ -1028,8 +1028,8 @@ class TooltipOnDraggableElement {
 })
 class TooltipDemoWithoutPositionBinding {
   message: any = initialTooltipMessage;
-  @ViewChild(MatTooltip) tooltip: MatTooltip;
-  @ViewChild('button') button: ElementRef<HTMLButtonElement>;
+  @ViewChild(MatTooltip, {static: false}) tooltip: MatTooltip;
+  @ViewChild('button', {static: false}) button: ElementRef<HTMLButtonElement>;
 }
 
 /** Asserts whether a tooltip directive has a tooltip instance. */

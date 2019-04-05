@@ -334,13 +334,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   controlType = 'mat-select';
 
   /** Trigger that opens the select. */
-  @ViewChild('trigger') trigger: ElementRef;
+  @ViewChild('trigger', {static: false}) trigger: ElementRef;
 
   /** Panel containing the select options. */
-  @ViewChild('panel') panel: ElementRef;
+  @ViewChild('panel', {static: false}) panel: ElementRef;
 
   /** Overlay pane containing the options. */
-  @ViewChild(CdkConnectedOverlay) overlayDir: CdkConnectedOverlay;
+  @ViewChild(CdkConnectedOverlay, {static: false}) overlayDir: CdkConnectedOverlay;
 
   /** All of the defined select options. */
   @ContentChildren(MatOption, { descendants: true }) options: QueryList<MatOption>;
@@ -352,7 +352,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
 
   /** User-supplied override of the trigger element. */
-  @ContentChild(MatSelectTrigger) customTrigger: MatSelectTrigger;
+  @ContentChild(MatSelectTrigger, {static: false}) customTrigger: MatSelectTrigger;
 
   /** Placeholder to be shown if no value has been selected. */
   @Input()

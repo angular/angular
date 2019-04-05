@@ -2353,8 +2353,8 @@ class SimpleAutocomplete implements OnDestroy {
   closedSpy = jasmine.createSpy('autocomplete closed spy');
 
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger;
-  @ViewChild(MatAutocomplete) panel: MatAutocomplete;
-  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChild(MatAutocomplete, {static: false}) panel: MatAutocomplete;
+  @ViewChild(MatFormField, {static: false}) formField: MatFormField;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
 
   states = [
@@ -2408,7 +2408,7 @@ class NgIfAutocomplete {
   isVisible = true;
   options = ['One', 'Two', 'Three'];
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
   @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
@@ -2509,7 +2509,7 @@ class AutocompleteWithNumbers {
   `
 })
 class AutocompleteWithOnPushDelay implements OnInit {
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
   options: string[];
 
   ngOnInit() {
@@ -2535,7 +2535,7 @@ class AutocompleteWithNativeInput {
   filteredOptions: Observable<any>;
   options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
   @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
@@ -2553,7 +2553,7 @@ class AutocompleteWithNativeInput {
   template: `<input placeholder="Choose" [matAutocomplete]="auto" [formControl]="control">`
 })
 class AutocompleteWithoutPanel {
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
   control = new FormControl();
 }
 
@@ -2590,7 +2590,7 @@ class AutocompleteWithFormsAndNonfloatingLabel {
   `
 })
 class AutocompleteWithGroups {
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
   selectedState: string;
   stateGroups = [
     {
@@ -2626,8 +2626,8 @@ class AutocompleteWithSelectEvent {
   states = ['New York', 'Washington', 'Oregon'];
   optionSelected = jasmine.createSpy('optionSelected callback');
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  @ViewChild(MatAutocomplete) autocomplete: MatAutocomplete;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocomplete, {static: false}) autocomplete: MatAutocomplete;
 }
 
 
@@ -2685,8 +2685,8 @@ class AutocompleteWithNumberInputAndNgModel {
   `
 })
 class AutocompleteWithDifferentOrigin {
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  @ViewChild(MatAutocompleteOrigin) alternateOrigin: MatAutocompleteOrigin;
+  @ViewChild(MatAutocompleteTrigger, {static: false}) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteOrigin, {static: false}) alternateOrigin: MatAutocompleteOrigin;
   selectedValue: string;
   values = ['one', 'two', 'three'];
   connectedTo?: MatAutocompleteOrigin;

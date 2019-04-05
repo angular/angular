@@ -17,7 +17,7 @@ import {MatRipple} from '@angular/material';
   styleUrls: ['ripple-demo.css'],
 })
 export class RippleDemo {
-  @ViewChild(MatRipple) ripple: MatRipple;
+  @ViewChild(MatRipple, {static: false}) ripple: MatRipple;
 
   centered = false;
   disabled = false;

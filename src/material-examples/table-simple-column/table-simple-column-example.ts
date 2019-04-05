@@ -112,7 +112,7 @@ export class SimpleColumn<T> implements OnDestroy, OnInit {
 
   @ViewChild(MatColumnDef, {static: true}) columnDef: MatColumnDef;
 
-  @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
+  @ViewChild(MatSortHeader, {static: false}) sortHeader: MatSortHeader;
 
   constructor(@Optional() public table: MatTable<any>) {}
 

@@ -246,13 +246,13 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   @Output() readonly _userSelection: EventEmitter<void> = new EventEmitter<void>();
 
   /** Reference to the current month view component. */
-  @ViewChild(MatMonthView) monthView: MatMonthView<D>;
+  @ViewChild(MatMonthView, {static: false}) monthView: MatMonthView<D>;
 
   /** Reference to the current year view component. */
-  @ViewChild(MatYearView) yearView: MatYearView<D>;
+  @ViewChild(MatYearView, {static: false}) yearView: MatYearView<D>;
 
   /** Reference to the current multi-year view component. */
-  @ViewChild(MatMultiYearView) multiYearView: MatMultiYearView<D>;
+  @ViewChild(MatMultiYearView, {static: false}) multiYearView: MatMultiYearView<D>;
 
   /**
    * The current active date. This determines which time period is shown and which date is

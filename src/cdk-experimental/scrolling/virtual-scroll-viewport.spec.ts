@@ -91,7 +91,7 @@ function finishInit(fixture: ComponentFixture<any>) {
   encapsulation: ViewEncapsulation.None,
 })
 class AutoSizeVirtualScroll {
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
 
   @Input() orientation = 'vertical';
   @Input() viewportSize = 200;

@@ -17,7 +17,7 @@ import {MatAccordion} from '@angular/material';
   templateUrl: 'expansion-demo.html',
 })
 export class ExpansionDemo {
-  @ViewChild(MatAccordion) accordion: MatAccordion;
+  @ViewChild(MatAccordion, {static: false}) accordion: MatAccordion;
 
   displayMode = 'default';
   multi = false;

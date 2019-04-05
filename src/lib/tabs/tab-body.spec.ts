@@ -192,8 +192,8 @@ class SimpleTabBodyApp implements AfterContentInit {
   position: number;
   origin: number | null;
 
-  @ViewChild(MatTabBody) tabBody: MatTabBody;
-  @ViewChild(TemplateRef) template: TemplateRef<any>;
+  @ViewChild(MatTabBody, {static: false}) tabBody: MatTabBody;
+  @ViewChild(TemplateRef, {static: true}) template: TemplateRef<any>;
 
   constructor(private _viewContainerRef: ViewContainerRef) { }
 

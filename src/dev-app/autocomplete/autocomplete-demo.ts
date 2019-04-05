@@ -39,7 +39,7 @@ export class AutocompleteDemo {
 
   tdDisabled = false;
 
-  @ViewChild(NgModel) modelDir: NgModel;
+  @ViewChild(NgModel, {static: false}) modelDir: NgModel;
 
   groupedStates: StateGroup[];
   filteredGroupedStates: StateGroup[];

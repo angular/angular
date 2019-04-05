@@ -82,10 +82,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   @ContentChildren(CdkDragHandle, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
   /** Element that will be used as a template to create the draggable item's preview. */
-  @ContentChild(CdkDragPreview) _previewTemplate: CdkDragPreview;
+  @ContentChild(CdkDragPreview, {static: false}) _previewTemplate: CdkDragPreview;
 
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
-  @ContentChild(CdkDragPlaceholder) _placeholderTemplate: CdkDragPlaceholder;
+  @ContentChild(CdkDragPlaceholder, {static: false}) _placeholderTemplate: CdkDragPlaceholder;
 
   /** Arbitrary data to attach to this drag instance. */
   @Input('cdkDragData') data: T;

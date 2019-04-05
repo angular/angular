@@ -117,5 +117,5 @@ export class MatSidenav extends MatDrawer {
 })
 export class MatSidenavContainer extends MatDrawerContainer {
   @ContentChildren(MatSidenav) _drawers: QueryList<MatSidenav>;
-  @ContentChild(MatSidenavContent) _content: MatSidenavContent;
+  @ContentChild(MatSidenavContent, {static: false}) _content: MatSidenavContent;
 }

@@ -25,8 +25,8 @@ import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core
   styleUrls: ['connected-overlay-demo.css'],
 })
 export class ConnectedOverlayDemo {
-  @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
-  @ViewChild('overlay') overlayTemplate: TemplateRef<any>;
+  @ViewChild(CdkOverlayOrigin, {static: false}) _overlayOrigin: CdkOverlayOrigin;
+  @ViewChild('overlay', {static: false}) overlayTemplate: TemplateRef<any>;
 
   originX: HorizontalConnectionPos = 'start';
   originY: VerticalConnectionPos = 'bottom';

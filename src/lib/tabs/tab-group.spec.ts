@@ -805,7 +805,7 @@ class AsyncTabsTestApp implements OnInit {
 class TabGroupWithSimpleApi {
   otherLabel = 'Fruit';
   otherContent = 'Apples, grapes';
-  @ViewChild('legumes') legumes: any;
+  @ViewChild('legumes', {static: false}) legumes: any;
 }
 
 

@@ -814,7 +814,9 @@ class DirectiveWithViewContainer {
 
 @Component({template: `<dir-with-view-container></dir-with-view-container>`})
 class ComponentWithChildViewContainer {
-  @ViewChild(DirectiveWithViewContainer) childWithViewContainer: DirectiveWithViewContainer;
+  @ViewChild(DirectiveWithViewContainer, {
+    static: false
+  }) childWithViewContainer: DirectiveWithViewContainer;
 
   get childViewContainer() {
     return this.childWithViewContainer.viewContainerRef;
@@ -830,7 +832,7 @@ class ComponentWithTemplateRef {
   localValue: string;
   bottomSheetRef: MatBottomSheetRef<any>;
 
-  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: false}) templateRef: TemplateRef<any>;
 
   setRef(bottomSheetRef: MatBottomSheetRef<any>): string {
     this.bottomSheetRef = bottomSheetRef;

@@ -428,8 +428,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 })
 export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy {
   @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;
-  @ContentChild(MatDrawerContent) _content: MatDrawerContent;
-  @ViewChild(MatDrawerContent) _userContent: MatDrawerContent;
+  @ContentChild(MatDrawerContent, {static: false}) _content: MatDrawerContent;
+  @ViewChild(MatDrawerContent, {static: false}) _userContent: MatDrawerContent;
 
   /** The drawer child with the `start` position. */
   get start(): MatDrawer | null { return this._start; }

@@ -1389,7 +1389,7 @@ class BasicChipList {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChild(MatChipList, {static: false}) chipList: MatChipList;
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
@@ -1424,7 +1424,7 @@ class MultiSelectionChipList {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChild(MatChipList, {static: false}) chipList: MatChipList;
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
@@ -1489,7 +1489,7 @@ class InputChipList {
     }
   }
 
-  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChild(MatChipList, {static: false}) chipList: MatChipList;
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
@@ -1552,7 +1552,7 @@ class ChipListWithFormErrorMessages {
   ];
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
 
-  @ViewChild('form') form: NgForm;
+  @ViewChild('form', {static: false}) form: NgForm;
   formControl = new FormControl('', Validators.required);
 }
 

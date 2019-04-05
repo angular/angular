@@ -2018,9 +2018,9 @@ describe('MatMenu default overrides', () => {
   `
 })
 class SimpleMenu {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
-  @ViewChild(MatMenu) menu: MatMenu;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl', {static: false}) triggerEl: ElementRef<HTMLElement>;
+  @ViewChild(MatMenu, {static: false}) menu: MatMenu;
   @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
   extraItems: string[] = [];
   closeCallback = jasmine.createSpy('menu closed callback');
@@ -2038,8 +2038,8 @@ class SimpleMenu {
   `
 })
 class PositionedMenu {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl', {static: false}) triggerEl: ElementRef<HTMLElement>;
   xPosition: MenuPositionX = 'before';
   yPosition: MenuPositionY = 'above';
 }
@@ -2058,8 +2058,8 @@ interface TestableMenu {
 })
 class OverlapMenu implements TestableMenu {
   @Input() overlapTrigger: boolean;
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl', {static: false}) triggerEl: ElementRef<HTMLElement>;
 }
 
 @Component({
@@ -2079,7 +2079,7 @@ class CustomMenuPanel implements MatMenuPanel {
   overlapTrigger = true;
   parentMenu: MatMenuPanel;
 
-  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: false}) templateRef: TemplateRef<any>;
   @Output() close = new EventEmitter<void | 'click' | 'keydown' | 'tab'>();
   focusFirstItem = () => {};
   resetActiveItem = () => {};
@@ -2095,7 +2095,7 @@ class CustomMenuPanel implements MatMenuPanel {
   `
 })
 class CustomMenu {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
 }
 
 
@@ -2146,22 +2146,22 @@ class CustomMenu {
   `
 })
 class NestedMenu {
-  @ViewChild('root') rootMenu: MatMenu;
-  @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
-  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef<HTMLElement>;
-  @ViewChild('alternateTrigger') alternateTrigger: MatMenuTrigger;
+  @ViewChild('root', {static: false}) rootMenu: MatMenu;
+  @ViewChild('rootTrigger', {static: false}) rootTrigger: MatMenuTrigger;
+  @ViewChild('rootTriggerEl', {static: false}) rootTriggerEl: ElementRef<HTMLElement>;
+  @ViewChild('alternateTrigger', {static: false}) alternateTrigger: MatMenuTrigger;
   readonly rootCloseCallback = jasmine.createSpy('root menu closed callback');
 
-  @ViewChild('levelOne') levelOneMenu: MatMenu;
-  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+  @ViewChild('levelOne', {static: false}) levelOneMenu: MatMenu;
+  @ViewChild('levelOneTrigger', {static: false}) levelOneTrigger: MatMenuTrigger;
   readonly levelOneCloseCallback = jasmine.createSpy('level one menu closed callback');
 
-  @ViewChild('levelTwo') levelTwoMenu: MatMenu;
-  @ViewChild('levelTwoTrigger') levelTwoTrigger: MatMenuTrigger;
+  @ViewChild('levelTwo', {static: false}) levelTwoMenu: MatMenu;
+  @ViewChild('levelTwoTrigger', {static: false}) levelTwoTrigger: MatMenuTrigger;
   readonly levelTwoCloseCallback = jasmine.createSpy('level one menu closed callback');
 
-  @ViewChild('lazy') lazyMenu: MatMenu;
-  @ViewChild('lazyTrigger') lazyTrigger: MatMenuTrigger;
+  @ViewChild('lazy', {static: false}) lazyMenu: MatMenu;
+  @ViewChild('lazyTrigger', {static: false}) lazyTrigger: MatMenuTrigger;
   showLazy = false;
 }
 
@@ -2181,8 +2181,8 @@ class NestedMenu {
   `
 })
 class NestedMenuCustomElevation {
-  @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
-  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+  @ViewChild('rootTrigger', {static: false}) rootTrigger: MatMenuTrigger;
+  @ViewChild('levelOneTrigger', {static: false}) levelOneTrigger: MatMenuTrigger;
 }
 
 
@@ -2204,8 +2204,8 @@ class NestedMenuCustomElevation {
   `
 })
 class NestedMenuRepeater {
-  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef<HTMLElement>;
-  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+  @ViewChild('rootTriggerEl', {static: false}) rootTriggerEl: ElementRef<HTMLElement>;
+  @ViewChild('levelOneTrigger', {static: false}) levelOneTrigger: MatMenuTrigger;
 
   items = ['one', 'two', 'three'];
 }
@@ -2225,7 +2225,7 @@ class NestedMenuRepeater {
   `
 })
 class SubmenuDeclaredInsideParentMenu {
-  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
+  @ViewChild('rootTriggerEl', {static: false}) rootTriggerEl: ElementRef;
 }
 
 
@@ -2249,8 +2249,8 @@ class FakeIcon {}
   `
 })
 class SimpleLazyMenu {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl', {static: false}) triggerEl: ElementRef<HTMLElement>;
   @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
 }
 
@@ -2275,8 +2275,8 @@ class SimpleLazyMenu {
   `
 })
 class LazyMenuWithContext {
-  @ViewChild('triggerOne') triggerOne: MatMenuTrigger;
-  @ViewChild('triggerTwo') triggerTwo: MatMenuTrigger;
+  @ViewChild('triggerOne', {static: false}) triggerOne: MatMenuTrigger;
+  @ViewChild('triggerTwo', {static: false}) triggerTwo: MatMenuTrigger;
 }
 
 
@@ -2294,9 +2294,9 @@ class LazyMenuWithContext {
   `
 })
 class DynamicPanelMenu {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('one') firstMenu: MatMenu;
-  @ViewChild('two') secondMenu: MatMenu;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('one', {static: false}) firstMenu: MatMenu;
+  @ViewChild('two', {static: false}) secondMenu: MatMenu;
 }
 
 
@@ -2311,5 +2311,5 @@ class DynamicPanelMenu {
   `
 })
 class MenuWithCheckboxItems {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
 }

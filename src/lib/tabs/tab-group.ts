@@ -96,9 +96,9 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
   @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
 
-  @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
+  @ViewChild('tabBodyWrapper', {static: false}) _tabBodyWrapper: ElementRef;
 
-  @ViewChild('tabHeader') _tabHeader: MatTabHeader;
+  @ViewChild('tabHeader', {static: false}) _tabHeader: MatTabHeader;
 
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;

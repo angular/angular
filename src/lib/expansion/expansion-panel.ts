@@ -128,10 +128,10 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   accordion: MatAccordionBase;
 
   /** Content that will be rendered lazily. */
-  @ContentChild(MatExpansionPanelContent) _lazyContent: MatExpansionPanelContent;
+  @ContentChild(MatExpansionPanelContent, {static: false}) _lazyContent: MatExpansionPanelContent;
 
   /** Element containing the panel's user-provided content. */
-  @ViewChild('body') _body: ElementRef<HTMLElement>;
+  @ViewChild('body', {static: false}) _body: ElementRef<HTMLElement>;
 
   /** Portal holding the user's content. */
   _portal: TemplatePortal;

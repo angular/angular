@@ -117,12 +117,12 @@ export class MatListOption extends _MatListOptionMixinBase
   private _disabled = false;
   private _hasFocus = false;
 
-  @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
-  @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
+  @ContentChild(MatListAvatarCssMatStyler, {static: false}) _avatar: MatListAvatarCssMatStyler;
+  @ContentChild(MatListIconCssMatStyler, {static: false}) _icon: MatListIconCssMatStyler;
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
   /** DOM element containing the item's text. */
-  @ViewChild('text') _text: ElementRef;
+  @ViewChild('text', {static: false}) _text: ElementRef;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';

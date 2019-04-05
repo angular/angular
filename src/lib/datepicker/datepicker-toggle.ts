@@ -81,10 +81,10 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   @Input() disableRipple: boolean;
 
   /** Custom icon set by the consumer. */
-  @ContentChild(MatDatepickerToggleIcon) _customIcon: MatDatepickerToggleIcon;
+  @ContentChild(MatDatepickerToggleIcon, {static: false}) _customIcon: MatDatepickerToggleIcon;
 
   /** Underlying button element. */
-  @ViewChild('button') _button: MatButton;
+  @ViewChild('button', {static: false}) _button: MatButton;
 
   constructor(
     public _intl: MatDatepickerIntl,

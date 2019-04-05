@@ -9,7 +9,7 @@ import {MatDialog, MatDialogRef, MatDialogConfig} from '@angular/material';
 export class DialogE2E {
   dialogRef: MatDialogRef<TestDialog> | null;
 
-  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: false}) templateRef: TemplateRef<any>;
 
   constructor (private _dialog: MatDialog) { }
 

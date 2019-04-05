@@ -141,7 +141,7 @@ export class MatTabBody implements OnInit, OnDestroy {
   @Output() readonly _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
    /** The portal host inside of this container into which the tab body content will be loaded. */
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+  @ViewChild(PortalHostDirective, {static: false}) _portalHost: PortalHostDirective;
 
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;
