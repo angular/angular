@@ -287,7 +287,7 @@ data rows.
 
 <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
 <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
-<tr mat-footer-row *matFooterRowDef="columnsToDisplay"></tr
+<tr mat-footer-row *matFooterRowDef="columnsToDisplay"></tr>
 ```
 
 <!--- example(table-footer-row) -->
