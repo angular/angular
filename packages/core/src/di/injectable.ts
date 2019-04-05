@@ -39,13 +39,8 @@ export interface InjectableDecorator {
    *
    * The following example shows how service classes are properly marked as
    * injectable.
-   *
-   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
-   *
-   * `Injector` throws an error if it tries to instantiate a class that
-   * is not decorated with `@Injectable`, as shown in the following example.
-   *
-   * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
+   *Z
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
    */
   (): TypeDecorator;
