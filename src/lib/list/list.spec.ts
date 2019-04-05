@@ -13,18 +13,10 @@ describe('MatList', () => {
     TestBed.configureTestingModule({
       imports: [MatListModule],
       declarations: [
-        ListWithOneAnchorItem,
-        ListWithOneItem,
-        ListWithTwoLineItem,
-        ListWithThreeLineItem,
-        ListWithAvatar,
-        ListWithItemWithCssClass,
-        ListWithDynamicNumberOfLines,
-        ListWithMultipleItems,
-        ListWithManyLines,
-        NavListWithOneAnchorItem,
-        ActionListWithoutType,
-        ActionListWithType
+        ListWithOneAnchorItem, ListWithOneItem, ListWithTwoLineItem, ListWithThreeLineItem,
+        ListWithAvatar, ListWithItemWithCssClass, ListWithDynamicNumberOfLines,
+        ListWithMultipleItems, ListWithManyLines, NavListWithOneAnchorItem, ActionListWithoutType,
+        ActionListWithType, ListWithIndirectDescendantLines
       ],
     });
 
@@ -274,6 +266,15 @@ describe('MatList', () => {
           .toBe(0, 'Expected no ripples after list ripples are disabled.');
     }));
 
+
+  it('should pick up indirect descendant lines', () => {
+    const fixture = TestBed.createComponent(ListWithIndirectDescendantLines);
+    fixture.detectChanges();
+
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    expect(listItems[0].nativeElement.className).toContain('mat-2-line');
+    expect(listItems[1].nativeElement.className).toContain('mat-2-line');
+  });
 });
 
 
@@ -409,3 +410,18 @@ class ListWithDynamicNumberOfLines extends BaseTestList { }
     </mat-list-item>
   </mat-list>`})
 class ListWithMultipleItems extends BaseTestList { }
+
+// Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
+@Component({
+  template: `
+  <mat-list>
+    <mat-list-item *ngFor="let item of items">
+      <ng-container [ngSwitch]="true">
+        <h3 mat-line>{{item.name}}</h3>
+        <p mat-line>{{item.description}}</p>
+      </ng-container>
+    </mat-list-item>
+  </mat-list>`
+})
+class ListWithIndirectDescendantLines extends BaseTestList {
+}
