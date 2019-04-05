@@ -415,12 +415,18 @@
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
-          },          
+          },
           "fancygrid": {
             "desc": "Angular grid library with charts integration and server communication for Enterprise.",
             "rev": true,
             "title": "FancyGrid",
             "url": "https://fancygrid.com/docs/getting-started/angular"
+          },
+          "ngx-smart-modal": {
+            "desc": "Angular smart, light and fast modal handler to manage modals and data everywhere.",
+            "rev": true,
+            "title": "ngx-smart-modal",
+            "url": "https://biig-io.github.io/ngx-smart-modal"
           },
           "jqwidgets": {
             "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
@@ -478,6 +484,12 @@
             "rev": true,
             "title": "Nebular",
             "url": "https://akveo.github.io/nebular/"
+          },
+          "carbondesignsystem": {
+            "desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "rev": true,
+            "title": "Carbon Components Angular",
+            "url": "https://angular.carbondesignsystem.com/"
           }
         }
       }
@@ -856,6 +868,13 @@
             "rev": true,
             "title": "StrongBrew",
             "url": "https://strongbrew.io/"
+          },
+          "angular.de": {
+            "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "logo": "https://angular.de/assets/img/angular-de-logo.svg",
+            "rev": true,
+            "title": "Angular.de (German)",
+            "url": "https://angular.de/"
           }
         }
       }

@@ -32,9 +32,11 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/simplifyMemberAnchors'))
   .processor(require('./processors/computeStability'))
   .processor(require('./processors/removeInjectableConstructors'))
+  .processor(require('./processors/collectPackageContentDocs'))
   .processor(require('./processors/processPackages'))
   .processor(require('./processors/processNgModuleDocs'))
   .processor(require('./processors/fixupRealProjectRelativePath'))
+  .processor(require('./processors/processAliasDocs'))
 
 
   /**
@@ -72,10 +74,10 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
-    readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]|^VERSION$/];
+    readTypeScriptModules.ignoreExportsMatching = [/^[_]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
 
-    // NOTE: This list shold be in sync with tools/public_api_guard/BUILD.bazel
+    // NOTE: This list should be in sync with tools/public_api_guard/BUILD.bazel
     readTypeScriptModules.sourceFiles = [
       'animations/index.ts',
       'animations/browser/index.ts',

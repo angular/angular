@@ -13,6 +13,8 @@
 import {
   Component,
   Directive,
+  InjectFlags,
+  InjectionToken,
   Injector,
   NgModule,
   NgZone,
@@ -167,7 +169,14 @@ export class TestBedRender3 implements Injector, TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
-  static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   */
+  static get(token: any, notFoundValue?: any): any;
+  static get(
+      token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      flags: InjectFlags = InjectFlags.Default): any {
     return _getTestBedRender3().get(token, notFoundValue);
   }
 
@@ -254,12 +263,18 @@ export class TestBedRender3 implements Injector, TestBed {
 
   compileComponents(): Promise<any> { return this.compiler.compileComponents(); }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  /**
+   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   */
+  get(token: any, notFoundValue?: any): any;
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      flags: InjectFlags = InjectFlags.Default): any {
     if (token === TestBedRender3) {
       return this;
     }
-    const result = this.testModuleRef.injector.get(token, UNDEFINED);
-    return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue) : result;
+    const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
+    return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) : result;
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {
@@ -338,9 +353,11 @@ export class TestBedRender3 implements Injector, TestBed {
           `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ngComponentDef' field`);
     }
 
-    const noNgZone: boolean = this.get(ComponentFixtureNoNgZone, false);
-    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
+    // TODO: Don't cast as `any`, proper type is boolean[]
+    const noNgZone = this.get(ComponentFixtureNoNgZone as any, false);
+    // TODO: Don't cast as `any`, proper type is boolean[]
+    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect as any, false);
+    const ngZone: NgZone|null = noNgZone ? null : this.get(NgZone as Type<NgZone|null>, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =

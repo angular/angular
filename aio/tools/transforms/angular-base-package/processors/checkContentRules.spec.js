@@ -50,7 +50,7 @@ describe('checkContentRules processor', function() {
 
     const docs = [
       { docType: 'test1', description: 'test doc 1', name: 'test-1' },
-      { docType: 'test2', description: 'test doc 2', name: 'test-2' }
+      { docType: 'test2', description: 'test doc 2', name: 'test-2' },
     ];
     processor.$process(docs);
     expect(nameSpy1).toHaveBeenCalledTimes(1);
@@ -119,4 +119,17 @@ describe('checkContentRules processor', function() {
          - doc "test-1" (test1) `);
   });
 
+  it('should ignore docs whose id contains a barred-o', () => {
+    const nameSpy1 = jasmine.createSpy('name 1');
+    processor.docTypeRules = { 'doc-type': { name: [nameSpy1] } };
+    const docs = [
+      { docType: 'doc-type', id: 'package/class/property/param', name: 'name-1' },
+      { docType: 'doc-type', id: 'package/class/property/ɵparam', name: 'name-2' },
+      { docType: 'doc-type', id: 'package/class/ɵproperty/param', name: 'name-3' },
+      { docType: 'doc-type', id: 'package/ɵclass/property/param', name: 'name-4' },
+    ];
+    processor.$process(docs);
+    expect(nameSpy1).toHaveBeenCalledTimes(1);
+    expect(nameSpy1).toHaveBeenCalledWith(docs[0], 'name', 'name-1');
+  });
 });
