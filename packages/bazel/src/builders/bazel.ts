@@ -8,10 +8,10 @@
 
 /// <reference types='node'/>
 
-import {Path, basename, dirname, getSystemPath, join} from '@angular-devkit/core';
-import {resolve} from '@angular-devkit/core/node';
+import {Path, dirname, getSystemPath, join, normalize} from '@angular-devkit/core';
 import {Host} from '@angular-devkit/core/src/virtual-fs/host';
 import {spawn} from 'child_process';
+import * as path from 'path';
 
 export type Executable = 'bazel' | 'ibazel';
 export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
@@ -20,9 +20,9 @@ export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
  * Spawn the Bazel process. Trap SINGINT to make sure Bazel process is killed.
  */
 export function runBazel(
-    projectDir: Path, binary: Path, command: Command, workspaceTarget: string, flags: string[]) {
+    projectDir: Path, binary: string, command: Command, workspaceTarget: string, flags: string[]) {
   return new Promise((resolve, reject) => {
-    const buildProcess = spawn(getSystemPath(binary), [command, workspaceTarget, ...flags], {
+    const buildProcess = spawn(process.argv[0], [binary, command, workspaceTarget, ...flags], {
       cwd: getSystemPath(projectDir),
       stdio: 'inherit',
       shell: false,
@@ -39,7 +39,7 @@ export function runBazel(
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`${basename(binary)} failed with code ${code}.`));
+        reject(new Error(`${binary} failed with code ${code}.`));
       }
     });
   });
@@ -49,11 +49,13 @@ export function runBazel(
  * Resolves the path to `@bazel/bazel` or `@bazel/ibazel`.
  */
 export function checkInstallation(name: Executable, projectDir: Path): string {
-  const packageName = `@bazel/${name}`;
+  const packageName = `@bazel/${name}/package.json`;
   try {
-    return resolve(packageName, {
-      basedir: projectDir,
+    const bazelPath = require.resolve(packageName, {
+      paths: [getSystemPath(projectDir)],
     });
+
+    return path.dirname(bazelPath);
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw new Error(
@@ -69,11 +71,11 @@ export function checkInstallation(name: Executable, projectDir: Path): string {
  * Returns the absolute path to the template directory in `@angular/bazel`.
  */
 export async function getTemplateDir(host: Host, root: Path): Promise<Path> {
-  const packageJson = resolve('@angular/bazel', {
-    basedir: root,
-    resolvePackageJson: true,
+  const packageJson = require.resolve('@angular/bazel/package.json', {
+    paths: [getSystemPath(root)],
   });
-  const packageDir = dirname(packageJson as Path);
+
+  const packageDir = dirname(normalize(packageJson));
   const templateDir = join(packageDir, 'src', 'builders', 'files');
   if (!await host.isDirectory(templateDir).toPromise()) {
     throw new Error('Could not find Bazel template directory in "@angular/bazel".');
