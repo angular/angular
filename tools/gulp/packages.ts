@@ -9,6 +9,7 @@ export const materialExperimentalPackage = new BuildPackage('material-experiment
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
 export const examplesPackage = new BuildPackage('material-examples', [
   cdkPackage,
+  cdkExperimentalPackage,
   materialPackage,
   momentAdapterPackage
 ]);

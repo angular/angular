@@ -5,7 +5,7 @@ set -e
 
 # Source directories for packages to build with bazel and copy into dist/
 # We use the bazel tag "publish" as a marker for rules we care about here.
-packages=$(bazel query --output=package 'attr(tags, publish, ...)' | xargs -n1 basename)
+packages=$(bazel query --output=package 'kind(ng_package, ...)' | xargs -n1 basename)
 
 # The bazel-bin directory where the bazel output is written
 bazel_bin="$(bazel info bazel-bin)"
