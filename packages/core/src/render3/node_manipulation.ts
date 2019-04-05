@@ -488,7 +488,7 @@ function removeListeners(lView: LView): void {
     const lCleanup = lView[CLEANUP] !;
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
-        // This is a listener with the native renderer
+        // This is a native DOM listener
         const idxOrTargetGetter = tCleanup[i + 1];
         const target = typeof idxOrTargetGetter === 'function' ?
             idxOrTargetGetter(lView) :
@@ -496,7 +496,7 @@ function removeListeners(lView: LView): void {
         const listener = lCleanup[tCleanup[i + 2]];
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {
-          // DOM listener
+          // native DOM listener registered with Renderer3
           target.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
         } else {
           if (useCaptureOrSubIdx >= 0) {
@@ -508,10 +508,6 @@ function removeListeners(lView: LView): void {
           }
         }
         i += 2;
-      } else if (typeof tCleanup[i] === 'number') {
-        // This is a listener with renderer2 (cleanup fn can be found by index)
-        const cleanupFn = lCleanup[tCleanup[i]];
-        cleanupFn();
       } else {
         // This is a cleanup function that is grouped with the index of its context
         const context = lCleanup[tCleanup[i + 1]];

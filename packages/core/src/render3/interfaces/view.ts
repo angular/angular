@@ -539,11 +539,6 @@ export interface TView {
    *         `useCaptureOrIndx >= 0` `removeListener = LView[CLEANUP][useCaptureOrIndx]`
    *         `useCaptureOrIndx <  0` `subscription = LView[CLEANUP][-useCaptureOrIndx]`
    *
-   * If it's a renderer2 style listener or ViewRef destroy hook being stored:
-   * 1st index is: index of the cleanup function in LView.cleanupInstances[]
-   * 2nd index is: `null`
-   *               `lView[CLEANUP][tView.cleanup[i+0]]()`
-   *
    * If it's an output subscription or query list destroy hook:
    * 1st index is: output unsubscribe function / query list destroy function
    * 2nd index is: index of function context in LView.cleanupInstances[]
