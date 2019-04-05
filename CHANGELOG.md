@@ -1,4 +1,4 @@
-# 8.0.0-beta.0 (2019-04-05)
+# 8.0.0-beta.0 "spidersilk-barbell" (2019-04-05)
 
 ### Project setup
 * `@angular/material` now has an explicit peer dependency on `@angular/forms`.
