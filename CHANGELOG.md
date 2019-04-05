@@ -1,3 +1,67 @@
+# 8.0.0-beta.0 (2019-04-05)
+
+### Project setup
+* `@angular/material` now has an explicit peer dependency on `@angular/forms`.
+It was always required, but is now correctly listed in the `package.json`.   
+
+
+### Bug Fixes
+
+* **a11y:** don't set aria description if it's the same as the node's aria-label ([#15250](https://github.com/angular/material2/issues/15250)) ([1bc8bc4](https://github.com/angular/material2/commit/1bc8bc4)), closes [#15048](https://github.com/angular/material2/issues/15048)
+* **autocomplete:** remove old classes when classlist has changed ([#15185](https://github.com/angular/material2/issues/15185)) ([413fe33](https://github.com/angular/material2/commit/413fe33)), closes [#15179](https://github.com/angular/material2/issues/15179)
+* **badge:** disable animations when using NoopAnimationsModule ([#11408](https://github.com/angular/material2/issues/11408)) ([4614fb8](https://github.com/angular/material2/commit/4614fb8))
+* **badge:** increase font size of small badge ([#15280](https://github.com/angular/material2/issues/15280)) ([2b14952](https://github.com/angular/material2/commit/2b14952)), closes [#15251](https://github.com/angular/material2/issues/15251)
+* **bottom-sheet:** focus trap not being attached when autoFocus is disabled ([#15125](https://github.com/angular/material2/issues/15125)) ([3787695](https://github.com/angular/material2/commit/3787695)), closes [#15119](https://github.com/angular/material2/issues/15119)
+* **drag-drop:** clear duplicate ids from descendants ([#15135](https://github.com/angular/material2/issues/15135)) ([751fe8a](https://github.com/angular/material2/commit/751fe8a)), closes [#15120](https://github.com/angular/material2/issues/15120)
+* **drag-drop:** disabled value not being synced to drop list ref ([#15065](https://github.com/angular/material2/issues/15065)) ([1aafdbe](https://github.com/angular/material2/commit/1aafdbe))
+* **drag-drop:** dragged styling not being removed when exiting component with OnPush ([#15266](https://github.com/angular/material2/issues/15266)) ([9bbbb80](https://github.com/angular/material2/commit/9bbbb80)), closes [#15233](https://github.com/angular/material2/issues/15233)
+* **drag-drop:** handle delay coming in as a string ([#15425](https://github.com/angular/material2/issues/15425)) ([8bbb116](https://github.com/angular/material2/commit/8bbb116))
+* **drag-drop:** preview not being rendered inside fullscreen element ([#15066](https://github.com/angular/material2/issues/15066)) ([f1e1528](https://github.com/angular/material2/commit/f1e1528)), closes [#15033](https://github.com/angular/material2/issues/15033)
+* **examples:** fix form-field-custom-control ([#15147](https://github.com/angular/material2/issues/15147)) ([83135e1](https://github.com/angular/material2/commit/83135e1)), closes [#14810](https://github.com/angular/material2/issues/14810)
+* **icon:** clearing user content when svgIcon is bound to falsy value ([#15290](https://github.com/angular/material2/issues/15290)) ([d646266](https://github.com/angular/material2/commit/d646266))
+* **input:** no focus on click in IE if clicked outside native control ([#15108](https://github.com/angular/material2/issues/15108)) ([2652532](https://github.com/angular/material2/commit/2652532)), closes [#15093](https://github.com/angular/material2/issues/15093)
+* **layout:** breakpoint observer completing unrelated subscribers when preceding subscriber unsubscribes ([#14988](https://github.com/angular/material2/issues/14988)) ([0d054db](https://github.com/angular/material2/commit/0d054db)), closes [#14983](https://github.com/angular/material2/issues/14983)
+* **list:** changed after checked error with preselected values in selection list ([#15388](https://github.com/angular/material2/issues/15388)) ([d6f2729](https://github.com/angular/material2/commit/d6f2729)), closes [#15386](https://github.com/angular/material2/issues/15386)
+* **list:** not picking up indirect descendant lines ([#15552](https://github.com/angular/material2/issues/15552)) ([a258400](https://github.com/angular/material2/commit/a258400)), closes [#15466](https://github.com/angular/material2/issues/15466)
+* **menu:** support focus first/last item via home/end keys ([#14896](https://github.com/angular/material2/issues/14896)) ([0185dd1](https://github.com/angular/material2/commit/0185dd1))
+* **overlay:** flexible position strategy throwing error for empty strings ([#14935](https://github.com/angular/material2/issues/14935)) ([6e52023](https://github.com/angular/material2/commit/6e52023))
+* **progress-bar:** clear aria-valuenow in indeterminate or query mode ([#15019](https://github.com/angular/material2/issues/15019)) ([a88d053](https://github.com/angular/material2/commit/a88d053)), closes [#15016](https://github.com/angular/material2/issues/15016)
+* **progress-spinner:** clear aria-valuenow in indeterminate mode ([#15052](https://github.com/angular/material2/issues/15052)) ([dd4257e](https://github.com/angular/material2/commit/dd4257e)), closes [#15018](https://github.com/angular/material2/issues/15018)
+* **radio:** underlying label not expanding to width of radio button ([#14895](https://github.com/angular/material2/issues/14895)) ([677db8c](https://github.com/angular/material2/commit/677db8c)), closes [#14894](https://github.com/angular/material2/issues/14894)
+* **schematics:** ensure project "style" and "skipTests" options are respected ([#15513](https://github.com/angular/material2/issues/15513)) ([fe6629a](https://github.com/angular/material2/commit/fe6629a)), closes [#15502](https://github.com/angular/material2/issues/15502)
+* **select:** error when navigating via keyboard to reset option on a closed select ([#15160](https://github.com/angular/material2/issues/15160)) ([a115b3a](https://github.com/angular/material2/commit/a115b3a)), closes [#14540](https://github.com/angular/material2/issues/14540) [#15159](https://github.com/angular/material2/issues/15159)
+* **select:** update panel width if the viewport size changes ([#14932](https://github.com/angular/material2/issues/14932)) ([78f55ea](https://github.com/angular/material2/commit/78f55ea)), closes [#7811](https://github.com/angular/material2/issues/7811)
+* **slide-toggle:** thumb animation not working on mobile ([#15236](https://github.com/angular/material2/issues/15236)) ([48d17af](https://github.com/angular/material2/commit/48d17af)), closes [#15232](https://github.com/angular/material2/issues/15232)
+* **stepper:** content not being rendered out initially with ivy ([#15485](https://github.com/angular/material2/issues/15485)) ([876727d](https://github.com/angular/material2/commit/876727d))
+* **table:** use default change detection strategy on table ([#15440](https://github.com/angular/material2/issues/15440)) ([f82259b](https://github.com/angular/material2/commit/f82259b))
+* **table:** use static queries for examples ([#15483](https://github.com/angular/material2/issues/15483)) ([d525f9c](https://github.com/angular/material2/commit/d525f9c))
+* **tooltip:** render style values in ngOnInit instead of the constructor ([#15469](https://github.com/angular/material2/issues/15469)) ([59818d1](https://github.com/angular/material2/commit/59818d1))
+* **typography:** move header letter spacing into typography config ([#15210](https://github.com/angular/material2/issues/15210)) ([0673574](https://github.com/angular/material2/commit/0673574)), closes [#15197](https://github.com/angular/material2/issues/15197)
+* add peer dependency on [@angular](https://github.com/angular)/forms ([#15133](https://github.com/angular/material2/issues/15133)) ([8fc97ac](https://github.com/angular/material2/commit/8fc97ac)), closes [#15085](https://github.com/angular/material2/issues/15085)
+* mark virtual scroll viewport queries as static ([#15346](https://github.com/angular/material2/issues/15346)) ([e739e61](https://github.com/angular/material2/commit/e739e61))
+* missing tag in footer-row of material table ([#15711](https://github.com/angular/material2/issues/15711)) ([578790b](https://github.com/angular/material2/commit/578790b))
+
+### Features
+
+* **a11y:** add injection token configure default politeness and duration ([#15126](https://github.com/angular/material2/issues/15126)) ([e2c9873](https://github.com/angular/material2/commit/e2c9873)), closes [#15121](https://github.com/angular/material2/issues/15121)
+* **dialog:** add ariaLabelledBy config option ([#14943](https://github.com/angular/material2/issues/14943)) ([3e935e9](https://github.com/angular/material2/commit/3e935e9))
+* **drag-drop:** add API to get/set current position of a standalone draggable ([#14696](https://github.com/angular/material2/issues/14696)) ([2f009d0](https://github.com/angular/material2/commit/2f009d0)), closes [#14420](https://github.com/angular/material2/issues/14420) [#14674](https://github.com/angular/material2/issues/14674)
+* **drag-drop:** add the ability to customize how the position is constrained ([#15137](https://github.com/angular/material2/issues/15137)) ([4704653](https://github.com/angular/material2/commit/4704653))
+* **drag-drop:** add the ability to disable sorting in a list ([#15064](https://github.com/angular/material2/issues/15064)) ([629460f](https://github.com/angular/material2/commit/629460f)), closes [#14838](https://github.com/angular/material2/issues/14838)
+* **drag-drop:** allow for dragging sequence to be delayed ([#14732](https://github.com/angular/material2/issues/14732)) ([bcf2781](https://github.com/angular/material2/commit/bcf2781)), closes [#13908](https://github.com/angular/material2/issues/13908)
+* **menu:** allow focus restoration to be disabled ([#15205](https://github.com/angular/material2/issues/15205)) ([dfa40fc](https://github.com/angular/material2/commit/dfa40fc)), closes [#15168](https://github.com/angular/material2/issues/15168)
+* **overlay:** allow for scroll strategy to be swapped out ([#15067](https://github.com/angular/material2/issues/15067)) ([3308187](https://github.com/angular/material2/commit/3308187)), closes [#12306](https://github.com/angular/material2/issues/12306)
+* **popover-edit:** experimental popover edit for tables (mvp) ([#15496](https://github.com/angular/material2/issues/15496)) ([457ff28](https://github.com/angular/material2/commit/457ff28))
+* **selection-list:** support specifying theme color ([#15237](https://github.com/angular/material2/issues/15237)) ([66d38fc](https://github.com/angular/material2/commit/66d38fc)), closes [#15234](https://github.com/angular/material2/issues/15234)
+* **stepper:** allow disabling ripples of headers ([#14972](https://github.com/angular/material2/issues/14972)) ([a6cc98f](https://github.com/angular/material2/commit/a6cc98f)), closes [#14940](https://github.com/angular/material2/issues/14940)
+
+
+### Performance Improvements
+
+* **focus-monitor:** avoid triggering change detection if there are no subscribers to stream ([#14964](https://github.com/angular/material2/issues/14964)) ([085bbb7](https://github.com/angular/material2/commit/085bbb7))
+
+
+
 ## 7.3.7 "herringbone-harpsichord" (2019-04-04)
 
 
