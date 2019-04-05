@@ -30,6 +30,6 @@ button:disabled {
   cursor: auto;
 }
 button.clear {
-  color: #888;
+  color: #333;
   margin-bottom: 12px;
 }
