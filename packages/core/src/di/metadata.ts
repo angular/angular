@@ -26,12 +26,11 @@ export interface InjectDecorator {
    * The following example shows a class constructor that specifies a
    * custom provider of a dependency using the parameter decorator.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Inject'}
-   *
    * When `@Inject()` is not present, the injector uses the type annotation of the
    * parameter as the provider.
    *
-   * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
+   * <code-example path="core/di/ts/metadata_spec.ts"
+   * region="InjectWithoutDecorator"></code-example>
    */
   (token: any): any;
   new (token: any): Inject;
@@ -78,7 +77,7 @@ export interface OptionalDecorator {
    *
    * The following code allows the possibility of a null result:
    *
-   * {@example core/di/ts/metadata_spec.ts region='Optional'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Optional"></code-example>
    *
    */
   (): any;
@@ -119,7 +118,8 @@ export interface SelfDecorator {
    * by the local injector when instantiating the class itself, but not
    * when instantiating a child.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Self'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Self"></code-example>
+   * 
    *
    * @see `SkipSelf`
    * @see `Optional`
@@ -162,7 +162,7 @@ export interface SkipSelfDecorator {
    * In the following example, the dependency can be resolved when
    * instantiating a child, but not when instantiating the class itself.
    *
-   * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="SkipSelf"></code-example>
    *
    * Learn more in the
    * [Dependency Injection guide](guide/dependency-injection-in-action#skip).
@@ -208,7 +208,7 @@ export interface HostDecorator {
    *
    * The following shows use with the `@Optional` decorator, and allows for a null result.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Host'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Host"></code-example>
    */
   (): any;
   new (): Host;
