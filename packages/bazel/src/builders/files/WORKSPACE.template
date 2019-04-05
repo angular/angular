@@ -12,8 +12,8 @@ workspace(name = "project")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.27.8"
-RULES_NODEJS_SHA256 = "88e5e579fb9edfbd19791b8a3c6bfbe16ae3444dba4b428e5efd36856db7cf16"
+RULES_NODEJS_VERSION = "0.27.10"
+RULES_NODEJS_SHA256 = "1fbea5f33a8cbf8fd798f4cf7973a9b09e53bda872c75b5665a92a6d28fbbb13"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
@@ -34,7 +34,7 @@ http_archive(
 # Load and install our dependencies downloaded above.
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
-check_bazel_version("0.22.0")
+check_bazel_version("0.24.0")
 node_repositories()
 yarn_install(
     name = "npm",

@@ -77,18 +77,9 @@ filegroup(
 ts_devserver(
     name = "devserver",
     port = 4200,
+    additional_root_paths = ["npm/node_modules/zone.js/dist"],
     entry_module = "project/src/main.dev",
     serving_path = "/bundle.min.js",
-    scripts = [
-        "@npm//node_modules/@angular/common:bundles/common.umd.js",
-        "@npm//node_modules/@angular/common:bundles/common-http.umd.js",
-        "@npm//node_modules/@angular/core:bundles/core.umd.js",
-        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
-        "@npm//node_modules/@angular/router:bundles/router.umd.js",
-        "@npm//node_modules/@angular/router:router.ngfactory.js",
-        "@npm//node_modules/tslib:tslib.js",
-        ":rxjs_umd_modules",
-    ],
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
     ],
@@ -96,7 +87,18 @@ ts_devserver(
         "favicon.ico",
     ],
     index_html = "index.html",
-    deps = [":src"],
+    deps = [
+        ":src",
+        ":rxjs_umd_modules",
+        "@npm//node_modules/tslib:tslib.js",
+
+        "@npm//node_modules/@angular/common:bundles/common.umd.js",
+        "@npm//node_modules/@angular/common:bundles/common-http.umd.js",
+        "@npm//node_modules/@angular/core:bundles/core.umd.js",
+        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
+        "@npm//node_modules/@angular/router:bundles/router.umd.js",
+        "@npm//node_modules/@angular/router:router.ngfactory.js",
+    ],
 )
 
 ts_library(
