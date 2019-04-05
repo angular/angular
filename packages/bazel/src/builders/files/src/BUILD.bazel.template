@@ -137,5 +137,6 @@ ts_web_test_suite(
     deps = [
         ":rxjs_umd_modules",
         ":test_lib",
+        "@npm//karma-jasmine",
     ],
 )

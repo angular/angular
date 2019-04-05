@@ -8,25 +8,24 @@
  * @fileoverview Bazel builder
  */
 
-import {BuildEvent, Builder, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
-import {Path} from '@angular-devkit/core';
-import {Observable, from} from 'rxjs';
+import {BuilderContext, BuilderOutput, createBuilder,} from '@angular-devkit/architect/src/index2';
+import {JsonObject, normalize} from '@angular-devkit/core';
 import {checkInstallation, copyBazelFiles, deleteBazelFiles, getTemplateDir, runBazel} from './bazel';
 import {Schema} from './schema';
+import {NodeJsSyncHost} from '@angular-devkit/core/node';
 
-class BazelBuilder implements Builder<Schema> {
-  constructor(private context: BuilderContext) {}
+async function _bazelBuilder(options: JsonObject & Schema, context: BuilderContext, ):
+    Promise<BuilderOutput> {
+      const root = normalize(context.workspaceRoot);
+      const {logger} = context;
+      const {bazelCommand, leaveBazelFilesOnDisk, targetLabel, watch} = options;
+      const executable = watch ? 'ibazel' : 'bazel';
+      const binary = checkInstallation(executable, root);
 
-  run(config: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
-    const {host, logger, workspace} = this.context;
-    const root: Path = workspace.root;
-    const {bazelCommand, leaveBazelFilesOnDisk, targetLabel, watch} = config.options as Schema;
-    const executable = watch ? 'ibazel' : 'bazel';
-    const binary = checkInstallation(executable, root) as Path;
-
-    return from(Promise.resolve().then(async() => {
+      const host = new NodeJsSyncHost();
       const templateDir = await getTemplateDir(host, root);
       const bazelFiles = await copyBazelFiles(host, root, templateDir);
+
       try {
         const flags: string[] = [];
         await runBazel(root, binary, bazelCommand, targetLabel, flags);
@@ -39,8 +38,6 @@ class BazelBuilder implements Builder<Schema> {
           await deleteBazelFiles(host, bazelFiles);  // this will never throw
         }
       }
-    }));
-  }
-}
+    }
 
-export default BazelBuilder;
+export default createBuilder(_bazelBuilder);
