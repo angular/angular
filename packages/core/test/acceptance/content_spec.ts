@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -55,6 +55,30 @@ describe('projection', () => {
     fixture.componentInstance.items = [6, 7, 8, 9];
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('6|7|8|');
+  });
+
+  it('should project content if the change detector has been detached', () => {
+    @Component({selector: 'my-comp', template: '<ng-content></ng-content>'})
+    class MyComp {
+      constructor(changeDetectorRef: ChangeDetectorRef) { changeDetectorRef.detach(); }
+    }
+
+    @Component({
+      selector: 'my-app',
+      template: `
+        <my-comp>
+          <p>hello</p>
+        </my-comp>
+      `
+    })
+    class MyApp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp, MyApp]});
+    const fixture = TestBed.createComponent(MyApp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement).toHaveText('hello');
   });
 
   describe('on inline templates (e.g.  *ngIf)', () => {
