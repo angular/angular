@@ -82,6 +82,14 @@ export function mainNgcc({basePath, targetEntryPointPath,
   const absoluteTargetEntryPointPath = targetEntryPointPath ?
       AbsoluteFsPath.from(resolve(basePath, targetEntryPointPath)) :
       undefined;
+
+  if (absoluteTargetEntryPointPath &&
+      hasProcessedTargetEntryPoint(
+          absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
+    logger.info('The target entry-point has already been processed');
+    return;
+  }
+
   const {entryPoints} =
       finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
 
@@ -166,4 +174,29 @@ export function mainNgcc({basePath, targetEntryPointPath,
 
 function getFileWriter(createNewEntryPointFormats: boolean): FileWriter {
   return createNewEntryPointFormats ? new NewEntryPointFileWriter() : new InPlaceFileWriter();
+}
+
+function hasProcessedTargetEntryPoint(
+    targetPath: AbsoluteFsPath, propertiesToConsider: string[], compileAllFormats: boolean) {
+  const packageJsonPath = AbsoluteFsPath.from(resolve(targetPath, 'package.json'));
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+
+  for (const property of propertiesToConsider) {
+    if (packageJson[property]) {
+      // Here is a property that should be processed
+      if (hasBeenProcessed(packageJson, property as EntryPointJsonProperty)) {
+        if (!compileAllFormats) {
+          // It has been processed and we only need one, so we are done.
+          return true;
+        }
+      } else {
+        // It has not been processed but we need all of them, so we are done.
+        return false;
+      }
+    }
+  }
+  // Either all formats need to be compiled and there were none that were unprocessed,
+  // Or only the one matching format needs to be compiled but there was at least one matching
+  // property before the first processed format that was unprocessed.
+  return true;
 }
