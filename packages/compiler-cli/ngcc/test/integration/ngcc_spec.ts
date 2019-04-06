@@ -11,10 +11,10 @@ import * as mockFs from 'mock-fs';
 import {join} from 'path';
 const Module = require('module');
 
-import {mainNgcc} from '../../src/main';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
+import {mainNgcc} from '../../src/main';
 import {EntryPointPackageJson} from '../../src/packages/entry_point';
-import {Logger} from '../../src/logging/logger';
+import {MockLogger} from '../helpers/mock_logger';
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
@@ -26,7 +26,11 @@ describe('ngcc main()', () => {
   });
 
   it('should run ngcc without errors for esm5', () => {
-    expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm5']}))
+    expect(() => mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['esm5'],
+             logger: new MockLogger(),
+           }))
         .not.toThrow();
   });
 
@@ -87,7 +91,9 @@ describe('ngcc main()', () => {
        () => {
          mainNgcc({
            basePath: '/node_modules',
-           propertiesToConsider: ['main', 'esm5', 'module', 'fesm5']
+           propertiesToConsider: ['main', 'esm5', 'module', 'fesm5'],
+           logger: new MockLogger(),
+
          });
 
          // * the `main` property is UMD, which is not yet supported.
@@ -125,7 +131,9 @@ describe('ngcc main()', () => {
       mainNgcc({
         basePath: '/node_modules',
         propertiesToConsider: ['main', 'module', 'fesm5', 'esm5'],
-        compileAllFormats: false
+        compileAllFormats: false,
+        logger: new MockLogger(),
+
       });
       // * The `main` is UMD, which is not yet supported, and so is not compiled.
       // * In the Angular packages fesm5 and module have the same underlying format,
@@ -158,15 +166,21 @@ describe('ngcc main()', () => {
          mainNgcc({
            basePath: '/node_modules',
            propertiesToConsider: ['module'],
-           compileAllFormats: false
+           compileAllFormats: false,
+           logger: new MockLogger(),
+
          });
          expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
            module: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
          });
          // If ngcc tries to write out the typings files again, this will throw an exception.
-         mainNgcc(
-             {basePath: '/node_modules', propertiesToConsider: ['esm5'], compileAllFormats: false});
+         mainNgcc({
+           basePath: '/node_modules',
+           propertiesToConsider: ['esm5'],
+           compileAllFormats: false,
+           logger: new MockLogger(),
+         });
          expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
@@ -181,7 +195,9 @@ describe('ngcc main()', () => {
       mainNgcc({
         basePath: '/node_modules',
         createNewEntryPointFormats: true,
-        propertiesToConsider: ['esm5']
+        propertiesToConsider: ['esm5'],
+        logger: new MockLogger(),
+
       });
 
       // Updates the package.json
@@ -222,9 +238,12 @@ describe('ngcc main()', () => {
     });
 
     it('should use a custom logger if provided', () => {
-      const logger: Logger = jasmine.createSpyObj(['debug', 'info', 'warn', 'error']);
-      mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015'], logger});
-      expect(logger.info).toHaveBeenCalled();
+      const logger = new MockLogger();
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['esm2015'], logger,
+      });
+      expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
     });
   });
 });
