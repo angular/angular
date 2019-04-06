@@ -1292,8 +1292,9 @@ export function componentRefresh(adjustedElementIndex: number): void {
   const hostView = getComponentViewByIndex(adjustedElementIndex, lView);
   ngDevMode && assertNodeType(lView[TVIEW].data[adjustedElementIndex] as TNode, TNodeType.Element);
 
-  // Only attached CheckAlways components or attached, dirty OnPush components should be checked
-  if (viewAttachedToChangeDetector(hostView) &&
+  // Only components in creation mode, attached CheckAlways
+  // components or attached, dirty OnPush components should be checked
+  if ((viewAttachedToChangeDetector(hostView) || isCreationMode(lView)) &&
       hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     syncViewWithBlueprint(hostView);
     checkView(hostView, hostView[CONTEXT]);
