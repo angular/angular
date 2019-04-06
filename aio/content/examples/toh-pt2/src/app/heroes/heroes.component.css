@@ -5,28 +5,31 @@
   padding: 0;
   width: 15em;
 }
-.heroes li {
+.heroes li button {
   cursor: pointer;
-  position: relative;
-  left: 0;
   background-color: #EEE;
   margin: .5em;
-  padding: .3em 0;
+  padding: 0;
   height: 1.6em;
   border-radius: 4px;
+  height: 100%;
+  width: 100%;
+  text-align: left;
 }
-.heroes li:hover {
-  color: #607D8B;
+.heroes li button:hover,
+.heroes li button:focus {
+  color: black;
   background-color: #DDD;
   left: .1em;
 }
-.heroes li.selected {
+.heroes li.selected button {
   background-color: #CFD8DC;
-  color: white;
+  color: black;
 }
-.heroes li.selected:hover {
+.heroes li.selected button:hover,
+.heroes li.selected button:focus {
   background-color: #BBD8DC;
-  color: white;
+  color: black;
 }
 .heroes .badge {
   display: inline-block;
@@ -35,9 +38,6 @@
   padding: 0.8em 0.7em 0 0.7em;
   background-color:#405061;
   line-height: 1em;
-  position: relative;
-  left: -1px;
-  top: -4px;
   height: 1.8em;
   margin-right: .8em;
   border-radius: 4px 0 0 4px;
