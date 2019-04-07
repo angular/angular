@@ -105,11 +105,11 @@ and leave it up to the app whether to provide the service.
 
 ### @NgModule-level injectors
 
-You can configure a provider at the module level using the `providedIn` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
-This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided this way is not tree-shakable.
+You can configure a provider at the module level using the `providers` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
+This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided via `providers` is not tree-shakable.
 
 You generally don't need to specify `AppModule` with `providedIn`, because the app's `root` injector is the `AppModule` injector. 
-However, if you configure a app-wide provider in the`@NgModule()` metadata for `AppModule`,
+However, if you configure a app-wide provider in the `@NgModule()` metadata for `AppModule`,
 it overrides one configured for `root` in the `@Injectable()` metadata. 
 You can do this to configure a non-default provider of a service that is shared with multiple apps. 
 
