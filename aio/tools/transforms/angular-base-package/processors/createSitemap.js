@@ -1,14 +1,15 @@
 module.exports = function createSitemap() {
   return {
     blacklistedDocTypes: [
-      'navigation-json',
+      'announcements-json',
       'contributors-json',
+      'navigation-json',
       'resources-json',
     ],
     blacklistedPaths: [
-      'test',
       'file-not-found',
-      'overview-dump'
+      'overview-dump',
+      'test',
     ],
     $runAfter: ['paths-computed'],
     $runBefore: ['rendering-docs'],
