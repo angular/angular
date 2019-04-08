@@ -128,4 +128,24 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     expect(failures.length).toBe(1);
     expect(failures[0].getFailure()).toMatch(/analysis of the query.*"{static: false}"/);
   });
+
+  it('should detect query usage in component template', () => {
+    writeFile('index.ts', `
+      import {Component, ViewChild} from '@angular/core';
+      
+      @Component({
+        template: \`
+          <span #test></span>
+          <my-comp [binding]="query"></my-comp>
+        \`
+      })
+      export class MyComp {
+        @ViewChild('test') query: any;
+      }
+    `);
+
+    runTSLint();
+
+    expectFileToContain('index.ts', `@ViewChild('test', { static: true }) query: any;`);
+  });
 });

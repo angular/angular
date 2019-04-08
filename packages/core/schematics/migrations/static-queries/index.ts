@@ -10,12 +10,15 @@ import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
 
+import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {visitAllNodes} from '../../utils/typescript/visit_nodes';
 
 import {analyzeNgQueryUsage} from './angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {getTransformedQueryCallExpr} from './transform';
+
 
 
 /** Entry point for the V8 static-query migration. */
@@ -58,13 +61,27 @@ function runStaticQueryMigration(tree: Tree, tsconfigPath: string, basePath: str
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const queryVisitor = new NgQueryResolveVisitor(typeChecker);
+  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
   const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
   const printer = ts.createPrinter();
 
-  // Analyze source files by detecting queries and class relations.
-  rootSourceFiles.forEach(sourceFile => queryVisitor.visitNode(sourceFile));
+  // Analyze source files by detecting queries, class relations and component templates.
+  rootSourceFiles.forEach(sourceFile => {
+    // The visit utility function only traverses the source file once. We don't want to
+    // traverse through all source files multiple times for each visitor as this could be
+    // slow.
+    visitAllNodes(sourceFile, [queryVisitor, templateVisitor]);
+  });
 
   const {resolvedQueries, classMetadata} = queryVisitor;
+
+  // Add all resolved templates to the class metadata so that we can also
+  // check component templates for static query usage.
+  templateVisitor.resolvedTemplates.forEach(template => {
+    if (classMetadata.has(template.container)) {
+      classMetadata.get(template.container) !.template = template;
+    }
+  });
 
   // Walk through all source files that contain resolved queries and update
   // the source files if needed. Note that we need to update multiple queries

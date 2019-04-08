@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PropertyWrite, parseTemplate} from '@angular/compiler';
+import {PropertyWrite} from '@angular/compiler';
 import {Variable, visitAll} from '@angular/compiler/src/render3/r3_ast';
 
 import {ResolvedTemplate} from '../../utils/ng_component_template';
+import {parseHtmlGracefully} from '../../utils/parse_html';
+
 import {PropertyAssignment, PropertyWriteHtmlVisitor} from './angular/property_write_html_visitor';
 
 export interface TemplateVariableAssignment {
@@ -24,22 +26,20 @@ export interface TemplateVariableAssignment {
  */
 export function analyzeResolvedTemplate(
     filePath: string, template: ResolvedTemplate): TemplateVariableAssignment[]|null {
-  try {
-    const templateNodes = parseTemplate(template.content, filePath).nodes;
-    const visitor = new PropertyWriteHtmlVisitor();
+  const templateNodes = parseHtmlGracefully(template.content, filePath);
 
-    // Analyze the Angular Render3 HTML AST and collect all property assignments and
-    // template variables.
-    visitAll(visitor, templateNodes);
-
-    return filterTemplateVariableAssignments(visitor.propertyAssignments, visitor.templateVariables)
-        .map(({node, start, end}) => ({node, start: start + node.span.start, end}));
-  } catch {
-    // Do nothing if the template couldn't be parsed. We don't want to throw any
-    // exception if a template is syntactically not valid. e.g. template could be
-    // using preprocessor syntax.
+  if (!templateNodes) {
     return null;
   }
+
+  const visitor = new PropertyWriteHtmlVisitor();
+
+  // Analyze the Angular Render3 HTML AST and collect all property assignments and
+  // template variables.
+  visitAll(visitor, templateNodes);
+
+  return filterTemplateVariableAssignments(visitor.propertyAssignments, visitor.templateVariables)
+      .map(({node, start, end}) => ({node, start: start + node.span.start, end}));
 }
 
 /**

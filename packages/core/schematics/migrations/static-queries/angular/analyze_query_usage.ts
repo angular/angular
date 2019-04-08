@@ -7,12 +7,16 @@
  */
 
 import * as ts from 'typescript';
+
+import {parseHtmlGracefully} from '../../../utils/parse_html';
 import {hasPropertyNameText} from '../../../utils/typescript/property_name';
 
 import {DeclarationUsageVisitor, FunctionContext} from './declaration_usage_visitor';
 import {ClassMetadataMap} from './ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from './query-definition';
+import {QueryReadHtmlVisitor} from './query_read_html_visitor';
 import {updateSuperClassAbstractMembersContext} from './super_class';
+
 
 /**
  * Object that maps a given type of query to a list of lifecycle hooks that
@@ -67,6 +71,19 @@ function isQueryUsedStatically(
 
   if (!classMetadata) {
     return false;
+  }
+
+  // In case there is a component template for the current class, we check if the
+  // template statically accesses the current query. In case that's true, the query
+  // can be marked as static.
+  if (classMetadata.template && hasPropertyNameText(query.property.name)) {
+    const template = classMetadata.template;
+    const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
+    const htmlVisitor = new QueryReadHtmlVisitor(query.property.name.text);
+
+    if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
+      return true;
+    }
   }
 
   // In case derived classes should also be analyzed, we determine the classes that derive
