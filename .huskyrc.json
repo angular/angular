@@ -1,5 +1,0 @@
-{
-  "hooks": {
-    "pre-commit": "check-clang-format \"\\`yarn format\\`\""
-  }
-}
