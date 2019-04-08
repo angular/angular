@@ -1634,6 +1634,21 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
+      it('should throw on bindings to unknown properties of containers', () => {
+        TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
+        const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+
+        try {
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          throw 'Should throw';
+        } catch (e) {
+          expect(e.message).toMatch(
+              /Can't bind to 'ngForIn' since it isn't a known property of 'div'./);
+        }
+      });
+
       it('should not throw for property binding to a non-existing property when there is a matching directive property',
          () => {
            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
@@ -2103,12 +2118,14 @@ class MyComp {
   ctxProp: string;
   ctxNumProp: number;
   ctxBoolProp: boolean;
+  ctxArrProp: number[];
   toStringThrow = {toString: function() { throw 'boom'; }};
 
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;
     this.ctxBoolProp = false;
+    this.ctxArrProp = [0, 1, 2];
   }
 
   throwError() { throw 'boom'; }

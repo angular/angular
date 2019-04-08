@@ -161,6 +161,12 @@ function elementPropertyInternal<T>(
       (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
                                           (element as any)[propName] = value;
     }
+  } else if (tNode.type === TNodeType.Container) {
+    // If the node is a container and the property didn't
+    // match any of the inputs or schemas we should throw.
+    if (ngDevMode && !matchingSchemas(lView, tNode.tagName)) {
+      throw createUnknownPropertyError(propName, tNode);
+    }
   }
 }
 
@@ -209,8 +215,7 @@ function validateAgainstUnknownProperties(
       // and isn't a synthetic animation property...
       propName[0] !== ANIMATION_PROP_PREFIX) {
     // ... it is probably a user error and we should throw.
-    throw new Error(
-        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
+    throw createUnknownPropertyError(propName, tNode);
   }
 }
 
@@ -256,4 +261,14 @@ function savePropertyDebugData(
       tNode.propertyMetadataEndIndex = lastBindingIndex + 1;
     }
   }
+}
+
+/**
+ * Creates an error that should be thrown when encountering an unknown property on an element.
+ * @param propName Name of the invalid property.
+ * @param tNode Node on which we encountered the error.
+ */
+function createUnknownPropertyError(propName: string, tNode: TNode): Error {
+  return new Error(
+      `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
 }
