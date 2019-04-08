@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
-import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {Overlay, OverlayRef, PositionStrategy} from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterViewInit,
   Directive,
@@ -19,13 +20,23 @@ import {
   TemplateRef,
   ViewContainerRef
 } from '@angular/core';
-import {fromEvent, ReplaySubject} from 'rxjs';
-import {debounceTime, filter, map, mapTo, takeUntil} from 'rxjs/operators';
+import {fromEvent, merge, ReplaySubject} from 'rxjs';
+import {debounceTime, filter, map, mapTo, startWith, takeUntil} from 'rxjs/operators';
 
 import {CELL_SELECTOR, EDIT_PANE_CLASS, EDIT_PANE_SELECTOR, ROW_SELECTOR} from './constants';
 import {EditEventDispatcher} from './edit-event-dispatcher';
 import {closest} from './polyfill';
 import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strategy-factory';
+
+/**
+ * Describes the number of columns before and after the originating cell that the
+ * edit popup should span. In left to right locales, before means left and after means
+ * right. In right to left locales before means right and after means left.
+ */
+export interface CdkPopoverEditColspan {
+  before?: number;
+  after?: number;
+}
 
 /**
  * The delay between the mouse entering a row and the mouse stopping its movement before
@@ -111,6 +122,28 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
    */
   @Input('cdkPopoverEditContext') context?: C;
 
+  /**
+   * Specifies that the popup should cover additional table cells before and/or after
+   * this one.
+   */
+  @Input('cdkPopoverEditColspan')
+  get colspan(): CdkPopoverEditColspan {
+    return this._colspan;
+  }
+  set colspan(value: CdkPopoverEditColspan) {
+    this._colspan = value;
+
+    // Recompute positioning when the colspan changes.
+    if (this.overlayRef) {
+      this.overlayRef.updatePositionStrategy(this._getPositionStrategy());
+
+      if (this.overlayRef.hasAttached()) {
+        this._updateOverlaySize();
+      }
+    }
+  }
+  private _colspan: CdkPopoverEditColspan = {};
+
   protected focusTrap?: FocusTrap;
   protected overlayRef?: OverlayRef;
   protected readonly destroyed = new ReplaySubject<void>();
@@ -122,7 +155,9 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
       protected readonly ngZone: NgZone,
       protected readonly overlay: Overlay,
       protected readonly positionFactory: PopoverEditPositionStrategyFactory,
-      protected readonly viewContainerRef: ViewContainerRef) {}
+      protected readonly scrollDispatcher: ScrollDispatcher,
+      protected readonly viewContainerRef: ViewContainerRef,
+      protected readonly viewportRuler: ViewportRuler) {}
 
   ngAfterViewInit(): void {
     this._startListeningToEditEvents();
@@ -161,8 +196,8 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
     this.overlayRef = this.overlay.create({
       disposeOnNavigation: true,
       panelClass: EDIT_PANE_CLASS,
-      positionStrategy: this.positionFactory.forElementRef(this.elementRef),
-      scrollStrategy: this.overlay.scrollStrategies.reposition({autoClose: true}),
+      positionStrategy: this._getPositionStrategy(),
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
     });
 
     this.focusTrap = this.focusTrapFactory.create(this.overlayRef.overlayElement);
@@ -179,6 +214,41 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
         this.viewContainerRef,
         {$implicit: this.context}));
     this.focusTrap!.focusInitialElementWhenReady();
+
+    // Update the size of the popup initially and on subsequent changes to
+    // scroll position and viewport size.
+    merge(this.scrollDispatcher.scrolled(), this.viewportRuler.change())
+        .pipe(
+            startWith(null),
+            takeUntil(this.overlayRef!.detachments()),
+            takeUntil(this.destroyed),
+            )
+        .subscribe(() => {
+          this._updateOverlaySize();
+        });
+  }
+
+  private _getOverlayCells(): HTMLElement[] {
+    const cell = closest(this.elementRef.nativeElement!, CELL_SELECTOR) as HTMLElement;
+
+    if (!this._colspan.before && !this._colspan.after) {
+      return [cell];
+    }
+
+    const row = closest(this.elementRef.nativeElement!, ROW_SELECTOR)!;
+    const rowCells = Array.from(row.querySelectorAll(CELL_SELECTOR)) as HTMLElement[];
+    const ownIndex = rowCells.indexOf(cell);
+
+    return rowCells.slice(
+        ownIndex - (this._colspan.before || 0), ownIndex + (this._colspan.after || 0) + 1);
+  }
+
+  private _getPositionStrategy(): PositionStrategy {
+    return this.positionFactory.positionStrategyForCells(this._getOverlayCells());
+  }
+
+  private _updateOverlaySize(): void {
+    this.overlayRef!.updateSize(this.positionFactory.sizeConfigForCells(this._getOverlayCells()));
   }
 
   private _maybeReturnFocusToCell(): void {

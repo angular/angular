@@ -1,11 +1,12 @@
-import {BehaviorSubject} from 'rxjs';
-import {Component, ElementRef, Type, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule, NgForm} from '@angular/forms';
-import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {DataSource} from '@angular/cdk/collections';
 import {CdkTableModule} from '@angular/cdk/table';
-import {CdkPopoverEditModule, PopoverEditClickOutBehavior} from './index';
+import {CommonModule} from '@angular/common';
+import {Component, ElementRef, Type, ViewChild} from '@angular/core';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {FormsModule, NgForm} from '@angular/forms';
+import {BehaviorSubject} from 'rxjs';
+
+import {CdkPopoverEditColspan, CdkPopoverEditModule, PopoverEditClickOutBehavior} from './index';
 
 const EDIT_TEMPLATE = `
     <div style="background-color: white;">
@@ -33,6 +34,8 @@ const CELL_TEMPLATE = `
     </span>
     `;
 
+const POPOVER_EDIT_DIRECTIVE = `[cdkPopoverEdit]="nameEdit" [cdkPopoverEditColspan]="colspan"`;
+
 interface PeriodicElement {
   name: string;
   weight: number;
@@ -45,6 +48,7 @@ abstract class BaseTestComponent {
 
   ignoreSubmitUnlessValid = true;
   clickOutBehavior: PopoverEditClickOutBehavior = 'close';
+  colspan: CdkPopoverEditColspan = {};
 
   onSubmit(element: PeriodicElement, form: NgForm) {
     if (!form.valid) { return; }
@@ -62,7 +66,7 @@ abstract class BaseTestComponent {
 
   getEditCell(rowIndex = 0) {
     const row = getRows(this.table.nativeElement)[rowIndex];
-    return getCells(row)[0];
+    return getCells(row)[1];
   }
 
   focusEditCell(rowIndex = 0) {
@@ -82,6 +86,10 @@ abstract class BaseTestComponent {
     this.getEditCell(rowIndex).dispatchEvent(
         new KeyboardEvent('keyup', {bubbles: true, key: 'Enter'}));
     flush();
+  }
+
+  getEditPane() {
+    return document.querySelector('.cdk-edit-pane');
   }
 
   getInput() {
@@ -125,7 +133,10 @@ abstract class BaseTestComponent {
     </ng-template>
 
     <tr *ngFor="let element of elements">
-      <td [cdkPopoverEdit]="nameEdit" [cdkPopoverEditContext]="element">
+      <td> just a cell </td>
+
+      <td ${POPOVER_EDIT_DIRECTIVE}
+          [cdkPopoverEditContext]="element">
         ${CELL_TEMPLATE}
       </td>
 
@@ -142,7 +153,9 @@ class VanillaTableOutOfCell extends BaseTestComponent {
   template: `
   <table #table editable>
     <tr *ngFor="let element of elements">
-      <td [cdkPopoverEdit]="nameEdit">
+      <td> just a cell </td>
+
+      <td ${POPOVER_EDIT_DIRECTIVE}>
         ${CELL_TEMPLATE}
 
         <ng-template #nameEdit>
@@ -175,9 +188,15 @@ class ElementDataSource extends DataSource<PeriodicElement> {
   template: `
   <div #table>
     <cdk-table cdk-table editable [dataSource]="dataSource">
+      <ng-container cdkColumnDef="before">
+        <cdk-cell *cdkCellDef="let element">
+          just a cell
+        </cdk-cell>
+      </ng-container>
+
       <ng-container cdkColumnDef="name">
         <cdk-cell *cdkCellDef="let element"
-            [cdkPopoverEdit]="nameEdit">
+            ${POPOVER_EDIT_DIRECTIVE}>
           ${CELL_TEMPLATE}
 
           <ng-template #nameEdit>
@@ -202,7 +221,7 @@ class ElementDataSource extends DataSource<PeriodicElement> {
   `
 })
 class CdkFlexTableInCell extends BaseTestComponent {
-  displayedColumns = ['name', 'weight'];
+  displayedColumns = ['before', 'name', 'weight'];
   dataSource = new ElementDataSource();
 }
 
@@ -210,9 +229,15 @@ class CdkFlexTableInCell extends BaseTestComponent {
   template: `
   <div #table>
     <table cdk-table editable [dataSource]="dataSource">
+      <ng-container cdkColumnDef="before">
+        <td cdk-cell *cdkCellDef="let element">
+          just a cell
+        </td>
+      </ng-container>
+
       <ng-container cdkColumnDef="name">
         <td cdk-cell *cdkCellDef="let element"
-            [cdkPopoverEdit]="nameEdit">
+            ${POPOVER_EDIT_DIRECTIVE}>
           ${CELL_TEMPLATE}
 
           <ng-template #nameEdit>
@@ -237,7 +262,7 @@ class CdkFlexTableInCell extends BaseTestComponent {
   `
 })
 class CdkTableInCell extends BaseTestComponent {
-  displayedColumns = ['name', 'weight'];
+  displayedColumns = ['before', 'name', 'weight'];
   dataSource = new ElementDataSource();
 }
 
@@ -315,6 +340,49 @@ describe('CDK Popover Edit', () => {
 
           expect(component.getInput()!.value).toBe('Hydrogen');
         }));
+
+        it('positions the lens at the top left corner and spans the full width of the cell',
+           fakeAsync(() => {
+             component.openLens();
+
+             const paneRect = component.getEditPane()!.getBoundingClientRect();
+             const cellRect = component.getEditCell().getBoundingClientRect();
+
+             expect(paneRect.width).toBe(cellRect.width);
+             expect(paneRect.left).toBe(cellRect.left);
+             expect(paneRect.top).toBe(cellRect.top);
+           }));
+
+        it('adjusts the positioning of the lens based on colspan', fakeAsync(() => {
+             const cellRects = getCells(getRows(component.table.nativeElement)[0])
+                                   .map(cell => cell.getBoundingClientRect());
+
+             component.colspan = {before: 1};
+             fixture.detectChanges();
+
+             component.openLens();
+
+             let paneRect = component.getEditPane()!.getBoundingClientRect();
+             expect(paneRect.top).toBe(cellRects[0].top);
+             expect(paneRect.left).toBe(cellRects[0].left);
+             expect(paneRect.right).toBe(cellRects[1].right);
+
+             component.colspan = {after: 1};
+             fixture.detectChanges();
+
+             paneRect = component.getEditPane()!.getBoundingClientRect();
+             expect(paneRect.top).toBe(cellRects[1].top);
+             expect(paneRect.left).toBe(cellRects[1].left);
+             expect(paneRect.right).toBe(cellRects[2].right);
+
+             component.colspan = {before: 1, after: 1};
+             fixture.detectChanges();
+
+             paneRect = component.getEditPane()!.getBoundingClientRect();
+             expect(paneRect.top).toBe(cellRects[0].top);
+             expect(paneRect.left).toBe(cellRects[0].left);
+             expect(paneRect.right).toBe(cellRects[2].right);
+           }));
 
         it('updates the form and submits, closing the lens', fakeAsync(() => {
           component.openLens();

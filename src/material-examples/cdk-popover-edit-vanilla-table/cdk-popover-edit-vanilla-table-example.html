@@ -4,7 +4,7 @@
     its context. It could be reused in multiple cells.
   -->
   <ng-template #weightEdit let-element>
-    <div style="background-color: white;">
+    <div style="background-color: white; width: 100%">
       <form #f="ngForm"
           cdkEditControl
           (ngSubmit)="onSubmitWeight(element, f)"
@@ -35,7 +35,7 @@
       
       <!-- This edit is defined in the cell and can implicitly access element -->
       <ng-template #nameEdit>
-        <div style="background-color: white;">
+        <div style="background-color: white; width: 100%">
           <form #f="ngForm"
               cdkEditControl
               (ngSubmit)="onSubmitName(element, f)"

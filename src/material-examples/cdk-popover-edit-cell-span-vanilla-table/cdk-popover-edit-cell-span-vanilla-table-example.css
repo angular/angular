@@ -11,3 +11,13 @@
   min-width: 300px;
   width: 25%;
 }
+
+.example-input-container {
+  display: flex;
+  justify-content: stretch;
+}
+
+.example-input-container input {
+  flex: 1;
+  font-size: 14px;
+}
