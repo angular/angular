@@ -615,6 +615,9 @@
     "name": "executeHooks"
   },
   {
+    "name": "executeListenerWithErrorHandling"
+  },
+  {
     "name": "executeNodeAction"
   },
   {
@@ -643,6 +646,9 @@
   },
   {
     "name": "findDirectiveMatches"
+  },
+  {
+    "name": "findExistingListener"
   },
   {
     "name": "findOrPatchDirectiveIntoRegistry"
