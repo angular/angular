@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics:__subpackages__"],
     deps = [
+        "//packages/compiler",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
     ],
