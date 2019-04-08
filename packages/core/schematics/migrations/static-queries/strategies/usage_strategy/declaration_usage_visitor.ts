@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {isFunctionLikeDeclaration, unwrapExpression} from '../../../utils/typescript/functions';
+import {isFunctionLikeDeclaration, unwrapExpression} from '../../../../utils/typescript/functions';
 
 export type FunctionContext = Map<ts.Node, ts.Node>;
 
