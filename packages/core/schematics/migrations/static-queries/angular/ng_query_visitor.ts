@@ -16,6 +16,8 @@ import {NgQueryDefinition, QueryType} from './query-definition';
 export interface ClassMetadata {
   /** List of class declarations that derive from the given class. */
   derivedClasses: ts.ClassDeclaration[];
+  /** Super class of the given class. */
+  superClass: ts.ClassDeclaration|null;
   /** List of property names that declare an Angular input within the given class. */
   ngInputNames: string[];
 }
@@ -101,29 +103,34 @@ export class NgQueryResolveVisitor {
   private _recordClassInheritances(node: ts.ClassDeclaration) {
     const baseTypes = getBaseTypeIdentifiers(node);
 
-    if (!baseTypes || !baseTypes.length) {
+    if (!baseTypes || baseTypes.length !== 1) {
       return;
     }
 
-    baseTypes.forEach(baseTypeIdentifier => {
-      // We need to resolve the value declaration through the resolved type as the base
-      // class could be declared in different source files and the local symbol won't
-      // contain a value declaration as the value is not declared locally.
-      const symbol = this.typeChecker.getTypeAtLocation(baseTypeIdentifier).getSymbol();
+    const superClass = baseTypes[0];
+    const baseClassMetadata = this._getClassMetadata(node);
 
-      if (symbol && symbol.valueDeclaration && ts.isClassDeclaration(symbol.valueDeclaration)) {
-        const extendedClass = symbol.valueDeclaration;
-        const classMetadata = this._getClassMetadata(extendedClass);
+    // We need to resolve the value declaration through the resolved type as the base
+    // class could be declared in different source files and the local symbol won't
+    // contain a value declaration as the value is not declared locally.
+    const symbol = this.typeChecker.getTypeAtLocation(superClass).getSymbol();
 
-        // Record all classes that derive from the given class. This makes it easy to
-        // determine all classes that could potentially use inherited queries statically.
-        classMetadata.derivedClasses.push(node);
-        this.classMetadata.set(extendedClass, classMetadata);
-      }
-    });
+    if (symbol && symbol.valueDeclaration && ts.isClassDeclaration(symbol.valueDeclaration)) {
+      const extendedClass = symbol.valueDeclaration;
+      const classMetadataExtended = this._getClassMetadata(extendedClass);
+
+      // Record all classes that derive from the given class. This makes it easy to
+      // determine all classes that could potentially use inherited queries statically.
+      classMetadataExtended.derivedClasses.push(node);
+      this.classMetadata.set(extendedClass, classMetadataExtended);
+
+      // Record the super class of the current class.
+      baseClassMetadata.superClass = extendedClass;
+      this.classMetadata.set(node, baseClassMetadata);
+    }
   }
 
   private _getClassMetadata(node: ts.ClassDeclaration): ClassMetadata {
-    return this.classMetadata.get(node) || {derivedClasses: [], ngInputNames: []};
+    return this.classMetadata.get(node) || {derivedClasses: [], superClass: null, ngInputNames: []};
   }
 }
