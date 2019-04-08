@@ -639,6 +639,93 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
+    it('should handle function callbacks which statically access queries', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        
+          ngOnInit() {        
+            this.callSync(() => this.query.doSomething());
+          }
+          
+          callSync(cb: Function) {
+            this.callSync2(cb);
+          }
+          
+          callSync2(cb: Function) {
+            cb();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should handle class instantiations with specified callbacks that access queries', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        import {External} from './external';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        
+          ngOnInit() {        
+            new External(() => this.query.doSomething());
+          }
+        }
+      `);
+
+      writeFile('/external.ts', `
+        export class External {
+          constructor(cb: () => void) {
+            // Add extra parentheses to ensure that expression is unwrapped. 
+            ((cb))();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should handle nested functions with arguments from parent closure', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        
+          ngOnInit() {        
+            this.callSync(() => this.query.doSomething());
+          }
+          
+          callSync(cb: Function) {
+            function callSyncNested() {
+              // The "cb" identifier comes from the "callSync" function.
+              cb();
+            }
+            
+            callSyncNested();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should not mark queries used in setTimeout as static', () => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
