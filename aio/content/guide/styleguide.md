@@ -3156,7 +3156,7 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <div class="s-why">
 
-**Why?** components have templates containing HTML and optional Angular template syntax.
+**Why?** Components have templates containing HTML and optional Angular template syntax.
 They display content.
 Developers place components on the page as they would native HTML elements and web components.
 
@@ -4229,7 +4229,7 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 **Why?** Lifecycle interfaces prescribe typed method
-signatures. use those signatures to flag spelling and syntax mistakes.
+signatures. Use those signatures to flag spelling and syntax mistakes.
 
 
 </div>
