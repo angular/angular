@@ -1032,6 +1032,163 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
+    it('should check derived abstract class methods', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export abstract class RootBaseClass {
+          abstract getQuery(): any;
+          
+          ngOnInit() {
+            this.getQuery().doSomething();
+          }
+        }
+                        
+        export abstract class BaseClass extends RootBaseClass {
+          abstract getQuery2(): any;
+          
+          getQuery() {
+            this.getQuery2();
+          }
+        }
+        
+        @Component({template: '<span #test></span>'})
+        export class Subclass extends BaseClass {
+          @${queryType}('test') query: any;
+        
+          getQuery2(): any {
+            return this.query; 
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect queries accessed through deep abstract class method', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export abstract class RootBaseClass {
+          abstract getQuery(): any;
+          
+          ngOnInit() {
+            this.getQuery().doSomething();
+          }
+        }
+                        
+        export abstract class BaseClass extends RootBaseClass {
+          /* additional layer of indirection */
+        }
+        
+        @Component({template: '<span #test></span>'})
+        export class Subclass extends BaseClass {
+          @${queryType}('test') query: any;
+        
+          getQuery(): any {
+            return this.query; 
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect queries accessed through abstract property getter', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export abstract class BaseClass {
+          abstract myQuery: any;
+          
+          ngOnInit() {
+            this.myQuery.doSomething();
+          }
+        }
+        
+        @Component({template: '<span #test></span>'})
+        export class Subclass extends BaseClass {
+          @${queryType}('test') query: any;
+        
+          get myQuery() { return this.query; }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect queries accessed through abstract property setter', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export abstract class BaseClass {
+          abstract myQuery: any;
+          
+          ngOnInit() {
+            this.myQuery = "trigger";
+          }
+        }
+        
+        @Component({template: '<span #test></span>'})
+        export class Subclass extends BaseClass {
+          @${queryType}('test') query: any;
+        
+          set myQuery(val: any) { this.query.doSomething() }
+          get myQuery() { /* noop */ }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect query usage in abstract class methods accessing inherited query', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export abstract class RootBaseClass {
+          abstract getQuery(): any;
+          
+          ngOnInit() {
+            this.getQuery().doSomething();
+          }
+        }
+                        
+        export abstract class BaseClass extends RootBaseClass {
+          @${queryType}('test') query: any;
+          abstract getQuery2(): any;
+          
+          getQuery() {
+            this.getQuery2();
+          }
+        }
+        
+        @Component({template: '<span #test></span>'})
+        export class Subclass extends BaseClass {
+        
+          getQuery2(): any {
+            return this.query;
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should properly handle multiple tsconfig files', () => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';

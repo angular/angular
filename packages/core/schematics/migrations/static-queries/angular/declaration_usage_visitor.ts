@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import {isFunctionLikeDeclaration, unwrapExpression} from '../../../utils/typescript/functions';
 
-type FunctionContext = Map<ts.ParameterDeclaration, ts.Node>;
+export type FunctionContext = Map<ts.Node, ts.Node>;
 
 /**
  * List of TypeScript syntax tokens that can be used within a binary expression as
@@ -45,7 +45,9 @@ export class DeclarationUsageVisitor {
    */
   private context: FunctionContext = new Map();
 
-  constructor(private declaration: ts.Node, private typeChecker: ts.TypeChecker) {}
+  constructor(
+      private declaration: ts.Node, private typeChecker: ts.TypeChecker,
+      private baseContext: FunctionContext = new Map()) {}
 
   private isReferringToSymbol(node: ts.Node): boolean {
     const symbol = this.typeChecker.getSymbolAtLocation(node);
@@ -114,7 +116,7 @@ export class DeclarationUsageVisitor {
 
   private visitPropertyAccessors(
       node: ts.PropertyAccessExpression, checkSetter: boolean, checkGetter: boolean) {
-    const propertySymbol = this.typeChecker.getSymbolAtLocation(node.name);
+    const propertySymbol = this._getPropertyAccessSymbol(node);
 
     if (!propertySymbol || !propertySymbol.declarations.length ||
         (propertySymbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
@@ -142,13 +144,6 @@ export class DeclarationUsageVisitor {
       return false;
     }
 
-    const symbol = this.typeChecker.getSymbolAtLocation(leftExpr.name);
-
-    if (!symbol || !symbol.declarations.length ||
-        (symbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
-      return false;
-    }
-
     if (BINARY_COMPOUND_TOKENS.indexOf(node.operatorToken.kind) !== -1) {
       // Compound assignments always cause the getter and setter to be called.
       // Therefore we need to check the setter and getter of the property access.
@@ -166,9 +161,15 @@ export class DeclarationUsageVisitor {
   }
 
   isSynchronouslyUsedInNode(searchNode: ts.Node): boolean {
+    this.nodeQueue = [searchNode];
     this.visitedJumpExprNodes.clear();
     this.context.clear();
-    this.nodeQueue = [searchNode];
+
+    // Copy base context values into the current function block context. The
+    // base context is useful if nodes need to be mapped to other nodes. e.g.
+    // abstract super class methods are mapped to their implementation node of
+    // the derived class.
+    this.baseContext.forEach((value, key) => this.context.set(key, value));
 
     while (this.nodeQueue.length) {
       const node = this.nodeQueue.shift() !;
@@ -225,7 +226,7 @@ export class DeclarationUsageVisitor {
    * the context, the original node is returned.
    */
   private _resolveNodeFromContext(node: ts.Node): ts.Node {
-    if (ts.isParameter(node) && this.context.has(node)) {
+    if (this.context.has(node)) {
       return this.context.get(node) !;
     }
     return node;
@@ -278,5 +279,32 @@ export class DeclarationUsageVisitor {
     }
 
     return symbol;
+  }
+
+  /** Gets the symbol of the given property access expression. */
+  private _getPropertyAccessSymbol(node: ts.PropertyAccessExpression): ts.Symbol|null {
+    let propertySymbol = this._getDeclarationSymbolOfNode(node.name);
+
+    if (!propertySymbol) {
+      return null;
+    }
+
+    if (!this.context.has(propertySymbol.valueDeclaration)) {
+      return propertySymbol;
+    }
+
+    // In case the context has the value declaration of the given property access
+    // name identifier, we need to replace the "propertySymbol" with the symbol
+    // referring to the resolved symbol based on the context. e.g. abstract properties
+    // can ultimately resolve into an accessor declaration based on the implementation.
+    const contextNode = this._resolveNodeFromContext(propertySymbol.valueDeclaration);
+
+    if (!ts.isAccessor(contextNode)) {
+      return null;
+    }
+
+    // Resolve the symbol referring to the "accessor" using the name identifier
+    // of the accessor declaration.
+    return this._getDeclarationSymbolOfNode(contextNode.name);
   }
 }
