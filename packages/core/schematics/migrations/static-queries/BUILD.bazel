@@ -10,6 +10,7 @@ ts_library(
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [
+        "//packages/compiler",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/node",

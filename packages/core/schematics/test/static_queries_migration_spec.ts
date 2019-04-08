@@ -1189,6 +1189,144 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
+    it('should detect query usage within component template', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent {
+          @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        <comp [dir]="query"></comp>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect query usage with nested property read within component template', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent {
+          @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        <comp [dir]="query.someProperty"></comp>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should not mark query as static if template has template reference with same name', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent {
+          @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        <same-name #query></same-name>
+        <!-- In that case the "query" from the component cannot be referenced. -->
+        <comp [dir]="query"></comp>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
+
+    it('should not mark query as static if template has property read with query name but different receiver',
+       () => {
+         writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent {
+          myObject: {someProp: any};
+          @${queryType}('test') someProp: any;
+        }
+      `);
+
+         // This test ensures that we don't accidentally treat template property reads
+         // which do not refer to the query of the component instance, but have the same
+         // "render3Ast.PropertyRead" name, as references to the query declaration.
+         writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        <comp [dir]="myObject.someProp"></comp>
+      `);
+
+         runMigration();
+
+         expect(tree.readContent('/index.ts'))
+             .toContain(`@${queryType}('test', { static: false }) someProp: any;`);
+       });
+
+    it('should ignore queries accessed within <ng-template> element', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent {
+          @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        
+        <ng-template>
+          <my-comp [myInput]="query"></my-comp>
+        </ng-template>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
+
+    it('should detect inherited queries used in templates', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        export class ParentClass {
+          @${queryType}('test') query: any;
+        }
+        
+        @Component({templateUrl: 'my-template.html'})
+        export class MyComponent extends ParentClass {}
+      `);
+
+      writeFile(`/my-template.html`, `
+        <foo #test></foo>
+        <my-comp [myInput]="query"></my-comp>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should properly handle multiple tsconfig files', () => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
