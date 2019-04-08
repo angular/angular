@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {StylingContext} from './styling';
 import {LView, TView} from './view';
@@ -163,14 +164,32 @@ export const enum AttributeMarker {
    * ```
    */
   Template = 4,
+
+  /**
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <h1 attr="value" ngProjectAs="[title]">
+   * ```
+   *
+   * the generated code for the `element()` instruction would include:
+   *
+   * ```
+   * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
+   * ```
+   */
+  ProjectAs = 5
 }
 
 /**
  * A combination of:
- * - attribute names and values
- * - special markers acting as flags to alter attributes processing.
+ * - Attribute names and values.
+ * - Special markers acting as flags to alter attributes processing.
+ * - Parsed ngProjectAs selectors.
  */
-export type TAttributes = (string | AttributeMarker)[];
+export type TAttributes = (string | AttributeMarker | CssSelector)[];
 
 /**
  * Binding data (flyweight) for a particular node that is shared between all templates

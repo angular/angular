@@ -75,10 +75,10 @@ export function patchContextWithStaticAttrs(
       mode = attr;
     } else if (mode == AttributeMarker.Classes) {
       initialClasses = initialClasses || context[StylingIndex.InitialClassValuesPosition];
-      patchInitialStylingValue(initialClasses, attr, true, directiveIndex);
+      patchInitialStylingValue(initialClasses, attr as string, true, directiveIndex);
     } else if (mode == AttributeMarker.Styles) {
       initialStyles = initialStyles || context[StylingIndex.InitialStyleValuesPosition];
-      patchInitialStylingValue(initialStyles, attr, attrs[++i], directiveIndex);
+      patchInitialStylingValue(initialStyles, attr as string, attrs[++i], directiveIndex);
     }
   }
 }

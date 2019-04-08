@@ -475,4 +475,21 @@ export const enum AttributeMarker {
    * ```
    */
   Template = 4,
+
+  /**
+   * Signals that the following attribute is `ngProjectAs` and its value is a parsed `CssSelector`.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <h1 attr="value" ngProjectAs="[title]">
+   * ```
+   *
+   * the generated code for the `element()` instruction would include:
+   *
+   * ```
+   * ['attr', 'value', AttributeMarker.ProjectAs, ['', 'title', '']]
+   * ```
+   */
+  ProjectAs = 5
 }
