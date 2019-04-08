@@ -12,7 +12,7 @@
       "factory": "./ng-update/index#updateToV7"
     },
     "migration-v8": {
-      "version": "8",
+      "version": "8-beta",
       "description": "Updates Angular Material to v8",
       "factory": "./ng-update/index#updateToV8"
     },
