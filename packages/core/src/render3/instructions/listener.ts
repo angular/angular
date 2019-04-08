@@ -11,7 +11,7 @@ import {assertDataInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
-import {FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
+import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode} from '../state';
 import {getComponentViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
@@ -64,6 +64,36 @@ export function ΔcomponentHostSyntheticListener<T>(
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
 }
 
+/**
+ * A utility function that checks if a given element has already an event handler registered for an
+ * event with a specified name. The TView.cleanup data structure is used to find out which events
+ * are registered for a given element.
+ */
+function findExistingListener(
+    lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
+  const tView = lView[TVIEW];
+  const tCleanup = tView.cleanup;
+  if (tCleanup != null) {
+    for (let i = 0; i < tCleanup.length - 1; i += 2) {
+      if (tCleanup[i] === eventName && tCleanup[i + 1] === tNodeIdx) {
+        // We have found a matching event name on the same node but it might not have been
+        // registered yet, so we must explicitly verify entries in the LView cleanup data
+        // structures.
+        const lCleanup = lView[CLEANUP] !;
+        const listenerIdxInLCleanup = tCleanup[i + 2];
+        return lCleanup.length > listenerIdxInLCleanup ? lCleanup[listenerIdxInLCleanup] : null;
+      }
+      // TView.cleanup can have a mix of 4-elements entries (for event handler cleanups) or
+      // 2-element entries (for directive and queries destroy hooks). As such we can encounter
+      // blocks of 4 or 2 items in the tView.cleanup and this is why we iterate over 2 elements
+      // first and jump another 2 elements if we detect listeners cleanup (4 elements). Also check
+      // documentation of TView.cleanup for more details of this data structure layout.
+      i += 2;
+    }
+  }
+  return null;
+}
+
 function listenerInternal(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver,
@@ -82,32 +112,56 @@ function listenerInternal(
     const native = getNativeByTNode(tNode, lView) as RElement;
     const resolved = eventTargetResolver ? eventTargetResolver(native) : {} as any;
     const target = resolved.target || native;
-    ngDevMode && ngDevMode.rendererAddEventListener++;
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
-    let useCaptureOrSubIdx: boolean|number = useCapture;
+    const idxOrTargetGetter = eventTargetResolver ?
+        (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])).target :
+        tNode.index;
 
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
     if (isProceduralRenderer(renderer)) {
-      // The first argument of `listen` function in Procedural Renderer is:
-      // - either a target name (as a string) in case of global target (window, document, body)
-      // - or element reference (in all other cases)
-      listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
-      const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
-      lCleanup.push(listenerFn, cleanupFn);
-      useCaptureOrSubIdx = lCleanupIndex + 1;
+      // There might be cases where multiple directives on the same element try to register an event
+      // handler function for the same event. In this situation we want to avoid registration of
+      // several native listeners as each registration would be intercepted by NgZone and
+      // trigger change detection. This would mean that a single user action would result in several
+      // change detections being invoked. To avoid this situation we want to have only one call to
+      // native handler registration (for the same element and same type of event).
+      //
+      // In order to have just one native event handler in presence of multiple handler functions,
+      // we just register a first handler function as a native event listener and then chain
+      // (coalesce) other handler functions on top of the first native handler function.
+      //
+      // Please note that the coalescing described here doesn't happen for events specifying an
+      // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
+      // view engine.
+      const existingListener =
+          eventTargetResolver ? null : findExistingListener(lView, eventName, tNode.index);
+      if (existingListener !== null) {
+        // Attach a new listener at the head of the coalesced listeners list.
+        (<any>listenerFn).__ngNextListenerFn__ = (<any>existingListener).__ngNextListenerFn__;
+        (<any>existingListener).__ngNextListenerFn__ = listenerFn;
+      } else {
+        // The first argument of `listen` function in Procedural Renderer is:
+        // - either a target name (as a string) in case of global target (window, document, body)
+        // - or element reference (in all other cases)
+        listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
+        const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
+        ngDevMode && ngDevMode.rendererAddEventListener++;
+
+        lCleanup.push(listenerFn, cleanupFn);
+        tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+      }
+
     } else {
       listenerFn = wrapListener(tNode, lView, listenerFn, true /** preventDefault */);
       target.addEventListener(eventName, listenerFn, useCapture);
-      lCleanup.push(listenerFn);
-    }
+      ngDevMode && ngDevMode.rendererAddEventListener++;
 
-    const idxOrTargetGetter = eventTargetResolver ?
-        (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])).target :
-        tNode.index;
-    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCaptureOrSubIdx);
+      lCleanup.push(listenerFn);
+      tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
+    }
   }
 
   // subscribe to directive outputs
@@ -144,6 +198,15 @@ function listenerInternal(
   }
 }
 
+function executeListenerWithErrorHandling(lView: LView, listenerFn: (e?: any) => any, e: any): any {
+  try {
+    return listenerFn(e);
+  } catch (error) {
+    handleError(lView, error);
+    return false;
+  }
+}
+
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
  * if applicable.
@@ -170,16 +233,21 @@ function wrapListener(
       markViewDirty(startView);
     }
 
-    try {
-      const result = listenerFn(e);
-      if (wrapWithPreventDefault && result === false) {
-        e.preventDefault();
-        // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
-        e.returnValue = false;
-      }
-      return result;
-    } catch (error) {
-      handleError(lView, error);
+    let result = executeListenerWithErrorHandling(lView, listenerFn, e);
+    // A just-invoked listener function might have coalesced listeners so we need to check for
+    // their presence and invoke as needed.
+    let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
+    while (nextListenerFn) {
+      result = executeListenerWithErrorHandling(lView, nextListenerFn, e);
+      nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
     }
+
+    if (wrapWithPreventDefault && result === false) {
+      e.preventDefault();
+      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
+      e.returnValue = false;
+    }
+
+    return result;
   };
 }
