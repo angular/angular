@@ -26,7 +26,7 @@ import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
 
 import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
-import {getActiveDirectiveStylingIndex} from './styling_instructions';
+import {getActiveDirectiveStylingIndex} from './styling';
 
 
 /**
