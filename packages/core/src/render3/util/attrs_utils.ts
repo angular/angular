@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker, TAttributes} from '../interfaces/node';
-import {NG_PROJECT_AS_ATTR_NAME} from '../interfaces/projection';
+import {CssSelector} from '../interfaces/projection';
 import {ProceduralRenderer3, RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {RENDERER} from '../interfaces/view';
 import {getLView} from '../state';
@@ -70,19 +70,17 @@ export function setUpAttributes(native: RElement, attrs: TAttributes): number {
       /// attrName is string;
       const attrName = value as string;
       const attrVal = attrs[++i];
-      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
-        // Standard attributes
-        ngDevMode && ngDevMode.rendererSetAttribute++;
-        if (isAnimationProp(attrName)) {
-          if (isProc) {
-            (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
-          }
-        } else {
-          isProc ?
-              (renderer as ProceduralRenderer3)
-                  .setAttribute(native, attrName as string, attrVal as string) :
-              native.setAttribute(attrName as string, attrVal as string);
+      // Standard attributes
+      ngDevMode && ngDevMode.rendererSetAttribute++;
+      if (isAnimationProp(attrName)) {
+        if (isProc) {
+          (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
         }
+      } else {
+        isProc ?
+            (renderer as ProceduralRenderer3)
+                .setAttribute(native, attrName as string, attrVal as string) :
+            native.setAttribute(attrName as string, attrVal as string);
       }
       i++;
     }
@@ -113,6 +111,6 @@ export function attrsStylingIndexOf(attrs: TAttributes, startIndex: number): num
  * @param marker The attribute marker to test.
  * @returns true if the marker is a "name-only" marker (e.g. `Bindings` or `Template`).
  */
-export function isNameOnlyAttributeMarker(marker: string | AttributeMarker) {
+export function isNameOnlyAttributeMarker(marker: string | AttributeMarker | CssSelector) {
   return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template;
 }

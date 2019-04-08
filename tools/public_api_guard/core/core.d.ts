@@ -1313,9 +1313,9 @@ export declare function ΔpipeBindV(index: number, slotOffset: number, values: a
 
 export declare type ΔPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
-export declare function Δprojection(nodeIndex: number, selectorIndex?: number, attrs?: string[]): void;
+export declare function Δprojection(nodeIndex: number, selectorIndex?: number, attrs?: TAttributes): void;
 
-export declare function ΔprojectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void;
+export declare function ΔprojectionDef(selectors?: CssSelectorList[]): void;
 
 export declare function ΔProvidersFeature<T>(providers: Provider[], viewProviders?: Provider[]): (definition: DirectiveDef<T>) => void;
 

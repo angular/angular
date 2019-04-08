@@ -1475,7 +1475,7 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: ChildWithSelector) => {
             if (rf & RenderFlags.Create) {
-              ΔprojectionDef([[['header']]], ['header']);
+              ΔprojectionDef([[['header']]]);
               ΔelementStart(0, 'first');
               { Δprojection(1, 1); }
               ΔelementEnd();

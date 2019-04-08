@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
-
-import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
-import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
-import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
 import {createTNode} from '@angular/core/src/render3/instructions/shared';
+
+import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
+import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList} from '../../src/render3/node_selector_matcher';
+import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
   return createTNode(null, TNodeType.Element, 0, tagName, attrs);
@@ -466,11 +466,11 @@ describe('css selector matching', () => {
 
   describe('reading the ngProjectAs attribute value', function() {
 
-    function testTNode(attrs: string[] | null) { return testLStaticData('tag', attrs); }
+    function testTNode(attrs: TAttributes | null) { return testLStaticData('tag', attrs); }
 
     it('should get ngProjectAs value if present', function() {
-      expect(getProjectAsAttrValue(testTNode([NG_PROJECT_AS_ATTR_NAME, 'tag[foo=bar]'])))
-          .toBe('tag[foo=bar]');
+      expect(getProjectAsAttrValue(testTNode([AttributeMarker.ProjectAs, ['tag', 'foo', 'bar']])))
+          .toEqual(['tag', 'foo', 'bar']);
     });
 
     it('should return null if there are no attributes',
@@ -481,7 +481,7 @@ describe('css selector matching', () => {
     });
 
     it('should not accidentally identify ngProjectAs in attribute values', function() {
-      expect(getProjectAsAttrValue(testTNode(['foo', NG_PROJECT_AS_ATTR_NAME]))).toBe(null);
+      expect(getProjectAsAttrValue(testTNode(['foo', AttributeMarker.ProjectAs]))).toBe(null);
     });
 
   });

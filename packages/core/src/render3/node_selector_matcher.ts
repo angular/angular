@@ -11,7 +11,7 @@ import '../util/ng_dev_mode';
 import {assertDefined, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {getInitialClassNameValue} from './styling/class_and_style_bindings';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
@@ -234,14 +234,14 @@ export function isNodeMatchingSelectorList(
   return false;
 }
 
-export function getProjectAsAttrValue(tNode: TNode): string|null {
+export function getProjectAsAttrValue(tNode: TNode): CssSelector|null {
   const nodeAttrs = tNode.attrs;
   if (nodeAttrs != null) {
-    const ngProjectAsAttrIdx = nodeAttrs.indexOf(NG_PROJECT_AS_ATTR_NAME);
+    const ngProjectAsAttrIdx = nodeAttrs.indexOf(AttributeMarker.ProjectAs);
     // only check for ngProjectAs in attribute names, don't accidentally match attribute's value
     // (attribute names are stored at even indexes)
     if ((ngProjectAsAttrIdx & 1) === 0) {
-      return nodeAttrs[ngProjectAsAttrIdx + 1] as string;
+      return nodeAttrs[ngProjectAsAttrIdx + 1] as CssSelector;
     }
   }
   return null;
@@ -251,18 +251,19 @@ export function getProjectAsAttrValue(tNode: TNode): string|null {
  * Checks a given node against matching projection selectors and returns
  * selector index (or 0 if none matched).
  *
- * This function takes into account the ngProjectAs attribute: if present its value will be
- * compared to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
+ * This function takes into account the parsed ngProjectAs selector from the node's attributes.
+ * If present, it will check whether the ngProjectAs selector matches any of the projection
+ * selectors.
  */
 export function matchingProjectionSelectorIndex(
-    tNode: TNode, selectors: CssSelectorList[], textSelectors: string[]): number {
+    tNode: TNode, selectors: CssSelectorList[]): number {
   const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
   for (let i = 0; i < selectors.length; i++) {
-    // if a node has the ngProjectAs attribute match it against unparsed selector
-    // match a node against a parsed selector only if ngProjectAs attribute is not present
-    if (ngProjectAsAttrVal === textSelectors[i] ||
-        ngProjectAsAttrVal === null &&
-            isNodeMatchingSelectorList(tNode, selectors[i], /* isProjectionMode */ true)) {
+    // If we ran into an `ngProjectAs` attribute, we should match its parsed selector
+    // to the list of selectors, otherwise we fall back to matching against the node.
+    if (ngProjectAsAttrVal === null ?
+            isNodeMatchingSelectorList(tNode, selectors[i], /* isProjectionMode */ true) :
+            isSelectorInSelectorList(ngProjectAsAttrVal, selectors[i])) {
       return i + 1;  // first matching selector "captures" a given node
     }
   }
@@ -289,4 +290,25 @@ function matchTemplateAttribute(attrs: TAttributes, name: string): number {
     }
   }
   return -1;
+}
+
+/**
+ * Checks whether a selector is inside a CssSelectorList
+ * @param selector Selector to be checked.
+ * @param list List in which to look for the selector.
+ */
+function isSelectorInSelectorList(selector: CssSelector, list: CssSelectorList): boolean {
+  selectorListLoop: for (let i = 0; i < list.length; i++) {
+    const currentSelectorInList = list[i];
+    if (selector.length !== currentSelectorInList.length) {
+      continue;
+    }
+    for (let j = 0; j < selector.length; j++) {
+      if (selector[j] !== currentSelectorInList[j]) {
+        continue selectorListLoop;
+      }
+    }
+    return true;
+  }
+  return false;
 }
