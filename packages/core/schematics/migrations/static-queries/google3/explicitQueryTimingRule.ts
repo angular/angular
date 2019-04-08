@@ -11,9 +11,9 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../../utils/ng_component_template';
 import {visitAllNodes} from '../../../utils/typescript/visit_nodes';
-import {analyzeNgQueryUsage} from '../angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
 import {QueryTiming} from '../angular/query-definition';
+import {QueryUsageStrategy} from '../strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from '../transform';
 
 const FAILURE_MESSAGE = 'Query does not explicitly specify its timing. Read more here: ' +
@@ -52,6 +52,7 @@ export class Rule extends Rules.TypedRule {
     });
 
     const queries = resolvedQueries.get(sourceFile);
+    const usageStrategy = new QueryUsageStrategy(classMetadata, typeChecker);
 
     // No queries detected for the given source file.
     if (!queries) {
@@ -62,7 +63,7 @@ export class Rule extends Rules.TypedRule {
     // query definitions to explicitly declare the query timing (static or dynamic)
     queries.forEach(q => {
       const queryExpr = q.decorator.node.expression;
-      const timing = analyzeNgQueryUsage(q, classMetadata, typeChecker);
+      const timing = usageStrategy.detectTiming(q);
       const transformedNode = getTransformedQueryCallExpr(q, timing);
 
       if (!transformedNode) {

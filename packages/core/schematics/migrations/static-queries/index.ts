@@ -15,8 +15,8 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 import {visitAllNodes} from '../../utils/typescript/visit_nodes';
 
-import {analyzeNgQueryUsage} from './angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
+import {QueryUsageStrategy} from './strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from './transform';
 
 
@@ -83,6 +83,8 @@ function runStaticQueryMigration(tree: Tree, tsconfigPath: string, basePath: str
     }
   });
 
+  const usageStrategy = new QueryUsageStrategy(classMetadata, typeChecker);
+
   // Walk through all source files that contain resolved queries and update
   // the source files if needed. Note that we need to update multiple queries
   // within a source file within the same recorder in order to not throw off
@@ -94,7 +96,7 @@ function runStaticQueryMigration(tree: Tree, tsconfigPath: string, basePath: str
     // query definitions to explicitly declare the query timing (static or dynamic)
     queries.forEach(q => {
       const queryExpr = q.decorator.node.expression;
-      const timing = analyzeNgQueryUsage(q, classMetadata, typeChecker);
+      const timing = usageStrategy.detectTiming(q);
       const transformedNode = getTransformedQueryCallExpr(q, timing);
 
       if (!transformedNode) {

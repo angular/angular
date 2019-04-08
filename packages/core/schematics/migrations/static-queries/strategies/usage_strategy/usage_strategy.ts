@@ -8,14 +8,15 @@
 
 import * as ts from 'typescript';
 
-import {parseHtmlGracefully} from '../../../utils/parse_html';
-import {hasPropertyNameText} from '../../../utils/typescript/property_name';
+import {parseHtmlGracefully} from '../../../../utils/parse_html';
+import {hasPropertyNameText} from '../../../../utils/typescript/property_name';
+import {ClassMetadataMap} from '../../angular/ng_query_visitor';
+import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';
+import {TimingStrategy} from '../../timing-strategy';
 
 import {DeclarationUsageVisitor, FunctionContext} from './declaration_usage_visitor';
-import {ClassMetadataMap} from './ng_query_visitor';
-import {NgQueryDefinition, QueryTiming, QueryType} from './query-definition';
-import {QueryReadHtmlVisitor} from './query_read_html_visitor';
-import {updateSuperClassAbstractMembersContext} from './super_class';
+import {updateSuperClassAbstractMembersContext} from './super_class_context';
+import {TemplateUsageVisitor} from './template_usage_visitor';
 
 
 /**
@@ -29,16 +30,24 @@ const STATIC_QUERY_LIFECYCLE_HOOKS = {
 };
 
 /**
- * Analyzes the usage of the given query and determines the query timing based
- * on the current usage of the query.
+ * Query timing strategy that determines the timing of a given query by inspecting how
+ * the query is accessed within the project's TypeScript source files. Read more about
+ * this strategy here: https://hackmd.io/s/Hymvc2OKE
  */
-export function analyzeNgQueryUsage(
-    query: NgQueryDefinition, classMetadata: ClassMetadataMap,
-    typeChecker: ts.TypeChecker): QueryTiming {
-  return isQueryUsedStatically(query.container, query, classMetadata, typeChecker, []) ?
-      QueryTiming.STATIC :
-      QueryTiming.DYNAMIC;
+export class QueryUsageStrategy implements TimingStrategy {
+  constructor(private classMetadata: ClassMetadataMap, private typeChecker: ts.TypeChecker) {}
+
+  /**
+   * Analyzes the usage of the given query and determines the query timing based
+   * on the current usage of the query.
+   */
+  detectTiming(query: NgQueryDefinition): QueryTiming {
+    return isQueryUsedStatically(query.container, query, this.classMetadata, this.typeChecker, []) ?
+        QueryTiming.STATIC :
+        QueryTiming.DYNAMIC;
+  }
 }
+
 
 /**
  * Checks whether a given query is used statically within the given class, its super
@@ -79,7 +88,7 @@ function isQueryUsedStatically(
   if (classMetadata.template && hasPropertyNameText(query.property.name)) {
     const template = classMetadata.template;
     const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
-    const htmlVisitor = new QueryReadHtmlVisitor(query.property.name.text);
+    const htmlVisitor = new TemplateUsageVisitor(query.property.name.text);
 
     if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
       return true;
