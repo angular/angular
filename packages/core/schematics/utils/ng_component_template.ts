@@ -16,12 +16,16 @@ import {unwrapExpression} from './typescript/functions';
 import {getPropertyNameText} from './typescript/property_name';
 
 export interface ResolvedTemplate {
+  /** Class declaration that contains this template. */
+  container: ts.ClassDeclaration;
   /** File content of the given template. */
   content: string;
   /** Start offset of the template content (e.g. in the inline source file) */
   start: number;
   /** Whether the given template is inline or not. */
   inline: boolean;
+  /** Path to the file that contains this template. */
+  filePath: string;
   /**
    * Gets the character and line of a given position index in the template.
    * If the template is declared inline within a TypeScript source file, the line and
@@ -40,13 +44,9 @@ export class NgComponentTemplateVisitor {
   constructor(public typeChecker: ts.TypeChecker) {}
 
   visitNode(node: ts.Node) {
-    switch (node.kind) {
-      case ts.SyntaxKind.ClassDeclaration:
-        this.visitClassDeclaration(node as ts.ClassDeclaration);
-        break;
+    if (node.kind === ts.SyntaxKind.ClassDeclaration) {
+      this.visitClassDeclaration(node as ts.ClassDeclaration);
     }
-
-    ts.forEachChild(node, node => this.visitNode(node));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -94,7 +94,10 @@ export class NgComponentTemplateVisitor {
         // Need to add an offset of one to the start because the template quotes are
         // not part of the template content.
         const templateStartIdx = property.initializer.getStart() + 1;
-        this.resolvedTemplates.set(resolve(sourceFileName), {
+        const filePath = resolve(sourceFileName);
+        this.resolvedTemplates.set(filePath, {
+          filePath: filePath,
+          container: node,
           content: property.initializer.text,
           inline: true,
           start: templateStartIdx,
@@ -115,6 +118,8 @@ export class NgComponentTemplateVisitor {
         const lineStartsMap = computeLineStartsMap(fileContent);
 
         this.resolvedTemplates.set(templatePath, {
+          filePath: templatePath,
+          container: node,
           content: fileContent,
           inline: false,
           start: 0,

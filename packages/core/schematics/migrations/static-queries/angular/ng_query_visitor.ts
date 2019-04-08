@@ -7,10 +7,14 @@
  */
 
 import * as ts from 'typescript';
+
+import {ResolvedTemplate} from '../../../utils/ng_component_template';
 import {getAngularDecorators} from '../../../utils/ng_decorators';
 import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../../../utils/typescript/class_declaration';
+
 import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
+
 
 /** Resolved metadata of a given class. */
 export interface ClassMetadata {
@@ -20,6 +24,8 @@ export interface ClassMetadata {
   superClass: ts.ClassDeclaration|null;
   /** List of property names that declare an Angular input within the given class. */
   ngInputNames: string[];
+  /** Component template that belongs to that class if present. */
+  template?: ResolvedTemplate;
 }
 
 /** Type that describes a map which can be used to get a class declaration's metadata. */
@@ -48,8 +54,6 @@ export class NgQueryResolveVisitor {
         this.visitClassDeclaration(node as ts.ClassDeclaration);
         break;
     }
-
-    ts.forEachChild(node, node => this.visitNode(node));
   }
 
   private visitPropertyDeclaration(node: ts.PropertyDeclaration) {
