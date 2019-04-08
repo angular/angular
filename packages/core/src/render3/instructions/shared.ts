@@ -1360,18 +1360,22 @@ function generateInitialInputs(
       // We do not allow inputs on namespaced attributes.
       i += 4;
       continue;
+    } else if (attrName === AttributeMarker.ProjectAs) {
+      // Skip over the `ngProjectAs` value.
+      i += 2;
+      continue;
     }
 
     // If we hit any other attribute markers, we're done anyway. None of those are valid inputs.
     if (typeof attrName === 'number') break;
 
-    const minifiedInputName = inputs[attrName];
+    const minifiedInputName = inputs[attrName as string];
     const attrValue = attrs[i + 1];
 
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(attrName, minifiedInputName, attrValue as string);
+      inputsToStore.push(attrName as string, minifiedInputName, attrValue as string);
     }
 
     i += 2;

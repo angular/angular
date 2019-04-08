@@ -81,6 +81,76 @@ describe('projection', () => {
     expect(fixture.nativeElement).toHaveText('hello');
   });
 
+  it('should support ngProjectAs on elements (including <ng-content>)', () => {
+    @Component({
+      selector: 'card',
+      template: `
+        <ng-content select="[card-title]"></ng-content>
+        ---
+        <ng-content select="[card-content]"></ng-content>
+      `
+    })
+    class Card {
+    }
+
+    @Component({
+      selector: 'card-with-title',
+      template: `
+        <card>
+         <h1 ngProjectAs="[card-title]">Title</h1>
+         <ng-content ngProjectAs="[card-content]"></ng-content>
+        </card>
+      `
+    })
+    class CardWithTitle {
+    }
+
+    @Component({
+      selector: 'app',
+      template: `
+        <card-with-title>content</card-with-title>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Card, CardWithTitle, App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Compare the text output, because Ivy and ViewEngine produce slightly different HTML.
+    expect(fixture.nativeElement.textContent).toContain('Title --- content');
+  });
+
+  it('should not match multiple selectors in ngProjectAs', () => {
+    @Component({
+      selector: 'card',
+      template: `
+        <ng-content select="[card-title]"></ng-content>
+        content
+      `
+    })
+    class Card {
+    }
+
+    @Component({
+      template: `
+        <card>
+         <h1 ngProjectAs="[non-existing-title-slot],[card-title]">Title</h1>
+        </card>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Card, App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Compare the text output, because Ivy and ViewEngine produce slightly different HTML.
+    expect(fixture.nativeElement.textContent).not.toContain('Title content');
+  });
+
   describe('on inline templates (e.g.  *ngIf)', () => {
     it('should work when matching the element name', () => {
       let divDirectives = 0;

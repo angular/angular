@@ -45,6 +45,9 @@ const DEFAULT_NG_CONTENT_SELECTOR = '*';
 // Selector attribute name of `<ng-content>`
 const NG_CONTENT_SELECT_ATTR = 'select';
 
+// Attribute name of `ngProjectAs`.
+const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
+
 // List of supported global targets for event listeners
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
@@ -264,11 +267,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Only selectors with a non-default value are generated
       if (this._ngContentSelectors.length) {
         const r3Selectors = this._ngContentSelectors.map(s => core.parseSelectorToR3Selector(s));
-        // `projectionDef` needs both the parsed and raw value of the selectors
-        const parsed = this.constantPool.getConstLiteral(asLiteral(r3Selectors), true);
-        const unParsed =
-            this.constantPool.getConstLiteral(asLiteral(this._ngContentSelectors), true);
-        parameters.push(parsed, unParsed);
+        parameters.push(this.constantPool.getConstLiteral(asLiteral(r3Selectors), true));
       }
 
       // Since we accumulate ngContent selectors while processing template elements,
@@ -475,18 +474,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         0 :
         this._ngContentSelectors.push(ngContent.selector) + this._ngContentSelectorsOffset;
     const parameters: o.Expression[] = [o.literal(slot)];
-
-    const attributeAsList: string[] = [];
+    const attributes: o.Expression[] = [];
 
     ngContent.attributes.forEach((attribute) => {
       const {name, value} = attribute;
-      if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
-        attributeAsList.push(name, value);
+      if (name === NG_PROJECT_AS_ATTR_NAME) {
+        attributes.push(...getNgProjectAsLiteral(attribute));
+      } else if (name.toLowerCase() !== NG_CONTENT_SELECT_ATTR) {
+        attributes.push(o.literal(name), o.literal(value));
       }
     });
 
-    if (attributeAsList.length > 0) {
-      parameters.push(o.literal(selectorIndex), asLiteral(attributeAsList));
+    if (attributes.length > 0) {
+      parameters.push(o.literal(selectorIndex), o.literalArr(attributes));
     } else if (selectorIndex !== 0) {
       parameters.push(o.literal(selectorIndex));
     }
@@ -574,7 +574,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     outputAttrs.forEach(attr => {
-      attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
+      if (attr.name === NG_PROJECT_AS_ATTR_NAME) {
+        attributes.push(...getNgProjectAsLiteral(attr));
+      } else {
+        attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
+      }
     });
 
     // add attributes for directive and projection matching purposes
@@ -1569,6 +1573,17 @@ function createCssSelector(tag: string, attributes: {[name: string]: string}): C
   });
 
   return cssSelector;
+}
+
+/**
+ * Creates an array of expressions out of an `ngProjectAs` attributes
+ * which can be added to the instruction parameters.
+ */
+function getNgProjectAsLiteral(attribute: t.TextAttribute): o.Expression[] {
+  // Parse the attribute value into a CssSelectorList. Note that we only take the
+  // first selector, because we don't support multiple selectors in ngProjectAs.
+  const parsedR3Selector = core.parseSelectorToR3Selector(attribute.value)[0];
+  return [o.literal(core.AttributeMarker.ProjectAs), asLiteral(parsedR3Selector)];
 }
 
 function interpolate(args: o.Expression[]): o.Expression {

@@ -65,8 +65,6 @@ export const enum SelectorFlags {
   CLASS = 0b1000,
 }
 
-export const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
-
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
