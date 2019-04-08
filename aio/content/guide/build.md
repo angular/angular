@@ -202,7 +202,7 @@ Specify size values in the following formats:
 
 * 12%: Percentage of size relative to baseline. (Not valid for baseline values.)
 
-When you configure a budget, the build system warns or reports and error when a given part of the app reaches or exceeds a boundary size that you set.
+When you configure a budget, the build system warns or reports an error when a given part of the app reaches or exceeds a boundary size that you set.
 
 Each budget entry is a JSON object with the following properties:
 
