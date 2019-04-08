@@ -1,3 +1,12 @@
+# 8.0.0-beta.1 "suede-banana" (2019-04-08)
+
+
+### Features
+
+* run v8 migration schematics for v8 beta and rc releases ([#15753](https://github.com/angular/material2/issues/15753)) ([bb5d544](https://github.com/angular/material2/commit/bb5d544))
+
+
+
 # 8.0.0-beta.0 "spidersilk-barbell" (2019-04-05)
 
 ### Project setup
