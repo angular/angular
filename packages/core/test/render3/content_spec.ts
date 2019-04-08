@@ -941,7 +941,7 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔprojectionDef([[['div']]], ['div']);
+        ΔprojectionDef([[['div']]]);
         Δprojection(0);
         Δtext(1, 'Before-');
         Δtemplate(2, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
@@ -1531,9 +1531,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]],
-              ['span[title=toFirst]', 'span[title=toSecond]']);
+          ΔprojectionDef([[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1, 1); }
           ΔelementEnd();
@@ -1577,7 +1575,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['', 'title', '']]], ['[title]']);
+          ΔprojectionDef([[['', 'title', '']]]);
           { Δprojection(0, 1); }
         }
       }, 1);
@@ -1614,12 +1612,10 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [
-                [['span', SelectorFlags.CLASS, 'toFirst']],
-                [['span', SelectorFlags.CLASS, 'toSecond']]
-              ],
-              ['span.toFirst', 'span.toSecond']);
+          ΔprojectionDef([
+            [['span', SelectorFlags.CLASS, 'toFirst']],
+            [['span', SelectorFlags.CLASS, 'toSecond']]
+          ]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1, 1); }
           ΔelementEnd();
@@ -1663,12 +1659,10 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [
-                [['span', SelectorFlags.CLASS, 'toFirst']],
-                [['span', SelectorFlags.CLASS, 'toSecond']]
-              ],
-              ['span.toFirst', 'span.toSecond']);
+          ΔprojectionDef([
+            [['span', SelectorFlags.CLASS, 'toFirst']],
+            [['span', SelectorFlags.CLASS, 'toSecond']]
+          ]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1, 1); }
           ΔelementEnd();
@@ -1712,8 +1706,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]], ['span', 'span.toSecond']);
+          ΔprojectionDef([[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1, 1); }
           ΔelementEnd();
@@ -1757,7 +1750,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]], ['span.toFirst']);
+          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1, 1); }
           ΔelementEnd();
@@ -1802,7 +1795,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]], ['span.toSecond']);
+          ΔprojectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]]);
           ΔelementStart(0, 'div', ['id', 'first']);
           { Δprojection(1); }
           ΔelementEnd();
@@ -1854,7 +1847,7 @@ describe('content projection', () => {
        */
       const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['span']]], ['span']);
+          ΔprojectionDef([[['span']]]);
           Δprojection(0, 1);
           Δelement(1, 'hr');
           Δprojection(2);
@@ -1915,9 +1908,7 @@ describe('content projection', () => {
        */
       const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [[['', 'card-title', '']], [['', 'card-content', '']]],
-              ['[card-title]', '[card-content]']);
+          ΔprojectionDef([[['', 'card-title', '']], [['', 'card-content', '']]]);
           Δprojection(0, 1);
           Δelement(1, 'hr');
           Δprojection(2, 2);
@@ -1963,64 +1954,6 @@ describe('content projection', () => {
               '<card-with-title><card><h1 card-title="">Title</h1><hr>content</card></card-with-title>');
     });
 
-
-    it('should support ngProjectAs on elements (including <ng-content>)', () => {
-
-      /**
-       * <ng-content select="[card-title]"></ng-content>
-       * <hr>
-       * <ng-content select="[card-content]"></ng-content>
-       */
-      const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          ΔprojectionDef(
-              [[['', 'card-title', '']], [['', 'card-content', '']]],
-              ['[card-title]', '[card-content]']);
-          Δprojection(0, 1);
-          Δelement(1, 'hr');
-          Δprojection(2, 2);
-        }
-      }, 3);
-
-      /**
-       * <card>
-       *  <h1 ngProjectAs="[card-title]>Title</h1>
-       *  <ng-content ngProjectAs="[card-content]"></ng-content>
-       * </card>
-       */
-      const CardWithTitle = createComponent('card-with-title', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          ΔprojectionDef();
-          ΔelementStart(0, 'card');
-          {
-            ΔelementStart(1, 'h1', ['ngProjectAs', '[card-title]']);
-            { Δtext(2, 'Title'); }
-            ΔelementEnd();
-            Δprojection(3, 0, ['ngProjectAs', '[card-content]']);
-          }
-          ΔelementEnd();
-        }
-      }, 4, 0, [Card]);
-
-      /**
-       * <card-with-title>
-       *  content
-       * </card-with-title>
-       */
-      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'card-with-title');
-          { Δtext(1, 'content'); }
-          ΔelementEnd();
-        }
-      }, 2, 0, [CardWithTitle]);
-
-      const app = renderComponent(App);
-      expect(toHtml(app))
-          .toEqual('<card-with-title><card><h1>Title</h1><hr>content</card></card-with-title>');
-
-    });
-
     it('should not match selectors against node having ngProjectAs attribute', function() {
 
       /**
@@ -2028,7 +1961,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['div']]], ['div']);
+          ΔprojectionDef([[['div']]]);
           Δprojection(0, 1);
         }
       }, 1);
@@ -2043,7 +1976,7 @@ describe('content projection', () => {
         if (rf & RenderFlags.Create) {
           ΔelementStart(0, 'child');
           {
-            ΔelementStart(1, 'div', ['ngProjectAs', 'span']);
+            ΔelementStart(1, 'div', [AttributeMarker.ProjectAs, ['span']]);
             { Δtext(2, 'should not project'); }
             ΔelementEnd();
             ΔelementStart(3, 'div');
@@ -2067,7 +2000,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔprojectionDef([[['div']]], ['div']);
+          ΔprojectionDef([[['div']]]);
           ΔelementStart(0, 'span');
           { Δprojection(1, 1); }
           ΔelementEnd();

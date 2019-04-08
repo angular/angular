@@ -2058,7 +2058,7 @@ describe('Runtime i18n', () => {
             vars: 0,
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
-                ΔprojectionDef([[['span']]], ['span']);
+                ΔprojectionDef([[['span']]]);
                 Δprojection(0, 1);
               }
             }

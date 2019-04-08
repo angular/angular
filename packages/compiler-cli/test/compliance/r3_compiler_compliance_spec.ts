@@ -1169,7 +1169,6 @@ describe('compiler compliance', () => {
           const $c3$ = ["id","first"];
           const $c4$ = ["id","second"];
           const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
-          const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
           …
           ComplexComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ComplexComponent,
@@ -1180,7 +1179,7 @@ describe('compiler compliance', () => {
             vars: 0,
             template:  function ComplexComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ΔprojectionDef($c1$, $c2$);
+                $r3$.ΔprojectionDef($c1$);
                 $r3$.ΔelementStart(0, "div", $c3$);
                 $r3$.Δprojection(1, 1);
                 $r3$.ΔelementEnd();
@@ -1252,11 +1251,10 @@ describe('compiler compliance', () => {
             }
           }
           const $_c4$ = [[["span", "title", "tofirst"]]];
-          const $_c5$ = ["span[title=toFirst]"];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ΔprojectionDef($_c4$, $_c5$);
+              $r3$.ΔprojectionDef($_c4$);
               $r3$.Δtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
               $r3$.Δtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
               $r3$.Δtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
@@ -1326,7 +1324,7 @@ describe('compiler compliance', () => {
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ΔprojectionDef($_c2$, $_c3$);
+              $r3$.ΔprojectionDef($_c2$);
               $r3$.Δprojection(0, 1);
               $r3$.Δtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
               $r3$.Δtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
@@ -1338,6 +1336,117 @@ describe('compiler compliance', () => {
         const {source} = compile(files, angularFiles);
         expectEmit(source, output, 'Invalid content projection instructions generated');
       });
+
+      it('should parse the selector that is passed into ngProjectAs', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'simple',
+                template: '<div><ng-content select="[title]"></ng-content></div>'
+              })
+              export class SimpleComponent {}
+
+              @NgModule({declarations: [SimpleComponent]})
+              export class MyModule {}
+
+              @Component({
+                selector: 'my-app',
+                template: '<simple><h1 ngProjectAs="[title]"></h1></simple>'
+              })
+              export class MyApp {}
+            `
+          }
+        };
+
+        // Note that the c0 and c1 constants aren't being used in this particular test,
+        // but they are used in some of the logic that is folded under the ellipsis.
+        const SimpleComponentDefinition = `
+          const $_c0$ = [[["", "title", ""]]];
+          const $_c1$ = ["[title]"];
+          const $_c2$ = [5, ["", "title", ""]];
+          …
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
+            type: MyApp,
+            selectors: [["my-app"]],
+            factory: function MyApp_Factory(t) {
+                return new(t || MyApp)();
+            },
+            consts: 2,
+            vars: 0,
+            template: function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                    $r3$.ΔelementStart(0, "simple");
+                    $r3$.Δelement(1, "h1", $_c2$);
+                    $r3$.ΔelementEnd();
+                }
+            },
+            encapsulation: 2
+        })`;
+
+        const result = compile(files, angularFiles);
+
+        expectEmit(
+            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+      });
+
+      it('should take the first selector if multiple values are passed into ngProjectAs', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'simple',
+                template: '<div><ng-content select="[title]"></ng-content></div>'
+              })
+              export class SimpleComponent {}
+
+              @NgModule({declarations: [SimpleComponent]})
+              export class MyModule {}
+
+              @Component({
+                selector: 'my-app',
+                template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>'
+              })
+              export class MyApp {}
+            `
+          }
+        };
+
+        // Note that the c0 and c1 constants aren't being used in this particular test,
+        // but they are used in some of the logic that is folded under the ellipsis.
+        const SimpleComponentDefinition = `
+          const $_c0$ = [[["", "title", ""]]];
+          const $_c1$ = ["[title]"];
+          const $_c2$ = [5, ["", "title", ""]];
+          …
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
+            type: MyApp,
+            selectors: [["my-app"]],
+            factory: function MyApp_Factory(t) {
+                return new(t || MyApp)();
+            },
+            consts: 2,
+            vars: 0,
+            template: function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                    $r3$.ΔelementStart(0, "simple");
+                    $r3$.Δelement(1, "h1", $_c2$);
+                    $r3$.ΔelementEnd();
+                }
+            },
+            encapsulation: 2
+        })`;
+
+        const result = compile(files, angularFiles);
+
+        expectEmit(
+            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+      });
+
     });
 
     describe('queries', () => {
