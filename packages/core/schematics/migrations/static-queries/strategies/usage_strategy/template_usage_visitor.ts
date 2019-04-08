@@ -13,7 +13,7 @@ import {BoundAttribute, BoundEvent, BoundText, Element, Node, NullVisitor, Templ
  * AST visitor that traverses the Render3 HTML AST in order to check if the given
  * query property is accessed statically in the template.
  */
-export class QueryReadHtmlVisitor extends NullVisitor {
+export class TemplateUsageVisitor extends NullVisitor {
   private hasQueryTemplateReference = false;
   private expressionAstVisitor = new ExpressionAstVisitor(this.queryPropertyName);
 
