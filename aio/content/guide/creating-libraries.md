@@ -89,7 +89,7 @@ In general, the more complex the customization, the more useful the schematic ap
 
 ## Integrating with the CLI
 
-A library can include [schematics](guide/glossary#schematic) that allow it to integrate with the Angular CLI.
+A library can include [schematics](guide/schematics-for-libraries) that allow it to integrate with the Angular CLI.
 
 * Include an installation schematic so that `ng add` can add your library to a project.
 
