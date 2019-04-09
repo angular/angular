@@ -65,7 +65,7 @@ export function flushQueue(context: StylingContext): void {
          i += HostInstructionsQueueIndex.Size) {
       const fn = buffer[i + HostInstructionsQueueIndex.InstructionFnOffset] as Function;
       const args = buffer[i + HostInstructionsQueueIndex.ParamsOffset] as any[];
-      fn(...args);
+      fn.apply(this, args);
     }
     buffer.length = HostInstructionsQueueIndex.ValuesStartPosition;
   }
