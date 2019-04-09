@@ -122,7 +122,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * ### Example
  *
  * ```
- * @Injectable(SomeModule, {deps: []})
+ * @Injectable({providedIn: SomeModule, deps: []})
  * class MyService {}
  * ```
  *

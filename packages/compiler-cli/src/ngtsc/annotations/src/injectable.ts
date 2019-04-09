@@ -77,10 +77,10 @@ export class InjectableDecoratorHandler implements
 }
 
 /**
- * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the input
+ * Read metadata from the `@Injectable` decorator and produce the `R3InjectableMetadata`, the input
  * metadata needed to run `compileIvyInjectable`.
  *
- * A `null` return value indicates this is @Injectable has invalid data.
+ * A `null` return value indicates this @Injectable has invalid data.
  */
 function extractInjectableMetadata(
     clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
@@ -113,8 +113,7 @@ function extractInjectableMetadata(
           ctorDeps = possibleCtorDeps.deps;
         } else {
           // This use of @Injectable is technically invalid. Generate a factory function which
-          // throws
-          // an error.
+          // throws an error.
           // TODO(alxhub): log warnings for the bad use of @Injectable.
           ctorDeps = 'invalid';
         }
@@ -156,17 +155,6 @@ function extractInjectableMetadata(
       providedIn = new WrappedNodeExpr(meta.get('providedIn') !);
     }
 
-    let userDeps: R3DependencyMetadata[]|undefined = undefined;
-    if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
-      const depsExpr = meta.get('deps') !;
-      if (!ts.isArrayLiteralExpression(depsExpr)) {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_NOT_LITERAL, depsExpr,
-            `In Ivy, deps metadata must be an inline array.`);
-      }
-      userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
-    }
-
     if (meta.has('useValue')) {
       return {
         name,
@@ -192,7 +180,8 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps,
+        useClass: new WrappedNodeExpr(meta.get('useClass') !),
+        userDeps: reflectDeps(meta, reflector),
       };
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
@@ -202,11 +191,17 @@ function extractInjectableMetadata(
         type,
         typeArgumentCount,
         providedIn,
-        useFactory: factory, ctorDeps, userDeps,
+        useFactory: factory, ctorDeps,
+        userDeps: reflectDeps(meta, reflector),
       };
     } else {
-      if (strictCtorDeps) {
-        // Since use* was not provided, validate the deps according to strictCtorDeps.
+      const userDeps = reflectDeps(meta, reflector);
+      if (userDeps !== undefined) {
+        // If `deps` was explicitly specified, consider those as constructor dependencies.
+        ctorDeps = userDeps;
+      } else if (strictCtorDeps) {
+        // Since neither `use*` nor `deps` was provided, validate the deps according to
+        // strictCtorDeps.
         validateConstructorDependencies(clazz, rawCtorDeps);
       }
       return {name, type, typeArgumentCount, providedIn, ctorDeps};
@@ -217,7 +212,19 @@ function extractInjectableMetadata(
   }
 }
 
+function reflectDeps(
+    meta: Map<string, ts.Expression>, reflector: ReflectionHost): R3DependencyMetadata[]|undefined {
+  if (!meta.has('deps')) {
+    return undefined;
+  }
 
+  const depsExpr = meta.get('deps') !;
+  if (!ts.isArrayLiteralExpression(depsExpr)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.VALUE_NOT_LITERAL, depsExpr, `In Ivy, deps metadata must be an inline array.`);
+  }
+  return depsExpr.elements.map(dep => getDep(dep, reflector));
+}
 
 function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {

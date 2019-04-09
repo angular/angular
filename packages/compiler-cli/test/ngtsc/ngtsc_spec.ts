@@ -164,6 +164,30 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectableDef: i0.\u0275\u0275InjectableDef<Service>;');
   });
 
+  it('should compile Injectables with invalid constructor with explicit deps without errors',
+     () => {
+       env.tsconfig();
+       env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+        
+        export const TOKEN = 'TOKEN';
+
+        @Injectable({ providedIn: 'root', deps: [TOKEN] })
+        export class Service {
+          constructor(private notInjectable: string) {}
+        }
+    `);
+
+       env.driveMain();
+
+       const jsContents = env.getContents('test.js');
+       expect(jsContents)
+           .toContain('Service.ngInjectableDef = i0.defineInjectable({ token: Service,');
+       expect(jsContents)
+           .toContain(
+               'function Service_Factory(t) { return new (t || Service)(i0.inject(TOKEN)); }');
+     });
+
   it('should compile @Injectable with an @Optional dependency', () => {
     env.tsconfig();
     env.write('test.ts', `
@@ -1126,7 +1150,7 @@ describe('ngtsc behavioral tests', () => {
            env.write('test.ts', `
             import {Injectable} from '@angular/core';
 
-            @Injectable()
+            @Injectable({providedIn: 'root'})
             export class Test {
               constructor(private notInjectable: string) {}
             }
