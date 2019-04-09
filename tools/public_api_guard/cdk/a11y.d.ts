@@ -87,6 +87,8 @@ export declare type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program' | n
 
 export declare class FocusTrap {
     enabled: boolean;
+    protected endAnchorListener: () => boolean;
+    protected startAnchorListener: () => boolean;
     constructor(_element: HTMLElement, _checker: InteractivityChecker, _ngZone: NgZone, _document: Document, deferAnchors?: boolean);
     attachAnchors(): boolean;
     destroy(): void;

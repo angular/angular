@@ -37,8 +37,8 @@ export class FocusTrap {
   private _hasAttached = false;
 
   // Event listeners for the anchors. Need to be regular functions so that we can unbind them later.
-  private _startAnchorListener = () => this.focusLastTabbableElement();
-  private _endAnchorListener = () => this.focusFirstTabbableElement();
+  protected startAnchorListener = () => this.focusLastTabbableElement();
+  protected endAnchorListener = () => this.focusFirstTabbableElement();
 
   /** Whether the focus trap is active. */
   get enabled(): boolean { return this._enabled; }
@@ -70,7 +70,7 @@ export class FocusTrap {
     const endAnchor = this._endAnchor;
 
     if (startAnchor) {
-      startAnchor.removeEventListener('focus', this._startAnchorListener);
+      startAnchor.removeEventListener('focus', this.startAnchorListener);
 
       if (startAnchor.parentNode) {
         startAnchor.parentNode.removeChild(startAnchor);
@@ -78,7 +78,7 @@ export class FocusTrap {
     }
 
     if (endAnchor) {
-      endAnchor.removeEventListener('focus', this._endAnchorListener);
+      endAnchor.removeEventListener('focus', this.endAnchorListener);
 
       if (endAnchor.parentNode) {
         endAnchor.parentNode.removeChild(endAnchor);
@@ -103,12 +103,12 @@ export class FocusTrap {
     this._ngZone.runOutsideAngular(() => {
       if (!this._startAnchor) {
         this._startAnchor = this._createAnchor();
-        this._startAnchor!.addEventListener('focus', this._startAnchorListener);
+        this._startAnchor!.addEventListener('focus', this.startAnchorListener);
       }
 
       if (!this._endAnchor) {
         this._endAnchor = this._createAnchor();
-        this._endAnchor!.addEventListener('focus', this._endAnchorListener);
+        this._endAnchor!.addEventListener('focus', this.endAnchorListener);
       }
     });
 
