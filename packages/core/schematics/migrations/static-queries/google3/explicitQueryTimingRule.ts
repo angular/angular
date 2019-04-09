@@ -60,7 +60,7 @@ export class Rule extends Rules.TypedRule {
           `marked as "{static: ${(timing === QueryTiming.STATIC).toString()}}".`;
 
       failures.push(new RuleFailure(
-          sourceFile, queryExpr.getStart(), queryExpr.getWidth(), failureMessage, this.ruleName,
+          sourceFile, queryExpr.getStart(), queryExpr.getEnd(), failureMessage, this.ruleName,
           fix));
     });
 
