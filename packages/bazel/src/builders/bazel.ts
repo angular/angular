@@ -8,10 +8,9 @@
 
 /// <reference types='node'/>
 
-import {Path, dirname, getSystemPath, join, normalize} from '@angular-devkit/core';
-import {Host} from '@angular-devkit/core/src/virtual-fs/host';
-import {spawn} from 'child_process';
-import * as path from 'path';
+import {fork} from 'child_process';
+import {copyFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'fs';
+import {dirname, join, normalize} from 'path';
 
 export type Executable = 'bazel' | 'ibazel';
 export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
@@ -20,12 +19,14 @@ export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
  * Spawn the Bazel process. Trap SINGINT to make sure Bazel process is killed.
  */
 export function runBazel(
-    projectDir: Path, binary: string, command: Command, workspaceTarget: string, flags: string[]) {
+    projectDir: string, binary: string, command: Command, workspaceTarget: string,
+    flags: string[]) {
+  projectDir = normalize(projectDir);
+  binary = normalize(binary);
   return new Promise((resolve, reject) => {
-    const buildProcess = spawn(process.argv[0], [binary, command, workspaceTarget, ...flags], {
-      cwd: getSystemPath(projectDir),
+    const buildProcess = fork(binary, [command, workspaceTarget, ...flags], {
+      cwd: projectDir,
       stdio: 'inherit',
-      shell: false,
     });
 
     process.on('SIGINT', (signal) => {
@@ -48,14 +49,14 @@ export function runBazel(
 /**
  * Resolves the path to `@bazel/bazel` or `@bazel/ibazel`.
  */
-export function checkInstallation(name: Executable, projectDir: Path): string {
+export function checkInstallation(name: Executable, projectDir: string): string {
+  projectDir = normalize(projectDir);
   const packageName = `@bazel/${name}/package.json`;
   try {
     const bazelPath = require.resolve(packageName, {
-      paths: [getSystemPath(projectDir)],
+      paths: [projectDir],
     });
-
-    return path.dirname(bazelPath);
+    return dirname(bazelPath);
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw new Error(
@@ -70,14 +71,14 @@ export function checkInstallation(name: Executable, projectDir: Path): string {
 /**
  * Returns the absolute path to the template directory in `@angular/bazel`.
  */
-export async function getTemplateDir(host: Host, root: Path): Promise<Path> {
+export function getTemplateDir(root: string): string {
+  root = normalize(root);
   const packageJson = require.resolve('@angular/bazel/package.json', {
-    paths: [getSystemPath(root)],
+    paths: [root],
   });
-
-  const packageDir = dirname(normalize(packageJson));
+  const packageDir = dirname(packageJson);
   const templateDir = join(packageDir, 'src', 'builders', 'files');
-  if (!await host.isDirectory(templateDir).toPromise()) {
+  if (!statSync(templateDir).isDirectory()) {
     throw new Error('Could not find Bazel template directory in "@angular/bazel".');
   }
   return templateDir;
@@ -87,30 +88,22 @@ export async function getTemplateDir(host: Host, root: Path): Promise<Path> {
  * Recursively list the specified 'dir' using depth-first approach. Paths
  * returned are relative to 'dir'.
  */
-function listR(host: Host, dir: Path): Promise<Path[]> {
-  async function list(dir: Path, root: Path, results: Path[]) {
-    const paths = await host.list(dir).toPromise();
+function listR(dir: string): string[] {
+  function list(dir: string, root: string, results: string[]) {
+    const paths = readdirSync(dir);
     for (const path of paths) {
       const absPath = join(dir, path);
       const relPath = join(root, path);
-      if (await host.isFile(absPath).toPromise()) {
+      if (statSync(absPath).isFile()) {
         results.push(relPath);
       } else {
-        await list(absPath, relPath, results);
+        list(absPath, relPath, results);
       }
     }
     return results;
   }
 
-  return list(dir, '' as Path, []);
-}
-
-/**
- * Copy the file from 'source' to 'dest'.
- */
-async function copyFile(host: Host, source: Path, dest: Path) {
-  const buffer = await host.read(source).toPromise();
-  await host.write(dest, buffer).toPromise();
+  return list(dir, '', []);
 }
 
 /**
@@ -119,35 +112,36 @@ async function copyFile(host: Host, source: Path, dest: Path) {
  * copied, so that they can be deleted later.
  * Existing files in `root` will not be replaced.
  */
-export async function copyBazelFiles(host: Host, root: Path, templateDir: Path) {
-  const bazelFiles: Path[] = [];
-  const templates = await listR(host, templateDir);
+export function copyBazelFiles(root: string, templateDir: string) {
+  root = normalize(root);
+  templateDir = normalize(templateDir);
+  const bazelFiles: string[] = [];
+  const templates = listR(templateDir);
 
-  await Promise.all(templates.map(async(template) => {
+  for (const template of templates) {
     const name = template.replace('__dot__', '.').replace('.template', '');
     const source = join(templateDir, template);
     const dest = join(root, name);
     try {
-      const exists = await host.exists(dest).toPromise();
-      if (!exists) {
-        await copyFile(host, source, dest);
+      if (!existsSync(dest)) {
+        copyFileSync(source, dest);
         bazelFiles.push(dest);
       }
     } catch {
     }
-  }));
+  }
 
   return bazelFiles;
 }
 
 /**
- * Delete the specified 'files' and return a promise that always resolves.
+ * Delete the specified 'files'. This function never throws.
  */
-export function deleteBazelFiles(host: Host, files: Path[]) {
-  return Promise.all(files.map(async(file) => {
+export function deleteBazelFiles(files: string[]) {
+  for (const file of files) {
     try {
-      await host.delete(file).toPromise();
+      unlinkSync(file);
     } catch {
     }
-  }));
+  }
 }
