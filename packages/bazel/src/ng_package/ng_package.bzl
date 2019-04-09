@@ -17,14 +17,14 @@ load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", "coll
 load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo")
 load("@build_bazel_rules_nodejs//internal/common:sources_aspect.bzl", "sources_aspect")
 load(
-    "@build_bazel_rules_nodejs//:internal/rollup/rollup_bundle.bzl",
+    "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
     "run_terser",
     "write_rollup_config",
 )
 load(
-    "@build_bazel_rules_nodejs//:internal/npm_package/npm_package.bzl",
+    "@build_bazel_rules_nodejs//internal/npm_package:npm_package.bzl",
     "NPM_PACKAGE_ATTRS",
     "NPM_PACKAGE_OUTPUTS",
     "create_package",
