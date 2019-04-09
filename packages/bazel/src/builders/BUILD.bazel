@@ -28,24 +28,3 @@ ts_library(
         "@npm//rxjs",
     ],
 )
-
-ts_library(
-    name = "test_lib",
-    testonly = True,
-    srcs = [
-        "bazel_spec.ts",
-    ],
-    deps = [
-        "builders",
-        "@npm//@angular-devkit/core",
-    ],
-)
-
-jasmine_node_test(
-    name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    deps = [
-        ":test_lib",
-        "//tools/testing:node",
-    ],
-)
