@@ -26,6 +26,11 @@ const IGNORED_EXAMPLES = [
 const fixmeIvyExamples = [
   // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
   'i18n',
+  // Needs a Angular CLI synced with the Ivy loadChildren: string support after
+  // https://github.com/angular/angular/pull/28685
+  'lazy-loading-ngmodules',
+  'router',
+  'ngmodules',
 ];
 
 if (argv.ivy) {
