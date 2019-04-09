@@ -10,7 +10,6 @@ import {APP_BASE_HREF, CommonModule, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
-import {$CONTROLLER} from '@angular/upgrade/static/src/common/constants';
 
 import {LocationUpgradeModule, LocationUpgradeService} from '../src';
 import {LocationProvider, LocationUpgradeProvider} from '../src/$location';
@@ -55,14 +54,14 @@ export class LocationUpgradeTestModule {
               appBaseHref = '';
             }
             return new MockPlatformLocation(
-                {startUrl: config && config.startUrl, appBaseHref: appBaseHref})
+                {startUrl: config && config.startUrl, appBaseHref: appBaseHref});
           },
           deps: [[new Inject(APP_BASE_HREF), new Optional()]]
         },
-        {provide: MockUpgradeModule, useClass: MockUpgradeModule}, {
+        {
           provide: LocationProvider,
           useFactory: provide$location,
-          deps: [MockUpgradeModule, LocationUpgradeService, LOC_UPGRADE_TEST_CONFIG]
+          deps: [UpgradeModule, LocationUpgradeService, LOC_UPGRADE_TEST_CONFIG]
         },
         LocationUpgradeModule
             .config({
@@ -72,22 +71,6 @@ export class LocationUpgradeTestModule {
             .providers !
       ],
     };
-  }
-}
-
-export class MockUpgradeModule {
-  $injector = {
-    get(key: string) {
-      if (key === '$rootScope') {
-        return {
-          $watch(fn: any) { return; },
-
-          $broadcast(evt: string, ...args: any[]) { return; }
-        };
-      } else {
-        throw new Error(`Unsupported mock service requested: ${key}`);
-      }
-    }
   }
 }
 
