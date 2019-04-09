@@ -40,9 +40,6 @@ export class LocationUpgradeService {
       private locationStrategy: LocationStrategy, private urlCodec: UrlCodec) {
     // Get current location changes & set lastLocationChanges defaults
     this.lastLocationChanges = {...this.getLocationChanges(), absUrl: this.absUrl()};
-    // TODO(jasonaden): smelly... needing to reset `locationChanges` to `null` after this read.
-    // Needs adjustment.
-    this.locationChanges = null;
   }
 
   /**
@@ -55,10 +52,19 @@ export class LocationUpgradeService {
       const hash = this.hash();
       const state = this.state();
 
-      this.locationChanges = {path, search, hash, state};
+      return {path, search, hash, state};
     }
     return this.locationChanges;
   }
+
+  private setLocationChanges(
+      changes: {path?: string, search?: {[k: string]: unknown}, hash?: string, state?: unknown}) {
+    const locationChanges =
+        {path: this.path(), search: this.search(), hash: this.hash(), state: this.state()};
+    this.locationChanges = {...locationChanges, ...changes};
+  }
+
+  private cleanPendingChanges() { this.locationChanges = null; }
 
   /**
    * Used to determine if there are outstanding changes to be saved.
@@ -73,9 +79,8 @@ export class LocationUpgradeService {
   /**
    * Allows subscribing to the `popstate` and `hashchange` events through `Location` service.
    */
-  onUrlChange(fn: (oldUrl: string, oldState: unknown, newUrl: string, newState: unknown) => void):
-      void {
-    this.location.subscribe(evt => {
+  onUrlChange(fn: (newUrl: string, newState: unknown) => void): void {
+    this.location.onUrlChange((newUrl: string, newState: unknown) => {
       // Grab the current URL. This is either the current, pending URL if one exists (this should be
       // rare as it means a URL change was started but left incomplete).
       // TODO(jasonaden): There is a problem with this code because it looks like it will grab from
@@ -86,14 +91,9 @@ export class LocationUpgradeService {
 
       // If there are pending changes, they should be blown away because by the time this event
       // fires, the URL has been updated
-      this.locationChanges = null;
+      this.cleanPendingChanges();
 
-      fn(oldUrl, oldState, this.absUrl(), this.state());
-
-      // Reset locationChanges
-      // TODO(jasonaden): I don't like mutating this property, and setting to `null` twice here
-      // seems odd. Need a better way to manage current URL and clean it up when needed.
-      this.locationChanges = null;
+      fn(newUrl, newState);
     });
   }
 
@@ -109,13 +109,13 @@ export class LocationUpgradeService {
         this.locationStrategy.getBaseHref());
     // Set the URL
     if (this.replaceHistory) {
-      this.locationStrategy.replaceState(null, '', url, '');
+      this.locationStrategy.replaceState(this.locationChanges.state, '', url, '');
     } else {
-      this.locationStrategy.pushState(null, '', url, '');
+      this.locationStrategy.pushState(this.locationChanges.state, '', url, '');
     }
     this.replaceHistory = false;
     this.lastLocationChanges = {...this.locationChanges, absUrl: this.absUrl()};
-    this.locationChanges = null;
+    this.cleanPendingChanges();
   }
 
   getServerBase() {
@@ -123,7 +123,7 @@ export class LocationUpgradeService {
     return `${this.platformLocation.protocol}//${this.platformLocation.hostname}${port ? ':' + port : ''}`;
   }
 
-  stripServerPrefix(url: string) { return stripPrefix(url, this.getServerBase()) }
+  stripServerPrefix(url: string) { return stripPrefix(url, this.getServerBase()); }
 
   stripBaseHref(url: string) { return stripPrefix(url, this.locationStrategy.getBaseHref()); }
 
@@ -196,8 +196,8 @@ export class LocationUpgradeService {
       if (!match) return this;
       // If the first character is '?', only set the query params & hash
       if (url[0] !== '?') {
-        const locationChanges = this.getLocationChanges();
-        locationChanges.path = stripPrefix(match[1] || '', this.locationStrategy.getBaseHref());
+        this.setLocationChanges(
+            {path: stripPrefix(match[1] || '', this.locationStrategy.getBaseHref())});
       }
       this.search(match[3] || '');
       this.hash(match[5] || '');
@@ -307,7 +307,7 @@ export class LocationUpgradeService {
     path = path !== null ? path.toString() : '';
     path = path.charAt(0) === '/' ? path : '/' + path;
 
-    locationChanges.path = stripPrefix(path, this.locationStrategy.getBaseHref());
+    this.setLocationChanges({path: stripPrefix(path, this.locationStrategy.getBaseHref())});
 
     return this;
   }
@@ -370,10 +370,8 @@ export class LocationUpgradeService {
 
         return this.urlCodec.decodeSearch(params[0] === '?' ? params.substring(1) : params);
       case 1:
-        const locationChanges = this.getLocationChanges();
-
         if (typeof search === 'string' || typeof search === 'number') {
-          locationChanges.search = this.urlCodec.decodeSearch(search.toString());
+          this.setLocationChanges({search: this.urlCodec.decodeSearch(search.toString())});
         } else if (typeof search === 'object') {
           // Copy the object so it's never mutated
           search = {...search};
@@ -383,7 +381,7 @@ export class LocationUpgradeService {
           }
 
           // Convert to string
-          locationChanges.search = search;
+          this.setLocationChanges({search});
         } else {
           throw new Error(
               'LocationUpgradeService.search(): First argument must be a string or an object.');
@@ -433,8 +431,7 @@ export class LocationUpgradeService {
       return this.urlCodec.decodeHash(hash);
     }
 
-    const locationChanges = this.getLocationChanges();
-    locationChanges.hash = hash != null ? hash.toString() : '';
+    this.setLocationChanges({hash: hash != null ? hash.toString() : ''});
 
     return this;
   }
@@ -472,8 +469,7 @@ export class LocationUpgradeService {
       return this.platformLocation.getState();
     }
 
-    const locationChanges = this.getLocationChanges();
-    locationChanges.state = state;
+    this.setLocationChanges({state});
     return this;
   }
 }
