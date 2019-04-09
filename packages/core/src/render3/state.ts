@@ -12,6 +12,7 @@ import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
+import {HostInstructionsQueue, HostInstructionsQueueIndex} from './interfaces/styling';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 import {setCachedStylingContext} from './styling/state';
 import {resetPreOrderHookFlags} from './util/view_utils';
@@ -243,6 +244,8 @@ export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
   // account how many sub-class directives were a part of the previous directive.
   activeDirectiveSuperClassHeight =
       Math.max(activeDirectiveSuperClassHeight, activeDirectiveSuperClassDepthPosition);
+
+  return activeDirectiveSuperClassDepthPosition;
 }
 
 /**
@@ -523,4 +526,47 @@ export function ɵɵnamespaceHTML() {
 
 export function getNamespace(): string|null {
   return _currentNamespace;
+}
+
+let hostInstructionsQueue: HostInstructionsQueue = [HostInstructionsQueueIndex.ValuesStartPosition];
+const _defaultHostInstructionsQueue = hostInstructionsQueue;
+
+/**
+ * Returns the active host instructions queue (which is used for style/class host bindings).
+ *
+ * The host instructions queue is used to queue-up all styling-related host bindings to be
+ * queued up and evaluated just before `hostStylingApply` or `elementStylingApply` is called
+ * for the host element. Host binding instructions are queued up because the ordering of
+ * styling-related instructions combined together with multiple directives all writing to
+ * the same element are complex and difficult to handle directly. By placing everything into
+ * a queue, stlying instructions can be processed as a batch and special-cased styling
+ * behaviors (such as sub-classed directives with style/class bindings) can be applied at
+ * the right moment.
+ */
+export function getHostInstructionsQueue() {
+  return hostInstructionsQueue;
+}
+
+/**
+ * Sets the active host instructions queue.
+ *
+ * By default there exists as a host instructions queue that is populated each time
+ * a host-level style or class binding is evaluated. However when sub-classed directives
+ * (which contain host-level style or class bindings) is processed, a different queue
+ * is used. This function allows that queue to be swapped out with another.
+ *
+ * If `null` is provided then the default queue will be restored.
+ */
+export function setHostInstructionsQueue(queue?: HostInstructionsQueue | null) {
+  hostInstructionsQueue = queue || _defaultHostInstructionsQueue;
+}
+
+let directiveInheritanceInstructionsQueue: HostInstructionsQueue =
+    [HostInstructionsQueueIndex.ValuesStartPosition];
+
+/**
+ * A special host instructions queue dedicated to sub-classed directives.
+ */
+export function getDirectiveInheritanceInstructionsQueue() {
+  return directiveInheritanceInstructionsQueue;
 }

@@ -28,16 +28,16 @@ export function createEmptyStylingContext(
     initialStyles?: InitialStylingValues | null,
     initialClasses?: InitialStylingValues | null): StylingContext {
   const context: StylingContext = [
-    wrappedElement || null,          // Element
-    0,                               // MasterFlags
-    [] as any,                       // DirectiveRefs (this gets filled below)
-    initialStyles || [null, null],   // InitialStyles
-    initialClasses || [null, null],  // InitialClasses
-    [0, 0],                          // SinglePropOffsets
-    [0],                             // CachedMultiClassValue
-    [0],                             // CachedMultiStyleValue
-    null,                            // HostBuffer
-    null,                            // PlayerContext
+    wrappedElement || null,            // Element
+    0,                                 // MasterFlags
+    [] as any,                         // DirectiveRefs (this gets filled below)
+    initialStyles || [null, null],     // InitialStyles
+    initialClasses || [null, null],    // InitialClasses
+    [0, 0],                            // SinglePropOffsets
+    [0],                               // CachedMultiClassValue
+    [0],                               // CachedMultiStyleValue
+    DEFAULT_TEMPLATE_DIRECTIVE_INDEX,  // HostBuffer
+    null,                              // PlayerContext
   ];
 
   // whenever a context is created there is always a `null` directive

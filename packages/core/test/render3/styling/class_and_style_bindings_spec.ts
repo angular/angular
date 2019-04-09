@@ -101,12 +101,12 @@ describe('style and class based bindings', () => {
     store = store || new MockStylingStore(element as HTMLElement, BindingType.Style);
     const handler = new CorePlayerHandler();
     return function(
-        context: StylingContext, targetDirective?: any, firstRender?: boolean,
+        context: StylingContext, targetDirectiveIndex: number = 0, firstRender?: boolean,
         renderer?: Renderer3): {[key: string]: any} {
       const lView = createMockViewData(handler, context);
       _renderStyling(
           context, (renderer || {}) as Renderer3, getRootContextInternal(lView), !!firstRender,
-          null, store, targetDirective);
+          null, store, targetDirectiveIndex);
       return store !.getValues();
     };
   }
@@ -219,7 +219,7 @@ describe('style and class based bindings', () => {
           [0, 0, 0, 0],
           [0, 0, 10, null, 0],
           [0, 0, 10, null, 0],
-          null,
+          0,
           null,
         ]);
       });
@@ -236,7 +236,7 @@ describe('style and class based bindings', () => {
           [0, 0, 0, 0],
           [0, 0, 10, null, 0],
           [0, 0, 10, null, 0],
-          null,
+          0,
           null,
         ]);
       });
@@ -502,7 +502,7 @@ describe('style and class based bindings', () => {
              [1, 1, 1, 1, 10, 14],
              [1, 0, 22, null, 1],
              [1, 0, 18, null, 1],
-             null,
+             0,
              null,
 
              // #10
@@ -541,7 +541,7 @@ describe('style and class based bindings', () => {
              [2, 2, 1, 1, 10, 18, 2, 1, 10, 14, 22],
              [2, 0, 34, null, 1, 0, 38, null, 1],
              [2, 0, 26, null, 1, 0, 30, null, 1],
-             null,
+             0,
              null,
 
              // #10
@@ -604,7 +604,7 @@ describe('style and class based bindings', () => {
              [3, 3, 1, 1, 10, 22, 2, 1, 10, 14, 26, 3, 3, 18, 10, 14, 30, 26, 22],
              [3, 0, 46, null, 1, 0, 50, null, 1, 0, 54, null, 1],
              [3, 0, 34, null, 1, 0, 38, null, 1, 0, 42, null, 1],
-             null,
+             0,
              null,
 
              // #10
@@ -704,7 +704,7 @@ describe('style and class based bindings', () => {
           height: '100px',
         });
         updateStyles(stylingContext, {height: '200px'});
-        expect(getStyles(stylingContext, null, true)).toEqual({height: '200px'});
+        expect(getStyles(stylingContext, undefined, true)).toEqual({height: '200px'});
       });
 
       it('should evaluate the delta between style changes when rendering occurs', () => {
@@ -1209,7 +1209,7 @@ describe('style and class based bindings', () => {
           [1, 0, 1, 0, 10],
           [0, 0, 22, null, 0],
           [1, 0, 14, cachedStyleValue, 1],
-          null,
+          0,
           null,
 
           // #10
@@ -1242,7 +1242,7 @@ describe('style and class based bindings', () => {
           [1, 0, 1, 0, 10],
           [0, 0, 22, null, 0],
           [1, 0, 14, cachedStyleValue, 1],
-          null,
+          0,
           null,
 
           // #10
@@ -1899,7 +1899,7 @@ describe('style and class based bindings', () => {
         [0, 2, 0, 2, 10, 14],
         [2, 0, 18, null, 2],
         [0, 0, 18, null, 0],
-        null,
+        0,
         null,
 
         // #10
@@ -1981,7 +1981,7 @@ describe('style and class based bindings', () => {
            [2, 2, 2, 2, 10, 14, 18, 22],
            [2, 0, 34, null, 2],
            [2, 0, 26, null, 2],
-           null,
+           0,
            null,
 
            // #10
@@ -2046,7 +2046,7 @@ describe('style and class based bindings', () => {
            [2, 2, 2, 2, 10, 14, 18, 22],
            [2, 0, 38, 'tall round', 2],
            [2, 0, 26, cachedStyleMap, 2],
-           null,
+           0,
            null,
 
            // #10
@@ -2129,7 +2129,7 @@ describe('style and class based bindings', () => {
            [2, 2, 2, 2, 10, 14, 18, 22],
            [2, 0, 38, cachedClassMap, 2],
            [1, 0, 26, cachedStyleMap, 1],
-           null,
+           0,
            null,
 
            // #10
@@ -2226,7 +2226,7 @@ describe('style and class based bindings', () => {
            [0, 0, 0, 0],               //
            [1, 0, 14, classesMap, 1],  //
            [1, 0, 10, stylesMap, 1],   //
-           null,                       //
+           0,                          //
            null,                       //
 
            // #10
@@ -2253,7 +2253,7 @@ describe('style and class based bindings', () => {
            [0, 0, 0, 0],               //
            [1, 0, 14, classesMap, 1],  //
            [1, 0, 10, stylesMap, 1],   //
-           null,                       //
+           0,                          //
            null,                       //
 
            // #10
@@ -2283,7 +2283,7 @@ describe('style and class based bindings', () => {
         [0, 0, 0, 0],
         [3, 0, 10, 'apple orange banana', 3],
         [0, 0, 10, null, 0],
-        null,
+        0,
         null,
 
         // #10
@@ -2650,7 +2650,7 @@ describe('style and class based bindings', () => {
            [1, 1, 1, 1, 10, 14],            //
            [1, 0, 22, null, 1],             //
            [1, 0, 18, null, 1],             //
-           null,                            //
+           0,                               //
            null,                            //
 
            // #10
@@ -2714,7 +2714,7 @@ describe('style and class based bindings', () => {
            [1, 1, 1, 1, 10, 14],                      //
            [1, 0, 26, classMapWithPlayerFactory, 1],  //
            [1, 0, 18, styleMapWithPlayerFactory, 1],  //
-           null,                                      //
+           0,                                         //
            playerContext,
 
            // #10
@@ -2776,7 +2776,7 @@ describe('style and class based bindings', () => {
            [1, 1, 1, 1, 10, 14],            //
            [1, 0, 26, cachedClassMap, 1],   //
            [1, 0, 18, cachedStyleMap, 1],   //
-           null,                            //
+           0,                               //
            playerContext,
 
            // #10

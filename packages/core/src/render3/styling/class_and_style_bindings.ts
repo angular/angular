@@ -901,17 +901,14 @@ function updateSingleStylingValue(
     input: string | boolean | null | BoundPlayerFactory<string|boolean|null>, isClassBased: boolean,
     directiveIndex: number, forceOverride?: boolean): void {
   ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
-  const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, isClassBased);
-  const currValue = getValue(context, singleIndex);
-  const currFlag = getPointers(context, singleIndex);
-  const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
-  const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
-
   ngDevMode && ngDevMode.stylingProp++;
 
-  if (hasValueChanged(currFlag, currValue, value) &&
-      (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex))) {
-    const isClassBased = (currFlag & StylingFlags.Class) === StylingFlags.Class;
+  const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, isClassBased);
+  if (!isSingleValueCacheHit(
+          context, offset, isClassBased, directiveIndex, input, forceOverride, singleIndex)) {
+    const currFlag = getPointers(context, singleIndex);
+    const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
+
     const element = context[StylingIndex.ElementPosition] !as HTMLElement;
     const playerBuilder = input instanceof BoundPlayerFactory ?
         new ClassAndStylePlayerBuilder(
@@ -964,6 +961,7 @@ function updateSingleStylingValue(
       setContextPlayersDirty(context, true);
     }
 
+    markAsDeferred(context, singleIndex, false);
     ngDevMode && ngDevMode.stylingPropCacheMiss++;
   }
 }
@@ -1005,8 +1003,7 @@ export function renderStyling(
     // sub-class code at different points and it's important that the
     // styling values are applied to the context in the right order
     // (see `interfaces/styling.ts` for more information).
-    flushHostInstructionsQueue(context);
-
+    flushHostInstructionsQueue();
     if (isContextDirty(context)) {
       ngDevMode && ngDevMode.stylingApplyCacheMiss++;
 
@@ -1765,7 +1762,7 @@ function readCachedMapValue(
  * - If there is no existing value cached (first write)
  * - If a previous directive flagged the existing cached value as dirty
  */
-function isMultiValueCacheHit(
+export function isMultiValueCacheHit(
     context: StylingContext, entryIsClassBased: boolean, directiveIndex: number,
     newValue: any): boolean {
   const indexOfCachedValues =
@@ -1776,6 +1773,78 @@ function isMultiValueCacheHit(
   if (cachedValues[index + MapBasedOffsetValuesIndex.DirtyFlagOffset]) return false;
   return newValue === NO_CHANGE ||
       readCachedMapValue(context, entryIsClassBased, directiveIndex) === newValue;
+}
+
+/**
+ * Determines whether the provided single styling value should be updated or not.
+ *
+ * Just like how `[style]` and `[class]` rely on an identity change to occur before
+ * applying new values, both `[style.prop]` and `[class.name]` bindings also work in
+ * the same way.
+ */
+export function isSingleValueCacheHit(
+    context: StylingContext, offset: number, entryIsClassBased: boolean, directiveIndex: number,
+    input: any, forceOverride?: boolean, singleIndex?: number): boolean {
+  if (singleIndex == null) {
+    singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, entryIsClassBased);
+  }
+
+  const currValue = getValue(context, singleIndex);
+  const currFlag = getPointers(context, singleIndex);
+  const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
+  const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
+
+  const somethingChanged = hasValueChanged(currFlag, currValue, value) &&
+      (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex));
+  return !somethingChanged;
+}
+
+export function isUpdateDeferred(context: StylingContext, index: number) {
+  return (context[index + StylingIndex.FlagsOffset] as number) & StylingFlags.Deferred;
+}
+
+export function markAsDeferred(context: StylingContext, index: number, yesOrNo: boolean) {
+  if (yesOrNo) {
+    (context[index + StylingIndex.FlagsOffset] as number) |= StylingFlags.Deferred;
+  } else {
+    (context[index + StylingIndex.FlagsOffset] as number) &= ~StylingFlags.Deferred;
+  }
+}
+
+export function markFollowUpMultiValuesAsDirty(
+    context: StylingContext, entryIsClassBased: boolean, directiveIndex: number,
+    dirtyFutureValues: boolean, nextStartPosition?: number) {
+  const values =
+      context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
+  const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
+      directiveIndex * MapBasedOffsetValuesIndex.Size;
+
+  values[index + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 1;
+
+  // in the event that this is true we assume that future values are dirty and therefore
+  // will be checked again in the next CD cycle
+  if (dirtyFutureValues) {
+    for (let i = index + MapBasedOffsetValuesIndex.Size; i < values.length;
+         i += MapBasedOffsetValuesIndex.Size) {
+      if (nextStartPosition != null) {
+        values[i + MapBasedOffsetValuesIndex.PositionStartOffset] = nextStartPosition;
+      }
+      values[i + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 1;
+    }
+  }
+}
+
+export function markSingleStylingValueAsDeferred(
+    context: StylingContext, offset: number, entryIsClassBased: boolean, directiveIndex: number,
+    yesOrNo: boolean) {
+  const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, entryIsClassBased);
+  markAsDeferred(context, singleIndex, yesOrNo);
+}
+
+export function isSingleStylingValueDeferred(
+    context: StylingContext, offset: number, entryIsClassBased: boolean, directiveIndex: number) {
+  const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, entryIsClassBased);
+  return isUpdateDeferred(context, singleIndex);
 }
 
 /**
@@ -1803,22 +1872,15 @@ function isMultiValueCacheHit(
 function updateCachedMapValue(
     context: StylingContext, directiveIndex: number, entryIsClassBased: boolean, cacheValue: any,
     startPosition: number, endPosition: number, totalValues: number, dirtyFutureValues: boolean) {
+  const nextStartPosition = startPosition + totalValues * MapBasedOffsetValuesIndex.Size;
+  markFollowUpMultiValuesAsDirty(
+      context, entryIsClassBased, directiveIndex, dirtyFutureValues, nextStartPosition);
+
   const values =
       context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
 
   const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
       directiveIndex * MapBasedOffsetValuesIndex.Size;
-
-  // in the event that this is true we assume that future values are dirty and therefore
-  // will be checked again in the next CD cycle
-  if (dirtyFutureValues) {
-    const nextStartPosition = startPosition + totalValues * MapBasedOffsetValuesIndex.Size;
-    for (let i = index + MapBasedOffsetValuesIndex.Size; i < values.length;
-         i += MapBasedOffsetValuesIndex.Size) {
-      values[i + MapBasedOffsetValuesIndex.PositionStartOffset] = nextStartPosition;
-      values[i + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 1;
-    }
-  }
 
   values[index + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 0;
   values[index + MapBasedOffsetValuesIndex.PositionStartOffset] = startPosition;

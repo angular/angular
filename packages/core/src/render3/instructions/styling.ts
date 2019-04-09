@@ -9,10 +9,11 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {assertEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
+import {StylingContext} from '../interfaces/styling';
 import {FLAGS, HEADER_OFFSET, LView, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getLView, getPreviousOrParentTNode, getSelectedIndex} from '../state';
-import {getInitialClassNameValue, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
-import {ParamsOf, enqueueHostInstruction, registerHostDirective} from '../styling/host_instructions_queue';
+import {getInitialClassNameValue, isMultiValueCacheHit, isSingleStylingValueDeferred, isSingleValueCacheHit, markFollowUpMultiValuesAsDirty as uncacheFutureMultiValues, markSingleStylingValueAsDeferred, renderStyling, updateClassProp as updateElementClassProp, updateClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
+import {enqueueHostInstruction, registerHostDirective} from '../styling/host_instructions_queue';
 import {BoundPlayerFactory} from '../styling/player_factory';
 import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
 import {getCachedStylingContext, setCachedStylingContext} from '../styling/state';
@@ -207,12 +208,10 @@ export function ɵɵelementHostStyleProp(
     suffix?: string | null, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
-
   const stylingContext = getStylingContext(hostElementIndex, getLView());
-  const valueToAdd = resolveStylePropValue(value, suffix);
-  const args: ParamsOf<typeof updateElementStyleProp> =
-      [stylingContext, styleIndex, valueToAdd, directiveStylingIndex, forceOverride];
-  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateElementStyleProp, args);
+  const input = resolveStylePropValue(value, suffix);
+  queueSingleStylingInstruction(
+      stylingContext, false, input, styleIndex, directiveStylingIndex, forceOverride);
 }
 
 function resolveStylePropValue(
@@ -288,19 +287,35 @@ export function ɵɵelementHostClassProp(
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
   const stylingContext = getStylingContext(hostElementIndex, getLView());
-
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
-
-  const args: ParamsOf<typeof updateElementClassProp> =
-      [stylingContext, classIndex, input, directiveStylingIndex, forceOverride];
-  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateElementClassProp, args);
+  queueSingleStylingInstruction(
+      stylingContext, true, input, classIndex, directiveStylingIndex, forceOverride);
 }
 
 function booleanOrNull(value: any): boolean|null {
   if (typeof value === 'boolean') return value;
   return value ? true : null;
+}
+
+function queueSingleStylingInstruction(
+    stylingContext: StylingContext, isClassBased: boolean,
+    value: string | boolean | BoundPlayerFactory<any>| null, singleIndex: number,
+    directiveStylingIndex: number, forceOverride?: boolean) {
+  // there is no point in backing up the queue with noop statements if the
+  // value that is being applied has not changed at all compared to the former
+  if (isSingleStylingValueDeferred(
+          stylingContext, singleIndex, isClassBased, directiveStylingIndex) ||
+      !isSingleValueCacheHit(
+          stylingContext, singleIndex, isClassBased, directiveStylingIndex, value, forceOverride)) {
+    markSingleStylingValueAsDeferred(
+        stylingContext, singleIndex, isClassBased, directiveStylingIndex, true);
+    const fn = isClassBased ? updateClassProp : updateStyleProp;
+    enqueueHostInstruction(
+        directiveStylingIndex, fn, stylingContext, singleIndex, value, directiveStylingIndex,
+        forceOverride);
+  }
 }
 
 
@@ -383,9 +398,21 @@ export function ɵɵelementHostStylingMap(
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
   const stylingContext = getStylingContext(hostElementIndex, getLView());
-  const args: ParamsOf<typeof updateStylingMap> =
-      [stylingContext, classes, styles, directiveStylingIndex];
-  enqueueHostInstruction(stylingContext, directiveStylingIndex, updateStylingMap, args);
+
+  const haveClassedChanged =
+      !isMultiValueCacheHit(stylingContext, true, directiveStylingIndex, classes);
+  const haveStylesChanged =
+      !isMultiValueCacheHit(stylingContext, false, directiveStylingIndex, styles);
+
+  if (haveClassedChanged || haveStylesChanged) {
+    haveClassedChanged &&
+        uncacheFutureMultiValues(stylingContext, true, directiveStylingIndex, true);
+    haveStylesChanged &&
+        uncacheFutureMultiValues(stylingContext, false, directiveStylingIndex, true);
+    enqueueHostInstruction(
+        directiveStylingIndex, updateStylingMap, stylingContext, classes, styles,
+        directiveStylingIndex, null);
+  }
 }
 
 

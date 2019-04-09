@@ -322,7 +322,7 @@ export interface StylingContext extends
    * `hostStylingApply`), the queue is flushed and the values are rendered onto
    * the host element.
    */
-  [StylingIndex.HostInstructionsQueue]: HostInstructionsQueue|null;
+  [StylingIndex.FinalDirectiveIndexThatFlushes]: number;
 
   /**
    * Location of animation context (which contains the active players) for this element styling
@@ -377,18 +377,18 @@ export interface StylingContext extends
  * only allows for styling to be applied once that directive is encountered (which will happen
  * as the last update for that element).
  */
-export interface HostInstructionsQueue extends Array<number|Function|any[]> { [0]: number; }
+export interface HostInstructionsQueue extends Array<null|number|Function|any[]> { [0]: number; }
 
 /**
  * Used as a reference for any values contained within `HostInstructionsQueue`.
  */
 export const enum HostInstructionsQueueIndex {
-  LastRegisteredDirectiveIndexPosition = 0,
+  ValuesLengthPosition = 0,
   ValuesStartPosition = 1,
-  DirectiveIndexOffset = 0,
+  PriorityOffset = 0,
   InstructionFnOffset = 1,
-  ParamsOffset = 2,
-  Size = 3,
+  ParamsStartOffset = 2,
+  Size = 7  // 5 args + function + priority
 }
 
 /**
@@ -712,20 +712,22 @@ export const enum MapBasedOffsetValuesIndex {
  */
 export const enum StylingFlags {
   // Implies no configurations
-  None = 0b00000,
+  None = 0b000000,
   // Whether or not the entry or context itself is dirty
-  Dirty = 0b00001,
+  Dirty = 0b000001,
   // Whether or not this is a class-based assignment
-  Class = 0b00010,
+  Class = 0b000010,
   // Whether or not a sanitizer was applied to this property
-  Sanitize = 0b00100,
+  Sanitize = 0b000100,
   // Whether or not any player builders within need to produce new players
-  PlayerBuildersDirty = 0b01000,
+  Deferred = 0b001000,
+  // Whether or not any player builders within need to produce new players
+  PlayerBuildersDirty = 0b010000,
   // The max amount of bits used to represent these configuration values
-  BindingAllocationLocked = 0b10000,
-  BitCountSize = 5,
-  // There are only five bits here
-  BitMask = 0b11111
+  BindingAllocationLocked = 0b100000,
+  BitCountSize = 6,
+  // There are only six bits here
+  BitMask = 0b111111
 }
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
@@ -749,7 +751,7 @@ export const enum StylingIndex {
   CachedMultiStyles = 7,
   // Multi and single entries are stored in `StylingContext` as: Flag; PropertyName;  PropertyValue
   // Position of where the initial styles are stored in the styling context
-  HostInstructionsQueue = 8,
+  FinalDirectiveIndexThatFlushes = 8,
   PlayerContext = 9,
   // Location of single (prop) value entries are stored within the context
   SingleStylesStartPosition = 10,

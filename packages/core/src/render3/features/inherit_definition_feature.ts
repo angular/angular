@@ -10,7 +10,9 @@ import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
-import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
+import {HostInstructionsQueue, HostInstructionsQueueIndex} from '../interfaces/styling';
+import {adjustActiveDirectiveSuperClassDepthPosition, setHostInstructionsQueue} from '../state';
+import {directiveInheritanceEnd, directiveInheritanceStart} from '../styling/host_instructions_queue';
 import {isComponentDef} from '../util/view_utils';
 
 import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
@@ -75,14 +77,11 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
           // a super-class depth value, there is no way to know whether a parent or
           // sub-class host bindings function is currently being executed.
           definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-            // The reason why we increment first and then decrement is so that parent
-            // hostBindings calls have a higher id value compared to sub-class hostBindings
-            // calls (this way the leaf directive is always at a super-class depth of 0).
-            adjustActiveDirectiveSuperClassDepthPosition(1);
+            enterInheritedDirective();
             try {
               superHostBindings(rf, ctx, elementIndex);
             } finally {
-              adjustActiveDirectiveSuperClassDepthPosition(-1);
+              leaveInheritedDirective();
             }
             prevHostBindings(rf, ctx, elementIndex);
           };
@@ -179,5 +178,26 @@ function maybeUnwrapEmpty(value: any): any {
     return [];
   } else {
     return value;
+  }
+}
+
+function enterInheritedDirective() {
+  // The reason why we increment first and then decrement is so that parent
+  // hostBindings calls have a higher id value compared to sub-class hostBindings
+  // calls (this way the leaf directive is always at a super-class depth of 0).
+  const depth = adjustActiveDirectiveSuperClassDepthPosition(1);
+
+  // first item in the chain
+  if (depth === 1) {
+    directiveInheritanceStart();
+  }
+}
+
+function leaveInheritedDirective() {
+  const depth = adjustActiveDirectiveSuperClassDepthPosition(-1);
+
+  // last item in the chain
+  if (depth === 0) {
+    directiveInheritanceEnd();
   }
 }

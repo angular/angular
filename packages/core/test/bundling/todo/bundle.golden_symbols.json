@@ -690,6 +690,9 @@
     "name": "getHighestElementOrICUContainer"
   },
   {
+    "name": "getHostInstructionsQueue"
+  },
+  {
     "name": "getHostNative"
   },
   {
@@ -873,6 +876,9 @@
     "name": "hasValueChanged"
   },
   {
+    "name": "hostInstructionsQueue"
+  },
+  {
     "name": "hyphenate"
   },
   {
@@ -996,6 +1002,9 @@
     "name": "isRootView"
   },
   {
+    "name": "isSingleValueCacheHit"
+  },
+  {
     "name": "isStylingContext"
   },
   {
@@ -1024,6 +1033,9 @@
   },
   {
     "name": "makeParamDecorator"
+  },
+  {
+    "name": "markAsDeferred"
   },
   {
     "name": "markDirty"
