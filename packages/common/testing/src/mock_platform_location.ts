@@ -104,6 +104,8 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 
   private parseChanges(state: unknown, url: string, baseHref: string = '') {
+    // When the `history.state` value is stored, it is always copied.
+    state = JSON.parse(JSON.stringify(state));
     return {...parseUrl(url, baseHref), state};
   }
 
