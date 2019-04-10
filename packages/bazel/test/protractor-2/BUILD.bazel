@@ -32,7 +32,7 @@ http_server(
     name = "prodserver",
     data = [
         "index.html",
-        ":bundle",
+        ":bundle.min.js",
     ],
 )
 
