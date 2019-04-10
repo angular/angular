@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+import {Inject, InjectFlags, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
@@ -420,6 +420,35 @@ function factoryFn(a: any){}
             .toThrowError(
                 `${injectorName}Error[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
                 '  NullInjectorError: No provider for Engine!');
+      });
+
+      it('should return a default value when not requested provider on self', () => {
+        const car = new SportsCar(new Engine());
+        const injector = Injector.create([]);
+        expect(injector.get<Car|null>(Car, null, InjectFlags.Self)).toBeNull();
+        expect(injector.get<Car>(Car, car, InjectFlags.Self)).toBe(car);
+      });
+
+      it('should return a default value when not requested provider on self and optional', () => {
+        const flags = InjectFlags.Self | InjectFlags.Optional;
+        const injector = Injector.create([]);
+        expect(injector.get<Car|null>(Car, null, InjectFlags.Self)).toBeNull();
+        expect(injector.get<Car|number>(Car, 0, flags)).toBe(0);
+      });
+
+      it(`should return null when not requested provider on self and optional`, () => {
+        const flags = InjectFlags.Self | InjectFlags.Optional;
+        const injector = Injector.create([]);
+        expect(injector.get<Car|null>(Car, undefined, flags)).toBeNull();
+      });
+
+      it('should throw error when not requested provider on self', () => {
+        const injector = Injector.create([]);
+        const injectorName = ivyEnabled ? `R3Injector` : `StaticInjector`;
+        expect(() => injector.get(Car, undefined, InjectFlags.Self))
+            .toThrowError(
+                `${injectorName}Error[${stringify(Car)}]: \n` +
+                `  NullInjectorError: No provider for ${stringify(Car)}!`);
       });
     });
 
