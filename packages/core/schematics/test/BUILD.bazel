@@ -6,7 +6,6 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     data = [
         "//packages/core/schematics:migrations.json",
-        "@npm//shelljs",
     ],
     deps = [
         "//packages/core/schematics/migrations/static-queries",
@@ -22,5 +21,8 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    deps = [":test_lib"],
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
 )
