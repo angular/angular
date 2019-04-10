@@ -187,7 +187,7 @@ export declare class NavigationError extends RouterEvent {
 }
 
 export interface NavigationExtras {
-    fragment?: string;
+    fragment?: string | null;
     preserveFragment?: boolean;
     /** @deprecated */ preserveQueryParams?: boolean;
     queryParams?: Params | null;
@@ -364,7 +364,7 @@ export declare class RouterEvent {
 }
 
 export declare class RouterLink {
-    fragment: string;
+    fragment: string | null;
     preserveFragment: boolean;
     /** @deprecated */ preserveQueryParams: boolean;
     queryParams: {
@@ -397,7 +397,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 }
 
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
-    fragment: string;
+    fragment: string | null;
     href: string;
     preserveFragment: boolean;
     preserveQueryParams: boolean;
