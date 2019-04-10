@@ -32,6 +32,26 @@ describe('hover', () => {
         'property name of MyComponent');
   });
 
+  it('should be able to find field of array-like element type', () => {
+    addCode(
+        `@Component({template: '{{test[0].«length»}}{{testTwo[1].«toFixed»}}'}) export class MyComponent {
+        test: Array<string>;
+        testTwo: [string, number];
+      }`,
+        fileName => {
+          const markers = mockHost.getReferenceMarkers(fileName) !;
+          const hover = ngService.getHoverAt(fileName, markers.references.length[0].start);
+          if (!hover)
+            throw new Error(`Expected a hover at location ${markers.references.length[0].start}`);
+          expect(toText(hover)).toEqual('property length of String');
+
+          const hoverTwo = ngService.getHoverAt(fileName, markers.references.toFixed[0].start);
+          if (!hoverTwo)
+            throw new Error(`Expected a hover at location ${markers.references.toFixed[0].start}`);
+          expect(toText(hoverTwo)).toEqual('method toFixed of Number');
+        });
+  });
+
   it('should be able to find a field in a attribute reference', () => {
     hover(
         ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { name: string; }`,

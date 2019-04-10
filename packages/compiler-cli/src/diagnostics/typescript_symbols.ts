@@ -269,7 +269,7 @@ class TypeWrapper implements Symbol {
   }
 
   members(): SymbolTable {
-    return new SymbolTableWrapper(this.tsType.getProperties(), this.context);
+    return new SymbolTableAndStringIndexTypeWrapper(this.tsType, this.context);
   }
 
   signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
@@ -278,7 +278,43 @@ class TypeWrapper implements Symbol {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined { return undefined; }
+  indexed(argument: Symbol, value: any): Symbol|undefined {
+    if (argument instanceof TypeWrapper) {
+      const tsType = argument.tsType;
+      if (tsType.isStringLiteral()) {
+        return new TypeWrapper(this.tsType.getStringIndexType() !, this.context)
+      }
+      if (tsType.isNumberLiteral()) {
+        const numberIndex = this.tsType.getNumberIndexType() !;
+        // get the right tuple Types. like 'var t: [number, string];' 
+        if (numberIndex.isUnion() && typeof value === "number") {
+          return new TypeWrapper(numberIndex.types[value], this.context);
+        }
+        return new TypeWrapper(this.tsType.getNumberIndexType() !, this.context);
+      }
+    }
+    return undefined;
+   }
+}
+
+class StringIndexTypeWrappr implements Symbol {
+  name: string = '';
+  kind: string = '';
+  language: string = '';
+  container: Symbol|undefined = undefined;
+
+  public: boolean = true;
+  callable: boolean = true;
+  definition: Definition;
+  nullable: boolean = true;
+  constructor(private tsType: ts.Type, private context: TypeContext) {}
+  members(): SymbolTable { throw new Error('Method not implemented.'); }
+  signatures(): Signature[] { throw new Error('Method not implemented.'); }
+  selectSignature(types: Symbol[]): Signature|undefined {
+    throw new Error('Method not implemented.');
+  }
+  indexed(argument: Symbol): Symbol|undefined { throw new Error('Method not implemented.'); }
+  get type() { return new TypeWrapper(this.tsType.getStringIndexType() !, this.context); }
 }
 
 class SymbolWrapper implements Symbol {
@@ -477,6 +513,31 @@ class SymbolTableWrapper implements SymbolTable {
   }
 
   values(): Symbol[] { return this.symbols.map(s => new SymbolWrapper(s, this.context)); }
+}
+
+class SymbolTableAndStringIndexTypeWrapper extends SymbolTableWrapper {
+  private _context: TypeContext;
+  constructor(
+    private tsType: ts.Type,
+    context: TypeContext,
+  ) {
+    super(tsType.getProperties(), context);
+    this._context = context;
+  }
+
+  get(key: string) {
+    const res = super.get(key);
+    if (res) {
+      return res;
+    } else {
+      // if can not find key in properties, try to return the string index type.
+      const stringIndexType = this.tsType.getStringIndexType();
+      if (stringIndexType) {
+        return new StringIndexTypeWrappr(this.tsType, this._context);
+      }
+    }
+    return undefined;
+  }
 }
 
 class MapSymbolTable implements SymbolTable {

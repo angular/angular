@@ -241,7 +241,7 @@ export class AstType implements AstVisitor {
   visitKeyedRead(ast: KeyedRead): Symbol {
     const targetType = this.getType(ast.obj);
     const keyType = this.getType(ast.key);
-    const result = targetType.indexed(keyType);
+    const result = targetType.indexed(keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
     return result || this.anyType;
   }
 
