@@ -1023,7 +1023,7 @@ interface StaticAndDynamicQueryIds {
 }
 
 
-function findStaticQueryIds(
+export function findStaticQueryIds(
     nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
     Map<TemplateAst, StaticAndDynamicQueryIds> {
   nodes.forEach((node) => {
@@ -1056,7 +1056,7 @@ function findStaticQueryIds(
   return result;
 }
 
-function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
+export function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
     StaticAndDynamicQueryIds {
   const staticQueryIds = new Set<number>();
   const dynamicQueryIds = new Set<number>();
