@@ -642,6 +642,9 @@
     "name": "getBindingsEnabled"
   },
   {
+    "name": "getCachedStylingContext"
+  },
+  {
     "name": "getCheckNoChangesMode"
   },
   {
@@ -823,6 +826,9 @@
   },
   {
     "name": "getStylingContext"
+  },
+  {
+    "name": "getStylingContextFromLView"
   },
   {
     "name": "getSymbolIterator"
@@ -1179,6 +1185,9 @@
     "name": "setBindingRoot"
   },
   {
+    "name": "setCachedStylingContext"
+  },
+  {
     "name": "setCheckNoChangesMode"
   },
   {
@@ -1264,6 +1273,9 @@
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "stylingContext"
   },
   {
     "name": "syncViewWithBlueprint"
