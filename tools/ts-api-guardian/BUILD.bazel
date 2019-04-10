@@ -11,16 +11,15 @@ ts_library(
     name = "lib",
     srcs = glob(["lib/*.ts"]),
     module_name = "ts-api-guardian",
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tsconfig = "//tools:tsconfig.json",
     visibility = ["//visibility:public"],
     deps = [
-        "@ts-api-guardian_deps//@types/diff",
-        "@ts-api-guardian_deps//@types/minimist",
-        "@ts-api-guardian_deps//@types/node",
-        "@ts-api-guardian_deps//diff",
-        "@ts-api-guardian_deps//minimist",
-        "@ts-api-guardian_deps//typescript",
+        "@npm//@types/diff",
+        "@npm//@types/minimist",
+        "@npm//@types/node",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
     ],
 )
 
@@ -53,16 +52,15 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
-        "@ts-api-guardian_deps//@types/chai",
-        "@ts-api-guardian_deps//@types/jasmine",
-        "@ts-api-guardian_deps//@types/node",
-        "@ts-api-guardian_deps//chai",
-        "@ts-api-guardian_deps//jasmine",
-        "@ts-api-guardian_deps//typescript",
+        "@npm//@types/chai",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//chai",
+        "@npm//jasmine",
+        "@npm//typescript",
     ],
 )
 
@@ -75,10 +73,9 @@ jasmine_node_test(
         "test/fixtures/*.patch",
     ]) + [
         ":ts-api-guardian",
-        "@ts-api-guardian_deps//chalk",
+        "@npm//chalk",
         # TODO: remove this once the boostrap.js workaround has been removed.
         ":package.json",
     ],
-    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tags = ["local"],
 )

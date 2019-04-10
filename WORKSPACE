@@ -73,12 +73,6 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
-yarn_install(
-    name = "ts-api-guardian_deps",
-    package_json = "@angular//tools/ts-api-guardian:package.json",
-    yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
-)
-
 # Install all bazel dependencies of the @npm npm packages
 load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
 
