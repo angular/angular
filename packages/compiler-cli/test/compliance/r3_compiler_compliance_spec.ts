@@ -1361,12 +1361,14 @@ describe('compiler compliance', () => {
           }
         };
 
+        // Note that the c0 and c1 constants aren't being used in this particular test,
+        // but they are used in some of the logic that is folded under the ellipsis.
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
           const $_c2$ = [5, ["", "title", ""]];
           …
-          MyApp.ngComponentDef = $r3$.ɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) {
@@ -1414,12 +1416,14 @@ describe('compiler compliance', () => {
           }
         };
 
+        // Note that the c0 and c1 constants aren't being used in this particular test,
+        // but they are used in some of the logic that is folded under the ellipsis.
         const SimpleComponentDefinition = `
           const $_c0$ = [[["", "title", ""]]];
           const $_c1$ = ["[title]"];
           const $_c2$ = [5, ["", "title", ""]];
           …
-          MyApp.ngComponentDef = $r3$.ɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) {

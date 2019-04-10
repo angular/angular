@@ -299,11 +299,12 @@ function matchTemplateAttribute(attrs: TAttributes, name: string): number {
  */
 function isSelectorInSelectorList(selector: CssSelector, list: CssSelectorList): boolean {
   selectorListLoop: for (let i = 0; i < list.length; i++) {
-    if (selector.length !== list[i].length) {
+    const currentSelectorInList = list[i];
+    if (selector.length !== currentSelectorInList.length) {
       continue;
     }
     for (let j = 0; j < selector.length; j++) {
-      if (selector[j] !== list[i][j]) {
+      if (selector[j] !== currentSelectorInList[j]) {
         continue selectorListLoop;
       }
     }
