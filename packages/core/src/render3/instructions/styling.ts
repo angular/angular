@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {assertEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
-import {FLAGS, HEADER_OFFSET, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, LView, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getLView, getPreviousOrParentTNode, getSelectedIndex} from '../state';
 import {getInitialClassNameValue, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
 import {ParamsOf, enqueueHostInstruction, registerHostDirective} from '../styling/host_instructions_queue';
 import {BoundPlayerFactory} from '../styling/player_factory';
 import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
-import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
+import {getCachedStylingContext, setCachedStylingContext} from '../styling/state';
+import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getRootContext} from '../util/view_traversal_utils';
@@ -170,9 +172,9 @@ export function ɵɵelementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const valueToAdd = resolveStylePropValue(value, suffix);
+  const stylingContext = getStylingContext(index, getLView());
   updateElementStyleProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd,
-      DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
+      stylingContext, styleIndex, valueToAdd, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
 
 /**
@@ -206,9 +208,7 @@ export function ɵɵelementHostStyleProp(
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
 
-  const lView = getLView();
-  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
-
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
   const valueToAdd = resolveStylePropValue(value, suffix);
   const args: ParamsOf<typeof updateElementStyleProp> =
       [stylingContext, styleIndex, valueToAdd, directiveStylingIndex, forceOverride];
@@ -259,9 +259,9 @@ export function ɵɵelementClassProp(
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
+  const stylingContext = getStylingContext(index, getLView());
   updateElementClassProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, input,
-      DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
+      stylingContext, classIndex, input, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
 
 
@@ -287,9 +287,7 @@ export function ɵɵelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
-
-  const lView = getLView();
-  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
 
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
@@ -330,8 +328,8 @@ export function ɵɵelementStylingMap(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const lView = getLView();
+  const stylingContext = getStylingContext(index, lView);
   const tNode = getTNode(index, lView);
-  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
 
   // inputs are only evaluated from a template binding into a directive, therefore,
   // there should not be a situation where a directive host bindings function
@@ -384,10 +382,7 @@ export function ɵɵelementHostStylingMap(
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
-
-  const lView = getLView();
-  const stylingContext = getStylingContext(hostElementIndex + HEADER_OFFSET, lView);
-
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
   const args: ParamsOf<typeof updateStylingMap> =
       [stylingContext, classes, styles, directiveStylingIndex];
   enqueueHostInstruction(stylingContext, directiveStylingIndex, updateStylingMap, args);
@@ -432,13 +427,22 @@ export function elementStylingApplyInternal(directiveStylingIndex: number, index
   // the styling apply code knows not to actually apply the values...
   const renderer = tNode.type === TNodeType.Element ? lView[RENDERER] : null;
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
-  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
+  const stylingContext = getStylingContext(index, lView);
   const totalPlayersQueued = renderStyling(
       stylingContext, renderer, lView, isFirstRender, null, null, directiveStylingIndex);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(lView);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
   }
+
+  // because select(n) may not run between every instruction, the cached styling
+  // context may not get cleared between elements. The reason for this is because
+  // styling bindings (like `[style]` and `[class]`) are not recognized as property
+  // bindings by default so a select(n) instruction is not generated. To ensure the
+  // context is loaded correctly for the next element the cache below is pre-emptively
+  // cleared because there is no code in Angular that applies more styling code after a
+  // styling flush has occurred. Note that this will be fixed once FW-1254 lands.
+  setCachedStylingContext(null);
 }
 
 export function getActiveDirectiveStylingIndex() {
@@ -449,4 +453,16 @@ export function getActiveDirectiveStylingIndex() {
   // parent directive. To help the styling code distinguish between a parent
   // sub-classed directive the inheritance depth is taken into account as well.
   return getActiveDirectiveId() + getActiveDirectiveSuperClassDepth();
+}
+
+function getStylingContext(index: number, lView: LView) {
+  let context = getCachedStylingContext();
+  if (!context) {
+    context = getStylingContextFromLView(index + HEADER_OFFSET, lView);
+    setCachedStylingContext(context);
+  } else if (ngDevMode) {
+    const actualContext = getStylingContextFromLView(index + HEADER_OFFSET, lView);
+    assertEqual(context, actualContext, 'The cached styling context is invalid');
+  }
+  return context;
 }
