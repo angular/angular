@@ -276,7 +276,8 @@
     "twitter": "deborahkurata",
     "website": "http://blogs.msmvps.com/deborahk/",
     "bio": "Deborah is a software developer, author, and Google Developer Expert. She is author of several Pluralsight courses including: 'Angular 2: Getting Started' and ‘Angular Routing’",
-    "groups": ["Collaborators", "GDE"]
+    "groups": ["Collaborators", "GDE"],
+    "mentor": "kara"
   },
   "alyssa": {
     "name": "Alyssa Nicoll",
@@ -341,7 +342,8 @@
     "twitter": "ManfredSteyer",
     "website": "https://www.softwarearchitekt.at",
     "bio": "Trainer and Consultant with focus on Angular. Writes for O'Reilly, the German Java Magazine and Heise. Regularly speaks at conferences.",
-    "groups": ["GDE"]
+    "mentor": "mgechev",
+    "groups": ["GDE", "Collaborators"]
   },
   "maximsalnikov": {
     "name": "Maxim Salnikov",
@@ -773,7 +775,7 @@
   },
   "globegitter": {
     "name": "Markus Padourek",
-    "groups": ["Collaborator"],
+    "groups": ["Collaborators"],
     "mentor": "gregmagolan",
     "picture": "globegitter.jpg"
   }
