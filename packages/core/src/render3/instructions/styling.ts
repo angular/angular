@@ -62,7 +62,7 @@ import {scheduleTick, setInputsForProperty} from './shared';
  * @param styleSanitizer An optional sanitizer function that will be used to sanitize any CSS
  *        style values that are applied to the element (during rendering).
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
@@ -104,7 +104,7 @@ export function ΔelementStyling(
  *        will not be used if the same property is assigned in another directive or
  *        on the element directly.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
@@ -164,7 +164,7 @@ function initElementStyling(
  * @param forceOverride Whether or not to update the styling value immediately
  *        (despite the other bindings possibly having priority)
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
@@ -198,7 +198,7 @@ export function ΔelementStyleProp(
  * @param forceOverride Whether or not to update the styling value immediately
  *        (despite the other bindings possibly having priority)
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostStyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
@@ -251,7 +251,7 @@ function resolveStylePropValue(
  * @param forceOverride Whether or not this value will be applied regardless
  *        of where it is being set within the styling priority structure.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory,
@@ -281,7 +281,7 @@ export function ΔelementClassProp(
  * @param forceOverride Whether or not this value will be applied regardless
  *        of where it is being set within the stylings priority structure.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
@@ -324,7 +324,7 @@ function booleanOrNull(value: any): boolean|null {
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementStylingMap(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
@@ -377,7 +377,7 @@ export function ΔelementStylingMap(
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostStylingMap(
     classes: {[key: string]: any} | string | NO_CHANGE | null,
@@ -403,7 +403,7 @@ export function ΔelementHostStylingMap(
  *
  * @param index Index of the element's with which styling is associated.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementStylingApply(index: number): void {
   elementStylingApplyInternal(DEFAULT_TEMPLATE_DIRECTIVE_INDEX, index);
@@ -417,7 +417,7 @@ export function ΔelementStylingApply(index: number): void {
  * been run and will only apply styling to the host element if any
  * styling bindings have been updated.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostStylingApply(): void {
   elementStylingApplyInternal(getActiveDirectiveStylingIndex(), getSelectedIndex());

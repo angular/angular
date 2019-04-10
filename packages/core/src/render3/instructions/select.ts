@@ -29,7 +29,7 @@ import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
  * ```
  * @param index the index of the item to act on with the following instructions
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δselect(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');

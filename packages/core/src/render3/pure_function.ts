@@ -38,7 +38,7 @@ import {getBindingRoot, getLView, isCreationMode} from './state';
  * @param thisArg Optional calling context of pureFn
  * @returns value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
@@ -59,7 +59,7 @@ export function ΔpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction1(
     slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any {
@@ -82,7 +82,7 @@ export function ΔpureFunction1(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction2(
     slotOffset: number, pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any,
@@ -109,7 +109,7 @@ export function ΔpureFunction2(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction3(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
@@ -137,7 +137,7 @@ export function ΔpureFunction3(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction4(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any,
@@ -166,7 +166,7 @@ export function ΔpureFunction4(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction5(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any,
@@ -197,7 +197,7 @@ export function ΔpureFunction5(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction6(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any,
@@ -230,7 +230,7 @@ export function ΔpureFunction6(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction7(
     slotOffset: number,
@@ -265,7 +265,7 @@ export function ΔpureFunction7(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunction8(
     slotOffset: number,
@@ -297,7 +297,7 @@ export function ΔpureFunction8(
  * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpureFunctionV(
     slotOffset: number, pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {

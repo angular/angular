@@ -35,7 +35,7 @@ import {createNodeAtIndex} from './shared';
  * @param selectors A collection of parsed CSS selectors
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔprojectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
   const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
@@ -75,7 +75,7 @@ export function ΔprojectionDef(selectors?: CssSelectorList[], textSelectors?: s
  *        - 0 when the selector is `*` (or unspecified as this is the default value),
  *        - 1 based index of the selector from the {@link projectionDef}
   *
- * @publicApi
+ * @codeGenApi
 */
 export function Δprojection(nodeIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
   const lView = getLView();

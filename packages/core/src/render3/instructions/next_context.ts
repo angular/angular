@@ -17,7 +17,7 @@ import {nextContextImpl} from '../state';
  * @param level The relative level of the view from which to grab context compared to contextVewData
  * @returns context
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔnextContext<T = any>(level: number = 1): T {
   return nextContextImpl(level);

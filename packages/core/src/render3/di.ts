@@ -635,7 +635,7 @@ export class NodeInjector implements Injector {
 }
 
 /**
- * @publicApi
+ * @codeGenApi
  */
 export function ΔgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
   const typeAny = type as any;
@@ -648,7 +648,7 @@ export function ΔgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)
 }
 
 /**
- * @publicApi
+ * @codeGenApi
  */
 export function ΔgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
