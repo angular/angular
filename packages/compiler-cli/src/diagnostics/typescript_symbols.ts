@@ -282,7 +282,7 @@ class TypeWrapper implements Symbol {
     if (argument instanceof TypeWrapper) {
       const tsType = argument.tsType;
       if (tsType.isStringLiteral()) {
-        return new TypeWrapper(this.tsType.getStringIndexType() !, this.context)
+        return new TypeWrapper(this.tsType.getStringIndexType() !, this.context);
       }
       if (tsType.isNumberLiteral()) {
         const numberIndex = this.tsType.getNumberIndexType() !;
