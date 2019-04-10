@@ -42,7 +42,7 @@ import {getActiveDirectiveStylingIndex} from './styling';
  * hold an attribute name and elements with an odd index hold an attribute value, ex.:
  * ['id', 'warning5', 'class', 'alert']
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementStart(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
@@ -127,7 +127,7 @@ export function ΔelementStart(
 /**
  * Mark the end of the element.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
@@ -179,7 +179,7 @@ export function ΔelementEnd(): void {
  *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δelement(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
@@ -198,7 +198,7 @@ export function Δelement(
  * @param sanitizer An optional function used to sanitize the value.
  * @param namespace Optional namespace to use when setting the attribute.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
@@ -266,7 +266,7 @@ export function ΔelementAttribute(
  * @param attrs An array of static values (attributes, classes and styles) with the correct marker
  * values.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔelementHostAttrs(attrs: TAttributes) {
   const hostElementIndex = getSelectedIndex();

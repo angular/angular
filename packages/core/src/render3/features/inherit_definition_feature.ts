@@ -24,7 +24,7 @@ function getSuperType(type: Type<any>): Type<any>&
  * Merges the definition from a super class to a sub class.
  * @param definition The definition that is a SubClass of another directive of component
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);

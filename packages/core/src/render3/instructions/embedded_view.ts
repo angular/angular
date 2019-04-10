@@ -23,8 +23,8 @@ import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews
  *
  * @param viewBlockId The ID of this view
  * @return boolean Whether or not this view is in creation mode
- * 
- * @publicApi
+ *
+ * @codeGenApi
  */
 export function ΔembeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags {
   const lView = getLView();
@@ -127,7 +127,7 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
 /**
  * Marks the end of an embedded view.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔembeddedViewEnd(): void {
   const lView = getLView();

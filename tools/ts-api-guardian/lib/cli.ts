@@ -30,18 +30,18 @@ export function startCli() {
   // Angular project tag rules unless specified explicitly through a given option.
   if (argv['useAngularTagRules']) {
     options.exportTags = {
-      required: ['publicApi'],
+      requireAtLeastOne: ['publicApi', 'codeGenApi'],
       banned: ['experimental'],
       toCopy: ['deprecated']
     };
     options.memberTags = {
-      required: [],
-      banned: ['experimental', 'publicApi'],
+      requireAtLeastOne: [],
+      banned: ['experimental', 'publicApi', 'codeGenApi'],
       toCopy: ['deprecated']
     };
     options.paramTags = {
-      required: [],
-      banned: ['experimental', 'publicApi'],
+      requireAtLeastOne: [],
+      banned: ['experimental', 'publicApi', 'codeGenApi'],
       toCopy: ['deprecated']
     };
   }

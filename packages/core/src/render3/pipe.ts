@@ -25,7 +25,7 @@ import {NO_CHANGE} from './tokens';
  * @param pipeName The name of the pipe
  * @returns T the instance of the pipe.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δpipe(index: number, pipeName: string): any {
   const tView = getLView()[TVIEW];
@@ -79,7 +79,7 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
  * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpipeBind1(index: number, slotOffset: number, v1: any): any {
   const pipeInstance = Δload<PipeTransform>(index);
@@ -99,7 +99,7 @@ export function ΔpipeBind1(index: number, slotOffset: number, v1: any): any {
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
   const pipeInstance = Δload<PipeTransform>(index);
@@ -120,7 +120,7 @@ export function ΔpipeBind2(index: number, slotOffset: number, v1: any, v2: any)
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 4rd argument to {@link PipeTransform#transform}.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = Δload<PipeTransform>(index);
@@ -142,7 +142,7 @@ export function ΔpipeBind3(index: number, slotOffset: number, v1: any, v2: any,
  * @param v3 3rd argument to {@link PipeTransform#transform}.
  * @param v4 4th argument to {@link PipeTransform#transform}.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpipeBind4(
     index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
@@ -163,7 +163,7 @@ export function ΔpipeBind4(
  * @param slotOffset the offset in the reserved slot space
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔpipeBindV(index: number, slotOffset: number, values: any[]): any {
   const pipeInstance = Δload<PipeTransform>(index);

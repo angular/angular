@@ -531,8 +531,8 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(2,1): error: Required jsdoc tags - "@stable" - are missing on `A`.',
-        {exportTags: {required: ['stable']}});
+        'file.d.ts(2,1): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `A`.',
+        {exportTags: {requireAtLeastOne: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on fields', () => {
@@ -544,8 +544,8 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(3,3): error: Required jsdoc tags - "@stable" - are missing on `value`.',
-        {memberTags: {required: ['stable']}});
+        'file.d.ts(3,3): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `value`.',
+        {memberTags: {requireAtLeastOne: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on parameters', () => {
@@ -557,8 +557,21 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input},
-        'file.d.ts(3,7): error: Required jsdoc tags - "@stable" - are missing on `param`.',
-        {paramTags: {required: ['stable']}});
+        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `param`.',
+        {paramTags: {requireAtLeastOne: ['stable']}});
+  });
+
+  it('should require at least one of the requireOnOf tags', () => {
+    const input = `
+      /** @experimental */
+      export declare class A {
+        foo(param: number): void;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input},
+        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable", "@foo", "@bar" - must exist on `param`.',
+        {paramTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
   });
 });
 

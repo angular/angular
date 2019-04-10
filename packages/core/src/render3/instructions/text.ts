@@ -22,7 +22,7 @@ import {createNodeAtIndex} from './shared';
  * @param index Index of the node in the data array
  * @param value Value to write. This value will be stringified.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δtext(index: number, value?: any): void {
   const lView = getLView();
@@ -45,7 +45,7 @@ export function Δtext(index: number, value?: any): void {
  * @param index Index of the node in the data array.
  * @param value Stringified value to write.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔtextBinding<T>(index: number, value: T | NO_CHANGE): void {
   if (value !== NO_CHANGE) {

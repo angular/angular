@@ -39,7 +39,7 @@ type OnChangesExpando = OnChanges & {
  * });
  * ```
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔNgOnChangesFeature<T>(): DirectiveDefFeature {
   // This option ensures that the ngOnChanges lifecycle hook will be inherited
