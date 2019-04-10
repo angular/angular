@@ -85,7 +85,7 @@ export * from './schema/dom_element_schema_registry';
 export * from './selector';
 export * from './style_compiler';
 export * from './template_parser/template_parser';
-export {ViewCompiler} from './view_compiler/view_compiler';
+export {ViewCompiler, findStaticQueryIds, staticViewQueryIds} from './view_compiler/view_compiler';
 export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
