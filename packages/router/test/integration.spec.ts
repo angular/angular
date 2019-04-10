@@ -1443,22 +1443,6 @@ describe('Integration', () => {
        expect(cmp.path.length).toEqual(2);
      })));
 
-  // https://github.com/angular/angular/issues/29391
-  it('should have a null fragment if fragment is not set',
-     fakeAsync(inject([Router], (router: Router) => {
-      const fixture = createRoot(router, RootCmp);
-
-      router.resetConfig([{path: 'simple', component: RouteCmp}]);
-
-      router.navigateByUrl('/simple');
-      advance(fixture);
-
-      const cmp = fixture.debugElement.children[1].componentInstance;
-
-      expect(cmp.route.snapshot.fragment).toBe(null);
-    })));
-
-
 
   describe('data', () => {
     class ResolveSix implements Resolve<number> {
@@ -1994,6 +1978,31 @@ describe('Integration', () => {
          const native = fixture.nativeElement.querySelector('area');
          expect(native.getAttribute('href')).toEqual('/home');
        }));
+
+    // https://github.com/angular/angular/issues/29391
+    it('should have a null fragment if fragment is not set', fakeAsync(() => {
+        @Component({
+          selector: 'someRoot',
+          template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`
+        })
+        class RootCmpWithLink {
+        }
+
+        TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+        const router: Router = TestBed.get(Router);
+
+        const fixture = createRoot(router, RootCmpWithLink);
+
+        router.resetConfig([{path: 'home', component: RouteCmp}]);
+
+        const anchor = fixture.nativeElement.querySelector('a');
+        anchor.click();
+        advance(fixture);
+
+        const cmp = fixture.debugElement.children[1].componentInstance;
+
+        expect(cmp.route.snapshot.fragment).toBe(null);
+      }));
   });
 
   describe('redirects', () => {
