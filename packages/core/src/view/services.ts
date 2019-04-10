@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement__PRE_R3__, DebugNode__PRE_R3__, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
+import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
 import {InjectableType} from '../di/injectable';
 import {getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
@@ -827,7 +827,7 @@ export class DebugRenderer2 implements Renderer2 {
     if (typeof target !== 'string') {
       const debugEl = getDebugNode(target);
       if (debugEl) {
-        debugEl.listeners.push(new EventListener(eventName, callback));
+        debugEl.listeners.push(new DebugEventListener(eventName, callback));
       }
     }
 

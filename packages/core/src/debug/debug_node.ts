@@ -21,7 +21,10 @@ import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} fr
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
-export class EventListener {
+/**
+ * @publicApi
+ */
+export class DebugEventListener {
   constructor(public name: string, public callback: Function) {}
 }
 
@@ -29,7 +32,7 @@ export class EventListener {
  * @publicApi
  */
 export interface DebugNode {
-  readonly listeners: EventListener[];
+  readonly listeners: DebugEventListener[];
   readonly parent: DebugElement|null;
   readonly nativeNode: any;
   readonly injector: Injector;
@@ -39,7 +42,7 @@ export interface DebugNode {
   readonly providerTokens: any[];
 }
 export class DebugNode__PRE_R3__ {
-  readonly listeners: EventListener[] = [];
+  readonly listeners: DebugEventListener[] = [];
   readonly parent: DebugElement|null = null;
   readonly nativeNode: any;
   private readonly _debugContext: DebugContext;
@@ -219,7 +222,7 @@ class DebugNode__POST_R3__ implements DebugNode {
   }
   get context(): any { return getContext(this.nativeNode as Element); }
 
-  get listeners(): EventListener[] {
+  get listeners(): DebugEventListener[] {
     return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
   }
 
