@@ -408,7 +408,7 @@
     "name": "getRootView"
   },
   {
-    "name": "getStylingContext"
+    "name": "getStylingContextFromLView"
   },
   {
     "name": "getTNode"
@@ -613,6 +613,9 @@
   },
   {
     "name": "setBindingRoot"
+  },
+  {
+    "name": "setCachedStylingContext"
   },
   {
     "name": "setClass"

@@ -11,7 +11,7 @@ import {getLContext} from './context_discovery';
 import {scheduleTick} from './instructions/shared';
 import {ComponentInstance, DirectiveInstance, Player} from './interfaces/player';
 import {RootContextFlags} from './interfaces/view';
-import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayersInternal, getStylingContext, throwInvalidRefError} from './styling/util';
+import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayersInternal, getStylingContextFromLView, throwInvalidRefError} from './styling/util';
 import {getRootContext} from './util/view_traversal_utils';
 
 
@@ -61,7 +61,7 @@ export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElem
     return [];
   }
 
-  const stylingContext = getStylingContext(context.nodeIndex, context.lView);
+  const stylingContext = getStylingContextFromLView(context.nodeIndex, context.lView);
   const playerContext = stylingContext ? getPlayerContext(stylingContext) : null;
   return playerContext ? getPlayersInternal(playerContext) : [];
 }
