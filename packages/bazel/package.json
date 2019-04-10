@@ -38,7 +38,7 @@
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
-    "@bazel/typescript": "0.27.10",
+    "@bazel/typescript": "0.27.12",
     "typescript": ">=3.4 <3.5"
   },
   "repository": {
