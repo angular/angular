@@ -115,8 +115,7 @@ import {UrlTree} from '../url_tree';
 export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() queryParams !: {[k: string]: any};
-  // TODO(issue/24571): remove '!'.
-  @Input() fragment !: string;
+  @Input() fragment: string|null = null;
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling !: QueryParamsHandling;
   // TODO(issue/24571): remove '!'.
@@ -197,8 +196,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding('attr.target') @Input() target !: string;
   // TODO(issue/24571): remove '!'.
   @Input() queryParams !: {[k: string]: any};
-  // TODO(issue/24571): remove '!'.
-  @Input() fragment !: string;
+  @Input() fragment: string|null = null;
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling !: QueryParamsHandling;
   // TODO(issue/24571): remove '!'.

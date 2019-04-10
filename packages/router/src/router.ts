@@ -93,7 +93,7 @@ export interface NavigationExtras {
    * this.router.navigate(['/results'], { fragment: 'top' });
    * ```
    */
-  fragment?: string;
+  fragment?: string|null;
 
   /**
    * DEPRECATED: Use `queryParamsHandling` instead to preserve

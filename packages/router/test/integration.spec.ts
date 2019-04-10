@@ -1443,6 +1443,21 @@ describe('Integration', () => {
        expect(cmp.path.length).toEqual(2);
      })));
 
+  // https://github.com/angular/angular/issues/29391
+  it('should have a null fragment if fragment is not set',
+     fakeAsync(inject([Router], (router: Router) => {
+      const fixture = createRoot(router, RootCmp);
+
+      router.resetConfig([{path: 'simple', component: RouteCmp}]);
+
+      router.navigateByUrl('/simple');
+      advance(fixture);
+
+      const cmp = fixture.debugElement.children[1].componentInstance;
+
+      expect(cmp.route.snapshot.fragment).toBe(null);
+    })));
+
 
 
   describe('data', () => {
