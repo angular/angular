@@ -197,7 +197,12 @@ export class R3Injector {
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
       const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
-      return nextInjector.get(token, flags & InjectFlags.Optional ? null : notFoundValue);
+      // Set the notFoundValue based on the Optional flag - if optional is set and notFoundValue
+      // is undefined, the value is null, otherwise it's the notFoundValue.
+      notFoundValue = (flags & InjectFlags.Optional) && notFoundValue === THROW_IF_NOT_FOUND ?
+          null :
+          notFoundValue;
+      return nextInjector.get(token, notFoundValue);
     } catch (e) {
       if (e.name === 'NullInjectorError') {
         const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
