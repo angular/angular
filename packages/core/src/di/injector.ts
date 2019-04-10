@@ -342,6 +342,10 @@ function resolveToken(
     }
   } else if (!(flags & InjectFlags.Self)) {
     value = parent.get(token, notFoundValue, InjectFlags.Default);
+  } else if (!(flags & InjectFlags.Optional)) {
+    value = Injector.NULL.get(token, notFoundValue);
+  } else {
+    value = Injector.NULL.get(token, typeof notFoundValue !== 'undefined' ? notFoundValue : null);
   }
   return value;
 }
