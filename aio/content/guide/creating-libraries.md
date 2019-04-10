@@ -97,7 +97,7 @@ A library can include [schematics](guide/glossary#schematic) that allow it to in
 
 * Include an update schematic so that `ng update` can update your library’s dependencies and provide migrations for breaking changes in new releases.
 
-To learn more, see [Schematics — An Introduction](https://blog.angular.io/schematics-an-introduction-dc1dfbc2a2b2).
+To learn more, see [Schematics Overview](guide/schematics) and [Schematics for Libraries](guide/schematics-for-libraries).
 
 ## Publishing your library
 
