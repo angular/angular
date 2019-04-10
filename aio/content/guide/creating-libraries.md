@@ -131,7 +131,7 @@ A linked library will then have its own set of Angular libraries that it uses fo
 However, this can cause problems while building or running your application.
 
 To get around this problem you can use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
-List all the peer dependencies that your library uses in the TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the app's `node_modules` folder.
+List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the app's `node_modules` folder.
 
 ```
 {
@@ -140,7 +140,7 @@ List all the peer dependencies that your library uses in the TypeScript configur
     // paths are relative to `baseUrl` path.
     "paths": {
       "@angular/*": [
-        "../node_modules/@angular/*"
+        "./node_modules/@angular/*"
       ]
     }
   }
@@ -162,7 +162,7 @@ To use your own library in an app:
 
 * In your apps, import from the library by name:
  ```
- import { my-export } from 'my-lib';
+ import { myExport } from 'my-lib';
  ```
 
 ### Building and rebuilding your library
