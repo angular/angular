@@ -228,7 +228,7 @@ export interface DebugNode {
     readonly componentInstance: any;
     readonly context: any;
     readonly injector: Injector;
-    readonly listeners: EventListener[];
+    readonly listeners: DebugEventListener[];
     readonly nativeNode: any;
     readonly parent: DebugElement | null;
     readonly providerTokens: any[];
