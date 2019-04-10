@@ -141,7 +141,8 @@ export function ΔdefineInjectable<T>(opts: {
 }
 
 /**
- * @deprecated in v8, delete after v10. This API should be used only be generated code, and that code should now use ΔdefineInjectable instead.
+ * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
+ * code should now use ΔdefineInjectable instead.
  * @publicApi
  */
 export const defineInjectable = ΔdefineInjectable;

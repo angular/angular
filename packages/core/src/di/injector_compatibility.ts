@@ -103,7 +103,8 @@ export function Δinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFla
   return (_injectImplementation || injectInjectorOnly)(token, flags);
 }
 /**
- * @deprecated in v8, delete after v10. This API should be used only be generated code, and that code should now use Δinject instead.
+ * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
+ * code should now use Δinject instead.
  * @publicApi
  */
 export const inject = Δinject;
