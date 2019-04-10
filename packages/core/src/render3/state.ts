@@ -12,6 +12,7 @@ import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
+import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 import {resetPreOrderHookFlags} from './util/view_utils';
 
@@ -456,6 +457,7 @@ export function leaveView(newView: LView): void {
       lView[BINDING_INDEX] = tView.bindingStartIndex;
     }
   }
+  setCachedStylingContext(null);
   enterView(newView, null);
 }
 
@@ -482,6 +484,10 @@ export function getSelectedIndex() {
  */
 export function setSelectedIndex(index: number) {
   _selectedIndex = index;
+
+  // remove the styling context from the cache
+  // because we are now on a different element
+  setCachedStylingContext(null);
 }
 
 
@@ -517,4 +523,26 @@ export function ɵɵnamespaceHTML() {
 
 export function getNamespace(): string|null {
   return _currentNamespace;
+}
+
+let stylingContext: StylingContext|null = null;
+
+/**
+ * Gets the most recent styling context value.
+ *
+ * Note that only one styling context is stored at a given time.
+ */
+export function getCachedStylingContext() {
+  return stylingContext;
+}
+
+/**
+ * Sets the most recent styling context value.
+ *
+ * Note that only one styling context is stored at a given time.
+ *
+ * @param context The styling context value that will be stored
+ */
+export function setCachedStylingContext(context: StylingContext | null) {
+  stylingContext = context;
 }

@@ -124,7 +124,7 @@ export function allocStylingContext(
  * @param index Index of the style allocation. See: `elementStyling`.
  * @param viewData The view to search for the styling context
  */
-export function getStylingContext(index: number, viewData: LView): StylingContext {
+export function getStylingContextFromLView(index: number, viewData: LView): StylingContext {
   let storageIndex = index;
   let slotValue: LContainer|LView|StylingContext|RElement = viewData[storageIndex];
   let wrapper: LContainer|LView|StylingContext = viewData;
@@ -252,7 +252,7 @@ export function getOrCreatePlayerContext(target: {}, context?: LContext | null):
   }
 
   const {lView, nodeIndex} = context;
-  const stylingContext = getStylingContext(nodeIndex, lView);
+  const stylingContext = getStylingContextFromLView(nodeIndex, lView);
   return getPlayerContext(stylingContext) || allocPlayerContext(stylingContext);
 }
 

@@ -13,7 +13,7 @@ import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/
 import {StylingIndex} from '../render3/interfaces/styling';
 import {LView, NEXT, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
-import {getStylingContext} from '../render3/styling/util';
+import {getStylingContextFromLView} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
 import {findComponentView} from '../render3/util/view_traversal_utils';
@@ -288,7 +288,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const element = this.nativeElement;
     if (element) {
       const lContext = loadLContextFromNode(element);
-      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      const stylingContext = getStylingContextFromLView(lContext.nodeIndex, lContext.lView);
       if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
              i += StylingIndex.Size) {
@@ -317,7 +317,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const element = this.nativeElement;
     if (element) {
       const lContext = loadLContextFromNode(element);
-      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      const stylingContext = getStylingContextFromLView(lContext.nodeIndex, lContext.lView);
       if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
              i += StylingIndex.Size) {

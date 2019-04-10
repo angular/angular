@@ -19,7 +19,7 @@ import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
 import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
-import {getStylingContext, hasClassInput, hasStyleInput} from '../styling/util';
+import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
@@ -157,12 +157,12 @@ export function ɵɵelementEnd(): void {
   // (for directives and the template) have now executed which means the styling
   // context can be instantiated properly.
   if (hasClassInput(previousOrParentTNode)) {
-    const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
+    const stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
     setInputsForProperty(
         lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
   }
   if (hasStyleInput(previousOrParentTNode)) {
-    const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
+    const stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
     setInputsForProperty(
         lView, previousOrParentTNode.inputs !['style'] !,
         getInitialStyleStringValue(stylingContext));
