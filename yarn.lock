@@ -137,18 +137,18 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.9.0.tgz#fd60023acd36313d304cc2f8c2e181b88b5445cd"
   integrity sha512-E31cefDcdJsx/oii6p/gqKZXSVw0kEg1O73DD2McFcSvnf/p1GYWcQtVgdRQmlviBEytJkJgdX8rtThitRvcow==
 
-"@bazel/jasmine@0.27.10":
-  version "0.27.10"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.27.10.tgz#29e51f752077d82663114fefca5bfa2c1c271466"
-  integrity sha512-DmCFlpYcmXtSOtakfU8vrnu/eWUELScbnsbLodNowbGuxHcr2V7aIqwKxBuXwH/Ox/Sk2Yb2KwpmJTAJDD6tIw==
+"@bazel/jasmine@0.27.12":
+  version "0.27.12"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.27.12.tgz#9319d1fb52723da8ec23d4ce507dc9eb202d4e31"
+  integrity sha512-olsKMLsfqA6F025EPn0glJal4DB0v4E2ISL+0Hu2piewAtjv8DARU0dxzyizgH1X20BooIlgq+ZL2cKdlXfMHg==
   dependencies:
     jasmine "~3.3.1"
     v8-coverage "1.0.8"
 
-"@bazel/karma@0.27.10":
-  version "0.27.10"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.27.10.tgz#7d686d3f785c654a3d966e1891d39a1a8ba8557b"
-  integrity sha512-CLbezRi5rXG0sjDwoDvaEhlpitAdMNxHmsNtY8ZxkxpajHEPBSxU8lCVKvuy2KB4AOyEGI5ECKqFtLc8RvDlVA==
+"@bazel/karma@0.27.12":
+  version "0.27.12"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.27.12.tgz#a7c1648af93b4d376e4e3b6fc1c7006b4d79c092"
+  integrity sha512-LJAbNe8bR1vRLb8GqIbKzCpf8VMaTnM9jizxmsjkgdGjy9OgsseYbk6+70z1yx7s3QHPjj7JBqcx+d2yeXPo7g==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -162,10 +162,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.27.10":
-  version "0.27.10"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.10.tgz#52d160dd13aba29f2c26851677f25c717afd2194"
-  integrity sha512-TeWlpalkAh0xfH9Jiirv5R54oWJTdyilj72HukUBdNUttJOT/cMqUsSqYTm+iArLiZrzaglMT70TKYizm8zaIg==
+"@bazel/typescript@0.27.12":
+  version "0.27.12"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.12.tgz#79a6468cd8da096c4da151fac658f7f801a59948"
+  integrity sha512-5cH+x7rvO8P9MCrd8YwJrTyzkET6MLajzngoV5yLDWwcokzs+b3yD9yoa5Vw3Dth2MdKRp+lyGMO7PwyAM3ebw==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
