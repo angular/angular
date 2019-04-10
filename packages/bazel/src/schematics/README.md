@@ -12,10 +12,10 @@ GitHub and ping [@mgechev](https://github.com/mgechev) or
 To create a new Angular project that builds with Bazel + CLI, the following
 packages have to be installed.
 
-    Package    | Minimum Version
----------------|----------------
-@angular/cli   | v8.0.x
-@angular/bazel | v8.0.x
+|     Package    | Minimum Version
+|----------------|-----------------
+| @angular/cli   | v8.0.x
+| @angular/bazel | v8.0.x
 
 The `@angular/bazel` package contains schematics to generate necessary Bazel
 build files.
