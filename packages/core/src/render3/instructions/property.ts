@@ -32,7 +32,7 @@ import {TsickleIssue1009, elementPropertyInternal, loadComponentRenderer, storeB
  * @returns This function returns itself so that it may be chained
  * (e.g. `property('name', ctx.name)('title', ctx.title)`)
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δproperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null,
@@ -48,7 +48,7 @@ export function Δproperty<T>(
  *
  * @param value Value to diff
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δbind<T>(value: T): T|NO_CHANGE {
   const lView = getLView();
@@ -73,7 +73,7 @@ export function Δbind<T>(value: T): T|NO_CHANGE {
 * @param nativeOnly Whether or not we should only set native properties and skip input check
 * (this is necessary for host property bindings)
  *
- * @publicApi
+ * @codeGenApi
 */
 export function ΔelementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
@@ -102,7 +102,7 @@ export function ΔelementProperty<T>(
  * @param nativeOnly Whether or not we should only set native properties and skip input check
  * (this is necessary for host property bindings)
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔcomponentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,

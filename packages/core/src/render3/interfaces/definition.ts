@@ -86,7 +86,7 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
 export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
 /**
- * @publicApi
+ * @codeGenApi
  */
 export type ΔDirectiveDefWithMeta<
     T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
@@ -101,7 +101,7 @@ export type ΔDirectiveDefWithMeta<
  *
  * See: {@link defineBase}
  *
- * @publicApi
+ * @codeGenApi
  */
 export interface ΔBaseDef<T> {
   /**
@@ -200,7 +200,7 @@ export interface DirectiveDef<T> extends ΔBaseDef<T> {
 }
 
 /**
- * @publicApi
+ * @codeGenApi
  */
 export type ΔComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
@@ -347,7 +347,7 @@ export interface PipeDef<T> {
 }
 
 /**
- * @publicApi
+ * @codeGenApi
  */
 export type ΔPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 

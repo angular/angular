@@ -90,7 +90,7 @@ export function getBindingsEnabled(): boolean {
  * </div>
  * ```
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔenableBindings(): void {
   bindingsEnabled = true;
@@ -113,7 +113,7 @@ export function ΔenableBindings(): void {
  * </div>
  * ```
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔdisableBindings(): void {
   bindingsEnabled = false;
@@ -267,7 +267,7 @@ export function getActiveDirectiveSuperClassDepth() {
  *
  * @param viewToRestore The OpaqueViewState instance to restore.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔrestoreView(viewToRestore: OpaqueViewState) {
   contextLView = viewToRestore as any as LView;
@@ -490,7 +490,7 @@ let _currentNamespace: string|null = null;
 /**
  * Sets the namespace used to create elements to `'http://www.w3.org/2000/svg'` in global state.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔnamespaceSVG() {
   _currentNamespace = 'http://www.w3.org/2000/svg';
@@ -499,7 +499,7 @@ export function ΔnamespaceSVG() {
 /**
  * Sets the namespace used to create elements to `'http://www.w3.org/1998/MathML/'` in global state.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔnamespaceMathML() {
   _currentNamespace = 'http://www.w3.org/1998/MathML/';
@@ -509,7 +509,7 @@ export function ΔnamespaceMathML() {
  * Sets the namespace used to create elements no `null`, which forces element creation to use
  * `createElement` rather than `createElementNS`.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔnamespaceHTML() {
   _currentNamespace = null;

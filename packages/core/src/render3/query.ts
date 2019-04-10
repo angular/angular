@@ -370,7 +370,7 @@ export function query<T>(
  * @returns `true` if a query got dirty during change detection or if this is a static query
  * resolving in creation mode, `false` otherwise.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔqueryRefresh(queryList: QueryList<any>): boolean {
   const queryListImpl = (queryList as any as QueryList_<any>);
@@ -392,7 +392,7 @@ export function ΔqueryRefresh(queryList: QueryList<any>): boolean {
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔstaticViewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
@@ -413,7 +413,7 @@ export function ΔstaticViewQuery<T>(
  * @param read What to save in the query
  * @returns QueryList<T>
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔviewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
@@ -433,7 +433,7 @@ export function ΔviewQuery<T>(
 /**
  * Loads current View Query and moves the pointer/index to the next View Query in LView.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔloadViewQuery<T>(): T {
   const index = getCurrentQueryIndex();
@@ -451,7 +451,7 @@ export function ΔloadViewQuery<T>(): T {
  * @param read What to save in the query
  * @returns QueryList<T>
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
@@ -482,7 +482,7 @@ export function ΔcontentQuery<T>(
  * @param read What to save in the query
  * @returns QueryList<T>
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔstaticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
@@ -498,7 +498,7 @@ export function ΔstaticContentQuery<T>(
 
 /**
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔloadContentQuery<T>(): QueryList<T> {
   const lView = getLView();
