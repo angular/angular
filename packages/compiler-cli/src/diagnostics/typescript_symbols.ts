@@ -286,15 +286,15 @@ class TypeWrapper implements Symbol {
       }
       if (tsType.isNumberLiteral()) {
         const numberIndex = this.tsType.getNumberIndexType() !;
-        // get the right tuple Types. like 'var t: [number, string];' 
-        if (numberIndex.isUnion() && typeof value === "number") {
+        // get the right tuple Types. like 'var t: [number, string];'
+        if (numberIndex.isUnion() && typeof value === 'number') {
           return new TypeWrapper(numberIndex.types[value], this.context);
         }
         return new TypeWrapper(this.tsType.getNumberIndexType() !, this.context);
       }
     }
     return undefined;
-   }
+  }
 }
 
 class StringIndexTypeWrappr implements Symbol {
@@ -517,10 +517,7 @@ class SymbolTableWrapper implements SymbolTable {
 
 class SymbolTableAndStringIndexTypeWrapper extends SymbolTableWrapper {
   private _context: TypeContext;
-  constructor(
-    private tsType: ts.Type,
-    context: TypeContext,
-  ) {
+  constructor(private tsType: ts.Type, context: TypeContext, ) {
     super(tsType.getProperties(), context);
     this._context = context;
   }

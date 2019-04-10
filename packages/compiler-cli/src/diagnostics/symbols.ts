@@ -116,7 +116,8 @@ export interface Symbol {
 
   /**
    * Return the type of the expression if this symbol is indexed by `argument`.
-   * sometimes we need the key of arguments to get the type of the expression(type Example = [string, number]).
+   * sometimes we need the key of arguments to get the type of the expression(type Example =
+   * [string, number]).
    * If the symbol cannot be indexed, this method should return `undefined`.
    */
   indexed(argument: Symbol, key?: any): Symbol|undefined;
