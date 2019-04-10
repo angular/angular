@@ -347,7 +347,7 @@ const parentIndexStack: number[] = [];
  * @param message The translation message.
  * @param subTemplateIndex Optional sub-template index in the `message`.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getLView()[TVIEW];
@@ -534,7 +534,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
  *
  * @returns Transformed string that can be consumed by i18nStart instruction
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nPostprocess(
     message: string, replacements: {[key: string]: (string | string[])} = {}): string {
@@ -630,7 +630,7 @@ export function Δi18nPostprocess(
  * Translates a translation block marked by `i18nStart` and `i18nEnd`. It inserts the text/ICU nodes
  * into the render tree, moves the placeholder nodes and removes the deleted nodes.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nEnd(): void {
   const tView = getLView()[TVIEW];
@@ -919,7 +919,7 @@ function removeNode(index: number, viewData: LView) {
  * @param message The translation message.
  * @param subTemplateIndex Optional sub-template index in the `message`.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18n(index: number, message: string, subTemplateIndex?: number): void {
   Δi18nStart(index, message, subTemplateIndex);
@@ -932,7 +932,7 @@ export function Δi18n(index: number, message: string, subTemplateIndex?: number
  * @param index A unique index in the static block
  * @param values
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nAttributes(index: number, values: string[]): void {
   const tView = getLView()[TVIEW];
@@ -984,7 +984,7 @@ let shiftsCounter = 0;
  *
  * @param expression The binding's new value or NO_CHANGE
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nExp<T>(expression: T | NO_CHANGE): void {
   if (expression !== NO_CHANGE) {
@@ -999,7 +999,7 @@ export function Δi18nExp<T>(expression: T | NO_CHANGE): void {
  * @param index Index of either {@link i18nStart} (translation block) or {@link i18nAttributes}
  * (i18n attribute) on which it should update the content.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δi18nApply(index: number) {
   if (shiftsCounter) {

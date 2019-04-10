@@ -27,7 +27,7 @@ import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from '.
  *
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔinterpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
@@ -72,7 +72,7 @@ export function ΔinterpolationV(values: any[]): string|NO_CHANGE {
  * @param v0 value checked for change.
  * @param suffix static value used for concatenation only.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -84,7 +84,7 @@ export function Δinterpolation1(prefix: string, v0: any, suffix: string): strin
 /**
  * Creates an interpolation binding with 2 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
@@ -105,7 +105,7 @@ export function Δinterpolation2(
 /**
  * Creates an interpolation binding with 3 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
@@ -131,7 +131,7 @@ export function Δinterpolation3(
 /**
  * Create an interpolation binding with 4 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
@@ -159,7 +159,7 @@ export function Δinterpolation4(
 /**
  * Creates an interpolation binding with 5 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
@@ -189,7 +189,7 @@ export function Δinterpolation5(
 /**
  * Creates an interpolation binding with 6 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
@@ -220,7 +220,7 @@ export function Δinterpolation6(
 /**
  * Creates an interpolation binding with 7 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
@@ -254,7 +254,7 @@ export function Δinterpolation7(
 /**
  * Creates an interpolation binding with 8 expressions.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δinterpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,

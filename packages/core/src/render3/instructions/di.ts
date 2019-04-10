@@ -33,7 +33,7 @@ import {getLView, getPreviousOrParentTNode} from '../state';
  * @param flags Injection flags
  * @returns the value from the injector or `null` when not found
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
 export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
@@ -48,7 +48,7 @@ export function ΔdirectiveInject<T>(
 /**
  * Facade for the attribute injection from DI.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔinjectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);

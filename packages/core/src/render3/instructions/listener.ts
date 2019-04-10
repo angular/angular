@@ -29,7 +29,7 @@ import {BindingDirection, generatePropertyAliases, getCleanup, handleError, load
  * @param eventTargetResolver Function that returns global target information in case this listener
  * should be attached to a global object like window, document or body
  *
- * @publicApi
+ * @codeGenApi
  */
 export function Δlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
@@ -56,7 +56,7 @@ export function Δlistener(
 * @param eventTargetResolver Function that returns global target information in case this listener
 * should be attached to a global object like window, document or body
  *
- * @publicApi
+ * @codeGenApi
 */
 export function ΔcomponentHostSyntheticListener<T>(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
