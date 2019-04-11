@@ -123,7 +123,7 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
     get: () => {
       if (ngDirectiveDef === null) {
         const name = type && type.name;
-        const sourceMapUrl = `ng://${name}/ngDirectiveDef.js`;
+        const sourceMapUrl = `ng:///${name}/ngDirectiveDef.js`;
         const compiler = getCompilerFacade();
         const facade = directiveMetadata(type as ComponentType<any>, directive);
         facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
