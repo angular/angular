@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {NgLocalization, getPluralCategory} from '../i18n/localization';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -26,6 +26,7 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * @publicApi
  */
+@Injectable()
 @Pipe({name: 'i18nPlural', pure: true})
 export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}
