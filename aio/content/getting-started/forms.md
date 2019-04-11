@@ -25,62 +25,18 @@ First, you'll set up the checkout form model. The form model is the source of tr
 
     1. Inject the `FormBuilder` service. 
 
-        ```
-        export class CartComponent {
-          items;
-
-          constructor(
-            private cartService: CartService,
-            private formBuilder: FormBuilder,
-          ) { }
-        }
-        ```
-
-        <!-- 
-        To do: Replace with docregion  
-        -->
+      <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="inject-form-builder">
+      </code-example>
 
 1. In the `CartComponent` class, define the `checkoutForm` property to store the form model.
 
-    ```
-    export class CartComponent {
-      items;
-      checkoutForm;
-    }
-    ```
-    <!-- 
-      To do: Replace with docregion  
-    -->
+    <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="checkout-form">
+    </code-example>
 
 1. During checkout, the app will prompt the user for a name and address. So that you can gather that information later, set the `checkoutForm` property with a form model containing `name` and `address` fields, using the `FormBuilder#group()` method.
 
-    ```
-    export class CartComponent {
-      items;
-      checkoutForm;
-
-      constructor(
-        private formBuilder: FormBuilder,
-        private cartService: CartService
-      ) {
-        this.items = this.cartService.getItems();
-
-        this.checkoutForm = this.formBuilder.group({
-          name: '',
-          address: ''
-        });
-      }
-    ```
-    <!-- 
-      To do: Replace with docregion  
-    --->
-
-    <!-- 
-    The resulting `CartComponent` class should look like this: 
-
-    <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="props-services">
+    <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts" region="checkout-form-group" linenums="false">
     </code-example>
-    -->
 
 1. For the checkout process, users need to be able to submit the form data (their name and address). When the order is submitted, the form should reset and the cart should clear. 
 
@@ -88,8 +44,8 @@ First, you'll set up the checkout form model. The form model is the source of tr
 
     The entire cart component is shown below: 
 
-      <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts">
-      </code-example>
+    <code-example header="src/app/cart/cart.component.ts" path="getting-started/src/app/cart/cart.component.ts">
+    </code-example>
 
 The form model is defined in the component class. To reflect the model in the view, you'll need a checkout form.
 
@@ -103,49 +59,18 @@ Next, you'll add a checkout form at the bottom of the "Cart" page.
 
 1. Use a `formGroup` property binding to bind the `checkoutForm` to the `form` tag in the template. Also include a "Purchase" button to submit the form. 
 
-  ```
-  <form [formGroup]="checkoutForm">
-
-    <button class="button" type="submit">Purchase</button>  
-
-  </form>
-  ```
-  
-    <!-- 
-      Note: The preview might contain an error message, which will be resolved by the following steps. 
-      To do: Replace with docregion
-      If you define the name and address fields here, it generates and error in the preview. 
-      I had to add the formGroup property before the message would resolve. 
-    -->
-
-<!--
-1. Use a `formGroup` property binding to bind the `checkoutForm` to the `form` tag in the template.
-
-    ```    
-    <form [formGroup]="checkoutForm">
-    ...
-    </form>
-    ```
-
-    To do: Replace with docregion
--->
+  <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.3.html" region="checkout-form">
+  </code-example>
 
 1. On the `form` tag, use an `ngSubmit` event binding to listen for the form submission and call the `onSubmit()` method with the `checkoutForm` value.
 
-    ```    
-    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
-    ...
-    </form>
-    ```
-
-    <!-- 
-      To do: Replace with docregion
-    -->
+  <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-1">
+  </code-example>
 
 1. Add input fields for `name` and `address`.  Use the `formControlName` attribute binding to bind the `checkoutForm` form controls for `name` and `address` to their input fields. The final complete component is shown below: 
 
-    <code-example header="src/app/cart/cart.component.html" path="getting-started/src/app/cart/cart.component.html" region="checkout-form-2">
-    </code-example>
+  <code-example path="getting-started/src/app/cart/cart.component.html" region="checkout-form-2">
+  </code-example>
 
 After putting a few items in the cart, users can now review their items, enter name and address, and submit their purchase: 
 

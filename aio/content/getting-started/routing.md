@@ -70,12 +70,12 @@ The product details component handles the display of each product. The Angular R
 
     1. Import `ActivatedRoute` from the `@angular/router` package, and the `products` array from `../products`.
 
-        <code-example header="src/app/product-details/product-details.component.1.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="imports">
+        <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="imports">
         </code-example>
 
     1. Define the `product` property and inject the `ActivatedRoute` into the constructor.
 
-        <code-example path="getting-started/src/app/product-details/product-details.component.1.ts" region="props-methods">
+        <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="props-methods">
         </code-example>
 
         The `ActivatedRoute` is specific to each routed component loaded by the Angular Router. It contains information about the
