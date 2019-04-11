@@ -21,7 +21,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
       if (ngPipeDef === null) {
         const typeName = type.name;
         ngPipeDef =
-            getCompilerFacade().compilePipe(angularCoreEnv, `ng://${typeName}/ngPipeDef.js`, {
+            getCompilerFacade().compilePipe(angularCoreEnv, `ng:///${typeName}/ngPipeDef.js`, {
               type: type,
               typeArgumentCount: 0,
               name: typeName,
