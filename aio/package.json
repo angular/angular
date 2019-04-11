@@ -19,7 +19,7 @@
     "build-local": "yarn ~~build",
     "prebuild-with-ivy": "yarn setup-local && yarn ivy-ngcc --properties module es2015",
     "build-with-ivy": "node scripts/build-with-ivy",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js b00300ebd",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 664990cad",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
