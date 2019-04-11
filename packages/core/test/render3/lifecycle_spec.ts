@@ -7,8 +7,8 @@
  */
 
 import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, injectComponentFactoryResolver, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {markDirty, store, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, injectComponentFactoryResolver, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {markDirty, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -2346,7 +2346,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           ɵɵelementProperty(0, 'val1', ɵɵbind(1));
           ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
-          ɵɵΔselect(1);
+          ɵɵselect(1);
           ɵɵelementProperty(1, 'val1', ɵɵbind(2));
           ɵɵelementProperty(1, 'publicVal2', ɵɵbind(2));
           ɵɵselect(2);
