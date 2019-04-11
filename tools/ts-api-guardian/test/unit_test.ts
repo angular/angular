@@ -561,7 +561,7 @@ describe('unit test', () => {
         {paramTags: {requireAtLeastOne: ['stable']}});
   });
 
-  it('should require at least one of the requireOnOf tags', () => {
+  it('should require at least one of the requireAtLeastOne tags', () => {
     const input = `
       /** @experimental */
       export declare class A {
@@ -572,6 +572,43 @@ describe('unit test', () => {
         {'file.d.ts': input},
         'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable", "@foo", "@bar" - must exist on `param`.',
         {paramTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
+  });
+
+  it('should allow with one of the requireAtLeastOne tags found', () => {
+    const input = `
+      /**
+       * @foo
+       * @bar
+       * @stable
+       */
+      export declare class A {
+      }
+      /**
+       * @foo
+       */
+      export declare const b: string;
+      /**
+       * @bar
+       */
+      export declare var c: number;
+      /**
+       * @stable
+       */
+      export declare function d(): void;
+    `;
+    const expected = `
+    export declare class A {
+    }
+
+    export declare const b: string;
+
+    export declare var c: number;
+
+    export declare function d(): void;
+    `;
+    check(
+        {'file.d.ts': input}, expected,
+        {exportTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
   });
 });
 
