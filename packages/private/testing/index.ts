@@ -7,5 +7,4 @@
  */
 
 export * from './src/render3';
-export * from './src/goog_get_msg';
 export * from './src/ivy_test_selectors';

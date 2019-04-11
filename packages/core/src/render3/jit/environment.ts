@@ -117,6 +117,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'Δi18nEnd': r3.Δi18nEnd,
   'Δi18nApply': r3.Δi18nApply,
   'Δi18nPostprocess': r3.Δi18nPostprocess,
+  'Δi18nLocalize': r3.Δi18nLocalize,
   'ΔresolveWindow': r3.ΔresolveWindow,
   'ΔresolveDocument': r3.ΔresolveDocument,
   'ΔresolveBody': r3.ΔresolveBody,

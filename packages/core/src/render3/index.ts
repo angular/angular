@@ -107,6 +107,8 @@ export {
   Δi18nEnd,
   Δi18nApply,
   Δi18nPostprocess,
+  i18nConfigureLocalize,
+  Δi18nLocalize,
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
