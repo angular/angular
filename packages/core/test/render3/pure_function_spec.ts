@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AttributeMarker, ΔdefineComponent, Δtemplate} from '../../src/render3/index';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, ΔnextContext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵtemplate} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {ΔpureFunction1, ΔpureFunction2, ΔpureFunction3, ΔpureFunction4, ΔpureFunction5, ΔpureFunction6, ΔpureFunction7, ΔpureFunction8, ΔpureFunctionV} from '../../src/render3/pure_function';
+import {ɵɵpureFunction1, ɵɵpureFunction2, ɵɵpureFunction3, ɵɵpureFunction4, ɵɵpureFunction5, ɵɵpureFunction6, ɵɵpureFunction7, ɵɵpureFunction8, ɵɵpureFunctionV} from '../../src/render3/pure_function';
 import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from '../../test/render3/render_util';
 
 import {NgIf} from './common_with_def';
@@ -20,7 +20,7 @@ describe('array literals', () => {
     // TODO(issue/24571): remove '!'.
     names !: string[];
 
-    static ngComponentDef = ΔdefineComponent({
+    static ngComponentDef = ɵɵdefineComponent({
       type: MyComp,
       selectors: [['my-comp']],
       factory: function MyComp_Factory() { return myComp = new MyComp(); },
@@ -39,10 +39,10 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'my-comp');
+        ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'names', Δbind(ΔpureFunction1(1, e0_ff, ctx.customName)));
+        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction1(1, e0_ff, ctx.customName)));
       }
     }, 1, 3, directives);
 
@@ -75,11 +75,11 @@ describe('array literals', () => {
 
     function IfTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'my-comp');
+        ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        const comp = ΔnextContext();
-        ΔelementProperty(0, 'names', Δbind(ΔpureFunction1(1, e0_ff, comp.customName)));
+        const comp = ɵɵnextContext();
+        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction1(1, e0_ff, comp.customName)));
       }
     }
 
@@ -88,12 +88,12 @@ describe('array literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δtemplate(
+        ɵɵtemplate(
             0, IfTemplate, 1, 3, 'my-comp',
             [AttributeMarker.Bindings, 'names', AttributeMarker.Template, 'ngIf']);
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'ngIf', Δbind(ctx.showing));
+        ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
       }
     }, 1, 1, [MyComp, NgIf]);
 
@@ -114,7 +114,7 @@ describe('array literals', () => {
       // TODO(issue/24571): remove '!'.
       names2 !: string[];
 
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: ManyPropComp,
         selectors: [['many-prop-comp']],
         factory: function ManyPropComp_Factory() { return manyPropComp = new ManyPropComp(); },
@@ -134,11 +134,11 @@ describe('array literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'many-prop-comp');
+        ɵɵelement(0, 'many-prop-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'names1', Δbind(ΔpureFunction1(2, e0_ff, ctx.customName)));
-        ΔelementProperty(0, 'names2', Δbind(ΔpureFunction1(4, e0_ff_1, ctx.customName2)));
+        ɵɵelementProperty(0, 'names1', ɵɵbind(ɵɵpureFunction1(2, e0_ff, ctx.customName)));
+        ɵɵelementProperty(0, 'names2', ɵɵbind(ɵɵpureFunction1(4, e0_ff_1, ctx.customName2)));
       }
     }, 1, 6, [ManyPropComp]);
 
@@ -170,7 +170,7 @@ describe('array literals', () => {
         return arr;
       }
 
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
         factory: () => new ParentComp(),
@@ -178,13 +178,13 @@ describe('array literals', () => {
         vars: 3,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            ΔelementStart(0, 'my-comp');
+            ɵɵelementStart(0, 'my-comp');
             myComps.push(getDirectiveOnNode(0));
-            ΔelementEnd();
+            ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ΔelementProperty(
-                0, 'names', Δbind(ctx.someFn(ΔpureFunction1(1, e0_ff, ctx.customName))));
+            ɵɵelementProperty(
+                0, 'names', ɵɵbind(ctx.someFn(ɵɵpureFunction1(1, e0_ff, ctx.customName))));
           }
         },
         directives: directives
@@ -193,8 +193,8 @@ describe('array literals', () => {
 
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'parent-comp');
-        Δelement(1, 'parent-comp');
+        ɵɵelement(0, 'parent-comp');
+        ɵɵelement(1, 'parent-comp');
       }
     }, 2, 0, [ParentComp]);
 
@@ -218,11 +218,11 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'my-comp');
+        ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(
-            0, 'names', Δbind(ΔpureFunction2(1, e0_ff, ctx.customName, ctx.customName2)));
+        ɵɵelementProperty(
+            0, 'names', ɵɵbind(ɵɵpureFunction2(1, e0_ff, ctx.customName, ctx.customName2)));
       }
     }, 1, 4, directives);
 
@@ -279,37 +279,38 @@ describe('array literals', () => {
 
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'my-comp');
+        ɵɵelementStart(0, 'my-comp');
         f3Comp = getDirectiveOnNode(0);
-        ΔelementEnd();
-        ΔelementStart(1, 'my-comp');
+        ɵɵelementEnd();
+        ɵɵelementStart(1, 'my-comp');
         f4Comp = getDirectiveOnNode(1);
-        ΔelementEnd();
-        ΔelementStart(2, 'my-comp');
+        ɵɵelementEnd();
+        ɵɵelementStart(2, 'my-comp');
         f5Comp = getDirectiveOnNode(2);
-        ΔelementEnd();
-        ΔelementStart(3, 'my-comp');
+        ɵɵelementEnd();
+        ɵɵelementStart(3, 'my-comp');
         f6Comp = getDirectiveOnNode(3);
-        ΔelementEnd();
-        ΔelementStart(4, 'my-comp');
+        ɵɵelementEnd();
+        ɵɵelementStart(4, 'my-comp');
         f7Comp = getDirectiveOnNode(4);
-        ΔelementEnd();
-        ΔelementStart(5, 'my-comp');
+        ɵɵelementEnd();
+        ɵɵelementStart(5, 'my-comp');
         f8Comp = getDirectiveOnNode(5);
-        ΔelementEnd();
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'names', Δbind(ΔpureFunction3(6, e0_ff, c[5], c[6], c[7])));
-        ΔelementProperty(1, 'names', Δbind(ΔpureFunction4(10, e2_ff, c[4], c[5], c[6], c[7])));
-        ΔelementProperty(
-            2, 'names', Δbind(ΔpureFunction5(15, e4_ff, c[3], c[4], c[5], c[6], c[7])));
-        ΔelementProperty(
-            3, 'names', Δbind(ΔpureFunction6(21, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
-        ΔelementProperty(
-            4, 'names', Δbind(ΔpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
-        ΔelementProperty(
+        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction3(6, e0_ff, c[5], c[6], c[7])));
+        ɵɵelementProperty(1, 'names', ɵɵbind(ɵɵpureFunction4(10, e2_ff, c[4], c[5], c[6], c[7])));
+        ɵɵelementProperty(
+            2, 'names', ɵɵbind(ɵɵpureFunction5(15, e4_ff, c[3], c[4], c[5], c[6], c[7])));
+        ɵɵelementProperty(
+            3, 'names', ɵɵbind(ɵɵpureFunction6(21, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
+        ɵɵelementProperty(
+            4, 'names',
+            ɵɵbind(ɵɵpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+        ɵɵelementProperty(
             5, 'names',
-            Δbind(ΔpureFunction8(36, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+            ɵɵbind(ɵɵpureFunction8(36, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
       }
     }
 
@@ -352,12 +353,12 @@ describe('array literals', () => {
      */
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'my-comp');
+        ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(
-            0, 'names', Δbind(ΔpureFunctionV(3, e0_ff, [
-              c[0], c[1], c[2], c[3], ΔpureFunction1(1, e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
+        ɵɵelementProperty(
+            0, 'names', ɵɵbind(ɵɵpureFunctionV(3, e0_ff, [
+              c[0], c[1], c[2], c[3], ɵɵpureFunction1(1, e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
             ])));
       }
     }
@@ -386,7 +387,7 @@ describe('object literals', () => {
     // TODO(issue/24571): remove '!'.
     config !: {[key: string]: any};
 
-    static ngComponentDef = ΔdefineComponent({
+    static ngComponentDef = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
       factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
@@ -405,10 +406,10 @@ describe('object literals', () => {
     /** <object-comp [config]="{duration: 500, animation: name}"></object-comp> */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'object-comp');
+        ɵɵelement(0, 'object-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'config', Δbind(ΔpureFunction1(1, e0_ff, ctx.name)));
+        ɵɵelementProperty(0, 'config', ɵɵbind(ɵɵpureFunction1(1, e0_ff, ctx.name)));
       }
     }, 1, 3, defs);
 
@@ -442,14 +443,14 @@ describe('object literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'object-comp');
+        ɵɵelement(0, 'object-comp');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(
+        ɵɵelementProperty(
             0, 'config',
-            Δbind(ΔpureFunction2(
+            ɵɵbind(ɵɵpureFunction2(
                 5, e0_ff, ctx.name,
-                ΔpureFunction1(3, e0_ff_1, ΔpureFunction1(1, e0_ff_2, ctx.duration)))));
+                ɵɵpureFunction1(3, e0_ff_1, ɵɵpureFunction1(1, e0_ff_2, ctx.duration)))));
       }
     }, 1, 8, defs);
 
@@ -511,27 +512,27 @@ describe('object literals', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δcontainer(0);
+        ɵɵcontainer(0);
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(0);
+        ɵɵcontainerRefreshStart(0);
         {
           for (let i = 0; i < 2; i++) {
-            let rf1 = ΔembeddedViewStart(0, 1, 4);
+            let rf1 = ɵɵembeddedViewStart(0, 1, 4);
             if (rf1 & RenderFlags.Create) {
-              ΔelementStart(0, 'object-comp');
+              ɵɵelementStart(0, 'object-comp');
               objectComps.push(getDirectiveOnNode(0));
-              ΔelementEnd();
+              ɵɵelementEnd();
             }
             if (rf1 & RenderFlags.Update) {
-              ΔelementProperty(
-                  0, 'config',
-                  Δbind(ΔpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+              ɵɵelementProperty(
+                  0, 'config', ɵɵbind(ɵɵpureFunction2(
+                                   1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }
 

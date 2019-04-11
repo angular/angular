@@ -1305,69 +1305,69 @@
     "name": "wrapListener"
   },
   {
-    "name": "Δbind"
+    "name": "ɵɵbind"
   },
   {
-    "name": "ΔdefineComponent"
+    "name": "ɵɵdefineComponent"
   },
   {
-    "name": "ΔdefineDirective"
+    "name": "ɵɵdefineDirective"
   },
   {
-    "name": "ΔdefineInjectable"
+    "name": "ɵɵdefineInjectable"
   },
   {
-    "name": "ΔdirectiveInject"
+    "name": "ɵɵdirectiveInject"
   },
   {
-    "name": "ΔelementClassProp"
+    "name": "ɵɵelementClassProp"
   },
   {
-    "name": "ΔelementEnd"
+    "name": "ɵɵelementEnd"
   },
   {
-    "name": "ΔelementProperty"
+    "name": "ɵɵelementProperty"
   },
   {
-    "name": "ΔelementStart"
+    "name": "ɵɵelementStart"
   },
   {
-    "name": "ΔelementStyling"
+    "name": "ɵɵelementStyling"
   },
   {
-    "name": "ΔelementStylingApply"
+    "name": "ɵɵelementStylingApply"
   },
   {
-    "name": "ΔgetCurrentView"
+    "name": "ɵɵgetCurrentView"
   },
   {
-    "name": "Δinterpolation1"
+    "name": "ɵɵinterpolation1"
   },
   {
-    "name": "Δlistener"
+    "name": "ɵɵlistener"
   },
   {
-    "name": "ΔnamespaceHTML"
+    "name": "ɵɵnamespaceHTML"
   },
   {
-    "name": "ΔnextContext"
+    "name": "ɵɵnextContext"
   },
   {
-    "name": "Δreference"
+    "name": "ɵɵreference"
   },
   {
-    "name": "ΔrestoreView"
+    "name": "ɵɵrestoreView"
   },
   {
-    "name": "Δselect"
+    "name": "ɵɵselect"
   },
   {
-    "name": "Δtemplate"
+    "name": "ɵɵtemplate"
   },
   {
-    "name": "Δtext"
+    "name": "ɵɵtext"
   },
   {
-    "name": "ΔtextBinding"
+    "name": "ɵɵtextBinding"
   }
 ]

@@ -30,7 +30,7 @@ import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAt
  *
  * @codeGenApi
  */
-export function Δcontainer(index: number): void {
+export function ɵɵcontainer(index: number): void {
   const tNode = containerInternal(index, null, null);
   const lView = getLView();
   if (lView[TVIEW].firstTemplatePass) {
@@ -59,7 +59,7 @@ export function Δcontainer(index: number): void {
  *
  * @codeGenApi
  */
-export function Δtemplate(
+export function ɵɵtemplate(
     index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
@@ -87,7 +87,7 @@ export function Δtemplate(
  *
  * @codeGenApi
  */
-export function ΔcontainerRefreshStart(index: number): void {
+export function ɵɵcontainerRefreshStart(index: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   let previousOrParentTNode = loadInternal(tView.data, index) as TNode;
@@ -110,7 +110,7 @@ export function ΔcontainerRefreshStart(index: number): void {
  *
  * @codeGenApi
  */
-export function ΔcontainerRefreshEnd(): void {
+export function ɵɵcontainerRefreshEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);
