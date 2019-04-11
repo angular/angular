@@ -46,7 +46,7 @@ Later, in the [Forms](getting-started/forms "Getting Started: Forms") part of th
 
 1. Define methods to add items to the cart, return cart items, and clear the cart items: 
 
-    <code-example path="getting-started/src/app/cart.service.ts" region="methods"></code-example>
+    <code-example path="getting-started/src/app/cart.service.ts" region="methods" linenums="false"></code-example>
 
     <!--
     To check: StackBlitz includes the constructor. If it's important (and not obvious) that the methods be below the constructor, then we should show it or say something. 
@@ -341,15 +341,7 @@ Now that your app can retrieve shipping data, you'll create a shipping component
 
     1. Inject the cart service into the `ShippingComponent` class: 
 
-        ```
-        constructor(
-            private cartService: CartService
-        ) { }
-        ```
-
-        <!--
-        To do: Create docregion
-        -->
+        <code-example path="getting-started/src/app/shipping/shipping.component.ts" region="inject-cart-service"></code-example>
 
     1. Set the `shippingCosts` property using the `getShippingPrices()` method from cart service.
 
