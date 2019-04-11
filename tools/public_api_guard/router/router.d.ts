@@ -147,7 +147,7 @@ export declare class GuardsCheckStart extends RouterEvent {
 
 export declare type LoadChildren = string | LoadChildrenCallback;
 
-export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<NgModuleFactory<any>> | Promise<Type<any>> | Observable<Type<any>>;
+export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
 
 export declare type Navigation = {
     id: number;
