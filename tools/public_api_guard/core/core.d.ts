@@ -1236,6 +1236,11 @@ export declare function Δi18nEnd(): void;
 
 export declare function Δi18nExp<T>(expression: T | NO_CHANGE): void;
 
+/** @deprecated */
+export declare function Δi18nLocalize(input: string, placeholders?: {
+    [key: string]: string;
+}): string;
+
 export declare function Δi18nPostprocess(message: string, replacements?: {
     [key: string]: (string | string[]);
 }): string;

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {global} from './global';
+
 declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
@@ -38,8 +40,6 @@ declare global {
   }
 }
 
-declare let global: any;
-
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   const newCounters: NgDevModePerfCounters = {
     firstTemplatePass: 0,
@@ -69,31 +69,20 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     stylingApply: 0,
     stylingApplyCacheMiss: 0,
   };
-  // NOTE: Under Ivy we may have both window & global defined in the Node
-  //    environment since ensureDocument() in render3.ts sets global.window.
-  if (typeof window != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (window as any)['ngDevMode'] = newCounters;
-  }
-  if (typeof global != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (global as any)['ngDevMode'] = newCounters;
-  }
-  if (typeof self != 'undefined') {
-    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-    (self as any)['ngDevMode'] = newCounters;
-  }
+
+  // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
+  global['ngDevMode'] = newCounters;
   return newCounters;
 }
 
 /**
  * This checks to see if the `ngDevMode` has been set. If yes,
- * than we honor it, otherwise we default to dev mode with additional checks.
+ * then we honor it, otherwise we default to dev mode with additional checks.
  *
  * The idea is that unless we are doing production build where we explicitly
  * set `ngDevMode == false` we should be helping the developer by providing
  * as much early warning and errors as possible.
  */
-if (typeof ngDevMode === 'undefined' || ngDevMode) {
+if (typeof global['ngDevMode'] === 'undefined' || global['ngDevMode']) {
   ngDevModeResetPerfCounters();
 }
