@@ -88,32 +88,23 @@ export class MatList extends _MatListMixinBase implements CanDisableRipple, OnCh
   /** Emits when the state of the list changes. */
   _stateChanges = new Subject<void>();
 
-  /**
-   * @deprecated _elementRef parameter to be made required.
-   * @breaking-change 8.0.0
-   */
-  constructor(private _elementRef?: ElementRef<HTMLElement>) {
+  constructor(private _elementRef: ElementRef<HTMLElement>) {
     super();
 
-    if (this._getListType() === 'action-list' && _elementRef) {
+    if (this._getListType() === 'action-list') {
       _elementRef.nativeElement.classList.add('mat-action-list');
     }
   }
 
   _getListType(): 'list' | 'action-list' | null {
-    const elementRef = this._elementRef;
+    const nodeName = this._elementRef.nativeElement.nodeName.toLowerCase();
 
-    // @breaking-change 8.0.0 Remove null check once _elementRef is a required param.
-    if (elementRef) {
-      const nodeName = elementRef.nativeElement.nodeName.toLowerCase();
+    if (nodeName === 'mat-list') {
+      return 'list';
+    }
 
-      if (nodeName === 'mat-list') {
-        return 'list';
-      }
-
-      if (nodeName === 'mat-action-list') {
-        return 'action-list';
-      }
+    if (nodeName === 'mat-action-list') {
+      return 'action-list';
     }
 
     return null;
@@ -185,10 +176,9 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   @ContentChild(MatListIconCssMatStyler, {static: false}) _icon: MatListIconCssMatStyler;
 
   constructor(private _element: ElementRef<HTMLElement>,
+              _changeDetectorRef: ChangeDetectorRef,
               @Optional() navList?: MatNavList,
-              @Optional() list?: MatList,
-              // @breaking-change 8.0.0 `_changeDetectorRef` to be made into a required parameter.
-              _changeDetectorRef?: ChangeDetectorRef) {
+              @Optional() list?: MatList) {
     super();
     this._isInteractiveList = !!(navList || (list && list._getListType() === 'action-list'));
     this._list = navList || list;
@@ -201,8 +191,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
       element.setAttribute('type', 'button');
     }
 
-    // @breaking-change 8.0.0 Remove null check for _changeDetectorRef.
-    if (this._list && _changeDetectorRef) {
+    if (this._list) {
       // React to changes in the state of the parent list since
       // some of the item's properties depend on it (e.g. `disableRipple`).
       this._list._stateChanges.pipe(takeUntil(this._destroyed)).subscribe(() => {

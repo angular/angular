@@ -30,6 +30,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/material2/pull/15761',
       changes: ['MatSpinner', 'MatProgressSpinner']
+    },
+    {
+      pr: 'https://github.com/angular/material2/pull/15723',
+      changes: ['MatList', 'MatListItem']
     }
   ],
 

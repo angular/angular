@@ -10,7 +10,7 @@ export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 export declare class MatList extends _MatListMixinBase implements CanDisableRipple, OnChanges, OnDestroy {
     _stateChanges: Subject<void>;
-    constructor(_elementRef?: ElementRef<HTMLElement> | undefined);
+    constructor(_elementRef: ElementRef<HTMLElement>);
     _getListType(): 'list' | 'action-list' | null;
     ngOnChanges(): void;
     ngOnDestroy(): void;
@@ -29,7 +29,7 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
     _avatar: MatListAvatarCssMatStyler;
     _icon: MatListIconCssMatStyler;
     _lines: QueryList<MatLine>;
-    constructor(_element: ElementRef<HTMLElement>, navList?: MatNavList, list?: MatList, _changeDetectorRef?: ChangeDetectorRef);
+    constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, navList?: MatNavList, list?: MatList);
     _getHostElement(): HTMLElement;
     _isRippleDisabled(): boolean;
     ngAfterContentInit(): void;
