@@ -103,7 +103,7 @@ export declare function getLocaleNumberFormat(locale: string, type: NumberFormat
 
 export declare function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string;
 
-export declare function getLocalePluralCase(locale: string): (value: number) => Plural;
+export declare const getLocalePluralCase: (locale: string) => ((value: number) => Plural);
 
 export declare function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
 

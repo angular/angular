@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOfContext} from '@angular/common';
+import {NgForOfContext, registerLocaleData} from '@angular/common';
+import localeRo from '@angular/common/locales/ro';
 
 import {noop} from '../../../compiler/src/render3/view/util';
-import {Component as _Component} from '../../src/core';
+import {Component as _Component, ɵNgModuleDef as NgModuleDef, ɵɵdefineInjector} from '../../src/core';
 import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
 import {ɵɵallocHostVars, ɵɵbind, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵnextContext, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
@@ -17,8 +18,8 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n} from '../../src/render3/interfaces/i18n';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
+import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
-
 import {NgForOf, NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
@@ -2259,4 +2260,57 @@ describe('Runtime i18n', () => {
       });
     });
   });
+
+  it('should return the correct plural form for ICU expressions when using a specific locale',
+     () => {
+       registerLocaleData(localeRo);
+       const MSG_DIV = `{�0�, plural, 
+            =0 {no email} 
+            =one {one email} 
+            =few {a few emails} 
+            =other {lots of emails} 
+          }`;
+       const ctx = {value: 0};
+
+       class MyAppModule {
+         static ngLocaleIdDef = 'ro';
+         static ngInjectorDef = ɵɵdefineInjector({factory: () => new MyAppModule()});
+         static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
+       }
+       const myAppModuleFactory = new NgModuleFactory(MyAppModule);
+       const ngModuleRef = myAppModuleFactory.create(null);
+
+       const fixture = prepareFixture(
+           () => {
+             ɵɵelementStart(0, 'div');
+             ɵɵi18n(1, MSG_DIV);
+             ɵɵelementEnd();
+           },
+           () => {
+             ɵɵi18nExp(ɵɵbind(ctx.value));
+             ɵɵi18nApply(1);
+           },
+           2, 1);
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+
+       // Change detection cycle, no model changes
+       fixture.update();
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+
+       ctx.value = 1;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>one email<!--ICU 3--></div>');
+
+       ctx.value = 10;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>a few emails<!--ICU 3--></div>');
+
+       ctx.value = 20;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>lots of emails<!--ICU 3--></div>');
+
+       ctx.value = 0;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+     });
 });

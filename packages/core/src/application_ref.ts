@@ -15,6 +15,7 @@ import {getCompilerFacade} from './compiler/compiler_facade';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {ErrorHandler} from './error_handler';
+import {LOCALE_ID} from './i18n/tokens';
 import {Type} from './interface/type';
 import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
@@ -25,6 +26,7 @@ import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
+import {DEFAULT_LOCALE_ID, setLocaleId} from './render3/i18n';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';
@@ -261,6 +263,9 @@ export class PlatformRef {
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
+      // If the `LOCALE_ID` provider is defined at bootstrap we set the value for runtime i18n (ivy)
+      const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+      setLocaleId(localeId);
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
       ngZone !.runOutsideAngular(
           () => ngZone !.onError.subscribe(
