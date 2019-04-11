@@ -62,11 +62,11 @@ export class Identifiers {
     moduleName: CORE,
 
   };
-  static inject: o.ExternalReference = {name: 'Δinject', moduleName: CORE};
+  static inject: o.ExternalReference = {name: 'ɵɵinject', moduleName: CORE};
   static INJECTOR: o.ExternalReference = {name: 'INJECTOR', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
-  static ΔdefineInjectable: o.ExternalReference = {name: 'ΔdefineInjectable', moduleName: CORE};
-  static InjectableDef: o.ExternalReference = {name: 'ΔInjectableDef', moduleName: CORE};
+  static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
+  static InjectableDef: o.ExternalReference = {name: 'ɵɵInjectableDef', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,
@@ -92,7 +92,7 @@ export class Identifiers {
     name: 'ɵinlineInterpolate',
     moduleName: CORE,
   };
-  static interpolate: o.ExternalReference = {name: 'Δinterpolate', moduleName: CORE};
+  static interpolate: o.ExternalReference = {name: 'ɵɵinterpolate', moduleName: CORE};
   static EMPTY_ARRAY: o.ExternalReference = {name: 'ɵEMPTY_ARRAY', moduleName: CORE};
   static EMPTY_MAP: o.ExternalReference = {name: 'ɵEMPTY_MAP', moduleName: CORE};
   static Renderer: o.ExternalReference = {name: 'Renderer', moduleName: CORE};

@@ -64,7 +64,7 @@ import {scheduleTick, setInputsForProperty} from './shared';
  *
  * @codeGenApi
  */
-export function ΔelementStyling(
+export function ɵɵelementStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -106,7 +106,7 @@ export function ΔelementStyling(
  *
  * @codeGenApi
  */
-export function ΔelementHostStyling(
+export function ɵɵelementHostStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -166,7 +166,7 @@ function initElementStyling(
  *
  * @codeGenApi
  */
-export function ΔelementStyleProp(
+export function ɵɵelementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const valueToAdd = resolveStylePropValue(value, suffix);
@@ -200,7 +200,7 @@ export function ΔelementStyleProp(
  *
  * @codeGenApi
  */
-export function ΔelementHostStyleProp(
+export function ɵɵelementHostStyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
@@ -253,7 +253,7 @@ function resolveStylePropValue(
  *
  * @codeGenApi
  */
-export function ΔelementClassProp(
+export function ɵɵelementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory,
     forceOverride?: boolean): void {
   const input = (value instanceof BoundPlayerFactory) ?
@@ -283,7 +283,7 @@ export function ΔelementClassProp(
  *
  * @codeGenApi
  */
-export function ΔelementHostClassProp(
+export function ɵɵelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
@@ -326,7 +326,7 @@ function booleanOrNull(value: any): boolean|null {
  *
  * @codeGenApi
  */
-export function ΔelementStylingMap(
+export function ɵɵelementStylingMap(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const lView = getLView();
@@ -379,7 +379,7 @@ export function ΔelementStylingMap(
  *
  * @codeGenApi
  */
-export function ΔelementHostStylingMap(
+export function ɵɵelementHostStylingMap(
     classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
@@ -405,7 +405,7 @@ export function ΔelementHostStylingMap(
  *
  * @codeGenApi
  */
-export function ΔelementStylingApply(index: number): void {
+export function ɵɵelementStylingApply(index: number): void {
   elementStylingApplyInternal(DEFAULT_TEMPLATE_DIRECTIVE_INDEX, index);
 }
 
@@ -419,7 +419,7 @@ export function ΔelementStylingApply(index: number): void {
  *
  * @codeGenApi
  */
-export function ΔelementHostStylingApply(): void {
+export function ɵɵelementHostStylingApply(): void {
   elementStylingApplyInternal(getActiveDirectiveStylingIndex(), getSelectedIndex());
 }
 

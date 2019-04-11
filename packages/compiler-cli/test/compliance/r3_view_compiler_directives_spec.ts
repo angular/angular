@@ -38,7 +38,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+            MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -46,7 +46,7 @@ describe('compiler compliance: directives', () => {
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {
-                        $r3$.Δelement(0, "div");
+                        $r3$.ɵɵelement(0, "div");
                     }
                 },
                 encapsulation: 2
@@ -84,7 +84,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+            MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -92,7 +92,7 @@ describe('compiler compliance: directives', () => {
                 vars: 0,
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {
-                        $r3$.Δelement(0, "div");
+                        $r3$.ɵɵelement(0, "div");
                     }
                 },
                 encapsulation: 2
@@ -132,15 +132,15 @@ describe('compiler compliance: directives', () => {
                 …
                 const _c0 = [${AttributeMarker.Bindings}, "someDirective"];
                 …
-                MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+                MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                     …
                     template: function MyComponent_Template(rf, ctx) {
                         if (rf & 1) {
-                            $r3$.Δelement(0, "div", _c0);
+                            $r3$.ɵɵelement(0, "div", _c0);
                         }
                         if (rf & 2) {
-                            $r3$.Δselect(0);
-                            $r3$.ΔelementProperty(0, "someDirective", $r3$.Δbind(true));
+                            $r3$.ɵɵselect(0);
+                            $r3$.ɵɵelementProperty(0, "someDirective", $r3$.ɵɵbind(true));
                         }
                     },
                     …
@@ -187,15 +187,15 @@ describe('compiler compliance: directives', () => {
         const $_c0$ = ["directiveA", ""];
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtext(0, "Some content");
+            $r3$.ɵɵtext(0, "Some content");
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", $_c0$);
+              $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template", $_c0$);
             }
           },
           …
@@ -241,21 +241,21 @@ describe('compiler compliance: directives', () => {
         const $_c1$ = ["directiveA", ""];
         function MyComponent_ng_container_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementContainerStart(0, $_c1$);
-            $r3$.Δtext(1, "Some content");
-            $r3$.ΔelementContainerEnd();
+            $r3$.ɵɵelementContainerStart(0, $_c1$);
+            $r3$.ɵɵtext(1, "Some content");
+            $r3$.ɵɵelementContainerEnd();
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.Δtemplate(0, MyComponent_ng_container_0_Template, 2, 0, "ng-container", $_c0$);
+              $r3$.ɵɵtemplate(0, MyComponent_ng_container_0_Template, 2, 0, "ng-container", $_c0$);
             }
             if (rf & 2) {
-              $r3$.Δselect(0);
-              $r3$.ΔelementProperty(0, "ngIf", $r3$.Δbind(ctx.showing));
+              $r3$.ɵɵselect(0);
+              $r3$.ɵɵelementProperty(0, "ngIf", $r3$.ɵɵbind(ctx.showing));
             }
           },
           …
@@ -295,15 +295,15 @@ describe('compiler compliance: directives', () => {
                 …
                 const $c0_a0$ = [${AttributeMarker.Bindings}, "someDirective"];
                 …
-                MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+                MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                     …
                     template: function MyComponent_Template(rf, ctx) {
                         if (rf & 1) {
-                            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", $c0_a0$);
+                            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 0, 0, "ng-template", $c0_a0$);
                         }
                         if (rf & 2) {
-                            $r3$.Δselect(0);
-                            $r3$.ΔelementProperty(0, "someDirective", $r3$.Δbind(true));
+                            $r3$.ɵɵselect(0);
+                            $r3$.ɵɵelementProperty(0, "someDirective", $r3$.ɵɵbind(true));
                         }
                     },
                     …
@@ -344,11 +344,11 @@ describe('compiler compliance: directives', () => {
                 …
                 const $c0_a0$ = [${AttributeMarker.Template}, "someDirective"];
                 …
-                MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+                MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                     …
                     template: function MyComponent_Template(rf, ctx) {
                         if (rf & 1) {
-                            $r3$.Δtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0_a0$);
+                            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0_a0$);
                         }
                     },
                     …
@@ -393,13 +393,13 @@ describe('compiler compliance: directives', () => {
                 …
                 const $c0_a0$ = [${AttributeMarker.Bindings}, "someDirective"];
                 …
-                MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+                MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
                     …
                     template: function MyComponent_Template(rf, ctx) {
                         if (rf & 1) {
-                            $r3$.ΔelementStart(0, "div", $c0_a0$);
-                            $r3$.Δlistener("someDirective", function MyComponent_Template_div_someDirective_0_listener($event) { return ctx.noop(); });
-                            $r3$.ΔelementEnd();
+                            $r3$.ɵɵelementStart(0, "div", $c0_a0$);
+                            $r3$.ɵɵlistener("someDirective", function MyComponent_Template_div_someDirective_0_listener($event) { return ctx.noop(); });
+                            $r3$.ɵɵelementEnd();
                         }
                     },
                     …

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementAttribute, ΔelementClassProp, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔelementStyling, ΔelementStylingApply, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation2, ΔnextContext, Δreference, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵnextContext, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -21,12 +21,12 @@ describe('exports', () => {
       /** {{ myInput.value}} <input value="one" #myInput> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtext(0);
-          Δelement(1, 'input', ['value', 'one'], ['myInput', '']);
+          ɵɵtext(0);
+          ɵɵelement(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp = Δreference(2) as any;
-          ΔtextBinding(0, Δbind(tmp.value));
+          const tmp = ɵɵreference(2) as any;
+          ɵɵtextBinding(0, ɵɵbind(tmp.value));
         }
       }, 3, 1);
 
@@ -39,12 +39,12 @@ describe('exports', () => {
       /** <div [title]="myInput.value"</div> <input value="one" #myInput> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div');
-          Δelement(1, 'input', ['value', 'one'], ['myInput', '']);
+          ɵɵelement(0, 'div');
+          ɵɵelement(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp = Δreference(2) as any;
-          ΔelementProperty(0, 'title', Δbind(tmp.value));
+          const tmp = ɵɵreference(2) as any;
+          ɵɵelementProperty(0, 'title', ɵɵbind(tmp.value));
         }
       }, 3, 1);
 
@@ -56,12 +56,12 @@ describe('exports', () => {
       /** <div [attr.aria-label]="myInput.value"</div> <input value="one" #myInput> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div');
-          Δelement(1, 'input', ['value', 'one'], ['myInput', '']);
+          ɵɵelement(0, 'div');
+          ɵɵelement(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp = Δreference(2) as any;
-          ΔelementAttribute(0, 'aria-label', Δbind(tmp.value));
+          const tmp = ɵɵreference(2) as any;
+          ɵɵelementAttribute(0, 'aria-label', ɵɵbind(tmp.value));
         }
       }, 3, 1);
 
@@ -73,15 +73,15 @@ describe('exports', () => {
       /** <div [class.red]="myInput.checked"</div> <input type="checkbox" checked #myInput> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div', [AttributeMarker.Classes, 'red']);
-          ΔelementStyling(['red']);
-          ΔelementEnd();
-          Δelement(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
+          ɵɵelementStart(0, 'div', [AttributeMarker.Classes, 'red']);
+          ɵɵelementStyling(['red']);
+          ɵɵelementEnd();
+          ɵɵelement(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp = Δreference(2) as any;
-          ΔelementClassProp(0, 0, tmp.checked);
-          ΔelementStylingApply(0);
+          const tmp = ɵɵreference(2) as any;
+          ɵɵelementClassProp(0, 0, tmp.checked);
+          ɵɵelementStylingApply(0);
         }
       }, 3);
 
@@ -97,7 +97,7 @@ describe('exports', () => {
       class MyComponent {
         constructor() { myComponent = this; }
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['comp']],
           consts: 0,
@@ -113,7 +113,7 @@ describe('exports', () => {
 
         constructor() { myDir = this; }
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: MyDir,
           selectors: [['', 'myDir', '']],
           factory: () => new MyDir,
@@ -124,12 +124,12 @@ describe('exports', () => {
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['myDir', '']);
-          Δelement(1, 'comp', null, ['myComp', '']);
+          ɵɵelement(0, 'div', ['myDir', '']);
+          ɵɵelement(1, 'comp', null, ['myComp', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp = Δreference(2) as any;
-          ΔelementProperty(0, 'myDir', Δbind(tmp));
+          const tmp = ɵɵreference(2) as any;
+          ɵɵelementProperty(0, 'myDir', ɵɵbind(tmp));
         }
       }, 3, 1, [MyComponent, MyDir]);
 
@@ -145,7 +145,7 @@ describe('exports', () => {
 
         constructor() { myComponent = this; }
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['comp']],
           consts: 0,
@@ -159,16 +159,16 @@ describe('exports', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtext(0);
-          Δtext(1);
-          Δelement(2, 'comp', null, ['myComp', '']);
-          Δelement(4, 'input', ['value', 'one'], ['myInput', '']);
+          ɵɵtext(0);
+          ɵɵtext(1);
+          ɵɵelement(2, 'comp', null, ['myComp', '']);
+          ɵɵelement(4, 'input', ['value', 'one'], ['myInput', '']);
         }
         if (rf & RenderFlags.Update) {
-          const tmp1 = Δreference(3) as any;
-          const tmp2 = Δreference(5) as any;
-          ΔtextBinding(0, Δbind(tmp2.value));
-          ΔtextBinding(1, Δbind(tmp1.name));
+          const tmp1 = ɵɵreference(3) as any;
+          const tmp2 = ɵɵreference(5) as any;
+          ɵɵtextBinding(0, ɵɵbind(tmp2.value));
+          ɵɵtextBinding(1, ɵɵbind(tmp1.name));
         }
       }, 6, 2, [MyComponent]);
 
@@ -179,29 +179,29 @@ describe('exports', () => {
     it('should work inside a view container', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div');
-          { Δcontainer(1); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'div');
+          { ɵɵcontainer(1); }
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(1);
+          ɵɵcontainerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = ΔembeddedViewStart(1, 2, 1);
+              let rf1 = ɵɵembeddedViewStart(1, 2, 1);
               {
                 if (rf1 & RenderFlags.Create) {
-                  Δtext(0);
-                  Δelement(1, 'input', ['value', 'one'], ['myInput', '']);
+                  ɵɵtext(0);
+                  ɵɵelement(1, 'input', ['value', 'one'], ['myInput', '']);
                 }
                 if (rf1 & RenderFlags.Update) {
-                  const tmp = Δreference(2) as any;
-                  ΔtextBinding(0, Δbind(tmp.value));
+                  const tmp = ɵɵreference(2) as any;
+                  ɵɵtextBinding(0, ɵɵbind(tmp.value));
                 }
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 2);
 
@@ -230,48 +230,48 @@ describe('exports', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, app: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
-          ΔelementEnd();
-          Δtemplate(2, outerTemplate, 5, 2, 'div', [AttributeMarker.Template, 'ngIf']);
+          ɵɵelementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
+          ɵɵelementEnd();
+          ɵɵtemplate(2, outerTemplate, 5, 2, 'div', [AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(2, 'ngIf', Δbind(app.outer));
+          ɵɵelementProperty(2, 'ngIf', ɵɵbind(app.outer));
         }
       }, 3, 1, [NgIf]);
 
       function outerTemplate(rf: RenderFlags, outer: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div');
+          ɵɵelementStart(0, 'div');
           {
-            Δtext(1);
-            ΔelementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
-            ΔelementEnd();
-            Δtemplate(4, innerTemplate, 2, 2, 'div', [AttributeMarker.Template, 'ngIf']);
+            ɵɵtext(1);
+            ɵɵelementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
+            ɵɵelementEnd();
+            ɵɵtemplate(4, innerTemplate, 2, 2, 'div', [AttributeMarker.Template, 'ngIf']);
           }
-          ΔelementEnd();
+          ɵɵelementEnd();
         }
 
         if (rf & RenderFlags.Update) {
-          const app = ΔnextContext();
-          const outerInput = Δreference(1) as any;
-          ΔtextBinding(1, Δbind(outerInput.value));
-          ΔelementProperty(4, 'ngIf', Δbind(app.inner));
+          const app = ɵɵnextContext();
+          const outerInput = ɵɵreference(1) as any;
+          ɵɵtextBinding(1, ɵɵbind(outerInput.value));
+          ɵɵelementProperty(4, 'ngIf', ɵɵbind(app.inner));
         }
       }
 
       function innerTemplate(rf: RenderFlags, inner: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div');
-          { Δtext(1); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'div');
+          { ɵɵtext(1); }
+          ɵɵelementEnd();
         }
 
         if (rf & RenderFlags.Update) {
-          ΔnextContext();
-          const innerInput = Δreference(3) as any;
-          ΔnextContext();
-          const outerInput = Δreference(1) as any;
-          ΔtextBinding(1, Δinterpolation2('', outerInput.value, ' - ', innerInput.value, ''));
+          ɵɵnextContext();
+          const innerInput = ɵɵreference(3) as any;
+          ɵɵnextContext();
+          const outerInput = ɵɵreference(1) as any;
+          ɵɵtextBinding(1, ɵɵinterpolation2('', outerInput.value, ' - ', innerInput.value, ''));
         }
       }
 
