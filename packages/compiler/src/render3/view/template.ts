@@ -35,7 +35,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prep
 import {I18nContext} from './i18n/context';
 import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
-import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
+import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
 import {Instruction, StylingBuilder} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
@@ -321,14 +321,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
       transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
-    const _ref = ref || this.i18nAllocateRef(message.id);
+    const _ref = ref || o.variable(this.constantPool.uniqueName(TRANSLATION_PREFIX));
+    // Closure Compiler requires const names to start with `MSG_` but disallows any other const to
+    // start with `MSG_`. We define a variable starting with `MSG_` just for the `goog.getMsg` call
+    const closureVar = this.i18nGenerateClosureVar(message.id);
     const _params: {[key: string]: any} = {};
     if (params && Object.keys(params).length) {
       Object.keys(params).forEach(key => _params[formatI18nPlaceholderName(key)] = params[key]);
     }
     const meta = metaFromI18nMessage(message);
     const content = getSerializedI18nContent(message);
-    const statements = getTranslationDeclStmts(_ref, content, meta, _params, transformFn);
+    const statements =
+        getTranslationDeclStmts(_ref, closureVar, content, meta, _params, transformFn);
     this.constantPool.statements.push(...statements);
     return _ref;
   }
@@ -360,7 +364,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return bound;
   }
 
-  i18nAllocateRef(messageId: string): o.ReadVarExpr {
+  i18nGenerateClosureVar(messageId: string): o.ReadVarExpr {
     let name: string;
     const suffix = this.fileBasedI18nSuffix.toUpperCase();
     if (this.i18nUseExternalIds) {
@@ -424,7 +428,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18nContext) {
       this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !, meta);
     } else {
-      const ref = this.i18nAllocateRef((meta as i18n.Message).id);
+      const ref = o.variable(this.constantPool.uniqueName(TRANSLATION_PREFIX));
       this.i18n = new I18nContext(index, ref, 0, this.templateIndex, meta);
     }
 

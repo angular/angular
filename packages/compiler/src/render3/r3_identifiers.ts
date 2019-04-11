@@ -130,6 +130,7 @@ export class Identifiers {
   static i18nEnd: o.ExternalReference = {name: 'Δi18nEnd', moduleName: CORE};
   static i18nApply: o.ExternalReference = {name: 'Δi18nApply', moduleName: CORE};
   static i18nPostprocess: o.ExternalReference = {name: 'Δi18nPostprocess', moduleName: CORE};
+  static i18nLocalize: o.ExternalReference = {name: 'Δi18nLocalize', moduleName: CORE};
 
   static load: o.ExternalReference = {name: 'Δload', moduleName: CORE};
 

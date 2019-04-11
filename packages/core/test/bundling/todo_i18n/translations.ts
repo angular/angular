@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-declare var global: any;
-declare var window: any;
+import {ɵi18nConfigureLocalize} from '@angular/core';
 
 export const translations: {[key: string]: string} = {
   'What needs to be done?': `Qu'y a-t-il à faire ?`,
@@ -25,18 +24,4 @@ export const translations: {[key: string]: string} = {
   'Demonstrate internationalization': `Démontrer l'internationalisation`
 };
 
-// Runtime i18n uses Closure goog.getMsg for now
-// It will be replaced by the runtime service for external people
-const glob = typeof global !== 'undefined' ? global : window;
-glob.goog = glob.goog || {};
-glob.goog.getMsg =
-    glob.goog.getMsg || function(input: string, placeholders: {[key: string]: string} = {}) {
-      if (typeof translations[input] !== 'undefined') {  // to account for empty string
-        input = translations[input];
-      }
-      return Object.keys(placeholders).length ?
-          input.replace(/\{\$(.*?)\}/g, (match, key) => placeholders[key] || '') :
-          input;
-    };
-
-export const localize = goog.getMsg;
+ɵi18nConfigureLocalize({translations});

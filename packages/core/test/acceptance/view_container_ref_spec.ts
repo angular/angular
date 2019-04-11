@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('ViewContainerRef', () => {
 
@@ -22,7 +22,7 @@ describe('ViewContainerRef', () => {
   };
 
   beforeEach(() => {
-    polyfillGoogGetMsg(TRANSLATIONS);
+    ɵi18nConfigureLocalize({translations: TRANSLATIONS});
     TestBed.configureTestingModule(
         {declarations: [StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp]});
   });

@@ -77,7 +77,7 @@ const verifyTranslationIds =
 // verify that placeholders in translation string match
 // placeholders object defined as goog.getMsg function argument
 const verifyPlaceholdersIntegrity = (output: string) => {
-  const extactTranslations = (from: string) => {
+  const extractTranslations = (from: string) => {
     return extract(from, EXTRACT_GENERATED_TRANSLATIONS_REGEXP, v => [v[2], v[3]]);
   };
   const extractPlaceholdersFromBody = (body: string) => {
@@ -88,7 +88,7 @@ const verifyPlaceholdersIntegrity = (output: string) => {
     const regex = /\s+"(.+?)":\s*".*?"/g;
     return extract(args, regex, v => v[1]);
   };
-  const translations = extactTranslations(output);
+  const translations = extractTranslations(output);
   translations.forEach((translation) => {
     const bodyPhs = extractPlaceholdersFromBody(translation[0]);
     const argsPhs = extractPlaceholdersFromArgs(translation[1]);
@@ -185,68 +185,117 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = `
-        /**
-         * @desc descA
-         * @meaning meaningA
-         */
-        const $MSG_EXTERNAL_idA$ = goog.getMsg("Content A");
-        /**
-         * @desc descB
-         * @meaning meaningB
-         */
-        const $MSG_EXTERNAL_idB$ = goog.getMsg("Title B");
-        const $_c0$ = ["title", $MSG_EXTERNAL_idB$];
-        /**
-         * @desc meaningC
-         */
-        const $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$ = goog.getMsg("Title C");
-        const $_c1$ = ["title", $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$];
-        /**
-         * @desc descD
-         * @meaning meaningD
-         */
-        const $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$ = goog.getMsg("Title D");
-        const $_c2$ = ["title", $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$];
-        /**
-         * @desc meaningE
-         */
-        const $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$ = goog.getMsg("Title E");
-        const $_c3$ = ["title", $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$];
-        const $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$ = goog.getMsg("Title F");
-        const $_c4$ = ["title", $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$];
-        /**
-         * @desc [BACKUP_MESSAGE_ID:idH]desc
-         */
-        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$ = goog.getMsg("Title G");
-        const $_c5$ = ["title", $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$];
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc descA
+             * @meaning meaningA
+             */
+            const $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$ = goog.getMsg("Content A");
+            $I18N_0$ = $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Content A");
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc descB
+             * @meaning meaningB
+             */
+            const $MSG_EXTERNAL_idB$$APP_SPEC_TS_1$ = goog.getMsg("Title B");
+            $I18N_1$ = $MSG_EXTERNAL_idB$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Title B");
+        }
+        const $_c2$ = ["title", $I18N_1$];
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc meaningC
+             */
+            const $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$ = goog.getMsg("Title C");
+            $I18N_3$ = $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("Title C");
+        }
+        const $_c4$ = ["title", $I18N_3$];
+        var $I18N_5$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc descD
+             * @meaning meaningD
+             */
+            const $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$ = goog.getMsg("Title D");
+            $I18N_5$ = $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$;
+        }
+        else {
+            $I18N_5$ = $r3$.Δi18nLocalize("Title D");
+        }
+        const $_c6$ = ["title", $I18N_5$];
+        var $I18N_7$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc meaningE
+             */
+            const $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$ = goog.getMsg("Title E");
+            $I18N_7$ = $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$;
+        }
+        else {
+            $I18N_7$ = $r3$.Δi18nLocalize("Title E");
+        }
+        const $_c8$ = ["title", $I18N_7$];
+        var $I18N_9$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$ = goog.getMsg("Title F");
+            $I18N_9$ = $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$;
+        }
+        else {
+            $I18N_9$ = $r3$.Δi18nLocalize("Title F");
+        }
+        const $_c10$ = ["title", $I18N_9$];
+        var $I18N_11$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc [BACKUP_MESSAGE_ID:idH]desc
+             */
+            const $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$ = goog.getMsg("Title G");
+            $I18N_11$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$;
+        }
+        else {
+            $I18N_11$ = $r3$.Δi18nLocalize("Title G");
+        }
+        const $_c12$ = ["title", $I18N_11$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(2, "div");
-            $r3$.Δi18nAttributes(3, $_c0$);
+            $r3$.Δi18nAttributes(3, $_c2$);
             $r3$.Δtext(4, "Content B");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(5, "div");
-            $r3$.Δi18nAttributes(6, $_c1$);
+            $r3$.Δi18nAttributes(6, $_c4$);
             $r3$.Δtext(7, "Content C");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(8, "div");
-            $r3$.Δi18nAttributes(9, $_c2$);
+            $r3$.Δi18nAttributes(9, $_c6$);
             $r3$.Δtext(10, "Content D");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(11, "div");
-            $r3$.Δi18nAttributes(12, $_c3$);
+            $r3$.Δi18nAttributes(12, $_c8$);
             $r3$.Δtext(13, "Content E");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(14, "div");
-            $r3$.Δi18nAttributes(15, $_c4$);
+            $r3$.Δi18nAttributes(15, $_c10$);
             $r3$.Δtext(16, "Content F");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(17, "div");
-            $r3$.Δi18nAttributes(18, $_c5$);
+            $r3$.Δi18nAttributes(18, $_c12$);
             $r3$.Δtext(19, "Content G");
             $r3$.ΔelementEnd();
           }
@@ -281,12 +330,19 @@ describe('i18n support in the view compiler', () => {
 
       const output = `
         const $_c0$ = ["id", "static"];
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$ = goog.getMsg("introduction");
-        const $_c1$ = ["title", $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$];
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+          /**
+           * @desc d
+           * @meaning m
+           */
+          const $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$ = goog.getMsg("introduction");
+          $I18N_1$ = $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$;
+        }
+        else {
+          $I18N_1$ = $r3$.Δi18nLocalize("introduction");
+        }
+        const $_c1$ = ["title", $I18N_1$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -315,42 +371,83 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["id", "dynamic-1"];
-        const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        /**
-         * @desc d1
-         * @meaning m1
-         */
-        const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+          const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
+          $I18N_1$ = $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$;
+        }
+        else {
+          $I18N_1$ = $r3$.Δi18nLocalize("static text");
+        }
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+          /**
+           * @desc d
+           * @meaning m
+           */
+          const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
+            "interpolation": "\uFFFD0\uFFFD"
+          });
+          $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
+        }
+        else {
+          $I18N_2$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+            "interpolation": "\uFFFD0\uFFFD"
+          });
+        }
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d1
+             * @meaning m1
+             */
+            const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         const $_c1$ = [
-          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$,
-          "title", $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$,
-          "aria-label", $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$
+          "aria-roledescription", $I18N_1$,
+          "title", $I18N_2$,
+          "aria-label", $I18N_3$
         ];
         const $_c2$ = ["id", "dynamic-2"];
-        /**
-         * @desc d2
-         * @meaning m2
-         */
-        const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD",
-          "interpolation_2": "\uFFFD2\uFFFD"
-        });
-        const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_6$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d2
+             * @meaning m2
+             */
+            const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+              "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
+            });
+            $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
+        }
+        else {
+            $I18N_6$ = $r3$.Δi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+              "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
+            });
+        }
+        var $I18N_7$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_7$ = $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$;
+        }
+        else {
+            $I18N_7$ = $r3$.Δi18nLocalize("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         const $_c3$ = [
-          "title", $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$,
-          "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$
+          "title", $I18N_6$,
+          "aria-roledescription", $I18N_7$
         ];
         …
         consts: 5,
@@ -389,10 +486,23 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $_c0$ = ["title", $MSG_EXTERNAL_8977039798304050198$];
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d
+             * @meaning m
+             */
+            const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_8977039798304050198$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        const $_c0$ = ["title", $I18N_0$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -420,14 +530,23 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d
+             * @meaning m
+             */
+            const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("different scope {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        const $_c1$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
@@ -476,42 +595,83 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["id", "dynamic-1"];
-        const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        /**
-         * @desc d1
-         * @meaning m1
-         */
-        const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
+            $I18N_1$ = $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("static text");
+        }
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d
+             * @meaning m
+             */
+            const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d1
+             * @meaning m1
+             */
+            const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         const $_c1$ = [
-          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$,
-          "title", $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$,
-          "aria-label", $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$
+          "aria-roledescription", $I18N_1$,
+          "title", $I18N_2$,
+          "aria-label", $I18N_3$
         ];
         const $_c2$ = ["id", "dynamic-2"];
-        /**
-         * @desc d2
-         * @meaning m2
-         */
-        const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD",
-          "interpolation_2": "\uFFFD2\uFFFD"
-        });
-        const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_6$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d2
+             * @meaning m2
+             */
+            const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+              "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
+            });
+            $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
+        }
+        else {
+            $I18N_6$ = $r3$.Δi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+              "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
+            });
+        }
+        var $I18N_7$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_7$ = $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$;
+        }
+        else {
+            $I18N_7$ = $r3$.Δi18nLocalize("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         const $_c3$ = [
-          "title", $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$,
-          "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$
+          "title", $I18N_6$,
+          "aria-roledescription", $I18N_7$
         ];
         …
         consts: 5,
@@ -553,14 +713,23 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d
+             * @meaning m
+             */
+            const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("different scope {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        const $_c1$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
@@ -600,19 +769,33 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        /**
-         * @desc d
-         * @meaning m
-         */
-        const $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
-        const $_c0$ = ["title", $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_1$];
-        const $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$ = goog.getMsg("Some content");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            /**
+             * @desc d
+             * @meaning m
+             */
+            const $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_0$ = goog.getMsg("Element title");
+            $I18N_0$ = $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Element title");
+        }
+        const $_c1$ = ["title", $I18N_0$];
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_2$ = goog.getMsg("Some content");
+            $I18N_2$ = $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("Some content");
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nAttributes(1, $_c0$);
-            $r3$.Δi18n(2, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
+            $r3$.Δi18nAttributes(1, $_c1$);
+            $r3$.Δi18n(2, $I18N_2$);
             $r3$.ΔelementEnd();
           }
         }
@@ -621,7 +804,7 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
-    it('should sanitize ids and generate proper const names', () => {
+    it('should sanitize ids and generate proper var names', () => {
       const input = `
         <div i18n="@@ID.WITH.INVALID.CHARS.2" i18n-title="@@ID.WITH.INVALID.CHARS" title="Element title">
           Some content
@@ -629,9 +812,23 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0 = goog.getMsg("Element title");
-        const $_c1$ = ["title", MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0];
-        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_2 = goog.getMsg(" Some content ");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
+            $I18N_0$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Element title");
+        }
+        const $_c1$ = ["title", $I18N_0$];
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$ = goog.getMsg(" Some content ");
+            $I18N_2$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize(" Some content ");
+        }
         …
       `;
 
@@ -676,7 +873,14 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+            $I18N_0$ = $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+        }
       `;
 
       verify(input, output);
@@ -692,26 +896,47 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
-        const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #2");
-        const $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #3");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
+            $I18N_0$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #1");
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #2");
+            $I18N_1$ = $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #2");
+        }
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #3");
+            $I18N_2$ = $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("My i18n block #3");
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(2, "div");
             $r3$.Δtext(3, "My non-i18n block #1");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(4, "div");
-            $r3$.Δi18n(5, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$);
+            $r3$.Δi18n(5, $I18N_1$);
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(6, "div");
             $r3$.Δtext(7, "My non-i18n block #2");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(8, "div");
-            $r3$.Δi18n(9, $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$);
+            $r3$.Δi18n(9, $I18N_2$);
             $r3$.ΔelementEnd();
           }
         }
@@ -726,16 +951,25 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", {
-          "phA": "\uFFFD0\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", {
+              "phA": "\uFFFD0\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Some value: {$phA}", {
+              "phA": "\uFFFD0\uFFFD"
+            });
+        }
         …
         consts: 2,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -755,14 +989,23 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_6749967533321674787$ = goog.getMsg("{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6749967533321674787$$APP_SPEC_TS_0$ = goog.getMsg("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_6749967533321674787$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_6749967533321674787$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -784,15 +1027,25 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$ = goog.getMsg(" {$interpolation} {$interpolation_1} ", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$ = goog.getMsg(" {$interpolation} {$interpolation_1} ", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize(" {$interpolation} {$interpolation_1} ", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD"
+            });
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.Δpipe(2, "async");
             $r3$.ΔelementEnd();
           }
@@ -815,29 +1068,56 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_2$ = $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         …
         consts: 7,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(2, "div");
-            $r3$.Δi18n(3, $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$);
+            $r3$.Δi18n(3, $I18N_1$);
             $r3$.Δpipe(4, "uppercase");
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(5, "div");
-            $r3$.Δi18n(6, $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$);
+            $r3$.Δi18n(6, $I18N_2$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -876,32 +1156,57 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "startTagSpan": "\uFFFD#2\uFFFD",
-          "closeTagSpan": "\uFFFD/#2\uFFFD"
-        });
-        const $MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
-          "startTagSpan": "\uFFFD#8\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD",
-          "closeTagSpan": "\uFFFD/#8\uFFFD",
-          "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
-        });
-        const $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
+              "startTagSpan": "\uFFFD#8\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD",
+              "closeTagSpan": "\uFFFD/#8\uFFFD",
+              "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
+              "startTagSpan": "\uFFFD#8\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD",
+              "closeTagSpan": "\uFFFD/#8\uFFFD",
+              "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
+            });
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$);
         …
         consts: 9,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δelement(2, "span");
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(3, "div");
-            $r3$.Δi18nStart(4, $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
+            $r3$.Δi18nStart(4, $I18N_1$);
             $r3$.Δpipe(5, "uppercase");
             $r3$.ΔelementStart(6, "div");
             $r3$.ΔelementStart(7, "div");
@@ -943,40 +1248,83 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD"
-        });
-        const $_c0$ = ["title", $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$];
-        const $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "startTagSpan": "\uFFFD#2\uFFFD",
-          "closeTagSpan": "\uFFFD/#2\uFFFD"
-        });
-        const $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$ = goog.getMsg("Span title {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $_c1$ = ["title", $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$];
-        const $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$ = goog.getMsg(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "startTagSpan": "\uFFFD#7\uFFFD",
-          "closeTagSpan": "\uFFFD/#7\uFFFD"
-        });
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Span title {$interpolation} and {$interpolation_1}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD"
+            });
+        }
+        const $_c2$ = ["title", $I18N_1$];
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+        }
+        var $I18N_4$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$ = goog.getMsg("Span title {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_4$ = $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$;
+        }
+        else {
+            $I18N_4$ = $r3$.Δi18nLocalize("Span title {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        const $_c5$ = ["title", $I18N_4$];
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$ = goog.getMsg(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#7\uFFFD",
+              "closeTagSpan": "\uFFFD/#7\uFFFD"
+            });
+            $I18N_3$ = $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagSpan": "\uFFFD#7\uFFFD",
+              "closeTagSpan": "\uFFFD/#7\uFFFD"
+            });
+        }
         …
         consts: 9,
         vars: 7,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.ΔelementStart(2, "span");
-            $r3$.Δi18nAttributes(3, $_c0$);
+            $r3$.Δi18nAttributes(3, $_c2$);
             $r3$.ΔelementEnd();
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(4, "div");
-            $r3$.Δi18nStart(5, $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$);
+            $r3$.Δi18nStart(5, $I18N_3$);
             $r3$.Δpipe(6, "uppercase");
             $r3$.ΔelementStart(7, "span");
-            $r3$.Δi18nAttributes(8, $_c1$);
+            $r3$.Δi18nAttributes(8, $_c5$);
             $r3$.ΔelementEnd();
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
@@ -1017,18 +1365,30 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
-        const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
-          "interpolation": "\uFFFD0\uFFFD",
-          "startTagDiv": "\uFFFD#3\uFFFD",
-          "interpolation_1": "\uFFFD1\uFFFD",
-          "closeTagDiv": "\uFFFD/#3\uFFFD"
-        });
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagDiv": "\uFFFD#3\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD",
+              "closeTagDiv": "\uFFFD/#3\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
+              "interpolation": "\uFFFD0\uFFFD",
+              "startTagDiv": "\uFFFD#3\uFFFD",
+              "interpolation_1": "\uFFFD1\uFFFD",
+              "closeTagDiv": "\uFFFD/#3\uFFFD"
+            });
+        }
         …
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
             $r3$.ΔelementStart(1, "div");
-            $r3$.Δi18nStart(2, $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$);
+            $r3$.Δi18nStart(2, $I18N_1$);
             $r3$.Δelement(3, "div");
             $r3$.Δpipe(4, "uppercase");
             $r3$.Δi18nEnd();
@@ -1079,10 +1439,19 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δelement(0, "img", $_c0$);
           }
         }
-        const $MSG_EXTERNAL_2367729185105559721$ = goog.getMsg("App logo #{$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
-        const $_c3$ = ["title", $MSG_EXTERNAL_2367729185105559721$];
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2367729185105559721$$APP_SPEC_TS__2$ = goog.getMsg("App logo #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_2$ = $MSG_EXTERNAL_2367729185105559721$$APP_SPEC_TS__2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("App logo #{$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
+        const $_c3$ = ["title", $I18N_2$];
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "img", $_c0$);
@@ -1146,7 +1515,7 @@ describe('i18n support in the view compiler', () => {
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
+            $r3$.Δi18nStart(0, $I18N_0$, 2);
             $r3$.ΔelementStart(1, "div");
             $r3$.Δelement(2, "div");
             $r3$.ΔelementEnd();
@@ -1162,7 +1531,7 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 1);
+            $r3$.Δi18nStart(0, $I18N_0$, 1);
             $r3$.ΔelementStart(1, "div");
             $r3$.ΔelementStart(2, "div");
             $r3$.Δpipe(3, "uppercase");
@@ -1180,23 +1549,42 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δi18nApply(0);
           }
         }
-        const $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
-          "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
-          "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
-          "interpolation": "\uFFFD0:1\uFFFD",
-          "startTagDiv": "[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]",
-          "interpolation_1": "\uFFFD1:1\uFFFD",
-          "startTagDiv_1": "\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD",
-          "interpolation_2": "\uFFFD0:2\uFFFD",
-          "interpolation_3": "\uFFFD1:2\uFFFD",
-          "interpolation_4": "\uFFFD0:3\uFFFD",
-          "interpolation_5": "\uFFFD1:3\uFFFD"
-        });
-        const $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
+              "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
+              "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
+              "interpolation": "\uFFFD0:1\uFFFD",
+              "startTagDiv": "[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]",
+              "interpolation_1": "\uFFFD1:1\uFFFD",
+              "startTagDiv_1": "\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD",
+              "interpolation_2": "\uFFFD0:2\uFFFD",
+              "interpolation_3": "\uFFFD1:2\uFFFD",
+              "interpolation_4": "\uFFFD0:3\uFFFD",
+              "interpolation_5": "\uFFFD1:3\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
+              "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
+              "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
+              "interpolation": "\uFFFD0:1\uFFFD",
+              "startTagDiv": "[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]",
+              "interpolation_1": "\uFFFD1:1\uFFFD",
+              "startTagDiv_1": "\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD",
+              "interpolation_2": "\uFFFD0:2\uFFFD",
+              "interpolation_3": "\uFFFD1:2\uFFFD",
+              "interpolation_4": "\uFFFD0:3\uFFFD",
+              "interpolation_5": "\uFFFD1:3\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$);
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 3);
+            $r3$.Δi18nStart(0, $I18N_0$, 3);
             $r3$.ΔelementStart(1, "div");
             $r3$.Δelement(2, "div");
             $r3$.Δpipe(3, "uppercase");
@@ -1217,7 +1605,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
             $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
             $r3$.Δi18nEnd();
@@ -1242,16 +1630,27 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
-        const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
-          "startTagSpan": "\uFFFD#2\uFFFD",
-          "interpolation": "\uFFFD0\uFFFD",
-          "closeTagSpan": "\uFFFD/#2\uFFFD"
-        });
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "interpolation": "\uFFFD0\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD#2\uFFFD",
+              "interpolation": "\uFFFD0\uFFFD",
+              "closeTagSpan": "\uFFFD/#2\uFFFD"
+            });
+        }
         …
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
               $r3$.ΔelementStart(0, "div");
-              $r3$.Δi18nStart(1, $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$);
+              $r3$.Δi18nStart(1, $I18N_1$);
               $r3$.Δelement(2, "span");
               $r3$.Δi18nEnd();
               $r3$.ΔelementEnd();
@@ -1287,13 +1686,20 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Bindings}, "click"];
-        const $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS_2$ = goog.getMsg("Hello");
+            $I18N_1$ = $MSG_APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Hello");
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div", $_c0$);
             $r3$.Δlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
-            $r3$.Δi18n(1, $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$);
+            $r3$.Δi18n(1, $I18N_1$);
             $r3$.ΔelementEnd();
           }
         }
@@ -1310,12 +1716,19 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
+            $I18N_0$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #1");
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
         }
@@ -1330,8 +1743,15 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1340,7 +1760,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -1361,11 +1781,25 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #2");
-        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$ = goog.getMsg("My i18n block #1");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #2");
+            $I18N_0$ = $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #2");
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$ = goog.getMsg("My i18n block #1");
+            $I18N_1$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #1");
+        }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $I18N_1$);
           }
         }
         …
@@ -1373,7 +1807,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
             $r3$.ΔelementContainerStart(1);
-            $r3$.Δi18n(2, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(2, $I18N_0$);
             $r3$.ΔelementContainerEnd();
           }
         }
@@ -1390,19 +1824,33 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [${AttributeMarker.Classes}, "myClass"];
-        const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$ = goog.getMsg("Text #1");
-        const $_c1$ = [${AttributeMarker.Styles}, "padding", "10px"];
-        const $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$ = goog.getMsg("Text #2");
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_1$ = goog.getMsg("Text #1");
+            $I18N_1$ = $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Text #1");
+        }
+        const $_c2$ = [${AttributeMarker.Styles}, "padding", "10px"];
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_3$ = goog.getMsg("Text #2");
+            $I18N_3$ = $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("Text #2");
+        }
         …
         consts: 4,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "span", $_c0$);
-            $r3$.Δi18n(1, $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_1$);
             $r3$.ΔelementEnd();
             $r3$.ΔelementStart(2, "span", $_c1$);
-            $r3$.Δi18n(3, $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$);
+            $r3$.Δi18n(3, $I18N_3$);
             $r3$.ΔelementEnd();
           }
         }
@@ -1419,16 +1867,25 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+          const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+          $I18N_0$ = $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$;
+        }
+        else {
+          $I18N_0$ = $r3$.Δi18nLocalize("Some content: {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         …
         consts: 3,
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18n(1, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.Δpipe(2, "uppercase");
             $r3$.ΔelementContainerEnd();
           }
@@ -1449,12 +1906,21 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", {
-          "interpolation": "\uFFFD0\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Some content: {$interpolation}", {
+              "interpolation": "\uFFFD0\uFFFD"
+            });
+        }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$);
+            $r3$.Δi18n(0, $I18N_0$);
             $r3$.Δpipe(1, "uppercase");
           } if (rf & 2) {
             const $ctx_r0$ = $r3$.ΔnextContext();
@@ -1485,17 +1951,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
-          "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
-          "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
-          "startTagNgContainer": "\uFFFD#3\uFFFD",
-          "interpolation_1": "\uFFFD0\uFFFD",
-          "closeTagNgContainer": "\uFFFD/#3\uFFFD",
-          "interpolation": "\uFFFD0:1\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+          const $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
+            "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
+            "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
+            "startTagNgContainer": "\uFFFD#3\uFFFD",
+            "interpolation_1": "\uFFFD0\uFFFD",
+            "closeTagNgContainer": "\uFFFD/#3\uFFFD",
+            "interpolation": "\uFFFD0:1\uFFFD"
+          });
+          $I18N_0$ = $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$;
+        }
+        else {
+          $I18N_0$ = $r3$.Δi18nLocalize("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
+            "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
+            "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
+            "startTagNgContainer": "\uFFFD#3\uFFFD",
+            "interpolation_1": "\uFFFD0\uFFFD",
+            "closeTagNgContainer": "\uFFFD/#3\uFFFD",
+            "interpolation": "\uFFFD0:1\uFFFD"
+          });
+        }
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$, 1);
+            $r3$.Δi18n(0, $I18N_0$, 1);
             $r3$.Δpipe(1, "uppercase");
           }
           if (rf & 2) {
@@ -1511,7 +1991,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
             $r3$.ΔelementContainerStart(3);
             $r3$.Δpipe(4, "uppercase");
@@ -1537,17 +2017,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $I18N_1$);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ΔnextContext();
@@ -1563,7 +2057,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
             $r3$.ΔelementContainerStart(1);
-            $r3$.Δi18n(2, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(2, $I18N_0$);
             $r3$.ΔelementContainerEnd();
           }
           if (rf & 2) {
@@ -1595,7 +2089,7 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 3);
+            $r3$.Δi18n(0, $I18N_0$, 3);
           }
           if (rf & 2) {
             const $ctx_r2$ = $r3$.ΔnextContext(3);
@@ -1606,7 +2100,7 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 2);
+            $r3$.Δi18nStart(0, $I18N_0$, 2);
             $r3$.Δtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
             $r3$.Δi18nEnd();
           }
@@ -1617,17 +2111,30 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δi18nApply(0);
           }
         }
-        const $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
-          "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
-          "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
-          "interpolation": "\uFFFD0:1\uFFFD",
-          "interpolation_1": "\uFFFD0:2\uFFFD",
-          "interpolation_2": "\uFFFD0:3\uFFFD"
-        });
-        const $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
+              "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
+              "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
+              "interpolation": "\uFFFD0:1\uFFFD",
+              "interpolation_1": "\uFFFD0:2\uFFFD",
+              "interpolation_2": "\uFFFD0:3\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
+              "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
+              "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
+              "interpolation": "\uFFFD0:1\uFFFD",
+              "interpolation_1": "\uFFFD0:2\uFFFD",
+              "interpolation_2": "\uFFFD0:3\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$);
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 1);
+            $r3$.Δi18nStart(0, $I18N_0$, 1);
             $r3$.Δpipe(1, "uppercase");
             $r3$.Δtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
             $r3$.Δi18nEnd();
@@ -1645,7 +2152,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
@@ -1663,17 +2170,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_1$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$);
+            $r3$.Δi18n(0, $I18N_1$);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ΔnextContext();
@@ -1688,7 +2209,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementContainerEnd();
             $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
@@ -1715,15 +2236,33 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png", "title", "Logo"];
-        const $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo #1 ", {
-          "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
-        });
-        const $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$ = goog.getMsg("{$tagImg} is my logo #2 ", {
-          "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo #1 ", {
+              "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$tagImg} is my logo #1 ", {
+              "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
+            });
+        }
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$ = goog.getMsg("{$tagImg} is my logo #2 ", {
+              "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
+            });
+            $I18N_2$ = $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("{$tagImg} is my logo #2 ", {
+              "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
+            });
+        }
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$);
+            $r3$.Δi18nStart(0, $I18N_2$);
             $r3$.Δelement(1, "img", $_c0$);
             $r3$.Δi18nEnd();
           }
@@ -1732,7 +2271,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δelement(2, "img", $_c0$);
             $r3$.Δi18nEnd();
             $r3$.ΔelementContainerEnd();
@@ -1755,10 +2294,20 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$ = goog.getMsg(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
-          "startTagNgContainer": "\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagNgContainer": "\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$ = goog.getMsg(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
+              "startTagNgContainer": "\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagNgContainer": "\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
+              "startTagNgContainer": "\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagNgContainer": "\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"
+            });
+        }
         …
       `;
 
@@ -1775,8 +2324,22 @@ describe('i18n support in the view compiler', () => {
       // contain the same content. This should be optimized by translation statements caching, that
       // can be implemented in the future within FW-635.
       const output = String.raw `
-        const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$ = goog.getMsg("Test");
-        const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_1$ = goog.getMsg("Test");
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$ = goog.getMsg("Test");
+            $I18N_0$ = $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("Test");
+        }
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_1$ = goog.getMsg("Test");
+            $I18N_1$ = $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("Test");
+        }
         …
       `;
 
@@ -1794,16 +2357,26 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
-          "startTagSpan": "\uFFFD#3\uFFFD",
-          "closeTagSpan": "\uFFFD/#3\uFFFD"
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
+              "startTagSpan": "\uFFFD#3\uFFFD",
+              "closeTagSpan": "\uFFFD/#3\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
+              "startTagSpan": "\uFFFD#3\uFFFD",
+              "closeTagSpan": "\uFFFD/#3\uFFFD"
+            });
+        }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.Δtext(0, "\n        ");
             $r3$.ΔelementStart(1, "div");
-            $r3$.Δi18nStart(2, $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(2, $I18N_0$);
             $r3$.Δelement(3, "span");
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
@@ -1823,8 +2396,15 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1833,7 +2413,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -1853,8 +2433,15 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
-        const $I18N_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
       `;
@@ -1868,14 +2455,23 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+          "VAR_SELECT": "\uFFFD0\uFFFD"
+        });
         …
         consts: 1,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(0, $I18N_0$);
           }
           if (rf & 2) {
             $r3$.Δselect(0);
@@ -1900,21 +2496,35 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = ["title", "icu only", ${AttributeMarker.Template}, "ngIf"];
         const $_c1$ = ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"];
         const $_c2$ = ["title", "icu only"];
-        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_3$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        }
+        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div", $_c2$);
-            $r3$.Δi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$);
+            $r3$.Δi18n(1, $I18N_3$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -1925,17 +2535,26 @@ describe('i18n support in the view compiler', () => {
           }
         }
         const $_c3$ = ["title", "icu and text"];
-        const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
-          "interpolation": "\uFFFD1\uFFFD"
-        });
-        const $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$, {
+        var $I18N_5$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+            $I18N_5$ = $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$;
+        }
+        else {
+            $I18N_5$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+        }
+        $I18N_5$ = $r3$.Δi18nPostprocess($I18N_5$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div", $_c3$);
             $r3$.Δtext(1, " You have ");
-            $r3$.Δi18n(2, $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$);
+            $r3$.Δi18n(2, $I18N_5$);
             $r3$.Δtext(3, ". ");
             $r3$.ΔelementEnd();
           }
@@ -1953,7 +2572,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
             $r3$.Δtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
             $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
@@ -1979,15 +2598,26 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2949673783721159566$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
-          "interpolation": "\uFFFD1\uFFFD"
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+          "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_2949673783721159566$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2949673783721159566$$RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_2949673783721159566$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -2011,37 +2641,66 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
-          "startBoldText": "<b>",
-          "closeBoldText": "</b>",
-          "startItalicText": "<i>",
-          "closeItalicText": "</i>",
-          "startTagDiv": "<div class=\"other\">",
-          "closeTagDiv": "</div>"
-        });
-        const $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
+              "startBoldText": "<b>",
+              "closeBoldText": "</b>",
+              "startItalicText": "<i>",
+              "closeItalicText": "</i>",
+              "startTagDiv": "<div class=\"other\">",
+              "closeTagDiv": "</div>"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
+              "startBoldText": "<b>",
+              "closeBoldText": "</b>",
+              "startItalicText": "<i>",
+              "closeItalicText": "</i>",
+              "startTagDiv": "<div class=\"other\">",
+              "closeTagDiv": "</div>"
+            });
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = ["other", 1, "other", true];
-        const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
-          "startBoldText": "\uFFFD#2\uFFFD",
-          "closeBoldText": "\uFFFD/#2\uFFFD",
-          "startTagDiv": "\uFFFD#3\uFFFD",
-          "startItalicText": "\uFFFD#4\uFFFD",
-          "closeItalicText": "\uFFFD/#4\uFFFD",
-          "closeTagDiv": "\uFFFD/#3\uFFFD",
-          "icu": $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$
-        });
+        const $_c2$ = [1, "other"];
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+              "startBoldText": "\uFFFD#2\uFFFD",
+              "closeBoldText": "\uFFFD/#2\uFFFD",
+              "startTagDiv": "\uFFFD#3\uFFFD",
+              "startItalicText": "\uFFFD#4\uFFFD",
+              "closeItalicText": "\uFFFD/#4\uFFFD",
+              "closeTagDiv": "\uFFFD/#3\uFFFD",
+              "icu": I18N_APP_SPEC_TS_1
+            });
+            $I18N_0$ = $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+              "startBoldText": "\uFFFD#2\uFFFD",
+              "closeBoldText": "\uFFFD/#2\uFFFD",
+              "startTagDiv": "\uFFFD#3\uFFFD",
+              "startItalicText": "\uFFFD#4\uFFFD",
+              "closeItalicText": "\uFFFD/#4\uFFFD",
+              "closeTagDiv": "\uFFFD/#3\uFFFD",
+              "icu": I18N_APP_SPEC_TS_1
+            });
+        }
         …
         consts: 5,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δelement(2, "b");
             $r3$.ΔelementStart(3, "div");
-            $r3$.ΔelementStyling($_c0$);
+            $r3$.ΔelementStyling($_c2$);
             $r3$.Δelement(4, "i");
             $r3$.ΔelementEnd();
             $r3$.Δi18nEnd();
@@ -2063,10 +2722,19 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
-          "interpolation": "\uFFFD1\uFFFD"
-        });
-        const $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
+              "interpolation": "\uFFFD1\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2075,7 +2743,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -2099,25 +2767,49 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$, {
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+            $I18N_2$ = $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+        }
+        $I18N_2$ = $r3$.Δi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
-          "icu": $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$,
-          "icu_1": $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
+              "icu": $I18N_1$,
+              "icu_1": $I18N_2$
+            });
+            $I18N_0$ = $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$icu_1}", {
+              "icu": $I18N_1$,
+              "icu_1": $I18N_2$
+            });
+        }
         …
         consts: 2,
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -2146,33 +2838,66 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $MSG_APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS_2$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_2$, {
+        var $I18N_2$;
+        if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_2$ = $MSG_APP_SPEC_TS_2$;
+        }
+        else {
+            $I18N_2$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_2$ = $r3$.Δi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         const $_c3$ = [${AttributeMarker.Template}, "ngIf"];
-        const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_APP_SPEC_TS__4$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS__4$, {
+        var $I18N_4$;
+        if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_4$ = $MSG_APP_SPEC_TS__4$;
+        }
+        else {
+            $I18N_4$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_4$ = $r3$.Δi18nPostprocess($I18N_4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
-          "startTagDiv": "\uFFFD#2\uFFFD",
-          "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
-          "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
-          "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
-        });
-        const $I18N_APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_APP_SPEC_TS_0$, {
-          "ICU": [$I18N_APP_SPEC_TS_1$, $I18N_APP_SPEC_TS_2$, $I18N_APP_SPEC_TS__4$]
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
+              "startTagDiv": "\uFFFD#2\uFFFD",
+              "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
+              "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
+              "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
+            });
+            $I18N_0$ = $MSG_APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
+              "startTagDiv": "\uFFFD#2\uFFFD",
+              "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
+              "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
+              "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+          "ICU": [$I18N_1$, $I18N_2$, $I18N_4$]
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_APP_SPEC_TS_0$, 1);
-            $r3$.Δelement(1, "div");
-            $r3$.Δi18nEnd();
+              $r3$.Δi18nStart(0, $I18N_0$, 1);
+              $r3$.Δelement(1, "div");
+              $r3$.Δi18nEnd();
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ΔnextContext();
@@ -2187,7 +2912,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δelement(2, "div");
             $r3$.Δtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
             $r3$.Δi18nEnd();
@@ -2221,8 +2946,15 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
-        const $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
+            $I18N_0$ = $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
@@ -2232,7 +2964,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {
@@ -2261,24 +2993,50 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
-        const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
+        const $_c2$ = [${AttributeMarker.Template}, "ngIf"];
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+            $I18N_3$ = $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+        }
+        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
-          "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          "icu": $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$,
-          "icu_1": $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+              "icu": $I18N_1$,
+              "icu_1": $I18N_3$
+            });
+            $I18N_0$ = $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+              "icu": $I18N_1$,
+              "icu_1": $I18N_3$
+            });
+        }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$, 1);
+            $r3$.Δi18nStart(0, $I18N_0$, 1);
             $r3$.Δelement(1, "span");
             $r3$.Δi18nEnd();
           }
@@ -2295,7 +3053,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
@@ -2323,29 +3081,60 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
-          "interpolation": "\uFFFD1\uFFFD",
-          "interpolation_1": "\uFFFD2\uFFFD"
-        });
-        const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
+        var $I18N_1$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
+              "interpolation": "\uFFFD1\uFFFD",
+              "interpolation_1": "\uFFFD2\uFFFD"
+            });
+            $I18N_1$ = $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$;
+        }
+        else {
+            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
+              "interpolation": "\uFFFD1\uFFFD",
+              "interpolation_1": "\uFFFD2\uFFFD"
+            });
+        }
+        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
-        const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
-          "interpolation": "\uFFFD1:1\uFFFD"
-        });
-        const $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$, {
+        var $I18N_3$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
+              "interpolation": "\uFFFD1:1\uFFFD"
+            });
+            $I18N_3$ = $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$;
+        }
+        else {
+            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
+              "interpolation": "\uFFFD1:1\uFFFD"
+            });
+        }
+        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
-          "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          "icu": $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$,
-          "icu_1": $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$
-        });
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+              "icu": $I18N_1$,
+              "icu_1": $I18N_3$
+            });
+            $I18N_0$ = $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+              "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+              "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+              "icu": $I18N_1$,
+              "icu_1": $I18N_3$
+            });
+        }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$, 1);
+            $r3$.Δi18nStart(0, $I18N_0$, 1);
             $r3$.Δelement(1, "span");
             $r3$.Δi18nEnd();
           }
@@ -2363,7 +3152,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$);
+            $r3$.Δi18nStart(1, $I18N_0$);
             $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
             $r3$.Δi18nEnd();
             $r3$.ΔelementEnd();
@@ -2394,12 +3183,23 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
-          "phA": "\uFFFD1\uFFFD",
-          "phB": "\uFFFD2\uFFFD",
-          "phC": "\uFFFD3\uFFFD"
-        });
-        const $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = $r3$.Δi18nPostprocess($MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$, {
+        var $I18N_0$;
+        if (ngI18nClosureMode) {
+            const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
+              "phA": "\uFFFD1\uFFFD",
+              "phB": "\uFFFD2\uFFFD",
+              "phC": "\uFFFD3\uFFFD"
+            });
+            $I18N_0$ = $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$;
+        }
+        else {
+            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
+              "phA": "\uFFFD1\uFFFD",
+              "phB": "\uFFFD2\uFFFD",
+              "phC": "\uFFFD3\uFFFD"
+            });
+        }
+        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2408,7 +3208,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$);
+            $r3$.Δi18n(1, $I18N_0$);
             $r3$.ΔelementEnd();
           }
           if (rf & 2) {

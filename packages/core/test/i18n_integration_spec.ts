@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {onlyInIvy} from '@angular/private/testing';
 
 @Directive({
   selector: '[tplRef]',
@@ -79,7 +79,7 @@ const getFixtureWithOverrides = (overrides = {}) => {
 onlyInIvy('Ivy i18n logic').describe('i18n', function() {
 
   beforeEach(() => {
-    polyfillGoogGetMsg(TRANSLATIONS);
+    ɵi18nConfigureLocalize({translations: TRANSLATIONS});
     TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTplRef]});
   });
 
