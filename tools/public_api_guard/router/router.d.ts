@@ -159,7 +159,7 @@ export declare type Navigation = {
     previousNavigation: Navigation | null;
 };
 
-export declare class NavigationCancel extends RouterEvent {
+export declare class NavigationCancel extends NavigationFinally {
     reason: string;
     constructor(
     id: number,
@@ -168,7 +168,7 @@ export declare class NavigationCancel extends RouterEvent {
     toString(): string;
 }
 
-export declare class NavigationEnd extends RouterEvent {
+export declare class NavigationEnd extends NavigationFinally {
     urlAfterRedirects: string;
     constructor(
     id: number,
@@ -177,7 +177,7 @@ export declare class NavigationEnd extends RouterEvent {
     toString(): string;
 }
 
-export declare class NavigationError extends RouterEvent {
+export declare class NavigationError extends NavigationFinally {
     error: any;
     constructor(
     id: number,
@@ -199,6 +199,8 @@ export interface NavigationExtras {
         [k: string]: any;
     };
 }
+
+export declare abstract class NavigationFinally extends RouterEvent {}
 
 export declare class NavigationStart extends RouterEvent {
     navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
