@@ -39,7 +39,7 @@ export interface ResolvedTemplate {
  * TypeScript source files (inline templates or external referenced templates)
  */
 export class NgComponentTemplateVisitor {
-  resolvedTemplates = new Map<string, ResolvedTemplate>();
+  resolvedTemplates: ResolvedTemplate[] = [];
 
   constructor(public typeChecker: ts.TypeChecker) {}
 
@@ -95,7 +95,7 @@ export class NgComponentTemplateVisitor {
         // not part of the template content.
         const templateStartIdx = property.initializer.getStart() + 1;
         const filePath = resolve(sourceFileName);
-        this.resolvedTemplates.set(filePath, {
+        this.resolvedTemplates.push({
           filePath: filePath,
           container: node,
           content: property.initializer.text,
@@ -117,7 +117,7 @@ export class NgComponentTemplateVisitor {
         const fileContent = readFileSync(templatePath, 'utf8');
         const lineStartsMap = computeLineStartsMap(fileContent);
 
-        this.resolvedTemplates.set(templatePath, {
+        this.resolvedTemplates.push({
           filePath: templatePath,
           container: node,
           content: fileContent,
