@@ -14,6 +14,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @see `UpperCasePipe`
  * @see `TitleCasePipe`
+ * @see `SentenceCasePipe`
  * @usageNotes
  *
  * The following example defines a view that allows the user to enter
@@ -58,6 +59,7 @@ const unicodeWordMatch =
  *
  * @see `LowerCasePipe`
  * @see `UpperCasePipe`
+ * @see `SentenceCasePipe`
  *
  * @usageNotes
  * The following example shows the result of transforming various strings into title case.
@@ -87,6 +89,7 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see `LowerCasePipe`
  * @see `TitleCasePipe`
+ * @see `SentenceCasePipe`
  *
  * @ngModule CommonModule
  * @publicApi
@@ -102,5 +105,31 @@ export class UpperCasePipe implements PipeTransform {
       throw invalidPipeArgumentError(UpperCasePipe, value);
     }
     return value.toUpperCase();
+  }
+}
+
+/**
+ * Transforms text to all sentence case.
+ * Capitalizes the first letter on sentence, and transforms the
+ * rest of the word to lower case.
+ *
+ * @see `LowerCasePipe`
+ * @see `UpperCasePipe`
+ * @see `TitleCasePipe`
+ *
+ * @ngModule CommonModule
+ * @publicApi
+ */
+@Pipe({ name: 'sentencecase' })
+export class SentenceCasePipe implements PipeTransform {
+  /**
+   * @param value The string to transform to upper case.
+   */
+  transform(value: string): string {
+    if (!value) return value;
+    if (typeof value !== 'string') {
+      throw invalidPipeArgumentError(UpperCasePipe, value);
+    }
+    return value[0].toUpperCase()+value.substr(1).toLowerCase();
   }
 }
