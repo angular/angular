@@ -503,7 +503,8 @@ describe('instructions', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 4);
         t.update(() => {
           ɵɵselect(0);
-          ɵɵpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
+          ɵɵpropertyInterpolate4(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, end"></div>');
         t.update(() => {
@@ -527,7 +528,8 @@ describe('instructions', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 8);
         t.update(() => {
           ɵɵselect(0);
-          ɵɵpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end')(
+          ɵɵpropertyInterpolate4(
+              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
         });
         expect(t.html).toEqual(

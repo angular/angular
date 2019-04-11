@@ -1029,7 +1029,8 @@ describe('content projection', () => {
              }
              if (rf & RenderFlags.Update) {
                let tmp: any;
-               ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) && (ctx.template = tmp.first);
+               ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                   (ctx.template = tmp.first);
              }
            });
 

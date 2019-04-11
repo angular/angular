@@ -442,7 +442,8 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
+    expect(jsContents)
+        .toContain('i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });');
     expect(jsContents)
         .toContain('/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] });');
     expect(jsContents)
@@ -1308,7 +1309,8 @@ describe('ngtsc behavioral tests', () => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(`import * as i1 from "router";`);
       expect(dtsContents)
-          .toContain('i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
+          .toContain(
+              'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
     });
 
     it('should extract the generic type if it is provided as qualified type name', () => {

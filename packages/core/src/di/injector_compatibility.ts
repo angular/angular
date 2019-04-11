@@ -99,7 +99,8 @@ export function injectInjectorOnly<T>(
  */
 export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
 export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
+    null {
   return (_injectImplementation || injectInjectorOnly)(token, flags);
 }
 /**

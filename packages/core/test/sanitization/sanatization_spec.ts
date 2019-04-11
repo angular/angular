@@ -103,7 +103,8 @@ describe('sanitization', () => {
   it('should sanitize resourceUrls via sanitizeUrlOrResourceUrl', () => {
     const ERROR = 'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)';
     expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'iframe', 'src')).toThrowError(ERROR);
-    expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'iframe', 'src')).toThrowError(ERROR);
+    expect(() => ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'iframe', 'src'))
+        .toThrowError(ERROR);
     expect(
         () => ɵɵsanitizeUrlOrResourceUrl(
             bypassSanitizationTrustHtml('javascript:true'), 'iframe', 'src'))

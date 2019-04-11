@@ -175,8 +175,8 @@ describe('host bindings', () => {
       static ngComponentDef = ɵɵdefineComponent({
         type: CompWithProviders,
         selectors: [['comp-with-providers']],
-        factory:
-            () => new CompWithProviders(ɵɵdirectiveInject(ServiceOne), ɵɵdirectiveInject(ServiceTwo)),
+        factory: () => new CompWithProviders(
+                     ɵɵdirectiveInject(ServiceOne), ɵɵdirectiveInject(ServiceTwo)),
         consts: 0,
         vars: 0,
         hostBindings: (rf: RenderFlags, ctx: CompWithProviders, elIndex: number) => {
@@ -836,12 +836,12 @@ describe('host bindings', () => {
           }
           if (rf & RenderFlags.Update) {
             ɵɵelementProperty(
-                elIndex, 'id', ɵɵbind(ctx.condition ? ɵɵpureFunction1(2, ff, ctx.id) : 'green'), null,
-                true);
+                elIndex, 'id', ɵɵbind(ctx.condition ? ɵɵpureFunction1(2, ff, ctx.id) : 'green'),
+                null, true);
             ɵɵelementProperty(
                 elIndex, 'title',
-                ɵɵbind(ctx.otherCondition ? ɵɵpureFunction1(4, ff1, ctx.title) : 'other title'), null,
-                true);
+                ɵɵbind(ctx.otherCondition ? ɵɵpureFunction1(4, ff1, ctx.title) : 'other title'),
+                null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -1270,8 +1270,8 @@ describe('host bindings', () => {
     }
 
     verify(
-        'a', 'href', 'javascript:alert(1)', 'unsafe:javascript:alert(1)', ɵɵsanitizeUrlOrResourceUrl,
-        bypassSanitizationTrustUrl);
+        'a', 'href', 'javascript:alert(1)', 'unsafe:javascript:alert(1)',
+        ɵɵsanitizeUrlOrResourceUrl, bypassSanitizationTrustUrl);
     verify(
         'script', 'src', bypassSanitizationTrustResourceUrl('javascript:alert(2)'),
         'javascript:alert(2)', ɵɵsanitizeUrlOrResourceUrl, bypassSanitizationTrustResourceUrl);

@@ -860,9 +860,9 @@ describe('render3 integration test', () => {
         static ngDirectiveDef = ɵɵdefineDirective({
           type: TestDirective,
           selectors: [['', 'testDirective', '']],
-          factory:
-              () => testDirective = new TestDirective(
-                  ɵɵdirectiveInject(TemplateRef as any), ɵɵdirectiveInject(ViewContainerRef as any)),
+          factory: () => testDirective = new TestDirective(
+                       ɵɵdirectiveInject(TemplateRef as any),
+                       ɵɵdirectiveInject(ViewContainerRef as any)),
         });
       }
 
@@ -1027,9 +1027,9 @@ describe('render3 integration test', () => {
         static ngDirectiveDef = ɵɵdefineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory:
-              () => directive = new Directive(
-                  ɵɵdirectiveInject(TemplateRef as any), ɵɵdirectiveInject(ViewContainerRef as any)),
+          factory: () => directive = new Directive(
+                       ɵɵdirectiveInject(TemplateRef as any),
+                       ɵɵdirectiveInject(ViewContainerRef as any)),
         });
       }
 
@@ -1292,12 +1292,13 @@ describe('render3 integration test', () => {
             ɵɵelementAttribute(0, 'a0', ɵɵbind(c[1]));
             ɵɵelementAttribute(0, 'a1', ɵɵinterpolation1(c[0], c[1], c[16]));
             ɵɵelementAttribute(0, 'a2', ɵɵinterpolation2(c[0], c[1], c[2], c[3], c[16]));
-            ɵɵelementAttribute(0, 'a3', ɵɵinterpolation3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
+            ɵɵelementAttribute(
+                0, 'a3', ɵɵinterpolation3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
             ɵɵelementAttribute(
                 0, 'a4', ɵɵinterpolation4(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[16]));
             ɵɵelementAttribute(
-                0, 'a5',
-                ɵɵinterpolation5(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
+                0, 'a5', ɵɵinterpolation5(
+                             c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
             ɵɵelementAttribute(
                 0, 'a6', ɵɵinterpolation6(
                              c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10],

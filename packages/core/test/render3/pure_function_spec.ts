@@ -306,7 +306,8 @@ describe('array literals', () => {
         ɵɵelementProperty(
             3, 'names', ɵɵbind(ɵɵpureFunction6(21, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
         ɵɵelementProperty(
-            4, 'names', ɵɵbind(ɵɵpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+            4, 'names',
+            ɵɵbind(ɵɵpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
         ɵɵelementProperty(
             5, 'names',
             ɵɵbind(ɵɵpureFunction8(36, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
@@ -525,8 +526,8 @@ describe('object literals', () => {
             }
             if (rf1 & RenderFlags.Update) {
               ɵɵelementProperty(
-                  0, 'config',
-                  ɵɵbind(ɵɵpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+                  0, 'config', ɵɵbind(ɵɵpureFunction2(
+                                   1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
             }
             ɵɵembeddedViewEnd();
           }

@@ -268,7 +268,8 @@ describe('query', () => {
                 let tmp: any;
                 ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
                     (ctx.directive = tmp.first);
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                    (ctx.service = tmp.first);
                 ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
               }
             },
@@ -310,7 +311,8 @@ describe('query', () => {
                 ɵɵviewQuery(MyDirective, false, Alias);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) && (ctx.service = tmp.first);
+                ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+                    (ctx.service = tmp.first);
               }
             },
             directives: [MyDirective]

@@ -125,8 +125,9 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
 export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = ɵɵload<PipeTransform>(index);
   return unwrapValue(
-      isPure(index) ? ɵɵpureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
-                      pipeInstance.transform(v1, v2, v3));
+      isPure(index) ?
+          ɵɵpureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
+          pipeInstance.transform(v1, v2, v3));
 }
 
 /**

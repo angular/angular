@@ -367,7 +367,8 @@ describe('pipe', () => {
     }
 
     class ModuleA {
-      static ngInjectorDef = ɵɵdefineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
+      static ngInjectorDef =
+          ɵɵdefineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
       static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
     }
 
@@ -452,7 +453,9 @@ describe('pipe', () => {
       ɵɵpipe(1, 'wrappingPipe');
     }
 
-    function updateTemplate() { ɵɵtextBinding(0, ɵɵinterpolation1('', ɵɵpipeBind1(1, 1, null), '')); }
+    function updateTemplate() {
+      ɵɵtextBinding(0, ɵɵinterpolation1('', ɵɵpipeBind1(1, 1, null), ''));
+    }
 
     it('should unwrap', () => {
       const fixture =

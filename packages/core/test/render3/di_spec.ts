@@ -426,8 +426,8 @@ describe('di', () => {
         static ngDirectiveDef = ɵɵdefineDirective({
           type: DirA,
           selectors: [['', 'dirA', '']],
-          factory: () =>
-                       new DirA(ɵɵdirectiveInject(DirB), ɵɵdirectiveInject(ViewContainerRef as any)),
+          factory:
+              () => new DirA(ɵɵdirectiveInject(DirB), ɵɵdirectiveInject(ViewContainerRef as any)),
           exportAs: ['dirA']
         });
       }

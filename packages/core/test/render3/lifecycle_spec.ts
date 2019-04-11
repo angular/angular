@@ -227,8 +227,9 @@ describe('lifecycles', () => {
         static ngComponentDef = ɵɵdefineComponent({
           type: ViewContainerComp,
           selectors: [['view-container-comp']],
-          factory: () => viewContainerComp = new ViewContainerComp(
-                       ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+          factory:
+              () => viewContainerComp = new ViewContainerComp(
+                  ɵɵdirectiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
           consts: 0,
           vars: 0,
           template: (rf: RenderFlags, ctx: ViewContainerComp) => {}
@@ -2345,7 +2346,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           ɵɵelementProperty(0, 'val1', ɵɵbind(1));
           ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
-         ɵɵΔselect(1);
+          ɵɵΔselect(1);
           ɵɵelementProperty(1, 'val1', ɵɵbind(2));
           ɵɵelementProperty(1, 'publicVal2', ɵɵbind(2));
           ɵɵselect(2);
@@ -2967,7 +2968,8 @@ describe('lifecycles', () => {
 
       function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
         if (rf & RenderFlags.Create) {
-          ɵɵtemplate(0, null, 0, 1, 'ng-template', [AttributeMarker.Bindings, 'onDestroyDirective']);
+          ɵɵtemplate(
+              0, null, 0, 1, 'ng-template', [AttributeMarker.Bindings, 'onDestroyDirective']);
         }
       }
 

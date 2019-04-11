@@ -185,7 +185,8 @@ it('should not invoke renderer destroy method for embedded views', () => {
           ɵɵelementStart(0, 'div');
           ɵɵtext(1, 'Root view');
           ɵɵelementEnd();
-          ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
+          ɵɵtemplate(
+              2, MyComponent_div_Template_2, 2, 0, 'div', [AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           ɵɵelementProperty(2, 'ngIf', ɵɵbind(ctx.visible));

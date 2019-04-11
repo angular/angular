@@ -565,7 +565,8 @@ export function ɵɵpropertyInterpolate6(
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
+      index, propName,
+      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
   return ɵɵpropertyInterpolate6;
 }
 

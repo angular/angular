@@ -26,7 +26,8 @@ import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews
  *
  * @codeGenApi
  */
-export function ɵɵembeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags {
+export function ɵɵembeddedViewStart(
+    viewBlockId: number, consts: number, vars: number): RenderFlags {
   const lView = getLView();
   const previousOrParentTNode = getPreviousOrParentTNode();
   // The previous node can be a view node if we are processing an inline for loop

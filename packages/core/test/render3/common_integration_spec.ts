@@ -351,7 +351,8 @@ describe('@angular/common integration', () => {
           const cell = ctx.$implicit;
           const row = ɵɵnextContext().$implicit as any;
           const app = ɵɵnextContext() as any;
-          ɵɵtextBinding(1, ɵɵinterpolation3('', cell, ' - ', row.value, ' - ', app.items.length, ''));
+          ɵɵtextBinding(
+              1, ɵɵinterpolation3('', cell, ' - ', row.value, ' - ', app.items.length, ''));
         }
       }
 
@@ -828,10 +829,10 @@ describe('@angular/common integration', () => {
           const item0 = ɵɵnextContext().$implicit;
           const myApp = ɵɵnextContext();
           ɵɵtextBinding(1, ɵɵinterpolationV([
-                         '',  value,       '.', item7.value, '.', item6.value, '.', item5.value,
-                         '.', item4.value, '.', item3.value, '.', item2.value, '.', item1.value,
-                         '.', item0.value, '.', myApp.value, ''
-                       ]));
+                          '',  value,       '.', item7.value, '.', item6.value, '.', item5.value,
+                          '.', item4.value, '.', item3.value, '.', item2.value, '.', item1.value,
+                          '.', item0.value, '.', myApp.value, ''
+                        ]));
         }
       }
 
