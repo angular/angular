@@ -164,10 +164,9 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectableDef: i0.\u0275\u0275InjectableDef<Service>;');
   });
 
-  it('should compile Injectables with invalid constructor with explicit deps without errors',
-     () => {
-       env.tsconfig();
-       env.write('test.ts', `
+  it('should compile Injectables with invalid constructor with deps without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
         import {Injectable} from '@angular/core';
         
         export const TOKEN = 'TOKEN';
@@ -178,15 +177,16 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-       env.driveMain();
+    env.driveMain();
 
-       const jsContents = env.getContents('test.js');
-       expect(jsContents)
-           .toContain('Service.ngInjectableDef = i0.defineInjectable({ token: Service,');
-       expect(jsContents)
-           .toContain(
-               'function Service_Factory(t) { return new (t || Service)(i0.inject(TOKEN)); }');
-     });
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('Service.ngInjectableDef = i0.defineInjectable({ token: Service,');
+    expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+    expect(jsContents)
+        .toContain('throw new Error("Service has a constructor which is not compatible');
+    expect(jsContents).toContain('(r = new Service(i0.inject(TOKEN)));');
+    expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
+  });
 
   it('should compile @Injectable with an @Optional dependency', () => {
     env.tsconfig();

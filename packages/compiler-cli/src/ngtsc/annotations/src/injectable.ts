@@ -196,15 +196,12 @@ function extractInjectableMetadata(
       };
     } else {
       const userDeps = reflectDeps(meta, reflector);
-      if (userDeps !== undefined) {
-        // If `deps` was explicitly specified, consider those as constructor dependencies.
-        ctorDeps = userDeps;
-      } else if (strictCtorDeps) {
+      if (strictCtorDeps && userDeps === undefined) {
         // Since neither `use*` nor `deps` was provided, validate the deps according to
         // strictCtorDeps.
         validateConstructorDependencies(clazz, rawCtorDeps);
       }
-      return {name, type, typeArgumentCount, providedIn, ctorDeps};
+      return {name, type, typeArgumentCount, providedIn, ctorDeps, userDeps};
     }
   } else {
     throw new FatalDiagnosticError(

@@ -94,7 +94,16 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
       expression: o.importExpr(Identifiers.inject).callFn([meta.useExisting]),
     });
   } else {
-    result = compileFactoryFunction(factoryMeta);
+    if (meta.userDeps !== undefined) {
+      result = compileFactoryFunction({
+        ...factoryMeta,
+        delegate: meta.type,
+        delegateDeps: meta.userDeps,
+        delegateType: R3FactoryDelegateType.Class,
+      });
+    } else {
+      result = compileFactoryFunction(factoryMeta);
+    }
   }
 
   const token = meta.type;
