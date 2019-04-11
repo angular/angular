@@ -542,9 +542,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         stylingBuilder.registerStyleAttr(value);
       } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
-      } else if (attr.i18n) {
-        i18nAttrs.push(attr);
       } else {
+        if (attr.i18n) {
+          // Place attributes into a separate array for i18n processing, but also keep such
+          // attributes in the main list to make them available for directive matching at runtime.
+          // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
+          // arguments
+          i18nAttrs.push(attr);
+        }
         outputAttrs.push(attr);
       }
     }
@@ -565,15 +570,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     element.inputs.forEach((input: t.BoundAttribute) => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property) {
-          if (input.i18n) {
-            i18nAttrs.push(input);
-          } else {
-            allOtherInputs.push(input);
-          }
-        } else {
-          allOtherInputs.push(input);
+        if (input.type === BindingType.Property && input.i18n) {
+          // Place attributes into a separate array for i18n processing, but also keep such
+          // attributes in the main list to make them available for directive matching at runtime.
+          // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
+          // arguments
+          i18nAttrs.push(input);
         }
+        allOtherInputs.push(input);
       }
     });
 
@@ -730,6 +734,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           ];
         });
       } else if (instruction) {
+        // we must skip attributes with associated i18n context, since these attributes are handled
+        // separately and corresponding `i18nExp` and `i18nApply` instructions will be generated
+        if (input.i18n) return;
+
         const value = input.value.visit(this._valueConverter);
         if (value !== undefined) {
           const params: any[] = [];
