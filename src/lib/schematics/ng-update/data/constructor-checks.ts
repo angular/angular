@@ -26,6 +26,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/material2/issues/15734',
       changes: ['MatButton', 'MatAnchor']
+    },
+    {
+      pr: 'https://github.com/angular/material2/pull/15761',
+      changes: ['MatSpinner', 'MatProgressSpinner']
     }
   ],
 

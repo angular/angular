@@ -7,7 +7,7 @@ export declare function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgr
 export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
     readonly _circleRadius: number;
     readonly _circleStrokeWidth: number;
-    _elementRef: ElementRef;
+    _elementRef: ElementRef<HTMLElement>;
     _noopAnimations: boolean;
     readonly _strokeCircumference: number;
     readonly _strokeDashOffset: number | null;
@@ -16,7 +16,7 @@ export declare class MatProgressSpinner extends _MatProgressSpinnerMixinBase imp
     mode: ProgressSpinnerMode;
     strokeWidth: number;
     value: number;
-    constructor(_elementRef: ElementRef, platform: Platform, _document: any, animationMode?: string | undefined, defaults?: MatProgressSpinnerDefaultOptions | undefined);
+    constructor(_elementRef: ElementRef<HTMLElement>, platform: Platform, _document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
 }
 
 export declare class MatProgressSpinnerBase {
@@ -31,7 +31,7 @@ export interface MatProgressSpinnerDefaultOptions {
 }
 
 export declare class MatSpinner extends MatProgressSpinner {
-    constructor(elementRef: ElementRef, platform: Platform, document: any, animationMode?: string, defaults?: MatProgressSpinnerDefaultOptions);
+    constructor(elementRef: ElementRef<HTMLElement>, platform: Platform, document: any, animationMode: string, defaults?: MatProgressSpinnerDefaultOptions);
 }
 
 export declare type ProgressSpinnerMode = 'determinate' | 'indeterminate';

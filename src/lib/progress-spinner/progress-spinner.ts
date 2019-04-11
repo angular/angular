@@ -139,8 +139,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   private static styleTag: HTMLStyleElement|null = null;
 
   /** Whether the _mat-animation-noopable class should be applied, disabling animations.  */
-  _noopAnimations: boolean = this.animationMode === 'NoopAnimations' && (
-      !!this.defaults && !this.defaults._forceAnimations);
+  _noopAnimations: boolean;
 
   /** The diameter of the progress spinner (will set width and height of svg). */
   @Input()
@@ -175,16 +174,17 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
   }
 
-  constructor(public _elementRef: ElementRef,
+  constructor(public _elementRef: ElementRef<HTMLElement>,
               platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              // @breaking-change 8.0.0 animationMode and defaults parameters to be made required.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) private animationMode?: string,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                  private defaults?: MatProgressSpinnerDefaultOptions) {
+                  defaults?: MatProgressSpinnerDefaultOptions) {
 
     super(_elementRef);
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
+    this._noopAnimations = animationMode === 'NoopAnimations' &&
+        (!!defaults && !defaults._forceAnimations);
 
     if (defaults) {
       if (defaults.diameter) {
@@ -291,10 +291,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   encapsulation: ViewEncapsulation.None,
 })
 export class MatSpinner extends MatProgressSpinner {
-  constructor(elementRef: ElementRef, platform: Platform,
+  constructor(elementRef: ElementRef<HTMLElement>, platform: Platform,
               @Optional() @Inject(DOCUMENT) document: any,
-              // @breaking-change 8.0.0 animationMode and defaults parameters to be made required.
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
                   defaults?: MatProgressSpinnerDefaultOptions) {
     super(elementRef, platform, document, animationMode, defaults);
