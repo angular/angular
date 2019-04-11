@@ -35,5 +35,5 @@ export class CartService {
   getShippingPrices() {
     return this.http.get('/assets/shipping.json');
   }
-// #docregion props, methods, import-inject
+// #docregion props, methods, inject-http
 }

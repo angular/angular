@@ -43,8 +43,8 @@ import { ShippingComponent } from './shipping/shipping.component';
     ProductListComponent,
     ProductAlertsComponent,
     ProductDetailsComponent,
-// #enddocregion http-client-module
     CartComponent,
+// #enddocregion http-client-module
     ShippingComponent
 // #docregion http-client-module
   ],
