@@ -106,11 +106,35 @@ export class NavigationStart extends RouterEvent {
 /**
  * @description
  *
+ * Represents an event triggered when navigation is over. `NavigationEnd`,
+ * `NavigationCancel`, and `NavigationError`all extend the abstract `NavigationFinally` class.
+ *
+ * Example:
+ *
+ * ```
+ * class MyService {
+ *   constructor(public router: Router) {
+ *     router.events.pipe(
+ *       filter(e => e instanceof NavigationFinally)
+ *     ).subscribe(e => {
+ *       // do stuff...
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+export abstract class NavigationFinally extends RouterEvent {}
+
+/**
+ * @description
+ *
  * Represents an event triggered when a navigation ends successfully.
  *
  * @publicApi
  */
-export class NavigationEnd extends RouterEvent {
+export class NavigationEnd extends NavigationFinally {
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -134,7 +158,7 @@ export class NavigationEnd extends RouterEvent {
  *
  * @publicApi
  */
-export class NavigationCancel extends RouterEvent {
+export class NavigationCancel extends NavigationFinally {
   constructor(
       /** @docsNotRequired */
       id: number,
@@ -156,7 +180,7 @@ export class NavigationCancel extends RouterEvent {
  *
  * @publicApi
  */
-export class NavigationError extends RouterEvent {
+export class NavigationError extends NavigationFinally {
   constructor(
       /** @docsNotRequired */
       id: number,
