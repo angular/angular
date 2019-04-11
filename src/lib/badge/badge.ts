@@ -8,7 +8,6 @@
 
 import {AriaDescriber} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {DOCUMENT} from '@angular/common';
 import {
   Directive,
   ElementRef,
@@ -119,12 +118,10 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
   private _badgeElement: HTMLElement;
 
   constructor(
-      @Optional() @Inject(DOCUMENT) private _document: any,
       private _ngZone: NgZone,
       private _elementRef: ElementRef<HTMLElement>,
       private _ariaDescriber: AriaDescriber,
-      /** @breaking-change 8.0.0 Make _renderer a required param and remove _document. */
-      private _renderer?: Renderer2,
+      private _renderer: Renderer2,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
       super();
     }
@@ -159,8 +156,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
 
       // When creating a badge through the Renderer, Angular will keep it in an index.
       // We have to destroy it ourselves, otherwise it'll be retained in memory.
-      // @breaking-change 8.0.0 remove _renderer from null.
-      if (this._renderer && this._renderer.destroyNode) {
+      if (this._renderer.destroyNode) {
         this._renderer.destroyNode(badgeElement);
       }
     }
@@ -178,9 +174,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
 
   /** Creates the badge element */
   private _createBadgeElement(): HTMLElement {
-    // @breaking-change 8.0.0 Remove null check for _renderer
-    const rootNode = this._renderer || this._document;
-    const badgeElement = rootNode.createElement('span');
+    const badgeElement = this._renderer.createElement('span');
     const activeClass = 'mat-badge-active';
     const contentClass = 'mat-badge-content';
 

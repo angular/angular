@@ -10,8 +10,7 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, O
     overlap: boolean;
     position: MatBadgePosition;
     size: MatBadgeSize;
-    constructor(_document: any, _ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _ariaDescriber: AriaDescriber,
-    _renderer?: Renderer2 | undefined, _animationMode?: string | undefined);
+    constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _ariaDescriber: AriaDescriber, _renderer: Renderer2, _animationMode?: string | undefined);
     isAbove(): boolean;
     isAfter(): boolean;
     ngOnChanges(changes: SimpleChanges): void;
