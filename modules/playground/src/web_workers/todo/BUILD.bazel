@@ -34,6 +34,11 @@ ts_devserver(
         "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
-    static_files = ["@npm//node_modules/zone.js:dist/zone.js"],
+    static_files = [
+        "@npm//node_modules/systemjs:dist/system.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/long-stack-trace-zone.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
+    ],
     deps = [":todo"],
 )
