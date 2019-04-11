@@ -71,7 +71,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           throw new Error(`Unreachable state.`);
         }
         def = getCompilerFacade().compileInjectable(
-            angularCoreDiEnv, `ng://${type.name}/ngInjectableDef.js`, compilerMeta);
+            angularCoreDiEnv, `ng:///${type.name}/ngInjectableDef.js`, compilerMeta);
       }
       return def;
     },
