@@ -12,6 +12,11 @@
         "$source": "argv",
         "index": 0
       }
+    },
+    "skipInstall": {
+      "description": "When true, does not install dependency packages.",
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
