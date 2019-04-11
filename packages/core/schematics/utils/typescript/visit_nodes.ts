@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-export interface TypeScriptVisitor { visitNode(node: ts.Node); }
+export interface TypeScriptVisitor { visitNode(node: ts.Node): void; }
 
 export function visitAllNodes(node: ts.Node, visitors: TypeScriptVisitor[]) {
   visitors.forEach(v => v.visitNode(node));
