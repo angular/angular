@@ -134,6 +134,8 @@ export {
   Δi18nEnd,
   Δi18nApply,
   Δi18nPostprocess,
+  i18nConfigureLocalize as ɵi18nConfigureLocalize,
+  Δi18nLocalize,
   setClassMetadata as ɵsetClassMetadata,
   ΔresolveWindow,
   ΔresolveDocument,

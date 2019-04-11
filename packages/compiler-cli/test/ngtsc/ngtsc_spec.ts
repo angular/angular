@@ -1887,7 +1887,7 @@ describe('ngtsc behavioral tests', () => {
     `);
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i18n(1, MSG_EXTERNAL_8321000940098097247$$TEST_TS_0);');
+    expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_1');
   });
 
   it('should take i18nUseExternalIds config option into account', () => {
@@ -1902,7 +1902,7 @@ describe('ngtsc behavioral tests', () => {
     `);
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i18n(1, MSG_TEST_TS_0);');
+    expect(jsContents).not.toContain('MSG_EXTERNAL_');
   });
 
   it('@Component\'s `interpolation` should override default interpolation config', () => {
