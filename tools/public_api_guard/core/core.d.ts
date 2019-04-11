@@ -224,6 +224,12 @@ export declare const DebugElement: {
     new (...args: any[]): DebugElement;
 };
 
+export declare class DebugEventListener {
+    callback: Function;
+    name: string;
+    constructor(name: string, callback: Function);
+}
+
 export interface DebugNode {
     readonly componentInstance: any;
     readonly context: any;

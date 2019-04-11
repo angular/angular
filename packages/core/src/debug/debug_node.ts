@@ -21,6 +21,9 @@ import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} fr
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
+/**
+ * @publicApi
+ */
 export class DebugEventListener {
   constructor(public name: string, public callback: Function) {}
 }
