@@ -25,6 +25,7 @@ import {debounceTime, filter, map, mapTo, startWith, takeUntil} from 'rxjs/opera
 
 import {CELL_SELECTOR, EDIT_PANE_CLASS, EDIT_PANE_SELECTOR, ROW_SELECTOR} from './constants';
 import {EditEventDispatcher} from './edit-event-dispatcher';
+import {FocusDispatcher} from './focus-dispatcher';
 import {closest} from './polyfill';
 import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strategy-factory';
 
@@ -59,7 +60,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
   constructor(
       protected readonly elementRef: ElementRef,
       protected readonly editEventDispatcher: EditEventDispatcher,
-      protected readonly ngZone: NgZone) {}
+      protected readonly focusDispatcher: FocusDispatcher, protected readonly ngZone: NgZone) {}
 
   ngAfterViewInit(): void {
     this._listenForTableEvents();
@@ -96,6 +97,11 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
           filter(event => event.key === 'Enter'),
           toClosest(CELL_SELECTOR),
           ).subscribe(this.editEventDispatcher.editing);
+
+      // Keydown must be used here or else key autorepeat does not work properly on some platforms.
+      fromEvent<KeyboardEvent>(element, 'keydown')
+          .pipe(takeUntil(this.destroyed))
+          .subscribe(this.focusDispatcher.keyObserver);
     });
   }
 }
@@ -109,6 +115,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
   selector: '[cdkPopoverEdit]',
   host: {
     'tabIndex': '0',
+    'class': 'cdk-popover-edit-cell',
     '[attr.aria-haspopup]': 'true',
   }
 })

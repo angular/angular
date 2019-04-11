@@ -12,7 +12,9 @@ ng_module(
     "@npm//@angular/forms",
     "@npm//rxjs",
     "//src/cdk/a11y",
+    "//src/cdk/bidi",
     "//src/cdk/overlay",
+    "//src/cdk/keycodes",
     "//src/cdk/portal",
   ],
 )
@@ -25,8 +27,11 @@ ng_test_library(
     "@npm//@angular/common",
     "@npm//@angular/forms",
     "@npm//rxjs",
+    "//src/cdk/bidi",
     "//src/cdk/collections",
+    "//src/cdk/keycodes",
     "//src/cdk/table",
+    "//src/cdk/testing",
   ],
 )
 
