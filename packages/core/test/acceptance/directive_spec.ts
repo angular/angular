@@ -18,6 +18,10 @@ describe('directives', () => {
     class TestDirective {
     }
 
+    @Directive({selector: '[title]'})
+    class TitleDirective {
+    }
+
     @Component({selector: 'test-cmpt', template: ''})
     class TestComponent {
     }
@@ -38,6 +42,18 @@ describe('directives', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TestDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
+    it('should match directives on i18n-annotated attributes', () => {
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div title="My title" i18n-title="Title translation description"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TitleDirective));
 
       expect(nodesWithDirective.length).toBe(1);
     });
