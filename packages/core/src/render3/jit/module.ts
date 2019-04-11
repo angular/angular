@@ -107,7 +107,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
     get: () => {
       if (ngModuleDef === null) {
         ngModuleDef = getCompilerFacade().compileNgModule(
-            angularCoreEnv, `ng://${moduleType.name}/ngModuleDef.js`, {
+            angularCoreEnv, `ng:///${moduleType.name}/ngModuleDef.js`, {
               type: moduleType,
               bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY, resolveForwardRef),
               declarations: declarations.map(resolveForwardRef),
@@ -142,7 +142,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
           ],
         };
         ngInjectorDef = getCompilerFacade().compileInjector(
-            angularCoreEnv, `ng://${moduleType.name}/ngInjectorDef.js`, meta);
+            angularCoreEnv, `ng:///${moduleType.name}/ngInjectorDef.js`, meta);
       }
       return ngInjectorDef;
     },
