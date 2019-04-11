@@ -32,7 +32,7 @@ export declare class MatExpansionModule {
 }
 
 export declare class MatExpansionPanel extends CdkAccordionItem implements AfterContentInit, OnChanges, OnDestroy {
-    _animationMode?: string | undefined;
+    _animationMode: string;
     _body: ElementRef<HTMLElement>;
     _bodyAnimationDone: Subject<AnimationEvent>;
     _headerId: string;
@@ -43,7 +43,7 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     afterCollapse: EventEmitter<void>;
     afterExpand: EventEmitter<void>;
     hideToggle: boolean;
-    constructor(accordion: MatAccordionBase, _changeDetectorRef: ChangeDetectorRef, _uniqueSelectionDispatcher: UniqueSelectionDispatcher, _viewContainerRef: ViewContainerRef, _document?: any, _animationMode?: string | undefined, defaultOptions?: MatExpansionPanelDefaultOptions);
+    constructor(accordion: MatAccordionBase, _changeDetectorRef: ChangeDetectorRef, _uniqueSelectionDispatcher: UniqueSelectionDispatcher, _viewContainerRef: ViewContainerRef, _document: any, _animationMode: string, defaultOptions?: MatExpansionPanelDefaultOptions);
     _containsFocus(): boolean;
     _getExpandedState(): MatExpansionPanelState;
     _hasSpacing(): boolean;

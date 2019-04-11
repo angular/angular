@@ -101,9 +101,7 @@ export const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS =
 export class MatExpansionPanel extends CdkAccordionItem implements AfterContentInit, OnChanges,
   OnDestroy {
 
-  // @breaking-change 8.0.0 Remove `| undefined` from here
-  // when the `_document` constructor param is required.
-  private _document: Document | undefined;
+  private _document: Document;
 
   /** Whether the toggle indicator should be hidden. */
   @Input()
@@ -146,9 +144,8 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
               private _viewContainerRef: ViewContainerRef,
-              // @breaking-change 8.0.0 _document and _animationMode to be made required
-              @Inject(DOCUMENT) _document?: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Inject(DOCUMENT) _document: any,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode: string,
               @Inject(MAT_EXPANSION_PANEL_DEFAULT_OPTIONS) @Optional()
                   defaultOptions?: MatExpansionPanelDefaultOptions) {
     super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
@@ -215,7 +212,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
 
   /** Checks whether the expansion panel's content contains the currently-focused element. */
   _containsFocus(): boolean {
-    if (this._body && this._document) {
+    if (this._body) {
       const focusedElement = this._document.activeElement;
       const bodyElement = this._body.nativeElement;
       return focusedElement === bodyElement || bodyElement.contains(focusedElement);
