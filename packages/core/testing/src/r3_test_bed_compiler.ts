@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, ErrorHandler, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgZone, Injector, Pipe, PlatformRef, Provider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵɵInjectableDef as InjectableDef, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵDirectiveDef as DirectiveDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵtransitiveScopesFor as transitiveScopesFor,} from '@angular/core';
+import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgZone, Injector, Pipe, PlatformRef, Provider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵɵInjectableDef as InjectableDef, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵDirectiveDef as DirectiveDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵtransitiveScopesFor as transitiveScopesFor,} from '@angular/core';
 import {ResourceLoader} from '@angular/compiler';
 
 import {clearResolutionOfComponentResourcesQueue, restoreComponentResolutionQueue, resolveComponentResources, isComponentDefPendingResolution} from '../../src/metadata/resource_loading';
@@ -513,10 +513,6 @@ export class R3TestBedCompiler {
     class RootScopeModule {
     }
 
-    @NgModule({providers: [{provide: ErrorHandler, useClass: R3TestErrorHandler}]})
-    class R3ErrorHandlerModule {
-    }
-
     const ngZone = new NgZone({enableLongStackTrace: true});
     const providers: Provider[] = [
       {provide: NgZone, useValue: ngZone},
@@ -524,8 +520,7 @@ export class R3TestBedCompiler {
       ...this.providers,
       ...this.providerOverrides,
     ];
-    const imports =
-        [RootScopeModule, this.additionalModuleTypes, R3ErrorHandlerModule, this.imports || []];
+    const imports = [RootScopeModule, this.additionalModuleTypes, this.imports || []];
 
     // clang-format off
     compileNgModuleDefs(this.testModuleType, {
@@ -631,11 +626,6 @@ function flatten<T>(values: any[], mapFn?: (value: T) => any): T[] {
     }
   });
   return out;
-}
-
-/** Error handler used for tests. Rethrows errors rather than logging them out. */
-class R3TestErrorHandler extends ErrorHandler {
-  handleError(error: any) { throw error; }
 }
 
 class R3TestCompiler implements Compiler {

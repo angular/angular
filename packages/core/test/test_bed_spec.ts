@@ -267,6 +267,51 @@ describe('TestBed', () => {
     TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
 
     expect(TestBed.get(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
+
+  });
+
+  it('should throw errors in CD', () => {
+    @Component({selector: 'my-comp', template: ''})
+    class MyComp {
+      name !: {hello: string};
+
+      ngOnInit() {
+        // this should throw because this.name is undefined
+        this.name.hello = 'hello';
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+
+    expect(() => {
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+    }).toThrowError();
+  });
+
+  // TODO(FW-1245): properly fix issue where errors in listeners aren't thrown and don't cause
+  // tests to fail. This is an issue in both View Engine and Ivy, and may require a breaking
+  // change to completely fix (since simple re-throwing breaks handlers in ngrx, etc).
+  xit('should throw errors in listeners', () => {
+
+    @Component({selector: 'my-comp', template: '<button (click)="onClick()">Click me</button>'})
+    class MyComp {
+      name !: {hello: string};
+
+      onClick() {
+        // this should throw because this.name is undefined
+        this.name.hello = 'hello';
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(() => {
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+    }).toThrowError();
   });
 
   onlyInIvy('TestBed should handle AOT pre-compiled Components')
