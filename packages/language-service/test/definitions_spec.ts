@@ -26,22 +26,22 @@ describe('definitions', () => {
 
   it('should be able to find field in an interpolation', () => {
     localReference(
-        ` @Component({template: '{{«name»}}'}) export class MyComponent { «ΔnameΔ: string;» }`);
+        ` @Component({template: '{{«name»}}'}) export class MyComponent { «ɵɵnameɵɵ: string;» }`);
   });
 
   it('should be able to find a field in a attribute reference', () => {
     localReference(
-        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { «ΔnameΔ: string;» }`);
+        ` @Component({template: '<input [(ngModel)]="«name»">'}) export class MyComponent { «ɵɵnameɵɵ: string;» }`);
   });
 
   it('should be able to find a method from a call', () => {
     localReference(
-        ` @Component({template: '<div (click)="«myClick»();"></div>'}) export class MyComponent { «ΔmyClickΔ() { }»}`);
+        ` @Component({template: '<div (click)="«myClick»();"></div>'}) export class MyComponent { «ɵɵmyClickɵɵ() { }»}`);
   });
 
   it('should be able to find a field reference in an *ngIf', () => {
     localReference(
-        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { «ΔincludeΔ = true;»}`);
+        ` @Component({template: '<div *ngIf="«include»"></div>'}) export class MyComponent { «ɵɵincludeɵɵ = true;»}`);
   });
 
   it('should be able to find a reference to a component', () => {
