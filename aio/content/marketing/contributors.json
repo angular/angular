@@ -778,5 +778,13 @@
     "groups": ["Collaborators"],
     "mentor": "gregmagolan",
     "picture": "globegitter.jpg"
+  },
+  "ahsanayaz": {
+    "name": "Muhammad Ahsan Ayaz",
+    "picture": "ahsanayaz.jpg",
+    "twitter": "ahsan_ayz",
+    "website": "https://medium.com/@ahsan.ayaz",
+    "bio": "Muhammad Ahsan Ayaz is Software Architect at Modus Create. He is absolutely passionate about Angular and Web Technologies. Uses Angular daily and talks about it everywhere. Runs NodeSchool Karachi and is a co-organizer of NgPakistan",
+    "groups": ["GDE"]
   }
 }
