@@ -18,9 +18,15 @@ export default function(options: Schema): Rule {
 
     return chain([
       externalSchematic('@schematics/angular', 'ng-new', options),
-      schematic('ng-add', options, {
-        scope: options.name,
-      }),
+      schematic(
+          'ng-add', {
+            name: options.name,
+            // skip install since `ng-new` above will schedule the task
+            skipInstall: true,
+          },
+          {
+            scope: options.name,
+          }),
     ]);
   };
 }
