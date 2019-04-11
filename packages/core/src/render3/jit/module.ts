@@ -99,7 +99,6 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
   ngDevMode && assertDefined(moduleType, 'Required value moduleType');
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
-
   let ngModuleDef: any = null;
   Object.defineProperty(moduleType, NG_MODULE_DEF, {
     configurable: true,
