@@ -10,6 +10,7 @@
 
 import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, url} from '@angular-devkit/schematics';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {getWorkspacePath} from '@schematics/angular/utility/config';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
@@ -54,7 +55,10 @@ function addDevDependenciesToPackageJson(options: Schema) {
     };
 
     const recorder = host.beginUpdate(packageJson);
-    for (const packageName of Object.keys(devDependencies)) {
+    const depsToInstall = Object.keys(devDependencies).filter((name) => {
+      return !findPropertyInAstObject(devDeps, name);
+    });
+    for (const packageName of depsToInstall) {
       const version = devDependencies[packageName];
       const indent = 4;
       insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
@@ -346,6 +350,17 @@ function addPostinstallToGenerateNgSummaries() {
   };
 }
 
+/**
+ * Schedule a task to perform npm / yarn install.
+ */
+function installNodeModules(options: Schema): Rule {
+  return (host: Tree, context: SchematicContext) => {
+    if (!options.skipInstall) {
+      context.addTask(new NodePackageInstallTask());
+    }
+  };
+}
+
 export default function(options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
@@ -360,6 +375,7 @@ export default function(options: Schema): Rule {
       updateGitignore(),
       updateTsconfigJson(),
       upgradeRxjs(),
+      installNodeModules(options),
     ]);
   };
 }
