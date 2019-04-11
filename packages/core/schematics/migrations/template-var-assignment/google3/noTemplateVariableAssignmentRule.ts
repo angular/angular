@@ -33,8 +33,9 @@ export class Rule extends Rules.TypedRule {
 
     // Analyze each resolved template and print a warning for property writes to
     // template variables.
-    resolvedTemplates.forEach((template, filePath) => {
-      const nodes = analyzeResolvedTemplate(filePath, template);
+    resolvedTemplates.forEach(template => {
+      const filePath = template.filePath;
+      const nodes = analyzeResolvedTemplate(template);
       const templateFile =
           template.inline ? sourceFile : createHtmlSourceFile(filePath, template.content);
 

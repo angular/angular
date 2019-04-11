@@ -71,8 +71,9 @@ function runTemplateVariableAssignmentCheck(
 
   // Analyze each resolved template and print a warning for property writes to
   // template variables.
-  resolvedTemplates.forEach((template, filePath) => {
-    const nodes = analyzeResolvedTemplate(filePath, template);
+  resolvedTemplates.forEach(template => {
+    const filePath = template.filePath;
+    const nodes = analyzeResolvedTemplate(template);
 
     if (!nodes) {
       return;
