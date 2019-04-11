@@ -34,13 +34,13 @@ import {TsickleIssue1009, elementPropertyInternal, loadComponentRenderer, storeB
  *
  * @codeGenApi
  */
-export function Δproperty<T>(
+export function ɵɵproperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): TsickleIssue1009 {
   const index = getSelectedIndex();
-  const bindReconciledValue = Δbind(value);
+  const bindReconciledValue = ɵɵbind(value);
   elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
-  return Δproperty;
+  return ɵɵproperty;
 }
 
 /**
@@ -50,7 +50,7 @@ export function Δproperty<T>(
  *
  * @codeGenApi
  */
-export function Δbind<T>(value: T): T|NO_CHANGE {
+export function ɵɵbind<T>(value: T): T|NO_CHANGE {
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX]++;
   storeBindingMetadata(lView);
@@ -75,7 +75,7 @@ export function Δbind<T>(value: T): T|NO_CHANGE {
  *
  * @codeGenApi
 */
-export function ΔelementProperty<T>(
+export function ɵɵelementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): void {
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
@@ -104,7 +104,7 @@ export function ΔelementProperty<T>(
  *
  * @codeGenApi
  */
-export function ΔcomponentHostSyntheticProperty<T>(
+export function ɵɵcomponentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean) {
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);

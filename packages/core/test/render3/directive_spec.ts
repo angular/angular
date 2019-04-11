@@ -8,8 +8,8 @@
 
 import {EventEmitter, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {AttributeMarker, RenderFlags, ΔdefineComponent, ΔdefineDirective, ΔdirectiveInject} from '../../src/render3/index';
-import {Δbind, Δelement, ΔelementContainerEnd, ΔelementContainerStart, ΔelementEnd, ΔelementProperty, ΔelementStart, Δlistener, Δtemplate, Δtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, RenderFlags, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject} from '../../src/render3/index';
+import {ɵɵbind, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
@@ -22,7 +22,7 @@ describe('directive', () => {
       let directiveInstance: Directive;
 
       class Directive {
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: Directive,
           selectors: [['', 'test', '']],
           factory: () => directiveInstance = new Directive,
@@ -52,10 +52,10 @@ describe('directive', () => {
        */
       function createTemplate() {
         // using 2 bindings to show example shape of attributes array
-        Δelement(0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'test', 'other']);
+        ɵɵelement(0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'test', 'other']);
       }
 
-      function updateTemplate() { ΔelementProperty(0, 'test', Δbind(false)); }
+      function updateTemplate() { ɵɵelementProperty(0, 'test', ɵɵbind(false)); }
 
       const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, 1, [Directive]);
 
@@ -70,7 +70,7 @@ describe('directive', () => {
          let directiveInstance: Directive;
 
          class Directive {
-           static ngDirectiveDef = ΔdefineDirective({
+           static ngDirectiveDef = ɵɵdefineDirective({
              type: Directive,
              selectors: [['', 'test', '']],
              factory: () => directiveInstance = new Directive,
@@ -103,14 +103,14 @@ describe('directive', () => {
           */
          function createTemplate() {
            // putting name (test) in the "usual" value position
-           Δelement(
+           ɵɵelement(
                0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'prop1', 'test', 'prop2']);
          }
 
          function updateTemplate() {
-           ΔelementProperty(0, 'prop1', Δbind(true));
-           ΔelementProperty(0, 'test', Δbind(false));
-           ΔelementProperty(0, 'prop2', Δbind(true));
+           ɵɵelementProperty(0, 'prop1', ɵɵbind(true));
+           ɵɵelementProperty(0, 'test', ɵɵbind(false));
+           ɵɵelementProperty(0, 'prop2', ɵɵbind(true));
          }
 
          const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, 3, [Directive]);
@@ -133,20 +133,20 @@ describe('directive', () => {
       let tmplRef: any;
       class DirectiveA {
         constructor(public templateRef: any) { tmplRef = templateRef; }
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: DirectiveA,
           selectors: [['ng-template', 'directiveA', '']],
-          factory: () => new DirectiveA(ΔdirectiveInject(TemplateRef as any))
+          factory: () => new DirectiveA(ɵɵdirectiveInject(TemplateRef as any))
         });
       }
 
       function MyComponent_ng_template_Template_0(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtext(0, 'Some content');
+          ɵɵtext(0, 'Some content');
         }
       }
       class MyComponent {
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
           factory: () => new MyComponent(),
@@ -155,7 +155,7 @@ describe('directive', () => {
           // <ng-template directiveA>Some content</ng-template>
           template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δtemplate(
+              ɵɵtemplate(
                   0, MyComponent_ng_template_Template_0, 1, 0, 'ng-template', ['directiveA', '']);
             }
           },
@@ -179,24 +179,24 @@ describe('directive', () => {
       let vcRef: any;
       class DirectiveA {
         constructor(public viewContainerRef: any) { vcRef = viewContainerRef; }
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: DirectiveA,
           selectors: [['ng-container', 'directiveA', '']],
-          factory: () => new DirectiveA(ΔdirectiveInject(ViewContainerRef as any))
+          factory: () => new DirectiveA(ɵɵdirectiveInject(ViewContainerRef as any))
         });
       }
 
       function MyComponent_ng_container_Template_0(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementContainerStart(0, ['directiveA', '']);
-          Δtext(1, 'Some content');
-          ΔelementContainerEnd();
+          ɵɵelementContainerStart(0, ['directiveA', '']);
+          ɵɵtext(1, 'Some content');
+          ɵɵelementContainerEnd();
         }
       }
       class MyComponent {
         visible = true;
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
           factory: () => new MyComponent(),
@@ -205,12 +205,12 @@ describe('directive', () => {
           // <ng-container *ngIf="visible" directiveA>Some content</ng-container>
           template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δtemplate(
+              ɵɵtemplate(
                   0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container',
                   ['directiveA', '', AttributeMarker.Template, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
-              ΔelementProperty(0, 'ngIf', Δbind(ctx.visible));
+              ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.visible));
             }
           },
           directives: [DirectiveA, NgIf]
@@ -225,7 +225,7 @@ describe('directive', () => {
       let directiveInstance: Directive;
 
       class Directive {
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: Directive,
           selectors: [['', 'out', '']],
           factory: () => directiveInstance = new Directive,
@@ -239,9 +239,9 @@ describe('directive', () => {
        * <span (out)="someVar = true"></span>
        */
       function createTemplate() {
-        ΔelementStart(0, 'span', [AttributeMarker.Bindings, 'out']);
-        { Δlistener('out', () => {}); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'span', [AttributeMarker.Bindings, 'out']);
+        { ɵɵlistener('out', () => {}); }
+        ɵɵelementEnd();
       }
 
       const fixture = new TemplateFixture(createTemplate, () => {}, 1, 0, [Directive]);
@@ -257,7 +257,7 @@ describe('directive', () => {
     let directiveInstance: Directive;
 
     class Directive {
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: Directive,
         selectors: [['', 'out', '']],
         factory: () => directiveInstance = new Directive,
@@ -273,8 +273,8 @@ describe('directive', () => {
        */
       const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'out']);
-          Δlistener('out', () => { ctx.value = true; });
+          ɵɵtemplate(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'out']);
+          ɵɵlistener('out', () => { ctx.value = true; });
         }
       }, 1, 0, [Directive]);
 
@@ -294,11 +294,11 @@ describe('directive', () => {
        */
       const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          ΔelementContainerStart(0, [AttributeMarker.Bindings, 'out']);
+          ɵɵelementContainerStart(0, [AttributeMarker.Bindings, 'out']);
           {
-            Δlistener('out', () => { ctx.value = true; });
+            ɵɵlistener('out', () => { ctx.value = true; });
           }
-          ΔelementContainerEnd();
+          ɵɵelementContainerEnd();
         }
       }, 1, 0, [Directive]);
 

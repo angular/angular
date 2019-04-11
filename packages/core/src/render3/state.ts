@@ -82,17 +82,17 @@ export function getBindingsEnabled(): boolean {
  *   Should match component / directive.
  * </my-comp>
  * <div ngNonBindable>
- *   <!-- ΔdisableBindings() -->
+ *   <!-- ɵɵdisableBindings() -->
  *   <my-comp my-directive>
  *     Should not match component / directive because we are in ngNonBindable.
  *   </my-comp>
- *   <!-- ΔenableBindings() -->
+ *   <!-- ɵɵenableBindings() -->
  * </div>
  * ```
  *
  * @codeGenApi
  */
-export function ΔenableBindings(): void {
+export function ɵɵenableBindings(): void {
   bindingsEnabled = true;
 }
 
@@ -105,17 +105,17 @@ export function ΔenableBindings(): void {
  *   Should match component / directive.
  * </my-comp>
  * <div ngNonBindable>
- *   <!-- ΔdisableBindings() -->
+ *   <!-- ɵɵdisableBindings() -->
  *   <my-comp my-directive>
  *     Should not match component / directive because we are in ngNonBindable.
  *   </my-comp>
- *   <!-- ΔenableBindings() -->
+ *   <!-- ɵɵenableBindings() -->
  * </div>
  * ```
  *
  * @codeGenApi
  */
-export function ΔdisableBindings(): void {
+export function ɵɵdisableBindings(): void {
   bindingsEnabled = false;
 }
 
@@ -269,7 +269,7 @@ export function getActiveDirectiveSuperClassDepth() {
  *
  * @codeGenApi
  */
-export function ΔrestoreView(viewToRestore: OpaqueViewState) {
+export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
   contextLView = viewToRestore as any as LView;
 }
 
@@ -492,7 +492,7 @@ let _currentNamespace: string|null = null;
  *
  * @codeGenApi
  */
-export function ΔnamespaceSVG() {
+export function ɵɵnamespaceSVG() {
   _currentNamespace = 'http://www.w3.org/2000/svg';
 }
 
@@ -501,7 +501,7 @@ export function ΔnamespaceSVG() {
  *
  * @codeGenApi
  */
-export function ΔnamespaceMathML() {
+export function ɵɵnamespaceMathML() {
   _currentNamespace = 'http://www.w3.org/1998/MathML/';
 }
 
@@ -511,7 +511,7 @@ export function ΔnamespaceMathML() {
  *
  * @codeGenApi
  */
-export function ΔnamespaceHTML() {
+export function ɵɵnamespaceHTML() {
   _currentNamespace = null;
 }
 

@@ -195,7 +195,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Content A");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Content A");
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -207,7 +207,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_idB$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Title B");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Title B");
         }
         const $_c2$ = ["title", $I18N_1$];
         var $I18N_3$;
@@ -219,7 +219,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("Title C");
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("Title C");
         }
         const $_c4$ = ["title", $I18N_3$];
         var $I18N_5$;
@@ -232,7 +232,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_5$ = $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$;
         }
         else {
-            $I18N_5$ = $r3$.Δi18nLocalize("Title D");
+            $I18N_5$ = $r3$.ɵɵi18nLocalize("Title D");
         }
         const $_c6$ = ["title", $I18N_5$];
         var $I18N_7$;
@@ -244,7 +244,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_7$ = $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$;
         }
         else {
-            $I18N_7$ = $r3$.Δi18nLocalize("Title E");
+            $I18N_7$ = $r3$.ɵɵi18nLocalize("Title E");
         }
         const $_c8$ = ["title", $I18N_7$];
         var $I18N_9$;
@@ -253,7 +253,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_9$ = $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$;
         }
         else {
-            $I18N_9$ = $r3$.Δi18nLocalize("Title F");
+            $I18N_9$ = $r3$.ɵɵi18nLocalize("Title F");
         }
         const $_c10$ = ["title", $I18N_9$];
         var $I18N_11$;
@@ -265,39 +265,39 @@ describe('i18n support in the view compiler', () => {
             $I18N_11$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$;
         }
         else {
-            $I18N_11$ = $r3$.Δi18nLocalize("Title G");
+            $I18N_11$ = $r3$.ɵɵi18nLocalize("Title G");
         }
         const $_c12$ = ["title", $I18N_11$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(2, "div");
-            $r3$.Δi18nAttributes(3, $_c2$);
-            $r3$.Δtext(4, "Content B");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(5, "div");
-            $r3$.Δi18nAttributes(6, $_c4$);
-            $r3$.Δtext(7, "Content C");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(8, "div");
-            $r3$.Δi18nAttributes(9, $_c6$);
-            $r3$.Δtext(10, "Content D");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(11, "div");
-            $r3$.Δi18nAttributes(12, $_c8$);
-            $r3$.Δtext(13, "Content E");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(14, "div");
-            $r3$.Δi18nAttributes(15, $_c10$);
-            $r3$.Δtext(16, "Content F");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(17, "div");
-            $r3$.Δi18nAttributes(18, $_c12$);
-            $r3$.Δtext(19, "Content G");
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(2, "div");
+            $r3$.ɵɵi18nAttributes(3, $_c2$);
+            $r3$.ɵɵtext(4, "Content B");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(5, "div");
+            $r3$.ɵɵi18nAttributes(6, $_c4$);
+            $r3$.ɵɵtext(7, "Content C");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(8, "div");
+            $r3$.ɵɵi18nAttributes(9, $_c6$);
+            $r3$.ɵɵtext(10, "Content D");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(11, "div");
+            $r3$.ɵɵi18nAttributes(12, $_c8$);
+            $r3$.ɵɵtext(13, "Content E");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(14, "div");
+            $r3$.ɵɵi18nAttributes(15, $_c10$);
+            $r3$.ɵɵtext(16, "Content F");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(17, "div");
+            $r3$.ɵɵi18nAttributes(18, $_c12$);
+            $r3$.ɵɵtext(19, "Content G");
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -315,7 +315,7 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δelement(0, "div", $_c0$);
+            $r3$.ɵɵelement(0, "div", $_c0$);
           }
         }
       `;
@@ -340,15 +340,15 @@ describe('i18n support in the view compiler', () => {
           $I18N_1$ = $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$;
         }
         else {
-          $I18N_1$ = $r3$.Δi18nLocalize("introduction");
+          $I18N_1$ = $r3$.ɵɵi18nLocalize("introduction");
         }
         const $_c1$ = ["title", $I18N_1$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c0$);
-            $r3$.Δi18nAttributes(1, $_c1$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵi18nAttributes(1, $_c1$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -377,7 +377,7 @@ describe('i18n support in the view compiler', () => {
           $I18N_1$ = $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$;
         }
         else {
-          $I18N_1$ = $r3$.Δi18nLocalize("static text");
+          $I18N_1$ = $r3$.ɵɵi18nLocalize("static text");
         }
         var $I18N_2$;
         if (ngI18nClosureMode) {
@@ -391,7 +391,7 @@ describe('i18n support in the view compiler', () => {
           $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
         }
         else {
-          $I18N_2$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+          $I18N_2$ = $r3$.ɵɵi18nLocalize("intro {$interpolation}", {
             "interpolation": "\uFFFD0\uFFFD"
           });
         }
@@ -407,7 +407,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("{$interpolation}", {
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -429,7 +429,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
         }
         else {
-            $I18N_6$ = $r3$.Δi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+            $I18N_6$ = $r3$.ɵɵi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
               "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
             });
         }
@@ -441,7 +441,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_7$ = $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$;
         }
         else {
-            $I18N_7$ = $r3$.Δi18nLocalize("{$interpolation}", {
+            $I18N_7$ = $r3$.ɵɵi18nLocalize("{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -454,25 +454,25 @@ describe('i18n support in the view compiler', () => {
         vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c0$);
-            $r3$.Δpipe(1, "uppercase");
-            $r3$.Δi18nAttributes(2, $_c1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(3, "div", $_c2$);
-            $r3$.Δi18nAttributes(4, $_c3$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵpipe(1, "uppercase");
+            $r3$.ɵɵi18nAttributes(2, $_c1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(3, "div", $_c2$);
+            $r3$.ɵɵi18nAttributes(4, $_c3$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nApply(2);
-            $r3$.Δselect(3);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
-            $r3$.Δi18nApply(4);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
+            $r3$.ɵɵi18nApply(2);
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueA));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind((ctx.valueA + ctx.valueB)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueC));
+            $r3$.ɵɵi18nApply(4);
           }
         }
       `;
@@ -498,7 +498,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_8977039798304050198$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("intro {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -506,15 +506,15 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δpipe(1, "uppercase");
-            $r3$.Δi18nAttributes(2, $_c0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵpipe(1, "uppercase");
+            $r3$.ɵɵi18nAttributes(2, $_c0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
-            $r3$.Δi18nApply(2);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nApply(2);
           }
         }
       `;
@@ -542,25 +542,25 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("different scope {$interpolation}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("different scope {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
         const $_c1$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δpipe(2, "uppercase");
-            $r3$.Δi18nAttributes(3, $_c1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵpipe(2, "uppercase");
+            $r3$.ɵɵi18nAttributes(3, $_c1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 0, $outer_r1$)));
-            $r3$.Δi18nApply(3);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 0, $outer_r1$)));
+            $r3$.ɵɵi18nApply(3);
           }
         }
         …
@@ -568,11 +568,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.ΔelementProperty(0, "ngForOf", $r3$.Δbind(ctx.items));
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵelementProperty(0, "ngForOf", $r3$.ɵɵbind(ctx.items));
           }
         }
       `;
@@ -601,7 +601,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("static text");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("static text");
         }
         var $I18N_2$;
         if (ngI18nClosureMode) {
@@ -615,7 +615,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("intro {$interpolation}", {
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("intro {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -631,7 +631,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("{$interpolation}", {
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -653,7 +653,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_6$ = $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$;
         }
         else {
-            $I18N_6$ = $r3$.Δi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+            $I18N_6$ = $r3$.ɵɵi18nLocalize("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
               "interpolation": "\uFFFD0\uFFFD", "interpolation_1": "\uFFFD1\uFFFD", "interpolation_2": "\uFFFD2\uFFFD"
             });
         }
@@ -665,7 +665,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_7$ = $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$;
         }
         else {
-            $I18N_7$ = $r3$.Δi18nLocalize("{$interpolation}", {
+            $I18N_7$ = $r3$.ɵɵi18nLocalize("{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -678,25 +678,25 @@ describe('i18n support in the view compiler', () => {
         vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c0$);
-            $r3$.Δpipe(1, "uppercase");
-            $r3$.Δi18nAttributes(2, $_c1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(3, "div", $_c2$);
-            $r3$.Δi18nAttributes(4, $_c3$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵpipe(1, "uppercase");
+            $r3$.ɵɵi18nAttributes(2, $_c1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(3, "div", $_c2$);
+            $r3$.ɵɵi18nAttributes(4, $_c3$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 0, ctx.valueA)));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nApply(2);
-            $r3$.Δselect(3);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
-            $r3$.Δi18nApply(4);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
+            $r3$.ɵɵi18nApply(2);
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueA));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind((ctx.valueA + ctx.valueB)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueC));
+            $r3$.ɵɵi18nApply(4);
           }
         }
       `;
@@ -725,25 +725,25 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("different scope {$interpolation}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("different scope {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
         const $_c1$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δpipe(2, "uppercase");
-            $r3$.Δi18nAttributes(3, $_c1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵpipe(2, "uppercase");
+            $r3$.ɵɵi18nAttributes(3, $_c1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 0, $outer_r1$)));
-            $r3$.Δi18nApply(3);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 0, $outer_r1$)));
+            $r3$.ɵɵi18nApply(3);
           }
         }
         …
@@ -751,11 +751,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.ΔelementProperty(0, "ngForOf", $r3$.Δbind(ctx.items));
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵelementProperty(0, "ngForOf", $r3$.ɵɵbind(ctx.items));
           }
         }
       `;
@@ -779,7 +779,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Element title");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Element title");
         }
         const $_c1$ = ["title", $I18N_0$];
         var $I18N_2$;
@@ -788,15 +788,15 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("Some content");
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("Some content");
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nAttributes(1, $_c1$);
-            $r3$.Δi18n(2, $I18N_2$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nAttributes(1, $_c1$);
+            $r3$.ɵɵi18n(2, $I18N_2$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -818,7 +818,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Element title");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Element title");
         }
         const $_c1$ = ["title", $I18N_0$];
         var $I18N_2$;
@@ -827,7 +827,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_4$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize(" Some content ");
+            $I18N_2$ = $r3$.ɵɵi18nLocalize(" Some content ");
         }
         …
       `;
@@ -853,9 +853,9 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δelement(0, "div");
-            $r3$.Δelement(1, "div");
-            $r3$.Δelement(2, "div");
+            $r3$.ɵɵelement(0, "div");
+            $r3$.ɵɵelement(1, "div");
+            $r3$.ɵɵelement(2, "div");
           }
         }
       `;
@@ -879,7 +879,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Some text 'with single quotes', \"with double quotes\" and without quotes.");
         }
       `;
 
@@ -902,7 +902,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #1");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("My i18n block #1");
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -910,7 +910,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #2");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("My i18n block #2");
         }
         var $I18N_2$;
         if (ngI18nClosureMode) {
@@ -918,26 +918,26 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("My i18n block #3");
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("My i18n block #3");
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(2, "div");
-            $r3$.Δtext(3, "My non-i18n block #1");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(4, "div");
-            $r3$.Δi18n(5, $I18N_1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(6, "div");
-            $r3$.Δtext(7, "My non-i18n block #2");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(8, "div");
-            $r3$.Δi18n(9, $I18N_2$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(2, "div");
+            $r3$.ɵɵtext(3, "My non-i18n block #1");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(4, "div");
+            $r3$.ɵɵi18n(5, $I18N_1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(6, "div");
+            $r3$.ɵɵtext(7, "My non-i18n block #2");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(8, "div");
+            $r3$.ɵɵi18n(9, $I18N_2$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -959,7 +959,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Some value: {$phA}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Some value: {$phA}", {
               "phA": "\uFFFD0\uFFFD"
             });
         }
@@ -968,14 +968,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueA));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -997,21 +997,21 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_6749967533321674787$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$interpolation}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueA));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -1036,7 +1036,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize(" {$interpolation} {$interpolation_1} ", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" {$interpolation} {$interpolation_1} ", {
               "interpolation": "\uFFFD0\uFFFD",
               "interpolation_1": "\uFFFD1\uFFFD"
             });
@@ -1044,16 +1044,16 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.Δpipe(2, "async");
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵpipe(2, "async");
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 2, ctx.valueA)));
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 2, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -1076,7 +1076,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("My i18n block #{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -1088,7 +1088,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("My i18n block #{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -1100,7 +1100,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("My i18n block #{$interpolation}", {
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("My i18n block #{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -1109,27 +1109,27 @@ describe('i18n support in the view compiler', () => {
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(2, "div");
-            $r3$.Δi18n(3, $I18N_1$);
-            $r3$.Δpipe(4, "uppercase");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(5, "div");
-            $r3$.Δi18n(6, $I18N_2$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(2, "div");
+            $r3$.ɵɵi18n(3, $I18N_1$);
+            $r3$.ɵɵpipe(4, "uppercase");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(5, "div");
+            $r3$.ɵɵi18n(6, $I18N_2$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.one));
-            $r3$.Δi18nApply(1);
-            $r3$.Δselect(3);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 3, ctx.two)));
-            $r3$.Δi18nApply(3);
-            $r3$.Δselect(6);
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.three + ctx.four) + ctx.five)));
-            $r3$.Δi18nApply(6);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.one));
+            $r3$.ɵɵi18nApply(1);
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(4, 3, ctx.two)));
+            $r3$.ɵɵi18nApply(3);
+            $r3$.ɵɵselect(6);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(((ctx.three + ctx.four) + ctx.five)));
+            $r3$.ɵɵi18nApply(6);
           }
         }
       `;
@@ -1166,7 +1166,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
               "interpolation": "\uFFFD0\uFFFD",
               "startTagSpan": "\uFFFD#2\uFFFD",
               "closeTagSpan": "\uFFFD/#2\uFFFD"
@@ -1185,7 +1185,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
               "interpolation": "\uFFFD0\uFFFD",
               "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
               "startTagSpan": "\uFFFD#8\uFFFD",
@@ -1194,36 +1194,36 @@ describe('i18n support in the view compiler', () => {
               "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
             });
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$);
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$);
         …
         consts: 9,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δelement(2, "span");
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(3, "div");
-            $r3$.Δi18nStart(4, $I18N_1$);
-            $r3$.Δpipe(5, "uppercase");
-            $r3$.ΔelementStart(6, "div");
-            $r3$.ΔelementStart(7, "div");
-            $r3$.Δelement(8, "span");
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵelement(2, "span");
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(3, "div");
+            $r3$.ɵɵi18nStart(4, $I18N_1$);
+            $r3$.ɵɵpipe(5, "uppercase");
+            $r3$.ɵɵelementStart(6, "div");
+            $r3$.ɵɵelementStart(7, "div");
+            $r3$.ɵɵelement(8, "span");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.one));
-            $r3$.Δi18nApply(1);
-            $r3$.Δselect(4);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(5, 3, ctx.two)));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.nestedInBlockTwo));
-            $r3$.Δi18nApply(4);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.one));
+            $r3$.ɵɵi18nApply(1);
+            $r3$.ɵɵselect(4);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(5, 3, ctx.two)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.nestedInBlockTwo));
+            $r3$.ɵɵi18nApply(4);
           }
         }
       `;
@@ -1257,7 +1257,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Span title {$interpolation} and {$interpolation_1}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Span title {$interpolation} and {$interpolation_1}", {
               "interpolation": "\uFFFD0\uFFFD",
               "interpolation_1": "\uFFFD1\uFFFD"
             });
@@ -1273,7 +1273,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
               "interpolation": "\uFFFD0\uFFFD",
               "startTagSpan": "\uFFFD#2\uFFFD",
               "closeTagSpan": "\uFFFD/#2\uFFFD"
@@ -1287,7 +1287,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_4$ = $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$;
         }
         else {
-            $I18N_4$ = $r3$.Δi18nLocalize("Span title {$interpolation}", {
+            $I18N_4$ = $r3$.ɵɵi18nLocalize("Span title {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -1302,7 +1302,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
+            $I18N_3$ = $r3$.ɵɵi18nLocalize(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
               "interpolation": "\uFFFD0\uFFFD",
               "startTagSpan": "\uFFFD#7\uFFFD",
               "closeTagSpan": "\uFFFD/#7\uFFFD"
@@ -1313,34 +1313,34 @@ describe('i18n support in the view compiler', () => {
         vars: 7,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.ΔelementStart(2, "span");
-            $r3$.Δi18nAttributes(3, $_c2$);
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(4, "div");
-            $r3$.Δi18nStart(5, $I18N_3$);
-            $r3$.Δpipe(6, "uppercase");
-            $r3$.ΔelementStart(7, "span");
-            $r3$.Δi18nAttributes(8, $_c5$);
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵelementStart(2, "span");
+            $r3$.ɵɵi18nAttributes(3, $_c2$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(4, "div");
+            $r3$.ɵɵi18nStart(5, $I18N_3$);
+            $r3$.ɵɵpipe(6, "uppercase");
+            $r3$.ɵɵelementStart(7, "span");
+            $r3$.ɵɵi18nAttributes(8, $_c5$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
-            $r3$.Δi18nApply(3);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
-            $r3$.Δi18nApply(1);
-            $r3$.Δselect(7);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.valueE));
-            $r3$.Δi18nApply(8);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(6, 5, ctx.valueD)));
-            $r3$.Δi18nApply(5);
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueC));
+            $r3$.ɵɵi18nApply(3);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueA));
+            $r3$.ɵɵi18nApply(1);
+            $r3$.ɵɵselect(7);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueE));
+            $r3$.ɵɵi18nApply(8);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(6, 5, ctx.valueD)));
+            $r3$.ɵɵi18nApply(5);
           }
         }
       `;
@@ -1376,7 +1376,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
               "interpolation": "\uFFFD0\uFFFD",
               "startTagDiv": "\uFFFD#3\uFFFD",
               "interpolation_1": "\uFFFD1\uFFFD",
@@ -1386,21 +1386,21 @@ describe('i18n support in the view compiler', () => {
         …
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δi18nStart(2, $I18N_1$);
-            $r3$.Δelement(3, "div");
-            $r3$.Δpipe(4, "uppercase");
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵi18nStart(2, $I18N_1$);
+            $r3$.ɵɵelement(3, "div");
+            $r3$.ɵɵpipe(4, "uppercase");
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(2);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 2, $ctx_r0$.valueB)));
-            $r3$.Δi18nApply(2);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.valueA));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(4, 2, $ctx_r0$.valueB)));
+            $r3$.ɵɵi18nApply(2);
           }
         }
         …
@@ -1408,14 +1408,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δtext(1, " Some content ");
-            $r3$.Δtemplate(2, MyComponent_div_2_Template, 5, 4, "div", $_c0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵtext(1, " Some content ");
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 4, "div", $_c0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
           }
         }
       `;
@@ -1436,7 +1436,7 @@ describe('i18n support in the view compiler', () => {
         const $_c2$ = ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"];
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δelement(0, "img", $_c0$);
+            $r3$.ɵɵelement(0, "img", $_c0$);
           }
         }
         var $I18N_2$;
@@ -1447,22 +1447,22 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_2367729185105559721$$APP_SPEC_TS__2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("App logo #{$interpolation}", {
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("App logo #{$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
         const $_c3$ = ["title", $I18N_2$];
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "img", $_c0$);
-            $r3$.Δi18nAttributes(1, $_c3$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "img", $_c0$);
+            $r3$.ɵɵi18nAttributes(1, $_c3$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.id));
-            $r3$.Δi18nApply(1);
+            const $ctx_r1$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.id));
+            $r3$.ɵɵi18nApply(1);
           }
         }
         …
@@ -1470,15 +1470,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δelement(0, "img", $_c0$);
-            $r3$.Δtemplate(1, MyComponent_img_1_Template, 1, 0, "img", $_c1$);
-            $r3$.Δtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
+            $r3$.ɵɵelement(0, "img", $_c0$);
+            $r3$.ɵɵtemplate(1, MyComponent_img_1_Template, 1, 0, "img", $_c1$);
+            $r3$.ɵɵtemplate(2, MyComponent_img_2_Template, 2, 1, "img", $_c2$);
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.ΔelementProperty(1, "ngIf", $r3$.Δbind(ctx.visible));
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵelementProperty(1, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
           }
         }
       `;
@@ -1515,38 +1515,38 @@ describe('i18n support in the view compiler', () => {
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 2);
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δelement(2, "div");
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 2);
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵelement(2, "div");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r2$ = $r3$.ΔnextContext(2);
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueC));
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueD));
-            $r3$.Δi18nApply(0);
+            const $ctx_r2$ = $r3$.ɵɵnextContext(2);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueC));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueD));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 1);
-            $r3$.ΔelementStart(1, "div");
-            $r3$.ΔelementStart(2, "div");
-            $r3$.Δpipe(3, "uppercase");
-            $r3$.Δtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", $_c1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵelementStart(2, "div");
+            $r3$.ɵɵpipe(3, "uppercase");
+            $r3$.ɵɵtemplate(4, MyComponent_div_2_div_4_Template, 3, 2, "div", $_c1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(4);
-            $r3$.ΔelementProperty(4, "ngIf", $r3$.Δbind($ctx_r0$.exists));
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(3, 3, $ctx_r0$.valueB)));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(4);
+            $r3$.ɵɵelementProperty(4, "ngIf", $r3$.ɵɵbind($ctx_r0$.exists));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.valueA));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(3, 3, $ctx_r0$.valueB)));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         var $I18N_0$;
@@ -1567,7 +1567,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
               "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
               "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
@@ -1581,22 +1581,22 @@ describe('i18n support in the view compiler', () => {
               "interpolation_5": "\uFFFD1:3\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$);
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$);
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 3);
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δelement(2, "div");
-            $r3$.Δpipe(3, "uppercase");
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 3);
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵelement(2, "div");
+            $r3$.ɵɵpipe(3, "uppercase");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(3, 2, $ctx_r1$.valueG)));
-            $r3$.Δi18nApply(0);
+            const $ctx_r1$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(3, 2, $ctx_r1$.valueG)));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -1604,18 +1604,18 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
-            $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 5, 5, "div", $_c1$);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 4, "div", $_c1$);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
-            $r3$.Δselect(3);
-            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(!ctx.visible));
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(!ctx.visible));
           }
         }
       `;
@@ -1640,7 +1640,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD#2\uFFFD",
               "interpolation": "\uFFFD0\uFFFD",
               "closeTagSpan": "\uFFFD/#2\uFFFD"
@@ -1649,17 +1649,17 @@ describe('i18n support in the view compiler', () => {
         …
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-              $r3$.ΔelementStart(0, "div");
-              $r3$.Δi18nStart(1, $I18N_1$);
-              $r3$.Δelement(2, "span");
-              $r3$.Δi18nEnd();
-              $r3$.ΔelementEnd();
+              $r3$.ɵɵelementStart(0, "div");
+              $r3$.ɵɵi18nStart(1, $I18N_1$);
+              $r3$.ɵɵelement(2, "span");
+              $r3$.ɵɵi18nEnd();
+              $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-              const $ctx_r0$ = $r3$.ΔnextContext();
-              $r3$.Δselect(1);
-              $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.valueA));
-              $r3$.Δi18nApply(1);
+              const $ctx_r0$ = $r3$.ɵɵnextContext();
+              $r3$.ɵɵselect(1);
+              $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.valueA));
+              $r3$.ɵɵi18nApply(1);
           }
         }
         …
@@ -1667,11 +1667,11 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", $_c0$);
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.ΔelementProperty(0, "ngIf", $r3$.Δbind(ctx.visible));
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵelementProperty(0, "ngIf", $r3$.ɵɵbind(ctx.visible));
           }
         }
       `;
@@ -1692,15 +1692,15 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_APP_SPEC_TS_2$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Hello");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Hello");
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c0$);
-            $r3$.Δlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
-            $r3$.Δi18n(1, $I18N_1$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c0$);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
+            $r3$.ɵɵi18n(1, $I18N_1$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -1722,14 +1722,14 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #1");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("My i18n block #1");
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -1749,9 +1749,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1759,14 +1759,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -1787,7 +1787,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("My i18n block #2");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("My i18n block #2");
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -1795,20 +1795,20 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("My i18n block #1");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("My i18n block #1");
         }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_1$);
+            $r3$.ɵɵi18n(0, $I18N_1$);
           }
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
-            $r3$.ΔelementContainerStart(1);
-            $r3$.Δi18n(2, $I18N_0$);
-            $r3$.ΔelementContainerEnd();
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 0, "ng-template");
+            $r3$.ɵɵelementContainerStart(1);
+            $r3$.ɵɵi18n(2, $I18N_0$);
+            $r3$.ɵɵelementContainerEnd();
           }
         }
       `;
@@ -1830,7 +1830,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Text #1");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Text #1");
         }
         const $_c2$ = [${AttributeMarker.Styles}, "padding", "10px"];
         var $I18N_3$;
@@ -1839,19 +1839,19 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("Text #2");
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("Text #2");
         }
         …
         consts: 4,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "span", $_c0$);
-            $r3$.Δi18n(1, $I18N_1$);
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(2, "span", $_c1$);
-            $r3$.Δi18n(3, $I18N_3$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "span", $_c0$);
+            $r3$.ɵɵi18n(1, $I18N_1$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(2, "span", $_c1$);
+            $r3$.ɵɵi18n(3, $I18N_3$);
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -1875,7 +1875,7 @@ describe('i18n support in the view compiler', () => {
           $I18N_0$ = $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$;
         }
         else {
-          $I18N_0$ = $r3$.Δi18nLocalize("Some content: {$interpolation}", {
+          $I18N_0$ = $r3$.ɵɵi18nLocalize("Some content: {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
@@ -1884,15 +1884,15 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.Δpipe(2, "uppercase");
-            $r3$.ΔelementContainerEnd();
+            $r3$.ɵɵelementContainerStart(0);
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵpipe(2, "uppercase");
+            $r3$.ɵɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 1, ctx.valueA)));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 1, ctx.valueA)));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -1914,19 +1914,19 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Some content: {$interpolation}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Some content: {$interpolation}", {
               "interpolation": "\uFFFD0\uFFFD"
             });
         }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_0$);
-            $r3$.Δpipe(1, "uppercase");
+            $r3$.ɵɵi18n(0, $I18N_0$);
+            $r3$.ɵɵpipe(1, "uppercase");
           } if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -1934,7 +1934,7 @@ describe('i18n support in the view compiler', () => {
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 2, 3, "ng-template");
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 2, 3, "ng-template");
           }
         }
       `;
@@ -1964,7 +1964,7 @@ describe('i18n support in the view compiler', () => {
           $I18N_0$ = $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$;
         }
         else {
-          $I18N_0$ = $r3$.Δi18nLocalize("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
+          $I18N_0$ = $r3$.ɵɵi18nLocalize("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
             "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
             "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
             "startTagNgContainer": "\uFFFD#3\uFFFD",
@@ -1975,14 +1975,14 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_0$, 1);
-            $r3$.Δpipe(1, "uppercase");
+            $r3$.ɵɵi18n(0, $I18N_0$, 1);
+            $r3$.ɵɵpipe(1, "uppercase");
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -1990,19 +1990,19 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
-            $r3$.ΔelementContainerStart(3);
-            $r3$.Δpipe(4, "uppercase");
-            $r3$.ΔelementContainerEnd();
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 2, 3, "ng-template");
+            $r3$.ɵɵelementContainerStart(3);
+            $r3$.ɵɵpipe(4, "uppercase");
+            $r3$.ɵɵelementContainerEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 1, ctx.valueB)));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(4, 1, ctx.valueB)));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2023,9 +2023,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         var $I18N_1$;
@@ -2034,20 +2034,20 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_1$);
+            $r3$.ɵɵi18n(0, $I18N_1$);
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.gender));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.gender));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -2055,15 +2055,15 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
-            $r3$.ΔelementContainerStart(1);
-            $r3$.Δi18n(2, $I18N_0$);
-            $r3$.ΔelementContainerEnd();
+            $r3$.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template");
+            $r3$.ɵɵelementContainerStart(1);
+            $r3$.ɵɵi18n(2, $I18N_0$);
+            $r3$.ɵɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nApply(2);
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nApply(2);
           }
         }
       `;
@@ -2089,26 +2089,26 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_0$, 3);
+            $r3$.ɵɵi18n(0, $I18N_0$, 3);
           }
           if (rf & 2) {
-            const $ctx_r2$ = $r3$.ΔnextContext(3);
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r2$.valueC));
-            $r3$.Δi18nApply(0);
+            const $ctx_r2$ = $r3$.ɵɵnextContext(3);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r2$.valueC));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 2);
-            $r3$.Δtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 2);
+            $r3$.ɵɵtemplate(1, MyComponent_ng_template_2_ng_template_2_ng_template_1_Template, 1, 1, "ng-template");
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ΔnextContext(2);
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.valueB));
-            $r3$.Δi18nApply(0);
+            const $ctx_r1$ = $r3$.ɵɵnextContext(2);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.valueB));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         var $I18N_0$;
@@ -2123,7 +2123,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
               "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
               "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
               "interpolation": "\uFFFD0:1\uFFFD",
@@ -2131,19 +2131,19 @@ describe('i18n support in the view compiler', () => {
               "interpolation_2": "\uFFFD0:3\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$);
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$);
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 1);
-            $r3$.Δpipe(1, "uppercase");
-            $r3$.Δtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+            $r3$.ɵɵpipe(1, "uppercase");
+            $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_ng_template_2_Template, 2, 1, "ng-template");
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(1, 1, $ctx_r0$.valueA)));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA)));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -2151,11 +2151,11 @@ describe('i18n support in the view compiler', () => {
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 3, 3, "ng-template");
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
         }
       `;
@@ -2176,9 +2176,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         var $I18N_1$;
@@ -2187,20 +2187,20 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_1$);
+            $r3$.ɵɵi18n(0, $I18N_1$);
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -2208,15 +2208,15 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementContainerEnd();
-            $r3$.Δtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
+            $r3$.ɵɵelementContainerStart(0);
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementContainerEnd();
+            $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2244,7 +2244,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$tagImg} is my logo #1 ", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$tagImg} is my logo #1 ", {
               "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
             });
         }
@@ -2256,26 +2256,26 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("{$tagImg} is my logo #2 ", {
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("{$tagImg} is my logo #2 ", {
               "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
             });
         }
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_2$);
-            $r3$.Δelement(1, "img", $_c0$);
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_2$);
+            $r3$.ɵɵelement(1, "img", $_c0$);
+            $r3$.ɵɵi18nEnd();
           }
         }
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementContainerStart(0);
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δelement(2, "img", $_c0$);
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementContainerEnd();
-            $r3$.Δtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
+            $r3$.ɵɵelementContainerStart(0);
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵelement(2, "img", $_c0$);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementContainerEnd();
+            $r3$.ɵɵtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
           }
         }
       `;
@@ -2303,7 +2303,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
               "startTagNgContainer": "\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagNgContainer": "\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"
             });
@@ -2330,7 +2330,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("Test");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("Test");
         }
         var $I18N_1$;
         if (ngI18nClosureMode) {
@@ -2338,7 +2338,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("Test");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("Test");
         }
         …
       `;
@@ -2366,7 +2366,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
               "startTagSpan": "\uFFFD#3\uFFFD",
               "closeTagSpan": "\uFFFD/#3\uFFFD"
             });
@@ -2374,13 +2374,13 @@ describe('i18n support in the view compiler', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtext(0, "\n        ");
-            $r3$.ΔelementStart(1, "div");
-            $r3$.Δi18nStart(2, $I18N_0$);
-            $r3$.Δelement(3, "span");
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
-            $r3$.Δtext(4, "\n      ");
+            $r3$.ɵɵtext(0, "\n        ");
+            $r3$.ɵɵelementStart(1, "div");
+            $r3$.ɵɵi18nStart(2, $I18N_0$);
+            $r3$.ɵɵelement(3, "span");
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵtext(4, "\n      ");
           }
         }
       `;
@@ -2402,9 +2402,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2412,14 +2412,14 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2439,9 +2439,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
       `;
@@ -2461,9 +2461,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2471,12 +2471,12 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18n(0, $I18N_0$);
+            $r3$.ɵɵi18n(0, $I18N_0$);
           }
           if (rf & 2) {
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nApply(0);
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nApply(0);
           }
         }
       `;
@@ -2502,9 +2502,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = ["title", "icu only", ${AttributeMarker.Template}, "ngIf"];
@@ -2516,22 +2516,22 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         }
-        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
+        $I18N_3$ = $r3$.ɵɵi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c2$);
-            $r3$.Δi18n(1, $I18N_3$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c2$);
+            $r3$.ɵɵi18n(1, $I18N_3$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
-            $r3$.Δi18nApply(1);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
+            $r3$.ɵɵi18nApply(1);
           }
         }
         const $_c3$ = ["title", "icu and text"];
@@ -2543,27 +2543,27 @@ describe('i18n support in the view compiler', () => {
             $I18N_5$ = $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$;
         }
         else {
-            $I18N_5$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
+            $I18N_5$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
               "interpolation": "\uFFFD1\uFFFD"
             });
         }
-        $I18N_5$ = $r3$.Δi18nPostprocess($I18N_5$, {
+        $I18N_5$ = $r3$.ɵɵi18nPostprocess($I18N_5$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $_c3$);
-            $r3$.Δtext(1, " You have ");
-            $r3$.Δi18n(2, $I18N_5$);
-            $r3$.Δtext(3, ". ");
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div", $_c3$);
+            $r3$.ɵɵtext(1, " You have ");
+            $r3$.ɵɵi18n(2, $I18N_5$);
+            $r3$.ɵɵtext(3, ". ");
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            const $ctx_r1$ = $r3$.ΔnextContext();
-            $r3$.Δselect(2);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.count));
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.count));
-            $r3$.Δi18nApply(2);
+            const $ctx_r1$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.count));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r1$.count));
+            $r3$.ɵɵi18nApply(2);
           }
         }
         …
@@ -2571,20 +2571,20 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
-            $r3$.Δtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
-            $r3$.Δtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c1$);
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.visible));
-            $r3$.Δselect(3);
-            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(ctx.available));
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(ctx.available));
           }
         }
       `;
@@ -2606,25 +2606,25 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
               "interpolation": "\uFFFD1\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.other));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.other));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2654,7 +2654,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
               "startBoldText": "<b>",
               "closeBoldText": "</b>",
               "startItalicText": "<i>",
@@ -2663,7 +2663,7 @@ describe('i18n support in the view compiler', () => {
               "closeTagDiv": "</div>"
             });
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c2$ = [1, "other"];
@@ -2681,7 +2681,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
               "startBoldText": "\uFFFD#2\uFFFD",
               "closeBoldText": "\uFFFD/#2\uFFFD",
               "startTagDiv": "\uFFFD#3\uFFFD",
@@ -2696,19 +2696,19 @@ describe('i18n support in the view compiler', () => {
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δelement(2, "b");
-            $r3$.ΔelementStart(3, "div");
-            $r3$.ΔelementStyling($_c2$);
-            $r3$.Δelement(4, "i");
-            $r3$.ΔelementEnd();
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵelement(2, "b");
+            $r3$.ɵɵelementStart(3, "div");
+            $r3$.ɵɵelementStyling($_c2$);
+            $r3$.ɵɵelement(4, "i");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2730,11 +2730,11 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
               "interpolation": "\uFFFD1\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2742,15 +2742,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2773,9 +2773,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         var $I18N_2$;
@@ -2784,9 +2784,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
         }
-        $I18N_2$ = $r3$.Δi18nPostprocess($I18N_2$, {
+        $I18N_2$ = $r3$.ɵɵi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         var $I18N_0$;
@@ -2798,7 +2798,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$icu_1}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$icu_1}", {
               "icu": $I18N_1$,
               "icu_1": $I18N_2$
             });
@@ -2808,15 +2808,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2844,9 +2844,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         var $I18N_2$;
@@ -2855,9 +2855,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_2$ = $MSG_APP_SPEC_TS_2$;
         }
         else {
-            $I18N_2$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_2$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_2$ = $r3$.Δi18nPostprocess($I18N_2$, {
+        $I18N_2$ = $r3$.ɵɵi18nPostprocess($I18N_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         const $_c3$ = [${AttributeMarker.Template}, "ngIf"];
@@ -2867,9 +2867,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_4$ = $MSG_APP_SPEC_TS__4$;
         }
         else {
-            $I18N_4$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_4$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_4$ = $r3$.Δi18nPostprocess($I18N_4$, {
+        $I18N_4$ = $r3$.ɵɵi18nPostprocess($I18N_4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         var $I18N_0$;
@@ -2883,27 +2883,27 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
               "startTagDiv": "\uFFFD#2\uFFFD",
               "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
               "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
               "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "ICU": [$I18N_1$, $I18N_2$, $I18N_4$]
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-              $r3$.Δi18nStart(0, $I18N_0$, 1);
-              $r3$.Δelement(1, "div");
-              $r3$.Δi18nEnd();
+              $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+              $r3$.ɵɵelement(1, "div");
+              $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.gender));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.gender));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -2911,19 +2911,19 @@ describe('i18n support in the view compiler', () => {
         vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δelement(2, "div");
-            $r3$.Δtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵelement(2, "div");
+            $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 2, 1, "div", $_c3$);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(3);
-            $r3$.ΔelementProperty(3, "ngIf", $r3$.Δbind(ctx.visible));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(3);
+            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2952,9 +2952,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
@@ -2963,15 +2963,15 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -2999,9 +2999,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male} female {female} other {other}}");
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c2$ = [${AttributeMarker.Template}, "ngIf"];
@@ -3011,9 +3011,9 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
         }
-        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
+        $I18N_3$ = $r3$.ɵɵi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         var $I18N_0$;
@@ -3027,7 +3027,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
@@ -3036,15 +3036,15 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 1);
-            $r3$.Δelement(1, "span");
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+            $r3$.ɵɵelement(1, "span");
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -3052,17 +3052,17 @@ describe('i18n support in the view compiler', () => {
         vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 1, "span", $_c2$);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.ageVisible));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.ageVisible));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -3090,12 +3090,12 @@ describe('i18n support in the view compiler', () => {
             $I18N_1$ = $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$;
         }
         else {
-            $I18N_1$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
+            $I18N_1$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
               "interpolation": "\uFFFD1\uFFFD",
               "interpolation_1": "\uFFFD2\uFFFD"
             });
         }
-        $I18N_1$ = $r3$.Δi18nPostprocess($I18N_1$, {
+        $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [${AttributeMarker.Template}, "ngIf"];
@@ -3107,11 +3107,11 @@ describe('i18n support in the view compiler', () => {
             $I18N_3$ = $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$;
         }
         else {
-            $I18N_3$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
+            $I18N_3$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
               "interpolation": "\uFFFD1:1\uFFFD"
             });
         }
-        $I18N_3$ = $r3$.Δi18nPostprocess($I18N_3$, {
+        $I18N_3$ = $r3$.ɵɵi18nPostprocess($I18N_3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
         var $I18N_0$;
@@ -3125,7 +3125,7 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
               "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
               "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
               "icu": $I18N_1$,
@@ -3134,16 +3134,16 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δi18nStart(0, $I18N_0$, 1);
-            $r3$.Δelement(1, "span");
-            $r3$.Δi18nEnd();
+            $r3$.ɵɵi18nStart(0, $I18N_0$, 1);
+            $r3$.ɵɵelement(1, "span");
+            $r3$.ɵɵi18nEnd();
           }
           if (rf & 2) {
-            const $ctx_r0$ = $r3$.ΔnextContext();
-            $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.age));
-            $r3$.Δi18nExp($r3$.Δbind($ctx_r0$.otherAge));
-            $r3$.Δi18nApply(0);
+            const $ctx_r0$ = $r3$.ɵɵnextContext();
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.age));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.otherAge));
+            $r3$.ɵɵi18nApply(0);
           }
         }
         …
@@ -3151,19 +3151,19 @@ describe('i18n support in the view compiler', () => {
         vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18nStart(1, $I18N_0$);
-            $r3$.Δtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
-            $r3$.Δi18nEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18nStart(1, $I18N_0$);
+            $r3$.ɵɵtemplate(2, MyComponent_span_2_Template, 2, 2, "span", $_c2$);
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(2);
-            $r3$.ΔelementProperty(2, "ngIf", $r3$.Δbind(ctx.ageVisible));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.weight));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.height));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(2);
+            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.ageVisible));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.weight));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.height));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;
@@ -3193,13 +3193,13 @@ describe('i18n support in the view compiler', () => {
             $I18N_0$ = $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$;
         }
         else {
-            $I18N_0$ = $r3$.Δi18nLocalize("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
+            $I18N_0$ = $r3$.ɵɵi18nLocalize("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
               "phA": "\uFFFD1\uFFFD",
               "phB": "\uFFFD2\uFFFD",
               "phC": "\uFFFD3\uFFFD"
             });
         }
-        $I18N_0$ = $r3$.Δi18nPostprocess($I18N_0$, {
+        $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -3207,17 +3207,17 @@ describe('i18n support in the view compiler', () => {
         vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div");
-            $r3$.Δi18n(1, $I18N_0$);
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵi18n(1, $I18N_0$);
+            $r3$.ɵɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.Δselect(1);
-            $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.weight));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.height));
-            $r3$.Δi18nExp($r3$.Δbind(ctx.age));
-            $r3$.Δi18nApply(1);
+            $r3$.ɵɵselect(1);
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.weight));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.height));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.age));
+            $r3$.ɵɵi18nApply(1);
           }
         }
       `;

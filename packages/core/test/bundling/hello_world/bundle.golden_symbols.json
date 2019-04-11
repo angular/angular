@@ -486,12 +486,12 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
-    "name": "ΔdefineComponent"
+    "name": "ɵɵdefineComponent"
   },
   {
-    "name": "ΔnamespaceHTML"
+    "name": "ɵɵnamespaceHTML"
   },
   {
-    "name": "Δtext"
+    "name": "ɵɵtext"
   }
 ]
