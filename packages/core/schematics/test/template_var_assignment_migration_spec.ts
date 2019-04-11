@@ -197,4 +197,26 @@ describe('template variable assignment migration', () => {
 
     expect(warnOutput.length).toBe(0);
   });
+
+  it('should be able to report multiple templates within the same source file', () => {
+    writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+      
+      @Component({
+        template: '<ng-template let-one><a (sayHello)="one=true"></a></ng-template>',
+      })
+      export class MyComp {}
+      
+      @Component({
+        template: '<ng-template let-two><b (greet)="two=true"></b></ng-template>',
+      })
+      export class MyComp2 {}
+    `);
+
+    runMigration();
+
+    expect(warnOutput.length).toBe(2);
+    expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:56: Found assignment/);
+    expect(warnOutput[1]).toMatch(/^⮑ {3}index.ts@10:53: Found assignment/);
+  });
 });
