@@ -31,7 +31,7 @@ import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
  *
  * @codeGenApi
  */
-export function Δselect(index: number): void {
+export function ɵɵselect(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode &&
       assertLessThan(

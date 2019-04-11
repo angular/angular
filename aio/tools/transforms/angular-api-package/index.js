@@ -74,7 +74,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
-    readTypeScriptModules.ignoreExportsMatching = [/^[_Δ]|^VERSION$/];
+    readTypeScriptModules.ignoreExportsMatching = [/^_|^ɵɵ|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
 
     // NOTE: This list should be in sync with tools/public_api_guard/BUILD.bazel

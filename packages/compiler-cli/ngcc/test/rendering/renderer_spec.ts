@@ -152,11 +152,11 @@ describe('Renderer', () => {
       const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
       expect(addDefinitionsSpy.calls.first().args[2])
           .toEqual(
-              `A.ngComponentDef = ɵngcc0.ΔdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
-        ɵngcc0.Δtext(0);
+              `A.ngComponentDef = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+        ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
-        ɵngcc0.Δselect(0);
-        ɵngcc0.ΔtextBinding(0, ɵngcc0.Δinterpolation1("", ctx.person.name, ""));
+        ɵngcc0.ɵɵselect(0);
+        ɵngcc0.ɵɵtextBinding(0, ɵngcc0.ɵɵinterpolation1("", ctx.person.name, ""));
     } }, encapsulation: 2 });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
@@ -197,7 +197,7 @@ describe('Renderer', () => {
            }));
            expect(addDefinitionsSpy.calls.first().args[2])
                .toEqual(
-                   `A.ngDirectiveDef = ɵngcc0.ΔdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });
+                   `A.ngDirectiveDef = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
@@ -331,7 +331,7 @@ describe('Renderer', () => {
         const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
         expect(typingsFile.contents)
             .toContain(
-                'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ΔDirectiveDefWithMeta');
+                'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ɵɵDirectiveDefWithMeta');
       });
 
       it('should render imports into typings files', () => {

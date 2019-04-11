@@ -88,7 +88,7 @@ export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 /**
  * @codeGenApi
  */
-export type ΔDirectiveDefWithMeta<
+export type ɵɵDirectiveDefWithMeta<
     T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
@@ -103,7 +103,7 @@ export type ΔDirectiveDefWithMeta<
  *
  * @codeGenApi
  */
-export interface ΔBaseDef<T> {
+export interface ɵɵBaseDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -139,7 +139,7 @@ export interface ΔBaseDef<T> {
  *
  * See: {@link defineDirective}
  */
-export interface DirectiveDef<T> extends ΔBaseDef<T> {
+export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
@@ -202,7 +202,7 @@ export interface DirectiveDef<T> extends ΔBaseDef<T> {
 /**
  * @codeGenApi
  */
-export type ΔComponentDefWithMeta<
+export type ɵɵComponentDefWithMeta<
     T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
 
@@ -349,7 +349,7 @@ export interface PipeDef<T> {
 /**
  * @codeGenApi
  */
-export type ΔPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
+export type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
 export interface DirectiveDefFeature {
   <T>(directiveDef: DirectiveDef<T>): void;

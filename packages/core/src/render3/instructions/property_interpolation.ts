@@ -29,7 +29,7 @@ import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from '.
  *
  * @codeGenApi
  */
-export function ΔinterpolationV(values: any[]): string|NO_CHANGE {
+export function ɵɵinterpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let different = false;
@@ -74,7 +74,7 @@ export function ΔinterpolationV(values: any[]): string|NO_CHANGE {
  *
  * @codeGenApi
  */
-export function Δinterpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
+export function ɵɵinterpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
   const different = bindingUpdated(lView, lView[BINDING_INDEX]++, v0);
   storeBindingMetadata(lView, prefix, suffix);
@@ -86,7 +86,7 @@ export function Δinterpolation1(prefix: string, v0: any, suffix: string): strin
  *
  * @codeGenApi
  */
-export function Δinterpolation2(
+export function ɵɵinterpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
@@ -107,7 +107,7 @@ export function Δinterpolation2(
  *
  * @codeGenApi
  */
-export function Δinterpolation3(
+export function ɵɵinterpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
   const lView = getLView();
@@ -133,7 +133,7 @@ export function Δinterpolation3(
  *
  * @codeGenApi
  */
-export function Δinterpolation4(
+export function ɵɵinterpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -161,7 +161,7 @@ export function Δinterpolation4(
  *
  * @codeGenApi
  */
-export function Δinterpolation5(
+export function ɵɵinterpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -191,7 +191,7 @@ export function Δinterpolation5(
  *
  * @codeGenApi
  */
-export function Δinterpolation6(
+export function ɵɵinterpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
   const lView = getLView();
@@ -222,7 +222,7 @@ export function Δinterpolation6(
  *
  * @codeGenApi
  */
-export function Δinterpolation7(
+export function ɵɵinterpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
@@ -256,7 +256,7 @@ export function Δinterpolation7(
  *
  * @codeGenApi
  */
-export function Δinterpolation8(
+export function ɵɵinterpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
@@ -292,7 +292,7 @@ export function Δinterpolation8(
 
 
 /**
- * Shared reference to a string, used in `ΔpropertyInterpolate`.
+ * Shared reference to a string, used in `ɵɵpropertyInterpolate`.
  */
 const EMPTY_STRING = '';
 
@@ -310,7 +310,7 @@ const EMPTY_STRING = '';
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate('title', v0);
+ * ɵɵpropertyInterpolate('title', v0);
  * ```
  *
  * If the property name also exists as an input property on one of the element's directives,
@@ -323,9 +323,9 @@ const EMPTY_STRING = '';
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate(propName: string, v0: any): TsickleIssue1009 {
-  ΔpropertyInterpolate1(propName, EMPTY_STRING, v0, EMPTY_STRING);
-  return ΔpropertyInterpolate;
+export function ɵɵpropertyInterpolate(propName: string, v0: any): TsickleIssue1009 {
+  ɵɵpropertyInterpolate1(propName, EMPTY_STRING, v0, EMPTY_STRING);
+  return ɵɵpropertyInterpolate;
 }
 
 
@@ -342,7 +342,7 @@ export function ΔpropertyInterpolate(propName: string, v0: any): TsickleIssue10
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate1('title', 'prefix', v0, 'suffix');
+ * ɵɵpropertyInterpolate1('title', 'prefix', v0, 'suffix');
  * ```
  *
  * If the property name also exists as an input property on one of the element's directives,
@@ -355,11 +355,11 @@ export function ΔpropertyInterpolate(propName: string, v0: any): TsickleIssue10
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate1(
+export function ɵɵpropertyInterpolate1(
     propName: string, prefix: string, v0: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, Δinterpolation1(prefix, v0, suffix));
-  return ΔpropertyInterpolate1;
+  elementPropertyInternal(index, propName, ɵɵinterpolation1(prefix, v0, suffix));
+  return ɵɵpropertyInterpolate1;
 }
 
 /**
@@ -375,7 +375,7 @@ export function ΔpropertyInterpolate1(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate2('title', 'prefix', v0, '-', v1, 'suffix');
+ * ɵɵpropertyInterpolate2('title', 'prefix', v0, '-', v1, 'suffix');
  * ```
  *
  * If the property name also exists as an input property on one of the element's directives,
@@ -390,12 +390,12 @@ export function ΔpropertyInterpolate1(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate2(
+export function ɵɵpropertyInterpolate2(
     propName: string, prefix: string, v0: any, i0: string, v1: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, Δinterpolation2(prefix, v0, i0, v1, suffix));
-  return ΔpropertyInterpolate2;
+  elementPropertyInternal(index, propName, ɵɵinterpolation2(prefix, v0, i0, v1, suffix));
+  return ɵɵpropertyInterpolate2;
 }
 
 /**
@@ -411,7 +411,7 @@ export function ΔpropertyInterpolate2(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate3(
+ * ɵɵpropertyInterpolate3(
  * 'title', 'prefix', v0, '-', v1, '-', v2, 'suffix');
  * ```
  *
@@ -429,12 +429,12 @@ export function ΔpropertyInterpolate2(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate3(
+export function ɵɵpropertyInterpolate3(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, Δinterpolation3(prefix, v0, i0, v1, i1, v2, suffix));
-  return ΔpropertyInterpolate3;
+  elementPropertyInternal(index, propName, ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix));
+  return ɵɵpropertyInterpolate3;
 }
 
 /**
@@ -450,7 +450,7 @@ export function ΔpropertyInterpolate3(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate4(
+ * ɵɵpropertyInterpolate4(
  * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, 'suffix');
  * ```
  *
@@ -470,13 +470,13 @@ export function ΔpropertyInterpolate3(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate4(
+export function ɵɵpropertyInterpolate4(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, Δinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix));
-  return ΔpropertyInterpolate4;
+      index, propName, ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix));
+  return ɵɵpropertyInterpolate4;
 }
 
 /**
@@ -492,7 +492,7 @@ export function ΔpropertyInterpolate4(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate5(
+ * ɵɵpropertyInterpolate5(
  * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, 'suffix');
  * ```
  *
@@ -514,13 +514,13 @@ export function ΔpropertyInterpolate4(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate5(
+export function ɵɵpropertyInterpolate5(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, Δinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix));
-  return ΔpropertyInterpolate5;
+      index, propName, ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix));
+  return ɵɵpropertyInterpolate5;
 }
 
 /**
@@ -536,7 +536,7 @@ export function ΔpropertyInterpolate5(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate6(
+ * ɵɵpropertyInterpolate6(
  *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, 'suffix');
  * ```
  *
@@ -560,13 +560,14 @@ export function ΔpropertyInterpolate5(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate6(
+export function ɵɵpropertyInterpolate6(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, Δinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
-  return ΔpropertyInterpolate6;
+      index, propName,
+      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
+  return ɵɵpropertyInterpolate6;
 }
 
 /**
@@ -582,7 +583,7 @@ export function ΔpropertyInterpolate6(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate7(
+ * ɵɵpropertyInterpolate7(
  *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, 'suffix');
  * ```
  *
@@ -608,15 +609,15 @@ export function ΔpropertyInterpolate6(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate7(
+export function ɵɵpropertyInterpolate7(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
       index, propName,
-      Δinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix));
-  return ΔpropertyInterpolate7;
+      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix));
+  return ɵɵpropertyInterpolate7;
 }
 
 /**
@@ -632,7 +633,7 @@ export function ΔpropertyInterpolate7(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolate8(
+ * ɵɵpropertyInterpolate8(
  *  'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, 'suffix');
  * ```
  *
@@ -660,15 +661,15 @@ export function ΔpropertyInterpolate7(
  * @param suffix Static value used for concatenation only.
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolate8(
+export function ɵɵpropertyInterpolate8(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
       index, propName,
-      Δinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix));
-  return ΔpropertyInterpolate8;
+      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix));
+  return ɵɵpropertyInterpolate8;
 }
 
 /**
@@ -684,7 +685,7 @@ export function ΔpropertyInterpolate8(
  * Its compiled representation is::
  *
  * ```ts
- * ΔpropertyInterpolateV(
+ * ɵɵpropertyInterpolateV(
  *  'title', ['prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, '-', v9,
  *  'suffix']);
  * ```
@@ -699,9 +700,9 @@ export function ΔpropertyInterpolate8(
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @returns itself, so that it may be chained.
  */
-export function ΔpropertyInterpolateV(propName: string, values: any[]): TsickleIssue1009 {
+export function ɵɵpropertyInterpolateV(propName: string, values: any[]): TsickleIssue1009 {
   const index = getSelectedIndex();
 
-  elementPropertyInternal(index, propName, ΔinterpolationV(values));
-  return ΔpropertyInterpolateV;
+  elementPropertyInternal(index, propName, ɵɵinterpolationV(values));
+  return ɵɵpropertyInterpolateV;
 }

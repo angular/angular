@@ -36,18 +36,18 @@ The size of the `CONSTS` section is declared in the property `consts` of the com
 })
 class MyApp {
 
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 5,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        Δtext(1, 'Hello ');
-        ΔelementStart(2, 'b');
-        Δtext(3, 'World');
-        ΔelementEnd();
-        Δtext(4, '!');
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        ɵɵtext(1, 'Hello ');
+        ɵɵelementStart(2, 'b');
+        ɵɵtext(3, 'World');
+        ɵɵelementEnd();
+        ɵɵtext(4, '!');
+        ɵɵelementEnd();
       }
       ...
     }
@@ -87,19 +87,19 @@ The size of the `VARS `section is declared in the property `vars` of the compone
 class MyApp {
   name = 'World';
 
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 2, // Two DOM Elements.
     vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        Δtext(1);
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        ɵɵtext(1);
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'title', Δbind(ctx.name));
-        ΔtextBinding(1, Δinterpolation1('Hello ', ctx.name, '!'));
+        ɵɵelementProperty(0, 'title', ɵɵbind(ctx.name));
+        ɵɵtextBinding(1, ɵɵinterpolation1('Hello ', ctx.name, '!'));
       }
       ...
     }
@@ -139,12 +139,12 @@ Examples include:
 })
 class MyApp {
 
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'child', ['tooltip', null]);
+        ɵɵelement(0, 'child', ['tooltip', null]);
       }
       ...
     },
@@ -159,7 +159,7 @@ class MyApp {
 })
 class Child {
   @HostBinding('tooltip') hostTitle = 'Hello World!';
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...
     hostVars: 1
   });
@@ -171,7 +171,7 @@ class Child {
 })
 class Tooltip {
   @HostBinding('title') hostTitle = 'greeting';
-  static ngDirectiveDef = ΔdefineDirective({
+  static ngDirectiveDef = ɵɵdefineDirective({
     ...
     hostVars: 1
   });
@@ -273,12 +273,12 @@ Injection tokens are sorted into three sections:
 })
 class MyApp {
 
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...,
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'child');
+        ɵɵelement(0, 'child');
       }
       ...
     },
@@ -301,7 +301,7 @@ class MyApp {
 })
 class Child {
   construction(injector: Injector) {}
-  static ngComponentDef = ΔdefineComponent({
+  static ngComponentDef = ɵɵdefineComponent({
     ...
     features: [
       ProvidesFeature(
