@@ -38,6 +38,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/material2/pull/15722',
       changes: ['MatExpansionPanel']
+    },
+    {
+      pr: 'https://github.com/angular/material2/pull/15737',
+      changes: ['MatTabHeader', 'MatTabBody']
     }
   ],
 

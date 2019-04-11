@@ -164,27 +164,18 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
               private _changeDetectorRef: ChangeDetectorRef,
               private _viewportRuler: ViewportRuler,
               @Optional() private _dir: Directionality,
-              // @breaking-change 8.0.0 `_ngZone` and `_platforms` parameters to be made required.
-              private _ngZone?: NgZone,
-              private _platform?: Platform) {
+              private _ngZone: NgZone,
+              private _platform: Platform) {
     super();
 
-    const element = _elementRef.nativeElement;
-    const bindEvent = () => {
-      fromEvent(element, 'mouseleave')
+    // Bind the `mouseleave` event on the outside since it doesn't change anything in the view.
+    _ngZone.runOutsideAngular(() => {
+      fromEvent(_elementRef.nativeElement, 'mouseleave')
         .pipe(takeUntil(this._destroyed))
         .subscribe(() => {
           this._stopInterval();
         });
-    };
-
-    // @breaking-change 8.0.0 remove null check once _ngZone is made into a required parameter.
-    if (_ngZone) {
-      // Bind the `mouseleave` event on the outside since it doesn't change anything in the view.
-      _ngZone.runOutsideAngular(bindEvent);
-    } else {
-      bindEvent();
-    }
+    });
   }
 
   ngAfterContentChecked(): void {
@@ -310,16 +301,13 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     if (textContent !== this._currentTextContent) {
       this._currentTextContent = textContent;
 
-      const zoneCallback = () => {
+      // The content observer runs outside the `NgZone` by default, which
+      // means that we need to bring the callback back in ourselves.
+      this._ngZone.run(() => {
         this.updatePagination();
         this._alignInkBarToSelectedTab();
         this._changeDetectorRef.markForCheck();
-      };
-
-      // The content observer runs outside the `NgZone` by default, which
-      // means that we need to bring the callback back in ourselves.
-      // @breaking-change 8.0.0 Remove null check for `_ngZone` once it's a required parameter.
-      this._ngZone ? this._ngZone.run(zoneCallback) : zoneCallback();
+      });
     }
   }
 
@@ -410,8 +398,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     // position to be thrown off in some cases. We have to reset it ourselves to ensure that
     // it doesn't get thrown off. Note that we scope it only to IE and Edge, because messing
     // with the scroll position throws off Chrome 71+ in RTL mode (see #14689).
-    // @breaking-change 8.0.0 Remove null check for `platform`.
-    if (platform && (platform.TRIDENT || platform.EDGE)) {
+    if (platform.TRIDENT || platform.EDGE) {
       this._tabListContainer.nativeElement.scrollLeft = 0;
     }
   }

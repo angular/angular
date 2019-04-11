@@ -163,13 +163,10 @@ export class MatTabBody implements OnInit, OnDestroy {
 
   constructor(private _elementRef: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality,
-              /**
-               * @breaking-change 8.0.0 changeDetectorRef to be made required.
-               */
-              changeDetectorRef?: ChangeDetectorRef) {
+              changeDetectorRef: ChangeDetectorRef) {
 
-    if (this._dir && changeDetectorRef) {
-      this._dirChangeSubscription = this._dir.change.subscribe((dir: Direction) => {
+    if (_dir) {
+      this._dirChangeSubscription = _dir.change.subscribe((dir: Direction) => {
         this._computePositionAnimationState(dir);
         changeDetectorRef.markForCheck();
       });

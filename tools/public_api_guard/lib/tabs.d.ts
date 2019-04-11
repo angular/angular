@@ -48,8 +48,7 @@ export declare class MatTabBody implements OnInit, OnDestroy {
     animationDuration: string;
     origin: number;
     position: number;
-    constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality,
-    changeDetectorRef?: ChangeDetectorRef);
+    constructor(_elementRef: ElementRef<HTMLElement>, _dir: Directionality, changeDetectorRef: ChangeDetectorRef);
     _getLayoutDirection(): Direction;
     _isCenterPosition(position: MatTabBodyPositionState | string): boolean;
     _onTranslateTabStarted(event: AnimationEvent): void;
@@ -124,7 +123,7 @@ export declare class MatTabHeader extends _MatTabHeaderMixinBase implements Afte
     scrollDistance: number;
     readonly selectFocusedIndex: EventEmitter<number>;
     selectedIndex: number;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone?: NgZone | undefined, _platform?: Platform | undefined);
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone: NgZone, _platform: Platform);
     _alignInkBarToSelectedTab(): void;
     _checkPaginationEnabled(): void;
     _checkScrollingControls(): void;
