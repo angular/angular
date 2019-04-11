@@ -141,7 +141,7 @@ function getJson(url) {
     const opts = {headers: {Accept: 'application/json'}};
     const onResponse = res => {
       const statusCode = res.statusCode || -1;
-      const isSuccess = (200 <= statusCode) && (statusCode <= 400);
+      const isSuccess = (200 <= statusCode) && (statusCode < 400);
       let responseText = '';
 
       res.
