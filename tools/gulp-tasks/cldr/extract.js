@@ -14,11 +14,14 @@ const cldr = require('cldr');
 // used to extract all other cldr data
 const cldrJs = require('cldrjs');
 
-const PACKAGE_FOLDER = 'packages/common';
-const I18N_FOLDER = `${PACKAGE_FOLDER}/src/i18n`;
-const I18N_DATA_FOLDER = `${PACKAGE_FOLDER}/locales`;
+const COMMON_PACKAGE = 'packages/common';
+const CORE_PACKAGE = 'packages/core';
+const I18N_FOLDER = `${COMMON_PACKAGE}/src/i18n`;
+const I18N_CORE_FOLDER = `${CORE_PACKAGE}/src/i18n`;
+const I18N_DATA_FOLDER = `${COMMON_PACKAGE}/locales`;
 const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
+const RELATIVE_I18N_CORE_FOLDER = path.resolve(__dirname, `../../../${I18N_CORE_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
 const RELATIVE_I18N_DATA_EXTRA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
 const DEFAULT_RULE = 'function anonymous(n\n/*``*/) {\nreturn"other"\n}';
@@ -60,9 +63,9 @@ module.exports = (gulp, done) => {
 
   const baseCurrencies = generateBaseCurrencies(new cldrJs('en'));
   // additional "en" file that will be included in common
-  console.log(`Writing file ${I18N_FOLDER}/locale_en.ts`);
+  console.log(`Writing file ${I18N_CORE_FOLDER}/locale_en.ts`);
   const localeEnFile = generateLocale('en', new cldrJs('en'), baseCurrencies);
-  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_en.ts`, localeEnFile);
+  fs.writeFileSync(`${RELATIVE_I18N_CORE_FOLDER}/locale_en.ts`, localeEnFile);
 
   LOCALES.forEach((locale, index) => {
     const localeData = new cldrJs(locale);
@@ -82,7 +85,7 @@ module.exports = (gulp, done) => {
     .src([
       `${I18N_DATA_FOLDER}/**/*.ts`,
       `${I18N_FOLDER}/currencies.ts`,
-      `${I18N_FOLDER}/locale_en.ts`
+      `${I18N_CORE_FOLDER}/locale_en.ts`
     ], {base: '.'})
     .pipe(format.format('file', clangFormat))
     .pipe(gulp.dest('.'));
