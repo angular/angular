@@ -488,5 +488,32 @@ describe('static-queries migration with template strategy', () => {
       expect(warnOutput[0])
           .toMatch(/^⮑ {3}index.ts@6:11: Content queries cannot be migrated automatically\./);
     });
+
+    it('should not normalize stylesheets which are referenced in component', async() => {
+      writeFile('sub_dir/index.ts', `
+        import {Component, NgModule, ContentChild} from '@angular/core';
+
+        @Component({
+          template: '<p #myRef></p>',
+          styleUrls: ['./my-comp.scss']
+        })
+        export class MyComp {}
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      // In order to check that the stylesheet is not normalized, we add an "@import" statement
+      // that would be extracted by the "DirectiveNormalizer" and fail because the URL resolver
+      // is not able to resolve the "../shared" relative import to the SCSS file extension.
+      writeFile('/sub_dir/my-comp.scss', `@import '../shared'`);
+      writeFile('/shared.scss', `shared {}`);
+
+      spyOn(console, 'error').and.callThrough();
+
+      await runMigration();
+
+      expect(console.error).toHaveBeenCalledTimes(0);
+    });
   });
 });
