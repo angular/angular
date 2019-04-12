@@ -63,8 +63,8 @@ export class Rule extends Rules.TypedRule {
     // query definitions to explicitly declare the query timing (static or dynamic)
     queries.forEach(q => {
       const queryExpr = q.decorator.node.expression;
-      const timing = usageStrategy.detectTiming(q);
-      const transformedNode = getTransformedQueryCallExpr(q, timing);
+      const {timing, message} = usageStrategy.detectTiming(q);
+      const transformedNode = getTransformedQueryCallExpr(q, timing, !!message);
 
       if (!transformedNode) {
         return;

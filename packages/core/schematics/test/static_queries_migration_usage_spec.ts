@@ -12,12 +12,18 @@ import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import * as shx from 'shelljs';
 
-describe('static-queries migration', () => {
+describe('static-queries migration with usage strategy', () => {
   let runner: SchematicTestRunner;
   let host: TempScopedNodeJsSyncHost;
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
+
+  // Enables the query usage strategy when running the `static-query` migration. By
+  // default the schematic runs the template strategy and there is currently no easy
+  // way to pass options to the migration without using environment variables.
+  beforeAll(() => process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] = 'true');
+  afterAll(() => process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] = '');
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
