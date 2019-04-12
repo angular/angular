@@ -12,7 +12,7 @@ import {parseHtmlGracefully} from '../../../../utils/parse_html';
 import {hasPropertyNameText} from '../../../../utils/typescript/property_name';
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';
-import {TimingStrategy} from '../../timing-strategy';
+import {TimingResult, TimingStrategy} from '../timing-strategy';
 
 import {DeclarationUsageVisitor, FunctionContext} from './declaration_usage_visitor';
 import {updateSuperClassAbstractMembersContext} from './super_class_context';
@@ -37,14 +37,23 @@ const STATIC_QUERY_LIFECYCLE_HOOKS = {
 export class QueryUsageStrategy implements TimingStrategy {
   constructor(private classMetadata: ClassMetadataMap, private typeChecker: ts.TypeChecker) {}
 
+  setup() {
+    // No setup is needed for this strategy and therefore we always return "true" as
+    // the setup is successful.
+    return true;
+  }
+
   /**
    * Analyzes the usage of the given query and determines the query timing based
    * on the current usage of the query.
    */
-  detectTiming(query: NgQueryDefinition): QueryTiming {
-    return isQueryUsedStatically(query.container, query, this.classMetadata, this.typeChecker, []) ?
-        QueryTiming.STATIC :
-        QueryTiming.DYNAMIC;
+  detectTiming(query: NgQueryDefinition): TimingResult {
+    return {
+      timing:
+          isQueryUsedStatically(query.container, query, this.classMetadata, this.typeChecker, []) ?
+          QueryTiming.STATIC :
+          QueryTiming.DYNAMIC
+    };
   }
 }
 

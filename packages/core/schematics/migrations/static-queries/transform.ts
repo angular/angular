@@ -15,11 +15,14 @@ import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
  * determined timing. The updated decorator call expression node will be returned.
  */
 export function getTransformedQueryCallExpr(
-    query: NgQueryDefinition, timing: QueryTiming): ts.CallExpression|null {
+    query: NgQueryDefinition, timing: QueryTiming | null, createTodo: boolean): ts.CallExpression|
+    null {
   const queryExpr = query.decorator.node.expression;
   const queryArguments = queryExpr.arguments;
-  const timingPropertyAssignment = ts.createPropertyAssignment(
-      'static', timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse());
+  const queryPropertyAssignments = timing === null ?
+      [] :
+      [ts.createPropertyAssignment(
+          'static', timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse())];
 
   // If the query decorator is already called with two arguments, we need to
   // keep the existing options untouched and just add the new property if needed.
@@ -34,13 +37,37 @@ export function getTransformedQueryCallExpr(
     }
 
     const updatedOptions = ts.updateObjectLiteral(
-        existingOptions, existingOptions.properties.concat(timingPropertyAssignment));
+        existingOptions, existingOptions.properties.concat(queryPropertyAssignments));
+
+    if (createTodo) {
+      addQueryTimingTodoToNode(updatedOptions);
+    }
+
     return ts.updateCall(
         queryExpr, queryExpr.expression, queryExpr.typeArguments,
         [queryArguments[0], updatedOptions]);
   }
 
+  const optionsNode = ts.createObjectLiteral(queryPropertyAssignments);
+
+  if (createTodo) {
+    addQueryTimingTodoToNode(optionsNode);
+  }
+
   return ts.updateCall(
-      queryExpr, queryExpr.expression, queryExpr.typeArguments,
-      [queryArguments[0], ts.createObjectLiteral([timingPropertyAssignment])]);
+      queryExpr, queryExpr.expression, queryExpr.typeArguments, [queryArguments[0], optionsNode]);
+}
+
+/**
+ * Adds a to-do to the given TypeScript node which reminds developers to specify
+ * an explicit query timing.
+ */
+function addQueryTimingTodoToNode(node: ts.Node) {
+  ts.setSyntheticLeadingComments(node, [{
+                                   pos: -1,
+                                   end: -1,
+                                   hasTrailingNewLine: false,
+                                   kind: ts.SyntaxKind.MultiLineCommentTrivia,
+                                   text: ' TODO: add static flag '
+                                 }]);
 }

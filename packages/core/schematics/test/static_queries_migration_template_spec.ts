@@ -1,0 +1,490 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
+import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
+import {HostTree} from '@angular-devkit/schematics';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import * as shx from 'shelljs';
+
+describe('static-queries migration with template strategy', () => {
+  let runner: SchematicTestRunner;
+  let host: TempScopedNodeJsSyncHost;
+  let tree: UnitTestTree;
+  let tmpDirPath: string;
+  let previousWorkingDir: string;
+  let warnOutput: string[];
+
+  beforeEach(() => {
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    host = new TempScopedNodeJsSyncHost();
+    tree = new UnitTestTree(new HostTree(host));
+
+    writeFile('/tsconfig.json', JSON.stringify({
+      compilerOptions: {
+        experimentalDecorators: true,
+        lib: ['es2015'],
+      }
+    }));
+
+    warnOutput = [];
+    runner.logger.subscribe(logEntry => {
+      if (logEntry.level === 'warn') {
+        warnOutput.push(logEntry.message);
+      }
+    });
+
+    previousWorkingDir = shx.pwd();
+    tmpDirPath = getSystemPath(host.root);
+
+    // Switch into the temporary directory path. This allows us to run
+    // the schematic against our custom unit test tree.
+    shx.cd(tmpDirPath);
+
+    writeFakeAngular();
+  });
+
+  afterEach(() => {
+    shx.cd(previousWorkingDir);
+    shx.rm('-r', tmpDirPath);
+  });
+
+  function writeFakeAngular() { writeFile('/node_modules/@angular/core/index.d.ts', ``); }
+
+  function writeFakeLibrary(selectorName = 'my-lib-selector') {
+    writeFile('/node_modules/my-lib/index.d.ts', `export * from './public-api';`);
+    writeFile('/node_modules/my-lib/public-api.d.ts', `export declare class MyLibComponent {}`);
+    writeFile('/node_modules/my-lib/index.metadata.json', JSON.stringify({
+      __symbolic: 'module',
+      version: 4,
+      metadata: {
+        MyLibComponent: {
+          __symbolic: 'class',
+          decorators: [{
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: '@angular/core',
+              name: 'Component',
+              line: 0,
+              character: 0
+            },
+            arguments: [{
+              selector: selectorName,
+              template: `<span>My Lib Component</span>`,
+            }]
+          }],
+          members: {}
+        },
+      },
+      origins: {
+        MyLibComponent: './public-api',
+      },
+      importAs: 'my-lib',
+    }));
+  }
+
+  function writeFile(filePath: string, contents: string) {
+    host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
+  }
+
+  function runMigration() { runner.runSchematic('migration-v8-static-queries', {}, tree); }
+
+  describe('ViewChild', () => {
+
+    it('should detect queries selecting elements through template reference', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+                        
+        @Component({template: \`
+          <ng-template>
+            <button #myButton>My Button</button>
+          </ng-template>
+          <div>
+            <button #myStaticButton>Button outside ng-template</button>
+          </div>
+        \`})
+        export class MyComp {
+          private @ViewChild('myButton') query: any;
+          private @ViewChild('myStaticButton') query2: any;
+        }
+        
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myButton', { static: false }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myStaticButton', { static: true }) query2: any;`);
+    });
+
+    it('should detect queries selecting ng-template as static', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+                        
+        @Component({template: \`
+          <ng-template #myTmpl>
+            My template
+          </ng-template>
+        \`})
+        export class MyComp {
+          private @ViewChild('myTmpl') query: any;
+        }
+        
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myTmpl', { static: true }) query: any;`);
+    });
+
+    it('should detect queries selecting component view providers through string token', () => {
+      writeFile('/index.ts', `
+        import {Component, Directive, NgModule, ViewChild} from '@angular/core';
+                
+        @Directive({
+          selector: '[myDirective]',
+          providers: [
+            {provide: 'my-token', useValue: 'test'}
+          ]
+        })
+        export class MyDirective {}
+        
+        @Directive({
+          selector: '[myDirective2]',
+          providers: [
+            {provide: 'my-token-2', useValue: 'test'}
+          ]
+        })
+        export class MyDirective2 {}
+             
+        @Component({templateUrl: './my-tmpl.html'})
+        export class MyComp {
+          private @ViewChild('my-token') query: any;
+          private @ViewChild('my-token-2') query2: any;
+        }
+        
+        @NgModule({declarations: [MyComp, MyDirective, MyDirective2]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/my-tmpl.html`, `
+        <span myDirective></span>
+        <ng-template>
+          <span myDirective2></span>
+        </ng-template>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('my-token', { static: true }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('my-token-2', { static: false }) query2: any;`);
+    });
+
+    it('should detect queries selecting component view providers using class token', () => {
+      writeFile('/index.ts', `
+        import {Component, Directive, NgModule, ViewChild} from '@angular/core';
+        
+        export class MyService {}
+        export class MyService2 {}
+                
+        @Directive({
+          selector: '[myDirective]',
+          providers: [MyService]
+        })
+        export class MyDirective {}
+        
+        @Directive({
+          selector: '[myDirective2]',
+          providers: [MyService2]
+        })
+        export class MyDirective2 {}
+             
+        @Component({templateUrl: './my-tmpl.html'})
+        export class MyComp {
+          private @ViewChild(MyService) query: any;
+          private @ViewChild(MyService2) query2: any;
+        }
+        
+        @NgModule({declarations: [MyComp, MyDirective, MyDirective2]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/my-tmpl.html`, `
+        <span myDirective></span>
+        <ng-template>
+          <span myDirective2></span>
+        </ng-template>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(MyService, { static: true }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(MyService2, { static: false }) query2: any;`);
+    });
+
+    it('should detect queries selecting component', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+        import {HomeComponent, HomeComponent2} from './home-comp';
+                        
+        @Component({
+          template: \`
+            <home-comp></home-comp>
+            <ng-template>
+              <home-comp2></home-comp2>
+            </ng-template>
+          \`
+        })
+        export class MyComp {
+          private @ViewChild(HomeComponent) query: any;
+          private @ViewChild(HomeComponent2) query2: any;
+        }
+        
+        @NgModule({declarations: [MyComp, HomeComponent, HomeComponent2]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/home-comp.ts`, `
+        import {Component} from '@angular/core';
+        
+        @Component({
+          selector: 'home-comp',
+          template: '<span>Home</span>'
+        })
+        export class HomeComponent {}
+        
+        @Component({
+          selector: 'home-comp2',
+          template: '<span>Home 2</span>'
+        })
+        export class HomeComponent2 {}
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(HomeComponent, { static: true }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(HomeComponent2, { static: false }) query2: any;`);
+    });
+
+    it('should detect queries selecting third-party component', () => {
+      writeFakeLibrary();
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+        import {MyLibComponent} from 'my-lib';
+                        
+        @Component({templateUrl: './my-tmpl.html'})
+        export class MyComp {
+          private @ViewChild(MyLibComponent) query: any;
+        }
+        
+        @NgModule({declarations: [MyComp, MyLibComponent]})
+        export class MyModule {}
+      `);
+
+      writeFile('/my-tmpl.html', `
+        <my-lib-selector>My projected content</my-lib-selector>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(MyLibComponent, { static: true }) query: any;`);
+    });
+
+    it('should detect queries selecting third-party component with multiple selectors', () => {
+      writeFakeLibrary('a-selector, test-selector');
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+        import {MyLibComponent} from 'my-lib';
+                        
+        @Component({templateUrl: './my-tmpl.html'})
+        export class MyComp {
+          private @ViewChild(MyLibComponent) query: any;
+        }
+        
+        @NgModule({declarations: [MyComp, MyLibComponent]})
+        export class MyModule {}
+      `);
+
+      writeFile('/my-tmpl.html', `
+        <a-selector>Match 1</a-selector>
+        <ng-template>
+          <test-selector>Match 2</test-selector>
+        </ng-template>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild(MyLibComponent, { static: false }) query: any;`);
+    });
+
+    it('should detect queries within structural directive', () => {
+      writeFile('/index.ts', `
+        import {Component, Directive, NgModule, ViewChild} from '@angular/core';
+        
+        @Directive({selector: '[ngIf]'})
+        export class FakeNgIf {}
+                        
+        @Component({templateUrl: 'my-tmpl.html'})
+        export class MyComp {
+          private @ViewChild('myRef') query: any;
+          private @ViewChild('myRef2') query2: any;
+        }
+        
+        @NgModule({declarations: [MyComp, FakeNgIf]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/my-tmpl.html`, `
+        <span ngIf #myRef>No asterisk</span>
+        <span *ngIf #myRef2>With asterisk</span>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef', { static: true }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef2', { static: false }) query2: any;`);
+    });
+
+    it('should detect inherited queries', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+        
+        export class BaseClass {
+          @ViewChild('myRef') query: any;
+        }
+                        
+        @Component({templateUrl: 'my-tmpl.html'})
+        export class MyComp extends BaseClass {}
+        
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/my-tmpl.html`, `
+          <span #myRef>My Ref</span>
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef', { static: true }) query: any;`);
+    });
+
+    it('should add a todo if a query is not declared in any component', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild, SomeToken} from '@angular/core';
+          
+        export class NotAComponent {
+          @ViewChild('myRef', {read: SomeToken}) query: any;
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(
+              `@ViewChild('myRef', /* TODO: add static flag */ { read: SomeToken }) query: any;`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(
+              /^⮑ {3}index.ts@5:11:.+could not be determined.+not declared in any component/);
+    });
+
+    it('should add a todo if a query is used multiple times with different timing', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+          
+        export class BaseClass {
+          @ViewChild('myRef') query: any;
+        }
+        
+        @Component({template: '<ng-template><p #myRef></p></ng-template>'})
+        export class FirstComp extends BaseClass {}
+        
+        @Component({template: '<span #myRef></span>'})
+        export class SecondComp extends BaseClass {}
+        
+        @NgModule({declarations: [FirstComp, SecondComp]})
+        export class MyModule {}
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef', /* TODO: add static flag */ {}) query: any;`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(
+              /^⮑ {3}index.ts@5:11: Multiple components use the query with different timings./);
+    });
+
+    it('should gracefully exit migration if queries could not be analyzed', () => {
+      writeFile('/index.ts', `
+        import {Component, ViewChild} from '@angular/core';
+             
+        @Component({template: '<ng-template><p #myRef></p></ng-template>'})
+        export class MyComp {
+          @ViewChild('myRef') query: any;
+        }
+        
+        // **NOTE**: Analysis will fail as there is no "NgModule" that declares the component.
+      `);
+
+      spyOn(console, 'error');
+
+      // We don't expect an error to be thrown as this could interrupt other
+      // migrations which are scheduled with "ng update" in the CLI.
+      expect(() => runMigration()).not.toThrow();
+
+      expect(console.error)
+          .toHaveBeenCalledWith('Could not create Angular AOT compiler to determine query timing.');
+      expect(console.error)
+          .toHaveBeenCalledWith(
+              jasmine.stringMatching(/Cannot determine the module for class MyComp/));
+    });
+
+    it('should add a todo for content queries which are not detectable', () => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ContentChild} from '@angular/core';
+
+        @Component({template: '<p #myRef></p>'})
+        export class MyComp {
+          @ContentChild('myRef') query: any;
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ContentChild('myRef', /* TODO: add static flag */ {}) query: any;`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(/^⮑ {3}index.ts@6:11: Content queries cannot be migrated automatically\./);
+    });
+  });
+});
