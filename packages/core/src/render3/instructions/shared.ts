@@ -755,6 +755,8 @@ export function createTNode(
     index: adjustedIndex,
     injectorIndex: tParent ? tParent.injectorIndex : -1,
     directiveStart: -1,
+    cleanupStart: -1,
+    cleanupEnd: -1,
     directiveEnd: -1,
     propertyMetadataStartIndex: -1,
     propertyMetadataEndIndex: -1,

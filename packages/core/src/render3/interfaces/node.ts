@@ -232,6 +232,17 @@ export interface TNode {
   injectorIndex: number;
 
   /**
+   * Marks a starting index in the TView.cleanup structure where entries for a given node are
+   * stored.
+   */
+  cleanupStart: number;
+
+  /**
+   * Marks an ending index in the TView.cleanup structure where entries for a given node are stored.
+   */
+  cleanupEnd: number;
+
+  /**
    * Stores starting index of the directives.
    */
   directiveStart: number;

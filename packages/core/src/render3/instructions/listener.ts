@@ -69,13 +69,13 @@ export function ɵɵcomponentHostSyntheticListener<T>(
  * event with a specified name. The TView.cleanup data structure is used to find out which events
  * are registered for a given element.
  */
-function findExistingListener(
-    lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
+function findExistingListener(lView: LView, tNode: TNode, eventName: string): ((e?: any) => any)|
+    null {
   const tView = lView[TVIEW];
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
-    for (let i = 0; i < tCleanup.length - 1; i += 2) {
-      if (tCleanup[i] === eventName && tCleanup[i + 1] === tNodeIdx) {
+    for (let i = tNode.cleanupStart; i < tNode.cleanupEnd - 1; i += 2) {
+      if (tCleanup[i] === eventName && tCleanup[i + 1] === tNode.index) {
         // We have found a matching event name on the same node but it might not have been
         // registered yet, so we must explicitly verify entries in the LView cleanup data
         // structures.
@@ -140,7 +140,7 @@ function listenerInternal(
       // matching on a given node as we can't register multiple event handlers for the same event in
       // a template (this would mean having duplicate attributes).
       if (!eventTargetResolver && hasDirectives(tNode)) {
-        existingListener = findExistingListener(lView, eventName, tNode.index);
+        existingListener = findExistingListener(lView, tNode, eventName);
       }
       if (existingListener !== null) {
         // Attach a new listener at the head of the coalesced listeners list.
@@ -155,7 +155,10 @@ function listenerInternal(
         ngDevMode && ngDevMode.rendererAddEventListener++;
 
         lCleanup.push(listenerFn, cleanupFn);
-        tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+        if (tCleanup) {
+          storeListenerTCleanup(
+              tNode, tCleanup, eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
+        }
       }
 
     } else {
@@ -164,7 +167,10 @@ function listenerInternal(
       ngDevMode && ngDevMode.rendererAddEventListener++;
 
       lCleanup.push(listenerFn);
-      tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
+      if (tCleanup) {
+        storeListenerTCleanup(
+            tNode, tCleanup, eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
+      }
     }
   }
 
@@ -196,10 +202,27 @@ function listenerInternal(
         const subscription = output.subscribe(listenerFn);
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscription);
-        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+        if (tCleanup) {
+          storeListenerTCleanup(tNode, tCleanup, eventName, tNode.index, idx, -(idx + 1));
+        }
       }
     }
   }
+}
+
+/**
+ * A utility function that stores information about listener cleanup functions in TView.cleanup data
+ * structures. Also updates TNode to mark start / end indexes of cleanup entries in TView.cleanup
+ * for a given TNode.
+ */
+function storeListenerTCleanup(
+    tNode: TNode, tCleanup: any[], eventName: string, idxOrTargetGetter: any, listenerFnIdx: number,
+    useCaptureOrIndx: boolean | number): void {
+  if (tNode.cleanupStart === -1) {
+    tNode.cleanupStart = tCleanup.length;
+  }
+  tCleanup.push(eventName, idxOrTargetGetter, listenerFnIdx, useCaptureOrIndx);
+  tNode.cleanupEnd = tNode.cleanupEnd === -1 ? tNode.cleanupStart + 4 : tNode.cleanupEnd + 4;
 }
 
 function executeListenerWithErrorHandling(lView: LView, listenerFn: (e?: any) => any, e: any): any {
