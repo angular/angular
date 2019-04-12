@@ -13,6 +13,7 @@ import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
+import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
@@ -156,13 +157,15 @@ export function ɵɵelementEnd(): void {
   // this is fired at the end of elementEnd because ALL of the stylingBindings code
   // (for directives and the template) have now executed which means the styling
   // context can be instantiated properly.
+  let stylingContext: StylingContext|null = null;
   if (hasClassInput(previousOrParentTNode)) {
-    const stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
+    stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
     setInputsForProperty(
         lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
   }
   if (hasStyleInput(previousOrParentTNode)) {
-    const stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
+    stylingContext =
+        stylingContext || getStylingContextFromLView(previousOrParentTNode.index, lView);
     setInputsForProperty(
         lView, previousOrParentTNode.inputs !['style'] !,
         getInitialStyleStringValue(stylingContext));
