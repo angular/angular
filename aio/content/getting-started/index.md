@@ -149,8 +149,8 @@ Learn more: See the [Template Syntax guide](guide/template-syntax "Template Synt
 {@a components}
 ## Components
 
-*Components* are the building blocks of Angular apps. 
-You've already been working with the product list component. 
+*Components* define areas of responsibility in your UI that let you reuse these sets of UI functionality. 
+You've already built one with the product list component. 
 
 A component is comprised of three things: 
 * **A component class,** which handles data and functionality. In the previous section, the product data and the `share()` method were defined for you in the component class. 
