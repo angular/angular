@@ -12,7 +12,7 @@ import {NgDecorator} from '../../../utils/ng_decorators';
 /** Timing of a given query. Either static or dynamic. */
 export enum QueryTiming {
   STATIC,
-  DYNAMIC
+  DYNAMIC,
 }
 
 /** Type of a given query. */
@@ -24,13 +24,10 @@ export enum QueryType {
 export interface NgQueryDefinition {
   /** Type of the query definition. */
   type: QueryType;
-
   /** Property that declares the query. */
   property: ts.PropertyDeclaration;
-
   /** Decorator that declares this as a query. */
   decorator: NgDecorator;
-
   /** Class declaration that holds this query. */
   container: ts.ClassDeclaration;
 }
