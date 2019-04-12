@@ -179,8 +179,9 @@ export function readConfiguration(
       readDirectory: ts.sys.readDirectory,
       readFile: ts.sys.readFile
     };
-    const parsed =
-        ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, existingOptions);
+    const configFileName = path.resolve(process.cwd(), projectFile);
+    const parsed = ts.parseJsonConfigFileContent(
+        config, parseConfigHost, basePath, existingOptions, configFileName);
     const rootNames = parsed.fileNames.map(f => path.normalize(f));
 
     const options = createNgCompilerOptions(basePath, config, parsed.options);
