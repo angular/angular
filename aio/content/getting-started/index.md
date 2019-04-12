@@ -152,7 +152,7 @@ Learn more: See the [Template Syntax guide](guide/template-syntax "Template Synt
 *Components* are the building blocks of Angular apps. 
 You've already been working with the product list component. 
 
-A component is comprised of three things: 
+A component has three pieces: 
 * **A component class,** which handles data and functionality. In the previous section, the product data and the `share()` method were defined for you in the component class. 
 * **An HTML template,** which determines what is presented to the user. In the previous section, you modified the product list's HTML template to display the name, description, and a "Share" button for each product. 
 * **Component-specific styles** that define the look and feel. The product list does not define any styles.  
