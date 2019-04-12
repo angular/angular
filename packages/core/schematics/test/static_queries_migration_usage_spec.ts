@@ -52,7 +52,7 @@ describe('static-queries migration with usage strategy', () => {
   describe('ViewChild', () => {
     createQueryTests('ViewChild');
 
-    it('should mark view queries used in "ngAfterContentInit" as static', () => {
+    it('should mark view queries used in "ngAfterContentInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
         
@@ -66,13 +66,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@ViewChild('test', { static: true }) query: any;`);
     });
 
-    it('should mark view queries used in "ngAfterContentChecked" as static', () => {
+    it('should mark view queries used in "ngAfterContentChecked" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
         
@@ -86,7 +86,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@ViewChild('test', { static: true }) query: any;`);
@@ -96,7 +96,7 @@ describe('static-queries migration with usage strategy', () => {
   describe('ContentChild', () => {
     createQueryTests('ContentChild');
 
-    it('should not mark content queries used in "ngAfterContentInit" as static', () => {
+    it('should not mark content queries used in "ngAfterContentInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ContentChild} from '@angular/core';
         
@@ -110,13 +110,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@ContentChild('test', { static: false }) query: any;`);
     });
 
-    it('should not mark content queries used in "ngAfterContentChecked" as static', () => {
+    it('should not mark content queries used in "ngAfterContentChecked" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ContentChild} from '@angular/core';
         
@@ -130,7 +130,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@ContentChild('test', { static: false }) query: any;`);
@@ -141,10 +141,12 @@ describe('static-queries migration with usage strategy', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() { runner.runSchematic('migration-v8-static-queries', {}, tree); }
+  async function runMigration() {
+    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
+  }
 
   function createQueryTests(queryType: 'ViewChild' | 'ContentChild') {
-    it('should mark queries as dynamic', () => {
+    it('should mark queries as dynamic', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -159,7 +161,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) unused: any;`);
@@ -167,7 +169,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('dynamic', { static: false }) dynamic: any`);
     });
 
-    it('should mark queries used in "ngOnChanges" as static', () => {
+    it('should mark queries used in "ngOnChanges" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -181,13 +183,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should mark queries used in "ngOnInit" as static', () => {
+    it('should mark queries used in "ngOnInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -201,13 +203,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should mark queries used in "ngDoCheck" as static', () => {
+    it('should mark queries used in "ngDoCheck" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -221,13 +223,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should keep existing query options when updating timing', () => {
+    it('should keep existing query options when updating timing', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -241,13 +243,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { /* test */ read: null, static: true }) query: any;`);
     });
 
-    it('should not overwrite existing explicit query timing', () => {
+    it('should not overwrite existing explicit query timing', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -257,13 +259,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', {static: /* untouched */ someVal}) query: any;`);
     });
 
-    it('should detect queries used in deep method chain', () => {
+    it('should detect queries used in deep method chain', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -292,13 +294,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should properly exit if recursive function is analyzed', () => {
+    it('should properly exit if recursive function is analyzed', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -316,13 +318,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should detect queries used in newly instantiated classes', () => {
+    it('should detect queries used in newly instantiated classes', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -353,7 +355,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
@@ -361,7 +363,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
-    it('should detect queries used in parenthesized new expressions', () => {
+    it('should detect queries used in parenthesized new expressions', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -381,13 +383,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect queries in lifecycle hook with string literal name', () => {
+    it('should detect queries in lifecycle hook with string literal name', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -401,13 +403,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect static queries within nested inheritance', () => {
+    it('should detect static queries within nested inheritance', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -426,13 +428,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect static queries used within input setters', () => {
+    it('should detect static queries used within input setters', async() => {
       writeFile('/index.ts', `
         import {Component, Input, ${queryType}} from '@angular/core';
         
@@ -448,13 +450,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect inputs defined in metadata', () => {
+    it('should detect inputs defined in metadata', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -474,13 +476,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect aliased inputs declared in metadata', () => {
+    it('should detect aliased inputs declared in metadata', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -497,13 +499,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should not mark query as static if query is used in non-input setter', () => {
+    it('should not mark query as static if query is used in non-input setter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -517,13 +519,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should detect input decorator on setter', () => {
+    it('should detect input decorator on setter', async() => {
       writeFile('/index.ts', `
         import {Input, Component, ${queryType}} from '@angular/core';
         
@@ -542,13 +544,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect setter inputs in derived classes', () => {
+    it('should detect setter inputs in derived classes', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -567,13 +569,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should properly detect static query in external derived class', () => {
+    it('should properly detect static query in external derived class', async() => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -597,13 +599,13 @@ describe('static-queries migration with usage strategy', () => {
       // recorded for TypeScript projects not at the schematic tree root.
       host.sync.rename(normalize('/tsconfig.json'), normalize('/src/tsconfig.json'));
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/src/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should not mark queries used in promises as static', () => {
+    it('should not mark queries used in promises as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -637,7 +639,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
@@ -645,7 +647,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
-    it('should handle function callbacks which statically access queries', () => {
+    it('should handle function callbacks which statically access queries', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -667,14 +669,15 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should handle class instantiations with specified callbacks that access queries', () => {
-      writeFile('/index.ts', `
+    it('should handle class instantiations with specified callbacks that access queries',
+       async() => {
+         writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {External} from './external';
                         
@@ -688,7 +691,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      writeFile('/external.ts', `
+         writeFile('/external.ts', `
         export class External {
           constructor(cb: () => void) {
             // Add extra parentheses to ensure that expression is unwrapped. 
@@ -697,13 +700,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+         await runMigration();
 
-      expect(tree.readContent('/index.ts'))
-          .toContain(`@${queryType}('test', { static: true }) query: any;`);
-    });
+         expect(tree.readContent('/index.ts'))
+             .toContain(`@${queryType}('test', { static: true }) query: any;`);
+       });
 
-    it('should handle nested functions with arguments from parent closure', () => {
+    it('should handle nested functions with arguments from parent closure', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -726,13 +729,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should not mark queries used in setTimeout as static', () => {
+    it('should not mark queries used in setTimeout as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                                 
@@ -757,7 +760,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
@@ -767,7 +770,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { static: false }) query3: any;`);
     });
 
-    it('should not mark queries used in "addEventListener" as static', () => {
+    it('should not mark queries used in "addEventListener" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ElementRef, ${queryType}} from '@angular/core';
                         
@@ -785,13 +788,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should not mark queries used in "requestAnimationFrame" as static', () => {
+    it('should not mark queries used in "requestAnimationFrame" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ElementRef, ${queryType}} from '@angular/core';
                         
@@ -809,13 +812,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should mark queries used in immediately-invoked function expression as static', () => {
+    it('should mark queries used in immediately-invoked function expression as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -836,7 +839,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
@@ -844,7 +847,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
-    it('should detect static queries used in external function-like declaration', () => {
+    it('should detect static queries used in external function-like declaration', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {externalFn} from './external';
@@ -867,13 +870,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect static queries used through getter property access', () => {
+    it('should detect static queries used through getter property access', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -891,13 +894,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect static queries used through external getter access', () => {
+    it('should detect static queries used through external getter access', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {External} from './external';
@@ -929,13 +932,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should not mark queries as static if a value is assigned to accessor property', () => {
+    it('should not mark queries as static if a value is assigned to accessor property', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -954,13 +957,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should mark queries as static if non-input setter uses query', () => {
+    it('should mark queries as static if non-input setter uses query', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -979,13 +982,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should check setter and getter when using compound assignment', () => {
+    it('should check setter and getter when using compound assignment', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -1005,7 +1008,7 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
@@ -1013,7 +1016,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
-    it('should check getters when using comparison operator in binary expression', () => {
+    it('should check getters when using comparison operator in binary expression', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -1032,13 +1035,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should check derived abstract class methods', () => {
+    it('should check derived abstract class methods', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1068,13 +1071,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect queries accessed through deep abstract class method', () => {
+    it('should detect queries accessed through deep abstract class method', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1100,13 +1103,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect queries accessed through abstract property getter', () => {
+    it('should detect queries accessed through abstract property getter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1126,13 +1129,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect queries accessed through abstract property setter', () => {
+    it('should detect queries accessed through abstract property setter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1153,13 +1156,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect query usage in abstract class methods accessing inherited query', () => {
+    it('should detect query usage in abstract class methods accessing inherited query', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1189,13 +1192,13 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect query usage within component template', () => {
+    it('should detect query usage within component template', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1210,13 +1213,13 @@ describe('static-queries migration with usage strategy', () => {
         <comp [dir]="query"></comp>
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should detect query usage with nested property read within component template', () => {
+    it('should detect query usage with nested property read within component template', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1231,14 +1234,15 @@ describe('static-queries migration with usage strategy', () => {
         <comp [dir]="query.someProperty"></comp>
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should not mark query as static if template has template reference with same name', () => {
-      writeFile('/index.ts', `
+    it('should not mark query as static if template has template reference with same name',
+       async() => {
+         writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
         @Component({templateUrl: 'my-template.html'})
@@ -1247,21 +1251,21 @@ describe('static-queries migration with usage strategy', () => {
         }
       `);
 
-      writeFile(`/my-template.html`, `
+         writeFile(`/my-template.html`, `
         <foo #test></foo>
         <same-name #query></same-name>
         <!-- In that case the "query" from the component cannot be referenced. -->
         <comp [dir]="query"></comp>
       `);
 
-      runMigration();
+         await runMigration();
 
-      expect(tree.readContent('/index.ts'))
-          .toContain(`@${queryType}('test', { static: false }) query: any;`);
-    });
+         expect(tree.readContent('/index.ts'))
+             .toContain(`@${queryType}('test', { static: false }) query: any;`);
+       });
 
     it('should not mark query as static if template has property read with query name but different receiver',
-       () => {
+       async() => {
          writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1280,13 +1284,13 @@ describe('static-queries migration with usage strategy', () => {
         <comp [dir]="myObject.someProp"></comp>
       `);
 
-         runMigration();
+         await runMigration();
 
          expect(tree.readContent('/index.ts'))
              .toContain(`@${queryType}('test', { static: false }) someProp: any;`);
        });
 
-    it('should ignore queries accessed within <ng-template> element', () => {
+    it('should ignore queries accessed within <ng-template> element', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1304,13 +1308,13 @@ describe('static-queries migration with usage strategy', () => {
         </ng-template>
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
 
-    it('should detect inherited queries used in templates', () => {
+    it('should detect inherited queries used in templates', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         
@@ -1327,13 +1331,13 @@ describe('static-queries migration with usage strategy', () => {
         <my-comp [myInput]="query"></my-comp>
       `);
 
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
-    it('should properly handle multiple tsconfig files', () => {
+    it('should properly handle multiple tsconfig files', async() => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
                         
@@ -1352,7 +1356,7 @@ describe('static-queries migration with usage strategy', () => {
       // The migration runs for "/tsconfig.json" and "/src/tsconfig.json" which both
       // contain the "src/index.ts" file. This test ensures that we don't incorrectly
       // apply the code transformation multiple times with outdated offsets.
-      runMigration();
+      await runMigration();
 
       expect(tree.readContent('/src/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
