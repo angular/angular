@@ -1,3 +1,14 @@
+<a name="7.2.13"></a>
+## [7.2.13](https://github.com/angular/angular/compare/7.2.12...7.2.13) (2019-04-12)
+
+
+### Bug Fixes
+
+* **bazel:** use //:tsconfig.json as the default for ng_module ([#29670](https://github.com/angular/angular/issues/29670)) ([#29711](https://github.com/angular/angular/issues/29711)) ([9e33dc3](https://github.com/angular/angular/commit/9e33dc3))
+* **platform-browser:** insert APP_ID in styles, contentAttr and hostAttr ([#17745](https://github.com/angular/angular/issues/17745)) ([ca14509](https://github.com/angular/angular/commit/ca14509))
+
+
+
 <a name="7.2.12"></a>
 ## [7.2.12](https://github.com/angular/angular/compare/7.2.11...7.2.12) (2019-04-03)
 
