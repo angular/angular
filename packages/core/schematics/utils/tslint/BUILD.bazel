@@ -4,5 +4,7 @@ ts_library(
     name = "tslint",
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
-    visibility = ["//packages/core/schematics/migrations/template-var-assignment/google3:__pkg__"],
+    visibility = [
+        "//packages/core/schematics/migrations/template-var-assignment/google3:__pkg__",
+    ],
 )
