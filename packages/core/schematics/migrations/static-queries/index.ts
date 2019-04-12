@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
+import {from} from 'rxjs';
 import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
+import {getInquirer, supportsPrompt} from '../../utils/schematics_prompt';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 import {TypeScriptVisitor, visitAllNodes} from '../../utils/typescript/visit_nodes';
 
@@ -22,24 +23,73 @@ import {TimingStrategy} from './strategies/timing-strategy';
 import {QueryUsageStrategy} from './strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from './transform';
 
-type Logger = logging.LoggerApi;
-
 /** Entry point for the V8 static-query migration. */
 export default function(): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    const projectTsConfigPaths = getProjectTsConfigPaths(tree);
-    const basePath = process.cwd();
-
-    if (!projectTsConfigPaths.length) {
-      throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot migrate queries ' +
-          'to explicit timing.');
-    }
-
-    for (const tsconfigPath of projectTsConfigPaths) {
-      runStaticQueryMigration(tree, tsconfigPath, basePath, context.logger);
-    }
+    // We need to cast the returned "Observable" to "any" as there is a
+    // RxJS version mismatch that breaks the TS compilation.
+    return from(runMigration(tree, context).then(() => tree)) as any;
   };
+}
+
+/** Runs the V8 migration static-query migration for all determined TypeScript projects. */
+async function runMigration(tree: Tree, context: SchematicContext) {
+  const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+  const basePath = process.cwd();
+  const logger = context.logger;
+
+  logger.info('------ Static Query migration ------');
+  logger.info('In preparation for Ivy, developers can now explicitly specify the');
+  logger.info('timing of their queries. Read more about this here:');
+  logger.info('https://github.com/angular/angular/pull/28810');
+  logger.info('');
+
+  if (!projectTsConfigPaths.length) {
+    throw new SchematicsException(
+        'Could not find any tsconfig file. Cannot migrate queries ' +
+        'to explicit timing.');
+  }
+
+  // In case prompts are supported, determine the desired migration strategy
+  // by creating a choice prompt. By default the template strategy is used.
+  let isUsageStrategy = false;
+  if (supportsPrompt()) {
+    logger.info('There are two available migration strategies that can be selected:');
+    logger.info('  • Template strategy  -  migration tool (short-term gains, rare corrections)');
+    logger.info('  • Usage strategy  -  best practices (long-term gains, manual corrections)');
+    logger.info('For an easy migration, the template strategy is recommended. The usage');
+    logger.info('strategy can be used for best practices and a code base that will be more');
+    logger.info('flexible to changes going forward.');
+    const {strategyName} = await getInquirer().prompt<{strategyName: string}>({
+      type: 'list',
+      name: 'strategyName',
+      message: 'What migration strategy do you want to use?',
+      choices: [
+        {name: 'Template strategy', value: 'template'}, {name: 'Usage strategy', value: 'usage'}
+      ],
+      default: 'template',
+    });
+    logger.info('');
+    isUsageStrategy = strategyName === 'usage';
+  } else {
+    // In case prompts are not supported, we still want to allow developers to opt
+    // into the usage strategy by specifying an environment variable. The tests also
+    // use the environment variable as there is no headless way to select via prompt.
+    isUsageStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'];
+  }
+
+  const failures = [];
+  for (const tsconfigPath of projectTsConfigPaths) {
+    failures.push(...await runStaticQueryMigration(tree, tsconfigPath, basePath, isUsageStrategy));
+  }
+
+  if (failures.length) {
+    logger.info('Some queries cannot be migrated automatically. Please go through');
+    logger.info('those manually and apply the appropriate timing:');
+    failures.forEach(failure => logger.warn(`⮑   ${failure}`));
+  }
+
+  logger.info('------------------------------------------------');
 }
 
 /**
@@ -48,8 +98,8 @@ export default function(): Rule {
  * the current usage of the query property. e.g. a view query that is not used in any
  * lifecycle hook does not need to be static and can be set up with "static: false".
  */
-function runStaticQueryMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
+async function runStaticQueryMigration(
+    tree: Tree, tsconfigPath: string, basePath: string, isUsageStrategy: boolean) {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
   const host = ts.createCompilerHost(parsed.options, true);
 
@@ -62,7 +112,6 @@ function runStaticQueryMigration(
     return buffer ? buffer.toString() : undefined;
   };
 
-  const isUsageStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'];
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const queryVisitor = new NgQueryResolveVisitor(typeChecker);
@@ -100,13 +149,13 @@ function runStaticQueryMigration(
   const strategy: TimingStrategy = isUsageStrategy ?
       new QueryUsageStrategy(classMetadata, typeChecker) :
       new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
-  const detectionMessages: string[] = [];
+  const failureMessages: string[] = [];
 
   // In case the strategy could not be set up properly, we just exit the
   // migration. We don't want to throw an exception as this could mean
   // that other migrations are interrupted.
   if (!strategy.setup()) {
-    return;
+    return [];
   }
 
   // Walk through all source files that contain resolved queries and update
@@ -135,23 +184,15 @@ function runStaticQueryMigration(
       update.remove(queryExpr.getStart(), queryExpr.getWidth());
       update.insertRight(queryExpr.getStart(), newText);
 
-      const {line, character} =
-          ts.getLineAndCharacterOfPosition(sourceFile, q.decorator.node.getStart());
-      detectionMessages.push(`${relativePath}@${line + 1}:${character + 1}: ${message}`);
+      if (message) {
+        const {line, character} =
+            ts.getLineAndCharacterOfPosition(sourceFile, q.decorator.node.getStart());
+        failureMessages.push(`${relativePath}@${line + 1}:${character + 1}: ${message}`);
+      }
     });
 
     tree.commitUpdate(update);
   });
 
-  if (detectionMessages.length) {
-    logger.info('------ Static Query migration ------');
-    logger.info('In preparation for Ivy, developers can now explicitly specify the');
-    logger.info('timing of their queries. Read more about this here:');
-    logger.info('https://github.com/angular/angular/pull/28810');
-    logger.info('');
-    logger.info('Some queries cannot be migrated automatically. Please go through');
-    logger.info('those manually and apply the appropriate timing:');
-    detectionMessages.forEach(failure => logger.warn(`⮑   ${failure}`));
-    logger.info('------------------------------------------------');
-  }
+  return failureMessages;
 }
