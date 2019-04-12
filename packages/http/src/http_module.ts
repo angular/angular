@@ -40,7 +40,8 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
 /**
  * The module that includes http's providers
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClientModule](/api/common/http/HttpClientModule),
+ * [HttpClient guide](/guide/http)
  * @publicApi
  */
 @NgModule({
@@ -62,7 +63,6 @@ export class HttpModule {
  * The module that includes jsonp's providers
  *
  * @deprecated see [HttpClientModule](/api/common/http/HttpClientModule),
- * [HttpClientJsonpModule](/api/common/http/HttpClientJsonpModule),
  * [HttpClient guide](/guide/http)
  * @publicApi
  */
