@@ -12,6 +12,8 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
 
+// This comment does nothing.
+
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
