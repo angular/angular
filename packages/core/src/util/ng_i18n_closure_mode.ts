@@ -15,5 +15,6 @@ declare global {
 if (typeof global['ngI18nClosureMode'] === 'undefined') {
   // Make sure to refer to ngI18nClosureMode as ['ngI18nClosureMode'] for closure.
   global['ngI18nClosureMode'] =
-      typeof global['goog'] !== 'undefined' && typeof global['goog'].getMsg === 'function';
+      // TODO(FW-1250): validate that this actually, you know, works.
+      typeof goog !== 'undefined' && typeof goog.getMsg === 'function';
 }
