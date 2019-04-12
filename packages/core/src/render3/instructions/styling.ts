@@ -434,9 +434,11 @@ export function elementStylingApplyInternal(directiveStylingIndex: number, index
   }
 
   // because select(n) may not run between every instruction, the cached styling
-  // context may not get cleared between elements. So to ensure that the right
-  // context is loaded for the next element the cache is pre-emptively cleared
-  // because there is no code in Angular that applies more styling code after a
+  // context may not get cleared between elements. The reason for this is because
+  // styling bindings (like `[style]` and `[class]`) are not recognized as property
+  // bindings by default so a select(n) instruction is not generated. To ensure the
+  // context is loaded correctly for the next element the cache below is pre-emptively
+  // cleared because there is no code in Angular that applies more styling code after a
   // styling flush has occurred.
   setCachedStylingContext(null);
 }
