@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, NgAnalyzedModules, StaticSymbol, TemplateAst, findStaticQueryIds, staticViewQueryIds} from '@angular/compiler';
+import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, NgAnalyzedModules, StaticSymbol, TemplateAst, findStaticQueryIds, staticViewQueryIds} from '@angular/compiler';
 import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
 import * as ts from 'typescript';
@@ -41,6 +41,20 @@ export class QueryTemplateStrategy implements TimingStrategy {
     // this by just accessing the necessary private properties using the bracket notation.
     this.compiler = (aotProgram as any)['compiler'];
     this.metadataResolver = this.compiler !['_metadataResolver'];
+
+    // Modify the "DirectiveNormalizer" to not normalize any referenced external stylesheets.
+    // This is necessary because in CLI projects preprocessor files are commonly referenced
+    // and we don't want to parse them in order to extract relative style references. This
+    // breaks the analysis of the project because we instantiate a standalone AOT compiler
+    // program which does not contain the custom logic by the Angular CLI Webpack compiler plugin.
+    const directiveNormalizer = this.metadataResolver !['_directiveNormalizer'];
+    directiveNormalizer['_normalizeStylesheet'] = function(metadata: CompileStylesheetMetadata) {
+      return new CompileStylesheetMetadata(
+          {styles: metadata.styles, styleUrls: [], moduleUrl: metadata.moduleUrl !});
+    };
+
+    // Retrieves the analyzed modules of the current program. This data can be
+    // used to determine the timing for registered queries.
     const analyzedModules = (aotProgram as any)['analyzedModules'] as NgAnalyzedModules;
 
     const ngDiagnostics = [
