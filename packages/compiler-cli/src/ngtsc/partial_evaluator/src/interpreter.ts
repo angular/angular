@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {Declaration, ReflectionHost} from '../../reflection';
 
-import {ArraySliceBuiltinFn} from './builtin';
+import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {ForeignFunctionResolver, VisitedFilesCallback} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
@@ -340,6 +340,8 @@ export class StaticInterpreter {
         return lhs.length;
       } else if (rhs === 'slice') {
         return new ArraySliceBuiltinFn(node, lhs);
+      } else if (rhs === 'concat') {
+        return new ArrayConcatBuiltinFn(node, lhs);
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
         return DynamicValue.fromUnknown(node);
