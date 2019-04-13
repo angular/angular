@@ -21,7 +21,7 @@ ng generate service User
 
 This command creates the following `UserService` skeleton:
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts" linenums="false"> </code-example>
 
 You can now inject `UserService` anywhere in your application.
 
@@ -38,7 +38,7 @@ You should always provide your service in the root injector unless there is a ca
 
 It's also possible to specify that a service should be provided in a particular `@NgModule`. For example, if you don't want `UserService` to be available to applications unless they import a `UserModule` you've created, you can specify that the service should be provided in the module:
 
-<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.1.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.ts" linenums="false">  </code-example>
 
 The example above shows the preferred way to provide a service in a module. This method is preferred because it enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
 
