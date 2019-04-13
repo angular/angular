@@ -142,14 +142,7 @@ export class StaticInterpreter {
     for (let i = 0; i < node.elements.length; i++) {
       const element = node.elements[i];
       if (ts.isSpreadElement(element)) {
-        const spread = this.visitExpression(element.expression, context);
-        if (spread instanceof DynamicValue) {
-          array.push(DynamicValue.fromDynamicInput(element.expression, spread));
-        } else if (!Array.isArray(spread)) {
-          throw new Error(`Unexpected value in spread expression: ${spread}`);
-        } else {
-          array.push(...spread);
-        }
+        array.push(...this.visitSpreadElement(element, context));
       } else {
         array.push(this.visitExpression(element, context));
       }
@@ -383,7 +376,7 @@ export class StaticInterpreter {
 
     // If the call refers to a builtin function, attempt to evaluate the function.
     if (lhs instanceof BuiltinFn) {
-      return lhs.evaluate(node.arguments.map(arg => this.visitExpression(arg, context)));
+      return lhs.evaluate(this.evaluateFunctionArguments(node, context));
     }
 
     if (!(lhs instanceof Reference)) {
@@ -432,17 +425,17 @@ export class StaticInterpreter {
     }
     const ret = body[0] as ts.ReturnStatement;
 
+    const args = this.evaluateFunctionArguments(node, context);
     const newScope: Scope = new Map<ts.ParameterDeclaration, ResolvedValue>();
     fn.parameters.forEach((param, index) => {
-      let value: ResolvedValue = undefined;
-      if (index < node.arguments.length) {
-        const arg = node.arguments[index];
-        value = this.visitExpression(arg, context);
+      let arg = args[index];
+      if (param.node.dotDotDotToken !== undefined) {
+        arg = args.slice(index);
       }
-      if (value === undefined && param.initializer !== null) {
-        value = this.visitExpression(param.initializer, context);
+      if (arg === undefined && param.initializer !== null) {
+        arg = this.visitExpression(param.initializer, context);
       }
-      newScope.set(param.node, value);
+      newScope.set(param.node, arg);
     });
 
     return ret.expression !== undefined ?
@@ -507,6 +500,29 @@ export class StaticInterpreter {
   private visitParenthesizedExpression(node: ts.ParenthesizedExpression, context: Context):
       ResolvedValue {
     return this.visitExpression(node.expression, context);
+  }
+
+  private evaluateFunctionArguments(node: ts.CallExpression, context: Context): ResolvedValueArray {
+    const args: ResolvedValueArray = [];
+    for (const arg of node.arguments) {
+      if (ts.isSpreadElement(arg)) {
+        args.push(...this.visitSpreadElement(arg, context));
+      } else {
+        args.push(this.visitExpression(arg, context));
+      }
+    }
+    return args;
+  }
+
+  private visitSpreadElement(node: ts.SpreadElement, context: Context): ResolvedValueArray {
+    const spread = this.visitExpression(node.expression, context);
+    if (spread instanceof DynamicValue) {
+      return [DynamicValue.fromDynamicInput(node.expression, spread)];
+    } else if (!Array.isArray(spread)) {
+      throw new Error(`Unexpected value in spread expression: ${spread}`);
+    } else {
+      return spread;
+    }
   }
 
   private stringNameFromPropertyName(node: ts.PropertyName, context: Context): string|undefined {

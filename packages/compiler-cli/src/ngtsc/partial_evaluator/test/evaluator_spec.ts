@@ -75,6 +75,12 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`function foo(bar) { return bar; }`, 'foo("test")')).toEqual('test');
   });
 
+  it('function call spread works', () => {
+    expect(evaluate(`function foo(a, ...b) { return [a, b]; }`, 'foo(1, ...[2, 3])')).toEqual([
+      1, [2, 3]
+    ]);
+  });
+
   it('conditionals work', () => {
     expect(evaluate(`const x = false; const y = x ? 'true' : 'false';`, 'y')).toEqual('false');
   });
@@ -136,6 +142,7 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`const a = [1, 2], b = 3, c = [4, 5];`, 'a[\'concat\'](b, c)')).toEqual([
       1, 2, 3, 4, 5
     ]);
+    expect(evaluate(`const a = [1, 2], b = [3, 4]`, 'a[\'concat\'](...b)')).toEqual([1, 2, 3, 4]);
   });
 
   it('negation works', () => {
