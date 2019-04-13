@@ -130,6 +130,14 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`const a = [1, 2, 3];`, 'a[\'slice\']()')).toEqual([1, 2, 3]);
   });
 
+  it('array `concat` function works', () => {
+    expect(evaluate(`const a = [1, 2], b = [3, 4];`, 'a[\'concat\'](b)')).toEqual([1, 2, 3, 4]);
+    expect(evaluate(`const a = [1, 2], b = 3;`, 'a[\'concat\'](b)')).toEqual([1, 2, 3]);
+    expect(evaluate(`const a = [1, 2], b = 3, c = [4, 5];`, 'a[\'concat\'](b, c)')).toEqual([
+      1, 2, 3, 4, 5
+    ]);
+  });
+
   it('negation works', () => {
     expect(evaluate(`const x = 3;`, '!x')).toEqual(false);
     expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
