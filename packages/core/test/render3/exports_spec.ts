@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵnextContext, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵnextContext, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -44,7 +44,8 @@ describe('exports', () => {
         }
         if (rf & RenderFlags.Update) {
           const tmp = ɵɵreference(2) as any;
-          ɵɵelementProperty(0, 'title', ɵɵbind(tmp.value));
+          ɵɵselect(0);
+          ɵɵproperty('title', tmp.value);
         }
       }, 3, 1);
 
@@ -129,7 +130,8 @@ describe('exports', () => {
         }
         if (rf & RenderFlags.Update) {
           const tmp = ɵɵreference(2) as any;
-          ɵɵelementProperty(0, 'myDir', ɵɵbind(tmp));
+          ɵɵselect(0);
+          ɵɵproperty('myDir', tmp);
         }
       }, 3, 1, [MyComponent, MyDir]);
 
@@ -235,7 +237,8 @@ describe('exports', () => {
           ɵɵtemplate(2, outerTemplate, 5, 2, 'div', [AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(2, 'ngIf', ɵɵbind(app.outer));
+          ɵɵselect(2);
+          ɵɵproperty('ngIf', app.outer);
         }
       }, 3, 1, [NgIf]);
 
@@ -255,7 +258,8 @@ describe('exports', () => {
           const app = ɵɵnextContext();
           const outerInput = ɵɵreference(1) as any;
           ɵɵtextBinding(1, ɵɵbind(outerInput.value));
-          ɵɵelementProperty(4, 'ngIf', ɵɵbind(app.inner));
+          ɵɵselect(4);
+          ɵɵproperty('ngIf', app.inner);
         }
       }
 

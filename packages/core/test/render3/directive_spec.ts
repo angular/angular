@@ -8,8 +8,8 @@
 
 import {EventEmitter, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {AttributeMarker, RenderFlags, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject} from '../../src/render3/index';
-import {ɵɵbind, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, RenderFlags, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
@@ -55,7 +55,10 @@ describe('directive', () => {
         ɵɵelement(0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'test', 'other']);
       }
 
-      function updateTemplate() { ɵɵelementProperty(0, 'test', ɵɵbind(false)); }
+      function updateTemplate() {
+        ɵɵselect(0);
+        ɵɵproperty('test', false);
+      }
 
       const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, 1, [Directive]);
 
@@ -108,9 +111,12 @@ describe('directive', () => {
          }
 
          function updateTemplate() {
-           ɵɵelementProperty(0, 'prop1', ɵɵbind(true));
-           ɵɵelementProperty(0, 'test', ɵɵbind(false));
-           ɵɵelementProperty(0, 'prop2', ɵɵbind(true));
+           ɵɵselect(0);
+           ɵɵproperty('prop1', true);
+           ɵɵselect(0);
+           ɵɵproperty('test', false);
+           ɵɵselect(0);
+           ɵɵproperty('prop2', true);
          }
 
          const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, 3, [Directive]);
@@ -210,7 +216,8 @@ describe('directive', () => {
                   ['directiveA', '', AttributeMarker.Template, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.visible));
+              ɵɵselect(0);
+              ɵɵproperty('ngIf', ctx.visible);
             }
           },
           directives: [DirectiveA, NgIf]

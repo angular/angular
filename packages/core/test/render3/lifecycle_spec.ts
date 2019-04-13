@@ -7,8 +7,8 @@
  */
 
 import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, injectComponentFactoryResolver, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {markDirty, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, injectComponentFactoryResolver, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty} from '../../src/render3/index';
+import {markDirty, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -22,7 +22,8 @@ describe('lifecycles', () => {
         ɵɵelement(0, name);
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+        ɵɵselect(0);
+        ɵɵproperty('val', ctx.val);
       }
     };
   }
@@ -86,7 +87,8 @@ describe('lifecycles', () => {
              ɵɵelement(0, 'comp');
            }
            if (rf & RenderFlags.Update) {
-             ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+             ɵɵselect(0);
+             ɵɵproperty('val', ctx.val);
            }
          }, 1, 1, directives);
 
@@ -136,9 +138,10 @@ describe('lifecycles', () => {
           ɵɵelement(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 2, 0, directives);
 
@@ -199,7 +202,8 @@ describe('lifecycles', () => {
           ɵɵtemplate(0, IfTemplate, 1, 0, 'comp', [AttributeMarker.Template, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
+          ɵɵselect(0);
+          ɵɵproperty('ngIf', ctx.showing);
         }
       }, 1, 0, directives);
 
@@ -288,13 +292,14 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 1);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 2);
+          ɵɵproperty('val', 2);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 4, 0, directives);
 
@@ -347,9 +352,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 5);
+          ɵɵproperty('val', 5);
           ɵɵcontainerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -358,7 +364,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', j);
+                ɵɵselect(0);
+                ɵɵproperty('val', j);
               }
               ɵɵembeddedViewEnd();
             }
@@ -388,9 +395,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 5);
+          ɵɵproperty('val', 5);
           ɵɵcontainerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -399,7 +407,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', j);
+                ɵɵselect(0);
+                ɵɵproperty('val', j);
               }
               ɵɵembeddedViewEnd();
             }
@@ -573,7 +582,8 @@ describe('lifecycles', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+        ɵɵselect(0);
+        ɵɵproperty('val', ctx.val);
       }
     }, 2, 1, [Comp]);
 
@@ -627,9 +637,10 @@ describe('lifecycles', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'val', 1);
+        ɵɵselect(0);
+        ɵɵproperty('val', 1);
         ɵɵselect(3);
-        ɵɵelementProperty(3, 'val', 4);
+        ɵɵproperty('val', 4);
         ɵɵcontainerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
@@ -640,7 +651,8 @@ describe('lifecycles', () => {
               ɵɵelementEnd();
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'val', i);
+              ɵɵselect(0);
+              ɵɵproperty('val', i);
             }
             ɵɵembeddedViewEnd();
           }
@@ -751,14 +763,15 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 33);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 2);
+          ɵɵproperty('val', 44);
         }
       }, 4, 0, directives);
 
       const fixture = new ComponentFixture(App);
-      expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
+      expect(events).toEqual(['parent33', 'parent44', 'comp33', 'comp44']);
     });
 
     it('should be called in projected components before their hosts', () => {
@@ -820,13 +833,14 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 1);
+          ɵɵproperty('val', 1);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val', 2);
+          ɵɵproperty('val', 2);
           ɵɵselect(4);
-          ɵɵelementProperty(4, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 6, 0, directives);
 
@@ -853,9 +867,10 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val', 4);
+          ɵɵproperty('val', 4);
           ɵɵcontainerRefreshStart(2);
           {
             for (let i = 2; i < 4; i++) {
@@ -866,7 +881,8 @@ describe('lifecycles', () => {
                 ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', i);
+                ɵɵselect(0);
+                ɵɵproperty('val', i);
               }
               ɵɵembeddedViewEnd();
             }
@@ -1101,9 +1117,10 @@ describe('lifecycles', () => {
           ɵɵelement(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 2, 0, defs);
 
@@ -1149,13 +1166,14 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 1);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 2);
+          ɵɵproperty('val', 2);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 4, 0, defs);
 
@@ -1176,9 +1194,10 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+          ɵɵselect(0);
+          ɵɵproperty('val', ctx.val);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', ɵɵbind(ctx.val));
+          ɵɵproperty('val', ctx.val);
         }
       }, 2, 2, [Comp, ProjectedComp]);
 
@@ -1192,9 +1211,10 @@ describe('lifecycles', () => {
           ɵɵelement(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 2);
+          ɵɵproperty('val', 2);
         }
       }, 2, 0, [ParentComp]);
 
@@ -1217,9 +1237,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 4);
+          ɵɵproperty('val', 4);
           ɵɵcontainerRefreshStart(1);
           {
             for (let i = 2; i < 4; i++) {
@@ -1228,7 +1249,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', i);
+                ɵɵselect(0);
+                ɵɵproperty('val', i);
               }
               ɵɵembeddedViewEnd();
             }
@@ -1257,9 +1279,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', 4);
+          ɵɵproperty('val', 4);
           ɵɵcontainerRefreshStart(1);
           {
             for (let i = 2; i < 4; i++) {
@@ -1268,7 +1291,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', i);
+                ɵɵselect(0);
+                ɵɵproperty('val', i);
               }
               ɵɵembeddedViewEnd();
             }
@@ -1316,7 +1340,8 @@ describe('lifecycles', () => {
             ɵɵelement(0, 'comp');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'val', ɵɵbind(ctx.myVal));
+            ɵɵselect(0);
+            ɵɵproperty('val', ctx.myVal);
           }
         }, 1, 1, defs);
 
@@ -1343,9 +1368,10 @@ describe('lifecycles', () => {
             ɵɵelement(2, 'parent');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'val', 1);
+            ɵɵselect(0);
+            ɵɵproperty('val', 1);
             ɵɵselect(2);
-            ɵɵelementProperty(2, 'val', 4);
+            ɵɵproperty('val', 4);
             ɵɵcontainerRefreshStart(1);
             {
               for (let i = 2; i < 4; i++) {
@@ -1354,7 +1380,8 @@ describe('lifecycles', () => {
                   ɵɵelement(0, 'parent');
                 }
                 if (rf1 & RenderFlags.Update) {
-                  ɵɵelementProperty(0, 'val', i);
+                  ɵɵselect(0);
+                  ɵɵproperty('val', i);
                 }
                 ɵɵembeddedViewEnd();
               }
@@ -1505,9 +1532,10 @@ describe('lifecycles', () => {
                 ɵɵelement(1, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', ɵɵbind('1'));
+                ɵɵselect(0);
+                ɵɵproperty('val', '1');
                 ɵɵselect(1);
-                ɵɵelementProperty(1, 'val', ɵɵbind('2'));
+                ɵɵproperty('val', '2');
               }
               ɵɵembeddedViewEnd();
             }
@@ -1622,13 +1650,14 @@ describe('lifecycles', () => {
                 ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', 1);
+                ɵɵselect(0);
+                ɵɵproperty('val', 1);
                 ɵɵselect(1);
-                ɵɵelementProperty(1, 'val', 1);
+                ɵɵproperty('val', 1);
                 ɵɵselect(2);
-                ɵɵelementProperty(2, 'val', 2);
+                ɵɵproperty('val', 2);
                 ɵɵselect(3);
-                ɵɵelementProperty(3, 'val', 2);
+                ɵɵproperty('val', 2);
               }
               ɵɵembeddedViewEnd();
             }
@@ -1671,9 +1700,10 @@ describe('lifecycles', () => {
                 ɵɵelement(2, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', ɵɵbind('1'));
+                ɵɵselect(0);
+                ɵɵproperty('val', '1');
                 ɵɵselect(2);
-                ɵɵelementProperty(2, 'val', ɵɵbind('3'));
+                ɵɵproperty('val', '3');
                 ɵɵcontainerRefreshStart(1);
                 {
                   if (ctx.condition2) {
@@ -1682,7 +1712,8 @@ describe('lifecycles', () => {
                       ɵɵelement(0, 'comp');
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ɵɵelementProperty(0, 'val', ɵɵbind('2'));
+                      ɵɵselect(0);
+                      ɵɵproperty('val', '2');
                     }
                     ɵɵembeddedViewEnd();
                   }
@@ -1765,9 +1796,10 @@ describe('lifecycles', () => {
                 ɵɵelement(2, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val', ɵɵbind('1'));
+                ɵɵselect(0);
+                ɵɵproperty('val', '1');
                 ɵɵselect(2);
-                ɵɵelementProperty(2, 'val', ɵɵbind('5'));
+                ɵɵproperty('val', '5');
                 ɵɵcontainerRefreshStart(1);
                 {
                   for (let j = 2; j < ctx.len; j++) {
@@ -1776,7 +1808,8 @@ describe('lifecycles', () => {
                       ɵɵelement(0, 'comp');
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ɵɵelementProperty(0, 'val', ɵɵbind(j));
+                      ɵɵselect(0);
+                      ɵɵproperty('val', j);
                     }
                     ɵɵembeddedViewEnd();
                   }
@@ -1995,8 +2028,8 @@ describe('lifecycles', () => {
         ɵɵelement(0, 'comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'val1', ɵɵbind(ctx.a));
-        ɵɵelementProperty(0, 'publicVal2', ɵɵbind(ctx.b));
+        ɵɵselect(0);
+        ɵɵproperty('val1', ctx.a)('publicVal2', ctx.b);
       }
     }, 1, 2, [Comp]);
 
@@ -2067,8 +2100,8 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(ctx.val1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(ctx.val2));
+          ɵɵselect(0);
+          ɵɵproperty('val1', ctx.val1)('publicVal2', ctx.val2);
         }
       }, 1, 2, defs);
 
@@ -2113,8 +2146,8 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(ctx.val1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(ctx.val2));
+          ɵɵselect(0);
+          ɵɵproperty('val1', ctx.val1)('publicVal2', ctx.val2);
         }
       }, 1, 2, defs);
 
@@ -2158,11 +2191,11 @@ describe('lifecycles', () => {
           ɵɵelement(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val1', ɵɵbind(2));
-          ɵɵelementProperty(1, 'publicVal2', ɵɵbind(2));
+          ɵɵselect(1);
+          ɵɵproperty('val1', 2)('publicVal2', 2);
         }
       }, 2, 4, defs);
 
@@ -2224,8 +2257,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-                ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+                ɵɵselect(0);
+                ɵɵproperty('val1', 1)('publicVal2', 1);
               }
               ɵɵembeddedViewEnd();
             }
@@ -2296,11 +2329,10 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val1', ɵɵbind(2));
-          ɵɵelementProperty(1, 'publicVal2', ɵɵbind(2));
+          ɵɵproperty('val1', 2)('publicVal2', 2);
         }
       }, 2, 4, defs);
 
@@ -2344,17 +2376,14 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val1', ɵɵbind(2));
-          ɵɵelementProperty(1, 'publicVal2', ɵɵbind(2));
+          ɵɵproperty('val1', 2)('publicVal2', 2);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val1', ɵɵbind(3));
-          ɵɵelementProperty(2, 'publicVal2', ɵɵbind(3));
+          ɵɵproperty('val1', 3)('publicVal2', 3);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val1', ɵɵbind(4));
-          ɵɵelementProperty(3, 'publicVal2', ɵɵbind(4));
+          ɵɵproperty('val1', 4)('publicVal2', 4);
         }
       }, 4, 8, defs);
 
@@ -2404,8 +2433,8 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'comp', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
         }
       }, 1, 2, defs);
 
@@ -2445,8 +2474,8 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'div', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
         }
       }, 1, 2, defs);
 
@@ -2481,11 +2510,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val1', ɵɵbind(5));
-          ɵɵelementProperty(2, 'publicVal2', ɵɵbind(5));
+          ɵɵproperty('val1', 5)('publicVal2', 5);
           ɵɵcontainerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -2494,8 +2522,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val1', ɵɵbind(j));
-                ɵɵelementProperty(0, 'publicVal2', ɵɵbind(j));
+                ɵɵselect(0);
+                ɵɵproperty('val1', j)('publicVal2', j);
               }
               ɵɵembeddedViewEnd();
             }
@@ -2568,11 +2596,10 @@ describe('lifecycles', () => {
           ɵɵelement(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val1', ɵɵbind(1));
-          ɵɵelementProperty(0, 'publicVal2', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val1', 1)('publicVal2', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val1', ɵɵbind(5));
-          ɵɵelementProperty(2, 'publicVal2', ɵɵbind(5));
+          ɵɵproperty('val1', 5)('publicVal2', 5);
           ɵɵcontainerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -2581,8 +2608,8 @@ describe('lifecycles', () => {
                 ɵɵelement(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'val1', ɵɵbind(j));
-                ɵɵelementProperty(0, 'publicVal2', ɵɵbind(j));
+                ɵɵselect(0);
+                ɵɵproperty('val1', j)('publicVal2', j);
               }
               ɵɵembeddedViewEnd();
             }
@@ -2699,7 +2726,8 @@ describe('lifecycles', () => {
               ɵɵelement(0, 'div');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'id', ɵɵbind(ctx.a));
+              ɵɵselect(0);
+              ɵɵproperty('id', ctx.a);
             }
           },
           selectors: [['my-comp']],
@@ -2720,7 +2748,8 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'my-comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'value', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('value', 1);
         }
       }, 1, 1, [MyComp]);
 
@@ -2774,6 +2803,8 @@ describe('lifecycles', () => {
     it('should call all hooks in correct order', () => {
       const Comp = createAllHooksComponent('comp', (rf: RenderFlags, ctx: any) => {});
 
+      let val = 0;
+
       /**
        * <comp [val]="1"></comp>
        * <comp [val]="2"></comp>
@@ -2789,24 +2820,25 @@ describe('lifecycles', () => {
         // This means when `fixture.update()` is called below, ngOnChanges should fire,
         // even though the *value* itself never changed.
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          ɵɵselect(0);
+          ɵɵproperty('val', val++);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 2);
+          ɵɵproperty('val', val++);
         }
-      }, 2, 0, [Comp]);
+      }, 2, 2, [Comp]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
-        'changes comp1', 'init comp1', 'check comp1', 'changes comp2', 'init comp2', 'check comp2',
-        'contentInit comp1', 'contentCheck comp1', 'contentInit comp2', 'contentCheck comp2',
-        'viewInit comp1', 'viewCheck comp1', 'viewInit comp2', 'viewCheck comp2'
+        'changes comp0', 'init comp0', 'check comp0', 'changes comp1', 'init comp1', 'check comp1',
+        'contentInit comp0', 'contentCheck comp0', 'contentInit comp1', 'contentCheck comp1',
+        'viewInit comp0', 'viewCheck comp0', 'viewInit comp1', 'viewCheck comp1'
       ]);
 
       events = [];
-      fixture.update();  // Changes are made due to lack of `bind()` call in template fn.
+      fixture.update();  // Changes are made due to incrementing `val` in bindings above.
       expect(events).toEqual([
-        'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
-        'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'
+        'changes comp2', 'check comp2', 'changes comp3', 'check comp3', 'contentCheck comp2',
+        'contentCheck comp3', 'viewCheck comp2', 'viewCheck comp3'
       ]);
     });
 
@@ -2819,47 +2851,48 @@ describe('lifecycles', () => {
           ɵɵelement(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+          ɵɵselect(0);
+          ɵɵproperty('val', ctx.val);
         }
       }, 1, 1, [Comp]);
 
-      /**
-       * <parent [val]="1"></parent>
-       * <parent [val]="2"></parent>
-       */
+      let val = 0;
+
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           ɵɵelement(0, 'parent');
           ɵɵelement(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', 1);
+          // NOTE: The incrementing `val++` below ensures ngOnChanges will be called.
+          ɵɵselect(0);
+          ɵɵproperty('val', val++);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', 2);
+          ɵɵproperty('val', val++);
         }
-      }, 2, 0, [Parent]);
+      }, 2, 2, [Parent]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
+        'changes parent0',      'init parent0',         'check parent0',
         'changes parent1',      'init parent1',         'check parent1',
-        'changes parent2',      'init parent2',         'check parent2',
-        'contentInit parent1',  'contentCheck parent1', 'contentInit parent2',
-        'contentCheck parent2', 'changes comp1',        'init comp1',
-        'check comp1',          'contentInit comp1',    'contentCheck comp1',
-        'viewInit comp1',       'viewCheck comp1',      'changes comp2',
-        'init comp2',           'check comp2',          'contentInit comp2',
-        'contentCheck comp2',   'viewInit comp2',       'viewCheck comp2',
-        'viewInit parent1',     'viewCheck parent1',    'viewInit parent2',
-        'viewCheck parent2'
+        'contentInit parent0',  'contentCheck parent0', 'contentInit parent1',
+        'contentCheck parent1', 'changes comp0',        'init comp0',
+        'check comp0',          'contentInit comp0',    'contentCheck comp0',
+        'viewInit comp0',       'viewCheck comp0',      'changes comp1',
+        'init comp1',           'check comp1',          'contentInit comp1',
+        'contentCheck comp1',   'viewInit comp1',       'viewCheck comp1',
+        'viewInit parent0',     'viewCheck parent0',    'viewInit parent1',
+        'viewCheck parent1'
       ]);
 
       events = [];
       fixture.update();
       expect(events).toEqual([
-        'changes parent1', 'check parent1', 'changes parent2', 'check parent2',
-        'contentCheck parent1', 'contentCheck parent2', 'check comp1', 'contentCheck comp1',
-        'viewCheck comp1', 'check comp2', 'contentCheck comp2', 'viewCheck comp2',
-        'viewCheck parent1', 'viewCheck parent2'
+        'changes parent2', 'check parent2', 'changes parent3', 'check parent3',
+        'contentCheck parent2', 'contentCheck parent3', 'changes comp2', 'check comp2',
+        'contentCheck comp2', 'viewCheck comp2', 'changes comp3', 'check comp3',
+        'contentCheck comp3', 'viewCheck comp3', 'viewCheck parent2', 'viewCheck parent3'
       ]);
 
     });
@@ -2879,7 +2912,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', ɵɵbind(ctx.val));
+          ɵɵproperty('val', ctx.val);
         }
       }, 2, 1, [View]);
 
@@ -2901,13 +2934,14 @@ describe('lifecycles', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'val', ɵɵbind(1));
+          ɵɵselect(0);
+          ɵɵproperty('val', 1);
           ɵɵselect(1);
-          ɵɵelementProperty(1, 'val', ɵɵbind(1));
+          ɵɵproperty('val', 1);
           ɵɵselect(2);
-          ɵɵelementProperty(2, 'val', ɵɵbind(2));
+          ɵɵproperty('val', 2);
           ɵɵselect(3);
-          ɵɵelementProperty(3, 'val', ɵɵbind(2));
+          ɵɵproperty('val', 2);
         }
       }, 4, 4, [Parent, Content]);
 
@@ -2983,7 +3017,8 @@ describe('lifecycles', () => {
           ɵɵtemplate(0, conditionTpl, 1, 1, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'ngIf', ɵɵbind(cmpt.showing));
+          ɵɵselect(0);
+          ɵɵproperty('ngIf', ɵɵbind(cmpt.showing));
         }
       }
 

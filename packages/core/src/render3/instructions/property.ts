@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {assertNotEqual} from '../../util/assert';
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {BINDING_INDEX} from '../interfaces/view';
@@ -12,6 +13,7 @@ import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
 import {TsickleIssue1009, elementPropertyInternal, loadComponentRenderer, storeBindingMetadata} from './shared';
+
 
 
 /**
@@ -38,6 +40,7 @@ export function ɵɵproperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   const bindReconciledValue = ɵɵbind(value);
   elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
   return ɵɵproperty;

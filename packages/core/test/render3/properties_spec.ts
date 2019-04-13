@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
 import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵlistener, ɵɵload, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
@@ -22,7 +22,8 @@ describe('elementProperty', () => {
         ɵɵelement(0, 'span');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
+        ɵɵselect(0);
+        ɵɵproperty('id', ctx.id);
       }
     }, 1, 1);
 
@@ -145,8 +146,8 @@ describe('elementProperty', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
-          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
+          ɵɵselect(0);
+          ɵɵproperty('disabled', ctx.isDisabled)('id', ctx.id);
         }
       }, 2, 2, deps);
 
@@ -176,8 +177,8 @@ describe('elementProperty', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
-          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
+          ɵɵselect(0);
+          ɵɵproperty('disabled', ctx.isDisabled)('id', ctx.id);
         }
       }, 2, 2, deps);
 
@@ -220,7 +221,8 @@ describe('elementProperty', () => {
           ɵɵelement(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
+          ɵɵselect(0);
+          ɵɵproperty('id', ctx.id);
         }
       }, 1, 1, [Comp]);
 
@@ -246,7 +248,8 @@ describe('elementProperty', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
+          ɵɵselect(0);
+          ɵɵproperty('disabled', ctx.isDisabled);
         }
       }, 2, 1, deps);
 
@@ -276,7 +279,8 @@ describe('elementProperty', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
+          ɵɵselect(0);
+          ɵɵproperty('id', ctx.id);
         }
       }, 2, 1, deps);
 
@@ -314,7 +318,8 @@ describe('elementProperty', () => {
           ɵɵcontainer(2);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id1));
+          ɵɵselect(0);
+          ɵɵproperty('id', ctx.id1);
           ɵɵcontainerRefreshStart(2);
           {
             if (ctx.condition) {
@@ -325,7 +330,8 @@ describe('elementProperty', () => {
                 ɵɵelementEnd();
               }
               if (rf0 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id2));
+                ɵɵselect(0);
+                ɵɵproperty('id', ctx.id2);
               }
               ɵɵembeddedViewEnd();
             } else {
@@ -336,7 +342,8 @@ describe('elementProperty', () => {
                 ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id3));
+                ɵɵselect(0);
+                ɵɵproperty('id', ctx.id3);
               }
               ɵɵembeddedViewEnd();
             }
@@ -422,7 +429,8 @@ describe('elementProperty', () => {
           ɵɵelement(0, 'div', ['role', 'button', 'myDir', '']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'role', ɵɵbind(ctx.role));
+          ɵɵselect(0);
+          ɵɵproperty('role', ctx.role);
         }
       }, 1, 1, deps);
 

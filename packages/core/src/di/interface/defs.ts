@@ -7,7 +7,9 @@
  */
 
 import {Type} from '../../interface/type';
+import {assertEqual} from '../../util/assert';
 import {getClosureSafeProperty} from '../../util/property';
+
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
 
 

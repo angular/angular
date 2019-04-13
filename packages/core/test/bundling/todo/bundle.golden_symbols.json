@@ -591,6 +591,9 @@
     "name": "executePreOrderHooks"
   },
   {
+    "name": "executeTemplate"
+  },
+  {
     "name": "executeViewQueryFn"
   },
   {
@@ -817,6 +820,9 @@
   },
   {
     "name": "getRootView"
+  },
+  {
+    "name": "getSelectedIndex"
   },
   {
     "name": "getSinglePropIndexValue"
@@ -1341,9 +1347,6 @@
     "name": "ɵɵelementEnd"
   },
   {
-    "name": "ɵɵelementProperty"
-  },
-  {
     "name": "ɵɵelementStart"
   },
   {
@@ -1366,6 +1369,9 @@
   },
   {
     "name": "ɵɵnextContext"
+  },
+  {
+    "name": "ɵɵproperty"
   },
   {
     "name": "ɵɵreference"

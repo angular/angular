@@ -8,8 +8,8 @@
 
 import {TemplateRef} from '@angular/core';
 
-import {AttributeMarker, RenderFlags, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵbind, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementProperty, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, RenderFlags, ɵɵdefineDirective, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
@@ -111,7 +111,8 @@ describe('TemplateRef', () => {
           ɵɵtemplate(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
+          ɵɵselect(0);
+          ɵɵproperty('ngIf', ctx.showing);
         }
       }
 

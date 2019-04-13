@@ -13,7 +13,7 @@ import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/d
 import {createInjector} from '../../src/di/r3_injector';
 import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {ɵɵProvidersFeature, ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinjectAttribute, ɵɵinterpolation2, ɵɵload, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtemplate, ɵɵtemplateRefExtractor, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {ɵɵProvidersFeature, ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinjectAttribute, ɵɵinterpolation2, ɵɵload, ɵɵprojection, ɵɵprojectionDef, ɵɵproperty, ɵɵreference, ɵɵselect, ɵɵtemplate, ɵɵtemplateRefExtractor, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
 import {TNODE} from '../../src/render3/interfaces/injector';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
@@ -494,7 +494,8 @@ describe('di', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+            ɵɵselect(1);
+            ɵɵproperty('ngIf', ctx.showing);
           }
         }, 2, 1, [DirA, DirB, NgIf]);
 
@@ -621,7 +622,8 @@ describe('di', () => {
           }
           if (rf & RenderFlags.Update) {
             const foo = ɵɵreference(2) as any;
-            ɵɵelementProperty(4, 'tmp', ɵɵbind(foo));
+            ɵɵselect(4);
+            ɵɵproperty('tmp', foo);
           }
         }, 5, 1, [DirA, DirB, StructuralDir]);
 
@@ -1252,7 +1254,8 @@ describe('di', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+              ɵɵselect(1);
+              ɵɵproperty('ngIf', ctx.showing);
 
               // testing only
               dirB = getDirectiveOnNode(0);
@@ -1978,7 +1981,8 @@ describe('di', () => {
                     ['dir', '', 'dirSame', '', AttributeMarker.Template, 'ngIf']);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
+                ɵɵselect(0);
+                ɵɵproperty('ngIf', ctx.showing);
               }
             },
             directives: directives

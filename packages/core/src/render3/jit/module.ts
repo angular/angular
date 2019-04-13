@@ -484,7 +484,7 @@ function expandModuleWithProviders(value: Type<any>| ModuleWithProviders<{}>): T
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
-  return (value as{ngModule?: any}).ngModule !== undefined;
+  return value && (value as{ngModule?: any}).ngModule !== undefined;
 }
 
 function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {

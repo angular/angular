@@ -9,8 +9,8 @@
 import {QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {AttributeMarker, detectChanges, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵreference, ɵɵtemplateRefExtractor, ɵɵviewQuery} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, detectChanges, ɵɵbind, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelementProperty, ɵɵloadViewQuery, ɵɵproperty, ɵɵqueryRefresh, ɵɵreference, ɵɵselect, ɵɵtemplateRefExtractor, ɵɵviewQuery} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgForOf, NgIf} from './common_with_def';
@@ -22,7 +22,7 @@ describe('content projection', () => {
     /**
      * <div><ng-content></ng-content></div>
      */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -34,7 +34,7 @@ describe('content projection', () => {
     /**
      * <child>content</child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         { ɵɵtext(1, 'content'); }
@@ -48,7 +48,7 @@ describe('content projection', () => {
 
   it('should project content when <ng-content> is at a template root', () => {
     /** <ng-content></ng-content> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -56,7 +56,7 @@ describe('content projection', () => {
     }, 1);
 
     /** <child>content</child> */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         { ɵɵtext(1, 'content'); }
@@ -70,7 +70,7 @@ describe('content projection', () => {
 
   it('should project content with siblings', () => {
     /** <ng-content></ng-content> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -84,7 +84,7 @@ describe('content projection', () => {
      *  after
      * </child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -104,7 +104,7 @@ describe('content projection', () => {
 
   it('should re-project content when root.', () => {
     /** <div><ng-content></ng-content></div> */
-    const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
+    const GrandChild = createComponent('grand-child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -114,7 +114,7 @@ describe('content projection', () => {
     }, 2);
 
     /** <grand-child><ng-content></ng-content></grand-child> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'grand-child');
@@ -124,7 +124,7 @@ describe('content projection', () => {
     }, 2, 0, [GrandChild]);
 
     /** <child><b>Hello</b>World!</child> */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -145,7 +145,7 @@ describe('content projection', () => {
   it('should project components', () => {
 
     /** <div><ng-content></ng-content></div> */
-    const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
+    const Child = createComponent('child', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -154,7 +154,7 @@ describe('content projection', () => {
       }
     }, 2);
 
-    const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags, ctx: any) => {
+    const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵtext(0, 'content');
       }
@@ -165,7 +165,7 @@ describe('content projection', () => {
      *   <projected-comp></projected-comp>
      * </child>
      */
-    const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
+    const Parent = createComponent('parent', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         { ɵɵelement(1, 'projected-comp'); }
@@ -180,7 +180,7 @@ describe('content projection', () => {
 
   it('should project components that have their own projection', () => {
     /** <div><ng-content></ng-content></div> */
-    const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
+    const Child = createComponent('child', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -190,7 +190,7 @@ describe('content projection', () => {
     }, 2);
 
     /** <p><ng-content></ng-content></p> */
-    const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags, ctx: any) => {
+    const ProjectedComp = createComponent('projected-comp', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'p');
@@ -207,7 +207,7 @@ describe('content projection', () => {
      *   </projected-comp>
      * </child>
      */
-    const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
+    const Parent = createComponent('parent', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -233,7 +233,7 @@ describe('content projection', () => {
 
   it('should project containers', () => {
     /** <div><ng-content></ng-content></div> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -290,7 +290,7 @@ describe('content projection', () => {
 
   it('should project containers into root', () => {
     /** <ng-content></ng-content> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -339,7 +339,7 @@ describe('content projection', () => {
 
   it('should project containers with if-else.', () => {
     /** <div><ng-content></ng-content></div> */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -441,7 +441,7 @@ describe('content projection', () => {
      *   content
      * </child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -500,7 +500,7 @@ describe('content projection', () => {
     }, 2);
 
     /** <child></child> */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'child');
 
@@ -553,7 +553,7 @@ describe('content projection', () => {
        /**
         * <child>content</child>
         */
-       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+       const Parent = createComponent('parent', function(rf: RenderFlags) {
          if (rf & RenderFlags.Create) {
            ɵɵelementStart(0, 'child');
            {
@@ -721,7 +721,7 @@ describe('content projection', () => {
 
     let parent: any;
     /** <parent><p>text</p></parent> */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'parent');
         {
@@ -783,7 +783,7 @@ describe('content projection', () => {
        /**
         * <child>content</child>
         */
-       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+       const Parent = createComponent('parent', function(rf: RenderFlags) {
          if (rf & RenderFlags.Create) {
            ɵɵelementStart(0, 'child');
            {
@@ -818,12 +818,13 @@ describe('content projection', () => {
         ɵɵtext(2, '-After');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+        ɵɵselect(1);
+        ɵɵproperty('ngIf', ctx.showing);
       }
 
     }, 3, 1, [NgIf]);
 
-    function IfTemplate(rf1: RenderFlags, ctx: any) {
+    function IfTemplate(rf1: RenderFlags) {
       if (rf1 & RenderFlags.Create) {
         ɵɵprojection(0);
       }
@@ -836,7 +837,7 @@ describe('content projection', () => {
      *     Some text
      * </child>
      */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -882,12 +883,13 @@ describe('content projection', () => {
         ɵɵtext(2, '-After');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+        ɵɵselect(1);
+        ɵɵproperty('ngIf', ctx.showing);
       }
 
     }, 3, 1, [NgIf]);
 
-    function IfTemplate(rf: RenderFlags, ctx: any) {
+    function IfTemplate(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojection(0);
       }
@@ -900,7 +902,7 @@ describe('content projection', () => {
      *     Some text
      * </child>
      */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -948,7 +950,8 @@ describe('content projection', () => {
         ɵɵtext(3, '-After');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(2, 'ngIf', ɵɵbind(ctx.showing));
+        ɵɵselect(2);
+        ɵɵproperty('ngIf', ctx.showing);
       }
 
     }, 4, 1, [NgIf]);
@@ -966,7 +969,7 @@ describe('content projection', () => {
      *     <span>B</span>
      * </child>
      */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -1002,7 +1005,7 @@ describe('content projection', () => {
      () => {
        let triggerDir !: Trigger;
 
-       function NgTemplate(rf: RenderFlags, ctx: any) {
+       function NgTemplate(rf: RenderFlags) {
          if (rf & RenderFlags.Create) {
            ɵɵprojection(0);
          }
@@ -1015,7 +1018,7 @@ describe('content projection', () => {
         */
        const Comp = createComponent(
            'comp',
-           (rf: RenderFlags, ctx: any) => {
+           (rf: RenderFlags) => {
              if (rf & RenderFlags.Create) {
                ɵɵprojectionDef();
                ɵɵtemplate(1, NgTemplate, 1, 0, 'ng-template', null, null, ɵɵtemplateRefExtractor);
@@ -1056,7 +1059,7 @@ describe('content projection', () => {
         *    Some content
         * </comp>
         */
-       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+       const App = createComponent('app', (rf: RenderFlags) => {
          if (rf & RenderFlags.Create) {
            ɵɵelement(0, 'button', [AttributeMarker.Bindings, 'trigger']);
            ɵɵelementStart(1, 'comp', null, ['comp', '']);
@@ -1065,7 +1068,8 @@ describe('content projection', () => {
          }
          if (rf & RenderFlags.Update) {
            const comp = ɵɵreference(2);
-           ɵɵelementProperty(0, 'trigger', ɵɵbind(comp));
+           ɵɵselect(0);
+           ɵɵproperty('trigger', comp);
          }
        }, 4, 1, [Comp, Trigger]);
 
@@ -1081,7 +1085,7 @@ describe('content projection', () => {
      * <div><ng-content></ng-content></div>
      * <span><ng-content></ng-content></span>
      */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'div');
@@ -1096,7 +1100,7 @@ describe('content projection', () => {
     /**
      * <child>content</child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         { ɵɵtext(1, 'content'); }
@@ -1153,7 +1157,7 @@ describe('content projection', () => {
     /**
      * <child>content</child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -1181,13 +1185,14 @@ describe('content projection', () => {
       ({{index}}): <ng-content></ng-content>
      </div>
      */
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         { ɵɵtemplate(0, ForTemplate, 3, 1, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']); }
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'ngForOf', ɵɵbind(items));
+        ɵɵselect(0);
+        ɵɵproperty('ngForOf', items);
       }
     }, 1, 1, [NgForOf]);
 
@@ -1206,7 +1211,7 @@ describe('content projection', () => {
     /**
      * <child>content</child>
      */
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         { ɵɵtext(1, 'content'); }
@@ -1219,7 +1224,7 @@ describe('content projection', () => {
   });
 
   it('should project with multiple instances of a component with projection', () => {
-    const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags, ctx: any) {
+    const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵtext(0, 'Before');
@@ -1238,7 +1243,7 @@ describe('content projection', () => {
      *     <p>456</p>
      * </projection-comp>
      */
-    const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
+    const AppComp = createComponent('app-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'projection-comp');
         {
@@ -1277,7 +1282,7 @@ describe('content projection', () => {
      * <ng-content></ng-content>
      * After
      */
-    const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags, ctx: any) {
+    const ProjectionComp = createComponent('projection-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵtext(0, 'Before');
@@ -1297,7 +1302,7 @@ describe('content projection', () => {
      *     <p>456</p>
      * </projection-comp>
      */
-    const ProjectionParent = createComponent('parent-comp', function(rf: RenderFlags, ctx: any) {
+    const ProjectionParent = createComponent('parent-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'projection-comp');
@@ -1332,7 +1337,7 @@ describe('content projection', () => {
      *    **DEF**
      * </parent-comp>
      */
-    const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
+    const AppComp = createComponent('app-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'parent-comp');
         { ɵɵtext(1, '**ABC**'); }
@@ -1358,7 +1363,7 @@ describe('content projection', () => {
   it('should project ng-container at the content root', () => {
 
     `<ng-content></ng-content>`;
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -1372,7 +1377,7 @@ describe('content projection', () => {
         </ng-container>
       </ng-container>
     </child>`;
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -1395,7 +1400,7 @@ describe('content projection', () => {
   it('should re-project ng-container at the content root', () => {
 
     `<ng-content></ng-content>`;
-    const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
+    const GrandChild = createComponent('grand-child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -1405,7 +1410,7 @@ describe('content projection', () => {
     `<grand-child>
       <ng-content></ng-content>
     </grand-child>`;
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+    const Child = createComponent('child', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵelementStart(0, 'grand-child');
@@ -1421,7 +1426,7 @@ describe('content projection', () => {
         </ng-container>
       </ng-container>
     </child>`;
-    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+    const Parent = createComponent('parent', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
         {
@@ -1443,7 +1448,7 @@ describe('content projection', () => {
 
   it('should handle projected containers inside other containers', () => {
     // <div>Child content</div>
-    const NestedComp = createComponent('nested-comp', function(rf: RenderFlags, ctx: any) {
+    const NestedComp = createComponent('nested-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
         ɵɵtext(1, 'Child content');
@@ -1452,7 +1457,7 @@ describe('content projection', () => {
     }, 2, 0, []);
 
     // <ng-content></ng-content>
-    const RootComp = createComponent('root-comp', function(rf: RenderFlags, ctx: any) {
+    const RootComp = createComponent('root-comp', function(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵprojectionDef();
         ɵɵprojection(0);
@@ -1464,7 +1469,7 @@ describe('content projection', () => {
     //     <nested-comp *ngIf="!last"></nested-comp>
     //   </ng-container>
     // </root-comp>
-    function MyApp_ng_container_1_child_comp_1_Template(rf: RenderFlags, ctx: any) {
+    function MyApp_ng_container_1_child_comp_1_Template(rf: RenderFlags) {
       if (rf & RenderFlags.Create) {
         ɵɵelement(0, 'nested-comp');
       }
@@ -1530,7 +1535,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
        *  <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1548,7 +1553,7 @@ describe('content projection', () => {
        *  <span title="toSecond">2</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1574,7 +1579,7 @@ describe('content projection', () => {
       /**
        *  <ng-content select="[title]"></ng-content>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['', 'title', '']]]);
           { ɵɵprojection(0, 1); }
@@ -1586,7 +1591,7 @@ describe('content projection', () => {
        *  <span [title]="'Some title'">Has title</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1597,7 +1602,8 @@ describe('content projection', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(1, 'title', ɵɵbind('Some title'));
+          ɵɵselect(1);
+          ɵɵproperty('title', 'Some title');
         }
       }, 3, 1, [Child]);
 
@@ -1611,7 +1617,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content select="span.toFirst"></ng-content></div>
        *  <div id="second"><ng-content select="span.toSecond"></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([
             [['span', SelectorFlags.CLASS, 'toFirst']],
@@ -1632,7 +1638,7 @@ describe('content projection', () => {
        *  <span class="toSecond">2</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1658,7 +1664,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content select="span.toFirst"></ng-content></div>
        *  <div id="second"><ng-content select="span.toSecond"></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([
             [['span', SelectorFlags.CLASS, 'toFirst']],
@@ -1679,7 +1685,7 @@ describe('content projection', () => {
        *  <span class="toSecond noise">2</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1705,7 +1711,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content select="span"></ng-content></div>
        *  <div id="second"><ng-content select="span.toSecond"></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1723,7 +1729,7 @@ describe('content projection', () => {
        *  <span class="toSecond">2</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1749,7 +1755,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content select="span.toFirst"></ng-content></div>
        *  <div id="second"><ng-content></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1767,7 +1773,7 @@ describe('content projection', () => {
        *  <span class="toSecond noise">2</span>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1794,7 +1800,7 @@ describe('content projection', () => {
        *  <div id="first"><ng-content></ng-content></div>
        *  <div id="second"><ng-content select="span.toSecond"></ng-content></div>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1813,7 +1819,7 @@ describe('content projection', () => {
        *  remaining
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1846,7 +1852,7 @@ describe('content projection', () => {
        *  <hr>
        *  <ng-content></ng-content>
        */
-      const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
+      const GrandChild = createComponent('grand-child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['span']]]);
           ɵɵprojection(0, 1);
@@ -1861,7 +1867,7 @@ describe('content projection', () => {
        *    <span>in child template</span>
        *  </grand-child>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef();
           ɵɵelementStart(0, 'grand-child');
@@ -1882,7 +1888,7 @@ describe('content projection', () => {
        *  </div>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1907,7 +1913,7 @@ describe('content projection', () => {
        * <hr>
        * <ng-content select="[card-content]"></ng-content>
        */
-      const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
+      const Card = createComponent('card', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['', 'card-title', '']], [['', 'card-content', '']]]);
           ɵɵprojection(0, 1);
@@ -1922,7 +1928,7 @@ describe('content projection', () => {
        *  <ng-content card-content></ng-content>
        * </card>
        */
-      const CardWithTitle = createComponent('card-with-title', function(rf: RenderFlags, ctx: any) {
+      const CardWithTitle = createComponent('card-with-title', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef();
           ɵɵelementStart(0, 'card');
@@ -1941,7 +1947,7 @@ describe('content projection', () => {
        *  content
        * </card-with-title>
        */
-      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'card-with-title');
           { ɵɵtext(1, 'content'); }
@@ -1960,7 +1966,7 @@ describe('content projection', () => {
       /**
        *  <ng-content select="div"></ng-content>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['div']]]);
           ɵɵprojection(0, 1);
@@ -1973,7 +1979,7 @@ describe('content projection', () => {
        *  <div>should project</div>
        * </child>
        */
-      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      const Parent = createComponent('parent', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'child');
           {
@@ -1999,7 +2005,7 @@ describe('content projection', () => {
        *  <ng-content select="div"></ng-content>
        * </span>
        */
-      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      const Child = createComponent('child', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([[['div']]]);
           ɵɵelementStart(0, 'span');
@@ -2008,7 +2014,7 @@ describe('content projection', () => {
         }
       }, 2);
 
-      function IfTemplate(rf: RenderFlags, ctx: any) {
+      function IfTemplate(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'div');
           { ɵɵtext(1, 'content'); }
@@ -2028,7 +2034,8 @@ describe('content projection', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.value));
+          ɵɵselect(1);
+          ɵɵproperty('ngIf', ctx.value);
         }
       }, 2, 1, [Child, NgIf]);
 

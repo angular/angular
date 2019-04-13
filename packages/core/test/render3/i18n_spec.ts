@@ -12,7 +12,7 @@ import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
 import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵnextContext, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵallocHostVars, ɵɵbind, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵnextContext, ɵɵprojection, ɵɵprojectionDef, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n} from '../../src/render3/interfaces/i18n';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
@@ -699,7 +699,8 @@ describe('Runtime i18n', () => {
           ɵɵi18nEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(2, 'ngIf', ɵɵbind(true));
+          ɵɵselect(2);
+          ɵɵproperty('ngIf', true);
         }
       }
 
@@ -728,7 +729,8 @@ describe('Runtime i18n', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(2, 'ngIf', true);
+              ɵɵselect(2);
+              ɵɵproperty('ngIf', true);
             }
           }
         });
@@ -835,7 +837,8 @@ describe('Runtime i18n', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(2, 'ngIf', true);
+              ɵɵselect(2);
+              ɵɵproperty('ngIf', true);
             }
           }
         });
@@ -1477,7 +1480,8 @@ describe('Runtime i18n', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(1, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(1);
+              ɵɵproperty('ngForOf', ctx.items);
             }
           },
           directives: () => [NgForOf]

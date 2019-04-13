@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {assertEqual} from '../../util/assert';
+import {assertEqual, assertNotEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
 import {FLAGS, HEADER_OFFSET, LView, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
@@ -207,6 +207,7 @@ export function ɵɵelementHostStyleProp(
     suffix?: string | null, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
+  ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
 
   const stylingContext = getStylingContext(hostElementIndex, getLView());
   const valueToAdd = resolveStylePropValue(value, suffix);
@@ -287,6 +288,7 @@ export function ɵɵelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
+  ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const stylingContext = getStylingContext(hostElementIndex, getLView());
 
   const input = (value instanceof BoundPlayerFactory) ?
@@ -382,6 +384,7 @@ export function ɵɵelementHostStylingMap(
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
+  ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const stylingContext = getStylingContext(hostElementIndex, getLView());
   const args: ParamsOf<typeof updateStylingMap> =
       [stylingContext, classes, styles, directiveStylingIndex];
@@ -415,7 +418,9 @@ export function ɵɵelementStylingApply(index: number): void {
  * @codeGenApi
  */
 export function ɵɵelementHostStylingApply(): void {
-  elementStylingApplyInternal(getActiveDirectiveStylingIndex(), getSelectedIndex());
+  const hostElementIndex = getSelectedIndex();
+  ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
+  elementStylingApplyInternal(getActiveDirectiveStylingIndex(), hostElementIndex);
 }
 
 export function elementStylingApplyInternal(directiveStylingIndex: number, index: number): void {

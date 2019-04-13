@@ -10,8 +10,8 @@ import {NgForOfContext} from '@angular/common';
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {AttributeMarker, detectChanges, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵload, ɵɵreference, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, detectChanges, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵload, ɵɵreference, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, ɵɵcontentQuery, ɵɵloadContentQuery, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
@@ -1399,7 +1399,8 @@ describe('query', () => {
                     0, Cmpt_Template_1, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.value));
+                ɵɵselect(0);
+                ɵɵproperty('ngIf', ctx.value);
               }
             },
             2, 1, [NgIf], [],
@@ -1434,7 +1435,8 @@ describe('query', () => {
             ɵɵelement(0, 'div', null, ['foo', '']);
           }
           if (rf1 & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'id', ɵɵbind(row.$implicit));
+            ɵɵselect(0);
+            ɵɵproperty('id', row.$implicit);
           }
         }
 
@@ -1461,7 +1463,8 @@ describe('query', () => {
                 ɵɵtemplate(0, Cmpt_Template_1, 2, 1, 'ng-template', ['ngForOf', '']);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.value));
+                ɵɵselect(0);
+                ɵɵproperty('ngForOf', ctx.value);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: Cmpt) {
@@ -1507,7 +1510,8 @@ describe('query', () => {
                ɵɵelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementProperty(0, 'id', ɵɵbind('foo1_' + ctx.idx));
+               ɵɵselect(0);
+               ɵɵproperty('id', 'foo1_' + ctx.idx);
              }
            }
 
@@ -1516,7 +1520,8 @@ describe('query', () => {
                ɵɵelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementProperty(0, 'id', ɵɵbind('foo2_' + ctx.idx));
+               ɵɵselect(0);
+               ɵɵproperty('id', 'foo2_' + ctx.idx);
              }
            }
 
@@ -1616,7 +1621,8 @@ describe('query', () => {
                ɵɵelement(0, 'div', null, ['foo', '']);
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementProperty(0, 'id', ɵɵbind('foo_' + ctx.container_idx + '_' + ctx.idx));
+               ɵɵselect(0);
+               ɵɵproperty('id', 'foo_' + ctx.container_idx + '_' + ctx.idx);
              }
            }
 
@@ -1720,7 +1726,8 @@ describe('query', () => {
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = ɵɵreference(1);
-                ɵɵelementProperty(2, 'ngTemplateOutlet', ɵɵbind(myApp.show ? tplRef : null));
+                ɵɵselect(2);
+                ɵɵproperty('ngTemplateOutlet', myApp.show ? tplRef : null);
               }
             },
             directives: () => [NgTemplateOutlet],
@@ -2402,7 +2409,8 @@ describe('query', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+          ɵɵselect(1);
+          ɵɵproperty('ngIf', ctx.showing);
         }
       }, 2, 1, [ShallowComp, NgIf]);
 

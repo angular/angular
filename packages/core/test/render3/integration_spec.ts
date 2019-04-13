@@ -10,7 +10,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵtemplateRefExtractor} from '../../src/render3/index';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect, ɵɵtemplateRefExtractor} from '../../src/render3/index';
 import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementHostStylingMap, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -568,7 +568,8 @@ describe('render3 integration test', () => {
           ɵɵelement(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'condition', ɵɵbind(ctx.condition));
+          ɵɵselect(0);
+          ɵɵproperty('condition', ctx.condition);
         }
       }, 1, 1, [MyComp]);
 
@@ -724,7 +725,8 @@ describe('render3 integration test', () => {
                      0, ngIfTemplate, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
-                 ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.value));
+                 ɵɵselect(0);
+                 ɵɵproperty('ngIf', ctx.value);
                }
              }, 1, 1, [NgIf]);
 
@@ -993,7 +995,8 @@ describe('render3 integration test', () => {
         }
         if (rf & RenderFlags.Update) {
           const content = ɵɵreference(2) as any;
-          ɵɵelementProperty(0, 'contentTpl', ɵɵbind(content));
+          ɵɵselect(0);
+          ɵɵproperty('contentTpl', content);
         }
       }, 3, 1, [Directive]);
 
@@ -1197,8 +1200,9 @@ describe('render3 integration test', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'beforeTree', ɵɵbind(ctx.beforeTree));
-        ɵɵelementProperty(0, 'afterTree', ɵɵbind(ctx.afterTree));
+        ɵɵselect(0);
+        ɵɵproperty('beforeTree', ctx.beforeTree);
+        ɵɵproperty('afterTree', ctx.afterTree);
         ɵɵcontainerRefreshStart(1);
         {
           const rf0 = ɵɵembeddedViewStart(0, 3, 0);
@@ -1624,7 +1628,8 @@ describe('render3 integration test', () => {
             const foo = ɵɵreference(1) as any;
             ɵɵelementClassProp(2, 0, ctx.class);
             ɵɵelementStylingApply(2);
-            ɵɵelementProperty(2, 'tmp', ɵɵbind(foo));
+            ɵɵselect(2);
+            ɵɵproperty('tmp', foo);
           }
         }, 3, 1, [StructuralComp]);
 
@@ -2331,6 +2336,7 @@ describe('component animations', () => {
         selectors: [['child-comp-with-anim']],
         hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
           if (rf & RenderFlags.Update) {
+            ɵɵselect(0);
             ɵɵelementProperty(0, '@fooAnim', ctx.exp);
           }
         },
@@ -2473,7 +2479,8 @@ describe('element discovery', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(1, 'ngIf', true);
+            ɵɵselect(1);
+            ɵɵproperty('ngIf', true);
           }
         }
       });
@@ -3074,7 +3081,8 @@ describe('sanitization', () => {
             ɵɵelement(0, 'a');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'href', ɵɵbind(ctx.href), ɵɵsanitizeUrl);
+            ɵɵselect(0);
+            ɵɵproperty('href', ctx.href, ɵɵsanitizeUrl);
           }
         }
       });

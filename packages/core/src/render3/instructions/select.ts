@@ -36,7 +36,7 @@ export function ɵɵselect(index: number): void {
   ngDevMode &&
       assertLessThan(
           index, getLView().length - HEADER_OFFSET, 'Should be within range for the view data');
-  setSelectedIndex(index);
   const lView = getLView();
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
+  setSelectedIndex(index);
 }

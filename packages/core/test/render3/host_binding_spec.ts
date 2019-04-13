@@ -8,7 +8,7 @@
 
 import {ElementRef, QueryList, ViewContainerRef} from '@angular/core';
 
-import {AttributeMarker, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵtemplate} from '../../src/render3/index';
+import {AttributeMarker, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
 import {ɵɵallocHostVars, ɵɵbind, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵlistener, ɵɵload, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpureFunction1, ɵɵpureFunction2} from '../../src/render3/pure_function';
@@ -383,7 +383,8 @@ describe('host bindings', () => {
             ɵɵelement(0, 'init-hook-comp');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'inputValue', ɵɵbind(ctx.value));
+            ɵɵselect(0);
+            ɵɵproperty('inputValue', ctx.value);
           }
         },
         consts: 1,
@@ -440,7 +441,8 @@ describe('host bindings', () => {
             ɵɵelement(0, 'input', ['hostBindingDir', '']);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
+            ɵɵselect(0);
+            ɵɵproperty('disabled', ctx.isDisabled);
           }
         },
         consts: 1,
@@ -509,7 +511,8 @@ describe('host bindings', () => {
         ɵɵtemplate(0, NgForTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.rows));
+        ɵɵselect(0);
+        ɵɵproperty('ngForOf', ctx.rows);
       }
     }, 1, 1, [HostBindingDir, NgForOf]);
 
@@ -536,7 +539,8 @@ describe('host bindings', () => {
         ɵɵelement(1, 'host-binding-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction1(1, ff, ctx.name)));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction1(1, ff, ctx.name));
       }
     }, 2, 3, [HostBindingComp, NameComp]);
 
@@ -617,7 +621,8 @@ describe('host bindings', () => {
         ɵɵelement(1, 'host-binding-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction2(1, ff3, ctx.name, ctx.otherName)));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction2(1, ff3, ctx.name, ctx.otherName));
       }
     }, 2, 4, [HostBindingComp, NameComp]);
 

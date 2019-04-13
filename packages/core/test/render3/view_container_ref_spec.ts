@@ -9,7 +9,7 @@
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ɵɵdefineInjector, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef,} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
 import {ViewEncapsulation} from '../../src/metadata';
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefinePipe, injectComponentFactoryResolver, ɵɵlistener, ɵɵloadViewQuery, ɵɵNgOnChangesFeature, ɵɵqueryRefresh, ɵɵviewQuery,} from '../../src/render3/index';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefinePipe, injectComponentFactoryResolver, ɵɵlistener, ɵɵloadViewQuery, ɵɵNgOnChangesFeature, ɵɵqueryRefresh, ɵɵviewQuery, ɵɵselect, ɵɵproperty,} from '../../src/render3/index';
 
 import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation3, ɵɵnextContext, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding,} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -85,7 +85,8 @@ describe('ViewContainerRef', () => {
 
     function updateTemplate() {
       const tplRef = ɵɵreference(1);
-      ɵɵelementProperty(2, 'tplRef', ɵɵbind(tplRef));
+      ɵɵselect(2);
+      ɵɵproperty('tplRef', tplRef);
     }
 
     describe('createEmbeddedView (incl. insert)', () => {
@@ -184,8 +185,10 @@ describe('ViewContainerRef', () => {
 
         function update() {
           const tplRef = ɵɵreference(1);
-          ɵɵelementProperty(2, 'tplRef', ɵɵbind(tplRef));
-          ɵɵelementProperty(3, 'tplRef', ɵɵbind(tplRef));
+          ɵɵselect(2);
+          ɵɵproperty('tplRef', tplRef);
+          ɵɵselect(3);
+          ɵɵproperty('tplRef', tplRef);
         }
 
         const fixture = new TemplateFixture(createTemplate, update, 4, 2, [DirectiveWithVCRef]);
@@ -211,7 +214,8 @@ describe('ViewContainerRef', () => {
 
         function updateTemplate() {
           const tplRef = ɵɵreference(1);
-          ɵɵelementProperty(0, 'tplRef', ɵɵbind(tplRef));
+          ɵɵselect(0);
+          ɵɵproperty('tplRef', tplRef);
         }
 
         const fixture =
@@ -453,7 +457,8 @@ describe('ViewContainerRef', () => {
             ɵɵpipe(1, 'starPipe');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'name', ɵɵbind(ɵɵpipeBind1(1, 1, 'C')));
+            ɵɵselect(0);
+            ɵɵproperty('name', ɵɵpipeBind1(1, 1, 'C'));
           }
         }
 
@@ -486,9 +491,10 @@ describe('ViewContainerRef', () => {
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = ɵɵreference(1);
-                ɵɵelementProperty(3, 'tplRef', ɵɵbind(tplRef));
-                ɵɵelementProperty(3, 'name', ɵɵbind(ɵɵpipeBind1(2, 3, 'A')));
-                ɵɵelementProperty(5, 'name', ɵɵbind(ɵɵpipeBind1(4, 5, 'B')));
+                ɵɵselect(3);
+                ɵɵproperty('tplRef', tplRef)('name', ɵɵpipeBind1(2, 3, 'A'));
+                ɵɵselect(5);
+                ɵɵproperty('name', ɵɵpipeBind1(4, 5, 'B'));
               }
             },
             directives: [Child, DirectiveWithVCRef],
@@ -550,7 +556,8 @@ describe('ViewContainerRef', () => {
                    ɵɵelementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementProperty(0, 'tplDir', ɵɵbind(ctx.tpl));
+                   ɵɵselect(0);
+                   ɵɵproperty('tplDir', ctx.tpl);
                    ɵɵtextBinding(1, ɵɵbind(ctx.name));
                  }
                },
@@ -576,7 +583,8 @@ describe('ViewContainerRef', () => {
 
              if (rf & RenderFlags.Update) {
                const tplRef = ɵɵreference(1);
-               ɵɵelementProperty(2, 'tpl', ɵɵbind(tplRef));
+               ɵɵselect(2);
+               ɵɵproperty('tpl', tplRef);
              }
 
            }, 3, 1, [Child]);
@@ -635,8 +643,8 @@ describe('ViewContainerRef', () => {
               }
 
               if (rf & RenderFlags.Update) {
-                ɵɵelementProperty(0, 'ngForOf', ɵɵbind(loop.rows));
-                ɵɵelementProperty(0, 'ngForTemplate', ɵɵbind(loop.tpl));
+                ɵɵselect(0);
+                ɵɵproperty('ngForOf', loop.rows)('ngForTemplate', loop.tpl);
               }
             },
             inputs: {tpl: 'tpl', rows: 'rows'},
@@ -669,8 +677,8 @@ describe('ViewContainerRef', () => {
 
           if (rf & RenderFlags.Update) {
             const rowTemplateRef = ɵɵreference(1);
-            ɵɵelementProperty(2, 'tpl', ɵɵbind(rowTemplateRef));
-            ɵɵelementProperty(2, 'rows', ɵɵbind(parent.rows));
+            ɵɵselect(2);
+            ɵɵproperty('tpl', rowTemplateRef)('rows', parent.rows);
           }
 
         }, 3, 2, [LoopComp]);
@@ -686,8 +694,8 @@ describe('ViewContainerRef', () => {
           if (rf & RenderFlags.Update) {
             const row = ctx.$implicit as any;
             const cellTemplateRef = ɵɵreference(1);
-            ɵɵelementProperty(2, 'tpl', ɵɵbind(cellTemplateRef));
-            ɵɵelementProperty(2, 'rows', ɵɵbind(row.data));
+            ɵɵselect(2);
+            ɵɵproperty('tpl', cellTemplateRef)('rows', row.data);
           }
         }
 
@@ -1343,8 +1351,8 @@ describe('ViewContainerRef', () => {
             let tplRef: any;
             if (rf & RenderFlags.Update) {
               tplRef = ɵɵreference(1);
-              ɵɵelementProperty(3, 'tplRef', ɵɵbind(tplRef));
-              ɵɵelementProperty(3, 'name', ɵɵbind(cmp.name));
+              ɵɵselect(3);
+              ɵɵproperty('tplRef', tplRef)('name', cmp.name);
             }
           },
           directives: [Child, DirectiveWithVCRef]
@@ -1438,8 +1446,8 @@ describe('ViewContainerRef', () => {
             }
             if (rf & RenderFlags.Update) {
               const tplRef = ɵɵreference(1);
-              ɵɵelementProperty(4, 'tplRef', ɵɵbind(tplRef));
-              ɵɵelementProperty(4, 'name', ɵɵbind(cmp.name));
+              ɵɵselect(4);
+              ɵɵproperty('tplRef', tplRef)('name', cmp.name);
             }
           },
           directives: [ChildWithView, DirectiveWithVCRef]
@@ -1521,8 +1529,8 @@ describe('ViewContainerRef', () => {
                  }
                  if (rf & RenderFlags.Update) {
                    tplRef = ɵɵreference(1);
-                   ɵɵelementProperty(3, 'tplRef', ɵɵbind(tplRef));
-                   ɵɵelementProperty(3, 'name', ɵɵbind(cmp.name));
+                   ɵɵselect(3);
+                   ɵɵproperty('tplRef', tplRef)('name', cmp.name);
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1575,8 +1583,8 @@ describe('ViewContainerRef', () => {
                  }
                  if (rf & RenderFlags.Update) {
                    tplRef = ɵɵreference(1);
-                   ɵɵelementProperty(3, 'tplRef', ɵɵbind(tplRef));
-                   ɵɵelementProperty(3, 'name', ɵɵbind(cmp.name));
+                   ɵɵselect(3);
+                   ɵɵproperty('tplRef', tplRef)('name', cmp.name);
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1648,7 +1656,8 @@ describe('ViewContainerRef', () => {
           ɵɵelement(0, 'hooks');
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'name', ɵɵbind('C'));
+          ɵɵselect(0);
+          ɵɵproperty('name', 'C');
         }
       }
 
@@ -1678,9 +1687,10 @@ describe('ViewContainerRef', () => {
             }
             if (rf & RenderFlags.Update) {
               const tplRef = ɵɵreference(1);
-              ɵɵelementProperty(2, 'tplRef', ɵɵbind(tplRef));
-              ɵɵelementProperty(2, 'name', ɵɵbind('A'));
-              ɵɵelementProperty(3, 'name', ɵɵbind('B'));
+              ɵɵselect(2);
+              ɵɵproperty('tplRef', tplRef)('name', 'A');
+              ɵɵselect(3);
+              ɵɵproperty('name', 'B');
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],
@@ -1772,8 +1782,10 @@ describe('ViewContainerRef', () => {
               ɵɵelement(1, 'hooks');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'name', ɵɵbind('A'));
-              ɵɵelementProperty(1, 'name', ɵɵbind('B'));
+              ɵɵselect(0);
+              ɵɵproperty('name', 'A');
+              ɵɵselect(1);
+              ɵɵproperty('name', 'B');
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],

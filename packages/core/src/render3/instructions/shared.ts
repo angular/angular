@@ -30,7 +30,7 @@ import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, incrementActiveDirectiveId, isCreationMode, leaveView, resetComponentState, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ɵɵnamespaceHTML} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, resetComponentState, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ɵɵnamespaceHTML} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -420,6 +420,7 @@ export function createEmbeddedViewAndNode<T>(
 export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
+  const _selectedIndex = getSelectedIndex();
   let oldView: LView;
   if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
@@ -431,12 +432,8 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
 
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
       resetPreOrderHookFlags(viewToRender);
-      ɵɵnamespaceHTML();
 
-      // Reset the selected index so we can assert that `select` was called later
-      setSelectedIndex(-1);
-
-      tView.template !(getRenderFlags(viewToRender), context);
+      executeTemplate(tView.template !, getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
       // ngFor loop, all the views will be created together before update mode runs and turns
       // off firstTemplatePass. If we don't set it here, instances will perform directive
@@ -446,6 +443,9 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       refreshDescendantViews(viewToRender);
     } finally {
       leaveView(oldView !);
+      // Because an embedded view can be rendered during the execution of another template's
+      // ɵɵproperty instruction, we must reset the global selected index state in this case.
+      setSelectedIndex(_selectedIndex);
       setIsParent(_isParent);
       setPreviousOrParentTNode(_previousOrParentTNode);
     }
@@ -466,12 +466,7 @@ function renderComponentOrTemplate<T>(
     if (creationModeIsActive) {
       // creation mode pass
       if (templateFn) {
-        ɵɵnamespaceHTML();
-
-        // Reset the selected index so we can assert that `select` was called later
-        setSelectedIndex(-1);
-
-        templateFn(RenderFlags.Create, context);
+        executeTemplate(templateFn, RenderFlags.Create, context);
       }
 
       refreshDescendantViews(hostView);
@@ -488,6 +483,14 @@ function renderComponentOrTemplate<T>(
     }
     leaveView(oldView);
   }
+}
+
+function executeTemplate<T>(
+    templateFn: (rf: RenderFlags, ctx: T) => void, rf: RenderFlags, ctx: T) {
+  ɵɵnamespaceHTML();
+  // Reset the selected index so we can assert that `select` was called later
+  setSelectedIndex(-1);
+  templateFn(rf, ctx);
 }
 
 /**
@@ -1672,13 +1675,9 @@ export function checkView<T>(hostView: LView, component: T) {
 
   try {
     resetPreOrderHookFlags(hostView);
-    ɵɵnamespaceHTML();
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
 
-    // Reset the selected index so we can assert that `select` was called later
-    setSelectedIndex(-1);
-
-    templateFn(getRenderFlags(hostView), component);
+    executeTemplate(templateFn, getRenderFlags(hostView), component);
 
     refreshDescendantViews(hostView);
     // Only check view queries again in creation mode if there are static view queries

@@ -276,6 +276,9 @@
     "name": "executePreOrderHooks"
   },
   {
+    "name": "executeTemplate"
+  },
+  {
     "name": "executeViewQueryFn"
   },
   {

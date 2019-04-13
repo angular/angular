@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {validateAgainstEventAttributes} from '../../sanitization/sanitization';
-import {assertDataInRange, assertEqual} from '../../util/assert';
+import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -273,6 +273,7 @@ export function ɵɵelementAttribute(
  */
 export function ɵɵelementHostAttrs(attrs: TAttributes) {
   const hostElementIndex = getSelectedIndex();
+  ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const lView = getLView();
   const tNode = getTNode(hostElementIndex, lView);
 

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual, assertLessThan} from '../../util/assert';
+import {assertEqual, assertLessThan, assertNotEqual} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {BINDING_INDEX, TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
@@ -358,6 +358,7 @@ export function ɵɵpropertyInterpolate(propName: string, v0: any): TsickleIssue
 export function ɵɵpropertyInterpolate1(
     propName: string, prefix: string, v0: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(index, propName, ɵɵinterpolation1(prefix, v0, suffix));
   return ɵɵpropertyInterpolate1;
 }
@@ -394,6 +395,7 @@ export function ɵɵpropertyInterpolate2(
     propName: string, prefix: string, v0: any, i0: string, v1: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(index, propName, ɵɵinterpolation2(prefix, v0, i0, v1, suffix));
   return ɵɵpropertyInterpolate2;
 }
@@ -433,6 +435,7 @@ export function ɵɵpropertyInterpolate3(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(index, propName, ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix));
   return ɵɵpropertyInterpolate3;
 }
@@ -474,6 +477,7 @@ export function ɵɵpropertyInterpolate4(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(
       index, propName, ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix));
   return ɵɵpropertyInterpolate4;
@@ -518,6 +522,7 @@ export function ɵɵpropertyInterpolate5(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(
       index, propName, ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix));
   return ɵɵpropertyInterpolate5;
@@ -564,6 +569,7 @@ export function ɵɵpropertyInterpolate6(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(
       index, propName,
       ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
@@ -614,6 +620,7 @@ export function ɵɵpropertyInterpolate7(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(
       index, propName,
       ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix));
@@ -666,6 +673,7 @@ export function ɵɵpropertyInterpolate8(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
   elementPropertyInternal(
       index, propName,
       ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix));
@@ -702,6 +710,7 @@ export function ɵɵpropertyInterpolate8(
  */
 export function ɵɵpropertyInterpolateV(propName: string, values: any[]): TsickleIssue1009 {
   const index = getSelectedIndex();
+  ngDevMode && assertNotEqual(index, -1, 'index not selected prior to instruction');
 
   elementPropertyInternal(index, propName, ɵɵinterpolationV(values));
   return ɵɵpropertyInterpolateV;

@@ -8,8 +8,8 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -381,7 +381,8 @@ describe('outputs', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'change', ɵɵbind(ctx.change));
+        ɵɵselect(0);
+        ɵɵproperty('change', ctx.change);
       }
     }
 

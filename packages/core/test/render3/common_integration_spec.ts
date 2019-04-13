@@ -8,8 +8,8 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {AttributeMarker, ɵɵdefineComponent, ɵɵelement, ɵɵgetCurrentView, ɵɵtemplateRefExtractor} from '../../src/render3/index';
-import {ɵɵbind, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolationV, ɵɵlistener, ɵɵload, ɵɵnextContext, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵelement, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect, ɵɵtemplateRefExtractor} from '../../src/render3/index';
+import {ɵɵbind, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolationV, ɵɵlistener, ɵɵload, ɵɵnextContext, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵrestoreView} from '../../src/render3/state';
 
@@ -54,7 +54,8 @@ describe('@angular/common integration', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(1, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(1);
+              ɵɵproperty('ngForOf', ctx.items);
             }
           },
           directives: () => [NgForOf]
@@ -120,7 +121,8 @@ describe('@angular/common integration', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(1, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(1);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -184,7 +186,8 @@ describe('@angular/common integration', () => {
                   0, ngForTemplate, 1, 0, 'comp', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.rows));
+              ɵɵselect(0);
+              ɵɵproperty('ngForOf', ctx.rows);
             }
           },
           directives: () => [NgForOf, Comp, Dir]
@@ -260,7 +263,8 @@ describe('@angular/common integration', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(3, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(3);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -318,7 +322,8 @@ describe('@angular/common integration', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(1, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(1);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -337,7 +342,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const row = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', row.data);
         }
       }
 
@@ -412,7 +418,8 @@ describe('@angular/common integration', () => {
                   0, divTemplate, 2, 1, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(0);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -428,7 +435,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const row = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', row.data);
         }
       }
 
@@ -507,7 +515,8 @@ describe('@angular/common integration', () => {
                   0, divTemplate, 2, 1, 'div', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(0);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -526,7 +535,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const row = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', row);
         }
       }
 
@@ -541,7 +551,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const cell = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(cell.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', cell.data);
         }
       }
 
@@ -682,7 +693,8 @@ describe('@angular/common integration', () => {
                   0, itemTemplate0, 2, 1, 'span', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.items));
+              ɵɵselect(0);
+              ɵɵproperty('ngForOf', ctx.items);
             }
 
           },
@@ -701,7 +713,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item0 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item0.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item0.data);
         }
       }
 
@@ -716,7 +729,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item1 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item1.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item1.data);
         }
       }
 
@@ -731,7 +745,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item2 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item2.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item2.data);
         }
       }
 
@@ -746,7 +761,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item3 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item3.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item3.data);
         }
       }
 
@@ -761,7 +777,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item4 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item4.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item4.data);
         }
       }
 
@@ -776,7 +793,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item5 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item5.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item5.data);
         }
       }
 
@@ -791,7 +809,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item6 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item6.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item6.data);
         }
       }
 
@@ -806,7 +825,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const item7 = ctx.$implicit as any;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(item7.data));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', item7.data);
         }
       }
 
@@ -875,8 +895,10 @@ describe('@angular/common integration', () => {
               ɵɵtemplate(1, templateTwo, 2, 1, 'div', [AttributeMarker.Template, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
-              ɵɵelementProperty(1, 'ngIf', ɵɵbind(ctx.showing));
+              ɵɵselect(0);
+              ɵɵproperty('ngIf', ctx.showing);
+              ɵɵselect(1);
+              ɵɵproperty('ngIf', ctx.showing);
             }
 
           },
@@ -944,7 +966,8 @@ describe('@angular/common integration', () => {
               ɵɵtemplate(0, divTemplate, 2, 1, 'div', [AttributeMarker.Template, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
+              ɵɵselect(0);
+              ɵɵproperty('ngIf', ctx.showing);
             }
 
           },
@@ -960,7 +983,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const app = ɵɵnextContext();
-          ɵɵelementProperty(1, 'ngIf', ɵɵbind(app.outerShowing));
+          ɵɵselect(1);
+          ɵɵproperty('ngIf', app.outerShowing);
         }
       }
 
@@ -972,7 +996,8 @@ describe('@angular/common integration', () => {
         }
         if (rf & RenderFlags.Update) {
           const app = ɵɵnextContext(2);
-          ɵɵelementProperty(1, 'ngIf', ɵɵbind(app.innerShowing));
+          ɵɵselect(1);
+          ɵɵproperty('ngIf', app.innerShowing);
         }
       }
 
@@ -1026,7 +1051,8 @@ describe('@angular/common integration', () => {
             }
             if (rf & RenderFlags.Update) {
               const tplRef = ɵɵload(1);
-              ɵɵelementProperty(2, 'ngTemplateOutlet', ɵɵbind(myApp.showing ? tplRef : null));
+              ɵɵselect(2);
+              ɵɵproperty('ngTemplateOutlet', myApp.showing ? tplRef : null);
             }
           },
           directives: () => [NgTemplateOutlet]
@@ -1070,7 +1096,8 @@ describe('@angular/common integration', () => {
             }
             if (rf & RenderFlags.Update) {
               const tplRef = ɵɵreference(1);
-              ɵɵelementProperty(2, 'ngTemplateOutlet', ɵɵbind(myApp.showing ? tplRef : null));
+              ɵɵselect(2);
+              ɵɵproperty('ngTemplateOutlet', myApp.showing ? tplRef : null);
             }
           },
           directives: () => [NgTemplateOutlet]

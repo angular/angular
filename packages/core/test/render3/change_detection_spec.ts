@@ -11,8 +11,8 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, getRenderedText, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵgetCurrentView, ɵɵtemplateRefExtractor} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵlistener, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {LifecycleHooksFeature, getRenderedText, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect, ɵɵtemplateRefExtractor} from '../../src/render3/index';
+import {detectChanges, markDirty, tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵlistener, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
@@ -144,7 +144,8 @@ describe('change detection', () => {
             ɵɵelement(0, 'my-comp');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'name', ɵɵbind(ctx.name));
+            ɵɵselect(0);
+            ɵɵproperty('name', ctx.name);
           }
         },
         directives: () => [MyComponent]
@@ -356,7 +357,8 @@ describe('change detection', () => {
               ɵɵelement(0, 'manual-comp');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'name', ɵɵbind(ctx.name));
+              ɵɵselect(0);
+              ɵɵproperty('name', ctx.name);
             }
 
           },
@@ -770,7 +772,8 @@ describe('change detection', () => {
                   ɵɵelement(0, 'child-comp');
                 }
                 if (rf & RenderFlags.Update) {
-                  ɵɵelementProperty(0, 'inp', ɵɵbind(true));
+                  ɵɵselect(0);
+                  ɵɵproperty('inp', true);
                 }
               },
               directives: [ChildComp]
@@ -868,7 +871,8 @@ describe('change detection', () => {
             }
             if (rf & RenderFlags.Update) {
               const foo = ɵɵreference(1) as any;
-              ɵɵelementProperty(2, 'tmp', ɵɵbind(foo));
+              ɵɵselect(2);
+              ɵɵproperty('tmp', foo);
             }
           }, 3, 1, [StructuralComp]);
 
@@ -910,7 +914,8 @@ describe('change detection', () => {
             }
             if (rf & RenderFlags.Update) {
               const foo = ɵɵreference(1) as any;
-              ɵɵelementProperty(2, 'tmp', ɵɵbind(foo));
+              ɵɵselect(2);
+              ɵɵproperty('tmp', foo);
             }
           }, 3, 1, [StructuralComp]);
 
@@ -1084,7 +1089,8 @@ describe('change detection', () => {
             ɵɵelement(0, 'on-push-comp');
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(0, 'value', ɵɵbind(ctx.value));
+            ɵɵselect(0);
+            ɵɵproperty('value', ctx.value);
           }
         }, 1, 1, [OnPushComp]);
 

@@ -11,7 +11,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {createInjector} from '../../src/di/r3_injector';
 import {ɵɵdefineDirective, ɵɵdefinePipe} from '../../src/render3/definition';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵload, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵload, ɵɵproperty, ɵɵselect, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpipe, ɵɵpipeBind1, ɵɵpipeBind3, ɵɵpipeBind4, ɵɵpipeBindV} from '../../src/render3/pipe';
 
@@ -109,7 +109,8 @@ describe('pipe', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'elprop', ɵɵbind(ɵɵpipeBind1(1, 1, ctx)));
+        ɵɵselect(0);
+        ɵɵproperty('elprop', ɵɵpipeBind1(1, 1, ctx));
         directive = getDirectiveOnNode(0);
       }
     }
@@ -171,7 +172,8 @@ describe('pipe', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'id', ɵɵbind(ɵɵpipeBind1(1, 1, 'Megatron')));
+        ɵɵselect(0);
+        ɵɵproperty('id', ɵɵpipeBind1(1, 1, 'Megatron'));
       }
     }
 
@@ -256,8 +258,10 @@ describe('pipe', () => {
           ɵɵcontainer(4);
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, 'id', ɵɵbind(ɵɵpipeBind1(1, 2, true)));
-          ɵɵelementProperty(2, 'id', ɵɵbind(ɵɵpipeBind1(3, 4, true)));
+          ɵɵselect(0);
+          ɵɵproperty('id', ɵɵpipeBind1(1, 2, true));
+          ɵɵselect(2);
+          ɵɵproperty('id', ɵɵpipeBind1(3, 4, true));
           pipeInstances.push(ɵɵload<CountingImpurePipe>(1), ɵɵload(3));
           ɵɵcontainerRefreshStart(4);
           {
@@ -270,7 +274,8 @@ describe('pipe', () => {
                   ɵɵelementEnd();
                 }
                 if (rf1 & RenderFlags.Update) {
-                  ɵɵelementProperty(0, 'id', ɵɵbind(ɵɵpipeBind1(1, 1, true)));
+                  ɵɵselect(0);
+                  ɵɵproperty('id', ɵɵpipeBind1(1, 1, true));
                   pipeInstances.push(ɵɵload<CountingImpurePipe>(1));
                 }
               }

@@ -10,8 +10,8 @@ import {AnimationEvent} from '@angular/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -176,7 +176,8 @@ describe('animation renderer factory', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, '@myAnimation', ɵɵbind(ctx.exp));
+          ɵɵselect(0);
+          ɵɵproperty('@myAnimation', ctx.exp);
         }
       },
       factory: () => new SomeComponentWithAnimation,

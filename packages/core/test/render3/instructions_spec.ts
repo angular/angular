@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {ɵɵpropertyInterpolate, ɵɵpropertyInterpolate1, ɵɵpropertyInterpolate2, ɵɵpropertyInterpolate3, ɵɵpropertyInterpolate4, ɵɵpropertyInterpolate5, ɵɵpropertyInterpolate6, ɵɵpropertyInterpolate7, ɵɵpropertyInterpolate8, ɵɵpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵbind, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {RenderFlags, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -49,10 +49,16 @@ describe('instructions', () => {
     it('should update bindings when value changes', () => {
       const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
 
-      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('Hello')));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('title', 'Hello');
+      });
       expect(t.html).toEqual('<a title="Hello"></a>');
 
-      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('World')));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('title', 'World');
+      });
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -64,7 +70,10 @@ describe('instructions', () => {
     });
 
     it('should not update bindings when value does not change', () => {
-      const idempotentUpdate = () => ɵɵelementProperty(0, 'title', ɵɵbind('Hello'));
+      const idempotentUpdate = () => {
+        ɵɵselect(0);
+        ɵɵproperty('title', 'Hello');
+      };
       const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
 
       t.update();
@@ -976,14 +985,18 @@ describe('instructions', () => {
 
   describe('elementProperty', () => {
     it('should use sanitizer function when available', () => {
-      const t = new TemplateFixture(createDiv, () => {}, 1);
+      const t = new TemplateFixture(createDiv, () => {}, 1, 1);
 
-      t.update(() => ɵɵelementProperty(0, 'title', 'javascript:true', ɵɵsanitizeUrl));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('title', 'javascript:true', ɵɵsanitizeUrl);
+      });
       expect(t.html).toEqual('<div title="unsafe:javascript:true"></div>');
 
-      t.update(
-          () => ɵɵelementProperty(
-              0, 'title', bypassSanitizationTrustUrl('javascript:false'), ɵɵsanitizeUrl));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('title', bypassSanitizationTrustUrl('javascript:false'), ɵɵsanitizeUrl);
+      });
       expect(t.html).toEqual('<div title="javascript:false"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -994,10 +1007,13 @@ describe('instructions', () => {
     });
 
     it('should not stringify non string values', () => {
-      const t = new TemplateFixture(() => { ɵɵelement(0, 'input'); }, () => {}, 1);
+      const t = new TemplateFixture(() => { ɵɵelement(0, 'input'); }, () => {}, 1, 1);
 
       // Note: don't use 'hidden' here because IE10 does not support the hidden property
-      t.update(() => ɵɵelementProperty(0, 'required', false));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('required', false);
+      });
       // The required property would be true if `false` was stringified into `"false"`.
       expect((t.hostElement as HTMLElement).querySelector('input') !.required).toEqual(false);
       expect(ngDevMode).toHaveProperties({
@@ -1127,7 +1143,8 @@ describe('instructions', () => {
         }
         if (rf & RenderFlags.Update) {
           const row_r2 = ctx0.$implicit;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row_r2));
+          ɵɵselect(1);
+          ɵɵproperty('ngForOf', row_r2);
         }
       }
 
@@ -1163,7 +1180,8 @@ describe('instructions', () => {
               ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.rows));
+              ɵɵselect(0);
+              ɵɵproperty('ngForOf', ctx.rows);
             }
           },
           directives: [NgForOf]
@@ -1280,66 +1298,84 @@ describe('instructions', () => {
 
     it('should work for script sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} //sanitized`);
-      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
+      });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
 
     it('should bypass script sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
+      });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 1, null, null, s);
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
+      });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
 
     it('should work for html sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} <!--sanitized-->`);
-      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
+      });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
 
     it('should bypass html sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
+      });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 1, null, null, s);
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => {
+        ɵɵselect(0);
+        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
+      });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });

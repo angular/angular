@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AttributeMarker, ɵɵdefineComponent, ɵɵtemplate} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpureFunction1, ɵɵpureFunction2, ɵɵpureFunction3, ɵɵpureFunction4, ɵɵpureFunction5, ɵɵpureFunction6, ɵɵpureFunction7, ɵɵpureFunction8, ɵɵpureFunctionV} from '../../src/render3/pure_function';
 import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from '../../test/render3/render_util';
@@ -42,7 +42,8 @@ describe('array literals', () => {
         ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction1(1, e0_ff, ctx.customName)));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction1(1, e0_ff, ctx.customName));
       }
     }, 1, 3, directives);
 
@@ -79,7 +80,8 @@ describe('array literals', () => {
       }
       if (rf & RenderFlags.Update) {
         const comp = ɵɵnextContext();
-        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction1(1, e0_ff, comp.customName)));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction1(1, e0_ff, comp.customName));
       }
     }
 
@@ -93,7 +95,8 @@ describe('array literals', () => {
             [AttributeMarker.Bindings, 'names', AttributeMarker.Template, 'ngIf']);
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
+        ɵɵselect(0);
+        ɵɵproperty('ngIf', ctx.showing);
       }
     }, 1, 1, [MyComp, NgIf]);
 
@@ -137,8 +140,9 @@ describe('array literals', () => {
         ɵɵelement(0, 'many-prop-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'names1', ɵɵbind(ɵɵpureFunction1(2, e0_ff, ctx.customName)));
-        ɵɵelementProperty(0, 'names2', ɵɵbind(ɵɵpureFunction1(4, e0_ff_1, ctx.customName2)));
+        ɵɵselect(0);
+        ɵɵproperty('names1', ɵɵpureFunction1(2, e0_ff, ctx.customName))(
+            'names2', ɵɵpureFunction1(4, e0_ff_1, ctx.customName2));
       }
     }, 1, 6, [ManyPropComp]);
 
@@ -183,8 +187,8 @@ describe('array literals', () => {
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ɵɵelementProperty(
-                0, 'names', ɵɵbind(ctx.someFn(ɵɵpureFunction1(1, e0_ff, ctx.customName))));
+            ɵɵselect(0);
+            ɵɵproperty('names', ctx.someFn(ɵɵpureFunction1(1, e0_ff, ctx.customName)));
           }
         },
         directives: directives
@@ -221,8 +225,8 @@ describe('array literals', () => {
         ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(
-            0, 'names', ɵɵbind(ɵɵpureFunction2(1, e0_ff, ctx.customName, ctx.customName2)));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction2(1, e0_ff, ctx.customName, ctx.customName2));
       }
     }, 1, 4, directives);
 
@@ -299,18 +303,19 @@ describe('array literals', () => {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'names', ɵɵbind(ɵɵpureFunction3(6, e0_ff, c[5], c[6], c[7])));
-        ɵɵelementProperty(1, 'names', ɵɵbind(ɵɵpureFunction4(10, e2_ff, c[4], c[5], c[6], c[7])));
-        ɵɵelementProperty(
-            2, 'names', ɵɵbind(ɵɵpureFunction5(15, e4_ff, c[3], c[4], c[5], c[6], c[7])));
-        ɵɵelementProperty(
-            3, 'names', ɵɵbind(ɵɵpureFunction6(21, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
-        ɵɵelementProperty(
-            4, 'names',
-            ɵɵbind(ɵɵpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
-        ɵɵelementProperty(
-            5, 'names',
-            ɵɵbind(ɵɵpureFunction8(36, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+        ɵɵselect(0);
+        ɵɵproperty('names', ɵɵpureFunction3(6, e0_ff, c[5], c[6], c[7]));
+        ɵɵselect(1);
+        ɵɵproperty('names', ɵɵpureFunction4(10, e2_ff, c[4], c[5], c[6], c[7]));
+        ɵɵselect(2);
+        ɵɵproperty('names', ɵɵpureFunction5(15, e4_ff, c[3], c[4], c[5], c[6], c[7]));
+        ɵɵselect(3);
+        ɵɵproperty('names', ɵɵpureFunction6(21, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7]));
+        ɵɵselect(4);
+        ɵɵproperty('names', ɵɵpureFunction7(28, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+        ɵɵselect(5);
+        ɵɵproperty(
+            'names', ɵɵpureFunction8(36, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
       }
     }
 
@@ -356,10 +361,11 @@ describe('array literals', () => {
         ɵɵelement(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(
-            0, 'names', ɵɵbind(ɵɵpureFunctionV(3, e0_ff, [
+        ɵɵselect(0);
+        ɵɵproperty(
+            'names', ɵɵpureFunctionV(3, e0_ff, [
               c[0], c[1], c[2], c[3], ɵɵpureFunction1(1, e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
-            ])));
+            ]));
       }
     }
 
@@ -409,7 +415,8 @@ describe('object literals', () => {
         ɵɵelement(0, 'object-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'config', ɵɵbind(ɵɵpureFunction1(1, e0_ff, ctx.name)));
+        ɵɵselect(0);
+        ɵɵproperty('config', ɵɵpureFunction1(1, e0_ff, ctx.name));
       }
     }, 1, 3, defs);
 
@@ -446,11 +453,11 @@ describe('object literals', () => {
         ɵɵelement(0, 'object-comp');
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(
-            0, 'config',
-            ɵɵbind(ɵɵpureFunction2(
-                5, e0_ff, ctx.name,
-                ɵɵpureFunction1(3, e0_ff_1, ɵɵpureFunction1(1, e0_ff_2, ctx.duration)))));
+        ɵɵselect(0);
+        ɵɵproperty(
+            'config', ɵɵpureFunction2(
+                          5, e0_ff, ctx.name,
+                          ɵɵpureFunction1(3, e0_ff_1, ɵɵpureFunction1(1, e0_ff_2, ctx.duration))));
       }
     }, 1, 8, defs);
 
@@ -525,9 +532,10 @@ describe('object literals', () => {
               ɵɵelementEnd();
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵelementProperty(
-                  0, 'config', ɵɵbind(ɵɵpureFunction2(
-                                   1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+              ɵɵselect(0);
+              ɵɵproperty(
+                  'config',
+                  ɵɵpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration));
             }
             ɵɵembeddedViewEnd();
           }
