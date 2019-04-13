@@ -90,11 +90,29 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
           `Expected one matching request for criteria "${description}", found ${matches.length} requests.`);
     }
     if (matches.length === 0) {
-      throw new Error(`Expected one matching request for criteria "${description}", found none.`);
+      const urlPartialMatch = this._getUrlPartialMatch(match);
+      let errorMessage = `Expected one matching request for criteria "${description}", found none.`;
+      if (urlPartialMatch) {
+        errorMessage +=
+            ` HINT: A partial match was found "${urlPartialMatch}". Make sure you also include the query params.`;
+      }
+
+      throw new Error(errorMessage);
     }
     return matches[0];
   }
 
+  private _getUrlPartialMatch(match: string|RequestMatch|
+                              ((req: HttpRequest<any>) => boolean)): string|null {
+    if (typeof match === 'function') {
+      return null;
+    } else {
+      const url = (typeof match === 'object') ? match.url : match;
+      const partialMatch = this.open.find(testReq => testReq.request.url === url);
+
+      return partialMatch ? partialMatch.request.urlWithParams : null;
+    }
+  }
   /**
    * Expect that no outstanding requests match the given matcher, and throw an error
    * if any do.
