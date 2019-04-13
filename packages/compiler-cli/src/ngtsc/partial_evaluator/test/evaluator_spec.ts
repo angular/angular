@@ -75,6 +75,12 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`function foo(bar) { return bar; }`, 'foo("test")')).toEqual('test');
   });
 
+  it('function call default value works', () => {
+    expect(evaluate(`function foo(bar = 1) { return bar; }`, 'foo()')).toEqual(1);
+    expect(evaluate(`function foo(bar = 1) { return bar; }`, 'foo(2)')).toEqual(2);
+    expect(evaluate(`function foo(a, c = a) { return c; }; const a = 1;`, 'foo(2)')).toEqual(2);
+  });
+
   it('function call spread works', () => {
     expect(evaluate(`function foo(a, ...b) { return [a, b]; }`, 'foo(1, ...[2, 3])')).toEqual([
       1, [2, 3]

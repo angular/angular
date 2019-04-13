@@ -427,20 +427,20 @@ export class StaticInterpreter {
 
     const args = this.evaluateFunctionArguments(node, context);
     const newScope: Scope = new Map<ts.ParameterDeclaration, ResolvedValue>();
+    const calleeContext = {...context, scope: newScope};
     fn.parameters.forEach((param, index) => {
       let arg = args[index];
       if (param.node.dotDotDotToken !== undefined) {
         arg = args.slice(index);
       }
       if (arg === undefined && param.initializer !== null) {
-        arg = this.visitExpression(param.initializer, context);
+        arg = this.visitExpression(param.initializer, calleeContext);
       }
       newScope.set(param.node, arg);
     });
 
-    return ret.expression !== undefined ?
-        this.visitExpression(ret.expression, {...context, scope: newScope}) :
-        undefined;
+    return ret.expression !== undefined ? this.visitExpression(ret.expression, calleeContext) :
+                                          undefined;
   }
 
   private visitConditionalExpression(node: ts.ConditionalExpression, context: Context):
