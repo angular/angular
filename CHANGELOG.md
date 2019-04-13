@@ -1,3 +1,54 @@
+<a name="8.0.0-beta.12"></a>
+# [8.0.0-beta.12](https://github.com/angular/angular/compare/8.0.0-beta.11...8.0.0-beta.12) (2019-04-13)
+
+
+### Bug Fixes
+
+* **bazel:** add configuration_env_vars = ["compile"] to generated [@npm](https://github.com/npm)//[@angular](https://github.com/angular)/bazel/bin:ngc-wrapped nodejs_binary ([#29694](https://github.com/angular/angular/issues/29694)) ([2e66ddf](https://github.com/angular/angular/commit/2e66ddf))
+* **bazel:** docs formatting ([#29817](https://github.com/angular/angular/issues/29817)) ([cc2e4b6](https://github.com/angular/angular/commit/cc2e4b6))
+* **bazel:** remove karma-jasmine from ts_web_test_suite ([#29695](https://github.com/angular/angular/issues/29695)) ([2bd9214](https://github.com/angular/angular/commit/2bd9214))
+* **bazel:** support running ng-add on minimal applications ([#29681](https://github.com/angular/angular/issues/29681)) ([9810c6c](https://github.com/angular/angular/commit/9810c6c)), closes [#29680](https://github.com/angular/angular/issues/29680)
+* **common:** add `@Injectable()` to common pipes ([#29834](https://github.com/angular/angular/issues/29834)) ([387fbb8](https://github.com/angular/angular/commit/387fbb8))
+* **compiler-cli:** ensure LogicalProjectPaths always start with a slash ([#29627](https://github.com/angular/angular/issues/29627)) ([e02684e](https://github.com/angular/angular/commit/e02684e))
+* **core:** add missing migration to npm package ([#29705](https://github.com/angular/angular/issues/29705)) ([96b76dc](https://github.com/angular/angular/commit/96b76dc))
+* **core:** call ngOnDestroy for tree-shakeable providers ([#28943](https://github.com/angular/angular/issues/28943)) ([30b0442](https://github.com/angular/angular/commit/30b0442)), closes [#28927](https://github.com/angular/angular/issues/28927)
+* **core:** Deprecate TestBed.get(...):any ([#29290](https://github.com/angular/angular/issues/29290)) ([609024f](https://github.com/angular/angular/commit/609024f)), closes [#13785](https://github.com/angular/angular/issues/13785) [#26491](https://github.com/angular/angular/issues/26491)
+* **core:** resolve ts compile issues due to lenient tsconfig ([#29843](https://github.com/angular/angular/issues/29843)) ([54058ba](https://github.com/angular/angular/commit/54058ba))
+* **platform-browser:** insert APP_ID in styles, contentAttr and hostAttr ([#17745](https://github.com/angular/angular/issues/17745)) ([712d60e](https://github.com/angular/angular/commit/712d60e))
+
+
+### Features
+
+* **bazel:** update the build to use the new architect api ([#29720](https://github.com/angular/angular/issues/29720)) ([902a53a](https://github.com/angular/angular/commit/902a53a))
+
+
+### DEPRECATIONS
+
+* `TestBed.get()` has two signatures, one which is typed and another which accepts and returns `any`. The signature for `any` is deprecated; all usage of `TestBed.get()` should go through the typed API. This mainly affects string tokens
+(which aren't supported) and abstract class tokens.
+
+Before:
+
+```ts
+TestBed.configureTestingModule({
+  providers: [{provide: "stringToken", useValue: new Service()}],
+});
+
+let service = TestBed.get("stringToken"); // type any
+```
+
+After:
+
+```ts
+const SERVICE_TOKEN = new InjectionToken<Service>("SERVICE_TOKEN");
+
+TestBed.configureTestingModule({
+  providers: [{provide: SERVICE_TOKEN, useValue: new Service()}],
+});
+
+let service = TestBed.get(SERVICE_TOKEN); // type Service
+```
+
 <a name="7.2.13"></a>
 ## [7.2.13](https://github.com/angular/angular/compare/7.2.12...7.2.13) (2019-04-12)
 
