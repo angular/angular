@@ -1570,6 +1570,8 @@ describe('ngtsc behavioral tests', () => {
           @ContentChild(forwardRef(() => TemplateRef)) child: any;
 
           @ContentChild(forwardRef(function() { return ViewContainerRef; })) child2: any;
+
+          @ContentChild((forwardRef((function() { return 'parens'; }) as any))) childInParens: any;
         }
     `);
 
@@ -1579,6 +1581,9 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', true));
     // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, true, null)`
     expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', true));
+    // match `i0.ɵɵcontentQuery(dirIndex, _c0, true, null)`
+    expect(jsContents).toContain('_c0 = ["parens"];');
+    expect(jsContents).toMatch(contentQueryRegExp('_c0', true));
   });
 
   it('should compile expressions that write keys', () => {

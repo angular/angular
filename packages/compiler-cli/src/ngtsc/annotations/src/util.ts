@@ -197,6 +197,7 @@ export function unwrapExpression(node: ts.Expression): ts.Expression {
 }
 
 function expandForwardRef(arg: ts.Expression): ts.Expression|null {
+  arg = unwrapExpression(arg);
   if (!ts.isArrowFunction(arg) && !ts.isFunctionExpression(arg)) {
     return null;
   }
@@ -228,6 +229,7 @@ function expandForwardRef(arg: ts.Expression): ts.Expression|null {
  * expression otherwise
  */
 export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression {
+  node = unwrapExpression(node);
   if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression) ||
       node.arguments.length !== 1) {
     return node;
