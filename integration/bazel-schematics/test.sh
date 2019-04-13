@@ -26,11 +26,8 @@ function testBazel() {
   # Create project
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
   cd demo
-  # Do an initial install to ensure packages like node-sass are built.
-  yarn
   # Force more recent TS version until new Angular CLI projects also use it.
-  # --ignore-scripts is necessary because there is a postinstall script that uses ngc.
-  yarn add typescript@3.4.2 --dev --ignore-scripts
+  yarn add typescript@3.4.2 --dev
   installLocalPackages
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng generate component widget --style=css
