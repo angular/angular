@@ -15,6 +15,7 @@ export {By} from './dom/debug/by';
 export {DOCUMENT} from './dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader} from './dom/events/hammer_gestures';
+export {UNIQUE_INPUT_EVENT_PLUGIN_CONFIG, UniqueInputEventPluginConfig} from './dom/events/unique_input_event';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
 
 export * from './private_export';

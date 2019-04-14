@@ -19,6 +19,7 @@ import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
+import {UNIQUE_INPUT_EVENT_PLUGIN_CONFIG, UniqueInputEventPlugin} from './dom/events/unique_input_event';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
 
@@ -68,6 +69,12 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
     useClass: DomEventsPlugin,
     multi: true,
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
+  },
+  {
+    provide: EVENT_MANAGER_PLUGINS,
+    useClass: UniqueInputEventPlugin,
+    multi: true,
+    deps: [DOCUMENT, [new Optional(), UNIQUE_INPUT_EVENT_PLUGIN_CONFIG]]
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
   {

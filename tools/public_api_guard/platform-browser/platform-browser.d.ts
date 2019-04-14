@@ -129,4 +129,11 @@ export declare class TransferState {
     toJson(): string;
 }
 
+export declare const UNIQUE_INPUT_EVENT_PLUGIN_CONFIG: InjectionToken<UniqueInputEventPluginConfig>;
+
+export interface UniqueInputEventPluginConfig {
+    shouldApplyToElement?(element: Element): boolean;
+    shouldTrustEvent?(event: Event): boolean;
+}
+
 export declare const VERSION: Version;
