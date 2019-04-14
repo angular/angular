@@ -77,7 +77,7 @@ export function downgradeComponent(info: {
     let ngZone: NgZone;
 
     return {
-      restrict: 'E',
+      restrict: 'EA',
       terminal: true,
       require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
