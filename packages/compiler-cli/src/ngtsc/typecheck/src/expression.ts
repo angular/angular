@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, Binary, Conditional, Interpolation, KeyedRead, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
@@ -42,30 +42,82 @@ const BINARY_OPS = new Map<string, ts.SyntaxKind>([
 export function astToTypescript(
     ast: AST, maybeResolve: (ast: AST) => ts.Expression | null,
     config: TypeCheckingConfig): ts.Expression {
-  const resolved = maybeResolve(ast);
-  if (resolved !== null) {
-    return resolved;
+  const translator = new AstTranslator(maybeResolve, config);
+  return translator.translate(ast);
+}
+
+class AstTranslator implements AstVisitor {
+  constructor(
+      private maybeResolve: (ast: AST) => ts.Expression | null,
+      private config: TypeCheckingConfig) {}
+
+  translate(ast: AST): ts.Expression {
+    // Skip over an `ASTWithSource` as its `visit` method calls directly into its ast's `visit`,
+    // which would prevent any custom resolution through `maybeResolve` for that node.
+    if (ast instanceof ASTWithSource) {
+      ast = ast.ast;
+    }
+
+    // First attempt to let any custom resolution logic provide a translation for the given node.
+    const resolved = this.maybeResolve(ast);
+    if (resolved !== null) {
+      return resolved;
+    }
+
+    return ast.visit(this);
   }
-  // Branch based on the type of expression being processed.
-  if (ast instanceof ASTWithSource) {
-    // Fall through to the underlying AST.
-    return astToTypescript(ast.ast, maybeResolve, config);
-  } else if (ast instanceof PropertyRead) {
-    // This is a normal property read - convert the receiver to an expression and emit the correct
-    // TypeScript expression to read the property.
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
-    return ts.createPropertyAccess(receiver, ast.name);
-  } else if (ast instanceof Interpolation) {
-    return astArrayToExpression(ast.expressions, maybeResolve, config);
-  } else if (ast instanceof Binary) {
-    const lhs = astToTypescript(ast.left, maybeResolve, config);
-    const rhs = astToTypescript(ast.right, maybeResolve, config);
+
+  visitBinary(ast: Binary): ts.Expression {
+    const lhs = this.translate(ast.left);
+    const rhs = this.translate(ast.right);
     const op = BINARY_OPS.get(ast.operation);
     if (op === undefined) {
       throw new Error(`Unsupported Binary.operation: ${ast.operation}`);
     }
     return ts.createBinary(lhs, op as any, rhs);
-  } else if (ast instanceof LiteralPrimitive) {
+  }
+
+  visitChain(ast: Chain): never { throw new Error('Method not implemented.'); }
+
+  visitConditional(ast: Conditional): ts.Expression {
+    const condExpr = this.translate(ast.condition);
+    const trueExpr = this.translate(ast.trueExp);
+    const falseExpr = this.translate(ast.falseExp);
+    return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
+  }
+
+  visitFunctionCall(ast: FunctionCall): never { throw new Error('Method not implemented.'); }
+
+  visitImplicitReceiver(ast: ImplicitReceiver): never {
+    throw new Error('Method not implemented.');
+  }
+
+  visitInterpolation(ast: Interpolation): ts.Expression {
+    return this.astArrayToExpression(ast.expressions);
+  }
+
+  visitKeyedRead(ast: KeyedRead): ts.Expression {
+    const receiver = this.translate(ast.obj);
+    const key = this.translate(ast.key);
+    return ts.createElementAccess(receiver, key);
+  }
+
+  visitKeyedWrite(ast: KeyedWrite): never { throw new Error('Method not implemented.'); }
+
+  visitLiteralArray(ast: LiteralArray): ts.Expression {
+    const elements = ast.expressions.map(expr => this.translate(expr));
+    return ts.createArrayLiteral(elements);
+  }
+
+  visitLiteralMap(ast: LiteralMap): ts.Expression {
+    const properties = ast.keys.map(({key}, idx) => {
+      const value = this.translate(ast.values[idx]);
+      return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
+    });
+    return ts.createObjectLiteral(properties, true);
+  }
+
+  visitLiteralPrimitive(ast: LiteralPrimitive): ts.Expression {
     if (ast.value === undefined) {
       return ts.createIdentifier('undefined');
     } else if (ast.value === null) {
@@ -73,72 +125,72 @@ export function astToTypescript(
     } else {
       return ts.createLiteral(ast.value);
     }
-  } else if (ast instanceof MethodCall) {
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+  }
+
+  visitMethodCall(ast: MethodCall): ts.Expression {
+    const receiver = this.translate(ast.receiver);
     const method = ts.createPropertyAccess(receiver, ast.name);
-    const args = ast.args.map(expr => astToTypescript(expr, maybeResolve, config));
+    const args = ast.args.map(expr => this.translate(expr));
     return ts.createCall(method, undefined, args);
-  } else if (ast instanceof Conditional) {
-    const condExpr = astToTypescript(ast.condition, maybeResolve, config);
-    const trueExpr = astToTypescript(ast.trueExp, maybeResolve, config);
-    const falseExpr = astToTypescript(ast.falseExp, maybeResolve, config);
-    return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
-  } else if (ast instanceof LiteralArray) {
-    const elements = ast.expressions.map(expr => astToTypescript(expr, maybeResolve, config));
-    return ts.createArrayLiteral(elements);
-  } else if (ast instanceof LiteralMap) {
-    const properties = ast.keys.map(({key}, idx) => {
-      const value = astToTypescript(ast.values[idx], maybeResolve, config);
-      return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
-    });
-    return ts.createObjectLiteral(properties, true);
-  } else if (ast instanceof KeyedRead) {
-    const receiver = astToTypescript(ast.obj, maybeResolve, config);
-    const key = astToTypescript(ast.key, maybeResolve, config);
-    return ts.createElementAccess(receiver, key);
-  } else if (ast instanceof NonNullAssert) {
-    const expr = astToTypescript(ast.expression, maybeResolve, config);
+  }
+
+  visitNonNullAssert(ast: NonNullAssert): ts.Expression {
+    const expr = this.translate(ast.expression);
     return ts.createNonNullExpression(expr);
-  } else if (ast instanceof PrefixNot) {
-    return ts.createLogicalNot(astToTypescript(ast.expression, maybeResolve, config));
-  } else if (ast instanceof SafePropertyRead) {
+  }
+
+  visitPipe(ast: BindingPipe): never { throw new Error('Method not implemented.'); }
+
+  visitPrefixNot(ast: PrefixNot): ts.Expression {
+    return ts.createLogicalNot(this.translate(ast.expression));
+  }
+
+  visitPropertyRead(ast: PropertyRead): ts.Expression {
+    // This is a normal property read - convert the receiver to an expression and emit the correct
+    // TypeScript expression to read the property.
+    const receiver = this.translate(ast.receiver);
+    return ts.createPropertyAccess(receiver, ast.name);
+  }
+
+  visitPropertyWrite(ast: PropertyWrite): never { throw new Error('Method not implemented.'); }
+
+  visitQuote(ast: Quote): never { throw new Error('Method not implemented.'); }
+
+  visitSafeMethodCall(ast: SafeMethodCall): ts.Expression {
+    // See the comment in SafePropertyRead above for an explanation of the need for the non-null
+    // assertion here.
+    const receiver = this.translate(ast.receiver);
+    const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+    const args = ast.args.map(expr => this.translate(expr));
+    const expr = ts.createCall(method, undefined, args);
+    const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
+    return safeTernary(receiver, expr, whenNull);
+  }
+
+  visitSafePropertyRead(ast: SafePropertyRead): ts.Expression {
     // A safe property expression a?.b takes the form `(a != null ? a!.b : whenNull)`, where
     // whenNull is either of type 'any' or or 'undefined' depending on strictness. The non-null
     // assertion is necessary because in practice 'a' may be a method call expression, which won't
     // have a narrowed type when repeated in the ternary true branch.
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const receiver = this.translate(ast.receiver);
     const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-    const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
+    const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
     return safeTernary(receiver, expr, whenNull);
-  } else if (ast instanceof SafeMethodCall) {
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
-    // See the comment in SafePropertyRead above for an explanation of the need for the non-null
-    // assertion here.
-    const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-    const args = ast.args.map(expr => astToTypescript(expr, maybeResolve, config));
-    const expr = ts.createCall(method, undefined, args);
-    const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
-    return safeTernary(receiver, expr, whenNull);
-  } else {
-    throw new Error(`Unknown node type: ${Object.getPrototypeOf(ast).constructor}`);
   }
-}
 
-/**
- * Convert an array of `AST` expressions into a single `ts.Expression`, by converting them all
- * and separating them with commas.
- */
-function astArrayToExpression(
-    astArray: AST[], maybeResolve: (ast: AST) => ts.Expression | null,
-    config: TypeCheckingConfig): ts.Expression {
-  // Reduce the `asts` array into a `ts.Expression`. Multiple expressions are combined into a
-  // `ts.BinaryExpression` with a comma separator. First make a copy of the input array, as
-  // it will be modified during the reduction.
-  const asts = astArray.slice();
-  return asts.reduce(
-      (lhs, ast) => ts.createBinary(
-          lhs, ts.SyntaxKind.CommaToken, astToTypescript(ast, maybeResolve, config)),
-      astToTypescript(asts.pop() !, maybeResolve, config));
+  /**
+   * Convert an array of `AST` expressions into a single `ts.Expression`, by converting them all
+   * and separating them with commas.
+   */
+  private astArrayToExpression(astArray: AST[]): ts.Expression {
+    // Reduce the `asts` array into a `ts.Expression`. Multiple expressions are combined into a
+    // `ts.BinaryExpression` with a comma separator. First make a copy of the input array, as
+    // it will be modified during the reduction.
+    const asts = astArray.slice();
+    return asts.reduce(
+        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.CommaToken, this.translate(ast)),
+        this.translate(asts.pop() !));
+  }
 }
 
 function safeTernary(
