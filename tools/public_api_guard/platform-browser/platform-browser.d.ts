@@ -129,4 +129,17 @@ export declare class TransferState {
     toJson(): string;
 }
 
+export declare const UNIQUE_INPUT_EVENT_PLUGIN_CONFIG: InjectionToken<UniqueInputEventPluginConfig>;
+
+export declare class UniqueInputEventPlugin extends EventManagerPlugin {
+    constructor(_document: any, config?: UniqueInputEventPluginConfig);
+    addEventListener(element: HTMLElement, eventName: string, originalHandler: (event: Event) => void): () => void;
+    supports(eventName: string): boolean;
+}
+
+export interface UniqueInputEventPluginConfig {
+    shouldApplyToElement?(element: Element): boolean;
+    shouldTrustEvent?(event: Event): boolean;
+}
+
 export declare const VERSION: Version;
