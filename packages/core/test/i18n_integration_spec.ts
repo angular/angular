@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {registerLocaleData} from '@angular/common';
-import {Component, ContentChild, ContentChildren, Directive, LOCALE_ID, QueryList, TemplateRef, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
-import localeRo from '@angular/common/locales/ro';
+import {Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -639,45 +637,4 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(child.innerHTML).toBe(`<li>Section 1</li><li>Section 2</li><li>Section 3</li>`);
     }
   });
-
-  it('should return the correct plural form for ICU expressions when using a specific locale',
-     () => {
-       registerLocaleData(localeRo);
-       TestBed.configureTestingModule({providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
-       // We could also use `TestBed.overrideProvider(LOCALE_ID, {useValue: 'ro'});`
-       const template = `
-      {count, plural,
-        =0 {no email}
-        =one {one email}
-        =few {a few emails}
-        =other {lots of emails}
-      }`;
-       const fixture = getFixtureWithOverrides({template});
-
-       expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
-
-       // Change detection cycle, no model changes
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
-
-       fixture.componentInstance.count = 0;
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
-
-       fixture.componentInstance.count = 1;
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('one email<!--ICU 2-->');
-
-       fixture.componentInstance.count = 10;
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('a few emails<!--ICU 2-->');
-
-       fixture.componentInstance.count = 20;
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('lots of emails<!--ICU 2-->');
-
-       fixture.componentInstance.count = 0;
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
-     });
 });
