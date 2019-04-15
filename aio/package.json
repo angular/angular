@@ -26,7 +26,7 @@
     "e2e": "ng e2e --no-webdriver-update",
     "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",
-    "postsetup": "yarn ~~build-ie-polyfills && yarn ~~minify-lunr && yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
+    "postsetup": "yarn ~~build-ie-polyfills && yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
     "presetup-local": "yarn presetup",
     "setup-local": "yarn aio-use-local && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
@@ -69,8 +69,7 @@
     "~~build": "ng build --configuration=stable",
     "post~~build": "yarn build-404-page",
     "~~build-ie-polyfills": "webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
-    "~~http-server": "http-server",
-    "~~minify-lunr": "uglifyjs node_modules/lunr/lunr.js -c -m -o src/generated/lunr.min.js --source-map"
+    "~~http-server": "http-server"
   },
   "engines": {
     "node": ">=10.9.0 <11.0.0",
@@ -89,6 +88,7 @@
     "@angular/platform-browser-dynamic": "^7.0.0",
     "@angular/router": "^7.0.0",
     "@angular/service-worker": "^7.0.0",
+    "@types/lunr": "^2.3.2",
     "@webcomponents/custom-elements": "^1.2.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",

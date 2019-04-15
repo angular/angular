@@ -1,17 +1,21 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "module": "es2015",
     "baseUrl": "",
     "types": [],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
     "importHelpers": true
   },
   "exclude": [
     "testing/**/*",
     "test.ts",
     "test-specs.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*-worker.ts"
   ],
   "angularCompilerOptions": {
     "disableTypeScriptVersionCheck": true
