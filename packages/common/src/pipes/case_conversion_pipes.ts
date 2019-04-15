@@ -120,7 +120,7 @@ export class UpperCasePipe implements PipeTransform {
  * @ngModule CommonModule
  * @publicApi
  */
-@Pipe({ name: 'sentencecase' })
+@Pipe({name: 'sentencecase'})
 export class SentenceCasePipe implements PipeTransform {
   /**
    * @param value The string to transform to upper case.
@@ -130,6 +130,6 @@ export class SentenceCasePipe implements PipeTransform {
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(UpperCasePipe, value);
     }
-    return value[0].toUpperCase()+value.substr(1).toLowerCase();
+    return value[0].toUpperCase() + value.substr(1).toLowerCase();
   }
 }

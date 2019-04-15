@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
+import {LowerCasePipe, SentenceCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
 
 {
   describe('LowerCasePipe', () => {
@@ -81,6 +81,20 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
       expect(pipe.transform('foo')).toEqual('FOO');
       expect(pipe.transform('bar')).toEqual('BAR');
     });
+
+    it('should not support other objects',
+       () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
+  });
+
+  describe('SentenceCasePipe', () => {
+    let pipe: SentenceCasePipe;
+
+    beforeEach(() => { pipe = new SentenceCasePipe(); });
+
+    it('should return sentence case', () => { expect(pipe.transform('foo')).toEqual('Foo'); });
+
+    it('should uppercase first letter of first word',
+       () => { expect(pipe.transform('foo bar')).toEqual('Foo bar'); });
 
     it('should not support other objects',
        () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
