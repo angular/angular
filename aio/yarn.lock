@@ -1939,6 +1939,7 @@ chownr@^1.0.1, chownr@^1.1.1:
 chrome-launcher@^0.10.5:
   version "0.10.5"
   resolved "https://registry.yarnpkg.com/chrome-launcher/-/chrome-launcher-0.10.5.tgz#d0aa72c11f1653e6a60dfebea171522447470ef1"
+  integrity sha512-Gbzg8HlWhyuoVqflhiXwfFXhzNfNWvAkSWv2QR1Yl6mwsMo1oCLAVjp2tIySuS4lrZLEjzVx1fOy584yE76P4g==
   dependencies:
     "@types/core-js" "^0.9.41"
     "@types/mkdirp" "^0.3.29"
