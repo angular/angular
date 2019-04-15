@@ -1,41 +1,42 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
-  name = "popover-edit",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk-experimental/popover-edit",
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/forms",
-    "@npm//rxjs",
-    "//src/cdk/a11y",
-    "//src/cdk/bidi",
-    "//src/cdk/overlay",
-    "//src/cdk/keycodes",
-    "//src/cdk/portal",
-  ],
+    name = "popover-edit",
+    srcs = glob(["**/*.ts"], exclude = ["**/*.spec.ts"]),
+    module_name = "@angular/cdk-experimental/popover-edit",
+    deps = [
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//rxjs",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/overlay",
+        "//src/cdk/scrolling",
+        "//src/cdk/keycodes",
+        "//src/cdk/portal",
+    ],
 )
 
 ng_test_library(
-  name = "popover_edit_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
-  deps = [
-    ":popover-edit",
-    "@npm//@angular/common",
-    "@npm//@angular/forms",
-    "@npm//rxjs",
-    "//src/cdk/bidi",
-    "//src/cdk/collections",
-    "//src/cdk/keycodes",
-    "//src/cdk/table",
-    "//src/cdk/testing",
-  ],
+    name = "popover_edit_test_sources",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":popover-edit",
+        "@npm//@angular/common",
+        "@npm//@angular/forms",
+        "@npm//rxjs",
+        "//src/cdk/bidi",
+        "//src/cdk/collections",
+        "//src/cdk/keycodes",
+        "//src/cdk/table",
+        "//src/cdk/testing",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":popover_edit_test_sources"]
+    name = "unit_tests",
+    deps = [":popover_edit_test_sources"],
 )
