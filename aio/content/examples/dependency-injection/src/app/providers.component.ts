@@ -7,7 +7,9 @@ import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import {
   APP_CONFIG,
   AppConfig,
-  HERO_DI_CONFIG } from './app.config';
+  HERO_DI_CONFIG,
+  APP_MULTI_CONFIG,
+  HERO_MULTI_DI_CONFIG } from './app.config';
 
 import { HeroService } from './heroes/hero.service';
 import { heroServiceProvider } from './heroes/hero.service.provider';
@@ -262,6 +264,40 @@ export class Provider10Component implements OnInit {
 /////////////////
 
 @Component({
+  selector: 'provider-11',
+  template: template,
+  /*
+   // #docregion providers-9-interface
+   // FAIL! Can't use interface as provider token
+   [{ provide: AppConfig, useValue: HERO_DI_CONFIG })]
+   // #enddocregion providers-9-interface
+   */
+  // #docregion providers-11
+  providers: [{ provide: APP_MULTI_CONFIG, useValue: HERO_MULTI_DI_CONFIG, multi:true }]
+  // #enddocregion providers-11
+})
+export class Provider9Component implements OnInit {
+  log: string;
+  /*
+   // #docregion provider-9-ctor-interface
+   // FAIL! Can't inject using the interface as the parameter type
+   constructor(private config: AppConfig){ }
+   // #enddocregion provider-9-ctor-interface
+   */
+  // #docregion provider-11-ctor
+  constructor(@Inject(APP_CONFIG) private config: AppConfig[]) { }
+  // #enddocregion provider-11-ctor
+
+  ngOnInit() {
+     this.config.forEach((c)=> {
+      'APP_CONFIG Application title is ' + c.title;
+     })
+  }
+}
+
+/////////////////
+
+@Component({
   selector: 'app-providers',
   template: `
   <h2>Provider variations</h2>
@@ -275,6 +311,7 @@ export class Provider10Component implements OnInit {
   <div id="p8"><provider-8></provider-8></div>
   <div id="p9"><provider-9></provider-9></div>
   <div id="p10"><provider-10></provider-10></div>
+  <div id="11"><provider-11></provider-11></div>
   `
 })
 export class ProvidersComponent { }

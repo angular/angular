@@ -191,6 +191,22 @@ it supports typing of the configuration object within the class.
 {@a factory-provider}
 {@a factory-providers}
 
+### Multiple providers
+
+You can also create multiple provider, Angular uses lot of multiple providers like `HTTP_INTERCEPTORS` and provides it to be used in applications. The advantage is you can add values into an array and use them whenever you need it, a simple example is in case you want an mechanism to register extranal components within your framework, you can get those values via a multi provider and load them.
+
+The only change you have to make is to convert the above provider to multi provider is
+
+<code-example path="dependency-injection/src/app/app.config.ts" region="multitoken" header="src/app/app.config.ts" linenums="false">
+</code-example>
+
+To register the multi providers use the below syntax
+
+<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-11"  linenums="false">
+</code-example>
+
+
+
 ## Factory providers
 
 Sometimes you need to create a dependent value dynamically,
