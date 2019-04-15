@@ -538,23 +538,26 @@ function collectPropertyBindings(
   let bindingIndex = getFirstBindingIndex(tNode.propertyMetadataStartIndex, tData);
 
   while (bindingIndex < tNode.propertyMetadataEndIndex) {
-    let value = '';
+    let value: any;
     let propMetadata = tData[bindingIndex] as string;
     while (!isPropMetadataString(propMetadata)) {
       // This is the first value for an interpolation. We need to build up
       // the full interpolation by combining runtime values in LView with
       // the static interstitial values stored in TData.
-      value += renderStringify(lView[bindingIndex]) + tData[bindingIndex];
+      value = (value || '') + renderStringify(lView[bindingIndex]) + tData[bindingIndex];
       propMetadata = tData[++bindingIndex] as string;
     }
-    value += lView[bindingIndex];
+    value = value === undefined ? lView[bindingIndex] : value += lView[bindingIndex];
     // Property metadata string has 3 parts: property name, prefix, and suffix
     const metadataParts = propMetadata.split(INTERPOLATION_DELIMITER);
     const propertyName = metadataParts[0];
     // Attr bindings don't have property names and should be skipped
     if (propertyName) {
-      // Wrap value with prefix and suffix (will be '' for normal bindings)
-      properties[propertyName] = metadataParts[1] + value + metadataParts[2];
+      // Wrap value with prefix and suffix (will be '' for normal bindings), if they're defined.
+      // Avoid wrapping for normal bindings so that the value doesn't get cast to a string.
+      properties[propertyName] = (metadataParts[1] && metadataParts[2]) ?
+          metadataParts[1] + value + metadataParts[2] :
+          value;
     }
     bindingIndex++;
   }

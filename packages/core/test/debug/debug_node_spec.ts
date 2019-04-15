@@ -195,6 +195,20 @@ class TestCmptWithViewContainerRef {
   constructor(private vcref: ViewContainerRef) {}
 }
 
+@Component({
+  template: `
+  <button
+    [disabled]="disabled"
+    [tabIndex]="tabIndex"
+    [title]="title">Click me</button>
+`
+})
+class TestCmptWithPropBindings {
+  disabled = true;
+  tabIndex = 1337;
+  title = 'hello';
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -218,6 +232,7 @@ class TestCmptWithViewContainerRef {
           HostClassBindingCmp,
           TestCmptWithViewContainerRef,
           SimpleContentComp,
+          TestCmptWithPropBindings,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -564,6 +579,14 @@ class TestCmptWithViewContainerRef {
       fixture.detectChanges();
 
       expect(debugElement.properties.className).toBeFalsy();
+    });
+
+    it('should preserve the type of the property values', () => {
+      const fixture = TestBed.createComponent(TestCmptWithPropBindings);
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.css('button'));
+      expect(button.properties).toEqual({disabled: true, tabIndex: 1337, title: 'hello'});
     });
 
     describe('componentInstance on DebugNode', () => {
