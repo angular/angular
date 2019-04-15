@@ -447,8 +447,7 @@ export class NgtscProgram implements api.Program {
           this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, referencesRegistry, this.isCore,
-          this.routeAnalyzer, this.refEmitter, this.defaultImportTracker,
-          this.options.i18nInLocale),
+          this.routeAnalyzer, this.refEmitter, this.defaultImportTracker),
       new PipeDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, this.defaultImportTracker, this.isCore),
     ];
