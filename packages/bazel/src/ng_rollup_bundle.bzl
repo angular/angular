@@ -194,7 +194,7 @@ ng_rollup_bundle = rule(
         "_brotli": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@org_brotli//:brotli"),
+            default = Label("//tools/brotli-cli"),
         ),
         "_rollup": attr.label(
             executable = True,
