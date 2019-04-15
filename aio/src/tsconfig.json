@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "es2015",
+    "lib": [
+      "es2018",
+      "dom",
+      "webworker"
+    ],
+  }
+}

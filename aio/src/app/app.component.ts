@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
     // Do not initialize the search on browsers that lack web worker support
     if ('Worker' in window) {
       // Delay initialization by up to 2 seconds
-      this.searchService.initWorker('app/search/search-worker.js', 2000);
+      this.searchService.initWorker(2000);
     }
 
     this.onResize(window.innerWidth);
