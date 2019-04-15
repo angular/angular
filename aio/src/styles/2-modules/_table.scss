@@ -55,12 +55,11 @@ table {
     td {
       letter-spacing: 0.30px;
 
-    tr td:first-child {
-      @media (max-width: 480px) {
-        background-color: $lightgray;
+      tr td:first-child {
+        @media (max-width: 480px) {
+          background-color: $lightgray;
+        }
       }
-    }
-
     }
 
     th {
@@ -69,7 +68,9 @@ table {
       font-weight: 600;
       max-width: 100px;
     }
+  }
 
+  tbody > tr {
     &:last-child td {
       border: none;
 
