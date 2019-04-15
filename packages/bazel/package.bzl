@@ -24,13 +24,6 @@ def rules_angular_dev_dependencies():
     shorter.
     """
 
-    http_archive(
-        name = "org_brotli",
-        sha256 = "774b893a0700b0692a76e2e5b7e7610dbbe330ffbe3fe864b4b52ca718061d5a",
-        strip_prefix = "brotli-1.0.5",
-        url = "https://github.com/google/brotli/archive/v1.0.5.zip",
-    )
-
     # Needed for Remote Execution
     _maybe(
         http_archive,
