@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {assertEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
 import {FLAGS, HEADER_OFFSET, LView, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
@@ -170,7 +171,7 @@ export function ɵɵelementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const valueToAdd = resolveStylePropValue(value, suffix);
-  const stylingContext = getStylingContext(index);
+  const stylingContext = getStylingContext(index, getLView());
   updateElementStyleProp(
       stylingContext, styleIndex, valueToAdd, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
@@ -206,7 +207,7 @@ export function ɵɵelementHostStyleProp(
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
 
-  const stylingContext = getStylingContext(hostElementIndex);
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
   const valueToAdd = resolveStylePropValue(value, suffix);
   const args: ParamsOf<typeof updateElementStyleProp> =
       [stylingContext, styleIndex, valueToAdd, directiveStylingIndex, forceOverride];
@@ -257,7 +258,7 @@ export function ɵɵelementClassProp(
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
-  const stylingContext = getStylingContext(index);
+  const stylingContext = getStylingContext(index, getLView());
   updateElementClassProp(
       stylingContext, classIndex, input, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
 }
@@ -285,7 +286,7 @@ export function ɵɵelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
-  const stylingContext = getStylingContext(hostElementIndex);
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
 
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
@@ -380,7 +381,7 @@ export function ɵɵelementHostStylingMap(
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   const hostElementIndex = getSelectedIndex();
-  const stylingContext = getStylingContext(hostElementIndex);
+  const stylingContext = getStylingContext(hostElementIndex, getLView());
   const args: ParamsOf<typeof updateStylingMap> =
       [stylingContext, classes, styles, directiveStylingIndex];
   enqueueHostInstruction(stylingContext, directiveStylingIndex, updateStylingMap, args);
@@ -439,7 +440,7 @@ export function elementStylingApplyInternal(directiveStylingIndex: number, index
   // bindings by default so a select(n) instruction is not generated. To ensure the
   // context is loaded correctly for the next element the cache below is pre-emptively
   // cleared because there is no code in Angular that applies more styling code after a
-  // styling flush has occurred.
+  // styling flush has occurred. Note that this will be fixed once FW-1254 lands.
   setCachedStylingContext(null);
 }
 
@@ -453,11 +454,14 @@ export function getActiveDirectiveStylingIndex() {
   return getActiveDirectiveId() + getActiveDirectiveSuperClassDepth();
 }
 
-function getStylingContext(index: number, lView?: LView) {
+function getStylingContext(index: number, lView: LView) {
   let context = getCachedStylingContext();
   if (!context) {
-    context = getStylingContextFromLView(index + HEADER_OFFSET, lView || getLView());
+    context = getStylingContextFromLView(index + HEADER_OFFSET, lView);
     setCachedStylingContext(context);
+  } else if (ngDevMode) {
+    const actualContext = getStylingContextFromLView(index + HEADER_OFFSET, lView);
+    assertEqual(context, actualContext, 'The cached styling context is invalid');
   }
   return context;
 }
