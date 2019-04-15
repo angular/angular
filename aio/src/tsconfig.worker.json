@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/worker",
+    "lib": [
+      "es2018",
+      "webworker"
+    ],
+    "types": [
+      "lunr"
+    ],
+  },
+  "include": ["**/*-worker.ts"]
+}

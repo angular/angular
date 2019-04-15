@@ -1,17 +1,12 @@
 import {NgZone} from '@angular/core';
 import {Observable} from 'rxjs';
-
-export interface WebWorkerMessage {
-  type: string;
-  payload: any;
-  id?: number;
-}
+import {WebWorkerMessage} from './web-worker-message';
 
 export class WebWorkerClient {
   private nextId = 0;
 
-  static create(workerUrl: string, zone: NgZone) {
-    return new WebWorkerClient(new Worker(workerUrl), zone);
+  static create(worker: Worker, zone: NgZone) {
+    return new WebWorkerClient(worker, zone);
   }
 
   private constructor(private worker: Worker, private zone: NgZone) {

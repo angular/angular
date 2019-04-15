@@ -21,6 +21,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "webWorkerTsConfig": "src/tsconfig.worker.json",
             "aot": true,
             "optimization": true,
             "buildOptimizer": true,
@@ -35,7 +36,6 @@
             "assets": [
               "src/assets",
               "src/generated",
-              "src/app/search/search-worker.js",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
@@ -123,6 +123,7 @@
             "karmaConfig": "src/karma.conf.js",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
+            "webWorkerTsConfig": "src/tsconfig.worker.json",
             "scripts": [],
             "styles": [
               "src/styles.scss"
@@ -130,7 +131,6 @@
             "assets": [
               "src/assets",
               "src/generated",
-              "src/app/search/search-worker.js",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
