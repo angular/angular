@@ -105,6 +105,8 @@ function processResults(results, logFile) {
       const categoryData = Object.keys(categories).map(name => categories[name]);
       const maxTitleLen = Math.max(...categoryData.map(({title}) => title.length));
 
+      console.log('\nLighthouse version:', results.lhr.lighthouseVersion);
+
       console.log('\nAudit scores:');
       categoryData.forEach(({title, score}) => {
         const paddedTitle = `${title}:`.padEnd(maxTitleLen + 1);
