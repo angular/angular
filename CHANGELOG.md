@@ -1,3 +1,29 @@
+# 8.0.0-beta.2 "helium-blockade" (2019-04-15)
+
+**Imminent Important Import Deprecation**:
+
+Importing directly from the root `@angular/material` entry-point is deprecated. You should instead
+import from specific entry-points, e.g. `@angular/material/button`. This aligns with `@angular/cdk`,
+makes clear where symbols originate, and helps safeguard against including unused code. The
+deprecated style will be removed in Angular v9.
+
+Angular CLI users can use `ng update @angular/material` to automatically migrate imports to the new
+style.
+
+### Breaking Changes
+
+* **tabs:** `_ngZone` and `_platform` parameters in `MatTabHeader` constructor are now required.
+* **tabs:** `changeDetectorRef` parameter in `MatTabBody` constructor is now required.
+* **expansion:** The `_document` and `_animationMode` parameters are now required.
+* **list:** `_elementRef` parameter in `MatList` constructor is now required.
+* **list:** `_changeDetectorRef` parameter in `MatListItem` constructor is now required. Also the order of constructor parameters has changed.
+* **progress-spinner:** The `animationMode` mode parameter is now required in the `MatProgressSpinner` and `MatSpinner` constructors.
+* **progress-spinner:** The `_elementRef` parameter has changed from `ElementRef<any>` to `ElementRef<HTMLElement>` in the `MatProgressSpinner` and `MatSpinner` constructors.
+* **button:** `_platform` parameter has been removed from the `MatButton` constructor and the `_animationMode` is now required.
+* **button:** `platform` parameter has been removed from the `MatAnchor` constructor and the `animationMode` is now required.
+* **badge:** `_document` parameter has been removed and the `_renderer` parameter is now required in the `MatBadge` constructor.
+
+
 # 8.0.0-beta.1 "suede-banana" (2019-04-08)
 
 
@@ -11,7 +37,7 @@
 
 ### Project setup
 * `@angular/material` now has an explicit peer dependency on `@angular/forms`.
-It was always required, but is now correctly listed in the `package.json`.   
+It was always required, but is now correctly listed in the `package.json`.
 
 
 ### Bug Fixes
