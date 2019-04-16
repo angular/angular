@@ -84,6 +84,9 @@
     "name": "NG_ELEMENT_ID"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_PIPE_DEF"
   },
   {
@@ -679,6 +682,9 @@
   },
   {
     "name": "ɵɵdefineComponent"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
   },
   {
     "name": "ɵɵdefineInjector"
