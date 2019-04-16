@@ -9,7 +9,6 @@
 import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 
-import {LocationUpgradeService} from './location_upgrade_service';
 import {AngularJSUrlCodec, UrlCodec} from './params';
 
 /**
@@ -46,7 +45,6 @@ export class LocationUpgradeModule {
       ngModule: LocationUpgradeModule,
       providers: [
         Location,
-        LocationUpgradeService,
         {provide: LOCATION_UPGRADE_CONFIGURATION, useValue: config ? config : {}},
         {provide: UrlCodec, useFactory: provideUrlCodec, deps: [LOCATION_UPGRADE_CONFIGURATION]},
         {

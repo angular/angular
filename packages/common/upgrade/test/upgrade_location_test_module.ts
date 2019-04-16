@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, CommonModule, Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationUpgradeModule, LocationUpgradeService} from '../src';
 import {LocationProvider, LocationUpgradeProvider} from '../src/$location';
+import {LocationUpgradeModule} from '../src/location_upgrade_module';
+import {UrlCodec} from '../src/params';
 
 export interface LocationUpgradeTestingConfig {
   useHash?: boolean;
@@ -61,7 +62,10 @@ export class LocationUpgradeTestModule {
         {
           provide: LocationProvider,
           useFactory: provide$location,
-          deps: [UpgradeModule, LocationUpgradeService, LOC_UPGRADE_TEST_CONFIG]
+          deps: [
+            UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy,
+            LOC_UPGRADE_TEST_CONFIG
+          ]
         },
         LocationUpgradeModule
             .config({
@@ -75,9 +79,10 @@ export class LocationUpgradeTestModule {
 }
 
 export function provide$location(
-    ngUpgrade: UpgradeModule, locationUpgrade: LocationUpgradeService,
-    config?: LocationUpgradeTestingConfig) {
-  const $locationProvider = new LocationUpgradeProvider(ngUpgrade, locationUpgrade);
+    ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation,
+    urlCodec: UrlCodec, locationStrategy: LocationStrategy, config?: LocationUpgradeTestingConfig) {
+  const $locationProvider = new LocationUpgradeProvider(
+      ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
 
   $locationProvider.hashPrefix(config && config.hashPrefix);
   $locationProvider.html5Mode(config && config.html5Mode);

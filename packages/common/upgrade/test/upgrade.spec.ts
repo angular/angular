@@ -607,7 +607,7 @@ describe('New URL Parsing', () => {
 
     expect(function() { $location.$$parse('http://other.server.org/path#/path'); })
         .toThrowError(
-            'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com".');
+            'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com/".');
   });
 
 
@@ -619,10 +619,10 @@ describe('New URL Parsing', () => {
     }));
 
     it('should set $$state and return itself', function() {
-      expect($location.$$state).toEqual(null);
+      expect(($location as any).$$state).toEqual(null);
 
       let returned = $location.state({a: 2});
-      expect($location.$$state).toEqual({a: 2});
+      expect(($location as any).$$state).toEqual({a: 2});
       expect(returned).toBe($location);
     });
 
@@ -645,27 +645,35 @@ describe('New URL Parsing', () => {
       expect($location.hash()).toEqual('abcd');
     });
 
-    xit('should always have the same value by reference until the value is changed', function() {
-      expect($location.$$state).toEqual(null);
+    it('should always have the same value by reference until the value is changed', function() {
+      expect(($location as any).$$state).toEqual(null);
       expect($location.state()).toEqual(null);
 
-      const testState = {foo: 'bar'};
+      const stateValue = {foo: 'bar'};
 
-      $location.state(testState);
-      expect($location.state()).toBe(testState);
-      expect(($location as any).location.locationChanges.state).toBe(testState);
+      $location.state(stateValue);
+      expect($location.state()).toBe(stateValue);
       mock$rootScope.runWatchers();
 
-      expect(($location as any).location.locationChanges).toBe(null);
-
-      // Testing the getState() method of the UpgradeLocationService, we will surface the platform
-      // value, which will not be equal by reference.
-      expect(($location as any).location.state()).toEqual(testState);
-      expect(($location as any).location.state()).not.toBe(testState);
+      const testState = $location.state();
 
       // $location.state() should equal by reference
-      expect($location.state()).toEqual(testState);
+      expect($location.state()).toEqual(stateValue);
       expect($location.state()).toBe(testState);
+
+      mock$rootScope.runWatchers();
+      expect($location.state()).toBe(testState);
+      mock$rootScope.runWatchers();
+      expect($location.state()).toBe(testState);
+
+      // Confirm updating other values doesn't change the value of `state`
+      $location.path('/new');
+
+      expect($location.state()).toBe(testState);
+      mock$rootScope.runWatchers();
+
+      // After watchers have been run, location should be updated and `state` should change
+      expect($location.state()).toBe(null);
     });
 
   });

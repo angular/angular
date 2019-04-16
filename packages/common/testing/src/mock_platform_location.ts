@@ -86,7 +86,9 @@ export class MockPlatformLocation implements PlatformLocation {
   onHashChange(fn: LocationChangeListener): void { this.hashUpdate.subscribe(fn); }
 
   get href(): string {
-    return `${this.protocol}//${this.hostname}${this.baseHref}${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`;
+    let url = `${this.protocol}//${this.hostname}${this.port ? ':' + this.port : ''}`;
+    url += `${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`
+    return url;
   }
 
   get url(): string { return `${this.pathname}${this.search}${this.hash}`; }

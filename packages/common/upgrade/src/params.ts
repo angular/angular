@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -22,8 +21,22 @@ export abstract class UrlCodec {
   abstract encodeHash(hash: string): string;
   abstract decodeHash(hash: string): string;
 
+  abstract normalize(href: string): string;
   abstract normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl?: string):
       string;
+
+  abstract areEqual(a: string, b: string): boolean;
+
+  abstract parse(url: string, base?: string): {
+    href: string,
+    protocol: string,
+    host: string,
+    search: string,
+    hash: string,
+    hostname: string,
+    port: string,
+    pathname: string
+  }|string;
 }
 
 /**
@@ -82,17 +95,55 @@ export class AngularJSUrlCodec implements UrlCodec {
     return hash[0] === '#' ? hash.substring(1) : hash;
   }
 
-  normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl: string = ''):
+  normalize(href: string): string;
+  normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl?: string): string;
+  normalize(pathOrHref: string, search?: {[k: string]: unknown}, hash?: string, baseUrl?: string):
       string {
-    const encPath = this.encodePath(path);
-    const encSearch = search && this.encodeSearch(search) || '';
-    const encHash = hash && this.encodeHash(hash) || '';
-    if (baseUrl) {
-      if (baseUrl[baseUrl.length - 1] != '/' && !encPath) {
-        baseUrl = baseUrl + '/';
+    if (arguments.length === 1) {
+      const parsed = this.parse(pathOrHref, baseUrl);
+
+      if (typeof parsed === 'string') {
+        return parsed;
       }
+
+      const serverUrl =
+          `${parsed.protocol}://${parsed.hostname}${parsed.port ? ':' + parsed.port : ''}`;
+
+      return this.normalize(
+          this.decodePath(parsed.pathname), this.decodeSearch(parsed.search),
+          this.decodeHash(parsed.hash), serverUrl);
+    } else {
+      const encPath = this.encodePath(pathOrHref);
+      const encSearch = search && this.encodeSearch(search) || '';
+      const encHash = hash && this.encodeHash(hash) || '';
+
+      let joinedPath = (baseUrl || '') + encPath;
+
+      if (!joinedPath.length || joinedPath[0] !== '/') {
+        joinedPath = '/' + joinedPath;
+      }
+      return joinedPath + encSearch + encHash;
     }
-    return baseUrl + encPath + encSearch + encHash;
+  }
+
+  areEqual(a: string, b: string) { return this.normalize(a) === this.normalize(b); }
+
+  parse(url: string, base?: string) {
+    try {
+      const parsed = new URL(url, base);
+      return {
+        href: parsed.href,
+        protocol: parsed.protocol ? parsed.protocol.replace(/:$/, '') : '',
+        host: parsed.host,
+        search: parsed.search ? parsed.search.replace(/^\?/, '') : '',
+        hash: parsed.hash ? parsed.hash.replace(/^#/, '') : '',
+        hostname: parsed.hostname,
+        port: parsed.port,
+        pathname: (parsed.pathname.charAt(0) === '/') ? parsed.pathname : '/' + parsed.pathname
+      };
+    } catch (e) {
+      return (base ? base : '') + url
+    }
   }
 }
 
