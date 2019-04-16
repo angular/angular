@@ -10,6 +10,7 @@ import {NgModule} from '@angular/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {
   CdkPopoverEdit,
+  CdkPopoverEditTabOut,
   CdkRowHoverContent,
   CdkEditable,
   CdkEditOpen,
@@ -26,6 +27,7 @@ import {
 
 const EXPORTED_DECLARATIONS = [
   CdkPopoverEdit,
+  CdkPopoverEditTabOut,
   CdkRowHoverContent,
   CdkEditControl,
   CdkEditRevert,

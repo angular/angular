@@ -26,6 +26,11 @@ import {debounceTime, filter, map, mapTo, startWith, takeUntil} from 'rxjs/opera
 import {CELL_SELECTOR, EDIT_PANE_CLASS, EDIT_PANE_SELECTOR, ROW_SELECTOR} from './constants';
 import {EditEventDispatcher} from './edit-event-dispatcher';
 import {FocusDispatcher} from './focus-dispatcher';
+import {
+  FocusEscapeNotifier,
+  FocusEscapeNotifierDirection,
+  FocusEscapeNotifierFactory
+} from './focus-escape-notifier';
 import {closest} from './polyfill';
 import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strategy-factory';
 
@@ -112,7 +117,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
  * Makes the cell focusable.
  */
 @Directive({
-  selector: '[cdkPopoverEdit]',
+  selector: '[cdkPopoverEdit]:not([cdkPopoverEditTabOut])',
   host: {
     'tabIndex': '0',
     'class': 'cdk-popover-edit-cell',
@@ -179,6 +184,14 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
     }
   }
 
+  protected initFocusTrap(): void {
+    this.focusTrap = this.focusTrapFactory.create(this.overlayRef!.overlayElement);
+  }
+
+  protected closeEditOverlay(): void {
+    this.editEventDispatcher.doneEditingCell(this.elementRef.nativeElement!);
+  }
+
   private _startListeningToEditEvents(): void {
     this.editEventDispatcher.editingCell(this.elementRef.nativeElement!)
         .pipe(takeUntil(this.destroyed))
@@ -207,12 +220,10 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
     });
 
-    this.focusTrap = this.focusTrapFactory.create(this.overlayRef.overlayElement);
+    this.initFocusTrap();
     this.overlayRef.overlayElement.setAttribute('aria-role', 'dialog');
 
-    this.overlayRef.detachments().subscribe(() => {
-      this.editEventDispatcher.doneEditingCell(this.elementRef.nativeElement!);
-    });
+    this.overlayRef.detachments().subscribe(() => this.closeEditOverlay());
   }
 
   private _showEditOverlay(): void {
@@ -263,6 +274,63 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
         this.overlayRef!.overlayElement) {
       this.elementRef.nativeElement!.focus();
     }
+  }
+}
+
+/**
+ * Attaches an ng-template to a cell and shows it when instructed to by the
+ * EditEventDispatcher service.
+ * Makes the cell focusable.
+ */
+@Directive({
+  selector: '[cdkPopoverEdit] [cdkPopoverEditTabOut]',
+  host: {
+    'tabIndex': '0',
+    'class': 'cdk-popover-edit-cell',
+    '[attr.aria-haspopup]': 'true',
+  }
+})
+export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
+  protected focusTrap?: FocusEscapeNotifier;
+
+  constructor(
+      editEventDispatcher: EditEventDispatcher,
+      elementRef: ElementRef,
+      focusTrapFactory: FocusTrapFactory,
+      ngZone: NgZone,
+      overlay: Overlay,
+      positionFactory: PopoverEditPositionStrategyFactory,
+      scrollDispatcher: ScrollDispatcher,
+      viewContainerRef: ViewContainerRef,
+      viewportRuler: ViewportRuler,
+      protected readonly focusEscapeNotifierFactory: FocusEscapeNotifierFactory,
+      protected readonly focusDispatcher: FocusDispatcher) {
+    super(
+        editEventDispatcher,
+        elementRef,
+        focusTrapFactory,
+        ngZone,
+        overlay,
+        positionFactory,
+        scrollDispatcher,
+        viewContainerRef,
+        viewportRuler);
+  }
+
+  protected initFocusTrap(): void {
+    this.focusTrap = this.focusEscapeNotifierFactory.create(this.overlayRef!.overlayElement);
+
+    this.focusTrap.escapes().pipe(takeUntil(this.destroyed)).subscribe(direction => {
+      if (this.editEventDispatcher.editRef) {
+        this.editEventDispatcher.editRef.blur();
+      }
+
+      this.focusDispatcher.moveFocusHorizontally(
+          closest(this.elementRef.nativeElement!, CELL_SELECTOR) as HTMLElement,
+          direction === FocusEscapeNotifierDirection.START ? -1 : 1);
+
+      this.closeEditOverlay();
+    });
   }
 }
 

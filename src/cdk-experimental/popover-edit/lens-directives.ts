@@ -61,6 +61,7 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.editRef.init(this.preservedFormValue);
     this.editRef.finalValue.subscribe(this.preservedFormValueChange);
+    this.editRef.blurred.subscribe(() => this._handleBlur());
   }
 
   ngOnDestroy(): void {
@@ -97,7 +98,7 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
     switch (this.clickOutBehavior) {
       case 'submit':
         // Manually cause the form to submit before closing.
-        this.elementRef.nativeElement!.dispatchEvent(new Event('submit'));
+        this._triggerFormSubmit();
         // Fall through
       case 'close':
         this.editRef.close();
@@ -105,6 +106,18 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
       default:
         break;
     }
+  }
+
+  /** Triggers submit on tab out if clickOutBehavior is 'submit'. */
+  private _handleBlur(): void {
+    if (this.clickOutBehavior === 'submit') {
+      // Manually cause the form to submit before closing.
+      this._triggerFormSubmit();
+    }
+  }
+
+  private _triggerFormSubmit() {
+    this.elementRef.nativeElement!.dispatchEvent(new Event('submit'));
   }
 }
 

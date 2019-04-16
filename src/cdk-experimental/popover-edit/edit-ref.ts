@@ -23,6 +23,10 @@ export class EditRef<FormValue> implements OnDestroy {
   private readonly _finalValueSubject = new Subject<FormValue>();
   readonly finalValue: Observable<FormValue> = this._finalValueSubject.asObservable();
 
+  /** Emits when the user tabs out of this edit lens before closing. */
+  private readonly _blurredSubject = new Subject<void>();
+  readonly blurred: Observable<void> = this._blurredSubject.asObservable();
+
   /** The value to set the form back to on revert. */
   private _revertFormValue: FormValue;
 
@@ -37,7 +41,9 @@ export class EditRef<FormValue> implements OnDestroy {
 
   constructor(
       @Self() private readonly _form: ControlContainer,
-      private readonly _editEventDispatcher: EditEventDispatcher) {}
+      private readonly _editEventDispatcher: EditEventDispatcher) {
+    this._editEventDispatcher.setActiveEditRef(this);
+  }
 
   /**
    * Called by the host directive's OnInit hook. Reads the initial state of the
@@ -57,6 +63,7 @@ export class EditRef<FormValue> implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._editEventDispatcher.unsetActiveEditRef(this);
     this._finalValueSubject.next(this._form.value);
     this._finalValueSubject.complete();
   }
@@ -74,6 +81,11 @@ export class EditRef<FormValue> implements OnDestroy {
   /** Tells the table to close the edit popup. */
   close(): void {
     this._editEventDispatcher.editing.next(null);
+  }
+
+  /** Notifies the active edit that the user has moved focus out of the lens. */
+  blur(): void {
+    this._blurredSubject.next();
   }
 
   /**

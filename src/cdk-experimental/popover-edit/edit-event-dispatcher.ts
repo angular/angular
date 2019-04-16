@@ -12,6 +12,7 @@ import {audit, distinctUntilChanged, filter, map, share} from 'rxjs/operators';
 
 import {CELL_SELECTOR, ROW_SELECTOR} from './constants';
 import {closest} from './polyfill';
+import {EditRef} from './edit-ref';
 
 /** The delay between mouse out events and hiding hover content. */
 const DEFAULT_MOUSE_OUT_DELAY_MS = 30;
@@ -29,6 +30,12 @@ export class EditEventDispatcher {
 
   /** A subject that emits mouse move events for table rows. */
   readonly mouseMove = new Subject<Element|null>();
+
+  /** The EditRef for the currently active edit lens (if any). */
+  get editRef(): EditRef<any>|null {
+    return this._editRef;
+  }
+  private _editRef: EditRef<any>|null = null;
 
   /** The table cell that has an active edit lens (or null). */
   private _currentlyEditing: Element|null = null;
@@ -65,6 +72,20 @@ export class EditEventDispatcher {
     if (this._currentlyEditing === cell) {
       this.editing.next(null);
     }
+  }
+
+  /** Sets the currently active EditRef. */
+  setActiveEditRef(ref: EditRef<any>) {
+    this._editRef = ref;
+  }
+
+  /** Unsets the currently active EditRef, if the specified editRef is active. */
+  unsetActiveEditRef(ref: EditRef<any>) {
+    if (this._editRef !== ref) {
+      return;
+    }
+
+    this._editRef = null;
   }
 
   /**

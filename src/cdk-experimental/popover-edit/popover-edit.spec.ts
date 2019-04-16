@@ -28,7 +28,13 @@ const NAME_EDIT_TEMPLATE = `
     </div>
     `;
 
-const WEIGHT_EDIT_TEMPLATE = `<div> Just a placeholder </div>`;
+const WEIGHT_EDIT_TEMPLATE = `
+    <div>
+      <form #f="ngForm" cdkEditControl>
+        <input>
+      </form>
+    </div>
+    `;
 
 const CELL_TEMPLATE = `
     {{element.name}}
@@ -40,7 +46,7 @@ const CELL_TEMPLATE = `
 
 const POPOVER_EDIT_DIRECTIVE_NAME = `[cdkPopoverEdit]="nameEdit" [cdkPopoverEditColspan]="colspan"`;
 
-const POPOVER_EDIT_DIRECTIVE_WEIGHT = `[cdkPopoverEdit]="weightEdit"`;
+const POPOVER_EDIT_DIRECTIVE_WEIGHT = `[cdkPopoverEdit]="weightEdit" cdkPopoverEditTabOut`;
 
 interface PeriodicElement {
   name: string;
@@ -74,13 +80,13 @@ abstract class BaseTestComponent {
     return getRows(this.table.nativeElement);
   }
 
-  getEditCell(rowIndex = 0) {
+  getEditCell(rowIndex = 0, cellIndex = 1) {
     const row = this.getRows()[rowIndex];
-    return getCells(row)[1];
+    return getCells(row)[cellIndex];
   }
 
-  focusEditCell(rowIndex = 0) {
-    this.getEditCell(rowIndex).focus();
+  focusEditCell(rowIndex = 0, cellIndex = 1) {
+    this.getEditCell(rowIndex, cellIndex).focus();
   }
 
   getOpenButton(rowIndex = 0) {
@@ -91,15 +97,19 @@ abstract class BaseTestComponent {
     this.getOpenButton(rowIndex)!.click();
   }
 
-  openLens(rowIndex = 0) {
-    this.focusEditCell(rowIndex);
-    this.getEditCell(rowIndex).dispatchEvent(
-        new KeyboardEvent('keyup', {bubbles: true, key: 'Enter'}));
+  openLens(rowIndex = 0, cellIndex = 1) {
+    this.focusEditCell(rowIndex, cellIndex);
+    this.getEditCell(rowIndex, cellIndex)
+        .dispatchEvent(new KeyboardEvent('keyup', {bubbles: true, key: 'Enter'}));
     flush();
   }
 
   getEditPane() {
     return document.querySelector('.cdk-edit-pane');
+  }
+
+  getEditBoundingBox() {
+    return document.querySelector('.cdk-overlay-connected-position-bounding-box');
   }
 
   getInput() {
@@ -366,68 +376,124 @@ describe('CDK Popover Edit', () => {
         }));
       });
 
-      describe('arrow key focus manipulation', () => {
-        const dispatchKey = (cell: HTMLElement, keyCode: number) =>
-            dispatchKeyboardEvent(cell, 'keydown', keyCode, cell);
-
+      describe('focus manipulation', () => {
         const getRowCells = () => component.getRows().map(getCells);
 
-        it('moves focus up/down/left/right and prevents default', () => {
-          const rowCells = getRowCells();
+        describe('arrow keys', () => {
+          const dispatchKey = (cell: HTMLElement, keyCode: number) =>
+              dispatchKeyboardEvent(cell, 'keydown', keyCode, cell);
 
-          // Focus the upper-left editable cell.
-          rowCells[0][1].focus();
+          it('moves focus up/down/left/right and prevents default', () => {
+            const rowCells = getRowCells();
 
-          const downEvent = dispatchKey(rowCells[0][1], DOWN_ARROW);
-          expect(document.activeElement).toBe(rowCells[1][1]);
-          expect(downEvent.defaultPrevented).toBe(true);
+            // Focus the upper-left editable cell.
+            rowCells[0][1].focus();
 
-          const rightEvent = dispatchKey(rowCells[1][1], RIGHT_ARROW);
-          expect(document.activeElement).toBe(rowCells[1][2]);
-          expect(rightEvent.defaultPrevented).toBe(true);
+            const downEvent = dispatchKey(rowCells[0][1], DOWN_ARROW);
+            expect(document.activeElement).toBe(rowCells[1][1]);
+            expect(downEvent.defaultPrevented).toBe(true);
 
-          const upEvent = dispatchKey(rowCells[1][2], UP_ARROW);
-          expect(document.activeElement).toBe(rowCells[0][2]);
-          expect(upEvent.defaultPrevented).toBe(true);
+            const rightEvent = dispatchKey(rowCells[1][1], RIGHT_ARROW);
+            expect(document.activeElement).toBe(rowCells[1][2]);
+            expect(rightEvent.defaultPrevented).toBe(true);
 
-          const leftEvent = dispatchKey(rowCells[0][2], LEFT_ARROW);
-          expect(document.activeElement).toBe(rowCells[0][1]);
-          expect(leftEvent.defaultPrevented).toBe(true);
+            const upEvent = dispatchKey(rowCells[1][2], UP_ARROW);
+            expect(document.activeElement).toBe(rowCells[0][2]);
+            expect(upEvent.defaultPrevented).toBe(true);
+
+            const leftEvent = dispatchKey(rowCells[0][2], LEFT_ARROW);
+            expect(document.activeElement).toBe(rowCells[0][1]);
+            expect(leftEvent.defaultPrevented).toBe(true);
+          });
+
+          it('wraps around when reaching start or end of a row, skipping non-editable cells',
+             () => {
+               const rowCells = getRowCells();
+
+               // Focus the upper-right editable cell.
+               rowCells[0][2].focus();
+
+               dispatchKey(rowCells[0][2], RIGHT_ARROW);
+               expect(document.activeElement).toBe(rowCells[1][1]);
+
+               dispatchKey(rowCells[1][1], LEFT_ARROW);
+               expect(document.activeElement).toBe(rowCells[0][2]);
+             });
+
+          it('does not fall off top or bottom of the table', () => {
+            const rowCells = getRowCells();
+
+            // Focus the upper-left editable cell.
+            rowCells[0][1].focus();
+
+            dispatchKey(rowCells[0][1], UP_ARROW);
+            expect(document.activeElement).toBe(rowCells[0][1]);
+
+            // Focus the bottom-left editable cell.
+            rowCells[4][1].focus();
+            dispatchKey(rowCells[4][1], DOWN_ARROW);
+            expect(document.activeElement).toBe(rowCells[4][1]);
+          });
+
+          it('ignores non arrow key events', () => {
+            component.focusEditCell();
+            const cell = component.getEditCell();
+
+            expect(dispatchKey(cell, TAB).defaultPrevented).toBe(false);
+          });
         });
 
-        it('wraps around when reaching start or end of a row, skipping non-editable cells', () => {
-          const rowCells = getRowCells();
+        describe('lens focus trapping behavior', () => {
+          const getFocusablePaneElements = () =>
+              Array.from(component.getEditBoundingBox()!.querySelectorAll(
+                  'input, button, .cdk-focus-trap-anchor')) as HTMLElement[];
 
-          // Focus the upper-right editable cell.
-          rowCells[0][2].focus();
+          it('keeps focus within the lens by default', fakeAsync(() => {
+               // Open the name lens which has the default behavior.
+               component.openLens();
 
-          dispatchKey(rowCells[0][2], RIGHT_ARROW);
-          expect(document.activeElement).toBe(rowCells[1][1]);
+               const focusableElements = getFocusablePaneElements();
 
-          dispatchKey(rowCells[1][1], LEFT_ARROW);
-          expect(document.activeElement).toBe(rowCells[0][2]);
-        });
+               // Focus the last element (end focus trap anchor).
+               focusableElements[focusableElements.length - 1].focus();
+               flush();
 
-        it('does not fall off top or bottom of the table', () => {
-          const rowCells = getRowCells();
+               // Focus should have moved to the top of the lens.
+               expect(document.activeElement).toBe(focusableElements[1]);
+               expect(component.lensIsOpen()).toBe(true);
+             }));
 
-          // Focus the upper-left editable cell.
-          rowCells[0][1].focus();
+          it('moves focus to the next cell when focus leaves end of lens with cdkPopoverEditTabOut',
+             fakeAsync(() => {
+               // Open the weight lens which has tab out behavior.
+               component.openLens(0, 2);
 
-          dispatchKey(rowCells[0][1], UP_ARROW);
-          expect(document.activeElement).toBe(rowCells[0][1]);
+               const focusableElements = getFocusablePaneElements();
 
-          // Focus the bottom-left editable cell.
-          rowCells[4][1].focus();
-          dispatchKey(rowCells[4][1], DOWN_ARROW);
-          expect(document.activeElement).toBe(rowCells[4][1]);
-        });
+               // Focus the last element (end focus trap anchor).
+               focusableElements[focusableElements.length - 1].focus();
+               flush();
 
-        it('ignores non arrow key events', () => {
-          component.focusEditCell();
-          const cell = component.getEditCell();
+               // Focus should have moved to the next editable cell.
+               expect(document.activeElement).toBe(component.getEditCell(1, 1));
+               expect(component.lensIsOpen()).toBe(false);
+             }));
 
-          expect(dispatchKey(cell, TAB).defaultPrevented).toBe(false);
+          it(`moves focus to the previous cell when focus leaves end of lens with
+cdkPopoverEditTabOut`, fakeAsync(() => {
+               // Open the weight lens which has tab out behavior.
+               component.openLens(0, 2);
+
+               const focusableElements = getFocusablePaneElements();
+
+               // Focus the first (start focus trap anchor).
+               focusableElements[0].focus();
+               flush();
+
+               // Focus should have moved to the next editable cell.
+               expect(document.activeElement).toBe(component.getEditCell(0, 1));
+               expect(component.lensIsOpen()).toBe(false);
+             }));
         });
       });
 
