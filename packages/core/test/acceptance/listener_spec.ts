@@ -42,6 +42,26 @@ describe('event listeners', () => {
       count() { this.counter++; }
     }
 
+    @Directive({selector: '[returns-false]'})
+    class ReturnsFalse {
+      counter = 0;
+      event !: Event;
+      handlerShouldReturn: boolean|undefined = undefined;
+
+      @HostListener('click', ['$event'])
+      count(e: Event) {
+        this.counter++;
+        this.event = e;
+
+        // stub preventDefault() to check whether it's called
+        Object.defineProperty(
+            this.event, 'preventDefault',
+            {value: jasmine.createSpy('preventDefault'), writable: true});
+
+        return this.handlerShouldReturn;
+      }
+    }
+
     onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
         .it('should coalesce multiple event listeners for the same event on the same element',
             () => {
@@ -119,5 +139,40 @@ describe('event listeners', () => {
       expect(noOfErrors).toBe(1);
       expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
     });
+
+    it('should prevent default if any of the listeners returns false', () => {
+      @Component({
+        selector: 'test-cmpt',
+        template: `
+          <button returns-false likes-clicks></button>
+        `
+      })
+      class TestCmpt {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestCmpt, ReturnsFalse, LikesClicks]});
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+
+      const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+      const likesClicksDir = buttonDebugEl.injector.get(LikesClicks);
+      const returnsFalseDir = buttonDebugEl.injector.get(ReturnsFalse);
+      expect(likesClicksDir.counter).toBe(0);
+      expect(returnsFalseDir.counter).toBe(0);
+
+      buttonDebugEl.nativeElement.click();
+      expect(likesClicksDir.counter).toBe(1);
+      expect(returnsFalseDir.counter).toBe(1);
+      expect(returnsFalseDir.event.preventDefault).not.toHaveBeenCalled();
+
+      returnsFalseDir.handlerShouldReturn = true;
+      buttonDebugEl.nativeElement.click();
+      expect(returnsFalseDir.event.preventDefault).not.toHaveBeenCalled();
+
+      returnsFalseDir.handlerShouldReturn = false;
+      buttonDebugEl.nativeElement.click();
+      expect(returnsFalseDir.event.preventDefault).toHaveBeenCalled();
+    });
+
   });
 });
