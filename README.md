@@ -1,15 +1,15 @@
-# Material Design for Angular
+# Components and Material Design for Angular
 [![npm version](https://badge.fury.io/js/%40angular%2Fmaterial.svg)](https://www.npmjs.com/package/%40angular%2Fmaterial)
 [![Build status](https://circleci.com/gh/angular/material2.svg?style=svg)](https://circleci.com/gh/angular/material2)
 [![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-This is the home for the Angular team's Material Design components built for and with Angular.
+This is the home for the Angular team's UI components built for and with Angular.
+These include Material Design components and the Angular Component Development Kit (CDK).
 
 #### Quick links
 [Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
-[Plunker Template](https://goo.gl/uDmqyY) |
 [StackBlitz Template](https://goo.gl/wwnhMV)
 
 ### Getting started
@@ -21,10 +21,11 @@ Check out our [directory of design documents](https://github.com/angular/materia
 for more insight into our process.
 
 If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/material2/blob/master/CONTRIBUTING.md).
-You can look through the issues (which should be up-to-date on who is working on which features
+You can look through the GitHub issues (which should be up-to-date on who is working on which features
 and which pieces are blocked) and make a comment.
-Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-label.
+
+Please see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+label for a list of issues where we could use help from the community.
 
 #### High level stuff planned for Q1 → Q2 2019 (January - June):
 * Most of the Angular Material team is on loan to the framework team
@@ -81,19 +82,9 @@ label.
 | ---------------- | ------------------------------------------------------ | ------------ |
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
-| layout           |                      See [angular/flex-layout][lay_rp] |  [Wiki][0]   |
+| layout           | See [CDK Layout][cdk-layout] or [@angular/flex-layout][lay_rp]| -     |
 | cdk              |                                                        |   [Docs][34] |
 
-
-#### In progress, planned, and non-planned features
-
-| Feature          | Status                              | Docs         | Issue          |
-|------------------|-------------------------------------|--------------|----------------|
-| fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
-| fab toolbar      |            Not started, not planned |           -  |              - |
-| bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
-
- [0]: https://github.com/angular/flex-layout/wiki
  [1]: https://material.angular.io/components/button/overview
  [2]: https://material.angular.io/components/card/overview
  [3]: https://material.angular.io/components/checkbox/overview
@@ -124,7 +115,7 @@ label.
 [28]: https://material.angular.io/components/table/overview
 [29]: https://material.angular.io/components/paginator/overview
 [30]: https://material.angular.io/components/sort/overview
-[31]: https://tina-material-tree.firebaseapp.com/simple-tree
+
 [32]: https://material.angular.io/components/expansion/overview
 [33]: https://material.angular.io/components/stepper/overview
 [34]: https://material.angular.io/cdk/categories
@@ -135,35 +126,17 @@ label.
 [39]: https://material.angular.io/cdk/drag-drop/overview
 [40]: https://material.angular.io/cdk/scrolling/overview#virtual-scrolling
 
-[0107]: https://github.com/angular/material2/issues/107
-[0119]: https://github.com/angular/material2/issues/119
-[0108]: https://github.com/angular/material2/issues/108
-[0114]: https://github.com/angular/material2/issues/114
-[0115]: https://github.com/angular/material2/issues/115
-[0118]: https://github.com/angular/material2/issues/118
-[0546]: https://github.com/angular/material2/issues/546
-[0117]: https://github.com/angular/material2/issues/117
-[0120]: https://github.com/angular/material2/issues/120
-[0123]: https://github.com/angular/material2/issues/123
-[0205]: https://github.com/angular/material2/issues/205
-[0860]: https://github.com/angular/material2/issues/860
-[0408]: https://github.com/angular/material2/issues/408
-[0508]: https://github.com/angular/material2/issues/508
-[0823]: https://github.com/angular/material2/issues/823
-[0581]: https://github.com/angular/material2/issues/581
-[4191]: https://github.com/angular/material2/pull/4191
-[0995]: https://github.com/angular/material2/pull/995
-[0474]: https://github.com/angular/material2/pull/474
-
 [aio]: https://material.angular.io
 [getting-started]: https://material.angular.io/guide/getting-started
 [lay_rp]:  https://github.com/angular/flex-layout
+[cdk-layout]: https://material.angular.io/cdk/layout/overview
 
 
-## The goal of Angular Material
-Our goal is to build a set of high-quality UI components built with Angular and TypeScript,
-following the Material Design spec. These
-components will serve as an example of how to write Angular code following best practices.
+## The goal of Angular Material and the CDK
+Our goal is to build a set of high-quality UI components built with Angular and TypeScript.
+These include foundational components and services, found in the CDK, and components that follow
+the Material Design spec. These components serve as an example of how to build Angular UI components
+that follow best practices.
 
 ### What do we mean by "high-quality"?
 * Internationalized and accessible so that all users can use them.
@@ -172,13 +145,15 @@ components will serve as an example of how to write Angular code following best 
 * Behavior is well-tested with both unit and integration tests.
 * Customizable within the bounds of the Material Design specification.
 * Performance cost is minimized.
-* Code is clean and well-documented to serve as an example for Angular devs.
+* Code is clean and well-documented to serve as an example for Angular developers.
 
 ## Browser and screen reader support
 Angular Material supports the most recent two versions of all major browsers:
-Chrome (including Android), Firefox, Safari (including iOS), and IE11 / Edge
+Chrome (including Android), Firefox, Safari (including iOS), and IE11 / Edge.
 
-We also aim for great user experience with the following screen readers:
-* NVDA and JAWS with IE / FF / Chrome (on Windows).
-* VoiceOver with Safari on iOS and Safari / Chrome on OSX.
-* TalkBack with Chrome on Android.
+We aim for great user experience with the following screen readers:
+* **Windows**: NVDA and JAWS with IE11 / FF / Chrome.
+* **macOS**: VoiceOver with Safari / Chrome.
+* **iOS**: VoiceOver with Safari
+* **Android**: Android Accessibility Suite (formerly TalkBack) with Chrome.
+* **Chrome OS**: ChromeVox with Chrome.
