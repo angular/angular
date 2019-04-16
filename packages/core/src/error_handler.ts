@@ -15,15 +15,23 @@ import {getDebugContext, getErrorLogger, getOriginalError} from './errors';
  *
  * The default implementation of `ErrorHandler` prints error messages to the `console`. To
  * intercept error handling, write a custom exception handler that replaces this default as
- * appropriate for your app.
+ * appropriate for your app.You can not inject any service directly to a class implementing the
+ * the ErrorHandler, use Injector to get the instance of any service you want to use.
  *
  * @usageNotes
  * ### Example
  *
  * ```
  * class MyErrorHandler implements ErrorHandler {
+ * // In case you want to save the errors on server and use any other service with this implementation
+ * // use Injector to get the instance
+ * constructor(private injector: Injector)
+ * // The above code will give you undefined as services are not available here
+ * constructor(private http: HttpClient)
  *   handleError(error) {
  *     // do something with the exception
+ *     // you will get the instance on below line,
+ *     // const http = this.injector.get(HttpClient);
  *   }
  * }
  *
