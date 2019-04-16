@@ -939,6 +939,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "invokeRootComponentHostBindings"
+  },
+  {
     "name": "isAnimationProp"
   },
   {
@@ -1183,9 +1186,6 @@
   },
   {
     "name": "searchTokensOnInjector"
-  },
-  {
-    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"

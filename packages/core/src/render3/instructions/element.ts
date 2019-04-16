@@ -18,7 +18,7 @@ import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedElementIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -272,7 +272,7 @@ export function ɵɵelementAttribute(
  * @codeGenApi
  */
 export function ɵɵelementHostAttrs(attrs: TAttributes) {
-  const hostElementIndex = getSelectedIndex();
+  const hostElementIndex = getSelectedElementIndex();
   ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const lView = getLView();
   const tNode = getTNode(hostElementIndex, lView);

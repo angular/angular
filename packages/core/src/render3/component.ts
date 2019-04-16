@@ -21,9 +21,9 @@ import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition'
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW, TView} from './interfaces/view';
 import {applyOnCreateInstructions} from './node_util';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
+import {enterView, getPreviousOrParentTNode, getSelectedElementIndex, leaveView, resetComponentState, setSelectedElementIndex} from './state';
 import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
@@ -210,15 +210,7 @@ export function createRootComponent<T>(
 
   const rootTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass && componentDef.hostBindings) {
-    const elementIndex = rootTNode.index - HEADER_OFFSET;
-    setActiveHostElement(elementIndex);
-
-    const expando = tView.expandoInstructions !;
-    invokeHostBindingsInCreationMode(
-        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
-    rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
-
-    setActiveHostElement(null);
+    invokeRootComponentHostBindings(rootTNode, tView, component, componentDef);
   }
 
   if (rootTNode.stylingTemplate) {
@@ -228,6 +220,22 @@ export function createRootComponent<T>(
   }
 
   return component;
+}
+
+function invokeRootComponentHostBindings<T>(
+    rootTNode: TNode, tView: TView, component: T, componentDef: ComponentDef<T>) {
+  const elementIndex = rootTNode.index - HEADER_OFFSET;
+  const _selectedIndex = getSelectedElementIndex();
+  try {
+    setSelectedElementIndex(elementIndex, false);
+
+    const expando = tView.expandoInstructions !;
+    invokeHostBindingsInCreationMode(
+        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
+    rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
+  } finally {
+    setSelectedElementIndex(_selectedIndex, false);
+  }
 }
 
 

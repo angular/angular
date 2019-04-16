@@ -10,7 +10,7 @@ import {assertEqual, assertNotEqual} from '../../util/assert';
 import {TNode, TNodeType} from '../interfaces/node';
 import {PlayerFactory} from '../interfaces/player';
 import {FLAGS, HEADER_OFFSET, LView, LViewFlags, RENDERER, RootContextFlags} from '../interfaces/view';
-import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getLView, getPreviousOrParentTNode, getSelectedIndex} from '../state';
+import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getLView, getPreviousOrParentTNode, getSelectedElementIndex} from '../state';
 import {getInitialClassNameValue, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
 import {ParamsOf, enqueueHostInstruction, registerHostDirective} from '../styling/host_instructions_queue';
 import {BoundPlayerFactory} from '../styling/player_factory';
@@ -206,7 +206,7 @@ export function ɵɵelementHostStyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
-  const hostElementIndex = getSelectedIndex();
+  const hostElementIndex = getSelectedElementIndex();
   ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
 
   const stylingContext = getStylingContext(hostElementIndex, getLView());
@@ -287,7 +287,7 @@ export function ɵɵelementClassProp(
 export function ɵɵelementHostClassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
-  const hostElementIndex = getSelectedIndex();
+  const hostElementIndex = getSelectedElementIndex();
   ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const stylingContext = getStylingContext(hostElementIndex, getLView());
 
@@ -383,7 +383,7 @@ export function ɵɵelementHostStylingMap(
     classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
-  const hostElementIndex = getSelectedIndex();
+  const hostElementIndex = getSelectedElementIndex();
   ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   const stylingContext = getStylingContext(hostElementIndex, getLView());
   const args: ParamsOf<typeof updateStylingMap> =
@@ -418,7 +418,7 @@ export function ɵɵelementStylingApply(index: number): void {
  * @codeGenApi
  */
 export function ɵɵelementHostStylingApply(): void {
-  const hostElementIndex = getSelectedIndex();
+  const hostElementIndex = getSelectedElementIndex();
   ngDevMode && assertNotEqual(hostElementIndex, -1, 'index not selected prior to instruction');
   elementStylingApplyInternal(getActiveDirectiveStylingIndex(), hostElementIndex);
 }

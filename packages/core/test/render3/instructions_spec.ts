@@ -318,8 +318,10 @@ describe('instructions', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 1);
         expect(() => { t.update(() => { ɵɵpropertyInterpolate('title', 123); }); }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate('title', 123); });
+          t.update(() => {
+            ɵɵselect(0);
+            ɵɵpropertyInterpolate('title', 123);
+          });
         }).not.toThrow();
       });
     });
@@ -375,8 +377,10 @@ describe('instructions', () => {
           t.update(() => { ɵɵpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
+          t.update(() => {
+            ɵɵselect(0);
+            ɵɵpropertyInterpolate1('title', 'start', 'whatever', 'end');
+          });
         }).not.toThrow();
       });
     });
@@ -437,8 +441,10 @@ describe('instructions', () => {
           t.update(() => { ɵɵpropertyInterpolate2('title', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate2('title', '', '', '', '', ''); });
+          t.update(() => {
+            ɵɵselect(0);
+            ɵɵpropertyInterpolate2('title', '', '', '', '', '');
+          });
         }).not.toThrow();
       });
     });
@@ -499,8 +505,10 @@ describe('instructions', () => {
           t.update(() => { ɵɵpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
+          t.update(() => {
+            ɵɵselect(0);
+            ɵɵpropertyInterpolate3('title', '', '', '', '', '', '', '');
+          });
         }).not.toThrow();
       });
     });
@@ -566,8 +574,10 @@ describe('instructions', () => {
           t.update(() => { ɵɵpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
+          t.update(() => {
+            ɵɵselect(0);
+            ɵɵpropertyInterpolate4('title', '', '', '', '', '', '', '', '', '');
+          });
         }).not.toThrow();
       });
     });
@@ -637,8 +647,8 @@ describe('instructions', () => {
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
           t.update(() => {
+            ɵɵselect(0);
             ɵɵpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
@@ -713,8 +723,8 @@ describe('instructions', () => {
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
           t.update(() => {
+            ɵɵselect(0);
             ɵɵpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
@@ -794,8 +804,8 @@ describe('instructions', () => {
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
           t.update(() => {
+            ɵɵselect(0);
             ɵɵpropertyInterpolate7(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
@@ -876,8 +886,8 @@ describe('instructions', () => {
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
           t.update(() => {
+            ɵɵselect(0);
             ɵɵpropertyInterpolate8(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
@@ -972,8 +982,8 @@ describe('instructions', () => {
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
           t.update(() => {
+            ɵɵselect(0);
             ɵɵpropertyInterpolateV(
                 'title',
                 ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);

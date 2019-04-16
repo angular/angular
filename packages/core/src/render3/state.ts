@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertGreaterThan} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 
 import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
@@ -157,19 +157,45 @@ let activeDirectiveSuperClassDepthPosition = 0;
  */
 let activeDirectiveSuperClassHeight = 0;
 
+let _selectedElementIndex = -1;
+
 /**
- * Sets the active directive host element and resets the directive id value
- * (when the provided elementIndex value has changed).
+ * Gets the most recent index passed to {@link select}
  *
- * @param elementIndex the element index value for the host element where
- *                     the directive/component instance lives
+ * Used with {@link property} instruction (and more in the future) to identify the index in the
+ * current `LView` to act on.
  */
-export function setActiveHostElement(elementIndex: number | null = null) {
-  if (_selectedIndex !== elementIndex) {
-    setSelectedIndex(elementIndex == null ? -1 : elementIndex);
-    activeDirectiveId = MIN_DIRECTIVE_ID;
-    activeDirectiveSuperClassDepthPosition = 0;
-    activeDirectiveSuperClassHeight = 0;
+export function getSelectedElementIndex() {
+  return _selectedElementIndex;
+}
+
+/**
+ * Sets the active host element index and resets the directive id value
+ * (when the provided index value has changed).
+ *
+ * NOTE: This should _never_ be set to `-1`, *unless* we're just about to execute a template
+ * function. In all cases, we should be capturing the previous index with `getSelectedIndex`, and
+ * resetting it after a `try/finally`. The only place we should be setting the selected index
+ * without capturing the previous value is in the `ɵɵselect` instruction.
+ *
+ * @param index the element index value for the host element where
+ *                     the directive/component instance lives
+ * @param preserveActiveDirective If false, will reset the active directive ids et al that are used
+ * in host binding.
+ */
+export function setSelectedElementIndex(index: number, preserveActiveDirective: boolean) {
+  ngDevMode && assertEqual(index >= -1, true, 'index must be -1 or greater');
+
+  if (_selectedElementIndex !== index) {
+    _selectedElementIndex = index;
+    // remove the styling context from the cache
+    // because we are now on a different element
+    setCachedStylingContext(null);
+    if (!preserveActiveDirective) {
+      activeDirectiveId = MIN_DIRECTIVE_ID;
+      activeDirectiveSuperClassDepthPosition = 0;
+      activeDirectiveSuperClassHeight = 0;
+    }
   }
 }
 
@@ -460,33 +486,6 @@ export function leaveView(newView: LView): void {
   setCachedStylingContext(null);
   enterView(newView, null);
 }
-
-let _selectedIndex = -1;
-
-/**
- * Gets the most recent index passed to {@link select}
- *
- * Used with {@link property} instruction (and more in the future) to identify the index in the
- * current `LView` to act on.
- */
-export function getSelectedIndex() {
-  return _selectedIndex;
-}
-
-/**
- * Sets the most recent index passed to {@link select}
- *
- * Used with {@link property} instruction (and more in the future) to identify the index in the
- * current `LView` to act on.
- */
-export function setSelectedIndex(index: number) {
-  _selectedIndex = index;
-
-  // remove the styling context from the cache
-  // because we are now on a different element
-  setCachedStylingContext(null);
-}
-
 
 let _currentNamespace: string|null = null;
 

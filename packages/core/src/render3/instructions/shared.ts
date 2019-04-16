@@ -30,7 +30,7 @@ import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, resetComponentState, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ɵɵnamespaceHTML} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedElementIndex, incrementActiveDirectiveId, isCreationMode, leaveView, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedElementIndex, ɵɵnamespaceHTML} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -106,6 +106,7 @@ export function setHostBindings(tView: TView, viewData: LView): void {
     setBindingRoot(bindingRootIndex);
     let currentDirectiveIndex = -1;
     let currentElementIndex = -1;
+    let prevSelectedIndex = getSelectedElementIndex();
     for (let i = 0; i < tView.expandoInstructions.length; i++) {
       const instruction = tView.expandoInstructions[i];
       if (typeof instruction === 'number') {
@@ -113,7 +114,8 @@ export function setHostBindings(tView: TView, viewData: LView): void {
           // Negative numbers mean that we are starting new EXPANDO block and need to update
           // the current element and directive index.
           currentElementIndex = -instruction;
-          setActiveHostElement(currentElementIndex);
+          prevSelectedIndex = getSelectedElementIndex();
+          setSelectedElementIndex(currentElementIndex, true);
 
           // Injector block and providers are taken into account.
           const providerCount = (tView.expandoInstructions[++i] as number);
@@ -132,8 +134,11 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
           const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
-          instruction(RenderFlags.Update, hostCtx, currentElementIndex);
-
+          try {
+            instruction(RenderFlags.Update, hostCtx, currentElementIndex);
+          } finally {
+            setSelectedElementIndex(prevSelectedIndex, true);
+          }
           // Each directive gets a uniqueId value that is the same for both
           // create and update calls when the hostBindings function is called. The
           // directive uniqueId is not set anywhere--it is just incremented between
@@ -144,8 +149,8 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         currentDirectiveIndex++;
       }
     }
+    setSelectedElementIndex(prevSelectedIndex, true);
   }
-  setActiveHostElement(null);
 }
 
 /** Refreshes content queries for all directives in the given view. */
@@ -420,7 +425,6 @@ export function createEmbeddedViewAndNode<T>(
 export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
-  const _selectedIndex = getSelectedIndex();
   let oldView: LView;
   if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
@@ -443,9 +447,6 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       refreshDescendantViews(viewToRender);
     } finally {
       leaveView(oldView !);
-      // Because an embedded view can be rendered during the execution of another template's
-      // ɵɵproperty instruction, we must reset the global selected index state in this case.
-      setSelectedIndex(_selectedIndex);
       setIsParent(_isParent);
       setPreviousOrParentTNode(_previousOrParentTNode);
     }
@@ -465,9 +466,7 @@ function renderComponentOrTemplate<T>(
 
     if (creationModeIsActive) {
       // creation mode pass
-      if (templateFn) {
-        executeTemplate(templateFn, RenderFlags.Create, context);
-      }
+      templateFn && executeTemplate(templateFn, RenderFlags.Create, context);
 
       refreshDescendantViews(hostView);
       hostView[FLAGS] &= ~LViewFlags.CreationMode;
@@ -475,7 +474,7 @@ function renderComponentOrTemplate<T>(
 
     // update mode pass
     resetPreOrderHookFlags(hostView);
-    templateFn && templateFn(RenderFlags.Update, context);
+    templateFn && executeTemplate(templateFn, RenderFlags.Update, context);
     refreshDescendantViews(hostView);
   } finally {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
@@ -487,10 +486,17 @@ function renderComponentOrTemplate<T>(
 
 function executeTemplate<T>(
     templateFn: (rf: RenderFlags, ctx: T) => void, rf: RenderFlags, ctx: T) {
+  const _selectedIndex = getSelectedElementIndex();
   ɵɵnamespaceHTML();
-  // Reset the selected index so we can assert that `select` was called later
-  setSelectedIndex(-1);
-  templateFn(rf, ctx);
+  try {
+    // Reset the selected index so we can assert that `select` was called later
+    setSelectedElementIndex(-1, false);
+    templateFn(rf, ctx);
+  } finally {
+    // Because an embedded view can be rendered during the execution of another template's
+    // ɵɵproperty instruction, we must reset the global selected index state in this case.
+    setSelectedElementIndex(_selectedIndex, false);
+  }
 }
 
 /**
@@ -1068,26 +1074,29 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const expando = tView.expandoInstructions !;
   const firstTemplatePass = tView.firstTemplatePass;
   const elementIndex = tNode.index - HEADER_OFFSET;
-  setActiveHostElement(elementIndex);
+  const _selectedIndex = getSelectedElementIndex();
+  try {
+    setSelectedElementIndex(elementIndex, false);
 
-  for (let i = start; i < end; i++) {
-    const def = tView.data[i] as DirectiveDef<any>;
-    const directive = viewData[i];
-    if (def.hostBindings) {
-      invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass);
+    for (let i = start; i < end; i++) {
+      const def = tView.data[i] as DirectiveDef<any>;
+      const directive = viewData[i];
+      if (def.hostBindings) {
+        invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass);
 
-      // Each directive gets a uniqueId value that is the same for both
-      // create and update calls when the hostBindings function is called. The
-      // directive uniqueId is not set anywhere--it is just incremented between
-      // each hostBindings call and is useful for helping instruction code
-      // uniquely determine which directive is currently active when executed.
-      incrementActiveDirectiveId();
-    } else if (firstTemplatePass) {
-      expando.push(null);
+        // Each directive gets a uniqueId value that is the same for both
+        // create and update calls when the hostBindings function is called. The
+        // directive uniqueId is not set anywhere--it is just incremented between
+        // each hostBindings call and is useful for helping instruction code
+        // uniquely determine which directive is currently active when executed.
+        incrementActiveDirectiveId();
+      } else if (firstTemplatePass) {
+        expando.push(null);
+      }
     }
+  } finally {
+    setSelectedElementIndex(_selectedIndex, false);
   }
-
-  setActiveHostElement(null);
 }
 
 export function invokeHostBindingsInCreationMode(

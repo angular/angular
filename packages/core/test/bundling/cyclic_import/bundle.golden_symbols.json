@@ -411,6 +411,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getSelectedIndex"
+  },
+  {
     "name": "getStylingContextFromLView"
   },
   {
@@ -463,6 +466,9 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "invokeRootComponentHostBindings"
   },
   {
     "name": "isAnimationProp"
@@ -610,9 +616,6 @@
   },
   {
     "name": "saveResolvedLocalsInData"
-  },
-  {
-    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"

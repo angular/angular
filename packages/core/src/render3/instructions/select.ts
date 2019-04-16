@@ -8,7 +8,7 @@
 import {assertGreaterThan, assertLessThan} from '../../util/assert';
 import {executePreOrderHooks} from '../hooks';
 import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
+import {getCheckNoChangesMode, getLView, setSelectedElementIndex} from '../state';
 
 /**
  * Selects an element for later binding instructions.
@@ -38,5 +38,5 @@ export function ɵɵselect(index: number): void {
           index, getLView().length - HEADER_OFFSET, 'Should be within range for the view data');
   const lView = getLView();
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
-  setSelectedIndex(index);
+  setSelectedElementIndex(index, true);
 }

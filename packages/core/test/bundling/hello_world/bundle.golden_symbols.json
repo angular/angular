@@ -348,6 +348,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "invokeRootComponentHostBindings"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -439,9 +442,6 @@
   },
   {
     "name": "resetPreOrderHookFlags"
-  },
-  {
-    "name": "setActiveHostElement"
   },
   {
     "name": "setBindingRoot"

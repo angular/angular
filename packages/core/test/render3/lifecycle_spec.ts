@@ -806,7 +806,7 @@ describe('lifecycles', () => {
        * <parent [val]="1">
        *   <projected [val]="1">content</projected>
        * </parent>
-       * * <parent [val]="2">
+       * <parent [val]="2">
        *   <projected [val]="2">content</projected>
        * </parent>
        *
