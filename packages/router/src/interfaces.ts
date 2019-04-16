@@ -264,7 +264,7 @@ export type CanDeactivateFn<T> =
 /**
  * @description
  *
- * Interface that class can implement to be a data provider.
+ * Interface that classes can implement to be a data provider.
  *
  * ```
  * class Backend {
