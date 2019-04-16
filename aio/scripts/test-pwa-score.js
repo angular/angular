@@ -18,6 +18,7 @@ const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default-config.js');
 const logger = require('lighthouse-logger');
+const puppeteer = require('puppeteer');
 
 // Constants
 const CHROME_LAUNCH_OPTS = {};
@@ -66,13 +67,14 @@ function evaluateScore(expectedScore, actualScore) {
 }
 
 async function launchChromeAndRunLighthouse(url, flags, config) {
-  const chrome = await chromeLauncher.launch(CHROME_LAUNCH_OPTS);
-  flags.port = chrome.port;
+  const browser = await puppeteer.launch({defaultViewport: null, headless: false});
+  const browserVersion = await browser.version();
+  flags.port = new URL(browser.wsEndpoint()).port;
 
   try {
-    return await lighthouse(url, flags, config);
+    return {browserVersion, ...await lighthouse(url, flags, config)};
   } finally {
-    await chrome.kill();
+    await browser.close();
   }
 }
 
@@ -96,6 +98,7 @@ function parseInput(args) {
 }
 
 async function processResults(results, logFile) {
+  const browserVersion = results.browserVersion;
   const lhVersion = results.lhr.lighthouseVersion;
   const categories = results.lhr.categories;
   const report = results.report;
@@ -110,7 +113,8 @@ async function processResults(results, logFile) {
   const categoryData = Object.keys(categories).map(name => categories[name]);
   const maxTitleLen = Math.max(...categoryData.map(({title}) => title.length));
 
-  console.log(`\nLighthouse version: ${lhVersion}`);
+  console.log(`\nBrowser version: ${browserVersion}`);
+  console.log(`Lighthouse version: ${lhVersion}`);
 
   console.log('\nAudit scores:');
   categoryData.forEach(({title, score}) => {
