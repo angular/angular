@@ -13,7 +13,6 @@
  */
 
 // Imports
-const chromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default-config.js');
