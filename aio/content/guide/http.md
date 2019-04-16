@@ -750,7 +750,7 @@ with the injected `MessageService`.
   header="app/http-interceptors/logging-interceptor.ts)">
 </code-example>
 
-The RxJS `tap` operator captures whether the request succeed or failed.
+The RxJS `tap` operator captures whether the request succeeded or failed.
 The RxJS `finalize` operator is called when the response observable either errors or completes (which it must),
 and reports the outcome to the `MessageService`.
 
