@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {createLanguageService} from './language_service';
 import {Completion, Diagnostic, DiagnosticMessageChain} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
-const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
+const projectHostMap = new WeakMap<ts.server.Project, TypeScriptServiceHost>();
 
-export function getExternalFiles(project: any): string[]|undefined {
+export function getExternalFiles(project: ts.server.Project): string[]|undefined {
   const host = projectHostMap.get(project);
   if (host) {
-    return host.getTemplateReferences();
+    const externalFiles = host.getTemplateReferences();
+    return externalFiles;
   }
 }
 
@@ -62,7 +63,7 @@ function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnost
   return result;
 }
 
-export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
+export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
   const oldLS: ts.LanguageService = info.languageService;
   const proxy: ts.LanguageService = Object.assign({}, oldLS);
   const logger = info.project.projectService.logger;
@@ -78,7 +79,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   const serviceHost = new TypeScriptServiceHost(info.languageServiceHost, oldLS);
-  const ls = createLanguageService(serviceHost as any);
+  const ls = createLanguageService(serviceHost);
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
