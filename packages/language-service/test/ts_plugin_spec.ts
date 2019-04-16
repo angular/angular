@@ -32,8 +32,13 @@ describe('plugin', () => {
   });
 
 
-  let plugin = create(
-      {ts: ts, languageService: service, project: mockProject, languageServiceHost: mockHost});
+  let plugin = create({
+    languageService: service,
+    project: mockProject as any,
+    languageServiceHost: mockHost,
+    serverHost: {} as any,
+    config: {},
+  });
 
   it('should not report template errors on tour of heroes', () => {
     for (let source of program !.getSourceFiles()) {
