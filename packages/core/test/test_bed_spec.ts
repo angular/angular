@@ -229,6 +229,27 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
+  it('allow to override multi provider', () => {
+    const MY_TOKEN = new InjectionToken('MyProvider');
+    class MyProvider {}
+
+    @Component({selector: 'my-comp', template: ``})
+    class MyComp {
+      constructor(@Inject(MY_TOKEN) public myProviders: MyProvider[]) {}
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyComp],
+      providers: [{provide: MY_TOKEN, useValue: {value: 'old provider'}, multi: true}]
+    });
+
+    const multiOverride = {useValue: [{value: 'new provider'}], multi: true};
+    TestBed.overrideProvider(MY_TOKEN, multiOverride as any);
+
+    const fixture = TestBed.createComponent(MyComp);
+    expect(fixture.componentInstance.myProviders).toEqual([{value: 'new provider'}]);
+  });
+
   it('should resolve components that are extended by other components', () => {
     // SimpleApp uses SimpleCmp in its template, which is extended by InheritedCmp
     const simpleApp = TestBed.createComponent(SimpleApp);
