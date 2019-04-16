@@ -1,5 +1,8 @@
 export declare const _MatCheckboxMixinBase: HasTabIndexCtor & CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatCheckboxBase;
 
+export declare class _MatCheckboxRequiredValidatorModule {
+}
+
 export declare const MAT_CHECKBOX_CLICK_ACTION: InjectionToken<MatCheckboxClickAction>;
 
 export declare const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any;

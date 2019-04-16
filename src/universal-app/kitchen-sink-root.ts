@@ -1,6 +1,7 @@
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
+import {KitchenSinkMdcModule} from './kitchen-sink-mdc/kitchen-sink-mdc';
 import {KitchenSinkModule} from './kitchen-sink/kitchen-sink';
 
 @Component({
@@ -8,13 +9,17 @@ import {KitchenSinkModule} from './kitchen-sink/kitchen-sink';
   template: `
     <h1>Kitchen sink app</h1>
     <kitchen-sink></kitchen-sink>
+    <kitchen-sink-mdc></kitchen-sink-mdc>
   `,
 })
 export class KitchenSinkRoot {
 }
 
 @NgModule({
-  imports: [BrowserModule.withServerTransition({appId: 'kitchen-sink'}), KitchenSinkModule],
+  imports: [
+    BrowserModule.withServerTransition({appId: 'kitchen-sink'}), KitchenSinkMdcModule,
+    KitchenSinkModule
+  ],
   declarations: [KitchenSinkRoot],
   exports: [KitchenSinkRoot],
   bootstrap: [KitchenSinkRoot],

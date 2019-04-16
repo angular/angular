@@ -30,6 +30,7 @@
   },
   "version": "8.0.0-beta.2",
   "requiredAngularVersion": ">=7.0.0",
+  "requiredMDCVersion": "^1.1.0",
   "dependencies": {
     "@angular/animations": "8.0.0-beta.10",
     "@angular/common": "8.0.0-beta.10",
@@ -40,6 +41,7 @@
     "@angular/platform-browser": "8.0.0-beta.10",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.1",
+    "material-components-web": "^1.1.0",
     "rxjs": "^6.4.0",
     "systemjs": "0.19.43",
     "tsickle": "^0.34.0",

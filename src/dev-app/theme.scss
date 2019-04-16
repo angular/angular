@@ -1,4 +1,6 @@
 @import '../lib/core/theming/all-theme';
+@import '../material-experimental/mdc-checkbox/mdc-checkbox';
+@import '../material-experimental/mdc-helpers/mdc-helpers';
 
 // Plus imports for other components in your app.
 
@@ -6,6 +8,7 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat-core();
+@include mat-checkbox-typography-mdc(mat-typography-config());
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat-palette($mat-indigo);
@@ -14,6 +17,7 @@ $candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the default theme styles.
 @include angular-material-theme($candy-app-theme);
+@include mat-checkbox-theme-mdc($candy-app-theme);
 
 
 // Define an alternate dark theme.
@@ -28,4 +32,5 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 // default theme.
 .demo-unicorn-dark-theme {
   @include angular-material-theme($dark-theme);
+  @include mat-checkbox-theme-mdc($dark-theme);
 }

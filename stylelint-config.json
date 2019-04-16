@@ -89,7 +89,7 @@
     "no-eol-whitespace": true,
     "max-line-length": 100,
     "linebreaks": "unix",
-    "selector-class-pattern": ["^_?(mat-|cdk-|example-|demo-|ng-)", {
+    "selector-class-pattern": ["^_?(mat-|cdk-|example-|demo-|ng-|mdc-)", {
       "resolveNestedSelectors": true
     }]
   }

@@ -83,7 +83,9 @@
 /src/material-moment-adapter/**                    @mmalerba
 
 # Material experimental package
-/src/material-experimental/**                      @jelbourn
+/src/material-experimental/*                       @jelbourn
+/src/material-experimental/mdc-checkbox/**         @mmalerba
+/src/material-experimental/mdc-helpers/**          @mmalerba
 
 # CDK experimental package
 /src/cdk-experimental/**                           @jelbourn
@@ -126,6 +128,7 @@
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/list/**                               @jelbourn @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn
+/src/dev-app/mdc-checkbox/**                       @mmalerba
 /src/dev-app/menu/**                               @crisbeto
 /src/dev-app/overlay/**                            @jelbourn @crisbeto
 /src/dev-app/paginator/**                          @andrewseguin
@@ -164,6 +167,7 @@
 /e2e/components/icon-e2e.spec.ts                   @jelbourn
 /e2e/components/input-e2e.spec.ts                  @mmalerba
 /e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto @devversion
+/e2e/components/mdc-checkbox-e2e.spec.ts           @mmalerba
 /e2e/components/menu-e2e.spec.ts                   @crisbeto
 /e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
 /e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
@@ -189,6 +193,7 @@
 /src/e2e-app/icon/**                               @jelbourn
 /src/e2e-app/input/**                              @mmalerba
 /src/e2e-app/list/**                               @jelbourn
+/src/e2e-app/mdc-checkbox/**                       @mmalerba
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott

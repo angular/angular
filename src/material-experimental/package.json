@@ -16,8 +16,9 @@
   },
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
+    "@angular/core": "0.0.0-NG",
     "@angular/material": "0.0.0-PLACEHOLDER",
-    "@angular/core": "0.0.0-NG"
+    "material-components-web": "0.0.0-MDC"
   },
   "dependencies": {
     "tslib": "^1.7.1"

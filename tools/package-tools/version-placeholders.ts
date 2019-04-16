@@ -9,11 +9,17 @@ const versionPlaceholderText = '0.0.0-PLACEHOLDER';
 /** Placeholder that will be replaced with the required Angular version. */
 const ngVersionPlaceholderText = '0.0.0-NG';
 
+/** Placeholder that will be replaced with the required MDC Web version. */
+const mdcVersionPlaceholderText = '0.0.0-MDC';
+
 /** RegExp that matches version placeholders inside of a file. */
 const ngVersionPlaceholderRegex = new RegExp(ngVersionPlaceholderText, 'g');
 
 /** Expression that matches Angular version placeholders within a file. */
 const versionPlaceholderRegex = new RegExp(versionPlaceholderText, 'g');
+
+/** RegExp that matches version placeholders inside of a file. */
+const mdcVersionPlaceholderRegex = new RegExp(mdcVersionPlaceholderText, 'g');
 
 /**
  * Walks through every file in a directory and replaces the version placeholders with the current
@@ -28,8 +34,9 @@ export function replaceVersionPlaceholders(packageDir: string) {
   // version of the root package.json file.
   files.forEach(filePath => {
     const fileContent = readFileSync(filePath, 'utf-8')
-      .replace(ngVersionPlaceholderRegex, buildConfig.angularVersion)
-      .replace(versionPlaceholderRegex, buildConfig.projectVersion);
+                            .replace(ngVersionPlaceholderRegex, buildConfig.angularVersion)
+                            .replace(versionPlaceholderRegex, buildConfig.projectVersion)
+                            .replace(mdcVersionPlaceholderRegex, buildConfig.mdcVersion);
 
     writeFileSync(filePath, fileContent);
   });
@@ -49,12 +56,20 @@ function buildPlaceholderFindCommand(packageDir: string) {
   if (platform() === 'win32') {
     return {
       binary: 'findstr',
-      args: ['/msi', `${ngVersionPlaceholderText} ${versionPlaceholderText}`, `${packageDir}\\*`]
+      args: [
+        '/msi',
+        `${ngVersionPlaceholderText} ${versionPlaceholderText} ${mdcVersionPlaceholderText}`,
+        `${packageDir}\\*`
+      ]
     };
   } else {
     return {
       binary: 'grep',
-      args: ['-ril', `${ngVersionPlaceholderText}\\|${versionPlaceholderText}`, packageDir]
+      args: [
+        '-ril',
+        `${ngVersionPlaceholderText}\\|${versionPlaceholderText}\\|${mdcVersionPlaceholderText}`,
+        packageDir
+      ]
     };
   }
 }

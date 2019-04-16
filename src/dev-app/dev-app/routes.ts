@@ -48,6 +48,10 @@ export const DEV_APP_ROUTES: Routes = [
     path: 'live-announcer',
     loadChildren: 'live-announcer/live-announcer-demo-module#LiveAnnouncerDemoModule'
   },
+  {
+    path: 'mdc-checkbox',
+    loadChildren: 'mdc-checkbox/mdc-checkbox-demo-module#MdcCheckboxDemoModule'
+  },
   {path: 'menu', loadChildren: 'menu/menu-demo-module#MenuDemoModule'},
   {path: 'paginator', loadChildren: 'paginator/paginator-demo-module#PaginatorDemoModule'},
   {path: 'platform', loadChildren: 'platform/platform-demo-module#PlatformDemoModule'},

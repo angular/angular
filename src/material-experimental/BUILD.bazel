@@ -1,13 +1,16 @@
 package(default_visibility=["//visibility:public"])
 
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
-load("//:packages.bzl", "CDK_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "ROLLUP_GLOBALS")
 
 ng_module(
   name = "material-experimental",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material-experimental",
-  deps = ["//src/lib:material"] + CDK_TARGETS,
+  deps = [
+    "@npm//@angular/forms",
+  ],
 )
 
 ng_package(

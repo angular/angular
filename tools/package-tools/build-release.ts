@@ -1,4 +1,4 @@
-import {appendFileSync} from 'fs';
+import {appendFileSync, existsSync, readFileSync, writeFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import {join} from 'path';
 import {buildConfig} from './build-config';
@@ -125,7 +125,87 @@ function copySecondaryEntryPointStylesheets(buildPackage: BuildPackage, releaseP
   buildPackage.secondaryEntryPoints.forEach(entryPointName => {
     const entryPointDir = join(buildPackage.outputDir, entryPointName);
 
-    copyFiles(entryPointDir, `_${entryPointName}.scss`, releasePath);
+    copyPartialToRootAndUpdateImports(buildPackage, entryPointName, releasePath);
     copyFiles(entryPointDir, `${entryPointName}-prebuilt.css`, releasePath);
   });
+}
+
+/** Mapping of released package names to directory name under `src`. */
+const packageDirs: {[key: string]: string} = {
+  'cdk': 'cdk',
+  'material': 'lib',
+  'material-experimental': 'material-experimental',
+  'cdk-experimental': 'cdk-experimental',
+};
+
+/**
+ * Copies the partial for the given secondary entry point to the root of the release directory and
+ * updates all imports from packages and secondary entry points in this repo to ones that will work
+ * relative when the partial is imported from `node_modules`.
+ */
+function copyPartialToRootAndUpdateImports(
+    buildPackage: BuildPackage, entryPointName: string, releasePath: string) {
+  // Check if there is a partial with the same name as the secondary entry point and read it in.
+  const sassPartialName = `_${entryPointName}.scss`;
+  const sassPartialPath = join(buildPackage.outputDir, entryPointName, sassPartialName);
+  if (!existsSync(sassPartialPath)) {
+    return;
+  }
+  let sassPartialData = readFileSync(sassPartialPath).toString('utf8');
+
+  // Iterate over the packages published from this repo and update any Sass imports from each one.
+  for (let packageName of Object.keys(packageDirs)) {
+    const packageDir = packageDirs[packageName];
+    let importPattern: string;
+
+    if (packageName === buildPackage.name) {
+      // If importing from another entry point under the same package, the import path will start
+      // with `../`.
+      importPattern = String.raw`\.\.\/`;
+    } else {
+      // If importing from another package in this repo, the import path will start with
+      // `../../${packageDir}/`.
+      importPattern = String.raw`\.\.\/\.\.\/${packageDir}\/`;
+    }
+    if (packageName === 'material') {
+      // If importing from the material package, the rest of the path can be anything (it doesn't
+      // necessarily have to be a secondary entry point, since @angular/material bundles all of its
+      // sass into `@angular/material/theming` before releasing. We just need to make sure the rest
+      // of the path doesn't start with `.` to prevent accidentally matching on an import that's
+      // going up another level (e.g. `../../cdk`).
+      importPattern += String.raw`[^.].*`;
+    } else {
+      // If importing from any other package, we know the import must be from one of the secondary
+      // entry points and that the partial must have the same name as the entry point
+      // (e.g. ../../cdk/a11y/a11y).
+      importPattern += String.raw`([^\/]+)\/\1`;
+    }
+
+    // Construct a regex for the full import statement now that we have the import path.
+    const importRegex = new RegExp(String.raw`^@import '${importPattern}';$`, 'gm');
+
+    if (packageName === 'material') {
+      // If we're importing from `@angular/material`, update the first import to the combined bundle
+      // and just remove the rest. (This is because `@angular/material` combines all of its Sass
+      // partials into a single bundle rather than having 1 per secondary entry point.
+      let updated = false;
+      sassPartialData = sassPartialData.replace(importRegex, (match) => {
+        const result = updated ? '' : `@import '../material/theming';`;
+        updated = true;
+        console.log(`Rewriting Sass import \`${match}\` to \`${result}\``);
+        return result;
+      });
+    } else {
+      // If we're importing from any other package, update the import to point to the partial that
+      // was copied over to the root of the release directory.
+      sassPartialData = sassPartialData.replace(importRegex, (match, importedEntryPointName) => {
+        const result = `@import '../${packageName}/${importedEntryPointName}';`;
+        console.log(`Rewriting Sass import \`${match}\` to \`${result}\``);
+        return result;
+      });
+    }
+  }
+
+  // Write the file with modified imports to the root of the release directory.
+  writeFileSync(join(releasePath, sassPartialName), sassPartialData);
 }

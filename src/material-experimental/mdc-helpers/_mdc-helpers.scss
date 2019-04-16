@@ -1,0 +1,209 @@
+// TODO(mmalerba): this file should be split into separate cohesive partials for things like
+//  "theming", "typography", "core". Currently splitting it is difficult because of our brittle
+//  gulp-based release build process. We can update this when we switch to bazel.
+
+@import '@material/feature-targeting/functions';
+@import '@material/theme/functions';
+@import '@material/theme/variables';
+@import '@material/typography/variables';
+@import '../../lib/core/theming/theming';
+@import '../../lib/core/typography/typography';
+
+// A set of standard queries to use with MDC's queryable mixins.
+$mat-base-styles-query: mdc-feature-without(mdc-feature-any(color, typography));
+$mat-theme-styles-query: color;
+$mat-typography-styles-query: typography;
+
+// Mappings between Angular Material and MDC's typography levels.
+$mat-typography-level-mappings: (
+  mdc-to-mat: (
+    headline1: display-4,
+    headline2: display-3,
+    headline3: display-2,
+    headline4: display-1,
+    headline5: headline,
+    headline6: title,
+    subtitle1: subheading-2,
+    subtitle2: subheading-1,
+    body1: body-2,
+    body2: body-1,
+    caption: caption,
+    button: button,
+    overline: null
+  ),
+  mat-to-mdc: (
+    display-4: headline1,
+    display-3: headline2,
+    display-2: headline3,
+    display-1: headline4,
+    headline: headline5,
+    title: headline6,
+    subheading-2: subtitle1,
+    subheading-1: subtitle2,
+    body-2: body1,
+    body-1: body2,
+    caption: caption,
+    button: button,
+    input: null
+  )
+);
+
+// Converts an Angular Material typography level config to an MDC one.
+@function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
+  $mdc-level: map-get($mat-typography-level-mappings, $mat-level);
+
+  @return map-merge(
+      if($mdc-level,
+          map-get($mdc-typography-styles, $mdc-level),
+          (
+            text-decoration: none,
+            text-transform: none,
+            -moz-osx-font-smoothing: grayscale,
+            -webkit-font-smoothing: antialiased
+          )),
+      if($mat-level,
+          (
+            font-size: mat-font-size($mat-config, $mat-level),
+            line-height: mat-line-height($mat-config, $mat-level),
+            font-weight: mat-font-weight($mat-config, $mat-level),
+            letter-spacing: mat-letter-spacing($mat-config, $mat-level),
+            font-family: mat-font-family($mat-config, $mat-level),
+            // Angular Material doesn't use text-transform, so disable it.
+            text-transform: none,
+          ),
+          ()));
+}
+
+// Converts an Angular Material typography config to an MDC one.
+@function mat-typography-config-to-mdc($mat-config: mat-typography-config()) {
+  $mdc-config: ();
+
+  @each $mdc-level, $mat-level in map-get($mat-typography-level-mappings, mdc-to-mat) {
+    $mdc-config: map-merge(
+        $mdc-config,
+        ($mdc-level: mat-typography-level-config-to-mdc($mat-config, $mat-level)));
+  }
+
+  @return $mdc-config;
+}
+
+// Converts an MDC typography level config to an Angular Material one.
+@function mat-typography-config-level-from-mdc($mdc-level) {
+  @return mat-typography-level(
+      map-get($mdc-typography-styles, font-size),
+      map-get($mdc-typography-styles, line-height),
+      map-get($mdc-typography-styles, font-weight),
+      map-get($mdc-typography-styles, font-family),
+      map-get($mdc-typography-styles, letter-spacing));
+}
+
+// Converts an MDC typography config to an Angular Material one.
+@function mat-typography-config-from-mdc() {
+  $mat-config: ();
+
+  @each $mat-level, $mdc-level in map-get($mat-typography-level-mappings, mat-to-mdc) {
+    $mat-config: map-merge($mat-config, mat-typography-config-from-mdc($mdc-level));
+  }
+
+  @return $mat-config;
+}
+
+// Configures MDC's global variables to reflect the given theme, applies the given styles,
+// then resets the global variables to prevent unintended side effects.
+@mixin mat-using-mdc-theme($theme) {
+  $primary: mat-color(map-get($theme, primary));
+  $accent: mat-color(map-get($theme, accent));
+  $warn: mat-color(map-get($theme, warn));
+  $background: mat-color(map-get($theme, background), background);
+
+  // Save the original values.
+  $orig-mdc-theme-primary: $mdc-theme-primary;
+  $orig-mdc-theme-on-primary: $mdc-theme-on-primary;
+  $orig-mdc-theme-secondary: $mdc-theme-secondary;
+  $orig-mdc-theme-on-secondary: $mdc-theme-on-secondary;
+  $orig-mdc-theme-background: $mdc-theme-background;
+  $orig-mdc-theme-surface: $mdc-theme-surface;
+  $orig-mdc-theme-on-surface: $mdc-theme-on-surface;
+  $orig-mdc-theme-error: $mdc-theme-error;
+  $orig-mdc-theme-on-error: $mdc-theme-on-error;
+  $orig-mdc-theme-property-values: $mdc-theme-property-values;
+
+  // Set new values based on the given Angular Material theme.
+  $mdc-theme-primary: $primary !global;
+  $mdc-theme-on-primary:
+      if(mdc-theme-contrast-tone($mdc-theme-primary) == 'dark', #000, #fff) !global;
+  $mdc-theme-secondary: $accent !global;
+  $mdc-theme-on-secondary:
+      if(mdc-theme-contrast-tone($mdc-theme-secondary) == 'dark', #000, #fff) !global;
+  $mdc-theme-background: $background !global;
+  $mdc-theme-surface: $background !global;
+  $mdc-theme-on-surface:
+      if(mdc-theme-contrast-tone($mdc-theme-surface) == 'dark', #000, #fff) !global;
+  $mdc-theme-error: $warn !global;
+  $mdc-theme-on-error: if(mdc-theme-contrast-tone($mdc-theme-error) == 'dark', #000, #fff) !global;
+  $mdc-theme-property-values: (
+      // Primary
+      primary: $mdc-theme-primary,
+      // Secondary
+      secondary: $mdc-theme-secondary,
+      // Background
+      background: $mdc-theme-background,
+      // Surface
+      surface: $mdc-theme-surface,
+      // Error
+      error: $mdc-theme-error,
+      on-primary: $mdc-theme-on-primary,
+      on-secondary: $mdc-theme-on-secondary,
+      on-surface: $mdc-theme-on-surface,
+      on-error: $mdc-theme-on-error,
+      // Text-primary on "background" background
+      text-primary-on-background: mdc-theme-ink-color-for-fill_(primary, $mdc-theme-background),
+      text-secondary-on-background: mdc-theme-ink-color-for-fill_(secondary, $mdc-theme-background),
+      text-hint-on-background: mdc-theme-ink-color-for-fill_(hint, $mdc-theme-background),
+      text-disabled-on-background: mdc-theme-ink-color-for-fill_(disabled, $mdc-theme-background),
+      text-icon-on-background: mdc-theme-ink-color-for-fill_(icon, $mdc-theme-background),
+      // Text-primary on "light" background
+      text-primary-on-light: mdc-theme-ink-color-for-fill_(primary, light),
+      text-secondary-on-light: mdc-theme-ink-color-for-fill_(secondary, light),
+      text-hint-on-light: mdc-theme-ink-color-for-fill_(hint, light),
+      text-disabled-on-light: mdc-theme-ink-color-for-fill_(disabled, light),
+      text-icon-on-light: mdc-theme-ink-color-for-fill_(icon, light),
+      // Text-primary on "dark" background
+      text-primary-on-dark: mdc-theme-ink-color-for-fill_(primary, dark),
+      text-secondary-on-dark: mdc-theme-ink-color-for-fill_(secondary, dark),
+      text-hint-on-dark: mdc-theme-ink-color-for-fill_(hint, dark),
+      text-disabled-on-dark: mdc-theme-ink-color-for-fill_(disabled, dark),
+      text-icon-on-dark: mdc-theme-ink-color-for-fill_(icon, dark)
+  ) !global;
+
+  // Apply given rules.
+  @content;
+
+  // Reset the original values.
+  $mdc-theme-primary: $orig-mdc-theme-primary !global;
+  $mdc-theme-on-primary: $orig-mdc-theme-on-primary !global;
+  $mdc-theme-secondary: $orig-mdc-theme-secondary !global;
+  $mdc-theme-on-secondary: $orig-mdc-theme-on-secondary !global;
+  $mdc-theme-background: $orig-mdc-theme-background !global;
+  $mdc-theme-surface: $orig-mdc-theme-surface !global;
+  $mdc-theme-on-surface: $orig-mdc-theme-on-surface !global;
+  $mdc-theme-error: $orig-mdc-theme-error !global;
+  $mdc-theme-on-error: $orig-mdc-theme-on-error !global;
+  $mdc-theme-property-values: $orig-mdc-theme-property-values !global;
+}
+
+// Configures MDC's global variables to reflect the given typography config,
+// applies the given styles, then resets the global variables to prevent unintended side effects.
+@mixin mat-using-mdc-typography($config) {
+  // Save the original values.
+  $orig-mdc-typography-styles: $mdc-typography-styles;
+
+  // Set new values based on the given Angular Material typography configuration.
+  $mdc-typography-styles: mat-typography-config-to-mdc($config) !global;
+
+  // Apply given rules.
+  @content;
+
+  // Reset the original values.
+  $mdc-typography-styles: $orig-mdc-typography-styles !global;
+}

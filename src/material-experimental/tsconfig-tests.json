@@ -13,7 +13,6 @@
     "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
     "emitDecoratorMetadata": true,
-    "fullTemplateTypeCheck": true,
 
     // Unset options inherited from tsconfig-build
     "annotateForClosureCompiler": false,
@@ -21,7 +20,8 @@
     "flatModuleId": null,
   },
   "include": [
-    "**/*.spec.ts",
-    "index.ts"
+    // Include the index.ts for each secondary entry-point
+    "./*/index.ts",
+    "**/*.spec.ts"
   ]
 }

@@ -27,7 +27,8 @@
       "@angular/material/*": ["./material/*"],
       "@angular/cdk-experimental": ["./cdk-experimental"],
       "@angular/cdk-experimental/*": ["./cdk-experimental/*"],
-      "@angular/material-experimental": ["./material-experimental"]
+      "@angular/material-experimental": ["./material-experimental"],
+      "@angular/material-experimental/*": ["./material-experimental/*"]
     }
   },
   "files": [

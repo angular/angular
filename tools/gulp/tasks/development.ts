@@ -40,6 +40,7 @@ const appVendors = [
   'moment',
   'tslib',
   '@webcomponents',
+  '@material',
 ];
 
 /** Glob that matches all required vendors for the dev-app. */

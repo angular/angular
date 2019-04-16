@@ -10,7 +10,8 @@
       "@angular/material": ["../lib/public_api"],
       "@angular/cdk-experimental": ["../cdk-experimental"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
-      "@angular/material-experimental": ["../material-experimental"]
+      "@angular/material-experimental": ["../material-experimental"],
+      "@angular/material-experimental/*": ["../material-experimental/*"]
     }
   },
   "include": ["./**/*.ts"]

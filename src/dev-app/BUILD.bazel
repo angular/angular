@@ -25,6 +25,7 @@ ng_module(
     "@npm//@angular/platform-browser-dynamic",
     "@npm//@angular/router",
     "@npm//rxjs",
+    "//src/material-experimental/mdc-checkbox",
     "//src/material-examples:examples",
   ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS
 )
@@ -32,7 +33,12 @@ ng_module(
 sass_binary(
   name = "theme",
   src = "theme.scss",
+  include_paths = [
+    "external/npm/node_modules",
+  ],
   deps = [
-    "//src/lib/core:all_themes"
+    "//src/lib/core:all_themes",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    "//src/material-experimental/mdc-checkbox:checkbox_scss_lib",
   ]
 )

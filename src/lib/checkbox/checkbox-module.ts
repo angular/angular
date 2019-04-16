@@ -13,10 +13,22 @@ import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatCheckbox} from './checkbox';
 import {MatCheckboxRequiredValidator} from './checkbox-required-validator';
 
+/** This module is used by both original and MDC-based checkbox implementations. */
+@NgModule({
+  exports: [MatCheckboxRequiredValidator],
+  declarations: [MatCheckboxRequiredValidator],
+})
+// tslint:disable-next-line:class-name
+export class _MatCheckboxRequiredValidatorModule {
+}
 
 @NgModule({
-  imports: [CommonModule, MatRippleModule, MatCommonModule, ObserversModule],
-  exports: [MatCheckbox, MatCheckboxRequiredValidator, MatCommonModule],
-  declarations: [MatCheckbox, MatCheckboxRequiredValidator],
+  imports: [
+    CommonModule, MatRippleModule, MatCommonModule, ObserversModule,
+    _MatCheckboxRequiredValidatorModule
+  ],
+  exports: [MatCheckbox, MatCommonModule, _MatCheckboxRequiredValidatorModule],
+  declarations: [MatCheckbox],
 })
-export class MatCheckboxModule {}
+export class MatCheckboxModule {
+}

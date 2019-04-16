@@ -15,6 +15,12 @@ const buildVersion = packageJson.version;
  */
 const angularVersion = packageJson.requiredAngularVersion;
 
+/**
+ * Required MDC Web version for all Angular Material packages. This version will be used
+ * as the peer dependency version for MDC Web in all release packages that require MDC Web.
+ */
+const mdcVersion = packageJson.requiredMDCVersion;
+
 /** License that will be placed inside of all created bundles. */
 const buildLicense = `/**
  * @license
@@ -27,6 +33,7 @@ const buildLicense = `/**
 module.exports = {
   projectVersion: buildVersion,
   angularVersion: angularVersion,
+  mdcVersion: mdcVersion,
   projectDir: __dirname,
   packagesDir: join(__dirname, 'src'),
   outputDir: join(__dirname, 'dist'),

@@ -1,0 +1,49 @@
+@import '@material/checkbox/functions';
+@import '@material/checkbox/mixins';
+@import '@material/form-field/mixins';
+@import '@material/ripple/variables';
+@import '../mdc-helpers/mdc-helpers';
+
+@include mdc-checkbox-without-ripple($query: $mat-base-styles-query);
+@include mdc-form-field-core-styles($query: $mat-base-styles-query);
+
+.mat-mdc-checkbox {
+  // The MDC checkbox styles related to the hover state are intertwined with the MDC ripple styles.
+  // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
+  // additional styles to restore the hover state.
+  .mdc-checkbox:hover
+      .mdc-checkbox__native-control:not([disabled]) ~ .mdc-checkbox__background::before {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+    transform: scale(2.75, 2.75);
+    transition: mdc-checkbox-transition-enter(opacity, 0, 80ms),
+                mdc-checkbox-transition-enter(transform, 0, 80ms);
+  }
+
+  .mdc-checkbox:hover .mdc-checkbox__native-control:focus ~ .mdc-checkbox__background::before {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, hover) +
+                 map-get($mdc-ripple-dark-ink-opacities, focus);
+  }
+
+  // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
+  // style it appropriately.
+  .mat-ripple-element {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+  }
+
+  // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
+  // TODO(mmalerba): Look into using MDC's Sass queries to separate the animation styles and
+  //  conditionally add them. Consider the size cost when deciding whether to switch.
+  &._mat-animation-noopable {
+    *,
+    *::before {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  // The MDC styles result in extra padding if the label is present but empty. To fix this we hide
+  // the label when it is empty.
+  label:empty {
+    display: none;
+  }
+}

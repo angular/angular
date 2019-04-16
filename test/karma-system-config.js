@@ -1,13 +1,44 @@
 // Configure the base path and map the different node packages.
 System.config({
   baseURL: '/base',
-  paths: {
-    'node:*': 'node_modules/*'
-  },
+  paths: {'node:*': 'node_modules/*'},
   map: {
     'rxjs': 'node:rxjs',
     'tslib': 'node:tslib/tslib.js',
     'moment': 'node:moment/min/moment-with-locales.min.js',
+
+    // MDC Web
+    '@material/animation': 'node:@material/animation/dist/mdc.animation.js',
+    '@material/auto-init': 'node:@material/auto-init/dist/mdc.autoInit.js',
+    '@material/base': 'node:@material/base/dist/mdc.base.js',
+    '@material/checkbox': 'node:@material/checkbox/dist/mdc.checkbox.js',
+    '@material/chips': 'node:@material/chips/dist/mdc.chips.js',
+    '@material/dialog': 'node:@material/dialog/dist/mdc.dialog.js',
+    '@material/dom': 'node:@material/dom/dist/mdc.dom.js',
+    '@material/drawer': 'node:@material/drawer/dist/mdc.drawer.js',
+    '@material/floating-label': 'node:@material/floating-label/dist/mdc.floatingLabel.js',
+    '@material/form-field': 'node:@material/form-field/dist/mdc.formField.js',
+    '@material/grid-list': 'node:@material/grid-list/dist/mdc.gridList.js',
+    '@material/icon-button': 'node:@material/icon-button/dist/mdc.iconButton.js',
+    '@material/line-ripple': 'node:@material/line-ripple/dist/mdc.lineRipple.js',
+    '@material/linear-progress': 'node:@material/linear-progress/dist/mdc.linearProgress.js',
+    '@material/list': 'node:@material/list/dist/mdc.list.js',
+    '@material/menu': 'node:@material/menu/dist/mdc.menu.js',
+    '@material/menu-surface': 'node:@material/menu-surface/dist/mdc.menuSurface.js',
+    '@material/notched-outline': 'node:@material/notched-outline/dist/mdc.notchedOutline.js',
+    '@material/radio': 'node:@material/radio/dist/mdc.radio.js',
+    '@material/ripple': 'node:@material/ripple/dist/mdc.ripple.js',
+    '@material/select': 'node:@material/select/dist/mdc.select.js',
+    '@material/slider': 'node:@material/slider/dist/mdc.slider.js',
+    '@material/snackbar': 'node:@material/snackbar/dist/mdc.snackbar.js',
+    '@material/switch': 'node:@material/switch/dist/mdc.switch.js',
+    '@material/tab': 'node:@material/tab/dist/mdc.tab.js',
+    '@material/tab-bar': 'node:@material/tab-bar/dist/mdc.tabBar.js',
+    '@material/tab-indicator': 'node:@material/tab-indicator/dist/mdc.tabIndicator.js',
+    '@material/tab-scroller': 'node:@material/tab-scroller/dist/mdc.tabScroller.js',
+    '@material/text-field': 'node:@material/textfield/dist/mdc.textField.js',
+    '@material/toolbar': 'node:@material/toolbar/dist/mdc.toolbar.js',
+    '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js',
 
     // Angular specific mappings.
     '@angular/core': 'node:@angular/core/bundles/core.umd.js',
@@ -23,15 +54,15 @@ System.config({
     '@angular/animations': 'node:@angular/animations/bundles/animations.umd.min.js',
     '@angular/animations/browser': 'node:@angular/animations/bundles/animations-browser.umd.min.js',
     '@angular/platform-browser/animations':
-      'node:@angular/platform-browser/bundles/platform-browser-animations.umd.min.js',
+        'node:@angular/platform-browser/bundles/platform-browser-animations.umd.min.js',
     '@angular/platform-browser':
-      'node:@angular/platform-browser/bundles/platform-browser.umd.min.js',
+        'node:@angular/platform-browser/bundles/platform-browser.umd.min.js',
     '@angular/platform-browser/testing':
-      'node:@angular/platform-browser/bundles/platform-browser-testing.umd.min.js',
+        'node:@angular/platform-browser/bundles/platform-browser-testing.umd.min.js',
     '@angular/platform-browser-dynamic':
-      'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.min.js',
+        'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.min.js',
     '@angular/platform-browser-dynamic/testing':
-      'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.min.js',
+        'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.min.js',
 
     // Path mappings for local packages that can be imported inside of tests.
     '@angular/material': 'dist/packages/material/index.js',
@@ -97,6 +128,11 @@ System.config({
     '@angular/material/toolbar': 'dist/packages/material/toolbar/index.js',
     '@angular/material/tooltip': 'dist/packages/material/tooltip/index.js',
     '@angular/material/tree': 'dist/packages/material/tree/index.js',
+
+    '@angular/material-experimental/mdc-checkbox':
+        'dist/packages/material-experimental/mdc-checkbox/index.js',
+    '@angular/material-experimental/mdc-helpers':
+        'dist/packages/material-experimental/mdc-helpers/index.js',
   },
   packages: {
     // Thirdparty barrels.
@@ -105,8 +141,6 @@ System.config({
 
     // Set the default extension for the root package, because otherwise the tests can't
     // be built within the production mode. Due to missing file extensions.
-    '.': {
-      defaultExtension: 'js'
-    }
+    '.': {defaultExtension: 'js'}
   }
 });

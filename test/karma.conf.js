@@ -7,24 +7,25 @@ module.exports = config => {
     frameworks: ['jasmine'],
     middleware: ['fake-url'],
     plugins: [
-      require('karma-jasmine'),
-      require('karma-browserstack-launcher'),
-      require('karma-sauce-launcher'),
-      require('karma-chrome-launcher'),
-      require('karma-firefox-launcher'),
-      require('karma-sourcemap-loader'),
-      {'middleware:fake-url': ['factory', function() {
-        // Middleware that avoids triggering 404s during tests that need to reference
-        // image paths. Assumes that the image path will start with `/$`.
-        return function(request, response, next) {
-          if (request.url.indexOf('/$') === 0) {
-            response.writeHead(200);
-            return response.end();
-          }
+      require('karma-jasmine'), require('karma-browserstack-launcher'),
+      require('karma-sauce-launcher'), require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'), require('karma-sourcemap-loader'), {
+        'middleware:fake-url': [
+          'factory',
+          function() {
+            // Middleware that avoids triggering 404s during tests that need to reference
+            // image paths. Assumes that the image path will start with `/$`.
+            return function(request, response, next) {
+              if (request.url.indexOf('/$') === 0) {
+                response.writeHead(200);
+                return response.end();
+              }
 
-          next();
-        }
-      }]}
+              next();
+            }
+          }
+        ]
+      }
     ],
     files: [
       {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
@@ -37,7 +38,12 @@ module.exports = config => {
       {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
       {pattern: 'node_modules/hammerjs/hammer.min.js', included: true, watched: false},
-      {pattern: 'node_modules/moment/min/moment-with-locales.min.js', included: false, watched: false},
+      {
+        pattern: 'node_modules/moment/min/moment-with-locales.min.js',
+        included: false,
+        watched: false
+      },
+      {pattern: 'node_modules/@material/*/dist/*.js', included: true, watched: false},
 
       // Include all Angular dependencies
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
@@ -47,7 +53,11 @@ module.exports = config => {
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
       // Include a Material theme in the test suite.
-      {pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css', included: true, watched: true},
+      {
+        pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css',
+        included: true,
+        watched: true
+      },
 
       // Includes all package tests and source files into karma. Those files will be watched.
       // This pattern also matches all sourcemap files and TypeScript files for debugging.
@@ -56,9 +66,7 @@ module.exports = config => {
 
     customLaunchers: customLaunchers,
 
-    preprocessors: {
-      'dist/packages/**/*.js': ['sourcemap']
-    },
+    preprocessors: {'dist/packages/**/*.js': ['sourcemap']},
 
     reporters: ['dots'],
     autoWatch: false,
@@ -90,10 +98,7 @@ module.exports = config => {
     // Try Websocket for a faster transmission first. Fallback to polling if necessary.
     transports: ['websocket', 'polling'],
 
-    browserConsoleLogOptions: {
-      terminal: true,
-      level: 'log'
-    },
+    browserConsoleLogOptions: {terminal: true, level: 'log'},
 
     client: {
       jasmine: {

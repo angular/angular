@@ -26,14 +26,15 @@
     "target": "es2015",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
-    "types": [],
+    "types": ["jasmine", "tslib"],
     "paths": {
       "@angular/material/*": ["../../dist/packages/material/*"],
       "@angular/material": ["../../dist/packages/material"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
       "@angular/cdk": ["../../dist/packages/cdk"],
       "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
-      "@angular/cdk-experimental": ["../../dist/packages/cdk-experimental"]
+      "@angular/cdk-experimental": ["../../dist/packages/cdk-experimental"],
+      "@angular/material-experimental/*": ["../../dist/packages/material-experimental/*"]
     }
   },
   "files": [

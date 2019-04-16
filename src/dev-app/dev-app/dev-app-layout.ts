@@ -69,6 +69,7 @@ export class DevAppLayout {
     {name: 'Tree', route: '/tree'},
     {name: 'Typography', route: '/typography'},
     {name: 'Virtual Scrolling', route: '/virtual-scroll'},
+    {name: 'MDC Checkbox', route: '/mdc-checkbox'},
   ];
 
   constructor(

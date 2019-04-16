@@ -8,20 +8,38 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatCheckboxModule, MatPseudoCheckboxModule} from '@angular/material';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  MatCheckboxModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatPseudoCheckboxModule,
+  MatSelectModule
+} from '@angular/material';
 import {RouterModule} from '@angular/router';
-import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from './checkbox-demo';
+import {
+  AnimationsNoop,
+  CheckboxDemo,
+  ClickActionCheck,
+  ClickActionNoop,
+  MatCheckboxDemoNestedChecklist
+} from './checkbox-demo';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     MatPseudoCheckboxModule,
+    ReactiveFormsModule,
     RouterModule.forChild([{path: '', component: CheckboxDemo}]),
   ],
-  declarations: [CheckboxDemo, MatCheckboxDemoNestedChecklist],
+  declarations: [
+    CheckboxDemo, MatCheckboxDemoNestedChecklist, ClickActionCheck, ClickActionNoop, AnimationsNoop
+  ],
 })
 export class CheckboxDemoModule {
 }

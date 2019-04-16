@@ -1,0 +1,56 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
+load("//tools:defaults.bzl", "ng_module")
+load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
+
+ng_module(
+  name = "mdc-helpers",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material-experimental/mdc-helpers",
+  assets = glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/core",
+  ] + CDK_TARGETS + MATERIAL_TARGETS,
+)
+
+# Add all MDC Sass files that we depend on here.
+# TODO(mmalerba): Find a less tedious way to do this...
+sass_library(
+  name = "mdc_scss_deps_lib",
+  srcs = [
+    "@npm//node_modules/@material/animation:_functions.scss",
+    "@npm//node_modules/@material/animation:_variables.scss",
+    "@npm//node_modules/@material/base:_mixins.scss",
+    "@npm//node_modules/@material/checkbox:_functions.scss",
+    "@npm//node_modules/@material/checkbox:_keyframes.scss",
+    "@npm//node_modules/@material/checkbox:_mixins.scss",
+    "@npm//node_modules/@material/checkbox:_variables.scss",
+    "@npm//node_modules/@material/feature-targeting:_functions.scss",
+    "@npm//node_modules/@material/feature-targeting:_mixins.scss",
+    "@npm//node_modules/@material/feature-targeting:_variables.scss",
+    "@npm//node_modules/@material/form-field:_mixins.scss",
+    "@npm//node_modules/@material/form-field:_variables.scss",
+    "@npm//node_modules/@material/ripple:_functions.scss",
+    "@npm//node_modules/@material/ripple:_keyframes.scss",
+    "@npm//node_modules/@material/ripple:_mixins.scss",
+    "@npm//node_modules/@material/ripple:_variables.scss",
+    "@npm//node_modules/@material/rtl:_mixins.scss",
+    "@npm//node_modules/@material/theme:_constants.scss",
+    "@npm//node_modules/@material/theme:_functions.scss",
+    "@npm//node_modules/@material/theme:_mixins.scss",
+    "@npm//node_modules/@material/theme:_variables.scss",
+    "@npm//node_modules/@material/typography:_functions.scss",
+    "@npm//node_modules/@material/typography:_mixins.scss",
+    "@npm//node_modules/@material/typography:_variables.scss",
+  ],
+)
+
+sass_library(
+  name = "mdc_helpers_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = [
+    ":mdc_scss_deps_lib",
+    "//src/lib/core:core_scss_lib",
+  ],
+)

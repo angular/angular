@@ -1,0 +1,39 @@
+<div class="mdc-form-field"
+     [class.mdc-form-field--align-end]="labelPosition == 'before'">
+  <div #checkbox
+       class="mdc-checkbox"
+       (click)="_activateRipple()">
+    <input #nativeCheckbox
+           type="checkbox"
+           [ngClass]="_classes"
+           [attr.aria-checked]="_getAriaChecked()"
+           [attr.aria-label]="ariaLabel || null"
+           [attr.aria-labelledby]="ariaLabelledby"
+           [attr.name]="name"
+           [attr.value]="value"
+           [checked]="checked"
+           [disabled]="disabled"
+           [indeterminate]="indeterminate"
+           [id]="inputId"
+           [required]="required"
+           [tabIndex]="tabIndex"
+           (blur)="_onBlur()"
+           (click)="_onClick()"
+           (change)="$event.stopPropagation()"/>
+    <div class="mdc-checkbox__background">
+      <svg class="mdc-checkbox__checkmark"
+           focusable="false"
+           viewBox="0 0 24 24">
+        <path class="mdc-checkbox__checkmark-path"
+              fill="none"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+      </svg>
+      <div class="mdc-checkbox__mixedmark"></div>
+    </div>
+  </div>
+  <label #label
+         [for]="inputId"
+         (click)="$event.stopPropagation()">
+    <ng-content></ng-content>
+  </label>
+</div>

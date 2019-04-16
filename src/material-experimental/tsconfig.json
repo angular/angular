@@ -10,7 +10,7 @@
       "@angular/material/*": ["../lib/*"],
       "@angular/material": ["../lib/public-api.ts"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
-      "@angular/cdk-experimental": ["../cdk-experimental/public-api.ts"]
+      "@material/*": ["../../node_modules/@material/*/index.d.ts"]
     }
   },
   "include": ["./**/*.ts"]
