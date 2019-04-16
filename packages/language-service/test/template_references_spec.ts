@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completions, Diagnostic, Diagnostics, LanguageService} from '../src/types';
+import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
