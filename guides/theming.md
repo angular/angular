@@ -211,6 +211,43 @@ $candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
 @include mat-checkbox-theme($candy-app-theme);
 ```
 
+#### Changing styles at run-time
+
+##### Toggling classes
+You can use the mixins described above to define styles to customize any part of your application
+with standard CSS selectors. For example, let's say you want to toggle alternate colors on a button.
+You would first define a CSS class with the alternate colors.
+```scss
+.alternate-button {
+  @include mat-button-theme($alternate-theme);
+}
+```
+
+Then you can use normal Angular class bindings to toggle the alternate styles.
+```html
+<div [class.alternate-button]="isAlternateMode">
+  <button mat-button>Save changes</button>
+</div>
+```
+
+You can use this approach to style any component inside of the region marked with the custom
+CSS class.
+
+##### Swapping CSS files
+
+If you want to completely swap a theme without including all of the styles at once, you
+can swap the loaded theme file. The details will depend on your application, but the general
+idea looks like this:
+
+```html
+<link id="themeAsset" rel="stylesheet" href="/path/to/my/theme-name.css">
+```
+```ts
+function changeTheme(themeName) {
+  document.getElementById('themeAsset').href = `/path/to/my/${themeName}.css`;
+}
+```
+
 ### Theming your own components
 For more details about theming your own components,
 see [theming-your-components.md](./theming-your-components.md).
