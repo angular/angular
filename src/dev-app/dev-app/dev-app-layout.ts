@@ -69,7 +69,13 @@ export class DevAppLayout {
     {name: 'Tree', route: '/tree'},
     {name: 'Typography', route: '/typography'},
     {name: 'Virtual Scrolling', route: '/virtual-scroll'},
+    {name: 'MDC Button', route: '/mdc-button'},
+    {name: 'MDC Card', route: '/mdc-card'},
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},
+    {name: 'MDC Menu', route: '/mdc-menu'},
+    {name: 'MDC Radio', route: '/mdc-radio'},
+    {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
+
   ];
 
   constructor(

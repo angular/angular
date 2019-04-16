@@ -84,8 +84,13 @@
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn
+/src/material-experimental/mdc-button/**           @mmalerba # Note to implementer: please repossess
+/src/material-experimental/mdc-card/**             @mmalerba # Note to implementer: please repossess
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
+/src/material-experimental/mdc-menu/**             @mmalerba # Note to implementer: please repossess
+/src/material-experimental/mdc-radio/**            @mmalerba # Note to implementer: please repossess
+/src/material-experimental/mdc-slide-toggle/**     @mmalerba # Note to implementer: please repossess
 
 # CDK experimental package
 /src/cdk-experimental/**                           @jelbourn
@@ -128,7 +133,12 @@
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/list/**                               @jelbourn @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn
+/src/dev-app/mdc-button/**                         @mmalerba # Note to implementer: please repossess
+/src/dev-app/mdc-card/**                           @mmalerba # Note to implementer: please repossess
 /src/dev-app/mdc-checkbox/**                       @mmalerba
+/src/dev-app/mdc-menu/**                           @mmalerba # Note to implementer: please repossess
+/src/dev-app/mdc-radio/**                          @mmalerba # Note to implementer: please repossess
+/src/dev-app/mdc-slide-toggle/**                   @mmalerba # Note to implementer: please repossess
 /src/dev-app/menu/**                               @crisbeto
 /src/dev-app/overlay/**                            @jelbourn @crisbeto
 /src/dev-app/paginator/**                          @andrewseguin
@@ -167,7 +177,12 @@
 /e2e/components/icon-e2e.spec.ts                   @jelbourn
 /e2e/components/input-e2e.spec.ts                  @mmalerba
 /e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto @devversion
+/e2e/components/mdc-button-e2e.spec.ts             @mmalerba # Note to implementer: please repossess
+/e2e/components/mdc-card-e2e.spec.ts               @mmalerba # Note to implementer: please repossess
 /e2e/components/mdc-checkbox-e2e.spec.ts           @mmalerba
+/e2e/components/mdc-menu-e2e.spec.ts               @mmalerba # Note to implementer: please repossess
+/e2e/components/mdc-radio-e2e.spec.ts              @mmalerba # Note to implementer: please repossess
+/e2e/components/mdc-slide-toggle-e2e.spec.ts       @mmalerba # Note to implementer: please repossess
 /e2e/components/menu-e2e.spec.ts                   @crisbeto
 /e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
 /e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
@@ -193,7 +208,12 @@
 /src/e2e-app/icon/**                               @jelbourn
 /src/e2e-app/input/**                              @mmalerba
 /src/e2e-app/list/**                               @jelbourn
+/src/e2e-app/mdc-button/**                         @mmalerba # Note to implementer: please repossess
+/src/e2e-app/mdc-card/**                           @mmalerba # Note to implementer: please repossess
 /src/e2e-app/mdc-checkbox/**                       @mmalerba
+/src/e2e-app/mdc-menu/**                           @mmalerba # Note to implementer: please repossess
+/src/e2e-app/mdc-radio/**                          @mmalerba # Note to implementer: please repossess
+/src/e2e-app/mdc-slide-toggle/**                   @mmalerba # Note to implementer: please repossess
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott

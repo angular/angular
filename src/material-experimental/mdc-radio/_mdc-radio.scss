@@ -1,0 +1,18 @@
+@import '../mdc-helpers/mdc-helpers';
+
+@mixin mat-radio-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    // TODO: MDC theme styles here.
+  }
+}
+
+@mixin mat-radio-typography-mdc($config) {
+  @if config {
+    @include mat-using-mdc-typography($config) {
+      // TODO: MDC typography styles here.
+    }
+  }
+  @else {
+    // TODO: MDC typography styles here.
+  }
+}

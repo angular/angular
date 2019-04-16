@@ -25,7 +25,12 @@ ng_module(
     "@npm//@angular/platform-browser-dynamic",
     "@npm//@angular/router",
     "@npm//rxjs",
+    "//src/material-experimental/mdc-button",
+    "//src/material-experimental/mdc-card",
     "//src/material-experimental/mdc-checkbox",
+    "//src/material-experimental/mdc-menu",
+    "//src/material-experimental/mdc-radio",
+    "//src/material-experimental/mdc-slide-toggle",
     "//src/material-examples:examples",
   ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS
 )
@@ -39,6 +44,11 @@ sass_binary(
   deps = [
     "//src/lib/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+    "//src/material-experimental/mdc-button:button_scss_lib",
+    "//src/material-experimental/mdc-card:card_scss_lib",
     "//src/material-experimental/mdc-checkbox:checkbox_scss_lib",
+    "//src/material-experimental/mdc-menu:menu_scss_lib",
+    "//src/material-experimental/mdc-radio:radio_scss_lib",
+    "//src/material-experimental/mdc-slide-toggle:slide_toggle_scss_lib",
   ]
 )

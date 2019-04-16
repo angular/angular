@@ -129,10 +129,20 @@ System.config({
     '@angular/material/tooltip': 'dist/packages/material/tooltip/index.js',
     '@angular/material/tree': 'dist/packages/material/tree/index.js',
 
+    '@angular/material-experimental/mdc-button':
+        'dist/packages/material-experimental/mdc-button/index.js',
+    '@angular/material-experimental/mdc-card':
+        'dist/packages/material-experimental/mdc-card/index.js',
     '@angular/material-experimental/mdc-checkbox':
         'dist/packages/material-experimental/mdc-checkbox/index.js',
     '@angular/material-experimental/mdc-helpers':
         'dist/packages/material-experimental/mdc-helpers/index.js',
+    '@angular/material-experimental/mdc-menu':
+        'dist/packages/material-experimental/mdc-menu/index.js',
+    '@angular/material-experimental/mdc-radio':
+        'dist/packages/material-experimental/mdc-radio/index.js',
+    '@angular/material-experimental/mdc-slide-toggle':
+        'dist/packages/material-experimental/mdc-slide-toggle/index.js',
   },
   packages: {
     // Thirdparty barrels.

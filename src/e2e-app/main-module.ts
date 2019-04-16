@@ -18,7 +18,12 @@ import {GridListE2eModule} from './grid-list/grid-list-e2e-module';
 import {IconE2eModule} from './icon/icon-e2e-module';
 import {InputE2eModule} from './input/input-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
+import {MdcButtonE2eModule} from './mdc-button/mdc-button-e2e-module';
+import {MdcCardE2eModule} from './mdc-card/mdc-card-e2e-module';
 import {MdcCheckboxE2eModule} from './mdc-checkbox/mdc-checkbox-e2e-module';
+import {MdcMenuE2eModule} from './mdc-menu/mdc-menu-e2e-module';
+import {MdcRadioE2eModule} from './mdc-radio/mdc-radio-e2e-module';
+import {MdcSlideToggleE2eModule} from './mdc-slide-toggle/mdc-slide-toggle-e2e-module';
 import {MenuE2eModule} from './menu/menu-e2e-module';
 import {ProgressBarE2eModule} from './progress-bar/progress-bar-e2e-module';
 import {ProgressSpinnerE2eModule} from './progress-spinner/progress-spinner-e2e-module';
@@ -49,7 +54,12 @@ import {VirtualScrollE2eModule} from './virtual-scroll/virtual-scroll-e2e-module
     IconE2eModule,
     InputE2eModule,
     ListE2eModule,
+    MdcButtonE2eModule,
+    MdcCardE2eModule,
     MdcCheckboxE2eModule,
+    MdcMenuE2eModule,
+    MdcRadioE2eModule,
+    MdcSlideToggleE2eModule,
     MenuE2eModule,
     ProgressBarE2eModule,
     ProgressSpinnerE2eModule,
