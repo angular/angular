@@ -209,7 +209,7 @@ Learn more in the [Testing](guide/testing) guide.
 
 ## Services that need other services 
 
-Service can have their own dependencies. `HeroService` is very simple and doesn't have any dependencies of its own. Suppose, however, that you want it to report its activities through a logging service. You can apply the same *constructor injection* pattern,
+Services can have their own dependencies. `HeroService` is very simple and doesn't have any dependencies of its own. Suppose, however, that you want it to report its activities through a logging service. You can apply the same *constructor injection* pattern,
 adding a constructor that takes a `Logger` parameter.
 
 Here is the revised `HeroService` that injects `Logger`, side by side with the previous service for comparison.
