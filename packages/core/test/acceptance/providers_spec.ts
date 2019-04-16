@@ -6,12 +6,54 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable} from '@angular/core';
+import {Component, Directive, Inject, Injectable, InjectionToken} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
 
-
 describe('providers', () => {
+
+  describe('inheritance', () => {
+
+    it('should NOT inherit providers', () => {
+      const SOME_DIRS = new InjectionToken('someDirs');
+
+      @Directive({
+        selector: '[super-dir]',
+        providers: [{provide: SOME_DIRS, useClass: SuperDirective, multi: true}]
+      })
+      class SuperDirective {
+      }
+
+      @Directive({
+        selector: '[sub-dir]',
+        providers: [{provide: SOME_DIRS, useClass: SubDirective, multi: true}]
+      })
+      class SubDirective extends SuperDirective {
+      }
+
+      @Directive({selector: '[other-dir]'})
+      class OtherDirective {
+        constructor(@Inject(SOME_DIRS) public dirs: any) {}
+      }
+
+      @Component({selector: 'app-comp', template: `<div other-dir sub-dir></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [SuperDirective, SubDirective, OtherDirective, App]});
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const otherDir = fixture.debugElement.query(By.css('div')).injector.get(OtherDirective);
+      expect(otherDir.dirs.length).toEqual(1);
+      expect(otherDir.dirs[0] instanceof SubDirective).toBe(true);
+    });
+
+  });
+
   describe('lifecycles', () => {
     it('should inherit ngOnDestroy hooks on providers', () => {
       const logs: string[] = [];
@@ -180,5 +222,54 @@ describe('providers', () => {
       expect(logs).toEqual(['OnDestroy Existing']);
     });
 
+  });
+
+  describe('components and directives', () => {
+
+    class MyService {
+      value = 'some value';
+    }
+
+    @Component({selector: 'my-comp', template: ``})
+    class MyComp {
+      constructor(public svc: MyService) {}
+    }
+
+    @Directive({selector: '[some-dir]'})
+    class MyDir {
+      constructor(public svc: MyService) {}
+    }
+
+    it('should support providing components in tests without @Injectable', () => {
+      @Component({selector: 'test-comp', template: '<my-comp></my-comp>'})
+      class TestComp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestComp, MyComp],
+        // providing MyComp is unnecessary but it shouldn't throw
+        providers: [MyComp, MyService],
+      });
+
+      const fixture = TestBed.createComponent(TestComp);
+      const myCompInstance = fixture.debugElement.query(By.css('my-comp')).injector.get(MyComp);
+      expect(myCompInstance.svc.value).toEqual('some value');
+    });
+
+    it('should support providing directives in tests without @Injectable', () => {
+      @Component({selector: 'test-comp', template: '<div some-dir></div>'})
+      class TestComp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestComp, MyDir],
+        // providing MyDir is unnecessary but it shouldn't throw
+        providers: [MyDir, MyService],
+      });
+
+      const fixture = TestBed.createComponent(TestComp);
+      const myCompInstance = fixture.debugElement.query(By.css('div')).injector.get(MyDir);
+      expect(myCompInstance.svc.value).toEqual('some value');
+    });
   });
 });
