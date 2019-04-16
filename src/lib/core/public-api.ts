@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export * from './version';
 export * from './animation/animation';
 export * from './common-behaviors/index';
 export * from './datetime/index';

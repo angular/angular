@@ -10,3 +10,6 @@ import { b } from "@angular/material/b";
 import { c } from "@angular/material/c";
 
 import { /* comment */ a as a3 } from "@angular/material/a";
+
+// primary entry-point export
+import { VERSION } from "@angular/material/core";

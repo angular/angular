@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './version';
 export * from '@angular/material/autocomplete';
 export * from '@angular/material/badge';
 export * from '@angular/material/bottom-sheet';

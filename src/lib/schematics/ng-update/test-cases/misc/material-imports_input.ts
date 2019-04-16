@@ -6,3 +6,6 @@ import {a as a2} from '@angular/material';
 import {c, b, a} from '@angular/material';
 
 import {/* comment */ a as a3} from '@angular/material';
+
+// primary entry-point export
+import {VERSION} from '@angular/material';

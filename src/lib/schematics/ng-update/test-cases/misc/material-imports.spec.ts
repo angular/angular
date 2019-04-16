@@ -5,10 +5,10 @@ import {join} from 'path';
 
 describe('v8 material imports', () => {
 
-  function writeSecondaryEntryPoint(materialPath: string, name: string) {
+  function writeSecondaryEntryPoint(materialPath: string, name: string, exportName = name) {
     const entryPointPath = join(materialPath, name);
     mkdirpSync(entryPointPath);
-    writeFileSync(join(entryPointPath, 'index.d.ts'), `export const ${name} = '';`);
+    writeFileSync(join(entryPointPath, 'index.d.ts'), `export const ${exportName} = '';`);
   }
 
   it('should report imports for deleted animation constants', async () => {
@@ -21,11 +21,13 @@ describe('v8 material imports', () => {
       export * from './a';
       export * from './b';
       export * from './c';
+      export * from './core';
     `);
 
     writeSecondaryEntryPoint(materialPath, 'a');
     writeSecondaryEntryPoint(materialPath, 'b');
     writeSecondaryEntryPoint(materialPath, 'c');
+    writeSecondaryEntryPoint(materialPath, 'core', 'VERSION');
 
     await runFixers();
 

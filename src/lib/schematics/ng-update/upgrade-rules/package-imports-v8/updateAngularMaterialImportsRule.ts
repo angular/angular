@@ -94,16 +94,13 @@ function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
 
     // Determine the subpackage each symbol in the namedBinding comes from.
     for (const element of declaration.importClause.namedBindings.elements) {
-      // Ensure the import specifier name is statically analyzable.
-      if (!ts.isIdentifier(element.name)) {
-        return ctx.addFailureAtNode(element, element.getText() + Rule.SYMBOL_NOT_FOUND_FAILURE_STR);
-      }
+      const elementName = element.propertyName ? element.propertyName : element.name;
 
       // Get the symbol for the named binding element. Note that we cannot determine the
       // value declaration based on the type of the element as types are not necessarily
       // specific to a given secondary entry-point (e.g. exports with the type of "string")
       // would resolve to the module types provided by TypeScript itself.
-      const symbol = getDeclarationSymbolOfNode(element.name, checker);
+      const symbol = getDeclarationSymbolOfNode(elementName, checker);
 
       // If the symbol can't be found, add failure saying the symbol
       // can't be found.
