@@ -1,7 +1,7 @@
 // When elements such as `<tr>` or `<li>` are repeated inside the cdk-virtual-scroll-viewport,
 // their container element (e.g. `<table>`, `<ul>`, etc.) needs to be placed in the viewport as
 // well. We reset some properties here to prevent these container elements from introducing
-// additional space that would throw off the the scrolling calculations.
+// additional space that would throw off the scrolling calculations.
 @mixin _cdk-virtual-scroll-clear-container-space($direction) {
   $start: if($direction == horizontal, 'left', 'top');
   $end: if($direction == horizontal, 'right', 'bottom');

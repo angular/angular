@@ -46,7 +46,7 @@ type MonitoredElementInfo = {
 
 /**
  * Event listener options that enable capturing and also
- * mark the the listener as passive if the browser supports it.
+ * mark the listener as passive if the browser supports it.
  */
 const captureEventListenerOptions = normalizePassiveListenerOptions({
   passive: true,
