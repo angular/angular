@@ -202,9 +202,11 @@ function listenerInternal(
   }
 }
 
-function executeListenerWithErrorHandling(lView: LView, listenerFn: (e?: any) => any, e: any): any {
+function executeListenerWithErrorHandling(
+    lView: LView, listenerFn: (e?: any) => any, e: any): boolean {
   try {
-    return listenerFn(e);
+    // Only explicitly returning false from a listener should preventDefault
+    return listenerFn(e) !== false;
   } catch (error) {
     handleError(lView, error);
     return false;
@@ -242,7 +244,8 @@ function wrapListener(
     // their presence and invoke as needed.
     let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
     while (nextListenerFn) {
-      result = executeListenerWithErrorHandling(lView, nextListenerFn, e);
+      // We should prevent default if any of the listeners explicitly return false
+      result = executeListenerWithErrorHandling(lView, nextListenerFn, e) && result;
       nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
     }
 
