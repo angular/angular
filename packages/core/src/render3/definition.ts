@@ -9,6 +9,7 @@
 import '../util/ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {NG_INJECTABLE_DEF, ɵɵdefineInjectable} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module';
 import {SchemaMetadata} from '../metadata/schema';
@@ -300,7 +301,17 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     def.pipeDefs = pipeTypes ?
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
+
+    // Add ngInjectableDef so components are reachable through the module injector by default
+    // (unless it has already been set by the @Injectable decorator). This is mostly to
+    // support injecting components in tests. In real application code, components should
+    // be retrieved through the node injector, so this isn't a problem.
+    if (!type.hasOwnProperty(NG_INJECTABLE_DEF)) {
+      (type as any)[NG_INJECTABLE_DEF] =
+          ɵɵdefineInjectable<T>({factory: componentDefinition.factory as() => T});
+    }
   }) as never;
+
   return def as never;
 }
 
