@@ -372,13 +372,13 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 
 ## Differential Loading
 
-When building web applications, making sure your application is compatible with the majority of browsers is a goal. Even as JavaScript continues to evolve, with new features being introduced, all browsers are not updated with support for these new features at the same pace. This is where compilation and [polyfills](guide/browser-support#polyfills) come in. The code you write in development using TypeScript is compiled and bundled into a format that is compatible with most browsers, commonly known as ES5. Polyfills are used bridge the gap, providing functionality that simply doesn't exist in some legacy browsers. 
+When building web applications, making sure your application is compatible with the majority of browsers is a goal. Even as JavaScript continues to evolve, with new features being introduced, not all browsers are updated with support for these new features at the same pace. This is where compilation and [polyfills](guide/browser-support#polyfills) come in. The code you write in development using TypeScript is compiled and bundled into a format that is compatible with most browsers, commonly known as ES5. Polyfills are used bridge the gap, providing functionality that simply doesn't exist in some legacy browsers. 
 
-There is a cost to ensure this browser compatibility, and it comes in the form of bundle size. All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't. To maximize compatibility, you ship a single bundle that includes all your transpiled code, plus any polyfills that may be needed. 
+There is a cost to ensure this browser compatibility, and it comes in the form of larger bundle size. All modern browsers support ES2015 and beyond, but in most cases, you still have to account for users accessing your application from a browser that doesn't. To maximize compatibility, you ship a single bundle that includes all your compiled code, plus any polyfills that may be needed. 
 
-Your web application shouldn't have to keep paying the penalty of increased bundle size modern browser that supports many of the latest features in JavaScript. This is where differential Loading comes into play. 
+Your web application shouldn't have to keep paying the penalty of increased bundle size when used in a modern browser that supports many of the latest features in JavaScript. This is where differential Loading comes into play. 
 
-Differential loading is a strategy where you provide two separate bundles as part of your deployed application. One bundle takes advantage of built-in support in modern browsers, ships less polyfills, resulting in a smaller bundle size. The second bundle, includes the additional transpiled code, all necessary polyfills. This strategy allows you to continue to build your web application to support multiple browsers, but only serve up the necessary code that the browsers need.
+Differential loading is a strategy where the CLI builds two separate bundles as part of your deployed application. One bundle takes advantage of built-in support in modern browsers, ships less polyfills, resulting in a smaller bundle size. The second bundle, includes the additional compiled code, all necessary polyfills. This strategy allows you to continue to build your web application to support multiple browsers, but only serve up the necessary code that the browsers need.
 
 ### Differential builds
 
@@ -386,18 +386,19 @@ The Angular CLI handles differential loading for you as part of the build proces
 
 The Angular CLI uses two configurations for differential loading.
 
-- Browserslist - The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports.
-- tsconfig.json - The `target` in the TypeScript `compilerOptions` determines the ECMAScript target version that the code is transpiled to. Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
+- Browserslist - The `browserslist` configuration file is included in your application [project structure](guide/file-structure#application-configuration-files) and provides the minimum browsers your application supports. See the [Browserslist spec](https://github.com/browserslist/browserslist) for complete configuration options.
+- tsconfig.json - The `target` in the TypeScript `compilerOptions` determines the ECMAScript target version that the code is compiled to. Modern browsers support ES2015 natively, while ES5 is more commonly used to support legacy browsers.
 
-The CLI queries the Browserslist configuration, and looks at the `target` to determine if support for legacy browsers is required. The combination of these two configurations determines the number of bundles produced when you create a build. When you create a development build and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of transpiled code. When you create a production build, the CLI uses the defined configurations above to determine the bundles to build for deployment of your application. The `index.html` is also modified duing a production build to include the script tags that enable differntial loading.
+
+The CLI queries the Browserslist configuration, and checks the `target` to determine if support for legacy browsers is required. The combination of these two configurations determines whether multiple bundles are produced when you create a build. When you create a development build and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code. When you create a production build, the CLI uses the defined configurations above to determine the bundles to build for deployment of your application. The `index.html` is also modified duing a production build to include the script tags that enable differential loading.
+
+See the [configuration table](#configuration-table) below for the configurations for enabling differential loading.
 
 ### Configuring differential loading
 
-Differential loading for creating builds is already supported and enabled with version 8 and later of the Angular CLI. You can configure how builds are produced based on the mentioned `browserslist` and `tsconfig.json` files in your application project.
+Differential loading for creating builds is already supported with version 8 and later of the Angular CLI. You can configure how builds are produced based on the mentioned `browserslist` and `tsconfig.json` files in your application project.
 
 Look at the default configuration for a newly created Angular application:
-
-<!-- BR: Can we pull these from somewhere? -->
 
 The `browserslist` looks like this:
 
@@ -438,7 +439,7 @@ The `tsconfig.json` looks like this:
 }
 ```
 
-By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces a two builds, with differential loading enabled. To see the build result for differential loading based on different configurations, refer to the table below.
+By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, with differential loading enabled. To see the build result for differential loading based on different configurations, refer to the table below.
 
 <div class="alert is-important">
 
@@ -446,7 +447,7 @@ By default, legacy browsers such as IE 9-11 are ignored, and the compilation tar
 
 </div>
 
-<!-- BR: What are the configuration combinations for browserslist to result in ES5? -->
+{@a configuration-table }
 
 | ES5 Browserslist Result | ES Target | Build Result |
 | -------- | -------- | -------- |
@@ -455,6 +456,11 @@ By default, legacy browsers such as IE 9-11 are ignored, and the compilation tar
 | Disabled | es2015  | Single build |
 | Enabled  | es2015  | Differential Loading (Two builds w/Conditional Polyfills |
 
+The `es5BrowserSupport` option in your Angular workspace configuration also let's you explicitly set whether polyfills for ES5 support are included in your bundle.
+
+- When the value is not set, the determination for ES5 polyfills is handled by the CLI.
+- When set to `true`, ES5 polyfills are included, regardless of browser.
+- When set to `false`, ES5 polyfills are excluded, regardless of browser.
 
 ### Opting out of differential loading
 
