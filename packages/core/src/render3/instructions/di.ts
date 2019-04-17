@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
+import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
@@ -40,9 +41,14 @@ export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags:
 export function ɵɵdirectiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   token = resolveForwardRef(token);
+  const lView = getLView();
+  // Fall back to inject() if view hasn't been created. This situation can happen in tests
+  // if inject utilities are used before bootstrapping.
+  if (lView == null) return ɵɵinject(token, flags);
+
   return getOrCreateInjectable<T>(
-      getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
-      getLView(), token, flags);
+      getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode, lView,
+      token, flags);
 }
 
 /**
