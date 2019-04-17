@@ -101,7 +101,7 @@ configure it with the `routes` in one step by calling
 
 ## Add _RouterOutlet_
 
-Open the `AppComponent` template replace the `<app-heroes>` element with a `<router-outlet>` element.
+Open the `AppComponent` template and replace the `<app-heroes>` element with a `<router-outlet>` element.
 
 <code-example path="toh-pt5/src/app/app.component.html" 
   region="outlet"
