@@ -27,7 +27,7 @@ interface TypeWithMetadata extends Type<any> {
 export function setClassMetadata(
     type: Type<any>, decorators: any[] | null, ctorParameters: (() => any[]) | null,
     propDecorators: {[field: string]: any} | null): void {
-  noSideEffects(() => {
+  return noSideEffects(() => {
     const clazz = type as TypeWithMetadata;
 
     // We determine whether a class has its own metadata by taking the metadata from the parent
@@ -63,5 +63,5 @@ export function setClassMetadata(
         clazz.propDecorators = propDecorators;
       }
     }
-  });
+  }) as never;
 }
