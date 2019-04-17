@@ -76,7 +76,7 @@ describe('compiler compliance: template', () => {
           const $outer1$ = $i0$.ɵɵnextContext().$implicit;
           const $myComp1$ = $i0$.ɵɵnextContext();
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "title", $i0$.ɵɵbind($myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component)));
+          $i0$.ɵɵproperty("title", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component));
           $r3$.ɵɵselect(1);
           $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " "));
         }
@@ -91,7 +91,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $myComp2$ = $i0$.ɵɵnextContext(2);
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵelementProperty(1, "ngForOf", $i0$.ɵɵbind($myComp2$.items));
+          $i0$.ɵɵproperty("ngForOf", $myComp2$.items);
         }
       }
 
@@ -104,7 +104,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $outer2$ = ctx.$implicit;
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵelementProperty(1, "ngForOf", $i0$.ɵɵbind($outer2$.items));
+          $i0$.ɵɵproperty("ngForOf", $outer2$.items);
         }
       }
       // ...
@@ -114,7 +114,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngForOf", $i0$.ɵɵbind(ctx.items));
+          $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -171,7 +171,7 @@ describe('compiler compliance: template', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "ngForOf", $r3$.ɵɵbind(ctx._data));
+            $r3$.ɵɵproperty("ngForOf", ctx._data);
           }
         }
         `;
@@ -225,7 +225,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngForOf", $i0$.ɵɵbind(ctx.items));
+          $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -285,7 +285,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $app$ = $i0$.ɵɵnextContext();
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵelementProperty(1, "ngIf", $i0$.ɵɵbind($app$.showing));
+          $i0$.ɵɵproperty("ngIf", $app$.showing);
         }
       }
 
@@ -296,7 +296,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngForOf", $i0$.ɵɵbind(ctx.items));
+          $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -356,7 +356,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $middle$ = ctx.$implicit;
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵelementProperty(1, "ngForOf", $i0$.ɵɵbind($middle$.items));
+          $i0$.ɵɵproperty("ngForOf", $middle$.items);
         }
       }
 
@@ -369,7 +369,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $outer$ = ctx.$implicit;
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵelementProperty(1, "ngForOf", $i0$.ɵɵbind($outer$.items));
+          $i0$.ɵɵproperty("ngForOf", $outer$.items);
         }
       }
       // ...
@@ -379,7 +379,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngForOf", $i0$.ɵɵbind(ctx.items));
+          $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -426,7 +426,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "boundAttr", $i0$.ɵɵbind(ctx.b));
+          $i0$.ɵɵproperty("boundAttr", ctx.b);
         }
       }`;
 
@@ -669,7 +669,7 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵpipe(1, "pipe");
         } if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngIf", $i0$.ɵɵbind($i0$.ɵɵpipeBind1(1, 1, ctx.val)));
+          $i0$.ɵɵproperty("ngIf", $i0$.ɵɵpipeBind1(1, 1, ctx.val));
         }
       }`;
 
