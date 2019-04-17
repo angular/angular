@@ -123,6 +123,8 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵɵpipeBindV', moduleName: CORE};
 
+  static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
+
   static i18n: o.ExternalReference = {name: 'ɵɵi18n', moduleName: CORE};
   static i18nAttributes: o.ExternalReference = {name: 'ɵɵi18nAttributes', moduleName: CORE};
   static i18nExp: o.ExternalReference = {name: 'ɵɵi18nExp', moduleName: CORE};

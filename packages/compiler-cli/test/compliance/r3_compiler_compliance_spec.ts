@@ -317,7 +317,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "id", $r3$.ɵɵbind(ctx.id));
+            $r3$.ɵɵproperty("id", ctx.id);
           }
         }
       `;
@@ -354,6 +354,14 @@ describe('compiler compliance', () => {
         }
       };
 
+      ///////////////
+      // TODO(FW-1273): The code generated below is adding extra parens, and we need to stop
+      // generating those.
+      //
+      // For example:
+      // `$r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));`
+      ///////////////
+
       const $e0_attrs$ = [];
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
@@ -365,10 +373,10 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "ternary", $r3$.ɵɵbind((ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$)));
-            $r3$.ɵɵelementProperty(0, "pipe", $r3$.ɵɵbind($r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2)));
-            $r3$.ɵɵelementProperty(0, "and", $r3$.ɵɵbind((ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b))));
-            $r3$.ɵɵelementProperty(0, "or", $r3$.ɵɵbind((ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c))));
+            $r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));
+            $r3$.ɵɵproperty("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2));
+            $r3$.ɵɵproperty("and", (ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b)));
+            $r3$.ɵɵproperty("or", (ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c)));
           }
         }
       `;
@@ -880,7 +888,7 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementProperty(0, "names", $r3$.ɵɵbind($r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName)));
+                $r3$.ɵɵproperty("names", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName));
               }
             },
            directives: [MyComp],
@@ -963,9 +971,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementProperty(
-                    0, "names",
-                    $r3$.ɵɵbind($r3$.ɵɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
+                $r3$.ɵɵproperty("names",
+                    $r3$.ɵɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8]));
               }
             },
             directives: [MyComp],
@@ -1028,7 +1035,7 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementProperty(0, "config", $r3$.ɵɵbind($r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name)));
+                $r3$.ɵɵproperty("config", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name));
               }
             },
             directives: [ObjectComp],
@@ -1097,9 +1104,9 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementProperty(
-                    0, "config",
-                    $r3$.ɵɵbind($r3$.ɵɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction1(3, $e0_ff_1$, $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.duration)))));
+                $r3$.ɵɵproperty(
+                    "config",
+                    $r3$.ɵɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction1(3, $e0_ff_1$, $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.duration))));
               }
             },
             directives: [NestedComp],
@@ -1261,9 +1268,9 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementProperty(0, "ngIf", $r3$.ɵɵbind(ctx.visible));
+              $r3$.ɵɵproperty("ngIf", ctx.visible);
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵelementProperty(1, "ngIf", $r3$.ɵɵbind(ctx.visible));
+              $r3$.ɵɵproperty("ngIf", ctx.visible);
             }
           }
         `;
@@ -2350,7 +2357,7 @@ describe('compiler compliance', () => {
         if (rf & 2) {
           const $app$ = $i0$.ɵɵnextContext();
           $r3$.ɵɵselect(3);
-          $i0$.ɵɵelementProperty(3, "ngIf", $i0$.ɵɵbind($app$.showing));
+          $i0$.ɵɵproperty("ngIf", $app$.showing);
         }
       }
 
@@ -2361,7 +2368,7 @@ describe('compiler compliance', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "ngForOf", $i0$.ɵɵbind(ctx.items));
+          $i0$.ɵɵproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -2442,9 +2449,9 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementProperty(0, "name", $r3$.ɵɵbind(ctx.name1));
+                $r3$.ɵɵproperty("name", ctx.name1);
                 $r3$.ɵɵselect(1);
-                $r3$.ɵɵelementProperty(1, "name", $r3$.ɵɵbind(ctx.name2));
+                $r3$.ɵɵproperty("name", ctx.name2);
               }
             },
             directives: [LifecycleComp],
@@ -2576,7 +2583,7 @@ describe('compiler compliance', () => {
                   }
                   if (rf & 2) {
                     $r3$.ɵɵselect(1);
-                    $r3$.ɵɵelementProperty(1,"forOf",$r3$.ɵɵbind(ctx.items));
+                    $r3$.ɵɵproperty("forOf", ctx.items);
                   }
                 },
                 directives: function() { return [ForOfDirective]; },
@@ -2658,7 +2665,7 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(1);
-                $r3$.ɵɵelementProperty(1, "forOf", $r3$.ɵɵbind(ctx.items));
+                $r3$.ɵɵproperty("forOf", ctx.items);
               }
             },
             directives: function() { return [ForOfDirective]; },
@@ -2743,7 +2750,7 @@ describe('compiler compliance', () => {
               $r3$.ɵɵselect(2);
               $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1("", IDENT.name, ""));
               $r3$.ɵɵselect(4);
-              $r3$.ɵɵelementProperty(4, "forOf", $r3$.ɵɵbind(IDENT.infos));
+              $r3$.ɵɵproperty("forOf", IDENT.infos);
             }
           }
 
@@ -2762,7 +2769,7 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(1);
-                $r3$.ɵɵelementProperty(1, "forOf", $r3$.ɵɵbind(ctx.items));
+                $r3$.ɵɵproperty("forOf", ctx.items);
               }
             },
             directives: function () { return [ForOfDirective]; },

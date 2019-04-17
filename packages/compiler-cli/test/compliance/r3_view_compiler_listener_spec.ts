@@ -164,7 +164,7 @@ describe('compiler compliance: listen()', () => {
           }
           if (rf & 2) {
             $i0$.ɵɵselect(0);
-            $i0$.ɵɵelementProperty(0, "ngIf", $i0$.ɵɵbind(ctx.showing));
+            $i0$.ɵɵproperty("ngIf", ctx.showing);
           }
         }
         `;

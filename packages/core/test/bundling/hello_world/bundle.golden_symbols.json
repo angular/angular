@@ -219,6 +219,9 @@
     "name": "executePreOrderHooks"
   },
   {
+    "name": "executeTemplate"
+  },
+  {
     "name": "executeViewQueryFn"
   },
   {
@@ -319,6 +322,9 @@
   },
   {
     "name": "getRootView"
+  },
+  {
+    "name": "getSelectedIndex"
   },
   {
     "name": "hasParentInjector"

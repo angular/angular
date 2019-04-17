@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef, HostBinding} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -95,6 +95,99 @@ describe('acceptance integration tests', () => {
     }
     expect(element.classList.contains('foo')).toBeTruthy();
     expect(element.classList.contains('baz')).toBeTruthy();
+  });
+
+  it('should not cause problems if detectChanges is called when a property updates', () => {
+    /**
+     * Angular Material CDK Tree contains a code path whereby:
+     *
+     * 1. During the execution of a template function in which **more than one** property is
+     * updated in a row.
+     * 2. A property that **is not the last property** is updated in the **original template**:
+     *   - That sets up a new observable and subscribes to it
+     *   - The new observable it sets up can emit synchronously.
+     *   - When it emits, it calls `detectChanges` on a `ViewRef` that it has a handle to
+     *   - That executes a **different template**, that has host bindings
+     *     - this executes `setHostBindings`
+     *     - Inside of `setHostBindings` we are currently updating the selected index **global
+     *       state** via `setActiveHostElement`.
+     * 3. We attempt to update the next property in the **original template**.
+     *  - But the selected index has been altered, and we get errors.
+     */
+
+    @Component({
+      selector: 'child',
+      template: `...`,
+    })
+    class ChildCmp {
+    }
+
+    @Component({
+      selector: 'parent',
+      template: `
+        <div>
+          <div #template></div>
+          <p>{{prop}}</p>
+          <p>{{prop2}}</p>
+        </div>
+      `,
+      host: {
+        '[style.color]': 'color',
+      },
+    })
+    class ParentCmp {
+      private _prop = '';
+
+      @ViewChild('template', {read: ViewContainerRef})
+      vcr: ViewContainerRef = null !;
+
+      private child: ComponentRef<ChildCmp> = null !;
+
+      @Input()
+      set prop(value: string) {
+        // Material CdkTree has at least one scenario where setting a property causes a data source
+        // to update, which causes a synchronous call to detectChanges().
+        this._prop = value;
+        if (this.child) {
+          this.child.changeDetectorRef.detectChanges();
+        }
+      }
+
+      get prop() { return this._prop; }
+
+      @Input()
+      prop2 = 0;
+
+      ngAfterViewInit() {
+        const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
+        this.child = this.vcr.createComponent(factory);
+      }
+
+      constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+    }
+
+    @Component({
+      template: `<parent [prop]="prop" [prop2]="prop2"></parent>`,
+    })
+    class App {
+      prop = 'a';
+      prop2 = 1;
+    }
+
+    @NgModule({
+      entryComponents: [ChildCmp],
+      declarations: [ChildCmp],
+    })
+    class ChildCmpModule {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    fixture.componentInstance.prop = 'b';
+    fixture.componentInstance.prop2 = 2;
+    fixture.detectChanges();
   });
 
   it('should render inline style and class attribute values on the element before a directive is instantiated',

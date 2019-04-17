@@ -227,11 +227,11 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementProperty(0, "@foo", $r3$.ɵɵbind(ctx.exp));
+              $r3$.ɵɵproperty("@foo", ctx.exp);
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵelementProperty(1, "@bar", $r3$.ɵɵbind(undefined));
+              $r3$.ɵɵproperty("@bar", undefined);
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵelementProperty(2, "@baz", $r3$.ɵɵbind(undefined));
+              $r3$.ɵɵproperty("@baz", undefined);
             }
           },
           encapsulation: 2
@@ -289,7 +289,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵelementEnd();
             } if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementProperty(0, "@myAnimation", $r3$.ɵɵbind(ctx.exp));
+              $r3$.ɵɵproperty("@myAnimation", ctx.exp);
             }
           },
           encapsulation: 2,

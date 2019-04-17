@@ -39,6 +39,7 @@ import {I18N_ICU_MAPPING_PREFIX, TRANSLATION_PREFIX, assembleBoundTextPlaceholde
 import {Instruction, StylingBuilder} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
+
 // Default selector used by `<ng-content>` if none specified
 const DEFAULT_NG_CONTENT_SELECTOR = '*';
 
@@ -51,20 +52,6 @@ const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
 // List of supported global targets for event listeners
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
-
-function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
-  switch (type) {
-    case BindingType.Property:
-    case BindingType.Animation:
-      return R3.elementProperty;
-    case BindingType.Class:
-      return R3.elementClassProp;
-    case BindingType.Attribute:
-      return R3.elementAttribute;
-    default:
-      return undefined;
-  }
-}
 
 //  if (rf & flags) { .. }
 export function renderFlagCheckIfStmt(
@@ -707,13 +694,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // the reason why `undefined` is used is because the renderer understands this as a
     // special value to symbolize that there is no RHS to this binding
     // TODO (matsko): revisit this once FW-959 is approached
-    const emptyValueBindInstruction = o.importExpr(R3.bind).callFn([o.literal(undefined)]);
+    const emptyValueBindInstruction = o.literal(undefined);
 
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
-
-      const instruction = mapBindingToInstruction(input.type);
-      if (input.type === BindingType.Animation) {
+      const inputType = input.type;
+      if (inputType === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
         // animation bindings can be presented in the following formats:
         // 1. [@binding]="fooExp"
@@ -727,13 +713,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const hasValue = value instanceof LiteralPrimitive ? !!value.value : true;
         this.allocateBindingSlots(value);
         const bindingName = prepareSyntheticPropertyName(input.name);
-        this.updateInstruction(elementIndex, input.sourceSpan, R3.elementProperty, () => {
+
+        this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
           return [
-            o.literal(elementIndex), o.literal(bindingName),
-            (hasValue ? this.convertPropertyBinding(implicit, value) : emptyValueBindInstruction)
+            o.literal(bindingName),
+            (hasValue ? this.convertPropertyBinding(implicit, value, /* skipBindFn */ true) :
+                        emptyValueBindInstruction),
           ];
         });
-      } else if (instruction) {
+      } else {
         // we must skip attributes with associated i18n context, since these attributes are handled
         // separately and corresponding `i18nExp` and `i18nApply` instructions will be generated
         if (input.i18n) return;
@@ -742,7 +730,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         if (value !== undefined) {
           const params: any[] = [];
           const [attrNamespace, attrName] = splitNsName(input.name);
-          const isAttributeBinding = input.type === BindingType.Attribute;
+          const isAttributeBinding = inputType === BindingType.Attribute;
           const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
           if (sanitizationRef) params.push(sanitizationRef);
           if (attrNamespace) {
@@ -757,15 +745,34 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             }
           }
           this.allocateBindingSlots(value);
-          this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
-            return [
-              o.literal(elementIndex), o.literal(attrName),
-              this.convertPropertyBinding(implicit, value), ...params
-            ];
-          });
+
+          if (inputType === BindingType.Property && !(value instanceof Interpolation)) {
+            // Bound, un-interpolated properties
+            this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
+              return [
+                o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
+              ];
+            });
+          } else {
+            let instruction: any;
+
+            if (inputType === BindingType.Property) {
+              // Interpolated properties
+              instruction = R3.elementProperty;
+            } else if (inputType === BindingType.Class) {
+              instruction = R3.elementClassProp;
+            } else {
+              instruction = R3.elementAttribute;
+            }
+
+            this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
+              return [
+                o.literal(elementIndex), o.literal(attrName),
+                this.convertPropertyBinding(implicit, value), ...params
+              ];
+            });
+          }
         }
-      } else {
-        this._unsupported(`binding type ${input.type}`);
       }
     });
 
@@ -856,7 +863,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return trimTrailingNulls(parameters);
     });
 
-    // handle property bindings e.g. ɵɵelementProperty(1, 'ngForOf', ɵɵbind(ctx.items));
+    // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
     const context = o.variable(CONTEXT_NAME);
     this.templatePropertyBindings(template, templateIndex, context, template.templateAttrs);
 
@@ -970,12 +977,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (input instanceof t.BoundAttribute) {
         const value = input.value.visit(this._valueConverter);
         this.allocateBindingSlots(value);
-        this.updateInstruction(templateIndex, template.sourceSpan, R3.elementProperty, () => {
-          return [
-            o.literal(templateIndex), o.literal(input.name),
-            this.convertPropertyBinding(context, value)
-          ];
-        });
+        this.updateInstruction(
+            templateIndex, template.sourceSpan, R3.property,
+            () => [o.literal(input.name), this.convertPropertyBinding(context, value, true)]);
       }
     });
   }

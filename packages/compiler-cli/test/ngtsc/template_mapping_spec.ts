@@ -104,13 +104,14 @@ describe('template source-mapping', () => {
         });
         expect(mappings).toContain({
           source: '[attr]="name"',
-          generated: 'i0.ɵɵelementProperty(0, "attr", i0.ɵɵbind(ctx.name))',
+          generated: 'i0.ɵɵproperty("attr", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
 
       it('should map a complex input binding expression', () => {
         const mappings = compileAndMap('<div [attr]="greeting + name"></div>');
+
         expect(mappings).toContain({
           source: '<div [attr]="greeting + name"></div>',
           generated: 'i0.ɵɵelement(0, "div", _c0)',
@@ -118,7 +119,7 @@ describe('template source-mapping', () => {
         });
         expect(mappings).toContain({
           source: '[attr]="greeting + name"',
-          generated: 'i0.ɵɵelementProperty(0, "attr", i0.ɵɵbind((ctx.greeting + ctx.name)))',
+          generated: 'i0.ɵɵproperty("attr", (ctx.greeting + ctx.name))',
           sourceUrl: '../test.ts'
         });
       });
@@ -132,7 +133,7 @@ describe('template source-mapping', () => {
         });
         expect(mappings).toContain({
           source: 'bind-attr="name"',
-          generated: 'i0.ɵɵelementProperty(0, "attr", i0.ɵɵbind(ctx.name))',
+          generated: 'i0.ɵɵproperty("attr", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });

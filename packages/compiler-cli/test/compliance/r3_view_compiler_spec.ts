@@ -147,8 +147,8 @@ describe('r3_view_compiler', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "@attr", …);
-          $i0$.ɵɵelementProperty(0, "@binding", …);
+          $i0$.ɵɵproperty("@attr", …);
+          $i0$.ɵɵproperty("@binding", …);
         }
       }`;
       const result = compile(files, angularFiles);
@@ -179,7 +179,7 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵelementStart(0, "div");
           …
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "@mySelector", …);
+          $i0$.ɵɵproperty("@mySelector", …);
         }
       }`;
       const result = compile(files, angularFiles);
