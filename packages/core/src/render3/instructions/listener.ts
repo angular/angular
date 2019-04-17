@@ -75,7 +75,8 @@ function findExistingListener(
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
-      if (tCleanup[i] === eventName && tCleanup[i + 1] === tNodeIdx) {
+      const cleanupEventName = tCleanup[i];
+      if (cleanupEventName === eventName && tCleanup[i + 1] === tNodeIdx) {
         // We have found a matching event name on the same node but it might not have been
         // registered yet, so we must explicitly verify entries in the LView cleanup data
         // structures.
@@ -88,7 +89,9 @@ function findExistingListener(
       // blocks of 4 or 2 items in the tView.cleanup and this is why we iterate over 2 elements
       // first and jump another 2 elements if we detect listeners cleanup (4 elements). Also check
       // documentation of TView.cleanup for more details of this data structure layout.
-      i += 2;
+      if (typeof cleanupEventName === 'string') {
+        i += 2;
+      }
     }
   }
   return null;
