@@ -6,12 +6,14 @@ import { Subject } from 'rxjs';
 import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { LocationService } from './location.service';
+import { ScrollService } from './scroll.service';
 
 describe('LocationService', () => {
   let injector: ReflectiveInjector;
   let location: MockLocationStrategy;
   let service: LocationService;
   let swUpdates: MockSwUpdatesService;
+  let scrollService: MockScrollService;
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -20,12 +22,14 @@ describe('LocationService', () => {
         { provide: GaService, useClass: TestGaService },
         { provide: LocationStrategy, useClass: MockLocationStrategy },
         { provide: PlatformLocation, useClass: MockPlatformLocation },
-        { provide: SwUpdatesService, useClass: MockSwUpdatesService }
+        { provide: SwUpdatesService, useClass: MockSwUpdatesService },
+        { provide: ScrollService, useClass: MockScrollService }
     ]);
 
     location  = injector.get(LocationStrategy);
     service  = injector.get(LocationService);
     swUpdates  = injector.get(SwUpdatesService);
+    scrollService = injector.get(ScrollService);
   });
 
   describe('currentUrl', () => {
@@ -289,11 +293,14 @@ describe('LocationService', () => {
       expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
     });
 
-    it('should do a "full page navigation" if a ServiceWorker update has been activated', () => {
+    it('should do a "full page navigation" and remove the stored scroll position when navigating to ' +
+      'internal URLs only if a ServiceWorker update has been activated', () => {
       const goExternalSpy = spyOn(service, 'goExternal');
+      const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
 
       // Internal URL - No ServiceWorker update
       service.go('some-internal-url');
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
       expect(goExternalSpy).not.toHaveBeenCalled();
       expect(location.path(true)).toEqual('some-internal-url');
 
@@ -301,7 +308,25 @@ describe('LocationService', () => {
       swUpdates.updateActivated.next('foo');
       service.go('other-internal-url');
       expect(goExternalSpy).toHaveBeenCalledWith('other-internal-url');
-      expect(location.path(true)).toEqual('some-internal-url');
+      expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
+    });
+
+    it('should not remove the stored scroll position when navigating to external URLs', () => {
+      const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
+      const goExternalSpy = spyOn(service, 'goExternal');
+      const externalUrl = 'http://some/far/away/land';
+      const otherExternalUrl = 'http://some/far/far/away/land';
+
+      // External URL - No ServiceWorker update
+      service.go(externalUrl);
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
+      expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
+
+      // External URL - ServiceWorker update
+      swUpdates.updateActivated.next('foo');
+      service.go(otherExternalUrl);
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
+      expect(goExternalSpy).toHaveBeenCalledWith(otherExternalUrl);
     });
 
     it('should not update currentUrl for external url that starts with "http"', () => {
@@ -605,6 +630,10 @@ class MockPlatformLocation {
 
 class MockSwUpdatesService {
   updateActivated = new Subject<string>();
+}
+
+class MockScrollService {
+  removeStoredScrollPosition() { }
 }
 
 class TestGaService {
