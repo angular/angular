@@ -16,12 +16,12 @@
 const chromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
-const config = require('lighthouse/lighthouse-core/config/default-config.js');
 const logger = require('lighthouse-logger');
 
 // Constants
 const CHROME_LAUNCH_OPTS = {};
 const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
+const LONG_WAIT_FOR_SW_DELAY = 5000;
 const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
@@ -37,12 +37,18 @@ _main(process.argv.slice(2));
 async function _main(args) {
   const {url, minScore, logFile} = parseInput(args);
   const isOnHttp = /^http:/.test(url);
+  const isOnLocalhost = /\/\/localhost\b/.test(url);
+  const config = {extends: 'lighthouse:default'};
 
   console.log(`Running PWA audit for '${url}'...`);
 
-  if (isOnHttp) {
-    skipHttpsAudits(config);
-  }
+  // If testing on HTTP, skip HTTPS-specific tests.
+  // (Note: Browsers special-case localhost and run ServiceWorker even on HTTP.)
+  if (isOnHttp) skipHttpsAudits(config);
+
+  // If testing on localhost, where the server has less optimizations (e.g. no file compression),
+  // wait longer for the ServiceWorker to be registered, so Lighthouse can reliably detect it.
+  if (isOnLocalhost) waitLongerForSw(config);
 
   logger.setLevel(LIGHTHOUSE_FLAGS.logLevel);
 
@@ -124,5 +130,12 @@ async function processResults(results, logFile) {
 
 function skipHttpsAudits(config) {
   console.info(`Skipping HTTPS-related audits (${SKIPPED_HTTPS_AUDITS.join(', ')})...`);
-  config.settings.skipAudits = SKIPPED_HTTPS_AUDITS;
+  const settings = config.settings || (config.settings = {});
+  settings.skipAudits = SKIPPED_HTTPS_AUDITS;
+}
+
+function waitLongerForSw(config) {
+  console.info(`Will wait longer for ServiceWorker (${LONG_WAIT_FOR_SW_DELAY}ms)...`);
+  const passes = config.passes || (config.passes = []);
+  passes.push({passName: 'defaultPass', pauseAfterLoadMs: LONG_WAIT_FOR_SW_DELAY});
 }
