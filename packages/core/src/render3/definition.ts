@@ -391,10 +391,12 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
    */
   exports?: Type<any>[] | (() => Type<any>[]);
 }): void {
-  const ngModuleDef = getNgModuleDef(type, true);
-  ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-  ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-  ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+  noSideEffects(() => {
+    const ngModuleDef = getNgModuleDef(type, true);
+    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
+    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
+    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+  });
 }
 
 /**
