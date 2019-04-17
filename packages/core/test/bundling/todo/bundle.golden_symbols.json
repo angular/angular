@@ -360,6 +360,9 @@
     "name": "_c9"
   },
   {
+    "name": "_currentInjector"
+  },
+  {
     "name": "_currentNamespace"
   },
   {
@@ -903,6 +906,9 @@
     "name": "injectElementRef"
   },
   {
+    "name": "injectInjectorOnly"
+  },
+  {
     "name": "injectRootLimpMode"
   },
   {
@@ -1354,6 +1360,9 @@
   },
   {
     "name": "ɵɵgetCurrentView"
+  },
+  {
+    "name": "ɵɵinject"
   },
   {
     "name": "ɵɵinterpolation1"
