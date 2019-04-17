@@ -13,7 +13,6 @@ ng new shiny-ivy-app --enable-ivy
 
 The new project is automatically configured for Ivy.
 - The `enableIvy` option is set to `true` in `tsconfig.app.json`.
-- The `"aot": true` option is added to your default build options.
 
 {@a updating}
 ## Updating an existing project to use Ivy
@@ -48,27 +47,9 @@ const routes: Routes = [{
   loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
 }];
 ```
-- In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
-```json
-{
-  "projects": {
-    "my-existing-project": {
-      "architect": {
-        "build": {
-          "options": {
-            ...
-            "aot": true,
-          }
-        }
-      }
-    }
-  }
-}
-```
 
 ## Switching back to the current compiler
 
 To stop using the Ivy compiler you need to undo the steps taken when [updating to use Ivy](#updating).
 - Set `enableIvy` to false in `tsconfig.app.json`, or remove it completely.
 - Add `"experimentalImportFactories": true` to your default build options in `angular.json` to support the import statement in `loadChildren` outside Ivy.
-- Remove `"aot": true` from your default build options if you didn't have it there before.
