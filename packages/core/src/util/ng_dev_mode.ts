@@ -83,8 +83,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * set `ngDevMode == false` we should be helping the developer by providing
  * as much early warning and errors as possible.
  *
- * NOTE: changes to the `ngDevMode` name must be synced with the CLI and
- * possibly other third party tooling. Check with them before altering it.
+ * NOTE: changes to the `ngDevMode` name must be synced with `compiler-cli/src/tooling.ts`.
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
   ngDevModeResetPerfCounters();
