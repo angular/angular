@@ -28,7 +28,8 @@ export type TestPipe = {
 export type TestDeclaration = TestDirective | TestPipe;
 
 export function tcb(
-    template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig): string {
+    template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
+    options?: {emitSpans?: boolean}): string {
   const classes = ['Test', ...declarations.map(decl => decl.name)];
   const code = classes.map(name => `class ${name}<T extends string> {}`).join('\n');
 
@@ -76,11 +77,15 @@ export function tcb(
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
   };
+  options = options || {
+    emitSpans: false,
+  };
 
   const tcb = generateTypeCheckBlock(
       FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta);
 
-  const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tcb, sf);
+  const removeComments = !options.emitSpans;
+  const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
   return res.replace(/\s+/g, ' ');
 }
 
