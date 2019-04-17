@@ -316,7 +316,7 @@ const testCases: ReadonlyArray<[Type<BaseTestComponent>, string]> = [
 ];
 
 describe('CDK Popover Edit', () => {
-  for (const [componentClass, label] of testCases.slice(0, 1)) {
+  for (const [componentClass, label] of testCases) {
     describe(label, () => {
       let component: BaseTestComponent;
       let fixture: ComponentFixture<BaseTestComponent>;

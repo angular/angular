@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
-import {Overlay, OverlayRef, PositionStrategy} from '@angular/cdk/overlay';
+import {FocusTrap} from '@angular/cdk/a11y';
+import {OverlayRef, PositionStrategy} from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterViewInit,
   Directive,
@@ -25,6 +24,7 @@ import {debounceTime, filter, map, mapTo, startWith, takeUntil} from 'rxjs/opera
 
 import {CELL_SELECTOR, EDIT_PANE_CLASS, EDIT_PANE_SELECTOR, ROW_SELECTOR} from './constants';
 import {EditEventDispatcher} from './edit-event-dispatcher';
+import {EditServices} from './edit-services';
 import {FocusDispatcher} from './focus-dispatcher';
 import {
   FocusEscapeNotifier,
@@ -32,7 +32,6 @@ import {
   FocusEscapeNotifierFactory
 } from './focus-escape-notifier';
 import {closest} from './polyfill';
-import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strategy-factory';
 
 /**
  * Describes the number of columns before and after the originating cell that the
@@ -57,7 +56,7 @@ const DEFAULT_MOUSE_MOVE_DELAY_MS = 30;
  */
 @Directive({
   selector: 'table[editable], cdk-table[editable], mat-table[editable]',
-  providers: [EditEventDispatcher],
+  providers: [EditEventDispatcher, EditServices],
 })
 export class CdkEditable implements AfterViewInit, OnDestroy {
   protected readonly destroyed = new ReplaySubject<void>();
@@ -161,15 +160,8 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   protected readonly destroyed = new ReplaySubject<void>();
 
   constructor(
-      protected readonly editEventDispatcher: EditEventDispatcher,
-      protected readonly elementRef: ElementRef,
-      protected readonly focusTrapFactory: FocusTrapFactory,
-      protected readonly ngZone: NgZone,
-      protected readonly overlay: Overlay,
-      protected readonly positionFactory: PopoverEditPositionStrategyFactory,
-      protected readonly scrollDispatcher: ScrollDispatcher,
-      protected readonly viewContainerRef: ViewContainerRef,
-      protected readonly viewportRuler: ViewportRuler) {}
+      protected readonly services: EditServices, protected readonly elementRef: ElementRef,
+      protected readonly viewContainerRef: ViewContainerRef) {}
 
   ngAfterViewInit(): void {
     this._startListeningToEditEvents();
@@ -185,18 +177,18 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   }
 
   protected initFocusTrap(): void {
-    this.focusTrap = this.focusTrapFactory.create(this.overlayRef!.overlayElement);
+    this.focusTrap = this.services.focusTrapFactory.create(this.overlayRef!.overlayElement);
   }
 
   protected closeEditOverlay(): void {
-    this.editEventDispatcher.doneEditingCell(this.elementRef.nativeElement!);
+    this.services.editEventDispatcher.doneEditingCell(this.elementRef.nativeElement!);
   }
 
   private _startListeningToEditEvents(): void {
-    this.editEventDispatcher.editingCell(this.elementRef.nativeElement!)
+    this.services.editEventDispatcher.editingCell(this.elementRef.nativeElement!)
         .pipe(takeUntil(this.destroyed))
         .subscribe((open) => {
-          this.ngZone.run(() => {
+          this.services.ngZone.run(() => {
             if (open && this.template) {
               if (!this.overlayRef) {
                 this._createEditOverlay();
@@ -209,15 +201,15 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
               this.overlayRef.detach();
             }
           });
-      });
+        });
   }
 
   private _createEditOverlay(): void {
-    this.overlayRef = this.overlay.create({
+    this.overlayRef = this.services.overlay.create({
       disposeOnNavigation: true,
       panelClass: EDIT_PANE_CLASS,
       positionStrategy: this._getPositionStrategy(),
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      scrollStrategy: this.services.overlay.scrollStrategies.reposition(),
     });
 
     this.initFocusTrap();
@@ -235,7 +227,7 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
 
     // Update the size of the popup initially and on subsequent changes to
     // scroll position and viewport size.
-    merge(this.scrollDispatcher.scrolled(), this.viewportRuler.change())
+    merge(this.services.scrollDispatcher.scrolled(), this.services.viewportRuler.change())
         .pipe(
             startWith(null),
             takeUntil(this.overlayRef!.detachments()),
@@ -262,11 +254,12 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   }
 
   private _getPositionStrategy(): PositionStrategy {
-    return this.positionFactory.positionStrategyForCells(this._getOverlayCells());
+    return this.services.positionFactory.positionStrategyForCells(this._getOverlayCells());
   }
 
   private _updateOverlaySize(): void {
-    this.overlayRef!.updateSize(this.positionFactory.sizeConfigForCells(this._getOverlayCells()));
+    this.overlayRef!.updateSize(
+        this.services.positionFactory.sizeConfigForCells(this._getOverlayCells()));
   }
 
   private _maybeReturnFocusToCell(): void {
@@ -294,38 +287,20 @@ export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
   protected focusTrap?: FocusEscapeNotifier;
 
   constructor(
-      editEventDispatcher: EditEventDispatcher,
-      elementRef: ElementRef,
-      focusTrapFactory: FocusTrapFactory,
-      ngZone: NgZone,
-      overlay: Overlay,
-      positionFactory: PopoverEditPositionStrategyFactory,
-      scrollDispatcher: ScrollDispatcher,
-      viewContainerRef: ViewContainerRef,
-      viewportRuler: ViewportRuler,
-      protected readonly focusEscapeNotifierFactory: FocusEscapeNotifierFactory,
-      protected readonly focusDispatcher: FocusDispatcher) {
-    super(
-        editEventDispatcher,
-        elementRef,
-        focusTrapFactory,
-        ngZone,
-        overlay,
-        positionFactory,
-        scrollDispatcher,
-        viewContainerRef,
-        viewportRuler);
+      elementRef: ElementRef, viewContainerRef: ViewContainerRef, services: EditServices,
+      protected readonly focusEscapeNotifierFactory: FocusEscapeNotifierFactory) {
+    super(services, elementRef, viewContainerRef);
   }
 
   protected initFocusTrap(): void {
     this.focusTrap = this.focusEscapeNotifierFactory.create(this.overlayRef!.overlayElement);
 
     this.focusTrap.escapes().pipe(takeUntil(this.destroyed)).subscribe(direction => {
-      if (this.editEventDispatcher.editRef) {
-        this.editEventDispatcher.editRef.blur();
+      if (this.services.editEventDispatcher.editRef) {
+        this.services.editEventDispatcher.editRef.blur();
       }
 
-      this.focusDispatcher.moveFocusHorizontally(
+      this.services.focusDispatcher.moveFocusHorizontally(
           closest(this.elementRef.nativeElement!, CELL_SELECTOR) as HTMLElement,
           direction === FocusEscapeNotifierDirection.START ? -1 : 1);
 
@@ -358,12 +333,9 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
   protected viewRef: EmbeddedViewRef<any>|null = null;
 
   constructor(
-      protected readonly elementRef: ElementRef,
-      protected readonly editEventDispatcher: EditEventDispatcher,
-      protected readonly ngZone: NgZone,
+      protected readonly services: EditServices, protected readonly elementRef: ElementRef,
       protected readonly templateRef: TemplateRef<any>,
-      protected readonly viewContainerRef: ViewContainerRef
-      ) {}
+      protected readonly viewContainerRef: ViewContainerRef) {}
 
   ngAfterViewInit(): void {
     this._listenForHoverEvents();
@@ -379,10 +351,10 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
   }
 
   private _listenForHoverEvents(): void {
-    this.editEventDispatcher.hoveringOnRow(this.elementRef.nativeElement!)
+    this.services.editEventDispatcher.hoveringOnRow(this.elementRef.nativeElement!)
         .pipe(takeUntil(this.destroyed))
         .subscribe(isHovering => {
-          this.ngZone.run(() => {
+          this.services.ngZone.run(() => {
             if (isHovering) {
               if (!this.viewRef) {
                 // Not doing any positioning in CDK version. Material version
