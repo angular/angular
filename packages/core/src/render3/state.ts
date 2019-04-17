@@ -470,9 +470,6 @@ let _selectedIndex = -1;
  * current `LView` to act on.
  */
 export function getSelectedIndex() {
-  ngDevMode &&
-      assertGreaterThan(
-          _selectedIndex, -1, 'select() should be called prior to retrieving the selected index');
   return _selectedIndex;
 }
 

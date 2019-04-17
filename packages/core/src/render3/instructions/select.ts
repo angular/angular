@@ -36,7 +36,14 @@ export function ɵɵselect(index: number): void {
   ngDevMode &&
       assertLessThan(
           index, getLView().length - HEADER_OFFSET, 'Should be within range for the view data');
-  setSelectedIndex(index);
   const lView = getLView();
+
+  // Flush the initial hooks for elements in the view that have been added up to this point.
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
+
+  // We must set the selected index *after* running the hooks, because hooks may have side-effects
+  // that cause other template functions to run, thus updating the selected index, which is global
+  // state. If we run `setSelectedIndex` *before* we run the hooks, in some cases the selected index
+  // will be altered by the time we leave the `ɵɵselect` instruction.
+  setSelectedIndex(index);
 }

@@ -140,7 +140,7 @@ describe('compiler compliance: directives', () => {
                         }
                         if (rf & 2) {
                             $r3$.ɵɵselect(0);
-                            $r3$.ɵɵelementProperty(0, "someDirective", $r3$.ɵɵbind(true));
+                            $r3$.ɵɵproperty("someDirective", true);
                         }
                     },
                     …
@@ -255,7 +255,7 @@ describe('compiler compliance: directives', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementProperty(0, "ngIf", $r3$.ɵɵbind(ctx.showing));
+              $r3$.ɵɵproperty("ngIf", ctx.showing);
             }
           },
           …
@@ -303,7 +303,7 @@ describe('compiler compliance: directives', () => {
                         }
                         if (rf & 2) {
                             $r3$.ɵɵselect(0);
-                            $r3$.ɵɵelementProperty(0, "someDirective", $r3$.ɵɵbind(true));
+                            $r3$.ɵɵproperty("someDirective", true);
                         }
                     },
                     …

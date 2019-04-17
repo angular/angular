@@ -580,7 +580,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "ngForOf", $r3$.ɵɵbind(ctx.items));
+            $r3$.ɵɵproperty("ngForOf", ctx.items);
           }
         }
       `;
@@ -767,7 +767,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "ngForOf", $r3$.ɵɵbind(ctx.items));
+            $r3$.ɵɵproperty("ngForOf", ctx.items);
           }
         }
       `;
@@ -1429,7 +1429,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
       `;
@@ -1491,9 +1491,9 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵelementProperty(1, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
       `;
@@ -1558,7 +1558,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵɵnextContext();
             $r3$.ɵɵselect(4);
-            $r3$.ɵɵelementProperty(4, "ngIf", $r3$.ɵɵbind($ctx_r0$.exists));
+            $r3$.ɵɵproperty("ngIf", $ctx_r0$.exists);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($ctx_r0$.valueA));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(3, 3, $ctx_r0$.valueB)));
             $r3$.ɵɵi18nApply(0);
@@ -1628,9 +1628,9 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
             $r3$.ɵɵselect(3);
-            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(!ctx.visible));
+            $r3$.ɵɵproperty("ngIf", !ctx.visible);
           }
         }
       `;
@@ -1686,7 +1686,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵelementProperty(0, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
           }
         }
       `;
@@ -2597,9 +2597,9 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
             $r3$.ɵɵi18nApply(1);
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
             $r3$.ɵɵselect(3);
-            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(ctx.available));
+            $r3$.ɵɵproperty("ngIf", ctx.available);
           }
         }
       `;
@@ -2935,7 +2935,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(3);
-            $r3$.ɵɵelementProperty(3, "ngIf", $r3$.ɵɵbind(ctx.visible));
+            $r3$.ɵɵproperty("ngIf", ctx.visible);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
             $r3$.ɵɵi18nApply(1);
@@ -3075,7 +3075,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.ageVisible));
+            $r3$.ɵɵproperty("ngIf", ctx.ageVisible);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
             $r3$.ɵɵi18nApply(1);
           }
@@ -3174,7 +3174,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(2);
-            $r3$.ɵɵelementProperty(2, "ngIf", $r3$.ɵɵbind(ctx.ageVisible));
+            $r3$.ɵɵproperty("ngIf", ctx.ageVisible);
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.gender));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.weight));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.height));
