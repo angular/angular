@@ -13,8 +13,7 @@ declare global {
 }
 
 /**
- * NOTE: changes to the `ngI18nClosureMode` name must be synced with the CLI and
- * possibly other third party tooling. Check with them before altering it.
+ * NOTE: changes to the `ngI18nClosureMode` name must be synced with `compiler-cli/src/tooling.ts`.
  */
 if (typeof ngI18nClosureMode === 'undefined') {
   // Make sure to refer to ngI18nClosureMode as ['ngI18nClosureMode'] for closure.

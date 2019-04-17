@@ -17,6 +17,7 @@ export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 
 export * from './src/perform_compile';
+export * from './src/tooling';
 
 // TODO(tbosch): remove this once cli 1.5 is fully released,
 // and usages in G3 are changed to `CompilerOptions`.
