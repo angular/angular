@@ -95,7 +95,7 @@ in the `AppModule` components that will need them.
 라우터는 `RouterModule`과 `Routes` 타입의 객체로 설정합니다.
 그래서 `@angular/router` 라이브러리에서 두 심볼을 로드해야 합니다.
 
-그리고 `@NgModule.expors` 배열을 추가하고 이 배열에 `RouterModule`을 등록하면 `AppModule` 범위에 있는 모든 컴포넌트에 라우터와 관련된 디렉티브를 사용할 수 있습니다.
+그리고 `@NgModule.exports` 배열을 추가하고 이 배열에 `RouterModule`을 등록하면 `AppModule` 범위에 있는 모든 컴포넌트에 라우터와 관련된 디렉티브를 사용할 수 있습니다.
 
 이 내용으로 수정하면 `AppRoutingModule`이 다음과 같이 정의될 것입니다:
 
