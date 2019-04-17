@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Inject, Injectable, InjectionToken} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {TestBed, async, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -270,6 +270,17 @@ describe('providers', () => {
       const fixture = TestBed.createComponent(TestComp);
       const myCompInstance = fixture.debugElement.query(By.css('div')).injector.get(MyDir);
       expect(myCompInstance.svc.value).toEqual('some value');
+    });
+
+    describe('injection without bootstrapping', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({declarations: [MyComp], providers: [MyComp, MyService]});
+      });
+
+      it('should support injecting without bootstrapping',
+         async(inject([MyComp, MyService], (comp: MyComp, service: MyService) => {
+           expect(comp.svc.value).toEqual('some value');
+         })));
     });
   });
 });
