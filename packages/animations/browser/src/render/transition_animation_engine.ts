@@ -203,8 +203,6 @@ export class AnimationTransitionNamespace {
       toState.absorbOptions(fromState.options);
     }
 
-    triggersWithStates[triggerName] = toState;
-
     if (!fromState) {
       fromState = DEFAULT_STATE_VALUE;
     }
@@ -235,6 +233,10 @@ export class AnimationTransitionNamespace {
       }
       return;
     }
+
+    // this is set at a later point below in the event that the `toState` value is
+    // unchanged (otherwise we would have a state change from `toState` to `toState`)
+    triggersWithStates[triggerName] = toState;
 
     const playersOnElement: TransitionAnimationPlayer[] =
         getOrSetAsInMap(this._engine.playersByElement, element, []);
