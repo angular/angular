@@ -249,10 +249,7 @@ jobs:
       - run: yarn --cwd aio lint
         # Run PWA-score tests
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-        # Temporarily lowering the min required PWA score to avoid flakes on CI.
-        # TODO(gkalpak): Re-enable once https://github.com/angular/angular/issues/29910 is resolved.
-      # - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-      - run: yarn --cwd aio test-pwa-score-localhost 70
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio payload-size
@@ -287,10 +284,7 @@ jobs:
       - run: yarn --cwd aio build-local --progress=false
         # Run PWA-score tests
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-        # Temporarily lowering the min required PWA score to avoid flakes on CI.
-        # TODO(gkalpak): Re-enable once https://github.com/angular/angular/issues/29910 is resolved.
-      # - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-      - run: yarn --cwd aio test-pwa-score-localhost 70
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
