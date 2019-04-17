@@ -561,6 +561,11 @@
           ]
         },
         {
+          "url": "guide/cli-builder",
+          "title": "CLI Builders",
+          "tooltip": "Using builders to customize Angular CLI."
+        },
+        {
           "url": "guide/ivy",
           "title": "Angular Ivy",
           "tooltip": "Opting into Angular Ivy with Angular CLI."
