@@ -89,6 +89,7 @@ export {
   ɵɵloadContentQuery,
   ɵɵelementEnd,
   ɵɵelementProperty,
+  ɵɵproperty,
   ɵɵcomponentHostSyntheticProperty,
   ɵɵcomponentHostSyntheticListener,
   ɵɵprojectionDef,

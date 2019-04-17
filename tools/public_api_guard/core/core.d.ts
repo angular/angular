@@ -937,6 +937,8 @@ export declare function ɵɵprojection(nodeIndex: number, selectorIndex?: number
 
 export declare function ɵɵprojectionDef(selectors?: CssSelectorList[]): void;
 
+export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
+
 export declare function ɵɵProvidersFeature<T>(providers: Provider[], viewProviders?: Provider[]): (definition: DirectiveDef<T>) => void;
 
 export declare function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T;

@@ -82,7 +82,7 @@ describe('compiler compliance: bindings', () => {
         }
         if (rf & 2) {
           $i0$.ɵɵselect(0);
-          $i0$.ɵɵelementProperty(0, "title", $i0$.ɵɵbind($ctx$.title));
+          $i0$.ɵɵproperty("title", $ctx$.title);
         }
       }`;
       const result = compile(files, angularFiles);
@@ -174,7 +174,7 @@ describe('compiler compliance: bindings', () => {
         }
         if (rf & 2) {
             $i0$.ɵɵselect(0);
-            $i0$.ɵɵelementProperty(0, "for", $i0$.ɵɵbind(ctx.forValue));
+            $i0$.ɵɵproperty("for", ctx.forValue);
         }
       }`;
 
