@@ -88,6 +88,7 @@
     "!/api/common/MaxLengthValidator*",
     "!/api/common/NgModel*",
     "!/api/http/**",
+    "!/api/http",
     "!/api/platform-browser/AnimationDriver*",
     "!/api/testing/**",
     "!/docs/?*",
