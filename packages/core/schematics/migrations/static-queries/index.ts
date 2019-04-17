@@ -55,10 +55,11 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   let isUsageStrategy = false;
   if (supportsPrompt()) {
     logger.info('There are two available migration strategies that can be selected:');
-    logger.info('  • Template strategy  -  (safe migration, uses anti-patterns)');
-    logger.info('  • Usage strategy  -  (uses best practices, not always correct)');
+    logger.info('  • Template strategy  -  migration tool (short-term gains, rare corrections)');
+    logger.info('  • Usage strategy  -  best practices (long-term gains, manual corrections)');
     logger.info('For an easy migration, the template strategy is recommended. The usage');
-    logger.info('strategy can be used for best practices and easier migration to Ivy.');
+    logger.info('strategy can be used for best practices and a code base that will be more');
+    logger.info('flexible to changes going forward.');
     const {strategyName} = await getInquirer().prompt<{strategyName: string}>({
       type: 'list',
       name: 'strategyName',
