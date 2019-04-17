@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, HostListener} from '@angular/core';
+import {Component, Directive, ErrorHandler, HostListener, QueryList, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -104,6 +104,35 @@ describe('event listeners', () => {
               expect(buttonDebugEls[1].injector.get(LikesClicks).counter).toBe(1);
               expect(buttonDebugEls[1].injector.get(MdButton).counter).toBe(1);
             });
+
+    onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
+        .it('should coalesce multiple event listeners in presence of queries', () => {
+
+          @Component({
+            selector: 'test-cmpt',
+            template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`
+          })
+          class TestCmpt {
+            counter = 0;
+
+            @ViewChildren('nothing') nothing !: QueryList<any>;
+          }
+
+          TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
+          const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
+          const fixture = TestBed.createComponent(TestCmpt);
+          fixture.detectChanges();
+          const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+
+          // We want to assert that only one native event handler was registered but still all
+          // directives are notified when an event fires. This assertion can only be verified in
+          // the ngDevMode (but the coalescing always happens!).
+          ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 1);
+
+          buttonDebugEl.nativeElement.click();
+          expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
+          expect(fixture.componentInstance.counter).toBe(1);
+        });
 
 
     it('should try to execute remaining coalesced listeners if one of the listeners throws', () => {
