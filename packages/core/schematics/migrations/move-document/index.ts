@@ -23,8 +23,7 @@ export default function(): Rule {
     const basePath = process.cwd();
 
     if (!projectTsConfigPaths.length) {
-      throw new SchematicsException(
-          `Could not find any tsconfig file. Cannot migrate DOCUMENT 
+      throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT 
           to new import source.`);
     }
 
@@ -75,7 +74,8 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
 
     const platformBrowserDeclaration = platformBrowserImport.parent.parent;
     const newPlatformBrowserText = removeFromImport(platformBrowserImport, DOCUMENT_TOKEN_NAME);
-    const newCommonText = commonImport ? addToImport(commonImport, DOCUMENT_TOKEN_NAME) : NEW_COMMON_TEXT;
+    const newCommonText =
+        commonImport ? addToImport(commonImport, DOCUMENT_TOKEN_NAME) : NEW_COMMON_TEXT;
 
     // Replace the existing query decorator call expression with the updated
     // call expression node.

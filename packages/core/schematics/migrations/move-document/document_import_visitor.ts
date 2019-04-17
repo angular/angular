@@ -13,24 +13,23 @@ const PLATFORM_BROWSER_IMPORT = '@angular/platform-browser';
 export const DOCUMENT_TOKEN_NAME = 'DOCUMENT';
 
 export interface Imports {
-  platformBrowserImport: ts.NamedImports | null;
-  commonImport: ts.NamedImports | null;
-  replaceText: string | null;
-  documentElement: ts.ImportSpecifier | null;
+  platformBrowserImport: ts.NamedImports|null;
+  commonImport: ts.NamedImports|null;
+  replaceText: string|null;
+  documentElement: ts.ImportSpecifier|null;
 }
 
 /**
  * Visitor that can be used to find a set of imports in a TypeScript file.
  */
 export class DocumentImportVisitor {
-
   importsMap: Map<ts.SourceFile, Imports> = new Map();
 
   constructor(public typeChecker: ts.TypeChecker) {}
 
   visitNode(node: ts.Node) {
     if (ts.isNamedImports(node)) {
-        this.visitNamedImport(node);
+      this.visitNamedImport(node);
     }
 
     ts.forEachChild(node, node => this.visitNode(node));
@@ -68,12 +67,14 @@ export class DocumentImportVisitor {
     this.importsMap.set(sourceFile, imports);
   }
 
-  private getDocumentElement(node: ts.NamedImports): ts.ImportSpecifier | undefined {
+  private getDocumentElement(node: ts.NamedImports): ts.ImportSpecifier|undefined {
     const elements = node.elements;
     return elements.find(el => (el.propertyName || el.name).escapedText === DOCUMENT_TOKEN_NAME);
   }
 
   private getReplaceText(documentElement: ts.ImportSpecifier): string {
-    return documentElement.propertyName ? `${DOCUMENT_TOKEN_NAME} as ${documentElement.name.escapedText}` : DOCUMENT_TOKEN_NAME;
+    return documentElement.propertyName ?
+        `${DOCUMENT_TOKEN_NAME} as ${documentElement.name.escapedText}` :
+        DOCUMENT_TOKEN_NAME;
   }
 }

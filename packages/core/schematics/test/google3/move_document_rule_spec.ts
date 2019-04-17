@@ -138,15 +138,17 @@ describe('Google3 moveDocument TSLint rule', () => {
     expectFileNotToContain('index.ts', `import {DOCUMENT} from '@angular/platform-browser';`);
   });
 
-  it('should properly apply import replacement with existing import and leave original import', () => {
-    writeFile('index.ts', `
+  it('should properly apply import replacement with existing import and leave original import',
+     () => {
+       writeFile('index.ts', `
       import {DOCUMENT, anotherImport} from '@angular/platform-browser';
       import {someImport} from '@angular/common';
     `);
 
-    runTSLint();
+       runTSLint();
 
-    expectFileToContain('index.ts', `import { someImport, DOCUMENT } from '@angular/common';`);
-    expectFileToContain('index.ts', `import { anotherImport } from '@angular/platform-browser';`);
-  });
+       expectFileToContain('index.ts', `import { someImport, DOCUMENT } from '@angular/common';`);
+       expectFileToContain(
+           'index.ts', `import { anotherImport } from '@angular/platform-browser';`);
+     });
 });
