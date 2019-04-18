@@ -35,6 +35,7 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  HostListener,
 } from '@angular/core';
 import {fromEvent, merge, Observable, Subject} from 'rxjs';
 import {
@@ -116,8 +117,6 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
   host: {
     'class': 'mat-drawer',
     '[@transform]': '_animationState',
-    '(@transform.start)': '_animationStarted.next($event)',
-    '(@transform.done)': '_animationEnd.next($event)',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',
@@ -403,6 +402,26 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
   get _width(): number {
     return this._elementRef.nativeElement ? (this._elementRef.nativeElement.offsetWidth || 0) : 0;
+  }
+
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritte.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('@transform.start', ['$event'])
+  _animationStartListener(event: AnimationEvent) {
+    this._animationStarted.next(event);
+  }
+
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritte.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('@transform.done', ['$event'])
+  _animationDoneListener(event: AnimationEvent) {
+    this._animationEnd.next(event);
   }
 }
 
