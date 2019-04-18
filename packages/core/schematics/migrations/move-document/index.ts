@@ -73,11 +73,11 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
     const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
     const platformBrowserDeclaration = platformBrowserImport.parent.parent;
-    const newPlatformBrowserText = removeFromImport(platformBrowserImport, sourceFile, DOCUMENT_TOKEN_NAME);
-    const newCommonText =
-        commonImport ? addToImport(commonImport, sourceFile,
-            documentElement.name, documentElement.propertyName) :
-            createImport(COMMON_IMPORT, sourceFile, documentElement.name, documentElement.propertyName);
+    const newPlatformBrowserText =
+        removeFromImport(platformBrowserImport, sourceFile, DOCUMENT_TOKEN_NAME);
+    const newCommonText = commonImport ?
+        addToImport(commonImport, sourceFile, documentElement.name, documentElement.propertyName) :
+        createImport(COMMON_IMPORT, sourceFile, documentElement.name, documentElement.propertyName);
 
     // Replace the existing query decorator call expression with the updated
     // call expression node.
