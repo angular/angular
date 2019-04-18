@@ -16,12 +16,18 @@ class Walker extends Lint.RuleWalker {
       return super.visitImportDeclaration(node);
     }
 
-    const importClause = node.importClause.getText();
+    const importClauseText = node.importClause.getText();
 
-    if (importClause.startsWith('{') && importClause.endsWith('}') && (
-        importClause.includes('{ ') || importClause.includes(' }'))) {
+    if (importClauseText.startsWith('{') && importClauseText.endsWith('}') && (
+        importClauseText.includes('{ ') || importClauseText.includes(' }'))) {
+
+      const fix = new Lint.Replacement(
+        node.importClause.getStart(), node.importClause.getWidth(),
+        importClauseText.replace(/{\s+/, '{').replace(/\s+}/, '}')
+      );
+
       this.addFailureAtNode(node.importClause, 'Import clauses should not have spaces after the ' +
-                                                'opening brace or before the closing one.');
+                                               'opening brace or before the closing one.', fix);
     }
 
     super.visitImportDeclaration(node);
