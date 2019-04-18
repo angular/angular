@@ -259,10 +259,10 @@ describe(`nginx`, () => {
 
       it('should disallow non-GET requests', async () => {
         await Promise.all([
-          h.runCmd(`curl -iLX POST ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PUT ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PATCH ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX DELETE ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX POST ${baseUrl}/42`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PUT ${baseUrl}/42`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PATCH ${baseUrl}/42`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX DELETE ${baseUrl}/42`).then(h.verifyResponse(405)),
         ]);
       });
 
@@ -295,10 +295,10 @@ describe(`nginx`, () => {
         const url = `${scheme}://${host}/circle-build`;
 
         Promise.all([
-          h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405)),
         ]).then(done);
       });
 
@@ -334,10 +334,10 @@ describe(`nginx`, () => {
 
       it('should disallow non-POST requests', done => {
         Promise.all([
-          h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
-          h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405)),
+          h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405)),
         ]).then(done);
       });
 

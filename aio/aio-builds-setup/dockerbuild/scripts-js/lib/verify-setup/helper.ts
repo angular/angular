@@ -1,7 +1,6 @@
 // Imports
 import * as cp from 'child_process';
 import * as fs from 'fs';
-import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {AIO_DOWNLOADS_DIR, HIDDEN_DIR_PREFIX} from '../common/constants';
@@ -105,18 +104,7 @@ class Helper {
     Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
   }
 
-  public verifyResponse(status: number | [number, string], regex: string | RegExp = /^/): VerifyCmdResultFn {
-    let statusCode: number;
-    let statusText: string;
-
-    if (Array.isArray(status)) {
-      statusCode = status[0];
-      statusText = status[1];
-    } else {
-      statusCode = status;
-      statusText = http.STATUS_CODES[statusCode] || 'UNKNOWN_STATUS_CODE';
-    }
-
+  public verifyResponse(status: number, regex: string | RegExp = /^/): VerifyCmdResultFn {
     return (result: CmdResult) => {
       const [headers, body] = result.stdout.
         split(/(?:\r?\n){2,}/).
@@ -131,7 +119,7 @@ class Helper {
       }
 
       expect(result.success).toBe(true);
-      expect(headers).toContain(`${statusCode} ${statusText}`);
+      expect(headers).toMatch(new RegExp(`HTTP/(?:1\\.1|2) ${status} `));
       expect(body).toMatch(regex);
     };
   }
