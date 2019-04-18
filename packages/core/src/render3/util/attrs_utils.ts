@@ -67,7 +67,7 @@ export function setUpAttributes(native: RElement, attrs: TAttributes): number {
           (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
           native.setAttributeNS(namespaceURI, attrName, attrVal);
     } else {
-      /// attrName is string;
+      // attrName is string;
       const attrName = value as string;
       const attrVal = attrs[++i];
       // Standard attributes
