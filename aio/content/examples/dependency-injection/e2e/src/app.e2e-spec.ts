@@ -56,7 +56,7 @@ describe('Dependency Injection Tests', function () {
     });
 
     it('Hero displays as expected', function () {
-      expectedMsg = 'Mr. Nice';
+      expectedMsg = 'Dr Nice';
       expect(element(by.css('#hero')).getText()).toEqual(expectedMsg);
     });
 
