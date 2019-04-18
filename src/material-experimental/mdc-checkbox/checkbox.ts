@@ -27,13 +27,8 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {
-  MAT_CHECKBOX_CLICK_ACTION,
-  MatCheckboxClickAction,
-  RippleRenderer,
-  RippleTarget,
-  ThemePalette
-} from '@angular/material';
+import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from '@angular/material/checkbox';
+import {RippleRenderer, RippleTarget, ThemePalette} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCCheckboxAdapter, MDCCheckboxFoundation} from '@material/checkbox';
 

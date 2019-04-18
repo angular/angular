@@ -1,32 +1,17 @@
-// TypeScript config file that is used to compile the experimental package into ES2015.
+// TypeScript config file that is used to compile the cdk-experimental's ES2015 package through
+// Gulp. As the long term goal is to switch to Bazel, and we already want to run tests with Bazel,
+// we need to ensure the TypeScript build options are the same for Gulp and Bazel. We achieve this
+// by extending the generic Bazel build tsconfig which will be used for each entry-point.
 {
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": false,
-    "experimentalDecorators": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "importHelpers": true,
-    "newLine": "lf",
-    "module": "es2015",
-    "moduleResolution": "node",
     "outDir": "../../dist/packages/cdk-experimental",
     "rootDir": ".",
     "rootDirs": [
       ".",
       "../../dist/packages/cdk-experimental"
     ],
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    "types": ["jasmine", "tslib"],
     "paths": {
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
       "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"]
@@ -43,8 +28,5 @@
     "flatModuleId": "@angular/cdk-experimental",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
-  },
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
   }
 }

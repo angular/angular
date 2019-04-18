@@ -5,7 +5,7 @@ export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
 export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkPackage]);
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
-    [materialPackage]);
+    [cdkPackage, cdkExperimentalPackage, materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
 export const examplesPackage = new BuildPackage('material-examples', [
   cdkPackage,

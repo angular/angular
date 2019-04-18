@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {_MatCheckboxRequiredValidatorModule} from '@angular/material';
+import {_MatCheckboxRequiredValidatorModule} from '@angular/material/checkbox';
 
 export * from './checkbox';
 export * from './module';
@@ -27,4 +27,4 @@ export {
    * @breaking-change 9.0.0
    */
   TransitionCheckState,
-} from '@angular/material';
+} from '@angular/material/checkbox';

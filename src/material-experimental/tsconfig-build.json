@@ -1,39 +1,21 @@
-// TypeScript config file that is used to compile the experimental package into ES2015.
+// TypeScript config file that is used to compile the material-experimental's ES2015 package through
+// Gulp. As the long term goal is to switch to Bazel, and we already want to run tests with Bazel,
+// we need to ensure the TypeScript build options are the same for Gulp and Bazel. We achieve this
+// by extending the generic Bazel build tsconfig which will be used for each entry-point.
 {
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": false,
-    "experimentalDecorators": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "importHelpers": true,
-    "newLine": "lf",
-    "module": "es2015",
-    "moduleResolution": "node",
     "outDir": "../../dist/packages/material-experimental",
     "rootDir": ".",
     "rootDirs": [
       ".",
       "../../dist/packages/material-experimental"
     ],
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    "types": ["jasmine", "tslib"],
     "paths": {
-      "@angular/material/*": ["../../dist/packages/material/*"],
-      "@angular/material": ["../../dist/packages/material"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
-      "@angular/cdk": ["../../dist/packages/cdk"],
       "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
-      "@angular/cdk-experimental": ["../../dist/packages/cdk-experimental"],
+      "@angular/material/*": ["../../dist/packages/material/*"],
       "@angular/material-experimental/*": ["../../dist/packages/material-experimental/*"]
     }
   },
@@ -45,11 +27,8 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material-experimental",
+    "flatModuleId": "@angular/cdk-experimental",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
-  },
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
   }
 }
