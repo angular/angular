@@ -81,15 +81,15 @@ RUN echo "deb http://ftp.debian.org/debian stretch-backports main" | tee /etc/ap
 
 # Install packages
 RUN apt-get update -y && apt-get install -y \
-    cron \
-    dnsmasq \
-    nano \
-    nginx \
-    nodejs \
-    openssl \
-    rsyslog \
-    yarn
-RUN yarn global add pm2@3
+    cron=3.0pl1-128+deb9u1 \
+    dnsmasq=2.76-5+deb9u2 \
+    nano=2.7.4-1 \
+    nginx=1.10.3-1+deb9u2 \
+    nodejs=10.15.3-1nodesource1 \
+    openssl=1.1.0j-1~deb9u1 \
+    rsyslog=8.24.0-1 \
+    yarn=1.15.2-1
+RUN yarn global add pm2@3.5.0
 
 
 # Set up log rotation
