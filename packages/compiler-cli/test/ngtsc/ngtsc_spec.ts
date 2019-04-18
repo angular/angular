@@ -484,6 +484,21 @@ describe('ngtsc behavioral tests', () => {
        expect(jsContents).not.toContain('\u0275\u0275setNgModuleScope(TestModule,');
      });
 
+  it('should emit a \u0275registerNgModuleType call when the module has an id', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({id: 'test'})
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.\u0275registerNgModuleType("test", TestModule);');
+  });
+
   it('should filter out directives and pipes from module exports in the injector def', () => {
     env.tsconfig();
     env.write('test.ts', `
