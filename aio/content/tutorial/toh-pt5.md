@@ -475,7 +475,7 @@ The browser refreshes and the app is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/11` in the browser address bar,
-the router navigates to the detail view for the hero with `id: 11`,  "Mr. Nice".
+the router navigates to the detail view for the hero with `id: 11`,  "Dr Nice".
 
 {@a goback}
 

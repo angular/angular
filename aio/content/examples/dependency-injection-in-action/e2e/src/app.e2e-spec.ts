@@ -23,8 +23,8 @@ describe('Dependency Injection Cookbook', function () {
       expect(sortedHeroes).toBeDefined();
     });
 
-    it('Mr. Nice should be in sorted heroes', function () {
-      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Mr. Nice" and position()=2]')).get(0);
+    it('Dr Nice should be in sorted heroes', function () {
+      let sortedHero = element.all(by.xpath('//sorted-heroes/[text()="Dr Nice" and position()=2]')).get(0);
       expect(sortedHero).toBeDefined();
     });
 
@@ -60,7 +60,7 @@ describe('Dependency Injection Cookbook', function () {
 
     it('should render Hero-of-the-Month runner-ups', function () {
       let runnersUp =  element(by.id('rups1')).getText();
-      expect(runnersUp).toContain('RubberMan, Mr. Nice');
+      expect(runnersUp).toContain('RubberMan, Dr Nice');
     });
 
     it('should render DateLogger log entry in Hero-of-the-Month', function () {
