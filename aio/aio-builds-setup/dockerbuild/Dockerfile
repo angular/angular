@@ -1,5 +1,5 @@
 # Image metadata and config
-FROM debian:jessie
+FROM debian:stretch
 
 LABEL name="angular.io PR preview" \
       description="This image implements the PR preview functionality for angular.io." \
@@ -76,21 +76,20 @@ RUN apt-get update -y && apt-get install -y curl
 RUN curl --silent --show-error --location https://deb.nodesource.com/setup_10.x | bash -
 RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" | tee /etc/apt/sources.list.d/backports.list
+RUN echo "deb http://ftp.debian.org/debian stretch-backports main" | tee /etc/apt/sources.list.d/backports.list
 
 
 # Install packages
 RUN apt-get update -y && apt-get install -y \
-    chkconfig \
     cron \
     dnsmasq \
     nano \
+    nginx \
     nodejs \
     openssl \
     rsyslog \
     yarn
-RUN apt-get install -t jessie-backports -y nginx
-RUN yarn global add pm2@2
+RUN yarn global add pm2@3
 
 
 # Set up log rotation
@@ -151,8 +150,7 @@ RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_PORT}}|$TEST_AIO_PREVIEW_SERVER_PORT|g" /et
 
 
 # Set up pm2
-RUN pm2 startup systemv -u root > /dev/null
-RUN chkconfig pm2-root on
+RUN pm2 startup --user root > /dev/null
 
 
 # Set up the shell scripts
