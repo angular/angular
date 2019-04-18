@@ -5,7 +5,7 @@ import { Hero } from './hero';
 
 const HEROES = [
         new Hero('Windstorm', 'Weather mastery'),
-        new Hero('Mr. Nice', 'Killing them with kindness'),
+        new Hero('Dr Nice', 'Killing them with kindness'),
         new Hero('Magneta', 'Manipulates metallic objects')
       ];
 
