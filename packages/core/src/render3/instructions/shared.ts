@@ -781,7 +781,7 @@ export function createTNode(
 /**
  * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param tNodeFlags node flags
+ * @param tNode
  * @param direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
@@ -842,7 +842,18 @@ export function elementPropertyInternal<T>(
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        setNgReflectProperties(lView, element, tNode.type, dataValue, value);
+        /**
+         * dataValue is an array containing runtime input or output names for the directives:
+         * i+0: directive instance index
+         * i+1: publicName
+         * i+2: privateName
+         *
+         * e.g. [0, 'change', 'change-minified']
+         * we want to set the reflected property with the privateName: dataValue[i+2]
+         */
+        for (let i = 0; i < dataValue.length; i += 3) {
+          setNgReflectProperty(lView, element, tNode.type, dataValue[i + 2] as string, value);
+        }
       }
     }
   } else if (tNode.type === TNodeType.Element) {
@@ -884,24 +895,21 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-function setNgReflectProperties(
-    lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
-    value: any) {
-  for (let i = 0; i < inputs.length; i += 3) {
-    const renderer = lView[RENDERER];
-    const attrName = normalizeDebugBindingName(inputs[i + 2] as string);
-    const debugValue = normalizeDebugBindingValue(value);
-    if (type === TNodeType.Element) {
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute((element as RElement), attrName, debugValue) :
-          (element as RElement).setAttribute(attrName, debugValue);
-    } else if (value !== undefined) {
-      const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
-      if (isProceduralRenderer(renderer)) {
-        renderer.setValue((element as RComment), value);
-      } else {
-        (element as RComment).textContent = value;
-      }
+export function setNgReflectProperty(
+    lView: LView, element: RElement | RComment, type: TNodeType, attrName: string, value: any) {
+  const renderer = lView[RENDERER];
+  attrName = normalizeDebugBindingName(attrName);
+  const debugValue = normalizeDebugBindingValue(value);
+  if (type === TNodeType.Element) {
+    isProceduralRenderer(renderer) ?
+        renderer.setAttribute((element as RElement), attrName, debugValue) :
+        (element as RElement).setAttribute(attrName, debugValue);
+  } else if (value !== undefined) {
+    const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    if (isProceduralRenderer(renderer)) {
+      renderer.setValue((element as RComment), value);
+    } else {
+      (element as RComment).textContent = value;
     }
   }
 }
@@ -1306,7 +1314,7 @@ function addComponentLogic<T>(
  *
  * @param directiveIndex Index of the directive in directives array
  * @param instance Instance of the directive on which to set the initial inputs
- * @param inputs The list of inputs from the directive def
+ * @param def The directive def that contains the list of inputs
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
@@ -1327,6 +1335,11 @@ function setInputsFromAttrs<T>(
         def.setInput !(instance, value, publicName, privateName);
       } else {
         (instance as any)[privateName] = value;
+      }
+      if (ngDevMode) {
+        const lView = getLView();
+        const nativeElement = getNativeByTNode(tNode, lView) as RElement;
+        setNgReflectProperty(lView, nativeElement, tNode.type, privateName, value);
       }
     }
   }
@@ -1772,7 +1785,7 @@ export function handleError(lView: LView, error: any): void {
  * Set the inputs of directives at the current node to corresponding value.
  *
  * @param lView the `LView` which contains the directives.
- * @param inputAliases mapping between the public "input" name and privately-known,
+ * @param inputs mapping between the public "input" name and privately-known,
  * possibly minified, property names to write to.
  * @param value Value to set.
  */
