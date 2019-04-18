@@ -781,7 +781,7 @@ export function createTNode(
 /**
  * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param tNodeFlags node flags
+ * @param tNode
  * @param direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
@@ -884,7 +884,7 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-function setNgReflectProperties(
+export function setNgReflectProperties(
     lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
     value: any) {
   for (let i = 0; i < inputs.length; i += 3) {
@@ -1772,7 +1772,7 @@ export function handleError(lView: LView, error: any): void {
  * Set the inputs of directives at the current node to corresponding value.
  *
  * @param lView the `LView` which contains the directives.
- * @param inputAliases mapping between the public "input" name and privately-known,
+ * @param inputs mapping between the public "input" name and privately-known,
  * possibly minified, property names to write to.
  * @param value Value to set.
  */

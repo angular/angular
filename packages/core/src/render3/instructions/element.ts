@@ -10,24 +10,24 @@ import {assertDataInRange, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
-import {RElement, isProceduralRenderer} from '../interfaces/renderer';
+import {PropertyAliases, TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
+import {RComment, RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, LView, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
-import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
+import {getStylingContextFromLView, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
-
-import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
+import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNgReflectProperties, setNodeStylingTemplate} from './shared';
 import {getActiveDirectiveStylingIndex} from './styling';
+
 
 
 /**
@@ -108,6 +108,10 @@ export function ɵɵelementStart(
     if (inputData && inputData.hasOwnProperty('style')) {
       tNode.flags |= TNodeFlags.hasStyleInput;
     }
+    if (ngDevMode && attrs && inputData &&
+        (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container)) {
+      setUnboundNgReflectProperties(attrs !, lView, native, tNode.type, inputData);
+    }
   }
 
   // we render the styling again below in case any directives have set any `style` and/or
@@ -123,6 +127,28 @@ export function ɵɵelementStart(
     lView[QUERIES] = currentQueries.clone();
   }
   executeContentQueries(tView, tNode, lView);
+}
+
+function setUnboundNgReflectProperties(
+    attrs: TAttributes, lView: LView, element: RElement | RComment, type: TNodeType,
+    inputs: PropertyAliases) {
+  let i = 0;
+  while (i < attrs.length) {
+    const value = attrs[i];
+    // If the value is a number, it's a bound property and we can ignore it because its value
+    // will be set in `elementPropertyInternal`.
+    if (typeof value !== 'number') {
+      const attrName = value as string;
+      const attrVal = attrs[++i];
+      // We check for an alias value because it means that it's an input.
+      // This way we don't reflect regular attributes.
+      const aliasValue = inputs[attrName];
+      if (aliasValue && !isAnimationProp(attrName)) {
+        setNgReflectProperties(lView, element, type, aliasValue, attrVal);
+      }
+    }
+    i++;
+  }
 }
 
 /**

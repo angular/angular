@@ -1700,6 +1700,20 @@ function declareTests(config?: {useJit: boolean}) {
             .toContain('ng-reflect-dir-prop="hello"');
       });
 
+      it('should reflect property values on unbound inputs', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        const template = '<div>' +
+            '<div my-dir elprop="hello" title="Reflect test"></div>' +
+            '</div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('ng-reflect-dir-prop="hello"');
+        expect(html).not.toContain('ng-reflect-title');
+      });
+
       it(`should work with prop names containing '$'`, () => {
         TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
         const fixture = TestBed.createComponent(ParentCmp);
