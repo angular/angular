@@ -1687,17 +1687,27 @@ function declareTests(config?: {useJit: boolean}) {
     describe('logging property updates', () => {
       it('should reflect property values as attributes', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-        const template = '<div>' +
-            '<div my-dir [elprop]="ctxProp"></div>' +
-            '</div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(
+            MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.componentInstance.ctxProp = 'hello';
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement))
-            .toContain('ng-reflect-dir-prop="hello"');
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('ng-reflect-dir-prop="hello"');
+      });
+
+      it('should reflect property values on unbound inputs', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        TestBed.overrideComponent(
+            MyComp, {set: {template: `<div my-dir elprop="hello" title="Reflect test"></div>`}});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('ng-reflect-dir-prop="hello"');
+        expect(html).not.toContain('ng-reflect-title');
       });
 
       it(`should work with prop names containing '$'`, () => {
@@ -1705,22 +1715,53 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test_="hello"');
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('ng-reflect-test_="hello"');
       });
 
       it('should reflect property values on template comments', () => {
         const fixture =
             TestBed.configureTestingModule({declarations: [MyComp]})
                 .overrideComponent(
-                    MyComp, {set: {template: '<ng-template [ngIf]="ctxBoolProp"></ng-template>'}})
+                    MyComp, {set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`}})
                 .createComponent(MyComp);
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
 
-        expect(getDOM().getInnerHTML(fixture.nativeElement))
-            .toContain('"ng\-reflect\-ng\-if"\: "true"');
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('"ng-reflect-ng-if": "true"');
       });
+
+      it('should reflect property values on ng-containers', () => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<ng-container *ngIf="ctxBoolProp">content</ng-container>`}})
+                .createComponent(MyComp);
+
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
+
+        const html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('"ng-reflect-ng-if": "true"');
+      });
+
+      it('should reflect property values of multiple directive bound to the same input name',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+           TestBed.overrideComponent(
+               MyComp, {set: {template: `<div my-dir my-dir2 [elprop]="ctxProp"></div>`}});
+           const fixture = TestBed.createComponent(MyComp);
+
+           fixture.componentInstance.ctxProp = 'hello';
+           fixture.detectChanges();
+
+           const html = getDOM().getInnerHTML(fixture.nativeElement);
+           expect(html).toContain('ng-reflect-dir-prop="hello"');
+           expect(html).toContain('ng-reflect-dir-prop2="hello"');
+         });
 
       it('should indicate when toString() throws', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
@@ -2017,6 +2058,12 @@ class DynamicViewport {
 class MyDir {
   dirProp: string;
   constructor() { this.dirProp = ''; }
+}
+
+@Directive({selector: '[my-dir2]', inputs: ['dirProp2: elprop'], exportAs: 'mydir2'})
+class MyDir2 {
+  dirProp2: string;
+  constructor() { this.dirProp2 = ''; }
 }
 
 @Directive({selector: '[title]', inputs: ['title']})

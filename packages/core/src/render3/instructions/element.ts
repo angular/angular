@@ -18,14 +18,13 @@ import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, getActiveDirectiveId, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
-
 import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
 import {getActiveDirectiveStylingIndex} from './styling';
 
