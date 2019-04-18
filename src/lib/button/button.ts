@@ -134,7 +134,7 @@ export class MatButton extends _MatButtonMixinBase
 }
 
 /**
- * Raised Material design button.
+ * Material design anchor button.
  */
 @Component({
   moduleId: module.id,
