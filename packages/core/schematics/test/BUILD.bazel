@@ -9,7 +9,6 @@ ts_library(
     ],
     deps = [
         "//packages/core/schematics/migrations/move-document",
-        "//packages/core/schematics/migrations/move-document/google3",
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/migrations/static-queries/google3",
         "//packages/core/schematics/migrations/template-var-assignment",

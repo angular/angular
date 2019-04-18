@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {DOCUMENT_TOKEN_NAME, DocumentImportVisitor, Imports} from './document_import_visitor';
-import {addToImport, removeFromImport} from './move-import';
+import {COMMON_IMPORT, DOCUMENT_TOKEN_NAME, DocumentImportVisitor, ResolvedDocumentImport} from './document_import_visitor';
+import {addToImport, createImport, removeFromImport} from './move-import';
 
 
 /** Entry point for the V8 move-document migration. */
@@ -65,17 +65,19 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
   // the source files if needed. Note that we need to update multiple queries
   // within a source file within the same recorder in order to not throw off
   // the TypeScript node offsets.
-  importsMap.forEach((imports: Imports, sourceFile: ts.SourceFile) => {
-    const {platformBrowserImport, commonImport, documentElement, replaceText} = imports;
-    if (!documentElement || !replaceText || !platformBrowserImport) {
+  importsMap.forEach((resolvedImport: ResolvedDocumentImport, sourceFile: ts.SourceFile) => {
+    const {platformBrowserImport, commonImport, documentElement} = resolvedImport;
+    if (!documentElement || !platformBrowserImport) {
       return;
     }
     const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
     const platformBrowserDeclaration = platformBrowserImport.parent.parent;
-    const newPlatformBrowserText = removeFromImport(platformBrowserImport, DOCUMENT_TOKEN_NAME);
+    const newPlatformBrowserText = removeFromImport(platformBrowserImport, sourceFile, DOCUMENT_TOKEN_NAME);
     const newCommonText =
-        commonImport ? addToImport(commonImport, DOCUMENT_TOKEN_NAME) : NEW_COMMON_TEXT;
+        commonImport ? addToImport(commonImport, sourceFile,
+            documentElement.name, documentElement.propertyName) :
+            createImport(COMMON_IMPORT, sourceFile, documentElement.name, documentElement.propertyName);
 
     // Replace the existing query decorator call expression with the updated
     // call expression node.
@@ -93,5 +95,3 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
     tree.commitUpdate(update);
   });
 }
-
-const NEW_COMMON_TEXT = `\nimport {DOCUMENT} from '@angular/common';`;

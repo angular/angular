@@ -8,22 +8,20 @@
 
 import * as ts from 'typescript';
 
-const COMMON_IMPORT = '@angular/common';
-const PLATFORM_BROWSER_IMPORT = '@angular/platform-browser';
+export const COMMON_IMPORT = '@angular/common';
+export const PLATFORM_BROWSER_IMPORT = '@angular/platform-browser';
 export const DOCUMENT_TOKEN_NAME = 'DOCUMENT';
 
-export interface Imports {
+/** This contains the metadata necessary to move items from one import to another */
+export interface ResolvedDocumentImport {
   platformBrowserImport: ts.NamedImports|null;
   commonImport: ts.NamedImports|null;
-  replaceText: string|null;
   documentElement: ts.ImportSpecifier|null;
 }
 
-/**
- * Visitor that can be used to find a set of imports in a TypeScript file.
- */
+/** Visitor that can be used to find a set of imports in a TypeScript file. */
 export class DocumentImportVisitor {
-  importsMap: Map<ts.SourceFile, Imports> = new Map();
+  importsMap: Map<ts.SourceFile, ResolvedDocumentImport> = new Map();
 
   constructor(public typeChecker: ts.TypeChecker) {}
 
@@ -49,7 +47,6 @@ export class DocumentImportVisitor {
       imports = {
         platformBrowserImport: null,
         commonImport: null,
-        replaceText: null,
         documentElement: null,
       };
     }
@@ -57,12 +54,13 @@ export class DocumentImportVisitor {
     if (moduleSpecifier.text === PLATFORM_BROWSER_IMPORT) {
       const documentElement = this.getDocumentElement(node);
       if (documentElement) {
-        imports.replaceText = this.getReplaceText(documentElement);
         imports.platformBrowserImport = node;
         imports.documentElement = documentElement;
       }
     } else if (moduleSpecifier.text === COMMON_IMPORT) {
       imports.commonImport = node;
+    } else {
+      return;
     }
     this.importsMap.set(sourceFile, imports);
   }
@@ -70,11 +68,5 @@ export class DocumentImportVisitor {
   private getDocumentElement(node: ts.NamedImports): ts.ImportSpecifier|undefined {
     const elements = node.elements;
     return elements.find(el => (el.propertyName || el.name).escapedText === DOCUMENT_TOKEN_NAME);
-  }
-
-  private getReplaceText(documentElement: ts.ImportSpecifier): string {
-    return documentElement.propertyName ?
-        `${DOCUMENT_TOKEN_NAME} as ${documentElement.name.escapedText}` :
-        DOCUMENT_TOKEN_NAME;
   }
 }

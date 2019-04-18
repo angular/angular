@@ -53,7 +53,7 @@ describe('move-document migration', () => {
 
       const content = tree.readContent('/index.ts');
 
-      expect(content).toContain(`import {DOCUMENT} from '@angular/common';`);
+      expect(content).toContain(`import { DOCUMENT } from "@angular/common";`);
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
@@ -63,16 +63,7 @@ describe('move-document migration', () => {
         import {someImport} from '@angular/common';
       `);
 
-      runMigration();
-
-      const content = tree.readContent('/index.ts');
-
-      expect(content).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
-      expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
-    });
-
-    it('should properly apply import replacement with existing import (reverse)', () => {
-      writeFile('/index.ts', `
+      writeFile('/reverse.ts', `
         import {someImport} from '@angular/common';
         import {DOCUMENT} from '@angular/platform-browser';
       `);
@@ -80,9 +71,13 @@ describe('move-document migration', () => {
       runMigration();
 
       const content = tree.readContent('/index.ts');
+      const contentReverse = tree.readContent('/reverse.ts');
 
       expect(content).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
+
+      expect(contentReverse).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
+      expect(contentReverse).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
     it('should properly apply import replacement with existing import w/ comments', () => {
@@ -100,6 +95,8 @@ describe('move-document migration', () => {
 
       expect(content).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
+
+      expect(content).toMatch(/.*this is a comment.*/);
     });
 
     it('should properly apply import replacement with existing and redundant imports', () => {
@@ -124,13 +121,28 @@ describe('move-document migration', () => {
         import {someImport} from '@angular/common';
       `);
 
-         runMigration();
+       runMigration();
 
-         const content = tree.readContent('/index.ts');
+       const content = tree.readContent('/index.ts');
 
-         expect(content).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
-         expect(content).toContain(`import { anotherImport } from '@angular/platform-browser';`);
-       });
+       expect(content).toContain(`import { someImport, DOCUMENT } from '@angular/common';`);
+       expect(content).toContain(`import { anotherImport } from '@angular/platform-browser';`);
+    });
+
+    it('should properly apply import replacement with existing import and alias',
+      () => {
+        writeFile('/index.ts', `
+        import {DOCUMENT as doc, anotherImport} from '@angular/platform-browser';
+        import {someImport} from '@angular/common';
+      `);
+
+      runMigration();
+
+      const content = tree.readContent('/index.ts');
+
+      expect(content).toContain(`import { someImport, DOCUMENT as doc } from '@angular/common';`);
+      expect(content).toContain(`import { anotherImport } from '@angular/platform-browser';`);
+    });
   });
 
   function writeFile(filePath: string, contents: string) {
