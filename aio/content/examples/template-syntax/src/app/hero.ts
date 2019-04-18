@@ -10,7 +10,7 @@ export class Hero {
       'http://www.imdb.com/title/tt0065832/',
       325
     ),
-    new Hero(1, 'Mr. Nice',  'happy'),
+    new Hero(1, 'Dr Nice',  'happy'),
     new Hero(2, 'Narco',     'sad' ),
     new Hero(3, 'Windstorm', 'confused' ),
     new Hero(4, 'Magneta')

@@ -36,7 +36,7 @@ describe('Http Tests', function() {
   describe('Heroes', () => {
     it('retrieves the list of heroes at startup', () => {
       expect(page.heroesListItems.count()).toBe(4);
-      expect(page.heroesListItems.get(0).getText()).toContain('Mr. Nice');
+      expect(page.heroesListItems.get(0).getText()).toContain('Dr Nice');
       checkLogForMessage('GET "api/heroes"');
     });
 
