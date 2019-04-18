@@ -26,8 +26,6 @@ function testBazel() {
   # Create project
   ng new demo --collection=@angular/bazel --routing --skip-git --skip-install --style=scss
   cd demo
-  # Force more recent TS version until new Angular CLI projects also use it.
-  yarn add typescript@3.4.2 --dev
   installLocalPackages
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng generate component widget --style=css
