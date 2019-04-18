@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -28,6 +28,7 @@ export interface NgModuleAnalysis {
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
+  id: string|null;
 }
 
 /**
@@ -119,6 +120,17 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
+    let id: string|null = null;
+    if (ngModule.has('id')) {
+      const expr = ngModule.get('id') !;
+      const value = this.evaluator.evaluate(expr);
+      if (typeof value !== 'string') {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `NgModule.id must be a string`);
+      }
+      id = value;
+    }
+
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
@@ -184,6 +196,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return {
       analysis: {
+        id,
         ngModuleDef,
         ngInjectorDef,
         declarations: declarationRefs,
@@ -246,6 +259,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
         ngModuleStatements.push(callExpr.toStmt());
       }
+    }
+    if (analysis.id !== null) {
+      const registerNgModuleType = new ExternalExpr(R3Identifiers.registerNgModuleType);
+      const callExpr = registerNgModuleType.callFn(
+          [new LiteralExpr(analysis.id), new WrappedNodeExpr(node.name)]);
+      ngModuleStatements.push(callExpr.toStmt());
     }
     return [
       {
