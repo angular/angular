@@ -235,14 +235,31 @@ export class MatFormField extends _MatFormFieldMixinBase
    * @deprecated
    * @breaking-change 8.0.0
    */
-  @ViewChild('underline') underlineRef: ElementRef;
+  @ViewChild('underline', {static: false}) underlineRef: ElementRef;
 
-  @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
-  @ViewChild('inputContainer') _inputContainerRef: ElementRef;
-  @ViewChild('label') private _label: ElementRef;
-  @ContentChild(MatFormFieldControl) _control: MatFormFieldControl<any>;
-  @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
-  @ContentChild(MatLabel) _labelChild: MatLabel;
+  @ViewChild('connectionContainer', {static: true}) _connectionContainerRef: ElementRef;
+  @ViewChild('inputContainer', {static: false}) _inputContainerRef: ElementRef;
+  @ViewChild('label', {static: false}) private _label: ElementRef;
+
+  @ContentChild(MatFormFieldControl, {static: false}) _controlNonStatic: MatFormFieldControl<any>;
+  @ContentChild(MatFormFieldControl, {static: true}) _controlStatic: MatFormFieldControl<any>;
+  get _control() {
+    // TODO(crisbeto): we need this hacky workaround in order to support both Ivy
+    // and ViewEngine. We should clean this up once Ivy is the default renderer.
+    return this._explicitFormFieldControl || this._controlNonStatic || this._controlStatic;
+  }
+  set _control(value) {
+    this._explicitFormFieldControl = value;
+  }
+  private _explicitFormFieldControl: MatFormFieldControl<any>;
+
+  @ContentChild(MatLabel, {static: false}) _labelChildNonStatic: MatLabel;
+  @ContentChild(MatLabel, {static: true}) _labelChildStatic: MatLabel;
+  get _labelChild() {
+    return this._labelChildNonStatic || this._labelChildStatic;
+  }
+
+  @ContentChild(MatPlaceholder, {static: false}) _placeholderChild: MatPlaceholder;
   @ContentChildren(MatError) _errorChildren: QueryList<MatError>;
   @ContentChildren(MatHint) _hintChildren: QueryList<MatHint>;
   @ContentChildren(MatPrefix) _prefixChildren: QueryList<MatPrefix>;

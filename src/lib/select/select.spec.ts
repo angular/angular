@@ -2441,6 +2441,17 @@ describe('MatSelect', () => {
     }));
   });
 
+  describe('with ngIf and mat-label', () => {
+    beforeEach(async(() => configureMatSelectTestingModule([SelectWithNgIfAndLabel])));
+
+    it('should not throw when using ngIf on a select with an associated label', fakeAsync(() => {
+      expect(() => {
+        const fixture = TestBed.createComponent(SelectWithNgIfAndLabel);
+        fixture.detectChanges();
+      }).not.toThrow();
+    }));
+  });
+
   describe('inside of a form group', () => {
     beforeEach(async(() => configureMatSelectTestingModule([SelectInsideFormGroup])));
 
@@ -4982,4 +4993,18 @@ class SelectWithoutOptionCentering {
 })
 class SelectWithFormFieldLabel {
   placeholder: string;
+}
+
+@Component({
+  template: `
+    <mat-form-field appearance="fill">
+      <mat-label>Select something</mat-label>
+      <mat-select *ngIf="showSelect">
+        <mat-option value="1">One</mat-option>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SelectWithNgIfAndLabel {
+  showSelect = true;
 }

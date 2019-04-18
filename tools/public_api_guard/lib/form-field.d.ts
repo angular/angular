@@ -18,12 +18,16 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     readonly _canLabelFloat: boolean;
     _connectionContainerRef: ElementRef;
     _control: MatFormFieldControl<any>;
+    _controlNonStatic: MatFormFieldControl<any>;
+    _controlStatic: MatFormFieldControl<any>;
     _elementRef: ElementRef;
     _errorChildren: QueryList<MatError>;
     _hintChildren: QueryList<MatHint>;
     _hintLabelId: string;
     _inputContainerRef: ElementRef;
-    _labelChild: MatLabel;
+    readonly _labelChild: MatLabel;
+    _labelChildNonStatic: MatLabel;
+    _labelChildStatic: MatLabel;
     _labelId: string;
     _placeholderChild: MatPlaceholder;
     _prefixChildren: QueryList<MatPrefix>;
