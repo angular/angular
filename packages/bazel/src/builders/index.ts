@@ -8,7 +8,7 @@
  * @fileoverview Bazel builder
  */
 
-import {BuilderContext, BuilderOutput, createBuilder,} from '@angular-devkit/architect/src/index2';
+import {BuilderContext, BuilderOutput, createBuilder,} from '@angular-devkit/architect';
 import {JsonObject} from '@angular-devkit/core';
 import {checkInstallation, copyBazelFiles, deleteBazelFiles, getTemplateDir, runBazel} from './bazel';
 import {Schema} from './schema';
