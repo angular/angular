@@ -371,23 +371,25 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
  * @param removeIndex The index of the view to detach
  * @returns Detached LView instance.
  */
-export function detachView(lContainer: LContainer, removeIndex: number): LView {
+export function detachView(lContainer: LContainer, removeIndex: number): LView|undefined {
   const views = lContainer[VIEWS];
   const viewToDetach = views[removeIndex];
-  if (removeIndex > 0) {
-    views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
-  }
-  views.splice(removeIndex, 1);
-  addRemoveViewFromContainer(viewToDetach, false);
+  if (viewToDetach) {
+    if (removeIndex > 0) {
+      views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
+    }
+    views.splice(removeIndex, 1);
+    addRemoveViewFromContainer(viewToDetach, false);
 
-  if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
-      !(viewToDetach[FLAGS] & LViewFlags.Destroyed) && viewToDetach[QUERIES]) {
-    viewToDetach[QUERIES] !.removeView();
+    if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
+        !(viewToDetach[FLAGS] & LViewFlags.Destroyed) && viewToDetach[QUERIES]) {
+      viewToDetach[QUERIES] !.removeView();
+    }
+    viewToDetach[PARENT] = null;
+    viewToDetach[NEXT] = null;
+    // Unsets the attached flag
+    viewToDetach[FLAGS] &= ~LViewFlags.Attached;
   }
-  viewToDetach[PARENT] = null;
-  viewToDetach[NEXT] = null;
-  // Unsets the attached flag
-  viewToDetach[FLAGS] &= ~LViewFlags.Attached;
   return viewToDetach;
 }
 
@@ -399,8 +401,10 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView {
  */
 export function removeView(lContainer: LContainer, removeIndex: number) {
   const view = lContainer[VIEWS][removeIndex];
-  detachView(lContainer, removeIndex);
-  destroyLView(view);
+  if (view) {
+    detachView(lContainer, removeIndex);
+    destroyLView(view);
+  }
 }
 
 /**

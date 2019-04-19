@@ -90,6 +90,26 @@ describe('ViewContainerRef', () => {
         });
   });
 
+  it('should not throw when calling remove() on an empty container', () => {
+    const fixture = TestBed.createComponent(ViewContainerRefApp);
+    fixture.detectChanges();
+
+    const viewContainerRef = fixture.componentInstance.vcrComp.vcr;
+
+    expect(viewContainerRef.length).toBe(0);
+    expect(() => viewContainerRef.remove()).not.toThrow();
+  });
+
+  it('should not throw when calling detach() on an empty container', () => {
+    const fixture = TestBed.createComponent(ViewContainerRefApp);
+    fixture.detectChanges();
+
+    const viewContainerRef = fixture.componentInstance.vcrComp.vcr;
+
+    expect(viewContainerRef.length).toBe(0);
+    expect(() => viewContainerRef.detach()).not.toThrow();
+  });
+
   describe('destroy should clean the DOM in all cases:', () => {
     function executeTest(template: string) {
       TestBed.overrideTemplate(DestroyCasesComp, template).configureTestingModule({
@@ -131,7 +151,7 @@ describe('ViewContainerRef', () => {
         <ng-template #foo>
           <span>Foo</span>
         </ng-template>
-        
+
         <ng-template structDir>
           <before></before>
           <ng-container [ngTemplateOutlet]="foo">
@@ -146,7 +166,7 @@ describe('ViewContainerRef', () => {
       <ng-template #foo>
         <span>Foo</span>
       </ng-template>
-      
+
       <ng-template structDir>
         <before></before>
         <div [ngTemplateOutlet]="foo">
@@ -161,7 +181,7 @@ describe('ViewContainerRef', () => {
       <ng-template #foo>
         <span>Foo</span>
       </ng-template>
-      
+
       <ng-template structDir>
         <before></before>
         <ng-template [ngTemplateOutlet]="foo"></ng-template>
@@ -174,7 +194,7 @@ describe('ViewContainerRef', () => {
       <ng-template #foo>
         <span>Foo</span>
       </ng-template>
-      
+
       <ng-template structDir>
         <before></before>
         <ng-container>
@@ -194,7 +214,7 @@ describe('ViewContainerRef', () => {
       <ng-template #foo>
         <span i18n>Bar</span>
       </ng-template>
-      
+
       <ng-template structDir>
         <before></before>
         <ng-container i18n>
@@ -215,7 +235,7 @@ describe('ViewContainerRef', () => {
       <ng-template #foo>
         <span>Foo</span>
       </ng-template>
-      
+
       <ng-template structDir i18n>
         <before></before>
         <div [ngTemplateOutlet]="foo">
