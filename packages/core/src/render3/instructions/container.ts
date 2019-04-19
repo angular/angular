@@ -144,9 +144,17 @@ export function ɵɵcontainerRefreshEnd(): void {
 function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): void {
   const queries = lView[QUERIES];
   if (queries) {
-    queries.addNode(tContainerNode);
     const lContainer = lView[tContainerNode.index];
-    lContainer[QUERIES] = queries.container();
+    if (lContainer[QUERIES]) {
+      // Query container should only exist if it was created through a dynamic view
+      // in a directive constructor. In this case, we must splice the template
+      // matches in before the view matches to ensure query results in embedded views
+      // don't clobber query results on the template node itself.
+      queries.insertNodeBeforeViews(tContainerNode);
+    } else {
+      queries.addNode(tContainerNode);
+      lContainer[QUERIES] = queries.container();
+    }
   }
 }
 

@@ -106,6 +106,12 @@ export function createTemplateRef<T>(
 
       createEmbeddedView(context: T, container?: LContainer, index?: number):
           viewEngine_EmbeddedViewRef<T> {
+        const currentQueries = this._declarationParentView[QUERIES];
+        // Query container may be missing if this view was created in a directive
+        // constructor. Create it now to avoid losing results in embedded views.
+        if (currentQueries && this._hostLContainer[QUERIES] == null) {
+          this._hostLContainer[QUERIES] = currentQueries !.container();
+        }
         const lView = createEmbeddedViewAndNode(
             this._tView, context, this._declarationParentView, this._hostLContainer[QUERIES],
             this._injectorIndex);
