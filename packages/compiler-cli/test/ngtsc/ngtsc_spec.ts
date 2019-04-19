@@ -180,11 +180,12 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('Service.ngInjectableDef = i0.defineInjectable({ token: Service,');
+    expect(jsContents)
+        .toContain('Service.ngInjectableDef = i0.\u0275\u0275defineInjectable({ token: Service,');
     expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
     expect(jsContents)
         .toContain('throw new Error("Service has a constructor which is not compatible');
-    expect(jsContents).toContain('(r = new Service(i0.inject(TOKEN)));');
+    expect(jsContents).toContain('(r = new Service(i0.\u0275\u0275inject(TOKEN)));');
     expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
   });
 
