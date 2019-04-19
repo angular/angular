@@ -354,6 +354,14 @@ describe('compiler compliance', () => {
         }
       };
 
+      ///////////////
+      // TODO(FW-1273): The code generated below is adding extra parens, and we need to stop
+      // generating those.
+      //
+      // For example:
+      // `$r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));`
+      ///////////////
+
       const $e0_attrs$ = [];
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
