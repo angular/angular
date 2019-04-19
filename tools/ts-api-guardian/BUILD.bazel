@@ -1,11 +1,10 @@
+# BEGIN-INTERNAL
 load(
     "@build_bazel_rules_nodejs//:defs.bzl",
     "jasmine_node_test",
     "npm_package",
 )
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
-
-exports_files(["bin/ts-api-guardian"])
 
 ts_library(
     name = "lib",
@@ -35,10 +34,16 @@ genrule(
 npm_package(
     name = "ts-api-guardian",
     srcs = [
+        "BUILD.bazel",
         "README.md",
         "bin/ts-api-guardian",
+        "index.bzl",
         "package.json",
     ],
+    replacements = {
+        "@angular//tools/ts-api-guardian": "@npm_ts_api_guardian//",
+        "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
+    },
     deps = [
         ":lib",
         ":license",
@@ -78,4 +83,11 @@ jasmine_node_test(
         ":package.json",
     ],
     tags = ["local"],
+)
+# END-INTERNAL
+
+filegroup(
+    name = "bin",
+    srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
+    visibility = ["//visibility:public"],
 )

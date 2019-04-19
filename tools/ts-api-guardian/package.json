@@ -4,6 +4,12 @@
   "description": "Guards the API of TypeScript libraries!",
   "main": "lib/main.js",
   "typings": "lib/main.d.ts",
+  "bazelWorkspaces": {
+    "npm_ts_api_guardian": {
+      "version": "0.4.1",
+      "rootPath": "."
+    }
+  },
   "bin": {
     "ts-api-guardian": "./bin/ts-api-guardian"
   },
