@@ -155,7 +155,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Note: this is internal-only convention and might change in the future, so it should not be
     // relied upon externally.
     const isIsolated = typeof rootSelectorOrNode === 'string' &&
-        /^#ng-internal-isolated-\d+/.test(rootSelectorOrNode);
+        /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
 
     const rootContext: RootContext = (isInternalRootView || isIsolated) ?
         createRootContext() :
