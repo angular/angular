@@ -281,8 +281,8 @@ export function createContainerRef(
       detach(index?: number): viewEngine_ViewRef|null {
         const adjustedIdx = this._adjustIndex(index, -1);
         const view = detachView(this._lContainer, adjustedIdx);
-        const wasDetached = this._viewRefs.splice(adjustedIdx, 1)[0] != null;
-        return wasDetached ? new ViewRef(view, view[CONTEXT], -1) : null;
+        const wasDetached = view && this._viewRefs.splice(adjustedIdx, 1)[0] != null;
+        return wasDetached ? new ViewRef(view !, view ![CONTEXT], -1) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
