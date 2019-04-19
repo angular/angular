@@ -842,7 +842,9 @@ export function elementPropertyInternal<T>(
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        setNgReflectProperties(lView, element, tNode.type, dataValue, value);
+        // dataValue is an array containing: [directive instance index, publicName, privateName]
+        // we want to set the reflected property with the privateName: dataValue[2]
+        setNgReflectProperties(lView, element, tNode.type, dataValue[2] as string, value);
       }
     }
   } else if (tNode.type === TNodeType.Element) {
@@ -885,23 +887,20 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
 }
 
 export function setNgReflectProperties(
-    lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
-    value: any) {
-  for (let i = 0; i < inputs.length; i += 3) {
-    const renderer = lView[RENDERER];
-    const attrName = normalizeDebugBindingName(inputs[i + 2] as string);
-    const debugValue = normalizeDebugBindingValue(value);
-    if (type === TNodeType.Element) {
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute((element as RElement), attrName, debugValue) :
-          (element as RElement).setAttribute(attrName, debugValue);
-    } else if (value !== undefined) {
-      const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
-      if (isProceduralRenderer(renderer)) {
-        renderer.setValue((element as RComment), value);
-      } else {
-        (element as RComment).textContent = value;
-      }
+    lView: LView, element: RElement | RComment, type: TNodeType, attrName: string, value: any) {
+  const renderer = lView[RENDERER];
+  attrName = normalizeDebugBindingName(attrName);
+  const debugValue = normalizeDebugBindingValue(value);
+  if (type === TNodeType.Element) {
+    isProceduralRenderer(renderer) ?
+        renderer.setAttribute((element as RElement), attrName, debugValue) :
+        (element as RElement).setAttribute(attrName, debugValue);
+  } else if (value !== undefined) {
+    const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    if (isProceduralRenderer(renderer)) {
+      renderer.setValue((element as RComment), value);
+    } else {
+      (element as RComment).textContent = value;
     }
   }
 }
@@ -1306,7 +1305,7 @@ function addComponentLogic<T>(
  *
  * @param directiveIndex Index of the directive in directives array
  * @param instance Instance of the directive on which to set the initial inputs
- * @param inputs The list of inputs from the directive def
+ * @param def The directive def that contains the list of inputs
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
@@ -1327,6 +1326,11 @@ function setInputsFromAttrs<T>(
         def.setInput !(instance, value, publicName, privateName);
       } else {
         (instance as any)[privateName] = value;
+      }
+      if (ngDevMode) {
+        const lView = getLView();
+        const nativeElement = getNativeByTNode(tNode, lView) as RElement;
+        setNgReflectProperties(lView, nativeElement, tNode.type, privateName, value);
       }
     }
   }
