@@ -293,10 +293,29 @@ describe('LocationService', () => {
       expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
     });
 
+    it('should do a "full page navigation" and remove the stored scroll position when navigating to ' +
+      'internal URLs only if a ServiceWorker update has been activated', () => {
+      const goExternalSpy = spyOn(service, 'goExternal');
+      const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
+
+      // Internal URL - No ServiceWorker update
+      service.go('some-internal-url');
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
+      expect(goExternalSpy).not.toHaveBeenCalled();
+      expect(location.path(true)).toEqual('some-internal-url');
+
+      // Internal URL - ServiceWorker update
+      swUpdates.updateActivated.next('foo');
+      service.go('other-internal-url');
+      expect(goExternalSpy).toHaveBeenCalledWith('other-internal-url');
+      expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
+    });
+
     it('should not remove the stored scroll position when navigating to external URLs', () => {
       const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
       const goExternalSpy = spyOn(service, 'goExternal');
       const externalUrl = 'http://some/far/away/land';
+      const otherExternalUrl = 'http://some/far/far/away/land';
 
       // External URL - No ServiceWorker update
       service.go(externalUrl);
@@ -305,24 +324,9 @@ describe('LocationService', () => {
 
       // External URL - ServiceWorker update
       swUpdates.updateActivated.next('foo');
-      service.go(externalUrl);
+      service.go(otherExternalUrl);
       expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
-      expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
-    });
-
-    it('should do a "full page navigation" if a ServiceWorker update has been activated', () => {
-      const goExternalSpy = spyOn(service, 'goExternal');
-
-      // Internal URL - No ServiceWorker update
-      service.go('some-internal-url');
-      expect(goExternalSpy).not.toHaveBeenCalled();
-      expect(location.path(true)).toEqual('some-internal-url');
-
-      // Internal URL - ServiceWorker update
-      swUpdates.updateActivated.next('foo');
-      service.go('other-internal-url');
-      expect(goExternalSpy).toHaveBeenCalledWith('other-internal-url');
-      expect(location.path(true)).toEqual('some-internal-url');
+      expect(goExternalSpy).toHaveBeenCalledWith(otherExternalUrl);
     });
 
     it('should not update currentUrl for external url that starts with "http"', () => {
