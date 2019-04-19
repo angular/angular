@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Component, Directive, ElementRef, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -23,8 +23,31 @@ describe('ViewContainerRef', () => {
 
   beforeEach(() => {
     ɵi18nConfigureLocalize({translations: TRANSLATIONS});
-    TestBed.configureTestingModule(
-        {declarations: [StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp]});
+    TestBed.configureTestingModule({
+      declarations: [
+        StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp, ConstructorDir,
+        ConstructorApp, ConstructorAppWithQueries
+      ]
+    });
+  });
+
+  describe('create', () => {
+
+    it('should support view queries inside embedded views created in dir constructors', () => {
+      const fixture = TestBed.createComponent(ConstructorApp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+      expect(fixture.componentInstance.foo.nativeElement)
+          .toEqual(fixture.debugElement.nativeElement.querySelector('span'));
+    });
+
+    it('should ensure results in views created in constructors do not appear before template node results',
+       () => {
+         const fixture = TestBed.createComponent(ConstructorAppWithQueries);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.foo).toBeAnInstanceOf(TemplateRef);
+       });
+
   });
 
   describe('insert', () => {
@@ -264,4 +287,35 @@ export class StructDir {
 @Component({selector: 'destroy-cases', template: `  `})
 class DestroyCasesComp {
   @ViewChildren(StructDir) structDirs !: QueryList<StructDir>;
+}
+
+@Directive({selector: '[constructorDir]'})
+class ConstructorDir {
+  constructor(vcref: ViewContainerRef, tplRef: TemplateRef<any>) {
+    vcref.createEmbeddedView(tplRef);
+  }
+}
+
+@Component({
+  selector: 'constructor-app',
+  template: `    
+    <div *constructorDir>
+      <span *constructorDir #foo></span>
+    </div>
+  `
+})
+class ConstructorApp {
+  @ViewChild('foo') foo !: ElementRef;
+}
+
+@Component({
+  selector: 'constructor-app-with-queries',
+  template: `
+    <ng-template constructorDir #foo>
+      <div #foo></div>
+    </ng-template>
+  `
+})
+class ConstructorAppWithQueries {
+  @ViewChild('foo') foo !: TemplateRef<any>;
 }

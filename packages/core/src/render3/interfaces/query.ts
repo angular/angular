@@ -38,6 +38,13 @@ export interface LQueries {
   addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): void;
 
   /**
+   * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
+   * if matching query predicate. This is a special mode invoked if the query container has to
+   * be created out of order (e.g. view created in the constructor of a directive).
+   */
+  insertNodeBeforeViews(tNode: TElementNode|TContainerNode|TElementContainerNode): void;
+
+  /**
    * Notify `LQueries` that a new LContainer was added to ivy data structures. As a result we need
    * to prepare room for views that might be inserted into this container.
    */

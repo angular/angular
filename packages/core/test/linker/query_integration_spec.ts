@@ -100,9 +100,18 @@ describe('Query API', () => {
 
     it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
        () => {
-         const template =
-             '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
-             '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
+         const template = `
+          <div directive-needs-content-child>
+            <ng-template text="foo" [ngIf]="true">
+              <div text="bar"></div>
+             </ng-template>
+           </div>
+           <needs-content-child #q>
+              <ng-template text="foo" [ngIf]="true">
+                <div text="bar"></div>
+              </ng-template>
+           </needs-content-child>
+         `;
          const view = createTestCmp(MyComp0, template);
          view.detectChanges();
          const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
