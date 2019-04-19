@@ -33,8 +33,11 @@ def ts_api_guardian_test(
     """Runs ts_api_guardian
     """
     data += [
+        # BEGIN-INTERNAL
+        # Locally we need to add the TS build target
         "@angular//tools/ts-api-guardian:lib",
-        "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        # END-INTERNAL
+        "@angular//tools/ts-api-guardian:bin",
     ]
 
     args = [
