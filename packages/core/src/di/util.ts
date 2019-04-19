@@ -24,7 +24,7 @@ export function convertInjectableProviderToFactory(
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
     // TODO - convert to flags.
-    return () => new type(...injectArgs(deps as any[]));
+    return () => new type(...injectArgs(deps as any[]) as never[]);
   }
 
   if (USE_VALUE in provider) {
@@ -43,13 +43,13 @@ export function convertInjectableProviderToFactory(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new classProvider.useClass(...injectArgs(deps));
+    return () => new classProvider.useClass(...injectArgs(deps) as never[]);
   } else {
     let deps = (provider as ConstructorSansProvider).deps;
     if (!deps) {
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new type(...injectArgs(deps !));
+    return () => new type(...injectArgs(deps !) as never[]);
   }
 }

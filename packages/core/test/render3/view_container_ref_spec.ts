@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ɵɵdefineInjector, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef,} from '../../src/core';
+import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ComponentRef, ɵɵdefineInjector, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewContainerRef, ViewRef, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef,} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
 import {ViewEncapsulation} from '../../src/metadata';
 import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefinePipe, injectComponentFactoryResolver, ɵɵlistener, ɵɵloadViewQuery, ɵɵNgOnChangesFeature, ɵɵqueryRefresh, ɵɵviewQuery,} from '../../src/render3/index';
@@ -1237,8 +1237,8 @@ describe('ViewContainerRef', () => {
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header');
-        expect(
-            directiveInstance !.vcref.injector.get(ElementRef).nativeElement.tagName.toLowerCase())
+        expect(directiveInstance !.vcref.injector.get(ElementRef as Type<ElementRef<HTMLElement>>)
+                   .nativeElement.tagName.toLowerCase())
             .toEqual('header');
         expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
       });
@@ -1256,8 +1256,8 @@ describe('ViewContainerRef', () => {
 
         expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
-        expect(
-            directiveInstance !.vcref.injector.get(ElementRef).nativeElement.tagName.toLowerCase())
+        expect(directiveInstance !.vcref.injector.get(ElementRef as Type<ElementRef<HTMLElement>>)
+                   .nativeElement.tagName.toLowerCase())
             .toEqual('header-cmp');
         expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
       });
@@ -1270,7 +1270,8 @@ describe('ViewContainerRef', () => {
 
         new TemplateFixture(createTemplate, () => {}, 2, 0, [DirectiveWithVCRef]);
         expect(directiveInstance !.vcref.element.nativeElement.textContent).toEqual('container');
-        expect(directiveInstance !.vcref.injector.get(ElementRef).nativeElement.textContent)
+        expect(directiveInstance !.vcref.injector.get(ElementRef as Type<ElementRef<HTMLElement>>)
+                   .nativeElement.textContent)
             .toEqual('container');
         expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
       });

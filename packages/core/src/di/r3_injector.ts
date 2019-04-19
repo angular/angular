@@ -431,7 +431,7 @@ export function providerToFactory(
             `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail);
       }
       if (hasDeps(provider)) {
-        factory = () => new (classRef)(...injectArgs(provider.deps));
+        factory = () => new (classRef)(...injectArgs(provider.deps) as never[]);
       } else {
         return injectableDefOrInjectorDefFactory(classRef);
       }
