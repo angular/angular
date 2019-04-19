@@ -11,16 +11,16 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationProvider, LocationUpgradeProvider} from '../src/$location';
+import {LocationUpgradeProvider, LocationUpgradeService} from '../src/$location';
 import {LocationUpgradeModule} from '../src/location_upgrade_module';
 import {UrlCodec} from '../src/params';
 
 export interface LocationUpgradeTestingConfig {
   useHash?: boolean;
+  hashPrefix?: string;
+  urlCodec?: typeof UrlCodec;
   startUrl?: string;
   appBaseHref?: string;
-  hashPrefix?: string;
-  html5Mode?: boolean;
 }
 
 /**
@@ -60,7 +60,7 @@ export class LocationUpgradeTestModule {
           deps: [[new Inject(APP_BASE_HREF), new Optional()]]
         },
         {
-          provide: LocationProvider,
+          provide: LocationUpgradeService,
           useFactory: provide$location,
           deps: [
             UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy,
@@ -85,7 +85,7 @@ export function provide$location(
       ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
 
   $locationProvider.hashPrefix(config && config.hashPrefix);
-  $locationProvider.html5Mode(config && config.html5Mode);
+  $locationProvider.html5Mode(config && !config.useHash);
 
   return $locationProvider.$get();
 }

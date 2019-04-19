@@ -10,7 +10,7 @@ import {CommonModule, PathLocationStrategy} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationProvider} from '../src/$location';
+import {LocationUpgradeService} from '../src/$location';
 
 import {LocationUpgradeTestModule} from './upgrade_location_test_module';
 
@@ -68,16 +68,16 @@ describe('LocationProvider', () => {
   });
 
   it('should instantiate LocationProvider',
-     inject([LocationProvider], ($location: LocationProvider) => {
+     inject([LocationUpgradeService], ($location: LocationUpgradeService) => {
        expect($location).toBeDefined();
-       expect($location instanceof LocationProvider).toBe(true);
+       expect($location instanceof LocationUpgradeService).toBe(true);
      }));
 
 });
 
 
 describe('LocationHtml5Url', function() {
-  let $location: LocationProvider;
+  let $location: LocationUpgradeService;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -96,7 +96,8 @@ describe('LocationHtml5Url', function() {
     };
   });
 
-  beforeEach(inject([LocationProvider], (loc: LocationProvider) => { $location = loc; }));
+  beforeEach(
+      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
 
 
   it('should set the URL', () => {
@@ -201,7 +202,7 @@ describe('LocationHtml5Url', function() {
 
 
 describe('NewUrl', function() {
-  let $location: LocationProvider;
+  let $location: LocationUpgradeService;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -219,7 +220,8 @@ describe('NewUrl', function() {
     };
   });
 
-  beforeEach(inject([LocationProvider], (loc: LocationProvider) => { $location = loc; }));
+  beforeEach(
+      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
 
   // Sets the default most of these tests rely on
   function setupUrl(url = '/path/b?search=a&b=c&d#hash') { $location.url(url); }
@@ -520,7 +522,7 @@ describe('NewUrl', function() {
 });
 
 describe('New URL Parsing', () => {
-  let $location: LocationProvider;
+  let $location: LocationUpgradeService;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -539,7 +541,8 @@ describe('New URL Parsing', () => {
     };
   });
 
-  beforeEach(inject([LocationProvider], (loc: LocationProvider) => { $location = loc; }));
+  beforeEach(
+      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
 
   it('should prepend path with basePath', function() {
     $location.$$parse('http://server/base/abc?a');
@@ -553,7 +556,7 @@ describe('New URL Parsing', () => {
 });
 
 describe('New URL Parsing', () => {
-  let $location: LocationProvider;
+  let $location: LocationUpgradeService;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -571,7 +574,8 @@ describe('New URL Parsing', () => {
     };
   });
 
-  beforeEach(inject([LocationProvider], (loc: LocationProvider) => { $location = loc; }));
+  beforeEach(
+      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
 
   it('should parse new url', function() {
     $location.$$parse('http://host.com/base');
@@ -696,7 +700,7 @@ describe('New URL Parsing', () => {
 
 describe('LocationHashbangUrl', function() {
 
-  let $location: LocationProvider;
+  let $location: LocationUpgradeService;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -715,7 +719,8 @@ describe('LocationHashbangUrl', function() {
     };
   });
 
-  beforeEach(inject([LocationProvider], (loc: LocationProvider) => { $location = loc; }));
+  beforeEach(
+      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
 
   xit('should rewrite URL', () => {
     expect(parseLinkAndReturn($location, 'http://other')).toEqual(undefined);
@@ -828,7 +833,7 @@ describe('LocationHashbangUrl', function() {
 //   });
 // });
 
-function parseLinkAndReturn(location: LocationProvider, toUrl: string, relHref?: string) {
+function parseLinkAndReturn(location: LocationUpgradeService, toUrl: string, relHref?: string) {
   const resetUrl = location.$$parseLinkUrl(toUrl, relHref);
   return resetUrl && location.absUrl() || undefined;
 }

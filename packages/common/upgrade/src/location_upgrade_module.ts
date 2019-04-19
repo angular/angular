@@ -8,7 +8,9 @@
 
 import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {UpgradeModule} from '@angular/upgrade/static';
 
+import {LocationUpgradeProvider, LocationUpgradeService} from './$location';
 import {AngularJSUrlCodec, UrlCodec} from './params';
 
 /**
@@ -18,6 +20,7 @@ import {AngularJSUrlCodec, UrlCodec} from './params';
  */
 export interface LocationUpgradeConfig {
   useHash?: boolean;
+  hashPrefix?: string;
   urlCodec?: typeof UrlCodec;
   serverBaseHref?: string;
   appBaseHref?: string;
@@ -45,6 +48,14 @@ export class LocationUpgradeModule {
       ngModule: LocationUpgradeModule,
       providers: [
         Location,
+        {
+          provide: LocationUpgradeService,
+          useFactory: provide$location,
+          deps: [
+            UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy,
+            LOCATION_UPGRADE_CONFIGURATION
+          ]
+        },
         {provide: LOCATION_UPGRADE_CONFIGURATION, useValue: config ? config : {}},
         {provide: UrlCodec, useFactory: provideUrlCodec, deps: [LOCATION_UPGRADE_CONFIGURATION]},
         {
@@ -88,4 +99,17 @@ export function provideLocationStrategy(
     options: LocationUpgradeConfig = {}) {
   return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
                            new PathLocationStrategy(platformLocationStrategy, baseHref);
+}
+
+
+export function provide$location(
+    ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation,
+    urlCodec: UrlCodec, locationStrategy: LocationStrategy, config?: LocationUpgradeConfig) {
+  const $locationProvider = new LocationUpgradeProvider(
+      ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
+
+  $locationProvider.hashPrefix(config && config.hashPrefix);
+  $locationProvider.html5Mode(config && !config.useHash);
+
+  return $locationProvider.$get();
 }

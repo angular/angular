@@ -20,7 +20,7 @@ const DEFAULT_PORTS: {[key: string]: number} = {
   'ftp:': 21
 };
 
-export class LocationProvider {
+export class LocationUpgradeService {
   private initalizing = true;
   private updateBrowser = false;
   private $$absUrl: string = '';
@@ -50,23 +50,17 @@ export class LocationProvider {
 
     this.$$protocol = parsedUrl.protocol;
     this.$$host = parsedUrl.hostname;
-    console.log('parsing URL: ', initialUrl);
-    console.log(parsedUrl.port);
     this.$$port = parseInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 
     this.$$parseLinkUrl(initialUrl, initialUrl);
     this.cacheState();
     this.$$state = this.browserState();
 
-    /**
-     * The corresponding AngularJS version of this handler first checked if the URL was an external
-     * URL.
-     * We likely don't need to do this as the event shouldn't fire.
-     */
-    location.onUrlChange((newUrl, newState) => {
+    this.location.onUrlChange((newUrl, newState) => {
       let oldUrl = this.absUrl();
       let oldState = this.$$state;
       this.$$parse(newUrl);
+      newUrl = this.absUrl();
       this.$$state = newState;
       const defaultPrevented =
           this.$rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl, newState, oldState)
@@ -89,7 +83,7 @@ export class LocationProvider {
     });
 
     // update browser
-    $rootScope.$watch(() => {
+    this.$rootScope.$watch(() => {
       if (this.initalizing || this.updateBrowser) {
         this.updateBrowser = false;
 
@@ -108,7 +102,7 @@ export class LocationProvider {
         if (this.initalizing || urlOrStateChanged) {
           this.initalizing = false;
 
-          $rootScope.$evalAsync(() => {
+          this.$rootScope.$evalAsync(() => {
             // Get the new URL again since it could have changed due to async update
             const newUrl = this.absUrl();
             const defaultPrevented =
@@ -131,7 +125,7 @@ export class LocationProvider {
                     newUrl, currentReplace, oldState === this.$$state ? null : this.$$state);
                 this.$$replace = false;
               }
-              $rootScope.$broadcast(
+              this.$rootScope.$broadcast(
                   '$locationChangeSuccess', newUrl, oldUrl, this.$$state, oldState);
             }
           });
@@ -158,8 +152,7 @@ export class LocationProvider {
       var sameState = this.lastHistoryState === state;
 
       // Normalize the inputted URL
-      // TODO(jasonaden): must have a `urlResolve` replacement
-      // url = urlResolve(url).href;
+      url = this.urlCodec.parse(url).href;
 
       // Don't change anything if previous and current URLs and states match.
       if (this.lastBrowserUrl === url && sameState) {
@@ -167,6 +160,11 @@ export class LocationProvider {
       }
       this.lastBrowserUrl = url;
       this.lastHistoryState = state;
+
+      // Remove server base from URL as the Angular APIs for updating URL require
+      // it to be the path+.
+      url = this.stripBaseUrl(this.getServerBase(), url) || url;
+
       // Set the URL
       if (replace) {
         this.locationStrategy.replaceState(state, '', url, '');
@@ -211,6 +209,7 @@ export class LocationProvider {
     if (url.startsWith(base)) {
       return url.substr(base.length);
     }
+    return undefined;
   }
 
   private getServerBase() {
@@ -246,8 +245,13 @@ export class LocationProvider {
   }
 
   $$parse(url: string) {
-    // Remove protocol & hostname if URL starts with it
-    const pathUrl = this.stripBaseUrl(this.getServerBase(), url);
+    let pathUrl: string|undefined;
+    if (url.startsWith('/')) {
+      pathUrl = url;
+    } else {
+      // Remove protocol & hostname if URL starts with it
+      pathUrl = this.stripBaseUrl(this.getServerBase(), url);
+    }
     if (typeof pathUrl === 'undefined') {
       throw new Error(`Invalid url "${url}", missing path prefix "${this.getServerBase()}".`);
     }
@@ -281,8 +285,8 @@ export class LocationProvider {
   }
 
   private setBrowserUrlWithFallback(url: string, replace: boolean, state: unknown) {
-    var oldUrl = this.url();
-    var oldState = this.$$state;
+    const oldUrl = this.url();
+    const oldState = this.$$state;
     try {
       this.browserUrl(url, replace, state);
 
@@ -596,7 +600,7 @@ export class LocationUpgradeProvider {
 
   $get() {
     const $rootScope: any = this.ngUpgrade.$injector.get('$rootScope');
-    return new LocationProvider(
+    return new LocationUpgradeService(
         $rootScope, this.location, this.platformLocation, this.urlCodec, this.locationStrategy);
   }
   // TODO(jasonaden): How to handle changing these values?

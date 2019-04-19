@@ -36,7 +36,7 @@ export abstract class UrlCodec {
     hostname: string,
     port: string,
     pathname: string
-  }|string;
+  };
 }
 
 /**
@@ -142,7 +142,7 @@ export class AngularJSUrlCodec implements UrlCodec {
         pathname: (parsed.pathname.charAt(0) === '/') ? parsed.pathname : '/' + parsed.pathname
       };
     } catch (e) {
-      return (base ? base : '') + url
+      throw new Error(`Invalid URL (${url}) with base (${base})`);
     }
   }
 }
@@ -164,6 +164,7 @@ function tryDecodeURIComponent(value: string) {
     return decodeURIComponent(value);
   } catch (e) {
     // Ignore any invalid uri component.
+    return undefined;
   }
 }
 
