@@ -123,8 +123,13 @@ export class LQueries_ implements LQueries {
   }
 
   addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): void {
-    add(this.deep, tNode);
-    add(this.shallow, tNode);
+    add(this.deep, tNode, false);
+    add(this.shallow, tNode, false);
+  }
+
+  insertNodeBeforeViews(tNode: TElementNode|TContainerNode|TElementContainerNode): void {
+    add(this.deep, tNode, true);
+    add(this.shallow, tNode, true);
   }
 
   removeView(): void {
@@ -277,8 +282,18 @@ function queryRead(tNode: TNode, currentView: LView, read: any, matchingIdx: num
   return queryByTNodeType(tNode, currentView);
 }
 
+/**
+ * Add query matches for a given node.
+ *
+ * @param query The first query in the linked list
+ * @param tNode The TNode to match against queries
+ * @param insertBeforeContainer Whether or not we should add matches before the last
+ * container array. This mode is necessary if the query container had to be created
+ * out of order (e.g. a view was created in a constructor)
+ */
 function add(
-    query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
+    query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode,
+    insertBeforeContainer: boolean) {
   const currentView = getLView();
 
   while (query) {
@@ -295,7 +310,7 @@ function add(
         }
       }
       if (result !== null) {
-        addMatch(query, result);
+        addMatch(query, result, insertBeforeContainer);
       }
     } else {
       const selector = predicate.selector !;
@@ -304,7 +319,7 @@ function add(
         if (matchingIdx !== null) {
           const result = queryRead(tNode, currentView, predicate.read, matchingIdx);
           if (result !== null) {
-            addMatch(query, result);
+            addMatch(query, result, insertBeforeContainer);
           }
         }
       }
@@ -313,8 +328,12 @@ function add(
   }
 }
 
-function addMatch(query: LQuery<any>, matchingValue: any): void {
-  query.values.push(matchingValue);
+function addMatch(query: LQuery<any>, matchingValue: any, insertBeforeViewMatches: boolean): void {
+  // Views created in constructors may have their container values created too early. In this case,
+  // ensure template node results are spliced before container results. Otherwise, results inside
+  // embedded views will appear before results on parent template nodes when flattened.
+  insertBeforeViewMatches ? query.values.splice(-1, 0, matchingValue) :
+                            query.values.push(matchingValue);
   query.list.setDirty();
 }
 
