@@ -1748,6 +1748,21 @@ function declareTests(config?: {useJit: boolean}) {
         expect(html).toContain('"ng-reflect-ng-if": "true"');
       });
 
+      it('should reflect property values of multiple directive bound to the same input name',
+         () => {
+           TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+           TestBed.overrideComponent(
+               MyComp, {set: {template: `<div my-dir my-dir2 [elprop]="ctxProp"></div>`}});
+           const fixture = TestBed.createComponent(MyComp);
+
+           fixture.componentInstance.ctxProp = 'hello';
+           fixture.detectChanges();
+
+           const html = getDOM().getInnerHTML(fixture.nativeElement);
+           expect(html).toContain('ng-reflect-dir-prop="hello"');
+           expect(html).toContain('ng-reflect-dir-prop2="hello"');
+         });
+
       it('should indicate when toString() throws', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
         const template = '<div my-dir [elprop]="toStringThrow"></div>';
@@ -2043,6 +2058,12 @@ class DynamicViewport {
 class MyDir {
   dirProp: string;
   constructor() { this.dirProp = ''; }
+}
+
+@Directive({selector: '[my-dir2]', inputs: ['dirProp2: elprop'], exportAs: 'mydir2'})
+class MyDir2 {
+  dirProp2: string;
+  constructor() { this.dirProp2 = ''; }
 }
 
 @Directive({selector: '[title]', inputs: ['title']})

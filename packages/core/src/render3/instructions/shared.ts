@@ -842,9 +842,18 @@ export function elementPropertyInternal<T>(
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        // dataValue is an array containing: [directive instance index, publicName, privateName]
-        // we want to set the reflected property with the privateName: dataValue[2]
-        setNgReflectProperties(lView, element, tNode.type, dataValue[2] as string, value);
+        /**
+         * dataValue is an array containing runtime input or output names for the directives:
+         * i+0: directive instance index
+         * i+1: publicName
+         * i+2: privateName
+         *
+         * e.g. [0, 'change', 'change-minified']
+         * we want to set the reflected property with the privateName: dataValue[i+2]
+         */
+        for (let i = 0; i < dataValue.length; i += 3) {
+          setNgReflectProperty(lView, element, tNode.type, dataValue[i + 2] as string, value);
+        }
       }
     }
   } else if (tNode.type === TNodeType.Element) {
@@ -886,7 +895,7 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-export function setNgReflectProperties(
+export function setNgReflectProperty(
     lView: LView, element: RElement | RComment, type: TNodeType, attrName: string, value: any) {
   const renderer = lView[RENDERER];
   attrName = normalizeDebugBindingName(attrName);
@@ -1330,7 +1339,7 @@ function setInputsFromAttrs<T>(
       if (ngDevMode) {
         const lView = getLView();
         const nativeElement = getNativeByTNode(tNode, lView) as RElement;
-        setNgReflectProperties(lView, nativeElement, tNode.type, privateName, value);
+        setNgReflectProperty(lView, nativeElement, tNode.type, privateName, value);
       }
     }
   }
