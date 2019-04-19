@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
 
 const goldens: string[] = process.argv.slice(2);
 
@@ -6,16 +6,18 @@ export const goldenMatcher: jasmine.CustomMatcherFactories = {
   toMatchGolden(util: jasmine.MatchersUtil): jasmine.CustomMatcher {
     return {
       compare(actual: {command: string}, golden: string): jasmine.CustomMatcherResult {
-        const expected = require(`./goldens/${golden}`);
-        const pass = util.equals(actual, expected);
-        if (!pass && goldens.indexOf(golden) >= 0) {
+        if (goldens.includes(golden)) {
           console.error(`Writing golden file ${golden}`);
           writeFileSync(`./goldens/${golden}`, JSON.stringify(actual, null, 2));
           return { pass : true };
         }
+        const content = readFileSync(`./goldens/${golden}`, 'utf-8');
+        const expected = JSON.parse(content.replace("${PWD}", process.env.PWD!));
+        const pass = util.equals(actual, expected);
         return {
           pass,
-          message: `Expected response for '${actual.command}' to match golden file ${golden}.\n` +
+          message: `Expected ${JSON.stringify(actual, null, 2)} to match golden ` +
+            `${JSON.stringify(expected, null, 2)}.\n` +
             `To generate new golden file, run "yarn golden ${golden}".`,
         };
       }
