@@ -16,7 +16,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   host: {
     'class': 'mat-mdc-card',
   },
-  exportAs: 'matMyCheckbox',
+  exportAs: 'matCard',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

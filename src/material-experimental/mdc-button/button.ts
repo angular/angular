@@ -16,7 +16,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   host: {
     'class': 'mat-mdc-button',
   },
-  exportAs: 'matMyCheckbox',
+  exportAs: 'matButton',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -16,7 +16,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   host: {
     'class': 'mat-mdc-radio',
   },
-  exportAs: 'matMyCheckbox',
+  exportAs: 'matRadio',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

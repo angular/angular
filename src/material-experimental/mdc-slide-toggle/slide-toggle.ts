@@ -16,7 +16,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   host: {
     'class': 'mat-mdc-slide-toggle',
   },
-  exportAs: 'matMyCheckbox',
+  exportAs: 'matSlideToggle',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
