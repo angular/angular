@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵtext as text} from '@angular/core';
+import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -256,6 +256,42 @@ describe('TestBed', () => {
     simpleApp.detectChanges();
     expect(simpleApp.nativeElement).toHaveText('simple - inherited');
   });
+
+  it('should not trigger change detection for ComponentA while calling TestBed.createComponent for ComponentB',
+     () => {
+       const log: string[] = [];
+       @Component({
+         selector: 'comp-a',
+         template: '...',
+       })
+       class CompA {
+         @Input() inputA: string = '';
+         ngOnInit() { log.push('CompA:ngOnInit', this.inputA); }
+       }
+
+       @Component({
+         selector: 'comp-b',
+         template: '...',
+       })
+       class CompB {
+         @Input() inputB: string = '';
+         ngOnInit() { log.push('CompB:ngOnInit', this.inputB); }
+       }
+
+       TestBed.configureTestingModule({declarations: [CompA, CompB]});
+
+       log.length = 0;
+       const appA = TestBed.createComponent(CompA);
+       appA.componentInstance.inputA = 'a';
+       appA.autoDetectChanges();
+       expect(log).toEqual(['CompA:ngOnInit', 'a']);
+
+       log.length = 0;
+       const appB = TestBed.createComponent(CompB);
+       appB.componentInstance.inputB = 'b';
+       appB.autoDetectChanges();
+       expect(log).toEqual(['CompB:ngOnInit', 'b']);
+     });
 
   it('should resolve components without async resources synchronously', (done) => {
     TestBed
