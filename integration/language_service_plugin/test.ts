@@ -50,7 +50,6 @@ describe('Angular Language Service', () => {
     // https://github.com/Microsoft/TypeScript/blob/master/lib/protocol.d.ts#L1055
     client.sendRequest('open', {
       file: `${PWD}/project/app/app.module.ts`,
-      fileContent: ""
     });
     // Server does not send response to geterr request
     // https://github.com/Microsoft/TypeScript/blob/master/lib/protocol.d.ts#L1770
@@ -77,7 +76,6 @@ describe('Angular Language Service', () => {
 
     client.sendRequest('open', {
       file: `${PWD}/project/app/app.component.ts`,
-      fileContent: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'my-app',\n  template: `<h1>Hello {{name}}</h1>`,\n})\nexport class AppComponent  { name = 'Angular'; }\n"
     });
 
     client.sendRequest('geterr', {
@@ -100,5 +98,45 @@ describe('Angular Language Service', () => {
       offset: 31,
     });
     expect(response).toMatchGolden('completionInfo.json');
+  });
+
+  it('should perform quickinfo', async () => {
+    client.sendRequest('open', {
+      file: `${PWD}/project/app/app.component.ts`,
+    });
+
+    const resp1 = await client.sendRequest('reload', {
+      file: `${PWD}/project/app/app.component.ts`,
+      tmpFile: `${PWD}/project/app/app.component.ts`,
+    }) as any;
+    expect(resp1.command).toBe('reload');
+    expect(resp1.success).toBe(true);
+
+    const resp2 = await client.sendRequest('quickinfo', {
+      file: `${PWD}/project/app/app.component.ts`,
+      line: 5,
+      offset: 28,
+    });
+    expect(resp2).toMatchGolden('quickinfo.json');
+  });
+
+  it('should perform definition', async () => {
+    client.sendRequest('open', {
+      file: `${PWD}/project/app/app.component.ts`,
+    });
+
+    const resp1 = await client.sendRequest('reload', {
+      file: `${PWD}/project/app/app.component.ts`,
+      tmpFile: `${PWD}/project/app/app.component.ts`,
+    }) as any;
+    expect(resp1.command).toBe('reload');
+    expect(resp1.success).toBe(true);
+
+    const resp2 = await client.sendRequest('definition', {
+      file: `${PWD}/project/app/app.component.ts`,
+      line: 5,
+      offset: 28,
+    });
+    expect(resp2).toMatchGolden('definition.json');
   });
 });
