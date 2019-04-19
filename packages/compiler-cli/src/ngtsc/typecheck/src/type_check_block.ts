@@ -14,7 +14,7 @@ import {ClassDeclaration} from '../../reflection';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {Environment} from './environment';
-import {astToTypescript} from './expression';
+import {astToTypeScript} from './expression';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
 
 
@@ -485,156 +485,159 @@ class Scope {
    * @param directive if present, a directive type on a `TmplAstElement` or `TmplAstTemplate` to
    * look up instead of the default for an element or template node.
    */
-  resolve(
+  resolveastToTypeScript
       node: TmplAstElement|TmplAstTemplate|TmplAstVariable,
       directive?: TypeCheckableDirectiveMeta): ts.Expression {
-    // Attempt to resolve the operation locally.
-    const res = this.resolveLocal(node, directive);
-    if (res !== null) {
-      return res;
-    } else if (this.parent !== null) {
-      // Check with the parent.
-      return this.parent.resolve(node, directive);
-    } else {
-      throw new Error(`Could not resolve ${node} / ${directive}`);
-    }
-  }
-
-  /**
-   * Add a statement to this scope.
-   */
-  addStatement(stmt: ts.Statement): void { this.statements.push(stmt); }
-
-  /**
-   * Get the statements.
-   */
-  render(): ts.Statement[] {
-    for (let i = 0; i < this.opQueue.length; i++) {
-      this.executeOp(i);
-    }
-    return this.statements;
-  }
-
-  private resolveLocal(
-      ref: TmplAstElement|TmplAstTemplate|TmplAstVariable,
-      directive?: TypeCheckableDirectiveMeta): ts.Expression|null {
-    if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
-      // Resolving a context variable for this template.
-      // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
-      return this.resolveOp(this.varMap.get(ref) !);
-    } else if (
-        ref instanceof TmplAstTemplate && directive === undefined &&
-        this.templateCtxOpMap.has(ref)) {
-      // Resolving the context of the given sub-template.
-      // Execute the `TcbTemplateContextOp` for the template.
-      return this.resolveOp(this.templateCtxOpMap.get(ref) !);
-    } else if (
-        (ref instanceof TmplAstElement || ref instanceof TmplAstTemplate) &&
-        directive !== undefined && this.directiveOpMap.has(ref)) {
-      // Resolving a directive on an element or sub-template.
-      const dirMap = this.directiveOpMap.get(ref) !;
-      if (dirMap.has(directive)) {
-        return this.resolveOp(dirMap.get(directive) !);
-      } else {
-        return null;
-      }
-    } else if (ref instanceof TmplAstElement && this.elementOpMap.has(ref)) {
-      // Resolving the DOM node of an element in this template.
-      return this.resolveOp(this.elementOpMap.get(ref) !);
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Like `executeOp`, but assert that the operation actually returned `ts.Expression`.
-   */
-  private resolveOp(opIndex: number): ts.Expression {
-    const res = this.executeOp(opIndex);
-    if (res === null) {
-      throw new Error(`Error resolving operation, got null`);
-    }
-    return res;
-  }
-
-  /**
-   * Execute a particular `TcbOp` in the `opQueue`.
-   *
-   * This method replaces the operation in the `opQueue` with the result of execution (once done)
-   * and also protects against a circular dependency from the operation to itself by temporarily
-   * setting the operation's result to a special expression.
-   */
-  private executeOp(opIndex: number): ts.Expression|null {
-    const op = this.opQueue[opIndex];
-    if (!(op instanceof TcbOp)) {
-      return op;
-    }
-
-    // Set the result of the operation in the queue to a special expression. If executing this
-    // operation results in a circular dependency, this will break the cycle and infer the least
-    // narrow type where needed (which is how TypeScript deals with circular dependencies in types).
-    this.opQueue[opIndex] = INFER_TYPE_FOR_CIRCULAR_OP_EXPR;
-    const res = op.execute();
-    // Once the operation has finished executing, it's safe to cache the real result.
-    this.opQueue[opIndex] = res;
-    return res;
-  }
-
-  private appendNode(node: TmplAstNode): void {
-    if (node instanceof TmplAstElement) {
-      const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
-      this.elementOpMap.set(node, opIndex);
-      this.appendDirectivesAndInputsOfNode(node);
-      for (const child of node.children) {
-        this.appendNode(child);
-      }
-    } else if (node instanceof TmplAstTemplate) {
-      // Template children are rendered in a child scope.
-      this.appendDirectivesAndInputsOfNode(node);
-      if (this.tcb.env.config.checkTemplateBodies) {
-        const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
-        this.templateCtxOpMap.set(node, ctxIndex);
-        this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
-      }
-    } else if (node instanceof TmplAstBoundText) {
-      this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
-    }
-  }
-
-  private appendDirectivesAndInputsOfNode(node: TmplAstElement|TmplAstTemplate): void {
-    // Collect all the inputs on the element.
-    const claimedInputs = new Set<string>();
-    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
-    if (directives === null || directives.length === 0) {
-      // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
-      // to add them if needed.
-      if (node instanceof TmplAstElement) {
-        this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
-      }
-      return;
-    }
-
-    const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
-    for (const dir of directives) {
-      const dirIndex = this.opQueue.push(new TcbDirectiveOp(this.tcb, this, node, dir)) - 1;
-      dirMap.set(dir, dirIndex);
-    }
-    this.directiveOpMap.set(node, dirMap);
-
-    // After expanding the directives, we might need to queue an operation to check any unclaimed
-    // inputs.
-    if (node instanceof TmplAstElement) {
-      // Go through the directives and remove any inputs that it claims from `elementInputs`.
-      for (const dir of directives) {
-        for (const fieldName of Object.keys(dir.inputs)) {
-          const value = dir.inputs[fieldName];
-          claimedInputs.add(Array.isArray(value) ? value[0] : value);
+        // Attempt to resolve the operation locally.
+        const res = this.resolveLocal(node, directive);
+        if (res !== null) {
+          return res;
+        } else if (this.parent !== null) {
+          // Check with the parent.
+          return this.parent.resolve(node, directive);
+        } else {
+          throw new Error(`Could not resolve ${node} / ${directive}`);
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
-    }
-  }
+      /**
+       * Add a statement to this scope.
+       */
+      addStatement(stmt: ts.Statement): void { this.statements.push(stmt); }
+
+      /**
+       * Get the statements.
+       */
+      render(): ts.Statement[] {
+        for (let i = 0; i < this.opQueue.length; i++) {
+          this.executeOp(i);
+        }
+        return this.statements;
+      }
+
+      private resolveLocal(
+          ref: TmplAstElement|TmplAstTemplate|TmplAstVariable,
+          directive?: TypeCheckableDirectiveMeta): ts.Expression|null {
+        if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
+          // Resolving a context variable for this template.
+          // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
+          return this.resolveOp(this.varMap.get(ref) !);
+        } else if (
+            ref instanceof TmplAstTemplate && directive === undefined &&
+            this.templateCtxOpMap.has(ref)) {
+          // Resolving the context of the given sub-template.
+          // Execute the `TcbTemplateContextOp` for the template.
+          return this.resolveOp(this.templateCtxOpMap.get(ref) !);
+        } else if (
+            (ref instanceof TmplAstElement || ref instanceof TmplAstTemplate) &&
+            directive !== undefined && this.directiveOpMap.has(ref)) {
+          // Resolving a directive on an element or sub-template.
+          const dirMap = this.directiveOpMap.get(ref) !;
+          if (dirMap.has(directive)) {
+            return this.resolveOp(dirMap.get(directive) !);
+          } else {
+            return null;
+          }
+        } else if (ref instanceof TmplAstElement && this.elementOpMap.has(ref)) {
+          // Resolving the DOM node of an element in this template.
+          return this.resolveOp(this.elementOpMap.get(ref) !);
+        } else {
+          return null;
+        }
+      }
+
+      /**
+       * Like `executeOp`, but assert that the operation actually returned `ts.Expression`.
+       */
+      private resolveOp(opIndex: number): ts.Expression {
+        const res = this.executeOp(opIndex);
+        if (res === null) {
+          throw new Error(`Error resolving operation, got null`);
+        }
+        return res;
+      }
+
+      /**
+       * Execute a particular `TcbOp` in the `opQueue`.
+       *
+       * This method replaces the operation in the `opQueue` with the result of execution (once
+       * done)
+       * and also protects against a circular dependency from the operation to itself by temporarily
+       * setting the operation's result to a special expression.
+       */
+      private executeOp(opIndex: number): ts.Expression|null {
+        const op = this.opQueue[opIndex];
+        if (!(op instanceof TcbOp)) {
+          return op;
+        }
+
+        // Set the result of the operation in the queue to a special expression. If executing this
+        // operation results in a circular dependency, this will break the cycle and infer the least
+        // narrow type where needed (which is how TypeScript deals with circular dependencies in
+        // types).
+        this.opQueue[opIndex] = INFER_TYPE_FOR_CIRCULAR_OP_EXPR;
+        const res = op.execute();
+        // Once the operation has finished executing, it's safe to cache the real result.
+        this.opQueue[opIndex] = res;
+        return res;
+      }
+
+      private appendNode(node: TmplAstNode): void {
+        if (node instanceof TmplAstElement) {
+          const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
+          this.elementOpMap.set(node, opIndex);
+          this.appendDirectivesAndInputsOfNode(node);
+          for (const child of node.children) {
+            this.appendNode(child);
+          }
+        } else if (node instanceof TmplAstTemplate) {
+          // Template children are rendered in a child scope.
+          this.appendDirectivesAndInputsOfNode(node);
+          if (this.tcb.env.config.checkTemplateBodies) {
+            const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
+            this.templateCtxOpMap.set(node, ctxIndex);
+            this.opQueue.push(new TcbTemplateBodyOp(this.tcb, this, node));
+          }
+        } else if (node instanceof TmplAstBoundText) {
+          this.opQueue.push(new TcbTextInterpolationOp(this.tcb, this, node));
+        }
+      }
+
+      private appendDirectivesAndInputsOfNode(node: TmplAstElement|TmplAstTemplate): void {
+        // Collect all the inputs on the element.
+        const claimedInputs = new Set<string>();
+        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+        if (directives === null || directives.length === 0) {
+          // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
+          // to add them if needed.
+          if (node instanceof TmplAstElement) {
+            this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
+          }
+          return;
+        }
+
+        const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
+        for (const dir of directives) {
+          const dirIndex = this.opQueue.push(new TcbDirectiveOp(this.tcb, this, node, dir)) - 1;
+          dirMap.set(dir, dirIndex);
+        }
+        this.directiveOpMap.set(node, dirMap);
+
+        // After expanding the directives, we might need to queue an operation to check any
+        // unclaimed
+        // inputs.
+        if (node instanceof TmplAstElement) {
+          // Go through the directives and remove any inputs that it claims from `elementInputs`.
+          for (const dir of directives) {
+            for (const fieldName of Object.keys(dir.inputs)) {
+              const value = dir.inputs[fieldName];
+              claimedInputs.add(Array.isArray(value) ? value[0] : value);
+            }
+          }
+
+          this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
+        }
+      }
 }
 
 /**

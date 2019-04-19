@@ -39,7 +39,7 @@ const BINARY_OPS = new Map<string, ts.SyntaxKind>([
  * Convert an `AST` to TypeScript code directly, without going through an intermediate `Expression`
  * AST.
  */
-export function astToTypescript(
+export function astToTypeScript(
     ast: AST, maybeResolve: (ast: AST) => ts.Expression | null,
     config: TypeCheckingConfig): ts.Expression {
   const resolved = maybeResolve(ast);
@@ -49,17 +49,17 @@ export function astToTypescript(
   // Branch based on the type of expression being processed.
   if (ast instanceof ASTWithSource) {
     // Fall through to the underlying AST.
-    return astToTypescript(ast.ast, maybeResolve, config);
+    return astToTypeScript(ast.ast, maybeResolve, config);
   } else if (ast instanceof PropertyRead) {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const receiver = astToTypeScript(ast.receiver, maybeResolve, config);
     return ts.createPropertyAccess(receiver, ast.name);
   } else if (ast instanceof Interpolation) {
     return astArrayToExpression(ast.expressions, maybeResolve, config);
   } else if (ast instanceof Binary) {
-    const lhs = astToTypescript(ast.left, maybeResolve, config);
-    const rhs = astToTypescript(ast.right, maybeResolve, config);
+    const lhs = astToTypeScript(ast.left, maybeResolve, config);
+    const rhs = astToTypeScript(ast.right, maybeResolve, config);
     const op = BINARY_OPS.get(ast.operation);
     if (op === undefined) {
       throw new Error(`Unsupported Binary.operation: ${ast.operation}`);
@@ -74,48 +74,48 @@ export function astToTypescript(
       return ts.createLiteral(ast.value);
     }
   } else if (ast instanceof MethodCall) {
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const receiver = astToTypeScript(ast.receiver, maybeResolve, config);
     const method = ts.createPropertyAccess(receiver, ast.name);
-    const args = ast.args.map(expr => astToTypescript(expr, maybeResolve, config));
+    const args = ast.args.map(expr => astToTypeScript(expr, maybeResolve, config));
     return ts.createCall(method, undefined, args);
   } else if (ast instanceof Conditional) {
-    const condExpr = astToTypescript(ast.condition, maybeResolve, config);
-    const trueExpr = astToTypescript(ast.trueExp, maybeResolve, config);
-    const falseExpr = astToTypescript(ast.falseExp, maybeResolve, config);
+    const condExpr = astToTypeScript(ast.condition, maybeResolve, config);
+    const trueExpr = astToTypeScript(ast.trueExp, maybeResolve, config);
+    const falseExpr = astToTypeScript(ast.falseExp, maybeResolve, config);
     return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
   } else if (ast instanceof LiteralArray) {
-    const elements = ast.expressions.map(expr => astToTypescript(expr, maybeResolve, config));
+    const elements = ast.expressions.map(expr => astToTypeScript(expr, maybeResolve, config));
     return ts.createArrayLiteral(elements);
   } else if (ast instanceof LiteralMap) {
     const properties = ast.keys.map(({key}, idx) => {
-      const value = astToTypescript(ast.values[idx], maybeResolve, config);
+      const value = astToTypeScript(ast.values[idx], maybeResolve, config);
       return ts.createPropertyAssignment(ts.createStringLiteral(key), value);
     });
     return ts.createObjectLiteral(properties, true);
   } else if (ast instanceof KeyedRead) {
-    const receiver = astToTypescript(ast.obj, maybeResolve, config);
-    const key = astToTypescript(ast.key, maybeResolve, config);
+    const receiver = astToTypeScript(ast.obj, maybeResolve, config);
+    const key = astToTypeScript(ast.key, maybeResolve, config);
     return ts.createElementAccess(receiver, key);
   } else if (ast instanceof NonNullAssert) {
-    const expr = astToTypescript(ast.expression, maybeResolve, config);
+    const expr = astToTypeScript(ast.expression, maybeResolve, config);
     return ts.createNonNullExpression(expr);
   } else if (ast instanceof PrefixNot) {
-    return ts.createLogicalNot(astToTypescript(ast.expression, maybeResolve, config));
+    return ts.createLogicalNot(astToTypeScript(ast.expression, maybeResolve, config));
   } else if (ast instanceof SafePropertyRead) {
     // A safe property expression a?.b takes the form `(a != null ? a!.b : whenNull)`, where
     // whenNull is either of type 'any' or or 'undefined' depending on strictness. The non-null
     // assertion is necessary because in practice 'a' may be a method call expression, which won't
     // have a narrowed type when repeated in the ternary true branch.
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const receiver = astToTypeScript(ast.receiver, maybeResolve, config);
     const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
     return safeTernary(receiver, expr, whenNull);
   } else if (ast instanceof SafeMethodCall) {
-    const receiver = astToTypescript(ast.receiver, maybeResolve, config);
+    const receiver = astToTypeScript(ast.receiver, maybeResolve, config);
     // See the comment in SafePropertyRead above for an explanation of the need for the non-null
     // assertion here.
     const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-    const args = ast.args.map(expr => astToTypescript(expr, maybeResolve, config));
+    const args = ast.args.map(expr => astToTypeScript(expr, maybeResolve, config));
     const expr = ts.createCall(method, undefined, args);
     const whenNull = config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
     return safeTernary(receiver, expr, whenNull);
@@ -137,8 +137,8 @@ function astArrayToExpression(
   const asts = astArray.slice();
   return asts.reduce(
       (lhs, ast) => ts.createBinary(
-          lhs, ts.SyntaxKind.CommaToken, astToTypescript(ast, maybeResolve, config)),
-      astToTypescript(asts.pop() !, maybeResolve, config));
+          lhs, ts.SyntaxKind.CommaToken, astToTypeScript(ast, maybeResolve, config)),
+      astToTypeScript(asts.pop() !, maybeResolve, config));
 }
 
 function safeTernary(
