@@ -470,5 +470,82 @@ function bootstrap(
          });
        }));
 
+    describe('change detection', () => {
+      const log: string[] = [];
+      @Component({
+        selector: 'hello-app',
+        template: '<div id="button-a" (click)="onClick()">{{title}}</div>',
+      })
+      class CompA {
+        title: string = '';
+        ngDoCheck() { log.push('CompA:ngDoCheck'); }
+        onClick() {
+          this.title = 'CompA';
+          log.push('CompA:onClick');
+        }
+      }
+
+      @Component({
+        selector: 'hello-app-2',
+        template: '<div id="button-b" (click)="onClick()">{{title}}</div>',
+      })
+      class CompB {
+        title: string = '';
+        ngDoCheck() { log.push('CompB:ngDoCheck'); }
+        onClick() {
+          this.title = 'CompB';
+          log.push('CompB:onClick');
+        }
+      }
+
+      it('should be triggered for all bootstrapped components in case change happens in one of them',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           @NgModule({
+             imports: [BrowserModule],
+             declarations: [CompA, CompB],
+             bootstrap: [CompA, CompB],
+             schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           })
+           class TestModuleA {
+           }
+           platformBrowserDynamic().bootstrapModule(TestModuleA).then((ref) => {
+             log.length = 0;
+             el.querySelectorAll('#button-a')[0].click();
+             expect(log).toContain('CompA:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).toContain('CompB:ngDoCheck');
+
+             log.length = 0;
+             el2.querySelectorAll('#button-b')[0].click();
+             expect(log).toContain('CompB:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).toContain('CompB:ngDoCheck');
+
+             async.done();
+           });
+         }));
+
+
+      it('should work in isolation for each component bootstrapped individually',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const refPromise1 = bootstrap(CompA);
+           const refPromise2 = bootstrap(CompB);
+           Promise.all([refPromise1, refPromise2]).then((refs) => {
+             log.length = 0;
+             el.querySelectorAll('#button-a')[0].click();
+             expect(log).toContain('CompA:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).not.toContain('CompB:ngDoCheck');
+
+             log.length = 0;
+             el2.querySelectorAll('#button-b')[0].click();
+             expect(log).toContain('CompB:onClick');
+             expect(log).toContain('CompB:ngDoCheck');
+             expect(log).not.toContain('CompA:ngDoCheck');
+
+             async.done();
+           });
+         }));
+    });
   });
 }

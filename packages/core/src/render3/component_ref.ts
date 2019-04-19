@@ -149,8 +149,17 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootContext: RootContext =
-        !isInternalRootView ? rootViewInjector.get(ROOT_CONTEXT) : createRootContext();
+
+    // Check whether this Component needs to be isolated from other components, i.e. whether it
+    // should be placed into its own (empty) root context or existing root context should be used.
+    // Note: this is internal-only convention and might change in the future, so it should not be
+    // relied upon externally.
+    const isIsolated = typeof rootSelectorOrNode === 'string' &&
+        /^#root-ng-internal-isolated-\d+/.test(rootSelectorOrNode);
+
+    const rootContext: RootContext = (isInternalRootView || isIsolated) ?
+        createRootContext() :
+        rootViewInjector.get(ROOT_CONTEXT);
 
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
 

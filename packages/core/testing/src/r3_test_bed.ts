@@ -343,7 +343,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
   createComponent<T>(type: Type<T>): ComponentFixture<T> {
     const testComponentRenderer: TestComponentRenderer = this.get(TestComponentRenderer);
-    const rootElId = `root${_nextRootElementId++}`;
+    const rootElId = `root-ng-internal-isolated-${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
     const componentDef = (type as any).ngComponentDef;
