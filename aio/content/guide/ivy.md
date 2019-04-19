@@ -17,9 +17,7 @@ The new project is automatically configured for Ivy.
 {@a updating}
 ## Updating an existing project to use Ivy
 
-You can update an existing project to use Ivy by making the following configuration changes.
-
-- Add the `enableIvy` option in the `angularCompilerOptions` in your project's `tsconfig.app.json`.
+To update an existing project to use Ivy, set the `enableIvy` option in the `angularCompilerOptions` in your project's `tsconfig.app.json`.
 ```json
 {
   "compilerOptions": { ... },
@@ -29,7 +27,4 @@ You can update an existing project to use Ivy by making the following configurat
 }
 ```
 
-## Switching back to the current compiler
-
-To stop using the Ivy compiler you need to undo the steps taken when [updating to use Ivy](#updating).
-- Set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely.
+To stop using the Ivy compiler, set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely.
