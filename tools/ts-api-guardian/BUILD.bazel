@@ -1,4 +1,4 @@
-# BEGIN-DEV-ONLY
+# BEGIN-INTERNAL
 load(
     "@build_bazel_rules_nodejs//:defs.bzl",
     "jasmine_node_test",
@@ -41,7 +41,6 @@ npm_package(
         "package.json",
     ],
     replacements = {
-        "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
         "@angular//tools/ts-api-guardian": "@npm_ts_api_guardian//",
         "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
     },
@@ -85,7 +84,7 @@ jasmine_node_test(
     ],
     tags = ["local"],
 )
-# END-DEV-ONLY
+# END-INTERNAL
 
 filegroup(
     name = "bin",
