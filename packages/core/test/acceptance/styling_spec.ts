@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, HostBinding, Input, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -174,7 +174,14 @@ describe('acceptance integration tests', () => {
       prop2 = 1;
     }
 
-    TestBed.configureTestingModule({declarations: [App, ParentCmp, ChildCmp]});
+    @NgModule({
+      entryComponents: [ChildCmp],
+      declarations: [ChildCmp],
+    })
+    class ChildCmpModule {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, ParentCmp], imports: [ChildCmpModule]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
