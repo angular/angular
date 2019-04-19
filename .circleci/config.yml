@@ -544,9 +544,9 @@ workflows:
       - test_aio_local:
           requires:
             - build-npm-packages
-      - test_aio_local_ivy:
-          requires:
-            - build-npm-packages
+      # - test_aio_local_ivy:
+      #     requires:
+      #       - build-npm-packages
       - test_aio_tools:
           requires:
             - build-npm-packages
