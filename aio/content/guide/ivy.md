@@ -28,28 +28,8 @@ You can update an existing project to use Ivy by making the following configurat
   }
 }
 ```
-- Set `"module": "esnext"` inside `compilerOptions` in your `tsconfig.json` to support the [ES `import()` statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import).
-```json
-{
-  "compilerOptions": {
-    ...
-    "module": "esnext",
-  }
-}
-```
-- Update your lazy routes to use the `import()` statement. You can use [angular-lazy-routes-fix](https://github.com/phenomnomnominal/angular-lazy-routes-fix) to automatically transform them.
-```typescript
-const routes: Routes = [{
-  path: 'lazy',
-  // The string syntax for loadChildren is not supported in Ivy:
-  //   loadChildren: './lazy/lazy.module#LazyModule'
-  // Instead use the import statement:
-  loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
-}];
-```
 
 ## Switching back to the current compiler
 
 To stop using the Ivy compiler you need to undo the steps taken when [updating to use Ivy](#updating).
-- Set `enableIvy` to false in `tsconfig.app.json`, or remove it completely.
-- Add `"experimentalImportFactories": true` to your default build options in `angular.json` to support the import statement in `loadChildren` outside Ivy.
+- Set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely.
