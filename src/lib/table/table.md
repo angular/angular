@@ -69,7 +69,7 @@ column list as inputs.
 <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
 ```
 
-Note that this list of columns provided to the rows can be in any order, not necessary the order in
+Note that this list of columns provided to the rows can be in any order, not necessarily the order in
 which you wrote the column definitions. Also, you do not necessarily have to include every column
 that was defined in your template.
 
