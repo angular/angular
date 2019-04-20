@@ -201,6 +201,30 @@ describe('css selector matching', () => {
                .toBeFalsy(
                    `Selector '[directive=value]' should not match <span [directive]="exp" [value]="otherExp">`);
          });
+
+      it('should match bound attributes that come after classes', () => {
+        expect(isMatching(
+                   'span',
+                   [
+                     AttributeMarker.Classes, 'my-class', 'other-class', AttributeMarker.Bindings,
+                     'title', 'directive'
+                   ],
+                   ['', 'directive', '']))
+            .toBeTruthy(
+                `Selector '[directive]' should match <span class="my-class other-class" [title]="title" [directive]="exp">`);
+      });
+
+      it('should match NOT match classes when looking for directives', () => {
+        expect(isMatching(
+                   'span',
+                   [
+                     AttributeMarker.Classes, 'directive', 'other-class', AttributeMarker.Bindings,
+                     'title'
+                   ],
+                   ['', 'directive', '']))
+            .toBeFalsy(
+                `Selector '[directive]' should NOT match <span class="directive other-class" [title]="title">`);
+      });
     });
 
     describe('class matching', () => {
