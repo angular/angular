@@ -58,6 +58,30 @@ describe('directives', () => {
       expect(nodesWithDirective.length).toBe(1);
     });
 
+    it('should match a mix of bound directives and classes', () => {
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div class="one two" [id]="someId" [title]="title"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TitleDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
+    it('should NOT match classes to directive selectors', () => {
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div class="title" [id]="someId"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TitleDirective));
+
+      expect(nodesWithDirective.length).toBe(0);
+    });
+
   });
 
 });
