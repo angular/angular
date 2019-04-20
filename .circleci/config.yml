@@ -454,7 +454,6 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
-      - run: uname -r
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
