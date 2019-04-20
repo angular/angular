@@ -205,6 +205,14 @@ function findAttrIndexInNode(
         return i;
       } else if (maybeAttrName === AttributeMarker.Bindings) {
         bindingsMode = true;
+      } else if (maybeAttrName === AttributeMarker.Classes) {
+        let value = attrs[++i];
+        // We should skip classes here because we have a separate mechanism for
+        // matching classes in projection mode.
+        while (typeof value === 'string') {
+          value = attrs[++i];
+        }
+        continue;
       } else if (maybeAttrName === AttributeMarker.Template) {
         // We do not care about Template attributes in this scenario.
         break;
