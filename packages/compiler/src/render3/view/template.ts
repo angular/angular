@@ -746,20 +746,37 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
           this.allocateBindingSlots(value);
 
-          if (inputType === BindingType.Property && !(value instanceof Interpolation)) {
-            // Bound, un-interpolated properties
-            this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
-              return [
-                o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
-              ];
-            });
+          if (inputType === BindingType.Property) {
+            if (value instanceof Interpolation) {
+              // Interpolated properties
+              const {currValExpr} = convertPropertyBinding(
+                  this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
+
+              let args: o.Expression[] = (currValExpr as any).args;
+              args.shift();  // ViewEngine required a count, we don't need that.
+
+              // For interpolations like attr="{{foo}}", we don't need ["", foo, ""], just [foo].
+              if (args.length === 3 && isEmptyStringExpression(args[0]) &&
+                  isEmptyStringExpression(args[2])) {
+                args = [args[1]];
+              }
+
+              this.updateInstruction(
+                  elementIndex, input.sourceSpan, propertyInterpolate(args.length), () => {
+                    return [o.literal(attrName), ...args, ...params];
+                  });
+            } else {
+              // Bound, un-interpolated properties
+              this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
+                return [
+                  o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
+                ];
+              });
+            }
           } else {
             let instruction: any;
 
-            if (inputType === BindingType.Property) {
-              // Interpolated properties
-              instruction = R3.elementProperty;
-            } else if (inputType === BindingType.Class) {
+            if (inputType === BindingType.Class) {
               instruction = R3.elementClassProp;
             } else {
               instruction = R3.elementAttribute;
@@ -1625,6 +1642,39 @@ function interpolate(args: o.Expression[]): o.Expression {
   (args.length >= 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
   return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
+}
+
+function isEmptyStringExpression(exp: o.Expression) {
+  return exp instanceof o.LiteralExpr && exp.value === '';
+}
+
+function propertyInterpolate(argsLength: number) {
+  if (argsLength % 2 !== 1) {
+    error(`Invalid propertyInterpolate argument length ${argsLength}`);
+  }
+
+  switch (argsLength) {
+    case 1:
+      return R3.propertyInterpolate;
+    case 3:
+      return R3.propertyInterpolate1;
+    case 5:
+      return R3.propertyInterpolate2;
+    case 7:
+      return R3.propertyInterpolate3;
+    case 9:
+      return R3.propertyInterpolate4;
+    case 11:
+      return R3.propertyInterpolate5;
+    case 13:
+      return R3.propertyInterpolate6;
+    case 15:
+      return R3.propertyInterpolate7;
+    case 17:
+      return R3.propertyInterpolate8;
+    default:
+      return R3.propertyInterpolateV;
+  }
 }
 
 /**

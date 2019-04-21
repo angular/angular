@@ -74,7 +74,7 @@ describe('template source-mapping', () => {
         });
         expect(mappings).toContain({
           source: 'id="{{name}}"',
-          generated: 'i0.ɵɵelementProperty(0, "id", i0.ɵɵinterpolation1("", ctx.name, ""))',
+          generated: 'i0.ɵɵpropertyInterpolate("id", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
