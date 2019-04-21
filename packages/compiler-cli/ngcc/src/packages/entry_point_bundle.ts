@@ -63,3 +63,41 @@ export function makeEntryPointBundle(
 
   return {format, formatProperty, rootDirs, isCore, isFlatCore, src, dts};
 }
+
+/**
+ * Create a compiler host that resolves a module import as a JavaScript source file if available,
+ * instead of the .d.ts typings file that would have been resolved by TypeScript. This is necessary
+ * for packages that have their typings in the same directory as the sources, which would otherwise
+ * let TypeScript prefer the .d.ts file instead of the JavaScript source file.
+ * @param entryPointPath The path of the directly where the entry-point resides in.
+ * @param options The compiler options to create the host from.
+ */
+function createCompilerHostThatPrefersJs(
+    entryPointPath: string, options: ts.CompilerOptions): ts.CompilerHost {
+  const host = ts.createCompilerHost(options);
+  const cache = ts.createModuleResolutionCache(
+      host.getCurrentDirectory(), file => host.getCanonicalFileName(file));
+  host.resolveModuleNames = (moduleNames, containingFile, reusedNames, redirectedReference) => {
+    return moduleNames.map(moduleName => {
+      const {resolvedModule} = ts.resolveModuleName(
+          moduleName, containingFile, options, host, cache, redirectedReference);
+
+      // If the module request originated from a relative import in a JavaScript source file,
+      // TypeScript may have resolved the module to its .d.ts declaration file if the .js source
+      // file was in the same directory. This is undesirable, as we need to have the actual
+      // JavaScript being present in the program. This logic recognizes this scenario and rewires
+      // the resolved .d.ts declaration file to its .js counterpart, if it exists.
+      if (resolvedModule !== undefined && resolvedModule.extension === ts.Extension.Dts &&
+          containingFile.endsWith('js') &&
+          (moduleName.startsWith('./') || moduleName.startsWith('../')) &&
+          resolvedModule.resolvedFileName.startsWith(entryPointPath)) {
+        const jsFile = resolvedModule.resolvedFileName.replace(/\.d\.ts$/, '.js');
+        if (host.fileExists(jsFile)) {
+          return {...resolvedModule, resolvedFileName: jsFile, extension: ts.Extension.Js};
+        }
+      }
+      return resolvedModule;
+    });
+  };
+  return host;
+}
