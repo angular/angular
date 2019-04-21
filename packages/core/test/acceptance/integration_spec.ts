@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, ContentChild, Directive, HostBinding, HostListener, Input, QueryList, TemplateRef, ViewChildren} from '@angular/core';
+import {Component, ContentChild, Directive, EventEmitter, HostListener, Input, Output, QueryList, TemplateRef, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
   it('should only call inherited host listeners once', () => {
@@ -117,4 +116,59 @@ describe('acceptance integration tests', () => {
     expect(fixture.componentInstance.tpl).not.toBeNull();
     expect(fixture.debugElement.nativeElement.getAttribute('aria-disabled')).toBe('true');
   });
+
+  it('should inherit inputs from undecorated superclasses', () => {
+    class ButtonSuperClass {
+      @Input() isDisabled !: boolean;
+    }
+
+    @Component({selector: 'button[custom-button]', template: ''})
+    class ButtonSubClass extends ButtonSuperClass {
+    }
+
+    @Component({template: '<button custom-button [isDisabled]="disableButton"></button>'})
+    class MyApp {
+      disableButton = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, ButtonSubClass]});
+    const fixture = TestBed.createComponent(MyApp);
+    const button = fixture.debugElement.query(By.directive(ButtonSubClass)).componentInstance;
+    fixture.detectChanges();
+
+    expect(button.isDisabled).toBe(false);
+
+    fixture.componentInstance.disableButton = true;
+    fixture.detectChanges();
+
+    expect(button.isDisabled).toBe(true);
+  });
+
+  it('should inherit outputs from undecorated superclasses', () => {
+    let clicks = 0;
+
+    class ButtonSuperClass {
+      @Output() clicked = new EventEmitter<void>();
+      emitClick() { this.clicked.emit(); }
+    }
+
+    @Component({selector: 'button[custom-button]', template: ''})
+    class ButtonSubClass extends ButtonSuperClass {
+    }
+
+    @Component({template: '<button custom-button (clicked)="handleClick()"></button>'})
+    class MyApp {
+      handleClick() { clicks++; }
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, ButtonSubClass]});
+    const fixture = TestBed.createComponent(MyApp);
+    const button = fixture.debugElement.query(By.directive(ButtonSubClass)).componentInstance;
+
+    button.emitClick();
+    fixture.detectChanges();
+
+    expect(clicks).toBe(1);
+  });
+
 });

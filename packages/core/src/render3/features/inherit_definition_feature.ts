@@ -9,7 +9,7 @@
 import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
+import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 import {isComponentDef} from '../util/view_utils';
 
@@ -54,7 +54,10 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     }
 
     if (baseDef) {
-      // Merge inputs and outputs
+      const baseViewQuery = baseDef.viewQuery;
+      const baseContentQueries = baseDef.contentQueries;
+      baseViewQuery && inheritViewQuery(definition, baseViewQuery);
+      baseContentQueries && inheritContentQueries(definition, baseContentQueries);
       fillProperties(definition.inputs, baseDef.inputs);
       fillProperties(definition.declaredInputs, baseDef.declaredInputs);
       fillProperties(definition.outputs, baseDef.outputs);
@@ -91,34 +94,11 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
         }
       }
 
-      // Merge View Queries
-      const prevViewQuery = definition.viewQuery;
+      // Merge queries
       const superViewQuery = superDef.viewQuery;
-
-      if (superViewQuery) {
-        if (prevViewQuery) {
-          definition.viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
-            superViewQuery(rf, ctx);
-            prevViewQuery(rf, ctx);
-          };
-        } else {
-          definition.viewQuery = superViewQuery;
-        }
-      }
-
-      // Merge Content Queries
-      const prevContentQueries = definition.contentQueries;
       const superContentQueries = superDef.contentQueries;
-      if (superContentQueries) {
-        if (prevContentQueries) {
-          definition.contentQueries = <T>(rf: RenderFlags, ctx: T, directiveIndex: number) => {
-            superContentQueries(rf, ctx, directiveIndex);
-            prevContentQueries(rf, ctx, directiveIndex);
-          };
-        } else {
-          definition.contentQueries = superContentQueries;
-        }
-      }
+      superViewQuery && inheritViewQuery(definition, superViewQuery);
+      superContentQueries && inheritContentQueries(definition, superContentQueries);
 
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);
@@ -179,5 +159,34 @@ function maybeUnwrapEmpty(value: any): any {
     return [];
   } else {
     return value;
+  }
+}
+
+function inheritViewQuery(
+    definition: DirectiveDef<any>| ComponentDef<any>, superViewQuery: ViewQueriesFunction<any>) {
+  const prevViewQuery = definition.viewQuery;
+
+  if (prevViewQuery) {
+    definition.viewQuery = (rf, ctx) => {
+      superViewQuery(rf, ctx);
+      prevViewQuery(rf, ctx);
+    };
+  } else {
+    definition.viewQuery = superViewQuery;
+  }
+}
+
+function inheritContentQueries(
+    definition: DirectiveDef<any>| ComponentDef<any>,
+    superContentQueries: ContentQueriesFunction<any>) {
+  const prevContentQueries = definition.contentQueries;
+
+  if (prevContentQueries) {
+    definition.contentQueries = (rf, ctx, directiveIndex) => {
+      superContentQueries(rf, ctx, directiveIndex);
+      prevContentQueries(rf, ctx, directiveIndex);
+    };
+  } else {
+    definition.contentQueries = superContentQueries;
   }
 }

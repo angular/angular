@@ -2890,6 +2890,17 @@ describe('compiler compliance', () => {
   });
 
   describe('inherited base classes', () => {
+    const directive = {
+      'some.directive.ts': `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[someDir]',
+        })
+        export class SomeDirective { }
+      `
+    };
+
     it('should add ngBaseDef if one or more @Input is present', () => {
       const files = {
         app: {
@@ -3025,6 +3036,182 @@ describe('compiler compliance', () => {
         outputs: {
           output1: "output1",
           output2: "output2"
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a ViewChild query is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, ViewChild} from '@angular/core';
+            export class BaseClass {
+              @ViewChild('something') something: any;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      const $e0_attrs$ = ["something"];
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        viewQuery: function (rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵviewQuery($e0_attrs$, true, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$.first));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a ViewChildren query is present', () => {
+      const files = {
+        app: {
+          ...directive,
+          'spec.ts': `
+            import {Component, NgModule, ViewChildren} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            export class BaseClass {
+              @ViewChildren(SomeDirective) something: QueryList<SomeDirective>;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent, SomeDirective]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        viewQuery: function (rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵviewQuery(SomeDirective, true, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a ContentChild query is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, ContentChild} from '@angular/core';
+            export class BaseClass {
+              @ContentChild('something') something: any;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      const $e0_attrs$ = ["something"];
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        contentQueries: function (rf, ctx, dirIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$.first));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a ContentChildren query is present', () => {
+      const files = {
+        app: {
+          ...directive,
+          'spec.ts': `
+            import {Component, NgModule, ContentChildren} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            export class BaseClass {
+              @ContentChildren(SomeDirective) something: QueryList<SomeDirective>;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent, SomeDirective]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        contentQueries: function (rf, ctx, dirIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$));
+          }
         }
       });
       // ...

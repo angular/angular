@@ -662,6 +662,7 @@ export interface OutputDecorator {
 export declare function ɵɵallocHostVars(count: number): void;
 
 export interface ɵɵBaseDef<T> {
+    contentQueries: ContentQueriesFunction<T> | null;
     /** @deprecated */ readonly declaredInputs: {
         [P in keyof T]: string;
     };
@@ -671,6 +672,7 @@ export interface ɵɵBaseDef<T> {
     readonly outputs: {
         [P in keyof T]: string;
     };
+    viewQuery: ViewQueriesFunction<T> | null;
 }
 
 export declare function ɵɵbind<T>(value: T): T | NO_CHANGE;
@@ -702,6 +704,8 @@ export declare function ɵɵdefineBase<T>(baseDefinition: {
     outputs?: {
         [P in keyof T]?: string;
     };
+    contentQueries?: ContentQueriesFunction<T> | null;
+    viewQuery?: ViewQueriesFunction<T> | null;
 }): ɵɵBaseDef<T>;
 
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
