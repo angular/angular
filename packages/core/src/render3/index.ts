@@ -81,6 +81,16 @@ export {
   ɵɵprojection,
   ɵɵprojectionDef,
   ɵɵproperty,
+  ɵɵpropertyInterpolate,
+  ɵɵpropertyInterpolate1,
+  ɵɵpropertyInterpolate2,
+  ɵɵpropertyInterpolate3,
+  ɵɵpropertyInterpolate4,
+  ɵɵpropertyInterpolate5,
+  ɵɵpropertyInterpolate6,
+  ɵɵpropertyInterpolate7,
+  ɵɵpropertyInterpolate8,
+  ɵɵpropertyInterpolateV,
 
   ɵɵreference,
 
