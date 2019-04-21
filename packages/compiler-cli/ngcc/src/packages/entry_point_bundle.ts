@@ -12,7 +12,7 @@ import {FileSystem} from '../file_system/file_system';
 import {PathMappings} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPointFormat, EntryPointJsonProperty} from './entry_point';
-import {NgccCompilerHost} from './ngcc_compiler_host';
+import {NgccCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host';
 
 /**
  * A bundle of files and paths (and TS programs) that correspond to a particular
@@ -48,16 +48,17 @@ export function makeEntryPointBundle(
     noLib: true,
     rootDir: entryPointPath, ...pathMappings
   };
-  const host = new NgccCompilerHost(fs, options);
+  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPointPath);
+  const dtsHost = new NgccCompilerHost(fs, options);
   const rootDirs = [AbsoluteFsPath.from(entryPointPath)];
 
   // Create the bundle programs, as necessary.
   const src = makeBundleProgram(
       fs, isCore, AbsoluteFsPath.resolve(entryPointPath, formatPath), 'r3_symbols.js', options,
-      host);
+      srcHost);
   const dts = transformDts ? makeBundleProgram(
                                  fs, isCore, AbsoluteFsPath.resolve(entryPointPath, typingsPath),
-                                 'r3_symbols.d.ts', options, host) :
+                                 'r3_symbols.d.ts', options, dtsHost) :
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
