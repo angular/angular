@@ -78,7 +78,7 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
 
   * The `outDir` maps to the library's output folder. By default, this is  the `dist/my-lib` folder at the root of your workspace.
 
-1. To make sure your schematics source files get compiled into the library bundle, add the following scripts to the `package.json` file in your library project's root folder (`projects/my-lib`).
+1. To make sure your schematics source files get compiled into the library bundle, add the following scripts to the `package.json` file in your library project's root folder (`projects/my-lib`). For Windows users, replace the `cp` command with `copy` or use a cross-platform solution like [ncp](https://www.npmjs.com/package/ncp).
 
 <code-example header="projects/my-lib/package.json (Build Scripts)" path="schematics-for-libraries/projects/my-lib/package.json">
 </code-example>
