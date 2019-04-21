@@ -18,7 +18,7 @@ import {noSideEffects} from '../util/closure';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
@@ -560,12 +560,25 @@ export function ɵɵdefineBase<T>(baseDefinition: {
    * of properties.
    */
   outputs?: {[P in keyof T]?: string};
+
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries?: ContentQueriesFunction<T>| null;
+
+  /**
+   * Additional set of instructions specific to view query processing. This could be seen as a
+   * set of instructions to be inserted into the template function.
+   */
+  viewQuery?: ViewQueriesFunction<T>| null;
 }): ɵɵBaseDef<T> {
   const declaredInputs: {[P in keyof T]: string} = {} as any;
   return {
     inputs: invertObject<T>(baseDefinition.inputs as any, declaredInputs),
     declaredInputs: declaredInputs,
     outputs: invertObject<T>(baseDefinition.outputs as any),
+    viewQuery: baseDefinition.viewQuery || null,
+    contentQueries: baseDefinition.contentQueries || null,
   };
 }
 
@@ -740,6 +753,10 @@ export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return (type as any)[NG_PIPE_DEF] || null;
+}
+
+export function getBaseDef<T>(type: any): ɵɵBaseDef<T>|null {
+  return (type as any)[NG_BASE_DEF] || null;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
