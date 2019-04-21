@@ -66,11 +66,13 @@ function baseDirectiveFields(
 
   if (meta.queries.length > 0) {
     // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
-    definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
+    definitionMap.set(
+        'contentQueries', createContentQueriesFunction(meta.queries, constantPool, meta.name));
   }
 
   if (meta.viewQueries.length) {
-    definitionMap.set('viewQuery', createViewQueriesFunction(meta, constantPool));
+    definitionMap.set(
+        'viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool, meta.name));
   }
 
   // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
@@ -163,13 +165,15 @@ export function compileDirectiveFromMetadata(
 export interface R3BaseRefMetaData {
   inputs?: {[key: string]: string | [string, string]};
   outputs?: {[key: string]: string};
+  viewQueries?: R3QueryMetadata[];
+  queries?: R3QueryMetadata[];
 }
 
 /**
  * Compile a base definition for the render3 runtime as defined by {@link R3BaseRefMetadata}
  * @param meta the metadata used for compilation.
  */
-export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData) {
+export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData, constantPool: ConstantPool) {
   const definitionMap = new DefinitionMap();
   if (meta.inputs) {
     const inputs = meta.inputs;
@@ -188,9 +192,14 @@ export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData) {
     });
     definitionMap.set('outputs', o.literalMap(outputsMap));
   }
+  if (meta.viewQueries && meta.viewQueries.length > 0) {
+    definitionMap.set('viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool));
+  }
+  if (meta.queries && meta.queries.length > 0) {
+    definitionMap.set('contentQueries', createContentQueriesFunction(meta.queries, constantPool));
+  }
 
   const expression = o.importExpr(R3.defineBase).callFn([definitionMap.toLiteralMap()]);
-
   const type = new o.ExpressionType(o.importExpr(R3.BaseDef));
 
   return {expression, type};
@@ -475,12 +484,12 @@ function convertAttributesToExpressions(attributes: {[name: string]: o.Expressio
 
 // Define and update any content queries
 function createContentQueriesFunction(
-    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression {
+    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
-  for (const query of meta.queries) {
+  for (const query of queries) {
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
     const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
 
@@ -498,7 +507,7 @@ function createContentQueriesFunction(
     updateStatements.push(refresh.and(updateDirective).toStmt());
   }
 
-  const contentQueriesFnName = meta.name ? `${meta.name}_ContentQueries` : null;
+  const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
   return o.fn(
       [
         new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
@@ -549,12 +558,12 @@ function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReferen
 
 // Define and update any view queries
 function createViewQueriesFunction(
-    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression {
+    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
-  meta.viewQueries.forEach((query: R3QueryMetadata) => {
+  viewQueries.forEach((query: R3QueryMetadata) => {
     const queryInstruction = query.static ? R3.staticViewQuery : R3.viewQuery;
 
     // creation, e.g. r3.viewQuery(somePredicate, true);
@@ -572,7 +581,7 @@ function createViewQueriesFunction(
     updateStatements.push(refresh.and(updateDirective).toStmt());
   });
 
-  const viewQueryFnName = meta.name ? `${meta.name}_Query` : null;
+  const viewQueryFnName = name ? `${name}_Query` : null;
   return o.fn(
       [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
       [

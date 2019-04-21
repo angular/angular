@@ -3033,6 +3033,92 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
+    it('should add ngBaseDef if view queries are present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, ViewChild} from '@angular/core';
+            export class BaseClass {
+              @ViewChild('something') something: any;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      const $e0_attrs$ = ["something"];
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        viewQuery: function (rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵviewQuery($e0_attrs$, true, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$.first));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if content queries are present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, ContentChild} from '@angular/core';
+            export class BaseClass {
+              @ContentChild('something') something: any;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      const $e0_attrs$ = ["something"];
+      // ...
+      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+        contentQueries: function (rf, ctx, dirIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
+          }
+          if (rf & 2) {
+            var $tmp$;
+            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$.first));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
     it('should NOT add ngBaseDef if @Component is present', () => {
       const files = {
         app: {

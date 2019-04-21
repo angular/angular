@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
+import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
+import {R3QueryMetadata} from '@angular/compiler/src/compiler';
 
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, ClassMember, Decorator, ReflectionHost, filterToMembersWithDecorator} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
+import {queriesFromFields} from './directive';
 import {isAngularDecorator} from './util';
 
 function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
@@ -41,8 +43,30 @@ export class BaseDefDecoratorHandler implements
     }
 
     let result: R3BaseRefDecoratorDetection|undefined = undefined;
+    const classMembers = this.reflector.getMembersOfClass(node);
+    const coreModule = this.isCore ? undefined : '@angular/core';
+    const viewChildFromFields = queriesFromFields(
+        filterToMembersWithDecorator(classMembers, 'ViewChild', coreModule), this.reflector,
+        this.evaluator);
+    const viewChildrenFromFields = queriesFromFields(
+        filterToMembersWithDecorator(classMembers, 'ViewChildren', coreModule), this.reflector,
+        this.evaluator);
+    const contentChildFromFields = queriesFromFields(
+        filterToMembersWithDecorator(classMembers, 'ContentChild', coreModule), this.reflector,
+        this.evaluator);
+    const contentChildrenFromFields = queriesFromFields(
+        filterToMembersWithDecorator(classMembers, 'ContentChildren', coreModule), this.reflector,
+        this.evaluator);
 
-    this.reflector.getMembersOfClass(node).forEach(property => {
+    if (viewChildFromFields.length || viewChildrenFromFields.length) {
+      result = result || {};
+      result.viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+    }
+    if (contentChildFromFields.length || contentChildrenFromFields.length) {
+      result = result || {};
+      result.queries = [...contentChildFromFields, ...contentChildrenFromFields];
+    }
+    classMembers.forEach(property => {
       const {decorators} = property;
       if (decorators) {
         for (const decorator of decorators) {
@@ -110,11 +134,20 @@ export class BaseDefDecoratorHandler implements
       });
     }
 
+    if (metadata.viewQueries) {
+      analysis.viewQueries = metadata.viewQueries;
+    }
+
+    if (metadata.queries) {
+      analysis.queries = metadata.queries;
+    }
+
     return {analysis};
   }
 
-  compile(node: ClassDeclaration, analysis: R3BaseRefMetaData): CompileResult[]|CompileResult {
-    const {expression, type} = compileBaseDefFromMetadata(analysis);
+  compile(node: ClassDeclaration, analysis: R3BaseRefMetaData, pool: ConstantPool):
+      CompileResult[]|CompileResult {
+    const {expression, type} = compileBaseDefFromMetadata(analysis, pool);
 
     return {
       name: 'ngBaseDef',
@@ -127,4 +160,6 @@ export class BaseDefDecoratorHandler implements
 export interface R3BaseRefDecoratorDetection {
   inputs?: Array<{property: ClassMember, decorator: Decorator}>;
   outputs?: Array<{property: ClassMember, decorator: Decorator}>;
+  viewQueries?: R3QueryMetadata[];
+  queries?: R3QueryMetadata[];
 }

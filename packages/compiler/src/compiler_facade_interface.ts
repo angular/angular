@@ -37,6 +37,8 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DirectiveMetadataFacade): any;
   compileComponent(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
+  compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3BaseMetadataFacade):
+      any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
@@ -144,6 +146,13 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   viewProviders: Provider[]|null;
   interpolation?: [string, string];
   changeDetection?: ChangeDetectionStrategy;
+}
+
+export interface R3BaseMetadataFacade {
+  inputs?: {[key: string]: string | [string, string]};
+  outputs?: {[key: string]: string};
+  queries?: R3QueryMetadataFacade[];
+  viewQueries?: R3QueryMetadataFacade[];
 }
 
 export type ViewEncapsulation = number;

@@ -96,7 +96,7 @@ export type ɵɵDirectiveDefWithMeta<
  * Runtime information for classes that are inherited by components or directives
  * that aren't defined as components or directives.
  *
- * This is an internal data structure used by the render to determine what inputs
+ * This is an internal data structure used by the renderer to determine what inputs
  * and outputs should be inherited.
  *
  * See: {@link defineBase}
@@ -123,6 +123,18 @@ export interface ɵɵBaseDef<T> {
    * (as in `@Output('alias') propertyName: any;`).
    */
   readonly outputs: {[P in keyof T]: string};
+
+  /**
+   * Function to create and refresh content queries associated with a given directive.
+   */
+  contentQueries: ContentQueriesFunction<T>|null;
+
+  /**
+   * Query-related instructions for a directive. Note that while directives don't have a
+   * view and as such view queries won't necessarily do anything, there might be
+   * components that extend the directive.
+   */
+  viewQuery: ViewQueriesFunction<T>|null;
 }
 
 /**
@@ -160,18 +172,6 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
    * Factory function used to create a new directive instance.
    */
   factory: FactoryFn<T>;
-
-  /**
-   * Function to create and refresh content queries associated with a given directive.
-   */
-  contentQueries: ContentQueriesFunction<T>|null;
-
-  /**
-   * Query-related instructions for a directive. Note that while directives don't have a
-   * view and as such view queries won't necessarily do anything, there might be
-   * components that extend the directive.
-   */
-  viewQuery: ViewQueriesFunction<T>|null;
 
   /**
    * Refreshes host bindings on the associated directive.

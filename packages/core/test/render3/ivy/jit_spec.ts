@@ -283,32 +283,6 @@ ivyEnabled && describe('render3 jit', () => {
     expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
-  it('should add ngBaseDef to types with @Input properties', () => {
-    class C {
-      @Input('alias1')
-      prop1 = 'test';
-
-      @Input('alias2')
-      prop2 = 'test';
-    }
-
-    expect((C as any).ngBaseDef).toBeDefined();
-    expect((C as any).ngBaseDef.inputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
-  });
-
-  it('should add ngBaseDef to types with @Output properties', () => {
-    class C {
-      @Output('alias1')
-      prop1 = 'test';
-
-      @Output('alias2')
-      prop2 = 'test';
-    }
-
-    expect((C as any).ngBaseDef).toBeDefined();
-    expect((C as any).ngBaseDef.outputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
-  });
-
   it('should compile ContentChildren query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {

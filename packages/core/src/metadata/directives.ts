@@ -9,12 +9,10 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../interface/type';
-import {NG_BASE_DEF} from '../render3/fields';
 import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
-import {fillProperties} from '../util/property';
 
 import {ViewEncapsulation} from './view';
 
@@ -695,47 +693,12 @@ export interface Input {
   bindingPropertyName?: string;
 }
 
-const initializeBaseDef = (target: any): void => {
-  const constructor = target.constructor;
-  const inheritedBaseDef = constructor.ngBaseDef;
-
-  const baseDef = constructor.ngBaseDef = {
-    inputs: {},
-    outputs: {},
-    declaredInputs: {},
-  };
-
-  if (inheritedBaseDef) {
-    fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
-    fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
-    fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
-  }
-};
-
-/**
- * Does the work of creating the `ngBaseDef` property for the `Input` and `Output` decorators.
- * @param key "inputs" or "outputs"
- */
-const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
-    (target: any, name: string, ...args: any[]) => {
-      const constructor = target.constructor;
-
-      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
-        initializeBaseDef(target);
-      }
-
-      const baseDef = constructor.ngBaseDef;
-      const defProp = getProp(baseDef);
-      defProp[name] = args[0] || name;
-    };
-
 /**
  * @Annotation
  * @publicApi
  */
-export const Input: InputDecorator = makePropDecorator(
-    'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
+export const Input: InputDecorator =
+    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -777,9 +740,8 @@ export interface Output {
  * @Annotation
  * @publicApi
  */
-export const Output: OutputDecorator = makePropDecorator(
-    'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
+export const Output: OutputDecorator =
+    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
 
 

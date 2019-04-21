@@ -173,6 +173,40 @@ describe('query logic', () => {
           .toBe(true);
     });
 
+    it('should support view queries inherited from undecorated superclasses', () => {
+      class MyComp {
+        @ViewChild('foo') foo: any;
+      }
+
+      @Component({selector: 'sub-comp', template: '<div #foo></div>'})
+      class SubComp extends MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [SubComp]});
+
+      const fixture = TestBed.createComponent(SubComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+    });
+
+    it('should support view queries inherited from undecorated grand superclasses', () => {
+      class MySuperComp {
+        @ViewChild('foo') foo: any;
+      }
+
+      class MyComp extends MySuperComp {}
+
+      @Component({selector: 'sub-comp', template: '<div #foo></div>'})
+      class SubComp extends MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [SubComp]});
+
+      const fixture = TestBed.createComponent(SubComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+    });
+
   });
 
   describe('content queries', () => {
@@ -397,6 +431,50 @@ describe('query logic', () => {
 
       expect(firstComponent.setEvents).toEqual(['textDir set', 'foo set']);
       expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
+    });
+
+    it('should support content queries inherited from undecorated superclasses', () => {
+      class MyComp {
+        @ContentChild('foo') foo: any;
+      }
+
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      class SubComp extends MyComp {
+      }
+
+      @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
+      class App {
+        @ViewChild(SubComp) subComp !: SubComp;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, SubComp]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
+    });
+
+    it('should support content queries inherited from undecorated grand superclasses', () => {
+      class MySuperComp {
+        @ContentChild('foo') foo: any;
+      }
+
+      class MyComp extends MySuperComp {}
+
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      class SubComp extends MyComp {
+      }
+
+      @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
+      class App {
+        @ViewChild(SubComp) subComp !: SubComp;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, SubComp]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
     });
 
   });
