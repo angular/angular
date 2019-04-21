@@ -7,7 +7,7 @@
  */
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {R3BaseMetadataFacade, R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {compileInjectable} from '../../di/jit/injectable';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
@@ -16,8 +16,9 @@ import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
+import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {renderStringify} from '../util/misc_utils';
 
@@ -71,6 +72,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
+        if (meta.usesInheritance) {
+          addBaseDefToUndecoratedParents(type);
+        }
         ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
@@ -125,6 +129,9 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
         const facade = directiveMetadata(type as ComponentType<any>, directive);
         facade.typeSourceSpan =
             compiler.createParseSourceSpan('Directive', renderStringify(type), sourceMapUrl);
+        if (facade.usesInheritance) {
+          addBaseDefToUndecoratedParents(type);
+        }
         ngDirectiveDef = compiler.compileDirective(angularCoreEnv, sourceMapUrl, facade);
       }
       return ngDirectiveDef;
@@ -169,6 +176,71 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
   };
+}
+
+/**
+ * Adds an `ngBaseDef` to all parent classes of a type that don't have an Angular decorator.
+ */
+function addBaseDefToUndecoratedParents(type: Type<any>) {
+  const objPrototype = Object.prototype;
+  let parent = Object.getPrototypeOf(type);
+
+  // Go up the prototype until we hit `Object`.
+  while (parent && parent !== objPrototype) {
+    // Since inheritance works if the class was annotated already, we only need to add
+    // the base def if there are no annotations and the base def hasn't been created already.
+    if (!getDirectiveDef(parent) && !getComponentDef(parent) && !getBaseDef(parent)) {
+      const facade = extractBaseDefMetadata(parent);
+      facade && compileBase(parent, facade);
+    }
+    parent = Object.getPrototypeOf(parent);
+  }
+}
+
+/** Compiles the base metadata into a base definition. */
+function compileBase(type: Type<any>, facade: R3BaseMetadataFacade): void {
+  let ngBaseDef: any = null;
+  Object.defineProperty(type, NG_BASE_DEF, {
+    get: () => {
+      if (ngBaseDef === null) {
+        const name = type && type.name;
+        const sourceMapUrl = `ng://${name}/ngBaseDef.js`;
+        const compiler = getCompilerFacade();
+        ngBaseDef = compiler.compileBase(angularCoreEnv, sourceMapUrl, facade);
+      }
+      return ngBaseDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+}
+
+/** Extracts the metadata necessary to construct an `ngBaseDef` from a class. */
+function extractBaseDefMetadata(type: Type<any>): R3BaseMetadataFacade|null {
+  const propMetadata = getReflect().ownPropMetadata(type);
+  const viewQueries = extractQueriesMetadata(type, propMetadata, isViewQuery);
+  const queries = extractQueriesMetadata(type, propMetadata, isContentQuery);
+  let inputs: {[key: string]: string | [string, string]}|undefined;
+  let outputs: {[key: string]: string}|undefined;
+
+  for (const field in propMetadata) {
+    propMetadata[field].forEach(ann => {
+      if (ann.ngMetadataName === 'Input') {
+        inputs = inputs || {};
+        inputs[field] = ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
+      } else if (ann.ngMetadataName === 'Output') {
+        outputs = outputs || {};
+        outputs[field] = ann.bindingPropertyName || field;
+      }
+    });
+  }
+
+  // Only generate the base def if there's any info inside it.
+  if (inputs || outputs || viewQueries.length || queries.length) {
+    return {inputs, outputs, viewQueries, queries};
+  }
+
+  return null;
 }
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
