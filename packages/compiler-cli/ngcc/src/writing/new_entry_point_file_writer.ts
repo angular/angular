@@ -43,10 +43,12 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
   protected copyBundle(
       bundle: EntryPointBundle, entryPointPath: AbsoluteFsPath, newDir: AbsoluteFsPath) {
     bundle.src.program.getSourceFiles().forEach(sourceFile => {
-      const relativePath = relative(entryPointPath, sourceFile.fileName);
-      const newFilePath = join(newDir, relativePath);
-      mkdir('-p', dirname(newFilePath));
-      cp(sourceFile.fileName, newFilePath);
+      if (!sourceFile.isDeclarationFile) {
+        const relativePath = relative(entryPointPath, sourceFile.fileName);
+        const newFilePath = join(newDir, relativePath);
+        mkdir('-p', dirname(newFilePath));
+        cp(sourceFile.fileName, newFilePath);
+      }
     });
   }
 
