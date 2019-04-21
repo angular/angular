@@ -1762,7 +1762,7 @@ describe('ngtsc behavioral tests', () => {
         }
         if (rf & 2) {
           i0.\u0275\u0275elementAttribute(elIndex, "hello", i0.\u0275\u0275bind(ctx.foo));
-          i0.\u0275\u0275elementProperty(elIndex, "prop", i0.\u0275\u0275bind(ctx.bar), null, true);
+          i0.\u0275\u0275property("prop", ctx.bar, null, true);
           i0.\u0275\u0275elementHostClassProp(0, ctx.someClass);
           i0.\u0275\u0275elementHostStylingApply();
         }
@@ -3266,12 +3266,12 @@ describe('ngtsc behavioral tests', () => {
             i0.\u0275\u0275allocHostVars(6);
           }
           if (rf & 2) {
-            i0.\u0275\u0275elementProperty(elIndex, "href", i0.\u0275\u0275bind(ctx.propHref), i0.\u0275\u0275sanitizeUrlOrResourceUrl, true);
-            i0.\u0275\u0275elementProperty(elIndex, "src", i0.\u0275\u0275bind(ctx.propSrc), i0.\u0275\u0275sanitizeUrlOrResourceUrl, true);
-            i0.\u0275\u0275elementProperty(elIndex, "action", i0.\u0275\u0275bind(ctx.propAction), i0.\u0275\u0275sanitizeUrl, true);
-            i0.\u0275\u0275elementProperty(elIndex, "profile", i0.\u0275\u0275bind(ctx.propProfile), i0.\u0275\u0275sanitizeResourceUrl, true);
-            i0.\u0275\u0275elementProperty(elIndex, "innerHTML", i0.\u0275\u0275bind(ctx.propInnerHTML), i0.\u0275\u0275sanitizeHtml, true);
-            i0.\u0275\u0275elementProperty(elIndex, "title", i0.\u0275\u0275bind(ctx.propSafeTitle), null, true);
+            i0.\u0275\u0275property("href", ctx.propHref, i0.\u0275\u0275sanitizeUrlOrResourceUrl, true);
+            i0.\u0275\u0275property("src", ctx.propSrc, i0.\u0275\u0275sanitizeUrlOrResourceUrl, true);
+            i0.\u0275\u0275property("action", ctx.propAction, i0.\u0275\u0275sanitizeUrl, true);
+            i0.\u0275\u0275property("profile", ctx.propProfile, i0.\u0275\u0275sanitizeResourceUrl, true);
+            i0.\u0275\u0275property("innerHTML", ctx.propInnerHTML, i0.\u0275\u0275sanitizeHtml, true);
+            i0.\u0275\u0275property("title", ctx.propSafeTitle, null, true);
           }
         }
       `;
@@ -3306,9 +3306,9 @@ describe('ngtsc behavioral tests', () => {
             i0.\u0275\u0275allocHostVars(6);
           }
           if (rf & 2) {
-            i0.\u0275\u0275elementProperty(elIndex, "src", i0.\u0275\u0275bind(ctx.srcProp), null, true);
-            i0.\u0275\u0275elementProperty(elIndex, "href", i0.\u0275\u0275bind(ctx.hrefProp), null, true);
-            i0.\u0275\u0275elementProperty(elIndex, "title", i0.\u0275\u0275bind(ctx.titleProp), null, true);
+            i0.\u0275\u0275property("src", ctx.srcProp, null, true);
+            i0.\u0275\u0275property("href", ctx.hrefProp, null, true);
+            i0.\u0275\u0275property("title", ctx.titleProp, null, true);
             i0.\u0275\u0275elementAttribute(elIndex, "src", i0.\u0275\u0275bind(ctx.srcAttr));
             i0.\u0275\u0275elementAttribute(elIndex, "href", i0.\u0275\u0275bind(ctx.hrefAttr));
             i0.\u0275\u0275elementAttribute(elIndex, "title", i0.\u0275\u0275bind(ctx.titleAttr));

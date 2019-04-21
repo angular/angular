@@ -1333,8 +1333,8 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵɵelementHostStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
         }
         if (rf & 2) {
-          $r3$.ɵɵelementProperty(elIndex, "id", $r3$.ɵɵbind(ctx.id), null, true);
-          $r3$.ɵɵelementProperty(elIndex, "title", $r3$.ɵɵbind(ctx.title), null, true);
+          $r3$.ɵɵproperty("id", ctx.id, null, true);
+          $r3$.ɵɵproperty("title", ctx.title, null, true);
           $r3$.ɵɵelementHostStylingMap(ctx.myClass, ctx.myStyle);
           $r3$.ɵɵelementHostStylingApply();
         }
@@ -1379,8 +1379,8 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵɵelementHostStyling($_c0$, $_c1$);
         }
         if (rf & 2) {
-          $r3$.ɵɵelementProperty(elIndex, "id", $r3$.ɵɵbind(ctx.id), null, true);
-          $r3$.ɵɵelementProperty(elIndex, "title", $r3$.ɵɵbind(ctx.title), null, true);
+          $r3$.ɵɵproperty("id", ctx.id, null, true);
+          $r3$.ɵɵproperty("title", ctx.title, null, true);
           $r3$.ɵɵelementHostStyleProp(0, ctx.myWidth);
           $r3$.ɵɵelementHostClassProp(0, ctx.myFooClass);
           $r3$.ɵɵelementHostStylingApply();
