@@ -202,8 +202,13 @@ export class NgForOf<T> implements DoCheck {
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch {
-          throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+          let errorMessage = `Cannot find a differ supporting object '${value}' of type ` +
+            `'${getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays`;
+          if (typeof value === 'object' && value !== null) {
+            errorMessage = `${errorMessage}. Use the keyvalue pipe to iterate over an object's ` +
+              `properties`;
+	        }
+          throw new Error(errorMessage);
         }
       }
     }

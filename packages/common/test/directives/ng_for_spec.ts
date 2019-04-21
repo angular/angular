@@ -119,6 +119,15 @@ let thisArg: any;
                  /Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays/);
        }));
 
+    it('should throw on object ref and suggest using keyvalue pipe', async(() => {
+          fixture = createTestComponent();
+
+          getComponent().items = <any>{};
+          expect(() => fixture.detectChanges())
+              .toThrowError(
+                /Cannot find a differ supporting object '\[object Object\]' of type 'object'\. NgFor only supports binding to Iterables such as Arrays\. Use the keyvalue pipe to iterate over an object's properties/);
+       }));
+
     it('should throw on ref changing to string', async(() => {
          fixture = createTestComponent();
 
