@@ -16,7 +16,9 @@ import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {LazyRoute} from '../../src/ngtsc/routing';
+import * as api from '../../src/transformers/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
+
 
 
 /**
@@ -179,9 +181,8 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
-  driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    // Cast is safe as ngtsc mode only produces ts.Diagnostics.
-    return mainDiagnosticsForTest(['-p', this.basePath]) as ReadonlyArray<ts.Diagnostic>;
+  driveDiagnostics(): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+    return mainDiagnosticsForTest(['-p', this.basePath]);
   }
 
   driveRoutes(entryPoint?: string): LazyRoute[] {

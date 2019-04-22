@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
-import {STRING_TYPE} from '@angular/compiler/src/output/output_ast';
+import {CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, STRING_TYPE, SchemaMetadata, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -19,6 +18,7 @@ import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
+
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
@@ -124,14 +124,54 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const id: Expression|null =
         ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
 
+    const schemas: SchemaMetadata[] = [];
+    if (ngModule.has('schemas')) {
+      const rawExpr = ngModule.get('schemas') !;
+      const result = this.evaluator.evaluate(rawExpr);
+      if (!Array.isArray(result)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr, `NgModule.schemas must be an array`);
+      }
+
+      for (const schemaRef of result) {
+        if (!(schemaRef instanceof Reference)) {
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+              'NgModule.schemas must be an array of schemas');
+        }
+        const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
+        if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+              'NgModule.schemas must be an array of schemas');
+        }
+        // Since `id` is the `ts.Identifer` within the schema ref's declaration file, it's safe to
+        // use `id.text` here to figure out which schema is in use. Even if the actual reference was
+        // renamed when the user imported it, these names will match.
+        switch (id.text) {
+          case 'CUSTOM_ELEMENTS_SCHEMA':
+            schemas.push(CUSTOM_ELEMENTS_SCHEMA);
+            break;
+          case 'NO_ERRORS_SCHEMA':
+            schemas.push(NO_ERRORS_SCHEMA);
+            break;
+          default:
+            throw new FatalDiagnosticError(
+                ErrorCode.VALUE_HAS_WRONG_TYPE, rawExpr,
+                `'${schemaRef.debugName}' is not a valid NgModule schema`);
+        }
+      }
+    }
+
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
     this.metaRegistry.registerNgModuleMetadata({
       ref: new Reference(node),
+      schemas,
       declarations: declarationRefs,
       imports: importRefs,
-      exports: exportRefs
+      exports: exportRefs,
     });
 
     const valueContext = node.getSourceFile();

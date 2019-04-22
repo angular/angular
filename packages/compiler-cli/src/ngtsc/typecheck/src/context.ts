@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget} from '@angular/compiler';
+import {BoundTarget, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -14,7 +14,7 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {SchemaDiagnostic, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
@@ -62,7 +62,8 @@ export class TypeCheckContext {
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>): void {
+      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+      schemas: SchemaMetadata[]): void {
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -87,10 +88,10 @@ export class TypeCheckContext {
     if (requiresInlineTypeCheckBlock(ref.node)) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
-      this.addInlineTypeCheckBlock(ref, {boundTarget, pipes});
+      this.addInlineTypeCheckBlock(ref, {boundTarget, pipes, schemas});
     } else {
       // The class can be type-checked externally as normal.
-      this.typeCheckFile.addTypeCheckBlock(ref, {boundTarget, pipes});
+      this.typeCheckFile.addTypeCheckBlock(ref, {boundTarget, pipes, schemas});
     }
   }
 
@@ -166,6 +167,7 @@ export class TypeCheckContext {
       originalProgram: ts.Program, originalHost: ts.CompilerHost,
       originalOptions: ts.CompilerOptions): {
     diagnostics: ts.Diagnostic[],
+    legacyDiagnostics: SchemaDiagnostic[],
     program: ts.Program,
   } {
     const typeCheckSf = this.typeCheckFile.render();
@@ -194,6 +196,11 @@ export class TypeCheckContext {
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(sf));
     }
 
+    let legacyDiagnostics: SchemaDiagnostic[] = [];
+    if (this.config.schemaChecker !== null) {
+      legacyDiagnostics = this.config.schemaChecker.errors;
+    }
+
     return {
       diagnostics: diagnostics.filter(
           (diag: ts.Diagnostic):
@@ -209,6 +216,7 @@ export class TypeCheckContext {
                 }
                 return true;
               }),
+      legacyDiagnostics,
       program: typeCheckProgram,
     };
   }

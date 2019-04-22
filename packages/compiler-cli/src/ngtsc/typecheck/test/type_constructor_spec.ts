@@ -14,6 +14,7 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
+import {LegacyTemplateSchemaChecker} from '../src/schema';
 
 const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   applyTemplateContextGuards: true,
@@ -22,6 +23,7 @@ const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfBindings: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
+  schemaChecker: new LegacyTemplateSchemaChecker(),
 };
 
 runInEachFileSystem(() => {

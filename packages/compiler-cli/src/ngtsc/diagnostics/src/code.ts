@@ -56,6 +56,9 @@ export enum ErrorCode {
    * otherwise imported.
    */
   NGMODULE_INVALID_REEXPORT = 6004,
+
+  SCHEMA_INVALID_ELEMENT = 7001,
+  SCHEMA_INVALID_ATTRIBUTE = 7002,
 }
 
 export function ngErrorCode(code: ErrorCode): number {

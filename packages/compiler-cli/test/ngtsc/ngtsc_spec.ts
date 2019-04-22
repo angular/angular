@@ -2970,7 +2970,7 @@ runInEachFileSystem(os => {
         export class Module {}
       `);
 
-        const errors = env.driveDiagnostics();
+        const errors = env.driveDiagnostics() as ts.Diagnostic[];
         expect(errors.length).toBe(1);
         expect(errors[0].messageText)
             .toBe(

@@ -339,5 +339,113 @@ export declare class CommonModule {
       expect(diags[1].messageText)
           .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
     });
+
+    describe('legacy schema checking with the DOM schema', () => {
+      beforeEach(
+          () => { env.tsconfig({ivyTemplateTypeCheck: true, fullTemplateTypeCheck: false}); });
+
+      it('should check for unknown elements', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'blah',
+          template: '<foo>test</foo>',
+        })
+        export class FooCmp {}
+
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'foo' is not a valid HTML Element`);
+      });
+
+      it('should check for unknown properties', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'blah',
+          template: '<div [foo]="1">test</div>',
+        })
+        export class FooCmp {}
+
+        @NgModule({
+          declarations: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'foo' is not a valid property of <div>`);
+      });
+
+      it('should produce diagnostics for custom-elements-style elements when not using the CUSTOM_ELEMENTS_SCHEMA',
+         () => {
+           env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'blah',
+            template: '<custom-element [foo]="1">test</custom-element>',
+          })
+          export class FooCmp {}
+
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+      `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(2);
+           expect(diags[0].messageText).toBe(`'custom-element' is not a valid HTML Element`);
+           expect(diags[1].messageText).toBe(`'foo' is not a valid property of <custom-element>`);
+         });
+
+      it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA',
+         () => {
+           env.write('test.ts', `
+            import {Component, NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+      
+            @Component({
+              selector: 'blah',
+              template: '<custom-element [foo]="1">test</custom-element>',
+            })
+            export class FooCmp {}
+      
+            @NgModule({
+              declarations: [FooCmp],
+              schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            })
+            export class FooModule {}
+          `);
+           const diags = env.driveDiagnostics();
+           expect(diags).toEqual([]);
+         });
+
+      it('should not produce diagnostics when using the NO_ERRORS_SCHEMA', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+  
+        @Component({
+          selector: 'blah',
+          template: '<foo [bar]="1"></foo>',
+        })
+        export class FooCmp {}
+  
+        @NgModule({
+          declarations: [FooCmp],
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+    });
   });
 });

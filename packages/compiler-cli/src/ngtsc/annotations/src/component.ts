@@ -369,7 +369,7 @@ export class ComponentDecoratorHandler implements
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
-      ctx.addTemplate(new Reference(node), bound, pipes);
+      ctx.addTemplate(new Reference(node), bound, pipes, scope.schemas);
     }
   }
 

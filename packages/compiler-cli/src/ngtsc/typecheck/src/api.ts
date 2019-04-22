@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, DirectiveMeta} from '@angular/compiler';
+import {BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {TemplateGuardMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+
+
 
 /**
  * Extension of `DirectiveMeta` that includes additional information required to type-check the
@@ -38,6 +41,13 @@ export interface TypeCheckBlockMetadata {
    * Pipes used in the template of the component.
    */
   pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
+
+  /**
+   * Schemas active for this template, determined by the NgModule in which the template is declared.
+   *
+   * These are only utilized when running in "legacy" type-checking mode.
+   */
+  schemas: SchemaMetadata[];
 }
 
 export interface TypeCtorMetadata {
@@ -55,6 +65,17 @@ export interface TypeCtorMetadata {
    * Input, output, and query field names in the type which should be included as constructor input.
    */
   fields: {inputs: string[]; outputs: string[]; queries: string[];};
+}
+
+export interface SchemaDiagnostic {
+  /**
+   * User-facing text of the error.
+   */
+  messageText: string;
+
+  code: ErrorCode;
+
+  span: ParseSourceSpan;
 }
 
 export interface TypeCheckingConfig {
@@ -103,4 +124,31 @@ export interface TypeCheckingConfig {
    * This is currently an unsupported feature.
    */
   checkQueries: false;
+
+  /**
+   * A strategy for checking the DOM/HTML within the template.
+   */
+  schemaChecker: SchemaChecker|null;
+}
+
+/**
+ * Checks the DOM/HTML of a template against a set of schemas, and accumulates any errors.
+ */
+export interface SchemaChecker {
+  /**
+   * Retrieves any errors that have accumulated as a result of this schema checking pass.
+   */
+  readonly errors: SchemaDiagnostic[];
+
+  /**
+   * Check the given element itself using the provided schemas.
+   */
+  checkElement(element: TmplAstElement, schemas: SchemaMetadata[]): void;
+
+  /**
+   * Check the binding to the given property of an element using the provided schemas.
+   */
+  checkProperty(
+      element: TmplAstElement, name: string, span: ParseSourceSpan,
+      schemas: SchemaMetadata[]): void;
 }

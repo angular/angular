@@ -34,6 +34,7 @@ import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
+import {LegacyTemplateSchemaChecker} from './typecheck/src/schema';
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, getSourceFileOrNull, isDtsPath, resolveModuleName} from './util/src/typescript';
 
@@ -381,7 +382,7 @@ export class NgtscProgram implements api.Program {
     return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
-  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
     // Skip template type-checking if it's disabled.
     if (this.options.ivyTemplateTypeCheck === false &&
         this.options.fullTemplateTypeCheck !== true) {
@@ -403,6 +404,7 @@ export class NgtscProgram implements api.Program {
         checkTypeOfBindings: true,
         checkTypeOfPipes: true,
         strictSafeNavigationTypes: true,
+        schemaChecker: new LegacyTemplateSchemaChecker(),
       };
     } else {
       typeCheckingConfig = {
@@ -412,6 +414,7 @@ export class NgtscProgram implements api.Program {
         checkTypeOfBindings: false,
         checkTypeOfPipes: false,
         strictSafeNavigationTypes: false,
+        schemaChecker: new LegacyTemplateSchemaChecker(),
       };
     }
 
@@ -423,12 +426,20 @@ export class NgtscProgram implements api.Program {
 
     // Get the diagnostics.
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
-    const {diagnostics, program} =
+    const {diagnostics, legacyDiagnostics, program} =
         ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
     this.perfRecorder.stop(typeCheckSpan);
     this.reuseTsProgram = program;
 
-    return diagnostics;
+    const apiDiagnostics: api.Diagnostic[] = legacyDiagnostics.map(diag => {
+      return {
+        ...diag,
+        source: 'angular',
+        category: ts.DiagnosticCategory.Error,
+      };
+    });
+
+    return [...diagnostics, ...apiDiagnostics];
   }
 
   getIndexedComponents(): Map<ts.Declaration, IndexedComponent> {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta} from '@angular/compiler';
+import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
@@ -19,6 +19,7 @@ export interface NgModuleMeta {
   declarations: Reference<ClassDeclaration>[];
   imports: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
+  schemas: SchemaMetadata[];
 }
 
 /**

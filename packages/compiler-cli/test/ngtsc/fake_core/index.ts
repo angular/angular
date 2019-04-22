@@ -44,6 +44,9 @@ export const Output = callablePropDecorator();
 export const ViewChild = callablePropDecorator();
 export const ViewChildren = callablePropDecorator();
 
+export const NO_ERRORS_SCHEMA = null;
+export const CUSTOM_ELEMENTS_SCHEMA = null;
+
 export type ModuleWithProviders<T> = any;
 
 export class ChangeDetectorRef {}

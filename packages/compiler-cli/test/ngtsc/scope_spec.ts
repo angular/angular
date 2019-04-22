@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import * as api from '../../src/transformers/api';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -179,12 +180,16 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diag: ts.Diagnostic, guard: (node: ts.Node) => node is T): T {
-    if (diag.file === undefined) {
-      throw new Error(`Expected ts.Diagnostic to have a file source`);
+      diag: ts.Diagnostic | api.Diagnostic, guard: (node: ts.Node) => node is T): T {
+    if (!isTsDiagnostic(diag) || diag.file === undefined) {
+      throw new Error(`Expected diagnostic to be from TypeScript and have a file source`);
     }
     const node = (ts as any).getTokenAtPosition(diag.file, diag.start) as ts.Node;
     expect(guard(node)).toBe(true);
     return node as T;
+  }
+
+  function isTsDiagnostic(diag: ts.Diagnostic | api.Diagnostic): diag is ts.Diagnostic {
+    return diag.source !== 'angular';
   }
 });

@@ -147,6 +147,7 @@ describe('type check blocks', () => {
       checkTypeOfBindings: true,
       checkTypeOfPipes: true,
       strictSafeNavigationTypes: true,
+      schemaChecker: null,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -333,7 +334,7 @@ function tcb(
     }
   }
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes};
+  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, schemas: []};
 
   config = config || {
     applyTemplateContextGuards: true,
@@ -342,6 +343,7 @@ function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
+    schemaChecker: null,
   };
 
   const tcb = generateTypeCheckBlock(
