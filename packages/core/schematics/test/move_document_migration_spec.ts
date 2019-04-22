@@ -29,6 +29,9 @@ describe('move-document migration', () => {
         lib: ['es2015'],
       }
     }));
+    writeFile('/angular.json', JSON.stringify({
+      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
+    }));
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);

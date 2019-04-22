@@ -35,6 +35,9 @@ describe('static-queries migration with usage strategy', () => {
         lib: ['es2015'],
       }
     }));
+    writeFile('/angular.json', JSON.stringify({
+      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
+    }));
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -598,6 +601,9 @@ describe('static-queries migration with usage strategy', () => {
       // Move the tsconfig into a subdirectory. This ensures that the update is properly
       // recorded for TypeScript projects not at the schematic tree root.
       host.sync.rename(normalize('/tsconfig.json'), normalize('/src/tsconfig.json'));
+      writeFile('/angular.json', JSON.stringify({
+        projects: {t: {architect: {build: {options: {tsConfig: './src/tsconfig.json'}}}}}
+      }));
 
       await runMigration();
 

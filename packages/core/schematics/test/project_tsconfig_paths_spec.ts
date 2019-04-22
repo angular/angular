@@ -22,7 +22,16 @@ describe('project tsconfig paths', () => {
           {my_name: {architect: {build: {options: {tsConfig: './my-custom-config.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree)).toEqual(['my-custom-config.json']);
+    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-custom-config.json']);
+  });
+
+  it('should detect test tsconfig path inside of angular.json file', () => {
+    testTree.create('/my-test-config.json', '');
+    testTree.create('/angular.json', JSON.stringify({
+      projects: {my_name: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
+    }));
+
+    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['my-test-config.json']);
   });
 
   it('should detect test tsconfig path inside of .angular.json file', () => {
@@ -32,25 +41,23 @@ describe('project tsconfig paths', () => {
           {with_tests: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree)).toEqual(['my-test-config.json']);
+    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['my-test-config.json']);
   });
 
   it('should detect common tsconfigs if no workspace config could be found', () => {
-    testTree.create('/tsconfig.json', '');
-    testTree.create('/src/tsconfig.json', '');
     testTree.create('/src/tsconfig.app.json', '');
+    testTree.create('/src/tsconfig.spec.json', '');
 
-    expect(getProjectTsConfigPaths(testTree)).toEqual([
-      'tsconfig.json', 'src/tsconfig.json', 'src/tsconfig.app.json'
-    ]);
+    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['src/tsconfig.app.json']);
+    expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['src/tsconfig.spec.json']);
   });
 
   it('should not return duplicate tsconfig files', () => {
     testTree.create('/tsconfig.json', '');
     testTree.create('/.angular.json', JSON.stringify({
-      projects: {app: {architect: {test: {options: {tsConfig: 'tsconfig.json'}}}}}
+      projects: {app: {architect: {build: {options: {tsConfig: 'tsconfig.json'}}}}}
     }));
 
-    expect(getProjectTsConfigPaths(testTree)).toEqual(['tsconfig.json']);
+    expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['tsconfig.json']);
   });
 });

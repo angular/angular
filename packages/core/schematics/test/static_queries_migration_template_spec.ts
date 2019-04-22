@@ -31,6 +31,9 @@ describe('static-queries migration with template strategy', () => {
         lib: ['es2015'],
       }
     }));
+    writeFile('/angular.json', JSON.stringify({
+      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
+    }));
 
     warnOutput = [];
     runner.logger.subscribe(logEntry => {
@@ -514,6 +517,55 @@ describe('static-queries migration with template strategy', () => {
       await runMigration();
 
       expect(console.error).toHaveBeenCalledTimes(0);
+    });
+
+    it('should always use the test migration strategy for test tsconfig files', async() => {
+      writeFile('/src/tsconfig.spec.json', JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          lib: ['es2015'],
+        },
+        files: [
+          'test.ts',
+        ],
+      }));
+
+      writeFile('/src/test.ts', `
+        import {ViewChild} from '@angular/core';
+        import {AppComponent} from './app.component';
+        
+        @Component({template: '<span #test>Test</span>'})
+        class MyTestComponent {
+          @ViewChild('test') query: any;
+        }
+      `);
+
+      writeFile('/src/app.component.ts', `
+        import {Component, ViewChild} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class AppComponent {
+          @ViewChild('test') query: any;
+        }
+      `);
+
+      writeFile('/src/app.module.ts', `
+        import {NgModule} from '@angular/core';
+        import {AppComponent} from './app.component';
+        
+        @NgModule({declarations: [AppComponent]})
+        export class MyModule {}
+      `);
+
+      spyOn(console, 'error').and.callThrough();
+
+      await runMigration();
+
+      expect(console.error).toHaveBeenCalledTimes(0);
+      expect(tree.readContent('/src/test.ts'))
+          .toContain(`@ViewChild('test', /* TODO: add static flag */ {}) query: any;`);
+      expect(tree.readContent('/src/app.component.ts'))
+          .toContain(`@ViewChild('test', { static: true }) query: any;`);
     });
   });
 });

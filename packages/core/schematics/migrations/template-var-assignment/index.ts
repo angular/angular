@@ -27,16 +27,16 @@ const FAILURE_MESSAGE = `Found assignment to template variable.`;
 /** Entry point for the V8 template variable assignment schematic. */
 export default function(): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
-    if (!projectTsConfigPaths.length) {
+    if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot check templates for template variable ' +
           'assignments.');
     }
 
-    for (const tsconfigPath of projectTsConfigPaths) {
+    for (const tsconfigPath of [...buildPaths, ...testPaths]) {
       runTemplateVariableAssignmentCheck(tree, tsconfigPath, basePath, context.logger);
     }
   };
