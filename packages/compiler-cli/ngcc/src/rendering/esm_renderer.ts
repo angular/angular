@@ -26,10 +26,13 @@ export class EsmRenderer extends Renderer {
   /**
    *  Add the imports at the top of the file
    */
-  addImports(output: MagicString, imports: {specifier: string; qualifier: string;}[]): void {
-    // The imports get inserted at the very top of the file.
-    imports.forEach(
-        i => { output.appendLeft(0, `import * as ${i.qualifier} from '${i.specifier}';\n`); });
+  addImports(
+      output: MagicString, imports: {specifier: string; qualifier: string;}[],
+      sf: ts.SourceFile): void {
+    const insertionPoint = findEndOfImports(sf);
+    const renderedImports =
+        imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');
+    output.appendLeft(insertionPoint, renderedImports);
   }
 
   addExports(output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void {
@@ -55,14 +58,11 @@ export class EsmRenderer extends Renderer {
     if (constants === '') {
       return;
     }
-    const insertionPoint = file.statements.reduce((prev, stmt) => {
-      if (ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
-          ts.isNamespaceImport(stmt)) {
-        return stmt.getEnd();
-      }
-      return prev;
-    }, 0);
-    output.appendLeft(insertionPoint, '\n' + constants + '\n');
+    const insertionPoint = findEndOfImports(file);
+
+    // Append the constants to the right of the insertion point, to ensure they get ordered after
+    // added imports (those are appended left to the insertion point).
+    output.appendRight(insertionPoint, '\n' + constants + '\n');
   }
 
   /**
@@ -113,6 +113,17 @@ export class EsmRenderer extends Renderer {
       outputText.overwrite(start, end, replacement);
     });
   }
+}
+
+function findEndOfImports(sf: ts.SourceFile): number {
+  for (const stmt of sf.statements) {
+    if (!ts.isImportDeclaration(stmt) && !ts.isImportEqualsDeclaration(stmt) &&
+        !ts.isNamespaceImport(stmt)) {
+      return stmt.getStart();
+    }
+  }
+
+  return 0;
 }
 
 function findStatement(node: ts.Node) {
