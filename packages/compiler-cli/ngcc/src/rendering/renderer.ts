@@ -155,7 +155,9 @@ export abstract class Renderer {
           renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
           compiledFile.sourceFile);
 
-      this.addImports(outputText, importManager.getAllImports(compiledFile.sourceFile.fileName));
+      this.addImports(
+          outputText, importManager.getAllImports(compiledFile.sourceFile.fileName),
+          compiledFile.sourceFile);
     }
 
     // Add exports to the entry-point file
@@ -185,7 +187,7 @@ export abstract class Renderer {
     });
 
     this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
-    this.addImports(outputText, importManager.getAllImports(dtsFile.fileName));
+    this.addImports(outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
 
     this.addExports(outputText, dtsFile.fileName, renderInfo.privateExports);
 
@@ -246,8 +248,9 @@ export abstract class Renderer {
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
-  protected abstract addImports(output: MagicString, imports: {specifier: string,
-                                                               qualifier: string}[]): void;
+  protected abstract addImports(
+      output: MagicString, imports: {specifier: string, qualifier: string}[],
+      sf: ts.SourceFile): void;
   protected abstract addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void;
   protected abstract addDefinitions(
