@@ -7,12 +7,10 @@
  */
 
 import {PropertyWrite} from '@angular/compiler';
-import {Variable, visitAll} from '@angular/compiler/src/render3/r3_ast';
-
+import {visitAll} from '@angular/compiler/src/render3/r3_ast';
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
-
-import {PropertyAssignment, PropertyWriteHtmlVisitor} from './angular/property_write_html_visitor';
+import {HtmlVariableAssignmentVisitor} from './angular/html_variable_assignment_visitor';
 
 export interface TemplateVariableAssignment {
   node: PropertyWrite;
@@ -32,20 +30,11 @@ export function analyzeResolvedTemplate(template: ResolvedTemplate): TemplateVar
     return null;
   }
 
-  const visitor = new PropertyWriteHtmlVisitor();
+  const visitor = new HtmlVariableAssignmentVisitor();
 
-  // Analyze the Angular Render3 HTML AST and collect all property assignments and
-  // template variables.
+  // Analyze the Angular Render3 HTML AST and collect all template variable assignments.
   visitAll(visitor, templateNodes);
 
-  return filterTemplateVariableAssignments(visitor.propertyAssignments, visitor.templateVariables)
-      .map(({node, start, end}) => ({node, start: start + node.span.start, end}));
-}
-
-/**
- * Returns all template variable assignments by looking if a given property
- * assignment is setting the value for one of the specified template variables.
- */
-function filterTemplateVariableAssignments(writes: PropertyAssignment[], variables: Variable[]) {
-  return writes.filter(propertyWrite => !!variables.find(v => v.name === propertyWrite.node.name));
+  return visitor.variableAssignments.map(
+      ({node, start, end}) => ({node, start: start + node.span.start, end}));
 }
