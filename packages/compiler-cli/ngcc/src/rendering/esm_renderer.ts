@@ -59,6 +59,9 @@ export class EsmRenderer extends Renderer {
       return;
     }
     const insertionPoint = findEndOfImports(file);
+
+    // Append the constants to the right of the insertion point, to ensure they get ordered after
+    // added imports (those are appended left to the insertion point).
     output.appendRight(insertionPoint, '\n' + constants + '\n');
   }
 
