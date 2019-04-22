@@ -57,6 +57,7 @@ export class Location {
   _platformStrategy: LocationStrategy;
   /** @internal */
   _platformLocation: PlatformLocation;
+  private urlChangeListeners: any[] = [];
 
   constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
@@ -146,6 +147,8 @@ export class Location {
    */
   go(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.pushState(state, '', path, query);
+    this.notifyUrlChangeListeners(
+        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
   /**
@@ -158,6 +161,8 @@ export class Location {
    */
   replaceState(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.replaceState(state, '', path, query);
+    this.notifyUrlChangeListeners(
+        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
   /**
@@ -169,6 +174,20 @@ export class Location {
    * Navigates back in the platform's history.
    */
   back(): void { this._platformStrategy.back(); }
+
+  /**
+   * Register URL change listeners. This API can be used to catch updates performed by the Angular
+   * framework. These are not detectible through "popstate" or "hashchange" events.
+   */
+  onUrlChange(fn: (url: string, state: unknown) => void) {
+    this.urlChangeListeners.push(fn);
+    this.subscribe(v => { this.notifyUrlChangeListeners(v.url, v.state); });
+  }
+
+
+  private notifyUrlChangeListeners(url: string = '', state: unknown) {
+    this.urlChangeListeners.forEach(fn => fn(url, state));
+  }
 
   /**
    * Subscribe to the platform's `popState` events.
