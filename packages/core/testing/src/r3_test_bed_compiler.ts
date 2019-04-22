@@ -505,14 +505,10 @@ export class R3TestBedCompiler {
   }
 
   private compileTestModule(): void {
-    const rootProviderOverrides = this.rootProviderOverrides;
-
-    @NgModule({
-      providers: [...rootProviderOverrides],
-      jit: true,
-    })
-    class RootScopeModule {
-    }
+    class RootScopeModule {}
+    compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
+      providers: [...this.rootProviderOverrides],
+    });
 
     const ngZone = new NgZone({enableLongStackTrace: true});
     const providers: Provider[] = [
