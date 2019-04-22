@@ -183,8 +183,9 @@ export class AnimationTransitionNamespace {
     return trigger;
   }
 
-  trigger(element: any, triggerName: string, value: any, defaultToFallback: boolean = true):
-      TransitionAnimationPlayer|undefined {
+  trigger(
+      element: any, triggerName: string, value: any, defaultToFallback: boolean = true,
+      isFinal: boolean = false): TransitionAnimationPlayer|undefined {
     const trigger = this._getTrigger(triggerName);
     const player = new TransitionAnimationPlayer(this.id, triggerName, element);
 
@@ -203,13 +204,9 @@ export class AnimationTransitionNamespace {
       toState.absorbOptions(fromState.options);
     }
 
-    triggersWithStates[triggerName] = toState;
-
     if (!fromState) {
       fromState = DEFAULT_STATE_VALUE;
     }
-
-    const isRemoval = toState.value === VOID_VALUE;
 
     // normally this isn't reached by here, however, if an object expression
     // is passed in then it may be a new object each time. Comparing the value
@@ -217,7 +214,7 @@ export class AnimationTransitionNamespace {
     // The removal arc here is special cased because the same element is triggered
     // twice in the event that it contains animations on the outer/inner portions
     // of the host container
-    if (!isRemoval && fromState.value === toState.value) {
+    if (fromState.value === toState.value) {
       // this means that despite the value not changing, some inner params
       // have changed which means that the animation final styles need to be applied
       if (!objEquals(fromState.params, toState.params)) {
@@ -234,6 +231,10 @@ export class AnimationTransitionNamespace {
         }
       }
       return;
+    }
+
+    if (!isFinal) {
+      triggersWithStates[triggerName] = toState;
     }
 
     const playersOnElement: TransitionAnimationPlayer[] =
@@ -336,7 +337,7 @@ export class AnimationTransitionNamespace {
         // this check is here in the event that an element is removed
         // twice (both on the host level and the component level)
         if (this._triggers[triggerName]) {
-          const player = this.trigger(element, triggerName, VOID_VALUE, defaultToFallback);
+          const player = this.trigger(element, triggerName, VOID_VALUE, defaultToFallback, true);
           if (player) {
             players.push(player);
           }

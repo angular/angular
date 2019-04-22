@@ -9,6 +9,7 @@ ts_library(
         ["**/*.ts"],
     ),
     deps = [
+        "//packages/animations",
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/testing",
@@ -16,6 +17,7 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
         "@npm//zone.js",
