@@ -30,6 +30,9 @@ describe('template variable assignment migration', () => {
         lib: ['es2015'],
       }
     }));
+    writeFile('/angular.json', JSON.stringify({
+      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
+    }));
 
     warnOutput = [];
     runner.logger.subscribe(logEntry => {

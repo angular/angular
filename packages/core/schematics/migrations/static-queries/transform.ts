@@ -10,6 +10,8 @@ import * as ts from 'typescript';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
 
+const TODO_COMMENT = 'TODO: add static flag';
+
 /**
  * Transforms the given query decorator by explicitly specifying the timing based on the
  * determined timing. The updated decorator call expression node will be returned.
@@ -39,7 +41,9 @@ export function getTransformedQueryCallExpr(
     const updatedOptions = ts.updateObjectLiteral(
         existingOptions, existingOptions.properties.concat(queryPropertyAssignments));
 
-    if (createTodo) {
+    // In case we want to add a todo and the options do not have the todo
+    // yet, we add the query timing todo as synthetic multi-line comment.
+    if (createTodo && !existingOptions.getFullText().includes(TODO_COMMENT)) {
       addQueryTimingTodoToNode(updatedOptions);
     }
 
@@ -68,6 +72,6 @@ function addQueryTimingTodoToNode(node: ts.Node) {
                                    end: -1,
                                    hasTrailingNewLine: false,
                                    kind: ts.SyntaxKind.MultiLineCommentTrivia,
-                                   text: ' TODO: add static flag '
+                                   text: ` ${TODO_COMMENT} `
                                  }]);
 }
