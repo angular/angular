@@ -756,10 +756,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               args.shift();  // ViewEngine required a count, we don't need that.
 
               // For interpolations like attr="{{foo}}", we don't need ["", foo, ""], just [foo].
-              if (args.length === 3) {
-                if (isEmptyStringExpression(args[0]) && isEmptyStringExpression(args[2])) {
-                  args = [args[1]];
-                }
+              if (args.length === 3 && isEmptyStringExpression(args[0]) &&
+                  isEmptyStringExpression(args[2])) {
+                args = [args[1]];
               }
 
               this.updateInstruction(
@@ -1645,10 +1644,8 @@ function interpolate(args: o.Expression[]): o.Expression {
   return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
 }
 
-const EMPTY_STRING = '';
-
 function isEmptyStringExpression(exp: o.Expression) {
-  return exp instanceof o.LiteralExpr && exp.value === EMPTY_STRING;
+  return exp instanceof o.LiteralExpr && exp.value === '';
 }
 
 function propertyInterpolate(argsLength: number) {
