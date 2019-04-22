@@ -10,6 +10,7 @@ import {AttributeMarker} from '../../core';
 import {AST, BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
+import {isEmptyExpression} from '../../template_parser/template_parser';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
@@ -160,7 +161,10 @@ export class StylingBuilder {
 
   registerStyleInput(
       name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan,
-      unit?: string|null): BoundStylingEntry {
+      unit?: string|null): BoundStylingEntry|null {
+    if (isEmptyExpression(value)) {
+      return null;
+    }
     const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
     const entry: BoundStylingEntry = {
       name: property,
@@ -180,7 +184,10 @@ export class StylingBuilder {
   }
 
   registerClassInput(name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan):
-      BoundStylingEntry {
+      BoundStylingEntry|null {
+    if (isEmptyExpression(value)) {
+      return null;
+    }
     const {property, hasOverrideFlag} = parseProperty(name);
     const entry:
         BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, unit: null};
