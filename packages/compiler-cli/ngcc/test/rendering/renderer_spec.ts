@@ -26,7 +26,8 @@ class TestRenderer extends Renderer {
       logger: Logger, host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
     super(logger, host, isCore, bundle, '/src');
   }
-  addImports(output: MagicString, imports: {specifier: string, qualifier: string}[]) {
+  addImports(
+      output: MagicString, imports: {specifier: string, qualifier: string}[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
   addExports(output: MagicString, baseEntryPointPath: string, exports: {
@@ -510,11 +511,15 @@ describe('Renderer', () => {
             export declare function withProviders7(): ({ngModule: SomeModule, providers: any[]})&{ngModule:SomeModule};
             export declare function withProviders8(): (MyModuleWithProviders)&{ngModule:SomeModule};`);
 
-        expect(renderer.addImports).toHaveBeenCalledWith(jasmine.any(MagicString), [
-          {specifier: './module', qualifier: 'ɵngcc0'},
-          {specifier: '@angular/core', qualifier: 'ɵngcc1'},
-          {specifier: 'some-library', qualifier: 'ɵngcc2'},
-        ]);
+        expect(renderer.addImports)
+            .toHaveBeenCalledWith(
+                jasmine.any(MagicString),
+                [
+                  {specifier: './module', qualifier: 'ɵngcc0'},
+                  {specifier: '@angular/core', qualifier: 'ɵngcc1'},
+                  {specifier: 'some-library', qualifier: 'ɵngcc2'},
+                ],
+                jasmine.anything());
 
 
         // The following expectation checks that we do not mistake `ModuleWithProviders` types

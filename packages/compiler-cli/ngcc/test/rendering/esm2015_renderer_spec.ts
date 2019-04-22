@@ -42,6 +42,7 @@ const PROGRAM = {
   name: '/some/file.js',
   contents: `
 /* A copyright notice */
+import 'some-side-effect';
 import {Directive} from '@angular/core';
 export class A {}
 A.decorators = [
@@ -114,17 +115,21 @@ export { D };
 describe('Esm2015Renderer', () => {
 
   describe('addImports', () => {
-    it('should insert the given imports at the start of the source file', () => {
-      const {renderer} = setup(PROGRAM);
+    it('should insert the given imports after existing imports of the source file', () => {
+      const {renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addImports(output, [
-        {specifier: '@angular/core', qualifier: 'i0'},
-        {specifier: '@angular/common', qualifier: 'i1'}
-      ]);
-      expect(output.toString()).toContain(`import * as i0 from '@angular/core';
-import * as i1 from '@angular/common';
-
-/* A copyright notice */`);
+      renderer.addImports(
+          output,
+          [
+            {specifier: '@angular/core', qualifier: 'i0'},
+            {specifier: '@angular/common', qualifier: 'i1'}
+          ],
+          sourceFile);
+      expect(output.toString()).toContain(`/* A copyright notice */
+import 'some-side-effect';
+import {Directive} from '@angular/core';
+import * as i0 from '@angular/core';
+import * as i1 from '@angular/common';`);
     });
   });
 
@@ -173,9 +178,26 @@ export {TopLevelComponent};`);
       renderer.addConstants(output, 'const x = 3;', file);
       expect(output.toString()).toContain(`
 import {Directive} from '@angular/core';
-const x = 3;
 
+const x = 3;
 export class A {}`);
+    });
+
+    it('should insert constants after inserted imports', () => {
+      const {renderer, program} = setup(PROGRAM);
+      const file = program.getSourceFile('some/file.js');
+      if (file === undefined) {
+        throw new Error(`Could not find source file`);
+      }
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addConstants(output, 'const x = 3;', file);
+      renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
+      expect(output.toString()).toContain(`
+import {Directive} from '@angular/core';
+import * as i0 from '@angular/core';
+
+const x = 3;
+export class A {`);
     });
   });
 
