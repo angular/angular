@@ -10,10 +10,10 @@ import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 import {UrlCodec} from './params';
-import {stripPrefix} from './utils';
 
 const PATH_MATCH = /^([^?#]*)(\?([^#]*))?(#(.*))?$/;
 const DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;
+const IGNORE_URI_REGEXP = /^\s*(javascript|mailto):/i;
 const DEFAULT_PORTS: {[key: string]: number} = {
   'http:': 80,
   'https:': 443,
@@ -37,7 +37,7 @@ export class LocationUpgradeService {
   private cachedState: unknown = null;
 
   constructor(
-      private $rootScope: any, private location: Location,
+      $rootScope: any, $rootElement: any, location: Location,
       private platformLocation: PlatformLocation, private urlCodec: UrlCodec,
       private locationStrategy: LocationStrategy) {
     const initialUrl = this.browserUrl();
@@ -56,14 +56,56 @@ export class LocationUpgradeService {
     this.cacheState();
     this.$$state = this.browserState();
 
-    this.location.onUrlChange((newUrl, newState) => {
+    $rootElement.on('click', (event: any) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.which === 2 ||
+          event.button === 2) {
+        return;
+      }
+
+      let elm: (Node & ParentNode)|null = event.target;
+
+      // traverse the DOM up to find first A tag
+      while (elm && elm.nodeName.toLowerCase() !== 'a') {
+        // ignore rewriting if no A tag (reached root element, or no parent - removed from document)
+        if (elm === $rootElement[0] || !(elm = elm.parentNode)) {
+          return;
+        }
+      }
+
+      if (!isAnchor(elm)) {
+        return;
+      }
+
+      const absHref = elm.href;
+      const relHref = elm.getAttribute('href');
+
+      // Ignore when url is started with javascript: or mailto:
+      if (IGNORE_URI_REGEXP.test(absHref)) {
+        return;
+      }
+
+      if (absHref && !elm.getAttribute('target') && !event.isDefaultPrevented()) {
+        if (this.$$parseLinkUrl(absHref, relHref)) {
+          // We do a preventDefault for all urls that are part of the AngularJS application,
+          // in html5mode and also without, so that we are able to abort navigation without
+          // getting double entries in the location history.
+          event.preventDefault();
+          // update location manually
+          if (this.absUrl() !== this.browserUrl()) {
+            $rootScope.$apply();
+          }
+        }
+      }
+    });
+
+    location.onUrlChange((newUrl, newState) => {
       let oldUrl = this.absUrl();
       let oldState = this.$$state;
       this.$$parse(newUrl);
       newUrl = this.absUrl();
       this.$$state = newState;
       const defaultPrevented =
-          this.$rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl, newState, oldState)
+          $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl, newState, oldState)
               .defaultPrevented;
 
       // if the location was changed by a `$locationChangeStart` handler then stop
@@ -83,7 +125,7 @@ export class LocationUpgradeService {
     });
 
     // update browser
-    this.$rootScope.$watch(() => {
+    $rootScope.$watch(() => {
       if (this.initalizing || this.updateBrowser) {
         this.updateBrowser = false;
 
@@ -102,11 +144,11 @@ export class LocationUpgradeService {
         if (this.initalizing || urlOrStateChanged) {
           this.initalizing = false;
 
-          this.$rootScope.$evalAsync(() => {
+          $rootScope.$evalAsync(() => {
             // Get the new URL again since it could have changed due to async update
             const newUrl = this.absUrl();
             const defaultPrevented =
-                this.$rootScope
+                $rootScope
                     .$broadcast('$locationChangeStart', newUrl, oldUrl, this.$$state, oldState)
                     .defaultPrevented;
 
@@ -125,7 +167,7 @@ export class LocationUpgradeService {
                     newUrl, currentReplace, oldState === this.$$state ? null : this.$$state);
                 this.$$replace = false;
               }
-              this.$rootScope.$broadcast(
+              $rootScope.$broadcast(
                   '$locationChangeSuccess', newUrl, oldUrl, this.$$state, oldState);
             }
           });
@@ -264,7 +306,7 @@ export class LocationUpgradeService {
     this.composeUrls();
   }
 
-  $$parseLinkUrl(url: string, relHref?: string): boolean {
+  $$parseLinkUrl(url: string, relHref?: string|null): boolean {
     // When relHref is passed, it should be a hash and is handled separately
     if (relHref && relHref[0] === '#') {
       this.hash(relHref.slice(1));
@@ -600,8 +642,10 @@ export class LocationUpgradeProvider {
 
   $get() {
     const $rootScope: any = this.ngUpgrade.$injector.get('$rootScope');
+    const $rootElement: any = this.ngUpgrade.$injector.get('$rootElement');
     return new LocationUpgradeService(
-        $rootScope, this.location, this.platformLocation, this.urlCodec, this.locationStrategy);
+        $rootScope, $rootElement, this.location, this.platformLocation, this.urlCodec,
+        this.locationStrategy);
   }
   // TODO(jasonaden): How to handle changing these values?
   hashPrefix(prefix?: string) {
@@ -637,4 +681,8 @@ function deepEqual(a: any, b: any): boolean {
       return false;
     }
   }
+}
+
+function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
+  return (<HTMLAnchorElement>el).href !== undefined;
 }

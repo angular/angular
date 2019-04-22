@@ -26,6 +26,20 @@ export class MockUpgradeModule {
   };
 }
 
+export function injectorFactory() {
+  const rootScopeMock = new $rootScopeMock();
+  const rootElementMock = {on: () => undefined};
+  return function $injectorGet(provider: string) {
+    if (provider === '$rootScope') {
+      return rootScopeMock;
+    } else if (provider === '$rootElement') {
+      return rootElementMock;
+    } else {
+      throw new Error(`Unsupported injectable mock: ${provider}`);
+    }
+  };
+}
+
 export class $rootScopeMock {
   private watchers: any[] = [];
   private events: {[k: string]: any[]} = {};
@@ -62,9 +76,7 @@ describe('LocationProvider', () => {
     });
 
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   it('should instantiate LocationProvider',
@@ -91,9 +103,7 @@ describe('LocationHtml5Url', function() {
 
     });
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   beforeEach(
@@ -215,9 +225,7 @@ describe('NewUrl', function() {
     });
 
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   beforeEach(
@@ -478,31 +486,26 @@ describe('NewUrl', function() {
       expect($location.absUrl()).toBe('http://www.domain.com:9877/!$:@#!$:@');
     });
 
+    it('should decode special characters', function() {
+      $location.$$parse('http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
+      expect($location.path()).toBe('/a <>#');
+      expect($location.search()).toEqual({'i j': '<>#'});
+      expect($location.hash()).toBe('x <>#');
+    });
 
-    // it('should decode special characters', function() {
-    //   var locationUrl = new LocationHtml5Url('http://host.com/', 'http://host.com/');
-    //   locationUrl.$$parse('http://host.com/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
-    //   expect(locationUrl.path()).toBe('/a <>#');
-    //   expect(locationUrl.search()).toEqual({'i j': '<>#'});
-    //   expect(locationUrl.hash()).toBe('x <>#');
-    // });
+    it('should not decode encoded forward slashes in the path', function() {
+      $location.$$parse('http://www.domain.com:9877/a/ng2;path=%2Fsome%2Fpath');
+      expect($location.path()).toBe('/a/ng2;path=%2Fsome%2Fpath');
+      expect($location.search()).toEqual({});
+      expect($location.hash()).toBe('');
+      expect($location.url()).toBe('/a/ng2;path=%2Fsome%2Fpath');
+      expect($location.absUrl()).toBe('http://www.domain.com:9877/a/ng2;path=%2Fsome%2Fpath');
+    });
 
-
-    // it('should not decode encoded forward slashes in the path', function() {
-    //   var locationUrl = new LocationHtml5Url('http://host.com/base/', 'http://host.com/base/');
-    //   locationUrl.$$parse('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
-    //   expect(locationUrl.path()).toBe('/a/ng2;path=%2Fsome%2Fpath');
-    //   expect(locationUrl.search()).toEqual({});
-    //   expect(locationUrl.hash()).toBe('');
-    //   expect(locationUrl.url()).toBe('/a/ng2;path=%2Fsome%2Fpath');
-    //   expect(locationUrl.absUrl()).toBe('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
-    // });
-
-    // it('should decode pluses as spaces in urls', function() {
-    //   var locationUrl = new LocationHtml5Url('http://host.com/', 'http://host.com/');
-    //   locationUrl.$$parse('http://host.com/?a+b=c+d');
-    //   expect(locationUrl.search()).toEqual({'a b': 'c d'});
-    // });
+    it('should decode pluses as spaces in urls', function() {
+      $location.$$parse('http://www.domain.com:9877/?a+b=c+d');
+      expect($location.search()).toEqual({'a b': 'c d'});
+    });
 
     it('should retain pluses when setting search queries', function() {
       $location.search({'a+b': 'c+d'});
@@ -536,9 +539,7 @@ describe('New URL Parsing', () => {
     });
 
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   beforeEach(
@@ -569,9 +570,7 @@ describe('New URL Parsing', () => {
     });
 
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   beforeEach(
@@ -714,9 +713,7 @@ describe('LocationHashbangUrl', function() {
     });
 
     upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue(new $rootScopeMock())
-    };
+    upgradeModule.$injector = {get: injectorFactory()};
   });
 
   beforeEach(
@@ -766,7 +763,8 @@ describe('LocationHashbangUrl', function() {
   //   not',
   //      function() {
   //        locationUrl =
-  //            new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
+  //            new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/',
+  //            '#');
 
   //        locationUrl.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
   //        expect(locationUrl.url()).toBe('/http://example.com/');
