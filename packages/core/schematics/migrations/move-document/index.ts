@@ -19,15 +19,15 @@ import {addToImport, createImport, removeFromImport} from './move-import';
 /** Entry point for the V8 move-document migration. */
 export default function(): Rule {
   return (tree: Tree) => {
-    const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
-    if (!projectTsConfigPaths.length) {
+    if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT 
           to new import source.`);
     }
 
-    for (const tsconfigPath of projectTsConfigPaths) {
+    for (const tsconfigPath of [...buildPaths, ...testPaths]) {
       runMoveDocumentMigration(tree, tsconfigPath, basePath);
     }
   };

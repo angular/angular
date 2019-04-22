@@ -184,6 +184,8 @@ export class QueryTemplateStrategy implements TimingStrategy {
     console.error('Could not create Angular AOT compiler to determine query timing.');
     console.error('The following diagnostics were detected:\n');
     console.error(diagnostics.map(d => d.messageText).join(`\n`));
+    console.error('Please make sure that there is no compilation failure. The migration');
+    console.error('can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"');
   }
 
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {
