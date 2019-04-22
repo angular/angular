@@ -146,25 +146,6 @@ describe('LocationHtml5Url', function() {
         .toEqual('http://server/pre/otherPath#test');
   });
 
-  // TODO(jasonaden): Get this test working again. Disabled due to refactor of directly running
-  // $location
-  // replacement. Can't get to platformLocation.hostname anymore.
-  xit('should rewrite umlaut URL', () => {
-    // Reset hostname url and hostname
-    $location.url('/');
-    ($location as any).platformLocation.hostname = 'särver';
-    expect($location.absUrl()).toEqual('http://särver/pre/');
-
-    expect(parseLinkAndReturn($location, 'http://other')).toEqual(undefined);
-    expect(parseLinkAndReturn($location, 'http://särver/pre')).toEqual('http://särver/pre/');
-    expect(parseLinkAndReturn($location, 'http://särver/pre/')).toEqual('http://särver/pre/');
-    expect(parseLinkAndReturn($location, 'http://särver/pre/otherPath'))
-        .toEqual('http://särver/pre/otherPath');
-    // Note: relies on the previous state!
-    expect(parseLinkAndReturn($location, 'someIgnoredAbsoluteHref', '#test'))
-        .toEqual('http://särver/pre/otherPath#test');
-  });
-
   it('should complain if the path starts with double slashes', function() {
     expect(function() {
       parseLinkAndReturn($location, 'http://server/pre///other/path');
@@ -178,33 +159,6 @@ describe('LocationHtml5Url', function() {
       parseLinkAndReturn($location, 'http://server/pre//\\//other/path');
     }).toThrow();
   });
-
-  // it('should complain if no base tag present', function() {
-  //   module(function($locationProvider) { $locationProvider.html5Mode(true); });
-
-  //   inject(function($browser, $injector) {
-  //     $browser.$$baseHref = undefined;
-  //     expect(function() { $injector.get('$location'); })
-  //         .toThrowMinErr(
-  //             '$location', 'nobase',
-  //             '$location in HTML5 mode requires a <base> tag to be present!');
-  //   });
-  // });
-
-
-  // it('should not complain if baseOptOut set to true in html5Mode', function() {
-  //   module(function($locationProvider) {
-  //     $locationProvider.html5Mode({enabled: true, requireBase: false});
-  //   });
-
-  //   inject(function($browser, $injector) {
-  //     $browser.$$baseHref = undefined;
-  //     expect(function() { $injector.get('$location'); })
-  //         .not.toThrowMinErr(
-  //             '$location', 'nobase',
-  //             '$location in HTML5 mode requires a <base> tag to be present!');
-  //   });
-  // });
 
   it('should support state',
      function() { expect($location.state({a: 2}).state()).toEqual({a: 2}); });
@@ -361,20 +315,14 @@ describe('NewUrl', function() {
     expect($location.search()).toEqual({1: true});
   });
 
-
-  // it('search() should throw error an incorrect argument', function() {
-  //   expect(function() { location.search(null); })
-  //       .toThrowMinErr(
-  //           '$location', 'isrcharg',
-  //           'The first argument of the `$location#search()` call must be a string or an
-  //           object.');
-  //   expect(function() { location.search(undefined); })
-  //       .toThrowMinErr(
-  //           '$location', 'isrcharg',
-  //           'The first argument of the `$location#search()` call must be a string or an
-  //           object.');
-  // });
-
+  it('search() should throw error an incorrect argument', function() {
+    expect(() => {
+      $location.search((null as any));
+    }).toThrowError('LocationProvider.search(): First argument must be a string or an object.');
+    expect(function() {
+      $location.search((undefined as any));
+    }).toThrowError('LocationProvider.search(): First argument must be a string or an object.');
+  });
 
   it('hash() should change hash fragment', function() {
     setupUrl();
@@ -455,14 +403,13 @@ describe('NewUrl', function() {
     expect($location.hash()).toBe('');
   });
 
+  it('replace should set $$replace flag and return itself', function() {
+    expect(($location as any).$$replace).toBe(false);
 
-  // it('replace should set $$replace flag and return itself', function() {
-  //   expect(location.$$replace).toBe(false);
-
-  //   location.replace();
-  //   expect(location.$$replace).toBe(true);
-  //   expect(location.replace()).toBe(location);
-  // });
+    $location.replace();
+    expect(($location as any).$$replace).toBe(true);
+    expect($location.replace()).toBe($location);
+  });
 
   describe('encoding', function() {
 
@@ -680,156 +627,7 @@ describe('New URL Parsing', () => {
     });
 
   });
-
-
 });
-
-
-
-// it('should not rewrite when hashbang url is not given', function() {
-//   initService({html5Mode: true, hashPrefix: '!', supportHistory: true});
-//   inject(
-//       initBrowser({url: 'http://domain.com/base/a/b', basePath: '/base'}),
-//       function($rootScope, $location, $browser) {
-//         expect($browser.url()).toBe('http://domain.com/base/a/b');
-//       });
-// });
-
-
-
-describe('LocationHashbangUrl', function() {
-
-  let $location: LocationUpgradeService;
-  let upgradeModule: UpgradeModule;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        LocationUpgradeTestModule.config(
-            {useHash: true, appBaseHref: '/pre', startUrl: 'http://server'}),
-      ],
-      providers: [UpgradeModule],
-    });
-
-    upgradeModule = TestBed.get(UpgradeModule);
-    upgradeModule.$injector = {get: injectorFactory()};
-  });
-
-  beforeEach(
-      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
-
-  xit('should rewrite URL', () => {
-    expect(parseLinkAndReturn($location, 'http://other')).toEqual(undefined);
-    expect(parseLinkAndReturn($location, 'http://server/pre')).toEqual('http://server/pre/');
-    expect(parseLinkAndReturn($location, 'http://server/pre/')).toEqual('http://server/pre/');
-    expect(parseLinkAndReturn($location, 'http://server/pre/#otherPath'))
-        .toEqual('http://server/pre/#/otherPath');
-    // eslint-disable-next-line no-script-url
-    expect(parseLinkAndReturn($location, 'javascript:void(0)')).toEqual(undefined);
-
-  });
-
-  //   it('should not set hash if one was not originally specified', function() {
-  //     locationUrl =
-  //         new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
-
-  //     locationUrl.$$parse('http://server/pre/index.html');
-  //     expect(locationUrl.url()).toBe('');
-  //     expect(locationUrl.absUrl()).toBe('http://server/pre/index.html');
-  //   });
-
-  //   it('should parse hash if one was specified', function() {
-  //     locationUrl =
-  //         new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
-
-  //     locationUrl.$$parse('http://server/pre/index.html#/foo/bar');
-  //     expect(locationUrl.url()).toBe('/foo/bar');
-  //     expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/foo/bar');
-  //   });
-
-
-  //   it('should prefix hash url with / if one was originally missing', function() {
-  //     locationUrl =
-  //         new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
-
-  //     locationUrl.$$parse('http://server/pre/index.html#not-starting-with-slash');
-  //     expect(locationUrl.url()).toBe('/not-starting-with-slash');
-  //     expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
-  //   });
-
-
-  //   it('should not strip stuff from path just because it looks like Windows drive when it\'s
-  //   not',
-  //      function() {
-  //        locationUrl =
-  //            new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/',
-  //            '#');
-
-  //        locationUrl.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
-  //        expect(locationUrl.url()).toBe('/http://example.com/');
-  //        expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
-  //      });
-
-  //   it('should throw on url(urlString, stateObject)',
-  //      function() { expectThrowOnStateChange(locationUrl); });
-
-  //   it('should allow navigating outside the original base URL', function() {
-  //     locationUrl =
-  //         new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
-
-  //     locationUrl.$$parse('http://server/next/index.html');
-  //     expect(locationUrl.url()).toBe('');
-  //     expect(locationUrl.absUrl()).toBe('http://server/next/index.html');
-  //   });
-});
-
-
-// describe('LocationHashbangInHtml5Url', function() {
-//   /* global LocationHashbangInHtml5Url: false */
-//   var locationUrl, locationIndexUrl;
-
-//   beforeEach(function() {
-//     locationUrl = new LocationHashbangInHtml5Url('http://server/pre/', 'http://server/pre/',
-//     '#!');
-//     locationIndexUrl =
-//         new LocationHashbangInHtml5Url('http://server/pre/index.html', 'http://server/pre/',
-//         '#!');
-//   });
-
-//   it('should rewrite URL', function() {
-//     expect(parseLinkAndReturn(locationUrl, 'http://other')).toEqual(undefined);
-//     expect(parseLinkAndReturn(locationUrl,
-//     'http://server/pre')).toEqual('http://server/pre/#!');
-//     expect(parseLinkAndReturn(locationUrl,
-//     'http://server/pre/')).toEqual('http://server/pre/#!');
-//     expect(parseLinkAndReturn(locationUrl, 'http://server/pre/otherPath'))
-//         .toEqual('http://server/pre/#!/otherPath');
-//     // Note: relies on the previous state!
-//     expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test'))
-//         .toEqual('http://server/pre/#!/otherPath#test');
-
-//     expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre'))
-//         .toEqual('http://server/pre/index.html#!');
-//     expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/')).toEqual(undefined);
-//     expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/otherPath'))
-//         .toEqual('http://server/pre/index.html#!/otherPath');
-//     // Note: relies on the previous state!
-//     expect(parseLinkAndReturn(locationIndexUrl, 'someIgnoredAbsoluteHref', '#test'))
-//         .toEqual('http://server/pre/index.html#!/otherPath#test');
-//   });
-
-//   it('should throw on url(urlString, stateObject)',
-//      function() { expectThrowOnStateChange(locationUrl); });
-
-//   it('should not throw when base path is another domain', function() {
-//     initService({html5Mode: true, hashPrefix: '!', supportHistory: true});
-//     inject(
-//         initBrowser({url: 'http://domain.com/base/', basePath:
-//         'http://otherdomain.com/base/'}),
-//         function($location) { expect(function() { $location.absUrl(); }).not.toThrow(); });
-//   });
-// });
 
 function parseLinkAndReturn(location: LocationUpgradeService, toUrl: string, relHref?: string) {
   const resetUrl = location.$$parseLinkUrl(toUrl, relHref);

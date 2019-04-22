@@ -131,6 +131,10 @@ export class LocationUpgradeService {
       } else {
         this.initalizing = false;
         $rootScope.$broadcast('$locationChangeSuccess', newUrl, oldUrl, newState, oldState);
+        this.resetBrowserUpdate();
+      }
+      if (!$rootScope.$$phase) {
+        $rootScope.$digest();
       }
     });
 
@@ -185,6 +189,11 @@ export class LocationUpgradeService {
       }
       this.$$replace = false;
     });
+  }
+
+  private resetBrowserUpdate() {
+    this.$$replace = false;
+    this.updateBrowser = false;
   }
 
   private lastHistoryState: unknown;
@@ -551,7 +560,7 @@ export class LocationUpgradeService {
       case 1:
         if (typeof search === 'string' || typeof search === 'number') {
           this.$$search = this.urlCodec.decodeSearch(search.toString());
-        } else if (typeof search === 'object') {
+        } else if (typeof search === 'object' && search !== null) {
           // Copy the object so it's never mutated
           search = {...search};
           // remove object undefined or null properties
