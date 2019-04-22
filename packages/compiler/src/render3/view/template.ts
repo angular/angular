@@ -822,7 +822,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const tagName = sanitizeIdentifier(template.tagName || '');
-    const contextName = `${tagName ? this.contextName + '_' + tagName : ''}_${templateIndex}`;
+    const contextName = `${this.contextName}${tagName ? '_' + tagName : ''}_${templateIndex}`;
     const templateName = `${contextName}_Template`;
 
     const parameters: o.Expression[] = [

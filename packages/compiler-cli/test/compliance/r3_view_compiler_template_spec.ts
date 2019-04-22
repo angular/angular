@@ -592,6 +592,54 @@ describe('compiler compliance: template', () => {
        expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
      });
 
+  it('should create unique template function names for ng-content templates', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'a-component',
+            template: \`
+              <ng-content *ngIf="show"></ng-content>
+            \`,
+          })
+          export class AComponent {
+            show = true;
+          }
+          
+          @Component({
+            selector: 'b-component',
+            template: \`
+              <ng-content *ngIf="show"></ng-content>
+            \`,
+          })
+          export class BComponent {
+            show = true;
+          }
+
+          @NgModule({declarations: [AComponent, BComponent]})
+          export class AModule {}
+        `
+      },
+    };
+
+    const result = compile(files, angularFiles);
+
+    const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+                                          .map(x => x.slice(9))
+                                          .filter(x => x.includes('Template'))
+                                          .sort();
+    const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
+
+    // Expected template function:
+    // - 1 for AComponent's template.
+    // - 1 for BComponent's template.
+    // - 2 for the two components.
+    expect(allTemplateFunctionsNames.length).toBe(1 + 1 + 2);
+    expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
+  });
+
   it('should create unique listener function names even for similar nested template structures',
      () => {
        const files = {
