@@ -106,4 +106,28 @@ describe('styling', () => {
        const outer = element.querySelector('.outer-area');
        expect(outer.textContent.trim()).toEqual('outer');
      });
+
+  it('should do nothing for empty style bindings', () => {
+    @Component({template: '<div [style.color]></div>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
+
+  it('should do nothing for empty class bindings', () => {
+    @Component({template: '<div [class.is-open]></div>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
 });
