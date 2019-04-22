@@ -395,7 +395,27 @@ The Angular CLI uses two configurations for differential loading:
 
 The CLI queries the Browserslist configuration, and checks the `target` to determine if support for legacy browsers is required. The combination of these two configurations determines whether multiple bundles are produced when you create a _build_. When you create a development build using [`ng build`](cli/build) and differential loading is enabled, the output produced is simpler and easier to debug, allowing you to rely less on sourcemaps of compiled code. When you create a production build using [`ng build --prod`](cli/build), the CLI uses the defined configurations above to determine the bundles to build for deployment of your application. 
 
-The `index.html` file is also modified during the build process with script tags that enable differential loading. Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the scripts that load ES modules. 
+The `index.html` file is also modified during the build process to include script tags that enable differential loading. See the sample output below from the `index.html` file produced during a build using `ng build`.
+
+```html
+<!-- ... -->
+<body>
+  <app-root></app-root>
+  <script src="runtime-es2015.js" type="module"></script>
+  <script src="runtime-es5.js" nomodule></script>
+  <script src="polyfills-es2015.js" type="module"></script>
+  <script src="polyfills-es5.js" nomodule></script>
+  <script src="styles-es2015.js" type="module"></script>
+  <script src="styles-es5.js" nomodule></script>
+  <script src="vendor-es2015.js" type="module"></script>
+  <script src="vendor-es5.js" nomodule></script>
+  <script src="main-es2015.js" type="module"></script>
+  <script src="main-es5.js" nomodule></script>
+</body>
+<!-- ... -->
+```
+
+Each script tag has a `type="module"` or `nomodule` attribute. Browsers with native support for ES modules only load the scripts with the `module` type attribute and ignore scripts with the `nomodule` attribute. Legacy browsers only load the scripts with the `nomodule` attribute, and ignore the script tags with the `module` type that load ES modules. 
 
 <div class="alert is-helpful">
 
