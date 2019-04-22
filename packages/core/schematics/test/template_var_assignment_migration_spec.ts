@@ -181,6 +181,55 @@ describe('template variable assignment migration', () => {
     expect(warnOutput.length).toBe(0);
   });
 
+  it('should not warn for property writes with template variable name but different receiver',
+     () => {
+       writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+      
+      @Component({
+        templateUrl: './sub_dir/tmpl.html',
+      })
+      export class MyComp {
+        someProp = {
+          element: 'someValue',
+        };
+      }
+    `);
+
+       writeFile('/sub_dir/tmpl.html', `
+      <button *ngFor="let element of list" (click)="someProp.element = null">
+        Reset
+      </button>
+    `);
+
+       runMigration();
+
+       expect(warnOutput.length).toBe(0);
+     });
+
+  it('should not warn for property writes with template variable name but different scope', () => {
+    writeFile('/index.ts', `
+      import {Component} from '@angular/core';
+      
+      @Component({
+        templateUrl: './sub_dir/tmpl.html',
+      })
+      export class MyComp {
+        element = 'someValue';
+      }
+    `);
+
+    writeFile('/sub_dir/tmpl.html', `
+      <button *ngFor="let element of list">{{element}}</button>
+      <button (click)="element = null"></button>
+    `);
+
+    runMigration();
+
+    expect(warnOutput.length).toBe(0);
+  });
+
+
   it('should not throw an error if a detected template fails parsing', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
