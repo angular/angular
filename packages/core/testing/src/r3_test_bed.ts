@@ -11,6 +11,7 @@
 // this statement only.
 // clang-format off
 import {
+  AbstractType,
   Component,
   Directive,
   InjectFlags,
@@ -169,15 +170,21 @@ export class TestBedRender3 implements Injector, TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
-  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  static typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T {
+    return TestBedRender3.get(token, notFoundValue, flags);
+  }
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
-  static get(token: any, notFoundValue?: any): any;
   static get(
       token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
-    return _getTestBedRender3().get(token, notFoundValue);
+    return _getTestBedRender3().get(token, notFoundValue, flags);
   }
 
   static createComponent<T>(component: Type<T>): ComponentFixture<T> {
@@ -263,11 +270,17 @@ export class TestBedRender3 implements Injector, TestBed {
 
   compileComponents(): Promise<any> { return this.compiler.compileComponents(); }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T {
+    return this.get(token, notFoundValue, flags);
+  }
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
-  get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
     if (token === TestBedRender3) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
+import {AbstractType, ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -56,9 +56,12 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
   get(token: any, notFoundValue?: any): any;
 
@@ -243,12 +246,17 @@ export class TestBedViewEngine implements Injector, TestBed {
     return TestBedViewEngine as any as TestBedStatic;
   }
 
-  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  static typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T {
+    return TestBedViewEngine.get(token, notFoundValue, flags);
+  }
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
-   * @suppress {duplicate}
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
-  static get(token: any, notFoundValue?: any): any;
   static get(
       token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
@@ -481,11 +489,17 @@ export class TestBedViewEngine implements Injector, TestBed {
     }
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T {
+    return this.get(token, notFoundValue, flags);
+  }
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
-  get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
     this._initIfNeeded();

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
+import {AbstractType, Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -130,9 +130,12 @@ export interface TestBedStatic {
     deps?: any[],
   }): TestBedStatic;
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  typedGet<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+
   /**
-   * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
+   * as a breaking change.
    */
   get(token: any, notFoundValue?: any): any;
 
