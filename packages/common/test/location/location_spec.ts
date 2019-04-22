@@ -77,4 +77,37 @@ describe('Location Class', () => {
        }));
 
   });
+
+  describe('location.onUrlChange()', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        providers: [
+          {provide: LocationStrategy, useClass: PathLocationStrategy},
+          {provide: PlatformLocation, useFactory: () => { return new MockPlatformLocation(); }},
+          {provide: Location, useClass: Location, deps: [LocationStrategy, PlatformLocation]},
+        ]
+      });
+    });
+
+    it('should have onUrlChange method', inject([Location], (location: Location) => {
+      expect(typeof location.onUrlChange).toBe('function');
+    }));
+
+    it('should add registered functions to urlChangeListeners', inject([Location], (location: Location) => {
+
+      function changeListener(url: string, state: unknown) {
+        return undefined;
+      }
+
+      expect((location as any).urlChangeListeners.length).toBe(0);
+
+      location.onUrlChange(changeListener);
+
+      expect((location as any).urlChangeListeners.length).toBe(1);
+      expect((location as any).urlChangeListeners[0]).toEqual(changeListener);
+      
+    }));
+
+  });
 });

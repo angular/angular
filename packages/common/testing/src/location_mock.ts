@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location, LocationStrategy} from '@angular/common';
+import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
+
+const urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
+function notifyUrlChangeListeners(url: string = '', state: unknown) {
+  urlChangeListeners.forEach(fn => fn(url, state));
+}
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
@@ -17,7 +22,7 @@ import {SubscriptionLike} from 'rxjs';
  * @publicApi
  */
 @Injectable()
-export class SpyLocation implements Location {
+export class SpyLocation extends Location {
   urlChanges: string[] = [];
   private _history: LocationState[] = [new LocationState('', '', null)];
   private _historyIndex: number = 0;
@@ -27,6 +32,8 @@ export class SpyLocation implements Location {
   _baseHref: string = '';
   /** @internal */
   _platformStrategy: LocationStrategy = null !;
+  /** @internal */
+  _platformLocation: PlatformLocation = null !;
 
   setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
 
@@ -109,6 +116,10 @@ export class SpyLocation implements Location {
       this._historyIndex--;
       this._subject.emit({'url': this.path(), 'state': this.getState(), 'pop': true});
     }
+  }
+  onUrlChange(fn: (url: string, state: unknown) => void) {
+    urlChangeListeners.push(fn);
+    this.subscribe(v => { notifyUrlChangeListeners(v.url, v.state); });
   }
 
   subscribe(
