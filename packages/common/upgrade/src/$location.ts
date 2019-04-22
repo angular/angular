@@ -37,9 +37,8 @@ export class LocationUpgradeService {
   private cachedState: unknown = null;
 
   constructor(
-      $rootScope: any, $rootElement: any, location: Location,
-      private platformLocation: PlatformLocation, private urlCodec: UrlCodec,
-      private locationStrategy: LocationStrategy) {
+      $injector: any, private location: Location, private platformLocation: PlatformLocation,
+      private urlCodec: UrlCodec, private locationStrategy: LocationStrategy) {
     const initialUrl = this.browserUrl();
 
     var parsedUrl = this.urlCodec.parse(initialUrl);
@@ -55,6 +54,17 @@ export class LocationUpgradeService {
     this.$$parseLinkUrl(initialUrl, initialUrl);
     this.cacheState();
     this.$$state = this.browserState();
+
+    if (isPromise($injector)) {
+      $injector.then($i => this.initialize($i));
+    } else {
+      this.initialize($injector);
+    }
+  }
+
+  private initialize($injector: any) {
+    const $rootScope = $injector.get('$rootScope');
+    const $rootElement = $injector.get('$rootElement');
 
     $rootElement.on('click', (event: any) => {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.which === 2 ||
@@ -98,7 +108,7 @@ export class LocationUpgradeService {
       }
     });
 
-    location.onUrlChange((newUrl, newState) => {
+    this.location.onUrlChange((newUrl, newState) => {
       let oldUrl = this.absUrl();
       let oldState = this.$$state;
       this.$$parse(newUrl);
@@ -641,10 +651,8 @@ export class LocationUpgradeProvider {
       private locationStrategy: LocationStrategy) {}
 
   $get() {
-    const $rootScope: any = this.ngUpgrade.$injector.get('$rootScope');
-    const $rootElement: any = this.ngUpgrade.$injector.get('$rootElement');
     return new LocationUpgradeService(
-        $rootScope, $rootElement, this.location, this.platformLocation, this.urlCodec,
+        this.ngUpgrade.$injector, this.location, this.platformLocation, this.urlCodec,
         this.locationStrategy);
   }
   // TODO(jasonaden): How to handle changing these values?
@@ -685,4 +693,10 @@ function deepEqual(a: any, b: any): boolean {
 
 function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
   return (<HTMLAnchorElement>el).href !== undefined;
+}
+
+function isPromise(obj: any): obj is Promise<any> {
+  // allow any Promise/A+ compliant thenable.
+  // It's up to the caller to ensure that obj.then conforms to the spec
+  return !!obj && typeof obj.then === 'function';
 }
