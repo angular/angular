@@ -31,7 +31,7 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "rxjs": "^6.0.0"
+    "rxjs": "^6.4.0"
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
