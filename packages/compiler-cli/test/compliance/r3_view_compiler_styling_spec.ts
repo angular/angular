@@ -649,6 +649,30 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
 
     });
+
+    it('should not create instructions for empty style bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div [style.color]></div>\`
+            })
+            export class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      expect(result.source).not.toContain('elementStyling');
+    });
+
   });
 
   describe('[class]', () => {
@@ -802,6 +826,30 @@ describe('compiler compliance: styling', () => {
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+
+    it('should not create instructions for empty class bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div [class.is-open]></div>\`
+            })
+            export class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      expect(result.source).not.toContain('elementStyling');
+    });
+
   });
 
   describe('[style] mixed with [class]', () => {

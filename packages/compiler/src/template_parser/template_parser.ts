@@ -899,7 +899,7 @@ export function removeSummaryDuplicates<T extends{type: CompileTypeMetadata}>(it
   return Array.from(map.values());
 }
 
-function isEmptyExpression(ast: AST): boolean {
+export function isEmptyExpression(ast: AST): boolean {
   if (ast instanceof ASTWithSource) {
     ast = ast.ast;
   }
