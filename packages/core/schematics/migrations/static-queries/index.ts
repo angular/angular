@@ -19,9 +19,16 @@ import {TypeScriptVisitor, visitAllNodes} from '../../utils/typescript/visit_nod
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {QueryTemplateStrategy} from './strategies/template_strategy/template_strategy';
+import {QueryTestStrategy} from './strategies/test_strategy/test_strategy';
 import {TimingStrategy} from './strategies/timing-strategy';
 import {QueryUsageStrategy} from './strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from './transform';
+
+export enum SELECTED_STRATEGY {
+  TEMPLATE,
+  USAGE,
+  TESTS,
+}
 
 /** Entry point for the V8 static-query migration. */
 export default function(): Rule {
@@ -34,7 +41,7 @@ export default function(): Rule {
 
 /** Runs the V8 migration static-query migration for all determined TypeScript projects. */
 async function runMigration(tree: Tree, context: SchematicContext) {
-  const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+  const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
   const basePath = process.cwd();
   const logger = context.logger;
 
@@ -44,7 +51,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   logger.info('https://github.com/angular/angular/pull/28810');
   logger.info('');
 
-  if (!projectTsConfigPaths.length) {
+  if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
         'Could not find any tsconfig file. Cannot migrate queries ' +
         'to explicit timing.');
@@ -52,7 +59,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
 
   // In case prompts are supported, determine the desired migration strategy
   // by creating a choice prompt. By default the template strategy is used.
-  let isUsageStrategy = false;
+  let selectedStrategy: SELECTED_STRATEGY = SELECTED_STRATEGY.TEMPLATE;
   if (supportsPrompt()) {
     logger.info('There are two available migration strategies that can be selected:');
     logger.info('  • Template strategy  -  migration tool (short-term gains, rare corrections)');
@@ -70,17 +77,26 @@ async function runMigration(tree: Tree, context: SchematicContext) {
       default: 'template',
     });
     logger.info('');
-    isUsageStrategy = strategyName === 'usage';
+    selectedStrategy =
+        strategyName === 'usage' ? SELECTED_STRATEGY.USAGE : SELECTED_STRATEGY.TEMPLATE;
   } else {
     // In case prompts are not supported, we still want to allow developers to opt
     // into the usage strategy by specifying an environment variable. The tests also
     // use the environment variable as there is no headless way to select via prompt.
-    isUsageStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'];
+    selectedStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] ? SELECTED_STRATEGY.USAGE :
+                                                                         SELECTED_STRATEGY.TEMPLATE;
   }
 
   const failures = [];
-  for (const tsconfigPath of projectTsConfigPaths) {
-    failures.push(...await runStaticQueryMigration(tree, tsconfigPath, basePath, isUsageStrategy));
+
+  for (const tsconfigPath of buildPaths) {
+    failures.push(...await runStaticQueryMigration(tree, tsconfigPath, basePath, selectedStrategy));
+  }
+  // For the "test" tsconfig projects we always want to use the test strategy as
+  // we can't detect the proper timing within spec files.
+  for (const tsconfigPath of testPaths) {
+    failures.push(
+        ...await runStaticQueryMigration(tree, tsconfigPath, basePath, SELECTED_STRATEGY.TESTS));
   }
 
   if (failures.length) {
@@ -99,7 +115,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
  * lifecycle hook does not need to be static and can be set up with "static: false".
  */
 async function runStaticQueryMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, isUsageStrategy: boolean) {
+    tree: Tree, tsconfigPath: string, basePath: string, selectedStrategy: SELECTED_STRATEGY) {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
   const host = ts.createCompilerHost(parsed.options, true);
 
@@ -119,10 +135,11 @@ async function runStaticQueryMigration(
   const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
   const printer = ts.createPrinter();
   const analysisVisitors: TypeScriptVisitor[] = [queryVisitor];
+  const failureMessages: string[] = [];
 
   // If the "usage" strategy is selected, we also need to add the query visitor
   // to the analysis visitors so that query usage in templates can be also checked.
-  if (isUsageStrategy) {
+  if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
     analysisVisitors.push(templateVisitor);
   }
 
@@ -136,7 +153,7 @@ async function runStaticQueryMigration(
   const {resolvedQueries, classMetadata} = queryVisitor;
   const {resolvedTemplates} = templateVisitor;
 
-  if (isUsageStrategy) {
+  if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
     // Add all resolved templates to the class metadata if the usage strategy is used. This
     // is necessary in order to be able to check component templates for static query usage.
     resolvedTemplates.forEach(template => {
@@ -146,10 +163,14 @@ async function runStaticQueryMigration(
     });
   }
 
-  const strategy: TimingStrategy = isUsageStrategy ?
-      new QueryUsageStrategy(classMetadata, typeChecker) :
-      new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
-  const failureMessages: string[] = [];
+  let strategy: TimingStrategy;
+  if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
+    strategy = new QueryUsageStrategy(classMetadata, typeChecker);
+  } else if (selectedStrategy === SELECTED_STRATEGY.TESTS) {
+    strategy = new QueryTestStrategy();
+  } else {
+    strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
+  }
 
   // In case the strategy could not be set up properly, we just exit the
   // migration. We don't want to throw an exception as this could mean
