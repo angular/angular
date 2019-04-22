@@ -672,6 +672,15 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContainerViewAt"
+  },
+  {
+    "name": "getContainerViewCount"
+  },
+  {
+    "name": "getContainerViewIndex"
+  },
+  {
     "name": "getContextLView"
   },
   {

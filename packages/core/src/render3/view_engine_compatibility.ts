@@ -24,7 +24,7 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, T
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, getContainerViewCount, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
@@ -116,7 +116,8 @@ export function createTemplateRef<T>(
             this._tView, context, this._declarationParentView, this._hostLContainer[QUERIES],
             this._injectorIndex);
         if (container) {
-          insertView(lView, container, index !);
+          // TODO(benlesh): pass the proper insert before node here.
+          insertView(lView, container, index !, null);
         }
         renderEmbeddedTemplate(lView, this._tView, context);
         const viewRef = new ViewRef(lView, context, -1);
@@ -201,14 +202,14 @@ export function createContainerRef(
       }
 
       clear(): void {
-        while (this._lContainer[VIEWS].length) {
+        while (getContainerViewCount(this._lContainer)) {
           this.remove(0);
         }
       }
 
       get(index: number): viewEngine_ViewRef|null { return this._viewRefs[index] || null; }
 
-      get length(): number { return this._lContainer[VIEWS].length; }
+      get length(): number { return getContainerViewCount(this._lContainer); }
 
       createEmbeddedView<C>(templateRef: ViewEngine_TemplateRef<C>, context?: C, index?: number):
           viewEngine_EmbeddedViewRef<C> {
@@ -248,10 +249,10 @@ export function createContainerRef(
           return this.move(viewRef, adjustedIdx);
         }
 
-        insertView(lView, this._lContainer, adjustedIdx);
+        // TODO(benlesh): pass the proper insert before node.
+        insertView(lView, this._lContainer, adjustedIdx, null);
 
-        const beforeNode =
-            getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], this._lContainer[NATIVE]);
+        const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
@@ -287,12 +288,12 @@ export function createContainerRef(
 
       private _adjustIndex(index?: number, shift: number = 0) {
         if (index == null) {
-          return this._lContainer[VIEWS].length + shift;
+          return getContainerViewCount(this._lContainer) + shift;
         }
         if (ngDevMode) {
           assertGreaterThan(index, -1, 'index must be positive');
           // +1 because it's legal to insert at the end.
-          assertLessThan(index, this._lContainer[VIEWS].length + 1 + shift, 'index');
+          assertLessThan(index, getContainerViewCount(this._lContainer) + 1 + shift, 'index');
         }
         return index;
       }

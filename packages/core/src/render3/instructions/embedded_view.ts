@@ -8,15 +8,17 @@
 
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainerOrUndefined} from '../assert';
-import {ACTIVE_INDEX, LContainer, VIEWS} from '../interfaces/container';
+import {ACTIVE_INDEX, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
 import {FLAGS, LView, LViewFlags, PARENT, QUERIES, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
-import {insertView, removeView} from '../node_manipulation';
+import {getContainerViewAt, getContainerViewCount, insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
 import {resetPreOrderHookFlags} from '../util/view_utils';
+
 import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews} from './shared';
+
 
 /**
  * Marks the start of an embedded view.
@@ -60,8 +62,9 @@ export function ɵɵembeddedViewStart(
   }
   if (lContainer) {
     if (isCreationMode(viewToRender)) {
+      // TODO(benlesh): Pass the proper insertBeforeNode here.
       // it is a new view, insert it into collection of views for a given container
-      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] !);
+      insertView(viewToRender, lContainer, lContainer[ACTIVE_INDEX] !, null);
     }
     lContainer[ACTIVE_INDEX] !++;
   }
@@ -107,11 +110,11 @@ function getOrCreateEmbeddedTView(
  * @returns index of a found view or -1 if not found
  */
 function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: number): LView|null {
-  const views = lContainer[VIEWS];
-  for (let i = startIdx; i < views.length; i++) {
-    const viewAtPositionId = views[i][TVIEW].id;
+  for (let i = startIdx; i < getContainerViewCount(lContainer); i++) {
+    const view = getContainerViewAt(lContainer, i) !;
+    const viewAtPositionId = view[TVIEW].id;
     if (viewAtPositionId === viewBlockId) {
-      return views[i];
+      return view;
     } else if (viewAtPositionId < viewBlockId) {
       // found a view that should not be at this position - remove
       removeView(lContainer, i);

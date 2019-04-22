@@ -8,7 +8,7 @@
 
 import {TNode} from './node';
 import {LQueries} from './query';
-import {RComment, RElement} from './renderer';
+import {RComment, RElement, RNode} from './renderer';
 import {StylingContext} from './styling';
 import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
 
@@ -94,13 +94,20 @@ export interface LContainer extends Array<any> {
       RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
 
   /**
-*A list of the container's currently active child views. Views will be inserted
-*here as they are added and spliced from here when they are removed. We need
-*to keep a record of current views so we know which views are already in the DOM
-*(and don't need to be re-added) and so we can remove views from the DOM when they
-*are no longer required.
-*/
-  [VIEWS]: LView[];
+   * A list of the container's currently active child views, and "insert before" RNodes.
+   *
+   * The structure of the list is as follows:
+   *
+   * - `index` (even): `RNode|null` -  The DOM node that can be used to insert DOM for a view
+   * inserted before the `LView` at `index + 1`. If the value is `null`, then the following `LView`
+   * is an empty.
+   * view, and you must use the next `RNode` found in the views list for insertion.
+   * - `index + 1` (odd): `LView` - A child view for the container.
+   *
+   * This list is used to identify views that are already inserted into DOM, so we know what we need
+   * to remove if the container's parent view is removed.
+   */
+  [VIEWS]: (RNode|null|LView)[];
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

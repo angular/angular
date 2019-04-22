@@ -11,7 +11,7 @@ import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from './interfaces/i18n';
 import {TNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {RComment, RElement} from './interfaces/renderer';
+import {RComment, RElement, RNode} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
 import {getTNode, unwrapRNode} from './util/view_utils';
@@ -207,7 +207,14 @@ export class LContainerDebug {
 
   get activeIndex(): number { return this._raw_lContainer[ACTIVE_INDEX]; }
   get views(): LViewDebug[] {
-    return this._raw_lContainer[VIEWS].map(toDebug as(l: LView) => LViewDebug);
+    return this
+        ._raw_lContainer[VIEWS]
+        // All odd indices are actual LViews
+        .filter((_, i) => i % 2 === 1)
+        .map(toDebug as(l: LView) => LViewDebug);
+  }
+  get insertBeforeList(): (RNode|null)[] {
+    return this._raw_lContainer[VIEWS].filter((_, i) => i % 2 === 0) as(RNode | null)[];
   }
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lContainer[PARENT]); }
   get queries(): LQueries|null { return this._raw_lContainer[QUERIES]; }

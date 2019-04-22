@@ -9,15 +9,17 @@ import {assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executePreOrderHooks, registerPostOrderHooks} from '../hooks';
-import {ACTIVE_INDEX, VIEWS} from '../interfaces/container';
+import {ACTIVE_INDEX} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
-import {appendChild, removeView} from '../node_manipulation';
+import {appendChild, getContainerViewCount, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, loadInternal} from '../util/view_utils';
+
 import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAtIndex, createTView} from './shared';
+
 
 /**
  * Creates an LContainer for inline views, e.g.
@@ -127,7 +129,7 @@ export function ɵɵcontainerRefreshEnd(): void {
   const nextIndex = lContainer[ACTIVE_INDEX];
 
   // remove extra views at the end of the container
-  while (nextIndex < lContainer[VIEWS].length) {
+  while (nextIndex < getContainerViewCount(lContainer)) {
     removeView(lContainer, nextIndex);
   }
 }

@@ -327,6 +327,15 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContainerViewAt"
+  },
+  {
+    "name": "getContainerViewCount"
+  },
+  {
+    "name": "getContainerViewIndex"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {

@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {assertDefined} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
@@ -99,8 +99,8 @@ function walkTNodeTree(
         // This element has an LContainer, and its comment needs to be handled
         executeNodeAction(
             action, renderer, renderParent, nodeOrContainer[NATIVE], tNode, beforeNode);
-        if (nodeOrContainer[VIEWS].length) {
-          currentView = nodeOrContainer[VIEWS][0];
+        if (getContainerViewCount(nodeOrContainer) > 0) {
+          currentView = getContainerViewAt(nodeOrContainer, 0) !;
           nextTNode = currentView[TVIEW].node;
 
           // When the walker enters a container, then the beforeNode has to become the local native
@@ -112,8 +112,8 @@ function walkTNodeTree(
       const lContainer = currentView ![tNode.index] as LContainer;
       executeNodeAction(action, renderer, renderParent, lContainer[NATIVE], tNode, beforeNode);
 
-      if (lContainer[VIEWS].length) {
-        currentView = lContainer[VIEWS][0];
+      if (getContainerViewCount(lContainer) > 0) {
+        currentView = getContainerViewAt(lContainer, 0) !;
         nextTNode = currentView[TVIEW].node;
 
         // When the walker enters a container, then the beforeNode has to become the local native
@@ -302,8 +302,9 @@ export function destroyViewTree(rootView: LView): void {
     } else {
       ngDevMode && assertLContainer(lViewOrLContainer);
       // If container, traverse down to its first LView.
-      const views = lViewOrLContainer[VIEWS] as LView[];
-      if (views.length > 0) next = views[0];
+      if (getContainerViewCount(lViewOrLContainer) > 0) {
+        next = getContainerViewAt(lViewOrLContainer, 0);
+      }
     }
 
     if (!next) {
@@ -330,23 +331,35 @@ export function destroyViewTree(rootView: LView): void {
  *
  * @param lView The view to insert
  * @param lContainer The container into which the view should be inserted
- * @param index Which index in the container to insert the child view into
+ * @param viewIndex Which index in the container to insert the child view into, relative to the
+ * number of views, not the length of the VIEWS storage.
+ * @param insertBeforeNode The node to use to insert DOM before the DOM of the view we're inserting.
  */
-export function insertView(lView: LView, lContainer: LContainer, index: number) {
+export function insertView(
+    lView: LView, lContainer: LContainer, viewIndex: number, insertBeforeNode: RNode | null) {
   ngDevMode && assertLView(lView);
   ngDevMode && assertLContainer(lContainer);
-  const views = lContainer[VIEWS];
-  ngDevMode && assertDefined(views, 'Container must have views');
-  if (index > 0) {
+  ngDevMode && assertDefined(lContainer[VIEWS], 'Container must have views');
+
+  if (viewIndex > 0) {
+    ngDevMode && assertDefined(
+                     getContainerViewAt(lContainer, viewIndex - 1),
+                     `No view found in container at ${viewIndex - 1}`);
     // This is a new view, we need to add it to the children.
-    views[index - 1][NEXT] = lView;
+    getContainerViewAt(lContainer, viewIndex - 1) ![NEXT] = lView;
   }
 
-  if (index < views.length) {
-    lView[NEXT] = views[index];
-    views.splice(index, 0, lView);
+  if (viewIndex < getContainerViewCount(lContainer)) {
+    // Inserting at the beginning or middle
+    lView[NEXT] = getContainerViewAt(lContainer, viewIndex);
+    // Insert the insertBeforeNode *and* the view, since the VIEWS array holds both. Note that the
+    // actualIndex is double the relative view index, because views and their insert before nodes
+    // are stored in pairs.
+    lContainer[VIEWS].splice(viewIndex * 2, 0, insertBeforeNode, lView);
   } else {
-    views.push(lView);
+    // Inserting at the end.
+    // Both the insert before node *and* the view are inserted.
+    lContainer[VIEWS].push(insertBeforeNode, lView);
     lView[NEXT] = null;
   }
 
@@ -354,7 +367,7 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
 
   // Notify query that a new view has been added
   if (lView[QUERIES]) {
-    lView[QUERIES] !.insertView(index);
+    lView[QUERIES] !.insertView(viewIndex);
   }
 
   // Sets the attached flag
@@ -371,14 +384,20 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
  * @param removeIndex The index of the view to detach
  * @returns Detached LView instance.
  */
-export function detachView(lContainer: LContainer, removeIndex: number): LView|undefined {
-  const views = lContainer[VIEWS];
-  const viewToDetach = views[removeIndex];
+export function detachView(lContainer: LContainer, removeIndex: number): LView|null {
+  const viewToDetach = getContainerViewAt(lContainer, removeIndex);
   if (viewToDetach) {
     if (removeIndex > 0) {
-      views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
+      ngDevMode && assertDefined(
+                       getContainerViewAt(lContainer, removeIndex - 1),
+                       `No view found in container at ${removeIndex - 1}`);
+
+      getContainerViewAt(lContainer, removeIndex - 1) ![NEXT] = viewToDetach[NEXT] as LView;
     }
-    views.splice(removeIndex, 1);
+    // There is a pair of RNode|null, LView that both need to be removed from VIEWS.
+    const actualIndex = removeIndex * 2;
+    lContainer[VIEWS].splice(actualIndex, 2);
+
     addRemoveViewFromContainer(viewToDetach, false);
 
     if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
@@ -400,7 +419,7 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
  * @param removeIndex The index of the view to remove
  */
 export function removeView(lContainer: LContainer, removeIndex: number) {
-  const view = lContainer[VIEWS][removeIndex];
+  const view = getContainerViewAt(lContainer, removeIndex);
   if (view) {
     detachView(lContainer, removeIndex);
     destroyLView(view);
@@ -678,9 +697,10 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
 function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   if (parentTNode.type === TNodeType.View) {
     const lContainer = getLContainer(parentTNode as TViewNode, lView) !;
-    const views = lContainer[VIEWS];
-    const index = views.indexOf(lView);
-    return getBeforeNodeForView(index, views, lContainer[NATIVE]);
+    // TODO(benlesh): Refactor this to just look into the VIEWS array and be a little more
+    // efficient, `getBeforeNodeForView` will either be heavily refactored or also go away.
+    const viewIndex = getContainerViewIndex(lContainer, lView);
+    return getBeforeNodeForView(viewIndex, lContainer);
   } else if (
       parentTNode.type === TNodeType.ElementContainer ||
       parentTNode.type === TNodeType.IcuContainer) {
@@ -729,9 +749,11 @@ function getHighestElementOrICUContainer(tNode: TNode): TNode {
   return tNode;
 }
 
-export function getBeforeNodeForView(index: number, views: LView[], containerNative: RComment) {
-  if (index + 1 < views.length) {
-    const view = views[index + 1] as LView;
+export function getBeforeNodeForView(viewIndex: number, lContainer: LContainer) {
+  const containerNative = lContainer[NATIVE];
+  const nextViewIndex = viewIndex + 1;
+  if (nextViewIndex < getContainerViewCount(lContainer)) {
+    const view = getContainerViewAt(lContainer, nextViewIndex) !;
     const viewTNode = view[T_HOST] as TViewNode;
     return viewTNode.child ? getNativeByTNode(viewTNode.child, view) : containerNative;
   } else {
@@ -817,9 +839,9 @@ function appendProjectedNode(
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
     // Assign the final projection location in those cases.
-    const views = nodeOrContainer[VIEWS];
-    for (let i = 0; i < views.length; i++) {
-      addRemoveViewFromContainer(views[i], true, nodeOrContainer[NATIVE]);
+    for (let i = 0; i < getContainerViewCount(nodeOrContainer); i++) {
+      addRemoveViewFromContainer(
+          getContainerViewAt(nodeOrContainer, i) !, true, nodeOrContainer[NATIVE]);
     }
   } else {
     if (projectedTNode.type === TNodeType.ElementContainer) {
@@ -834,4 +856,41 @@ function appendProjectedNode(
       appendChild(nodeOrContainer[NATIVE], tProjectionNode, currentView);
     }
   }
+}
+
+
+/**
+ * Returns the number of child views in a container.
+ * @param lContainer The container to examine
+ */
+export function getContainerViewCount(lContainer: LContainer) {
+  // Every other item is an RNode, not just an LView.
+  return lContainer[VIEWS].length / 2;
+}
+
+/**
+ * Gets a view from the lContainer's views by the index of where the view would be relative to the
+ * view count.
+ *
+ * Since the internal VIEWS array keeps both LViews and their insert before RNodes, this function is
+ * required to make getting views from the container a little more sane.
+ * @param lContainer the container to get the view from
+ * @param viewIndex The (virtual) index of the view. e.g. If the view is the third view, the
+ * `viewIndex` would be `2`.
+ */
+export function getContainerViewAt(lContainer: LContainer, viewIndex: number): LView|null {
+  ngDevMode && assertLContainer(lContainer);
+  const views = lContainer[VIEWS];
+  return views.length > 0 ? views[(viewIndex * 2) + 1] as LView : null;
+}
+
+/**
+ * Finds the relative view index of a view within a container. This will return the index of the
+ * view within the view count, not the index of the view within the underlying storage array, VIEWS.
+ * @param lContainer The container to search for the view in
+ * @param lView The view to search for
+ */
+export function getContainerViewIndex(lContainer: LContainer, lView: LView) {
+  const index = lContainer[VIEWS].indexOf(lView);
+  return (index - 1) / 2;
 }
