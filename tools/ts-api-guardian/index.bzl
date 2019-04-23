@@ -36,7 +36,7 @@ def ts_api_guardian_test(
         # Locally we need to add the TS build target
         # But it will replaced to @npm//ts-api-guardian when publishing
         "@angular//tools/ts-api-guardian:lib",
-        "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        "@angular//tools/ts-api-guardian:bin",
     ]
 
     args = [
