@@ -9,7 +9,7 @@ export interface Schema {
   /**
    * The name of the project.
    */
-  name: string;
+  name?: string;
   /**
    * When true, does not install dependency packages.
    */
