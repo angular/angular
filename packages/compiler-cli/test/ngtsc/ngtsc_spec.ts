@@ -499,6 +499,25 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('i0.\u0275registerNgModuleType("test", TestModule);');
   });
 
+  it('should emit a \u0275registerNgModuleType call when the module id is defined as `module.id`',
+     () => {
+       env.tsconfig();
+       env.write('index.d.ts', `
+         declare const module = {id: string};
+       `);
+       env.write('test.ts', `
+         import {NgModule} from '@angular/core';
+
+         @NgModule({id: module.id})
+         export class TestModule {}
+       `);
+
+       env.driveMain();
+
+       const jsContents = env.getContents('test.js');
+       expect(jsContents).toContain('i0.\u0275registerNgModuleType(module.id, TestModule);');
+     });
+
   it('should filter out directives and pipes from module exports in the injector def', () => {
     env.tsconfig();
     env.write('test.ts', `
