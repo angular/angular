@@ -9,7 +9,6 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
 import {
   AfterContentInit,
   Attribute,
@@ -185,11 +184,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   @ViewChild('input', {static: false}) _inputElement: ElementRef<HTMLInputElement>;
 
   constructor(elementRef: ElementRef,
-              /**
-               * @deprecated The `_platform` parameter to be removed.
-               * @breaking-change 8.0.0
-               */
-              _platform: Platform,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,

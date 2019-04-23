@@ -18,7 +18,6 @@ ng_module(
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/observers",
-    "//src/cdk/platform",
     "//src/lib/core",
   ],
 )
