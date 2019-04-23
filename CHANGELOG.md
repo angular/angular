@@ -1,3 +1,13 @@
+<a name="7.2.14"></a>
+## [7.2.14](https://github.com/angular/angular/compare/7.2.13...7.2.14) (2019-04-23)
+
+
+### Bug Fixes
+
+* **common:** prevent repeated application of HttpParams mutations ([#29045](https://github.com/angular/angular/issues/29045)) ([ee65d0d](https://github.com/angular/angular/commit/ee65d0d)), closes [#20430](https://github.com/angular/angular/issues/20430)
+
+
+
 <a name="7.2.13"></a>
 ## [7.2.13](https://github.com/angular/angular/compare/7.2.12...7.2.13) (2019-04-12)
 
