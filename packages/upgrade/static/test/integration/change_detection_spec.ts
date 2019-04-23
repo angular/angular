@@ -18,9 +18,64 @@ import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
-  describe('scope/component change-detection', () => {
+  describe('change-detection', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
+
+    it('should not break if a $digest is already in progress', async(() => {
+         const element = html('<my-app></my-app>');
+
+         @Component({selector: 'my-app', template: ''})
+         class AppComponent {
+         }
+
+         @NgModule({
+           declarations: [AppComponent],
+           entryComponents: [AppComponent],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module = angular.module('ng1', []).directive(
+             'myApp', downgradeComponent({component: AppComponent}));
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+           const ngZone: NgZone = upgrade.ngZone;
+
+           // Wrap in a setTimeout to ensure all boostrap operations have completed.
+           setTimeout(
+               // Run inside the Angular zone, so that operations such as emitting
+               // `onMicrotaskEmpty` do not trigger entering/existing the zone (and thus another
+               // `$digest`). This also closer simulates what would happen in a real app.
+               () => ngZone.run(() => {
+                 const digestSpy = spyOn($rootScope, '$digest').and.callThrough();
+
+                 // Step 1: Ensure `$digest` is run on `onMicrotaskEmpty`.
+                 ngZone.onMicrotaskEmpty.emit(null);
+                 expect(digestSpy).toHaveBeenCalledTimes(1);
+
+                 digestSpy.calls.reset();
+
+                 // Step 2: Cause the issue.
+                 $rootScope.$apply(() => ngZone.onMicrotaskEmpty.emit(null));
+
+                 // With the fix, `$digest` will only be run once (for `$apply()`).
+                 // Without the fix, `$digest()` would have been run an extra time
+                 // (`onMicrotaskEmpty`).
+                 expect(digestSpy).toHaveBeenCalledTimes(1);
+
+                 digestSpy.calls.reset();
+
+                 // Step 3: Ensure that `$digest()` is still executed on `onMicrotaskEmpty`.
+                 ngZone.onMicrotaskEmpty.emit(null);
+                 expect(digestSpy).toHaveBeenCalledTimes(1);
+               }),
+               0);
+         });
+       }));
 
     it('should interleave scope and component expressions', async(() => {
          const log: string[] = [];

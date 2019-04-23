@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability} from '@angular/core';
+import {Injector, NgModule, NgZone, Testability, isDevMode} from '@angular/core';
 
 import {IInjectorService, IIntervalService, IProvideService, ITestabilityService, bootstrap, element as angularElement, module_ as angularModule} from '../../src/common/src/angular1';
 import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
@@ -255,8 +255,18 @@ export class UpgradeModule {
                 // stabilizing
                 setTimeout(() => {
                   const $rootScope = $injector.get('$rootScope');
-                  const subscription =
-                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
+                  const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
+                    if ($rootScope.$$phase) {
+                      if (isDevMode()) {
+                        console.warn(
+                            'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
+                      }
+
+                      return $rootScope.$evalAsync();
+                    }
+
+                    return $rootScope.$digest();
+                  });
                   $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                 }, 0);
               }
