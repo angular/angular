@@ -46,6 +46,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/material2/pull/15806',
       changes: ['MatSlideToggle']
+    },
+    {
+      pr: 'https://github.com/angular/material2/pull/15773',
+      changes: ['MatDrawerContainer']
     }
   ],
 

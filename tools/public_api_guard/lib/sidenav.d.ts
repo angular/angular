@@ -54,8 +54,7 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     hasBackdrop: any;
     readonly scrollable: CdkScrollable;
     readonly start: MatDrawer | null;
-    constructor(_dir: Directionality, _element: ElementRef<HTMLElement>, _ngZone: NgZone, _changeDetectorRef: ChangeDetectorRef, defaultAutosize?: boolean, _animationMode?: string | undefined,
-    viewportRuler?: ViewportRuler);
+    constructor(_dir: Directionality, _element: ElementRef<HTMLElement>, _ngZone: NgZone, _changeDetectorRef: ChangeDetectorRef, viewportRuler: ViewportRuler, defaultAutosize?: boolean, _animationMode?: string | undefined);
     _closeModalDrawer(): void;
     _isShowingBackdrop(): boolean;
     _onBackdropClicked(): void;

@@ -527,13 +527,9 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
               private _element: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
+              viewportRuler: ViewportRuler,
               @Inject(MAT_DRAWER_DEFAULT_AUTOSIZE) defaultAutosize = false,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
-              /**
-               * @deprecated viewportRuler to become a required parameter.
-               * @breaking-change 8.0.0
-               */
-              @Optional() viewportRuler?: ViewportRuler) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
 
     // If a `Dir` directive exists up the tree, listen direction changes
     // and update the left/right properties to point to the proper start/end.
@@ -546,11 +542,9 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
 
     // Since the minimum width of the sidenav depends on the viewport width,
     // we need to recompute the margins if the viewport changes.
-    if (viewportRuler) {
-      viewportRuler.change()
-        .pipe(takeUntil(this._destroyed))
-        .subscribe(() => this._updateContentMargins());
-    }
+    viewportRuler.change()
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(() => this._updateContentMargins());
 
     this._autosize = defaultAutosize;
   }
