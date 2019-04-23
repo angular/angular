@@ -356,6 +356,17 @@ describe('ngtsc metadata', () => {
     expect(id.text).toEqual('Target');
   });
 
+  it('should resolve functions with more than one statement to an unknown value', () => {
+    const value = evaluate(`function foo(bar) { const b = bar; return b; }`, 'foo("test")');
+
+    if (!(value instanceof DynamicValue)) {
+      return fail(`Should have resolved to a DynamicValue`);
+    }
+
+    expect(value.isFromUnknown()).toBe(true);
+    expect((value.node as ts.CallExpression).expression.getText()).toBe('foo');
+  });
+
   describe('(visited file tracking)', () => {
     it('should track each time a source file is visited', () => {
       const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
