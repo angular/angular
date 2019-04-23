@@ -12,10 +12,10 @@ import {Subject} from 'rxjs';
 
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
-  let serverBase = '';
+  let serverBase;
 
-  // URL class requires full URL. If the URL string doesn't start with protocol, we need to add an
-  // arbitrary base URL which can be removed afterward.
+  // URL class requires full URL. If the URL string doesn't start with protocol, we need to add
+  // an arbitrary base URL which can be removed afterward.
   if (!verifyProtocol.test(urlStr)) {
     serverBase = 'http://empty.com/';
   }
@@ -62,7 +62,7 @@ export class MockPlatformLocation implements PlatformLocation {
       this.baseHref = config.appBaseHref || '';
 
       const parsedChanges =
-          this.parseChanges(null, config.startUrl || 'http://<empty>', this.baseHref);
+          this.parseChanges(null, config.startUrl || 'http://<empty>/', this.baseHref);
       this.urlChanges[0] = {...parsedChanges};
     }
   }
@@ -86,7 +86,9 @@ export class MockPlatformLocation implements PlatformLocation {
   onHashChange(fn: LocationChangeListener): void { this.hashUpdate.subscribe(fn); }
 
   get href(): string {
-    return `${this.protocol}//${this.hostname}${this.baseHref}${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`;
+    let url = `${this.protocol}//${this.hostname}${this.port ? ':' + this.port : ''}`;
+    url += `${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`
+    return url;
   }
 
   get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
@@ -104,6 +106,8 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 
   private parseChanges(state: unknown, url: string, baseHref: string = '') {
+    // When the `history.state` value is stored, it is always copied.
+    state = JSON.parse(JSON.stringify(state));
     return {...parseUrl(url, baseHref), state};
   }
 
