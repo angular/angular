@@ -57,7 +57,8 @@ export class Location {
   _platformStrategy: LocationStrategy;
   /** @internal */
   _platformLocation: PlatformLocation;
-  private urlChangeListeners: any[] = [];
+  /** @internal */
+  _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
 
   constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
@@ -147,7 +148,7 @@ export class Location {
    */
   go(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.pushState(state, '', path, query);
-    this.notifyUrlChangeListeners(
+    this._notifyUrlChangeListeners(
         this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
@@ -161,7 +162,7 @@ export class Location {
    */
   replaceState(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.replaceState(state, '', path, query);
-    this.notifyUrlChangeListeners(
+    this._notifyUrlChangeListeners(
         this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
@@ -180,13 +181,13 @@ export class Location {
    * framework. These are not detectible through "popstate" or "hashchange" events.
    */
   onUrlChange(fn: (url: string, state: unknown) => void) {
-    this.urlChangeListeners.push(fn);
-    this.subscribe(v => { this.notifyUrlChangeListeners(v.url, v.state); });
+    this._urlChangeListeners.push(fn);
+    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
   }
 
-
-  private notifyUrlChangeListeners(url: string = '', state: unknown) {
-    this.urlChangeListeners.forEach(fn => fn(url, state));
+  /** @internal */
+  _notifyUrlChangeListeners(url: string = '', state: unknown) {
+    this._urlChangeListeners.forEach(fn => fn(url, state));
   }
 
   /**

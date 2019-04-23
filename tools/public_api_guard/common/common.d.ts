@@ -116,7 +116,6 @@ export declare class HashLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
-    getState(): unknown;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
@@ -167,13 +166,14 @@ export declare class KeyValuePipe implements PipeTransform {
 }
 
 export declare class Location {
-    constructor(platformStrategy: LocationStrategy);
+    constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation);
     back(): void;
     forward(): void;
     getState(): unknown;
     go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
+    onUrlChange(fn: (url: string, state: unknown) => void): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string, state?: any): void;
@@ -198,7 +198,6 @@ export declare abstract class LocationStrategy {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHref(): string;
-    abstract getState(): unknown;
     abstract onPopState(fn: LocationChangeListener): void;
     abstract path(includeHash?: boolean): string;
     abstract prepareExternalUrl(internal: string): string;
@@ -362,7 +361,6 @@ export declare class PathLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
-    getState(): unknown;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
@@ -378,6 +376,7 @@ export declare class PercentPipe implements PipeTransform {
 export declare abstract class PlatformLocation {
     abstract readonly hash: string;
     abstract readonly hostname: string;
+    abstract readonly href: string;
     abstract readonly pathname: string;
     abstract readonly port: string;
     abstract readonly protocol: string;
