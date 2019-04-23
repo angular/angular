@@ -40,8 +40,8 @@ withEachNg1Version(() => {
          }
 
          // create the ng1 module that will import an ng2 service
-         const ng1Module =
-             angular.module('ng1Module', []).factory('ng2Service', downgradeInjectable(Ng2Service));
+         const ng1Module = angular.module_('ng1Module', [])
+                               .factory('ng2Service', downgradeInjectable(Ng2Service));
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
              .then((upgrade) => {
@@ -71,7 +71,8 @@ withEachNg1Version(() => {
          }
 
          // create the ng1 module that will import an ng2 service
-         const ng1Module = angular.module('ng1Module', []).value('ng1Service', 'ng1 service value');
+         const ng1Module =
+             angular.module_('ng1Module', []).value('ng1Service', 'ng1 service value');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
              .then((upgrade) => {
@@ -84,7 +85,7 @@ withEachNg1Version(() => {
        async(() => {
          let runBlockTriggered = false;
 
-         const ng1Module = angular.module('ng1Module', []).run([
+         const ng1Module = angular.module_('ng1Module', []).run([
            INJECTOR_KEY,
            function(injector: Injector) {
              runBlockTriggered = true;
@@ -124,7 +125,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1Module', []);
+         const ng1Module = angular.module_('ng1Module', []);
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
              .then(upgrade => expect(wrappedBootstrapCalled).toBe(true))

@@ -9,7 +9,7 @@
 import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type, resolveForwardRef} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, bootstrap, element as angularElement, module as angularModule} from '../../common/src/angular1';
+import {IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, bootstrap, element as angularElement, module_ as angularModule} from '../../common/src/angular1';
 import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../../common/src/constants';
 import {downgradeComponent} from '../../common/src/downgrade_component';
 import {downgradeInjectable} from '../../common/src/downgrade_injectable';
