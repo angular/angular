@@ -17,6 +17,7 @@ import {
   CdkColumnDef, CdkHeaderCellDef, CdkHeaderCell, CdkCell, CdkCellDef,
   CdkFooterCellDef, CdkFooterCell
 } from './cell';
+import {CdkTextColumn} from './text-column';
 
 const EXPORTED_DECLARATIONS = [
   CdkTable,
@@ -37,6 +38,7 @@ const EXPORTED_DECLARATIONS = [
   DataRowOutlet,
   HeaderRowOutlet,
   FooterRowOutlet,
+  CdkTextColumn,
 ];
 
 @NgModule({

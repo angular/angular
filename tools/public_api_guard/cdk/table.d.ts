@@ -179,6 +179,21 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
 export declare class CdkTableModule {
 }
 
+export declare class CdkTextColumn<T> implements OnDestroy, OnInit {
+    _name: string;
+    cell: CdkCellDef;
+    columnDef: CdkColumnDef;
+    dataAccessor: (data: T, name: string) => string;
+    headerCell: CdkHeaderCellDef;
+    headerText: string;
+    justify: 'start' | 'end';
+    name: string;
+    constructor(table: CdkTable<T>, options: TextColumnOptions<T>);
+    _createDefaultHeaderText(): string;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+}
+
 export interface CellDef {
     template: TemplateRef<any>;
 }
@@ -235,4 +250,11 @@ export declare class StickyStyler {
     stickRows(rowsToStick: HTMLElement[], stickyStates: boolean[], position: 'top' | 'bottom'): void;
     updateStickyColumns(rows: HTMLElement[], stickyStartStates: boolean[], stickyEndStates: boolean[]): void;
     updateStickyFooterContainer(tableElement: Element, stickyStates: boolean[]): void;
+}
+
+export declare const TEXT_COLUMN_OPTIONS: InjectionToken<TextColumnOptions<any>>;
+
+export interface TextColumnOptions<T> {
+    defaultDataAccessor?: (data: T, name: string) => string;
+    defaultHeaderTextTransform?: (name: string) => string;
 }

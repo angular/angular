@@ -69,3 +69,6 @@ export declare class MatTableDataSource<T> extends DataSource<T> {
 
 export declare class MatTableModule {
 }
+
+export declare class MatTextColumn<T> extends CdkTextColumn<T> {
+}

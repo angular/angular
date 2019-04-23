@@ -22,7 +22,7 @@ export interface CellDef {
  */
 @Directive({selector: '[cdkCellDef]'})
 export class CdkCellDef implements CellDef {
-  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {}
 }
 
 /**
@@ -31,7 +31,7 @@ export class CdkCellDef implements CellDef {
  */
 @Directive({selector: '[cdkHeaderCellDef]'})
 export class CdkHeaderCellDef implements CellDef {
-  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {}
 }
 
 /**
@@ -40,13 +40,13 @@ export class CdkHeaderCellDef implements CellDef {
  */
 @Directive({selector: '[cdkFooterCellDef]'})
 export class CdkFooterCellDef implements CellDef {
-  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {}
 }
 
 // Boilerplate for applying mixins to CdkColumnDef.
 /** @docs-private */
 export class CdkColumnDefBase {}
-export const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase =
+export const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
     mixinHasStickyInput(CdkColumnDefBase);
 
 /**
@@ -56,19 +56,20 @@ export const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase =
 @Directive({
   selector: '[cdkColumnDef]',
   inputs: ['sticky'],
-  providers: [{
-    provide: 'MAT_SORT_HEADER_COLUMN_DEF',
-    useExisting: CdkColumnDef
-  }],
+  providers: [{provide: 'MAT_SORT_HEADER_COLUMN_DEF', useExisting: CdkColumnDef}],
 })
 export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   /** Unique name for this column. */
   @Input('cdkColumnDef')
-  get name(): string { return this._name; }
+  get name(): string {
+    return this._name;
+  }
   set name(name: string) {
     // If the directive is set without a name (updated programatically), then this setter will
     // trigger with an empty string and should not overwrite the programatically set value.
-    if (!name) { return; }
+    if (!name) {
+      return;
+    }
 
     this._name = name;
     this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
@@ -81,7 +82,9 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
    * has been changed.
    */
   @Input('stickyEnd')
-  get stickyEnd(): boolean { return this._stickyEnd; }
+  get stickyEnd(): boolean {
+    return this._stickyEnd;
+  }
   set stickyEnd(v: boolean) {
     const prevValue = this._stickyEnd;
     this._stickyEnd = coerceBooleanProperty(v);

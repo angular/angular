@@ -56,3 +56,11 @@ export function getTableMissingRowDefsError() {
 export function getTableUnknownDataSourceError() {
   return Error(`Provided data source did not match an array, Observable, or DataSource`);
 }
+
+/**
+ * Returns an error to be thrown when the text column cannot find a parent table to inject.
+ * @docs-private
+ */
+export function getTableTextColumnMissingParentTableError() {
+  return Error(`Text column could not find a parent table for registration.`);
+}

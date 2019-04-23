@@ -1,0 +1,9 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <mat-text-column name="position"></mat-text-column>
+  <mat-text-column name="name"></mat-text-column>
+  <mat-text-column name="weight"></mat-text-column>
+  <mat-text-column name="symbol"></mat-text-column>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

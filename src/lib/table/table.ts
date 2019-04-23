@@ -21,6 +21,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
   host: {
     'class': 'mat-table',
   },
+  providers: [{provide: CdkTable, useExisting: MatTable}],
   encapsulation: ViewEncapsulation.None,
   // See note on CdkTable for explanation on why this uses the default change detection strategy.
   // tslint:disable-next-line:validate-decorators

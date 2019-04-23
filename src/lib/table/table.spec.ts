@@ -893,7 +893,7 @@ function getActualTableContent(tableElement: Element): string[][] {
   return actualTableContent.map(row => row.map(cell => cell.textContent!.trim()));
 }
 
-function expectTableToMatchContent(tableElement: Element, expected: any[]) {
+export function expectTableToMatchContent(tableElement: Element, expected: any[]) {
   const missedExpectations: string[] = [];
   function checkCellContent(actualCell: string, expectedCell: string) {
     if (actualCell !== expectedCell) {
