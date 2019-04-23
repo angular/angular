@@ -1,3 +1,26 @@
+<a name="8.0.0-beta.14"></a>
+# [8.0.0-beta.14](https://github.com/angular/angular/compare/8.0.0-beta.13...8.0.0-beta.14) (2019-04-23)
+
+
+### Bug Fixes
+
+* **bazel:** do not typecheck core schematic files ([#29876](https://github.com/angular/angular/issues/29876)) ([2ba799d](https://github.com/angular/angular/commit/2ba799d))
+* **bazel:** restore ng build --prod ([#30005](https://github.com/angular/angular/issues/30005)) ([96a8289](https://github.com/angular/angular/commit/96a8289))
+* **common:** prevent repeated application of HttpParams mutations ([#29045](https://github.com/angular/angular/issues/29045)) ([8e8e89a](https://github.com/angular/angular/commit/8e8e89a)), closes [#20430](https://github.com/angular/angular/issues/20430)
+* **common:** async pipe will properly check when it recieves an NaN value from an observable ([#22305](https://github.com/angular/angular/issues/22305)) ([3f6bf6d](https://github.com/angular/angular/commit/3f6bf6d)), closes [#15721](https://github.com/angular/angular/issues/15721)
+* **core:** don't include a local `EventListener` in typings ([#29809](https://github.com/angular/angular/issues/29809)) ([4bde40f](https://github.com/angular/angular/commit/4bde40f)), closes [/github.com/angular/angular/blob/303eae918d997070a36b523ddc97e018f622c258/packages/core/src/debug/debug_node.ts#L32](https://github.com//github.com/angular/angular/blob/303eae918d997070a36b523ddc97e018f622c258/packages/core/src/debug/debug_node.ts/issues/L32) [#29806](https://github.com/angular/angular/issues/29806)
+* **core:** use shakeable global definitions ([#29929](https://github.com/angular/angular/issues/29929)) ([e5905bb](https://github.com/angular/angular/commit/e5905bb)), closes [/github.com/angular/angular-cli/blob/5fc1f2499cbe57f9a95e4b0dfced130eb3a8046d/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts#L279-L282](https://github.com//github.com/angular/angular-cli/blob/5fc1f2499cbe57f9a95e4b0dfced130eb3a8046d/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/common.ts/issues/L279-L282)
+* **language-service:** Use proper types instead of any ([#29942](https://github.com/angular/angular/issues/29942)) ([1a56cd5](https://github.com/angular/angular/commit/1a56cd5))
+
+
+### Features
+
+* **compiler-cli:** export tooling definitions ([#29929](https://github.com/angular/angular/issues/29929)) ([e1f51ea](https://github.com/angular/angular/commit/e1f51ea))
+* **compiler-cli:** lower some exported expressions ([#30038](https://github.com/angular/angular/issues/30038)) ([8e73f9b](https://github.com/angular/angular/commit/8e73f9b))
+* **core:** add schematics to move deprecated DOCUMENT import ([#29950](https://github.com/angular/angular/issues/29950)) ([645e305](https://github.com/angular/angular/commit/645e305))
+
+
+
 <a name="8.0.0-beta.13"></a>
 # [8.0.0-beta.13](https://github.com/angular/angular/compare/8.0.0-beta.12...8.0.0-beta.13) (2019-04-16)
 
