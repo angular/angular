@@ -42,6 +42,8 @@ export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken('MOCK_PLATFORM_L
 
 /**
  * Mock implementation of URL state.
+ *
+ * @publicApi
  */
 @Injectable()
 export class MockPlatformLocation implements PlatformLocation {
