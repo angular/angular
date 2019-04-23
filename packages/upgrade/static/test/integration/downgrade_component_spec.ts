@@ -23,7 +23,7 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     it('should bind properties, events', async(() => {
-         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+         const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['name'] = 'world';
            $rootScope['dataA'] = 'A';
            $rootScope['dataB'] = 'B';
@@ -147,7 +147,7 @@ withEachNg1Version(() => {
        }));
 
     it('should bind properties to onpush components', async(() => {
-         const ng1Module = angular.module('ng1', []).run(
+         const ng1Module = angular.module_('ng1', []).run(
              ($rootScope: angular.IScope) => { $rootScope['dataB'] = 'B'; });
 
          @Component({
@@ -189,7 +189,7 @@ withEachNg1Version(() => {
 
     it('should support two-way binding and event listener', async(() => {
          const listenerSpy = jasmine.createSpy('$rootScope.listener');
-         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+         const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
            $rootScope['value'] = 'world';
            $rootScope['listener'] = listenerSpy;
          });
@@ -259,7 +259,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', [])
+         const ng1Module = angular.module_('ng1', [])
                                .directive('ng2', downgradeComponent({component: Ng2Component}))
                                .run(($rootScope: angular.IRootScopeService) => {
                                  $rootScope.value1 = 0;
@@ -323,7 +323,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive(
                      'ng2', downgradeComponent({component: Ng2Component, propagateDigest: false}))
                  .run(($rootScope: angular.IRootScopeService) => {
@@ -385,7 +385,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive(
                      'ng2A', downgradeComponent({component: Ng2Component, propagateDigest: true}))
                  .directive(
@@ -439,7 +439,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'ng2', downgradeComponent({component: Ng2Component}));
 
          const element = html(`
@@ -462,7 +462,7 @@ withEachNg1Version(() => {
        }));
 
     it('should bind to ng-model', async(() => {
-         const ng1Module = angular.module('ng1', []).run(
+         const ng1Module = angular.module_('ng1', []).run(
              ($rootScope: angular.IScope) => { $rootScope['modelA'] = 'A'; });
 
          let ng2Instance: Ng2;
@@ -534,7 +534,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive(
                      'ng1',
                      () => { return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'}; })
@@ -587,7 +587,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive('ng1', () => ({template: '<ng2-inner></ng2-inner>'}))
                  .directive('ng2Inner', downgradeComponent({component: Ng2InnerComponent}))
                  .directive('ng2Outer', downgradeComponent({component: Ng2OuterComponent}));
@@ -622,7 +622,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive(
                      'ng1',
                      [
@@ -667,7 +667,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'worksComponent', downgradeComponent({component: WorksComponent}));
 
          const element = html('<works-component></works-component>');
@@ -695,7 +695,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'rootComponent', downgradeComponent({component: RootComponent}));
 
          const element = html('<root-component></root-component>');
@@ -725,7 +725,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive('parent', downgradeComponent({component: ParentComponent}))
                  .directive('child', downgradeComponent({component: ChildComponent}));
 
@@ -765,7 +765,7 @@ withEachNg1Version(() => {
          class LazyLoadedModule {
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'ng2', downgradeComponent({component: Ng2Component}));
 
          const element = html('<ng2></ng2>');
@@ -800,7 +800,7 @@ withEachNg1Version(() => {
          }
 
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'ng2', downgradeComponent({component: Ng2Component, downgradedModule: 'foo'}));
 
          const element = html('<ng2></ng2>');
