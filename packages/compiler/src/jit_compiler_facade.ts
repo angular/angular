@@ -154,7 +154,13 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3BaseMetadataFacade):
       any {
     const constantPool = new ConstantPool();
-    const res = compileBaseDefFromMetadata(facade, constantPool);
+    const meta = {
+      ...facade,
+      viewQueries: facade.viewQueries ? facade.viewQueries.map(convertToR3QueryMetadata) :
+                                        facade.viewQueries,
+      queries: facade.queries ? facade.queries.map(convertToR3QueryMetadata) : facade.queries
+    };
+    const res = compileBaseDefFromMetadata(meta, constantPool);
     return this.jitExpression(
         res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
   }

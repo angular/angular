@@ -173,7 +173,7 @@ describe('query logic', () => {
           .toBe(true);
     });
 
-    it('should support view queries inherited from undecorated superclasses', () => {
+    it('should support ViewChild query inherited from undecorated superclasses', () => {
       class MyComp {
         @ViewChild('foo') foo: any;
       }
@@ -189,7 +189,7 @@ describe('query logic', () => {
       expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
     });
 
-    it('should support view queries inherited from undecorated grand superclasses', () => {
+    it('should support ViewChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
         @ViewChild('foo') foo: any;
       }
@@ -205,6 +205,62 @@ describe('query logic', () => {
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
       expect(fixture.componentInstance.foo).toBeAnInstanceOf(ElementRef);
+    });
+
+    it('should support ViewChildren query inherited from undecorated superclasses', () => {
+      @Directive({selector: '[some-dir]'})
+      class SomeDir {
+      }
+
+      class MyComp {
+        @ViewChildren(SomeDir) foo !: QueryList<SomeDir>;
+      }
+
+      @Component({
+        selector: 'sub-comp',
+        template: `
+          <div some-dir></div>
+          <div some-dir></div>
+        `
+      })
+      class SubComp extends MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [SubComp, SomeDir]});
+
+      const fixture = TestBed.createComponent(SubComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.foo.length).toBe(2);
+    });
+
+    it('should support ViewChildren query inherited from undecorated grand superclasses', () => {
+      @Directive({selector: '[some-dir]'})
+      class SomeDir {
+      }
+
+      class MySuperComp {
+        @ViewChildren(SomeDir) foo !: QueryList<SomeDir>;
+      }
+
+      class MyComp extends MySuperComp {}
+
+      @Component({
+        selector: 'sub-comp',
+        template: `
+          <div some-dir></div>
+          <div some-dir></div>
+        `
+      })
+      class SubComp extends MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [SubComp, SomeDir]});
+
+      const fixture = TestBed.createComponent(SubComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.foo.length).toBe(2);
     });
 
   });
@@ -433,7 +489,7 @@ describe('query logic', () => {
       expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
     });
 
-    it('should support content queries inherited from undecorated superclasses', () => {
+    it('should support ContentChild query inherited from undecorated superclasses', () => {
       class MyComp {
         @ContentChild('foo') foo: any;
       }
@@ -454,7 +510,7 @@ describe('query logic', () => {
       expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
     });
 
-    it('should support content queries inherited from undecorated grand superclasses', () => {
+    it('should support ContentChild query inherited from undecorated grand superclasses', () => {
       class MySuperComp {
         @ContentChild('foo') foo: any;
       }
@@ -475,6 +531,74 @@ describe('query logic', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(ElementRef);
+    });
+
+    it('should support ContentChildren query inherited from undecorated superclasses', () => {
+      @Directive({selector: '[some-dir]'})
+      class SomeDir {
+      }
+
+      class MyComp {
+        @ContentChildren(SomeDir) foo !: QueryList<SomeDir>;
+      }
+
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      class SubComp extends MyComp {
+      }
+
+      @Component({
+        template: `
+        <sub-comp>
+          <div some-dir></div>
+          <div some-dir></div>
+        </sub-comp>
+      `
+      })
+      class App {
+        @ViewChild(SubComp) subComp !: SubComp;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.subComp.foo.length).toBe(2);
+    });
+
+    it('should support ContentChildren query inherited from undecorated grand superclasses', () => {
+      @Directive({selector: '[some-dir]'})
+      class SomeDir {
+      }
+
+      class MySuperComp {
+        @ContentChildren(SomeDir) foo !: QueryList<SomeDir>;
+      }
+
+      class MyComp extends MySuperComp {}
+
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      class SubComp extends MyComp {
+      }
+
+      @Component({
+        template: `
+        <sub-comp>
+          <div some-dir></div>
+          <div some-dir></div>
+        </sub-comp>
+      `
+      })
+      class App {
+        @ViewChild(SubComp) subComp !: SubComp;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.subComp.foo).toBeAnInstanceOf(QueryList);
+      expect(fixture.componentInstance.subComp.foo.length).toBe(2);
     });
 
   });
