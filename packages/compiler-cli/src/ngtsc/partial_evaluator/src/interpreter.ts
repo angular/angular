@@ -421,7 +421,7 @@ export class StaticInterpreter {
 
     const body = fn.body;
     if (body.length !== 1 || !ts.isReturnStatement(body[0])) {
-      throw new Error('Function body must have a single return statement only.');
+      return DynamicValue.fromUnknown(node);
     }
     const ret = body[0] as ts.ReturnStatement;
 
