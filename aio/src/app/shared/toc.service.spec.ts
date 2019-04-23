@@ -27,7 +27,7 @@ describe('TocService', () => {
       { provide: ScrollSpyService, useClass: MockScrollSpyService },
       TocService,
     ]);
-    scrollSpyService = injector.get(ScrollSpyService);
+    scrollSpyService = injector.get(ScrollSpyService) as unknown as MockScrollSpyService;
     tocService = injector.get(TocService);
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
@@ -327,7 +327,7 @@ describe('TocService', () => {
     });
 
     it('should have bypassed HTML sanitizing of heading\'s innerHTML ', () => {
-      const domSanitizer: TestDomSanitizer = injector.get(DomSanitizer);
+      const domSanitizer = injector.get(DomSanitizer) as unknown as TestDomSanitizer;
       expect(domSanitizer.bypassSecurityTrustHtml)
         .toHaveBeenCalledWith('Setup to develop <i>locally</i>.');
     });

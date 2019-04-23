@@ -670,7 +670,7 @@ describe('AppComponent', () => {
       });
 
       it('should not be loaded/registered until necessary', () => {
-        const loader: TestElementsLoader = fixture.debugElement.injector.get(ElementsLoader);
+        const loader = fixture.debugElement.injector.get(ElementsLoader) as unknown as TestElementsLoader;
         expect(loader.loadCustomElement).not.toHaveBeenCalled();
 
         setHasFloatingToc(true);
@@ -775,14 +775,14 @@ describe('AppComponent', () => {
 
       describe('showing search results', () => {
         it('should not display search results when query is empty', () => {
-          const searchService: MockSearchService = TestBed.get(SearchService);
+          const searchService = TestBed.get(SearchService) as unknown as MockSearchService;
           searchService.searchResults.next({ query: '', results: [] });
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
         });
 
         it('should hide the results when a search result is selected', () => {
-          const searchService: MockSearchService = TestBed.get(SearchService);
+          const searchService = TestBed.get(SearchService) as unknown as MockSearchService;
 
           const results = [
             { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }

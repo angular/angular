@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type, ɵisPromise} from '@angular/core';
+import {ApplicationRef, InjectionToken, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type, ɵisPromise} from '@angular/core';
 import {ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -33,7 +33,7 @@ function _getPlatform(
 function _render<T>(
     platform: PlatformRef, moduleRefPromise: Promise<NgModuleRef<T>>): Promise<string> {
   return moduleRefPromise.then((moduleRef) => {
-    const transitionId = moduleRef.injector.get(ɵTRANSITION_ID, null);
+    const transitionId = moduleRef.injector.get(ɵTRANSITION_ID as InjectionToken<{}|null>, null);
     if (!transitionId) {
       throw new Error(
           `renderModule[Factory]() requires the use of BrowserModule.withServerTransition() to ensure
@@ -48,19 +48,17 @@ the server-rendered app can be properly bootstrapped into a client app.`);
           const asyncPromises: Promise<any>[] = [];
 
           // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-          const callbacks = moduleRef.injector.get(BEFORE_APP_SERIALIZED, null);
-          if (callbacks) {
-            for (const callback of callbacks) {
-              try {
-                const callbackResult = callback();
-                if (ɵisPromise(callbackResult)) {
-                  asyncPromises.push(callbackResult);
-                }
-
-              } catch (e) {
-                // Ignore exceptions.
-                console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+          const callbacks = moduleRef.injector.get(BEFORE_APP_SERIALIZED, []);
+          for (const callback of callbacks) {
+            try {
+              const callbackResult = callback();
+              if (ɵisPromise(callbackResult)) {
+                asyncPromises.push(callbackResult);
               }
+
+            } catch (e) {
+              // Ignore exceptions.
+              console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
             }
           }
 

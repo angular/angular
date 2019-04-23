@@ -254,7 +254,7 @@ describe('CodeComponent', () => {
     it('should display an error when copy fails', () => {
       const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
       const copierService: CopierService = TestBed.get(CopierService);
-      const logger: TestLogger = TestBed.get(Logger);
+      const logger = TestBed.get(Logger) as unknown as TestLogger;
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(false);
       getButton().click();

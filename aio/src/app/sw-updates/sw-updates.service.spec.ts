@@ -28,9 +28,9 @@ describe('SwUpdatesService', () => {
       SwUpdatesService
     ]);
 
-    appRef = injector.get(ApplicationRef);
+    appRef = injector.get(ApplicationRef) as unknown as MockApplicationRef;
     service = injector.get(SwUpdatesService);
-    swu = injector.get(SwUpdate);
+    swu = injector.get(SwUpdate) as unknown as MockSwUpdate;
     checkInterval = (service as any).checkInterval;
   };
   const tearDown = () => service.ngOnDestroy();

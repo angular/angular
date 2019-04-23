@@ -166,7 +166,7 @@ export function downgradeModule<T>(
               const result: LazyModuleRef = {
                 promise: bootstrapFn(angular1Providers).then(ref => {
                   injector = result.injector = new NgAdapterInjector(ref.injector);
-                  injector.get($INJECTOR);
+                  injector.get($INJECTOR as any);
 
                   return injector;
                 })

@@ -1156,7 +1156,8 @@ function declareTests(config?: {useJit: boolean}) {
             const compFixture =
                 TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
             const compiler = <Compiler>TestBed.get(Compiler);
-            const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+            const myModule =
+                compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef).injector);
             const myCompFactory = (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
                                       .resolveComponentFactory(MyComp);
 
@@ -1199,7 +1200,7 @@ function declareTests(config?: {useJit: boolean}) {
                                        .createComponent(RootComp);
                const compiler = <Compiler>TestBed.get(Compiler);
                const myModule =
-                   compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+                   compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef).injector);
                const myCompFactory =
                    myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
 

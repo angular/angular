@@ -43,10 +43,10 @@ describe('ScrollService', () => {
         { provide: ViewportScroller, useValue: viewportScrollerStub },
         { provide: LocationStrategy, useClass: MockLocationStrategy }
     ]);
-    platformLocation = injector.get(PlatformLocation);
-    document = injector.get(DOCUMENT);
+    platformLocation = injector.get(PlatformLocation) as MockPlatformLocation;
+    document = injector.get(DOCUMENT) as unknown as MockDocument;
     scrollService = injector.get(ScrollService);
-    location = injector.get(Location);
+    location = injector.get(Location) as SpyLocation;
 
     spyOn(window, 'scrollBy');
   });

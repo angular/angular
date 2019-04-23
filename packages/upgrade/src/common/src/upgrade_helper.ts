@@ -43,7 +43,7 @@ export class UpgradeHelper {
   constructor(
       private injector: Injector, private name: string, elementRef: ElementRef,
       directive?: IDirective) {
-    this.$injector = injector.get($INJECTOR);
+    this.$injector = injector.get($INJECTOR as any);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
 

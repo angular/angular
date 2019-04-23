@@ -8,6 +8,7 @@
 
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {Injector} from '../di/injector';
+import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -226,7 +227,8 @@ export function createContainerRef(
           ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
         const contextInjector = injector || this.parentInjector;
         if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
-          ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
+          ngModuleRef = contextInjector.get(
+              viewEngine_NgModuleRef as Type<viewEngine_NgModuleRef<any>|null>, null);
         }
 
         const componentRef =

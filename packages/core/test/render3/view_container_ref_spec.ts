@@ -23,6 +23,7 @@ import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, getDirectiveOnNode, TemplateFixture,} from './render_util';
+import {Injector} from '@angular/core';
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.
@@ -1110,7 +1111,8 @@ describe('ViewContainerRef', () => {
 
              // The injector should retrieve the change detector ref for DynamicComp. As such,
              // the doCheck hook for DynamicComp should NOT run upon ref.detectChanges().
-             const changeDetector = ref.injector.get(ChangeDetectorRef);
+             const changeDetector =
+                 ref.injector.get(ChangeDetectorRef) as EmbeddedViewRef<DynamicComp>;
              changeDetector.detectChanges();
              expect(dynamicComp.doCheckCount).toEqual(1);
              expect(changeDetector.context).toEqual(dynamicComp);
@@ -1966,15 +1968,15 @@ describe('ViewContainerRef', () => {
        () => {
          const fixture = new ComponentFixture(AppCmpt, {
            injector: {
-             get: (token: any) => {
+             get: (token: unknown) => {
                if (token === 'foo') return 'bar';
              }
-           }
+           } as Injector
          });
          expect(fixture.outerHtml).toBe('<div host="mark"></div>');
 
          const parentInjector = fixture.component.getVCRefParentInjector();
-         expect(parentInjector.get('foo')).toEqual('bar');
+         expect(parentInjector.get('foo' as any)).toEqual('bar');
        });
 
     it('should check bindings for components dynamically created by root component', () => {

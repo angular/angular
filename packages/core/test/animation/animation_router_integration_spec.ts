@@ -7,6 +7,7 @@
  */
 import {animate, animateChild, group, query, sequence, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
+import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
@@ -129,7 +130,7 @@ import {RouterTestingModule} from '@angular/router/testing';
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0] !as TransitionAnimationPlayer;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -236,7 +237,7 @@ import {RouterTestingModule} from '@angular/router/testing';
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0] !as TransitionAnimationPlayer;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -340,7 +341,7 @@ import {RouterTestingModule} from '@angular/router/testing';
          fixture.detectChanges();
          engine.flush();
 
-         const player = engine.players[0] !;
+         const player = engine.players[0] !as TransitionAnimationPlayer;
          const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
@@ -433,14 +434,14 @@ import {RouterTestingModule} from '@angular/router/testing';
          fixture.detectChanges();
          engine.flush();
 
-         const players = engine.players;
+         const players = engine.players as TransitionAnimationPlayer[];
          expect(players.length).toEqual(1);
          const [p1] = players;
 
-         const innerPlayers = p1.getRealPlayer().players;
+         const innerPlayers = (p1.getRealPlayer() as AnimationGroupPlayer).players;
          expect(innerPlayers.length).toEqual(2);
 
-         const [ip1, ip2] = innerPlayers;
+         const [ip1, ip2] = innerPlayers as MockAnimationPlayer[];
          expect(ip1.element.innerText).toEqual('page1');
          expect(ip2.element.innerText).toEqual('page2');
        }));

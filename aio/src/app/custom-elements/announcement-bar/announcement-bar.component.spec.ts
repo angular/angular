@@ -26,7 +26,7 @@ describe('AnnouncementBarComponent', () => {
     });
 
     httpMock = injector.get(HttpTestingController);
-    mockLogger = injector.get(Logger);
+    mockLogger = injector.get(Logger) as unknown as MockLogger;
     fixture = TestBed.createComponent(AnnouncementBarComponent);
     component = fixture.componentInstance;
     element = fixture.nativeElement;

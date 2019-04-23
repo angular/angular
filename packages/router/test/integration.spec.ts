@@ -8,7 +8,7 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, Type, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -406,7 +406,7 @@ describe('Integration', () => {
 
        TestBed.configureTestingModule({imports: [TestModule]});
 
-       const router: Router = TestBed.get(Router);
+       const router = TestBed.get(Router);
        const fixture = createRoot(router, RootCmp);
 
        router.resetConfig([{
@@ -476,7 +476,7 @@ describe('Integration', () => {
        }
        TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
-       const router: Router = TestBed.get(Router);
+       const router = TestBed.get(Router);
 
        const fixture = createRoot(router, RootCmpWithLink);
 
@@ -1120,8 +1120,8 @@ describe('Integration', () => {
   // Errors should behave the same for both deferred and eager URL update strategies
   ['deferred', 'eager'].forEach((strat: any) => {
     it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
-         const router: Router = TestBed.get(Router);
-         const location: SpyLocation = TestBed.get(Location);
+         const router = TestBed.get(Router);
+         const location = TestBed.get(Location);
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig(
@@ -1147,8 +1147,8 @@ describe('Integration', () => {
        }));
 
     it('should reset the url with the right state when navigation errors', fakeAsync(() => {
-         const router: Router = TestBed.get(Router);
-         const location: SpyLocation = TestBed.get(Location);
+         const router = TestBed.get(Router);
+         const location = TestBed.get(Location);
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
@@ -1214,8 +1214,8 @@ describe('Integration', () => {
        TestBed.configureTestingModule(
            {providers: [{provide: 'returnsFalse', useValue: () => false}]});
 
-       const router: Router = TestBed.get(Router);
-       const location: SpyLocation = TestBed.get(Location);
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
 
        const fixture = createRoot(router, RootCmp);
 
@@ -1236,7 +1236,7 @@ describe('Integration', () => {
          }
        });
 
-       location.simulateHashChange('/throwing');
+       (location as SpyLocation).simulateHashChange('/throwing');
        advance(fixture);
 
        expect(routerUrlBeforeEmittingError).toEqual('/simple');
@@ -1401,7 +1401,7 @@ describe('Integration', () => {
 
        TestBed.configureTestingModule({declarations: [Container]});
 
-       const router: Router = TestBed.get(Router);
+       const router = TestBed.get(Router);
 
        const fixture = createRoot(router, Container);
        const cmp = fixture.componentInstance;
@@ -1703,7 +1703,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
 
          const fixture = createRoot(router, RootCmpWithLink);
 
@@ -1726,7 +1726,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [CmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
 
          let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
@@ -1746,7 +1746,7 @@ describe('Integration', () => {
          class RootCmpWithLink {
          }
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
@@ -1776,7 +1776,7 @@ describe('Integration', () => {
          class RootCmpWithLink {
          }
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
@@ -1798,7 +1798,7 @@ describe('Integration', () => {
          class RootCmpWithLink {
          }
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
 
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
@@ -1970,7 +1970,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [RootCmpWithArea]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
 
          const fixture = createRoot(router, RootCmpWithArea);
 
@@ -2642,7 +2642,8 @@ describe('Integration', () => {
 
         it('should allow a predicate function to determine when to run guards and resolvers',
            fakeAsync(inject([Router], (router: Router) => {
-             const fixture = configureRouter(router, (from, to) => to.paramMap.get('p') === '2');
+             const fixture =
+                 configureRouter(router, (from, to) => to.paramMap.get('p' as any) === '2');
 
              const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
              const recordedData: any[] = [];
@@ -3131,7 +3132,7 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'alwaysFalse',
-              useValue: (a: any, b: any) => a.paramMap.get('id') === '22',
+              useValue: (a: any, b: any) => a.paramMap.get('id' as any) === '22',
             }]
           });
         });
@@ -3598,7 +3599,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
 
          const f = TestBed.createComponent(RootCmpWithLink);
          advance(f);
@@ -3683,7 +3684,7 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
 
          router.resetConfig([
            {
@@ -3815,25 +3816,25 @@ describe('Integration', () => {
              const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
              const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
 
-             expect(pInj.get('moduleName')).toEqual('parent');
-             expect(pInj.get('fromParent')).toEqual('from parent');
+             expect(pInj.get('moduleName' as any)).toEqual('parent');
+             expect(pInj.get('fromParent' as any)).toEqual('from parent');
              expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
-             expect(pInj.get('fromChild', null)).toEqual(null);
-             expect(pInj.get(Child, null)).toEqual(null);
+             expect(pInj.get('fromChild' as any, null)).toEqual(null);
+             expect(pInj.get(Child as Type<Child>, null)).toEqual(null);
 
-             expect(cInj.get('moduleName')).toEqual('child');
-             expect(cInj.get('fromParent')).toEqual('from parent');
-             expect(cInj.get('fromChild')).toEqual('from child');
+             expect(cInj.get('moduleName' as any)).toEqual('child');
+             expect(cInj.get('fromParent' as any)).toEqual('from parent');
+             expect(cInj.get('fromChild' as any)).toEqual('from child');
              expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
              expect(cInj.get(Child)).toBeAnInstanceOf(Child);
              // The child module can not shadow the parent component
-             expect(cInj.get('shadow')).toEqual('from parent component');
+             expect(cInj.get('shadow' as any)).toEqual('from parent component');
 
              const pmInj = pInj.get(NgModuleRef).injector;
              const cmInj = cInj.get(NgModuleRef).injector;
 
-             expect(pmInj.get('moduleName')).toEqual('parent');
-             expect(cmInj.get('moduleName')).toEqual('child');
+             expect(pmInj.get('moduleName' as any)).toEqual('parent');
+             expect(cmInj.get('moduleName' as any)).toEqual('child');
 
              expect(pmInj.get(Parent, '-')).toEqual('-');
              expect(cmInj.get(Parent, '-')).toEqual('-');
@@ -4708,7 +4709,7 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({imports: [TestModule]});
 
-         const router: Router = TestBed.get(Router);
+         const router = TestBed.get(Router);
          router.routeReuseStrategy = new AttachDetachReuseStrategy();
 
          const fixture = createRoot(router, RootCmpWithCondOutlet);
@@ -4808,7 +4809,7 @@ class AbsoluteLinkCmp {
 class DummyLinkCmp {
   private exact: boolean;
   constructor(route: ActivatedRoute) {
-    this.exact = route.snapshot.paramMap.get('exact') === 'true';
+    this.exact = route.snapshot.paramMap.get('exact' as any) === 'true';
   }
 }
 
@@ -4913,7 +4914,7 @@ class QueryParamsAndFragmentCmp {
   fragment: Observable<string>;
 
   constructor(route: ActivatedRoute) {
-    this.name = route.queryParamMap.pipe(map((p: ParamMap) => p.get('name')));
+    this.name = route.queryParamMap.pipe(map((p: ParamMap) => p.get('name' as any)));
     this.fragment = route.fragment;
   }
 }

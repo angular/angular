@@ -23,9 +23,9 @@ describe('LocationService', () => {
         { provide: SwUpdatesService, useClass: MockSwUpdatesService }
     ]);
 
-    location  = injector.get(LocationStrategy);
+    location  = injector.get(LocationStrategy) as MockLocationStrategy;
     service  = injector.get(LocationService);
-    swUpdates  = injector.get(SwUpdatesService);
+    swUpdates  = injector.get(SwUpdatesService) as unknown as MockSwUpdatesService;
   });
 
   describe('currentUrl', () => {
@@ -355,7 +355,7 @@ describe('LocationService', () => {
     let platformLocation: MockPlatformLocation;
 
     beforeEach(() => {
-      platformLocation = injector.get(PlatformLocation);
+      platformLocation = injector.get(PlatformLocation) as unknown as MockPlatformLocation;
     });
 
     it('should call replaceState on PlatformLocation', () => {
@@ -552,7 +552,7 @@ describe('LocationService', () => {
     let gaLocationChanged: jasmine.Spy;
 
     beforeEach(() => {
-      const gaService = injector.get(GaService);
+      const gaService = injector.get(GaService) as unknown as TestGaService;
       gaLocationChanged = gaService.locationChanged;
       // execute currentPath observable so that gaLocationChanged is called
       service.currentPath.subscribe();

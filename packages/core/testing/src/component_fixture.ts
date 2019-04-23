@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, RendererFactory2, getDebugNode} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, RendererFactory2, Type, getDebugNode} from '@angular/core';
+
 
 
 /**

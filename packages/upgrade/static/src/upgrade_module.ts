@@ -245,7 +245,7 @@ export class UpgradeModule {
 
                 // Initialize the ng1 $injector provider
                 setTempInjectorRef($injector);
-                this.injector.get($INJECTOR);
+                this.injector.get($INJECTOR as any);
 
                 // Put the injector on the DOM, so that it can be "required"
                 angularElement(element).data !(controllerKey(INJECTOR_KEY), this.injector);

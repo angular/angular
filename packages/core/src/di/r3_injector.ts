@@ -7,7 +7,7 @@
  */
 
 import {OnDestroy} from '../interface/lifecycle_hooks';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
@@ -81,7 +81,7 @@ export class R3Injector {
   /**
    * Map of tokens to records which contain the instances of those tokens.
    */
-  private records = new Map<Type<any>|InjectionToken<any>, Record<any>>();
+  private records = new Map<Type<any>|InjectionToken<any>|AbstractType<any>|string, Record<any>>();
 
   /**
    * The transitive set of `InjectorType`s which define this injector.
@@ -157,8 +157,14 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags = InjectFlags.Default): T {
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T|null {
     this.assertNotDestroyed();
     // Set the injection context.
     const previousInjector = setCurrentInjector(this);
@@ -187,7 +193,7 @@ export class R3Injector {
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
       const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
-      return nextInjector.get(token, flags & InjectFlags.Optional ? null : notFoundValue);
+      return nextInjector.get(token as any, flags & InjectFlags.Optional ? null : notFoundValue);
     } catch (e) {
       if (e.name === 'NullInjectorError') {
         const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
@@ -343,7 +349,8 @@ export class R3Injector {
     this.records.set(token, record);
   }
 
-  private hydrate<T>(token: Type<T>|InjectionToken<T>, record: Record<T>): T {
+  private hydrate<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>|string, record: Record<T>):
+      T {
     if (record.value === CIRCULAR) {
       throw new Error(`Cannot instantiate cyclic dependency! ${stringify(token)}`);
     } else if (record.value === NOT_YET) {
@@ -367,7 +374,8 @@ export class R3Injector {
   }
 }
 
-function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
+function injectableDefOrInjectorDefFactory(
+    token: Type<any>| InjectionToken<any>| AbstractType<any>| string): () => any {
   const injectableDef = getInjectableDef(token as InjectableType<any>);
   if (injectableDef === null) {
     const injectorDef = getInjectorDef(token as InjectorType<any>);

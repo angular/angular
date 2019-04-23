@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {InjectionToken} from './injection_token';
@@ -118,7 +118,8 @@ export const inject = ɵɵinject;
  * `InjectableDef`.
  */
 export function injectRootLimpMode<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue: T | undefined, flags: InjectFlags): T|null {
+    token: Type<T>| InjectionToken<T>| AbstractType<T>, notFoundValue: T | undefined,
+    flags: InjectFlags): T|null {
   const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
     return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :

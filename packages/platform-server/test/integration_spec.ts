@@ -10,7 +10,7 @@ import {AnimationBuilder, animate, state, style, transition, trigger} from '@ang
 import {DOCUMENT, PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, Type, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {async, inject} from '@angular/core/testing';
 import {BrowserModule, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -193,7 +193,7 @@ class SVGServerModule {
                 'transform': 'translate3d(0, 0, 0)',  // not natively supported by Domino
               })),
         transition('void => *', [animate('0ms')]),
-      ], )]
+      ])]
 })
 class MyAnimationApp {
   state = 'active';
@@ -612,10 +612,9 @@ class HiddenModule {
 
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
-           const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+           const compilerFactory = defaultPlatform.injector.get(CompilerFactory, null);
            const moduleFactory =
-               compilerFactory.createCompiler().compileModuleSync(AsyncServerModule);
+               compilerFactory !.createCompiler().compileModuleSync(AsyncServerModule);
            renderModuleFactory(moduleFactory, {document: doc}).then(output => {
              expect(output).toBe(expectedOutput);
              called = true;
@@ -820,10 +819,9 @@ class HiddenModule {
 
       it('adds transfer script tag when using renderModuleFactory',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
-           const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
+           const compilerFactory = defaultPlatform.injector.get(CompilerFactory, null);
            const moduleFactory =
-               compilerFactory.createCompiler().compileModuleSync(TransferStoreModule);
+               compilerFactory !.createCompiler().compileModuleSync(TransferStoreModule);
            renderModuleFactory(moduleFactory, {document: '<app></app>'}).then(output => {
              expect(output).toBe(defaultExpectedOutput);
              called = true;

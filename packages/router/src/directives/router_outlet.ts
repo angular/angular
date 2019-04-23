@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {AbstractType, Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, InjectionToken, Injector, OnDestroy, OnInit, Output, Type, ViewContainerRef} from '@angular/core';
 
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
 
 /**
  * @description
@@ -146,13 +147,15 @@ class OutletInjector implements Injector {
       private route: ActivatedRoute, private childContexts: ChildrenOutletContexts,
       private parent: Injector) {}
 
-  get(token: any, notFoundValue?: any): any {
-    if (token === ActivatedRoute) {
-      return this.route;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null): T|null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T): T;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null): T|null {
+    if (token as unknown === ActivatedRoute) {
+      return this.route as any;
     }
 
-    if (token === ChildrenOutletContexts) {
-      return this.childContexts;
+    if (token as unknown === ChildrenOutletContexts) {
+      return this.childContexts as any;
     }
 
     return this.parent.get(token, notFoundValue);

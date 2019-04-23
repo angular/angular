@@ -163,7 +163,7 @@ function declareTests(config?: {useJit: boolean}) {
         const tokenValue = 1;
         const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
-        expect(injector.get(token)).toEqual(tokenValue);
+        expect(injector.get(token as any)).toEqual(tokenValue);
       });
 
       it('should support providers with an anonymous function as token', () => {
@@ -192,7 +192,7 @@ function declareTests(config?: {useJit: boolean}) {
         }
         const data = [new TestClass(1), new TestClass(2)];
         const injector = createInjector([{provide: 'someToken', useValue: data}]);
-        expect(injector.get('someToken')).toEqual(data);
+        expect(injector.get('someToken' as any)).toEqual(data);
       });
 
       describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {

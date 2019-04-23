@@ -164,7 +164,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     TestBed.configureTestingModule({
       providers: [{provide: 'foo', useValue: 'bar'}],
     });
-    expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
+    expect(TestBed.get(INJECTOR).get('foo' as any)).toEqual('bar');
   });
 
   it('Component injector understands requests for INJECTABLE', () => {
@@ -181,6 +181,6 @@ describe('ngInjectableDef Bazel Integration', () => {
     });
 
     const fixture = TestBed.createComponent(TestCmp);
-    expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
+    expect(fixture.componentRef.injector.get(INJECTOR).get('foo' as any)).toEqual('bar');
   });
 });

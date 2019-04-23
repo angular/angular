@@ -80,7 +80,8 @@ export class ServerModule {
 }
 
 function _document(injector: Injector) {
-  let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+  let config: PlatformConfig|null =
+      injector.get(INITIAL_CONFIG as InjectionToken<PlatformConfig|null>, null);
   if (config && config.document) {
     return parseDocument(config.document, config.url);
   } else {

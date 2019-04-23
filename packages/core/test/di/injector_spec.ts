@@ -13,16 +13,16 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 {
   describe('Injector.NULL', () => {
     it('should throw if no arg is given', () => {
-      expect(() => Injector.NULL.get('someToken'))
+      expect(() => Injector.NULL.get('someToken' as any))
           .toThrowError('NullInjectorError: No provider for someToken!');
     });
 
     it('should throw if THROW_IF_NOT_FOUND is given', () => {
-      expect(() => Injector.NULL.get('someToken', Injector.THROW_IF_NOT_FOUND))
+      expect(() => Injector.NULL.get('someToken' as any, Injector.THROW_IF_NOT_FOUND))
           .toThrowError('NullInjectorError: No provider for someToken!');
     });
 
     it('should return the default value',
-       () => { expect(Injector.NULL.get('someToken', 'notFound')).toEqual('notFound'); });
+       () => { expect(Injector.NULL.get('someToken' as any, 'notFound')).toEqual('notFound'); });
   });
 }

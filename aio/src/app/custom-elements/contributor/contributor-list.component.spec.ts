@@ -24,8 +24,8 @@ describe('ContributorListComponent', () => {
       {provide: LocationService, useClass: TestLocationService }
     ]);
 
-    locationService = injector.get(LocationService);
-    contributorService = injector.get(ContributorService);
+    locationService = injector.get(LocationService) as unknown as TestLocationService;
+    contributorService = injector.get(ContributorService) as unknown as TestContributorService;
     contributorGroups = contributorService.testContributors;
   });
 

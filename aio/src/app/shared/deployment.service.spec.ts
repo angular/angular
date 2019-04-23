@@ -15,7 +15,7 @@ describe('Deployment service', () => {
     it('should get the mode from the `mode` query parameter if available', () => {
       const injector = getInjector();
 
-      const locationService: MockLocationService = injector.get(LocationService);
+      const locationService = injector.get(LocationService) as unknown as MockLocationService;
       locationService.search.and.returnValue({ mode: 'bar' });
 
       const deployment = injector.get(Deployment);

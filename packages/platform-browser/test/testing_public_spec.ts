@@ -416,7 +416,7 @@ class CompWithUrlTemplate {
               ]
             });
             TestBed.overrideProvider('a', {useValue: 'mockValue'});
-            expect(TestBed.get('a')).toBe('mockValue');
+            expect(TestBed.get('a' as any)).toBe('mockValue');
           });
 
           it('should support useFactory', () => {
@@ -428,7 +428,7 @@ class CompWithUrlTemplate {
             });
             TestBed.overrideProvider(
                 'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: ['dep']});
-            expect(TestBed.get('a')).toBe('mockA: depValue');
+            expect(TestBed.get('a' as any)).toBe('mockA: depValue');
           });
 
           it('should support @Optional without matches', () => {
@@ -439,7 +439,7 @@ class CompWithUrlTemplate {
             });
             TestBed.overrideProvider(
                 'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
-            expect(TestBed.get('a')).toBe('mockA: null');
+            expect(TestBed.get('a' as any)).toBe('mockA: null');
           });
 
           it('should support Optional with matches', () => {
@@ -451,7 +451,7 @@ class CompWithUrlTemplate {
             });
             TestBed.overrideProvider(
                 'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new Optional(), 'dep']]});
-            expect(TestBed.get('a')).toBe('mockA: depValue');
+            expect(TestBed.get('a' as any)).toBe('mockA: depValue');
           });
 
           it('should support SkipSelf', () => {
@@ -471,7 +471,8 @@ class CompWithUrlTemplate {
 
             const compiler = TestBed.get(Compiler) as Compiler;
             const modFactory = compiler.compileModuleSync(MyModule);
-            expect(modFactory.create(getTestBed()).injector.get('a')).toBe('mockA: parentDepValue');
+            expect(modFactory.create(getTestBed()).injector.get('a' as any))
+                .toBe('mockA: parentDepValue');
           });
 
           it('should keep imported NgModules eager', () => {
@@ -490,7 +491,7 @@ class CompWithUrlTemplate {
             });
             TestBed.overrideProvider('a', {useValue: 'mockValue'});
 
-            expect(TestBed.get('a')).toBe('mockValue');
+            expect(TestBed.get('a' as any)).toBe('mockValue');
             expect(someModule).toBeAnInstanceOf(SomeModule);
           });
 
@@ -511,7 +512,7 @@ class CompWithUrlTemplate {
                 });
                 TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
 
-                expect(TestBed.get('a')).toBe('mockValue');
+                expect(TestBed.get('a' as any)).toBe('mockValue');
                 expect(someModule).toBeUndefined();
               });
 
@@ -532,7 +533,7 @@ class CompWithUrlTemplate {
               TestBed.overrideProvider(
                   'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
 
-              expect(TestBed.get('b')).toBe('mockB: aValue');
+              expect(TestBed.get('b' as any)).toBe('mockB: aValue');
             });
 
             it('should inject providers that were declared afterwards', () => {
@@ -540,7 +541,7 @@ class CompWithUrlTemplate {
               TestBed.overrideProvider(
                   'a', {useFactory: (b: string) => `mockA: ${b}`, deps: ['b']});
 
-              expect(TestBed.get('a')).toBe('mockA: bValue');
+              expect(TestBed.get('a' as any)).toBe('mockA: bValue');
             });
           });
         });
@@ -560,7 +561,7 @@ class CompWithUrlTemplate {
             const ctx =
                 TestBed.configureTestingModule({declarations: [MComp]}).createComponent(MComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockValue');
+            expect(ctx.debugElement.injector.get('a' as any)).toBe('mockValue');
           });
 
           it('should support useFactory', () => {
@@ -579,7 +580,7 @@ class CompWithUrlTemplate {
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
+            expect(ctx.debugElement.injector.get('a' as any)).toBe('mockA: depValue');
           });
 
           it('should support @Optional without matches', () => {
@@ -597,7 +598,7 @@ class CompWithUrlTemplate {
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: null');
+            expect(ctx.debugElement.injector.get('a' as any)).toBe('mockA: null');
           });
 
           it('should support Optional with matches', () => {
@@ -616,7 +617,7 @@ class CompWithUrlTemplate {
             const ctx =
                 TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-            expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
+            expect(ctx.debugElement.injector.get('a' as any)).toBe('mockA: depValue');
           });
 
           it('should support SkipSelf', () => {
@@ -643,7 +644,8 @@ class CompWithUrlTemplate {
                 'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
             const ctx = TestBed.configureTestingModule({declarations: [MyComp, MyDir]})
                             .createComponent(MyComp);
-            expect(ctx.debugElement.children[0].injector.get('a')).toBe('mockA: parentDepValue');
+            expect(ctx.debugElement.children[0].injector.get('a' as any))
+                .toBe('mockA: parentDepValue');
           });
 
           it('should support multiple providers in a template', () => {
@@ -674,8 +676,8 @@ class CompWithUrlTemplate {
             TestBed.overrideProvider('a', {useValue: 'mockA'});
             const ctx = TestBed.configureTestingModule({declarations: [MyComp, MyDir1, MyDir2]})
                             .createComponent(MyComp);
-            expect(ctx.debugElement.children[0].injector.get('a')).toBe('mockA');
-            expect(ctx.debugElement.children[1].injector.get('a')).toBe('mockA');
+            expect(ctx.debugElement.children[0].injector.get('a' as any)).toBe('mockA');
+            expect(ctx.debugElement.children[1].injector.get('a' as any)).toBe('mockA');
           });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
@@ -697,7 +699,7 @@ class CompWithUrlTemplate {
               const ctx =
                   TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('b')).toBe('mockB: aValue');
+              expect(ctx.debugElement.injector.get('b' as any)).toBe('mockB: aValue');
             });
 
             it('should inject providers that were declared after it', () => {
@@ -706,7 +708,7 @@ class CompWithUrlTemplate {
               const ctx =
                   TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('a')).toBe('mockA: bValue');
+              expect(ctx.debugElement.injector.get('a' as any)).toBe('mockA: bValue');
             });
           });
         });
@@ -715,7 +717,7 @@ class CompWithUrlTemplate {
           TestBed.overrideProvider('a', {useValue: 'mockValue'});
           TestBed.resetTestingModule();
           TestBed.configureTestingModule({providers: [{provide: 'a', useValue: 'aValue'}]});
-          expect(TestBed.get('a')).toBe('aValue');
+          expect(TestBed.get('a' as any)).toBe('aValue');
         });
       });
 

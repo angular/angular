@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbstractType, Type} from '../interface/type';
+
+import {InjectionToken} from './injection_token';
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
+import {InjectFlags} from './interface/injector';
 import {Provider} from './interface/provider';
 import {Self, SkipSelf} from './metadata';
 import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
+
 
 
 // Threshold for the dynamic version
@@ -265,7 +270,11 @@ export abstract class ReflectiveInjector implements Injector {
    */
   abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
 
-  abstract get(token: any, notFoundValue?: any): any;
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
 }
 
 export class ReflectiveInjector_ implements ReflectiveInjector {
@@ -296,7 +305,11 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     }
   }
 
-  get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null): T|null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T): T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = THROW_IF_NOT_FOUND as T): T|null {
     return this._getByKey(ReflectiveKey.get(token), null, notFoundValue);
   }
 
@@ -437,7 +450,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
       inj = inj_.parent;
     }
     if (inj !== null) {
-      return inj.get(key.token, notFoundValue);
+      return inj.get(key.token as any, notFoundValue);
     } else {
       return this._throwOrNull(key, notFoundValue);
     }

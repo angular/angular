@@ -187,7 +187,7 @@ function factoryFn(a: any){}
       const injector = Injector.create([{provide: 'car', useExisting: SportsCar}]);
       const e =
           `StaticInjectorError[car -> ${stringify(SportsCar)}]: \n  NullInjectorError: No provider for ${stringify(SportsCar)}!`;
-      expect(() => injector.get('car')).toThrowError(e);
+      expect(() => injector.get('car' as any)).toThrowError(e);
     });
 
     it('should handle forwardRef in useExisting', () => {
@@ -198,7 +198,7 @@ function factoryFn(a: any){}
           deps: []
         }
       ]);
-      expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
+      expect(injector.get('aliasedEngine' as any)).toBeAnInstanceOf(Engine);
     });
 
     it('should support overriding factory dependencies', () => {
@@ -238,7 +238,7 @@ function factoryFn(a: any){}
     it('should use non-type tokens', () => {
       const injector = Injector.create([{provide: 'token', useValue: 'value'}]);
 
-      expect(injector.get('token')).toEqual('value');
+      expect(injector.get('token' as any)).toEqual('value');
     });
 
     it('should throw when given invalid providers', () => {
@@ -277,7 +277,7 @@ function factoryFn(a: any){}
 
     it('should throw when no provider defined', () => {
       const injector = Injector.create([]);
-      expect(() => injector.get('NonExisting'))
+      expect(() => injector.get('NonExisting' as any))
           .toThrowError(
               'StaticInjectorError[NonExisting]: \n  NullInjectorError: No provider for NonExisting!');
     });
@@ -340,8 +340,8 @@ function factoryFn(a: any){}
         {provide: 'null', useValue: null},
         {provide: 'undefined', useValue: undefined},
       ]);
-      expect(injector.get('null')).toBe(null);
-      expect(injector.get('undefined')).toBe(undefined);
+      expect(injector.get('null' as any) as any).toBe(null);
+      expect(injector.get('undefined' as any) as any).toBe(undefined);
     });
 
   });
@@ -466,7 +466,7 @@ function factoryFn(a: any){}
         {provide: 'token', useFactory: (e: any) => e, deps: [[new Inject(Engine)]]}
       ]);
 
-      expect(injector.get('token')).toBeAnInstanceOf(Engine);
+      expect(injector.get('token' as any)).toBeAnInstanceOf(Engine);
     });
   });
 

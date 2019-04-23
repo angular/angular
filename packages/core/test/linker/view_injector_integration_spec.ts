@@ -241,14 +241,14 @@ describe('View injector', () => {
         {provide: 'instance', useValue: new TestValue('a')},
         {provide: 'nested', useValue: [{'a': [1]}, new TestValue('b')]},
       ]);
-      expect(el.injector.get('numLiteral')).toBe(0);
-      expect(el.injector.get('boolLiteral')).toBe(true);
-      expect(el.injector.get('strLiteral')).toBe('a');
-      expect(el.injector.get('null')).toBe(null);
-      expect(el.injector.get('array')).toEqual([1]);
-      expect(el.injector.get('map')).toEqual({'a': 1});
-      expect(el.injector.get('instance')).toEqual(new TestValue('a'));
-      expect(el.injector.get('nested')).toEqual([{'a': [1]}, new TestValue('b')]);
+      expect(el.injector.get('numLiteral' as any)).toBe(0);
+      expect(el.injector.get('boolLiteral' as any)).toBe(true);
+      expect(el.injector.get('strLiteral' as any)).toBe('a');
+      expect(el.injector.get('null' as any) as any).toBe(null);
+      expect(el.injector.get('array' as any)).toEqual([1]);
+      expect(el.injector.get('map' as any)).toEqual({'a': 1});
+      expect(el.injector.get('instance' as any)).toEqual(new TestValue('a'));
+      expect(el.injector.get('nested' as any)).toEqual([{'a': [1]}, new TestValue('b')]);
     });
 
     it('should instantiate providers that have dependencies with SkipSelf', () => {
@@ -267,7 +267,7 @@ describe('View injector', () => {
         }
       });
       const el = createComponent('<div simpleDirective><span someOtherDirective></span></div>');
-      expect(el.children[0].children[0].injector.get('injectable2'))
+      expect(el.children[0].children[0].injector.get('injectable2' as any))
           .toEqual('injectable1-injectable2');
     });
 
@@ -282,7 +282,7 @@ describe('View injector', () => {
       ];
       TestBed.overrideDirective(SimpleDirective, {add: {providers}});
       const el = createComponent('<div simpleDirective></div>');
-      expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
+      expect(el.children[0].injector.get('injectable2' as any)).toEqual('injectable1-injectable2');
     });
 
     it('should instantiate viewProviders that have dependencies', () => {
@@ -296,7 +296,7 @@ describe('View injector', () => {
       ];
       TestBed.overrideComponent(SimpleComponent, {set: {viewProviders}});
       const el = createComponent('<div simpleComponent></div>');
-      expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
+      expect(el.children[0].injector.get('injectable2' as any)).toEqual('injectable1-injectable2');
     });
 
     it('should instantiate components that depend on viewProviders providers', () => {
@@ -315,7 +315,9 @@ describe('View injector', () => {
       ];
       TestBed.overrideDirective(SimpleDirective, {set: {providers}});
       const el = createComponent('<div simpleDirective></div>');
-      expect(el.children[0].injector.get('injectable1')).toEqual(['injectable11', 'injectable12']);
+      expect(el.children[0].injector.get('injectable1' as any)).toEqual([
+        'injectable11', 'injectable12'
+      ]);
     });
 
     it('should instantiate providers lazily', () => {
@@ -329,7 +331,7 @@ describe('View injector', () => {
 
       expect(created).toBe(false);
 
-      el.children[0].injector.get('service');
+      el.children[0].injector.get('service' as any);
 
       expect(created).toBe(true);
     });
@@ -345,8 +347,8 @@ describe('View injector', () => {
                                    }
                                  }]);
 
-      expect(el.injector.get('token')).toBeUndefined();
-      expect(el.injector.get('token')).toBeUndefined();
+      expect(el.injector.get('token' as any)).toBeUndefined();
+      expect(el.injector.get('token' as any)).toBeUndefined();
       expect(factoryCounter).toBe(1);
     });
 
@@ -359,7 +361,7 @@ describe('View injector', () => {
             {provide: 'lazy', useFactory: () => 'lazyValue'},
             {
               provide: 'eager',
-              useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+              useFactory: (i: Injector) => `eagerValue: ${i.get('lazy' as any)}`,
               deps: [Injector]
             },
           ]
@@ -371,7 +373,7 @@ describe('View injector', () => {
 
         const ctx =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
-        expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        expect(ctx.debugElement.injector.get('eager' as any)).toBe('eagerValue: lazyValue');
       });
 
       it('should inject providers that were declared after it', () => {
@@ -380,7 +382,7 @@ describe('View injector', () => {
           providers: [
             {
               provide: 'eager',
-              useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+              useFactory: (i: Injector) => `eagerValue: ${i.get('lazy' as any)}`,
               deps: [Injector]
             },
             {provide: 'lazy', useFactory: () => 'lazyValue'},
@@ -393,7 +395,7 @@ describe('View injector', () => {
 
         const ctx =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
-        expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        expect(ctx.debugElement.injector.get('eager' as any)).toBe('eagerValue: lazyValue');
       });
     });
 
@@ -405,7 +407,7 @@ describe('View injector', () => {
             {provide: 'eager1', useFactory: () => 'v1'},
             {
               provide: 'eager2',
-              useFactory: (i: Injector) => `v2: ${i.get('eager1')}`,
+              useFactory: (i: Injector) => `v2: ${i.get('eager1' as any)}`,
               deps: [Injector]
             },
           ]
@@ -417,7 +419,7 @@ describe('View injector', () => {
 
         const ctx =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
-        expect(ctx.debugElement.injector.get('eager2')).toBe('v2: v1');
+        expect(ctx.debugElement.injector.get('eager2' as any)).toBe('v2: v1');
       });
 
       it('should inject providers that were declared after it', () => {
@@ -426,7 +428,7 @@ describe('View injector', () => {
           providers: [
             {
               provide: 'eager1',
-              useFactory: (i: Injector) => `v1: ${i.get('eager2')}`,
+              useFactory: (i: Injector) => `v1: ${i.get('eager2' as any)}`,
               deps: [Injector]
             },
             {provide: 'eager2', useFactory: () => 'v2'},
@@ -439,7 +441,7 @@ describe('View injector', () => {
 
         const ctx =
             TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
-        expect(ctx.debugElement.injector.get('eager1')).toBe('v1: v2');
+        expect(ctx.debugElement.injector.get('eager1' as any)).toBe('v1: v2');
       });
     });
 
@@ -448,7 +450,7 @@ describe('View injector', () => {
          @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
          class SomeComponent {
            public a: string;
-           constructor(injector: Injector) { this.a = injector.get('a'); }
+           constructor(injector: Injector) { this.a = injector.get('a' as any); }
          }
 
          const comp = TestBed.configureTestingModule({declarations: [SomeComponent]})
@@ -498,7 +500,7 @@ describe('View injector', () => {
 
       expect(created).toBe(false);
 
-      el.children[0].injector.get('service');
+      el.children[0].injector.get('service' as any);
 
       expect(created).toBe(true);
     });
@@ -757,7 +759,8 @@ describe('View injector', () => {
                                  })
                                  .createComponent(MyComp);
 
-         expect(compFixture.componentInstance.vc.parentInjector.get('someToken')).toBe('someValue');
+         expect(compFixture.componentInstance.vc.parentInjector.get('someToken' as any))
+             .toBe('someValue');
        });
   });
 
@@ -917,7 +920,7 @@ describe('View injector', () => {
                               .get(ComponentFactoryResolver)
                               .resolveComponentFactory(TestComp);
       const component = compFactory.create(testInjector);
-      expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
+      expect(component.instance.vcr.parentInjector.get('someToken' as any)).toBe('someNewValue');
     });
 
     it('should inject TemplateRef', () => {

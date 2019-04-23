@@ -10,7 +10,7 @@ import {InjectFlags, InjectionToken} from '../di';
 import {Injector} from '../di/injector';
 import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
 import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
@@ -336,7 +336,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  */
 export function getOrCreateInjectable<T>(
     tNode: TElementNode | TContainerNode | TElementContainerNode | null, lView: LView,
-    token: Type<T>| InjectionToken<T>, flags: InjectFlags = InjectFlags.Default,
+    token: Type<T>| InjectionToken<T>| AbstractType<T>, flags: InjectFlags = InjectFlags.Default,
     notFoundValue?: any): T|null {
   if (tNode) {
     const bloomHash = bloomHashBitOrFactory(token);
@@ -454,7 +454,7 @@ export function getOrCreateInjectable<T>(
 const NOT_FOUND = {};
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Type<T>| InjectionToken<T>,
+    injectorIndex: number, lView: LView, token: Type<T>| InjectionToken<T>| AbstractType<T>,
     previousTView: TView | null, flags: InjectFlags, hostTElementNode: TNode | null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
@@ -501,8 +501,8 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, lView: LView, token: Type<T>| InjectionToken<T>, canAccessViewProviders: boolean,
-    isHostSpecialCase: boolean | number): number|null {
+    tNode: TNode, lView: LView, token: Type<T>| InjectionToken<T>| AbstractType<T>,
+    canAccessViewProviders: boolean, isHostSpecialCase: boolean | number): number|null {
   const tView = lView[TVIEW];
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
@@ -580,8 +580,8 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| string): number|
-    Function|undefined {
+export function bloomHashBitOrFactory(
+    token: Type<any>| InjectionToken<any>| AbstractType<any>| string): number|Function|undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
@@ -629,8 +629,14 @@ export class NodeInjector implements Injector {
       private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
       private _lView: LView) {}
 
-  get(token: any, notFoundValue?: any): any {
-    return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T|null {
+    return getOrCreateInjectable(this._tNode, this._lView, token, flags, notFoundValue);
   }
 }
 

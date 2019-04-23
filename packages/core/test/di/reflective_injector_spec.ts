@@ -35,7 +35,7 @@ class Car {
 
 @Injectable()
 class CarWithOptionalEngine {
-  constructor(@Optional() public engine: Engine) {}
+  constructor(@Optional() public engine?: Engine) {}
 }
 
 @Injectable()
@@ -191,7 +191,7 @@ function factoryFn(a: any){}
         {provide: Car, useClass: CarWithOptionalEngine, multi: true}
       ]);
 
-      const cars = injector.get(Car);
+      const cars: Car[] = injector.get(Car) as any;
       expect(cars.length).toEqual(2);
       expect(cars[0]).toBeAnInstanceOf(SportsCar);
       expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
@@ -201,7 +201,7 @@ function factoryFn(a: any){}
       const injector =
           createInjector([Engine, SportsCar, {provide: Car, useExisting: SportsCar, multi: true}]);
 
-      const cars = injector.get(Car);
+      const cars: Car[] = injector.get(Car) as any;
       expect(cars.length).toEqual(1);
       expect(cars[0]).toBe(injector.get(SportsCar));
     });
@@ -209,7 +209,7 @@ function factoryFn(a: any){}
     it('should throw when the aliased provider does not exist', () => {
       const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
       const e = `No provider for ${stringify(SportsCar)}! (car -> ${stringify(SportsCar)})`;
-      expect(() => injector.get('car')).toThrowError(e);
+      expect(() => injector.get('car' as any)).toThrowError(e);
     });
 
     it('should handle forwardRef in useExisting', () => {
@@ -217,7 +217,7 @@ function factoryFn(a: any){}
         {provide: 'originalEngine', useClass: forwardRef(() => Engine)},
         {provide: 'aliasedEngine', useExisting: <any>forwardRef(() => 'originalEngine')}
       ]);
-      expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
+      expect(injector.get('aliasedEngine' as any)).toBeAnInstanceOf(Engine);
     });
 
     it('should support overriding factory dependencies', () => {
@@ -233,7 +233,7 @@ function factoryFn(a: any){}
       const injector = createInjector([CarWithOptionalEngine]);
 
       const car = injector.get(CarWithOptionalEngine);
-      expect(car.engine).toEqual(null);
+      expect(car.engine as any).toEqual(null);
     });
 
     it('should flatten passed-in providers', () => {
@@ -253,7 +253,7 @@ function factoryFn(a: any){}
     it('should use non-type tokens', () => {
       const injector = createInjector([{provide: 'token', useValue: 'value'}]);
 
-      expect(injector.get('token')).toEqual('value');
+      expect(injector.get('token' as any)).toEqual('value');
     });
 
     it('should throw when given invalid providers', () => {
@@ -271,7 +271,7 @@ function factoryFn(a: any){}
 
     it('should throw when no provider defined', () => {
       const injector = createInjector([]);
-      expect(() => injector.get('NonExisting')).toThrowError('No provider for NonExisting!');
+      expect(() => injector.get('NonExisting' as any)).toThrowError('No provider for NonExisting!');
     });
 
     it('should show the full path when no provider', () => {
@@ -322,7 +322,7 @@ function factoryFn(a: any){}
 
     it('should support null values', () => {
       const injector = createInjector([{provide: 'null', useValue: null}]);
-      expect(injector.get('null')).toBe(null);
+      expect(injector.get('null' as any) as any).toBe(null);
     });
 
   });

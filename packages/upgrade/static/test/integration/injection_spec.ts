@@ -88,7 +88,7 @@ withEachNg1Version(() => {
            INJECTOR_KEY,
            function(injector: Injector) {
              runBlockTriggered = true;
-             expect(injector.get($INJECTOR)).toBeDefined();
+             expect(injector.get($INJECTOR as any)).toBeDefined();
            }
          ]);
 

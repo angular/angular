@@ -8,9 +8,8 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/interface/injector';
-import {Type} from '../interface/type';
+import {InjectFlags, InjectionToken, Injector} from '../di';
+import {AbstractType, Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
@@ -334,7 +333,11 @@ export function createInjector(view: ViewData, elDef: NodeDef): Injector {
 
 class Injector_ implements Injector {
   constructor(private view: ViewData, private elDef: NodeDef|null) {}
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null): T|null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T): T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = Injector.THROW_IF_NOT_FOUND as T): T|null {
     const allowPrivateServices =
         this.elDef ? (this.elDef.flags & NodeFlags.ComponentView) !== 0 : false;
     return Services.resolveDep(
@@ -496,8 +499,15 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     initNgModule(this);
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      injectFlags: InjectFlags = InjectFlags.Default): any {
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = Injector.THROW_IF_NOT_FOUND as T,
+      injectFlags: InjectFlags = InjectFlags.Default): T|null {
     let flags = DepFlags.None;
     if (injectFlags & InjectFlags.SkipSelf) {
       flags |= DepFlags.SkipSelf;

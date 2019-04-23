@@ -130,14 +130,15 @@ export interface TestBedStatic {
     deps?: any[],
   }): TestBedStatic;
 
+  /** @deprecated from v9.0.0 use get<T>() */
   typedGet<T>(
       token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
 
-  /**
-   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
-   * as a breaking change.
-   */
-  get(token: any, notFoundValue?: any): any;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
 }

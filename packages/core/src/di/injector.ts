@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
@@ -35,7 +35,9 @@ export const INJECTOR = new InjectionToken<Injector>(
     );
 
 export class NullInjector implements Injector {
-  get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
+  get<T>(token: unknown, notFoundValue: null): null;
+  get<T>(token: unknown, notFoundValue?: T): T;
+  get<T>(token: unknown, notFoundValue: T = _THROW_IF_NOT_FOUND as T): T|null {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
       // Intentionally left behind: With dev tools open the debugger will stop here. There is no
       // reason why correctly written application should cause this exception.
@@ -74,12 +76,11 @@ export abstract class Injector {
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  /**
-   * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
-   * @suppress {duplicate}
-   */
-  abstract get(token: any, notFoundValue?: any): any;
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
 
   /**
    * @deprecated from v5 use the new signature Injector.create(options)
@@ -161,9 +162,14 @@ export class StaticInjector implements Injector {
     recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  get(token: any, notFoundValue?: any): any;
-  get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
+      flags: InjectFlags = InjectFlags.Default): T|null {
     const record = this._records.get(token);
     try {
       return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);

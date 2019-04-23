@@ -128,8 +128,8 @@ describe('DocViewerComponent', () => {
     };
 
     beforeEach(() => {
-      titleService = TestBed.get(Title);
-      tocService = TestBed.get(TocService);
+      titleService = TestBed.get(Title) as unknown as MockTitle;
+      tocService = TestBed.get(TocService) as unknown as MockTocService;
 
       targetEl = document.createElement('div');
       document.body.appendChild(targetEl);  // Required for `innerText` to work as expected.
@@ -299,7 +299,7 @@ describe('DocViewerComponent', () => {
       docViewer.render({contents, id}).toPromise();
 
     beforeEach(() => {
-      const elementsLoader = TestBed.get(ElementsLoader) as MockElementsLoader;
+      const elementsLoader = TestBed.get(ElementsLoader) as unknown as MockElementsLoader;
       loadElementsSpy = elementsLoader.loadContainedCustomElements.and.returnValue(of(undefined));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
@@ -454,7 +454,9 @@ describe('DocViewerComponent', () => {
     describe('(on error) should clean up, log the error and recover', () => {
       let logger: MockLogger;
 
-      beforeEach(() => logger = TestBed.get(Logger));
+      beforeEach(() => {
+        logger = TestBed.get(Logger) as unknown as MockLogger;
+      });
 
       it('when `prepareTitleAndTocSpy()` fails', async () => {
         const error = Error('Typical `prepareTitleAndToc()` error');

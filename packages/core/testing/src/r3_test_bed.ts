@@ -170,6 +170,7 @@ export class TestBedRender3 implements Injector, TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
+  /** @deprecated from v9.0.0 use get<T>() */
   static typedGet<T>(
       token: Type<T>|InjectionToken<T>|AbstractType<T>,
       notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
@@ -177,13 +178,15 @@ export class TestBedRender3 implements Injector, TestBed {
     return TestBedRender3.get(token, notFoundValue, flags);
   }
 
-  /**
-   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
-   * as a breaking change.
-   */
-  static get(
-      token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags: InjectFlags = InjectFlags.Default): any {
+  static get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  static get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  static get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T|null {
     return _getTestBedRender3().get(token, notFoundValue, flags);
   }
 
@@ -270,6 +273,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
   compileComponents(): Promise<any> { return this.compiler.compileComponents(); }
 
+  /** @deprecated from v9.0.0 use get<T>() */
   typedGet<T>(
       token: Type<T>|InjectionToken<T>|AbstractType<T>,
       notFoundValue: T = Injector.THROW_IF_NOT_FOUND as T,
@@ -277,14 +281,17 @@ export class TestBedRender3 implements Injector, TestBed {
     return this.get(token, notFoundValue, flags);
   }
 
-  /**
-   * @deprecated from v8.0.0 use typedGet<T>(). Note that `typedGet` will be renamed back to `get`
-   * as a breaking change.
-   */
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags: InjectFlags = InjectFlags.Default): any {
-    if (token === TestBedRender3) {
-      return this;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
+      |null;
+  get<T>(token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags):
+      T;
+  get<T>(
+      token: Type<T>|InjectionToken<T>|AbstractType<T>,
+      notFoundValue: T|null = Injector.THROW_IF_NOT_FOUND as T,
+      flags: InjectFlags = InjectFlags.Default): T|null {
+    if (token as unknown === TestBedRender3) {
+      return this as any;
     }
     const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
     return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) : result;
@@ -370,7 +377,7 @@ export class TestBedRender3 implements Injector, TestBed {
     const noNgZone = this.get(ComponentFixtureNoNgZone as any, false);
     // TODO: Don't cast as `any`, proper type is boolean[]
     const autoDetect: boolean = this.get(ComponentFixtureAutoDetect as any, false);
-    const ngZone: NgZone|null = noNgZone ? null : this.get(NgZone as Type<NgZone|null>, null);
+    const ngZone: NgZone|null = noNgZone ? null : this.get(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =

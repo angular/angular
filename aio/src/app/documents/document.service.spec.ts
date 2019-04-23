@@ -32,9 +32,9 @@ describe('DocumentService', () => {
     const injector = createInjector(initialUrl);
     httpMock = injector.get(HttpTestingController) as HttpTestingController;
     return {
-      locationService: injector.get(LocationService) as MockLocationService,
+      locationService: injector.get(LocationService) as unknown as MockLocationService,
       docService: injector.get(DocumentService) as DocumentService,
-      logger: injector.get(Logger) as MockLogger
+      logger: injector.get(Logger) as unknown as MockLogger
     };
   }
 

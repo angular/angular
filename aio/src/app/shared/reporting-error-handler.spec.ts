@@ -18,11 +18,11 @@ describe('ReportingErrorHandler service', () => {
       { provide: ErrorHandler, useClass: ReportingErrorHandler },
       { provide: WindowToken, useFactory: () => ({ onerror: onerrorSpy }) }
     ]);
-    handler = injector.get(ErrorHandler);
+    handler = injector.get(ErrorHandler) as ReportingErrorHandler;
   });
 
   it('should be registered on the AppModule', () => {
-    handler = TestBed.configureTestingModule({ imports: [AppModule] }).get(ErrorHandler);
+    handler = TestBed.configureTestingModule({ imports: [AppModule] }).get(ErrorHandler) as ReportingErrorHandler;
     expect(handler).toEqual(jasmine.any(ReportingErrorHandler));
   });
 

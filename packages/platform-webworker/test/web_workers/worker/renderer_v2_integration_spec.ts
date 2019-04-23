@@ -183,8 +183,7 @@ class MyComp2 {
 
 function createWebWorkerBrokerFactory(
     messageBuses: PairedMessageBuses, wwSerializer: Serializer, uiSerializer: Serializer,
-    domRendererFactory: DomRendererFactory2,
-    uiRenderStore: RenderStore): ClientMessageBrokerFactory {
+    rendererFactory2: RendererFactory2, uiRenderStore: RenderStore): ClientMessageBrokerFactory {
   const uiMessageBus = messageBuses.ui;
   const wwMessageBus = messageBuses.worker;
 
@@ -194,18 +193,18 @@ function createWebWorkerBrokerFactory(
   // set up the ui side
   const uiBrokerFactory = new (ServiceMessageBrokerFactory as any)(uiMessageBus, uiSerializer);
   const renderer = new MessageBasedRenderer2(
-      uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
+      uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, rendererFactory2);
   renderer.start();
 
   return wwBrokerFactory;
 }
 
 function createWebWorkerRendererFactory2(
-    workerSerializer: Serializer, uiSerializer: Serializer, domRendererFactory: DomRendererFactory2,
+    workerSerializer: Serializer, uiSerializer: Serializer, rendererFactory2: RendererFactory2,
     uiRenderStore: RenderStore, workerRenderStore: RenderStore): RendererFactory2 {
   const messageBuses = createPairedMessageBuses();
   const brokerFactory = createWebWorkerBrokerFactory(
-      messageBuses, workerSerializer, uiSerializer, domRendererFactory, uiRenderStore);
+      messageBuses, workerSerializer, uiSerializer, rendererFactory2, uiRenderStore);
 
   const rendererFactory =
       new RenderFactory(brokerFactory, messageBuses.worker, workerSerializer, workerRenderStore);

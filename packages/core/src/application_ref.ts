@@ -113,8 +113,8 @@ export function createPlatform(injector: Injector): PlatformRef {
         'There can be only one platform. Destroy the previous one to create a new one.');
   }
   _platform = injector.get(PlatformRef);
-  const inits = injector.get(PLATFORM_INITIALIZER, null);
-  if (inits) inits.forEach((init: any) => init());
+  const inits = injector.get(PLATFORM_INITIALIZER, []);
+  inits.forEach((init: any) => init());
   return _platform;
 }
 
@@ -257,7 +257,7 @@ export class PlatformRef {
       const ngZoneInjector = Injector.create(
           {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
-      const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
+      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
@@ -593,7 +593,8 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = isBoundToModule(componentFactory) ? null : this._injector.get(NgModuleRef);
+    const ngModule =
+        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
 

@@ -140,7 +140,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
 
     const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
+        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2);
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRNode = isInternalRootView ?

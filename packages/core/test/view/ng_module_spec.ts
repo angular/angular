@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef} from '@angular/core';
+import {NgModuleRef, Type} from '@angular/core';
 import {InjectFlags, inject} from '@angular/core/src/di';
 import {INJECTOR, Injector} from '@angular/core/src/di/injector';
 import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';

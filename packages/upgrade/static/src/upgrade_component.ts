@@ -116,7 +116,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // We ask for the AngularJS scope from the Angular injector, since
     // we will put the new component scope onto the new injector for each component
-    const $parentScope = injector.get($SCOPE);
+    const $parentScope = injector.get($SCOPE as any) as IScope;
     // QUESTION 1: Should we create an isolated scope if the scope is only true?
     // QUESTION 2: Should we make the scope accessible through `$element.scope()/isolateScope()`?
     this.$componentScope = $parentScope.$new(!!this.directive.scope);

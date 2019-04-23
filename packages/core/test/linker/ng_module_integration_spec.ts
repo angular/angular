@@ -771,7 +771,7 @@ function declareTests(config?: {useJit: boolean}) {
         if (ivyEnabled) {
           errorMsg = `R3InjectorError(SomeModule)[car -> SportsCar]: \n  ` + errorMsg;
         }
-        expect(() => injector.get('car')).toThrowError(errorMsg);
+        expect(() => injector.get('car' as any)).toThrowError(errorMsg);
       });
 
       it('should handle forwardRef in useExisting', () => {
@@ -779,7 +779,7 @@ function declareTests(config?: {useJit: boolean}) {
           {provide: 'originalEngine', useClass: forwardRef(() => Engine)},
           {provide: 'aliasedEngine', useExisting: <any>forwardRef(() => 'originalEngine')}
         ]);
-        expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
+        expect(injector.get('aliasedEngine' as any)).toBeAnInstanceOf(Engine);
       });
 
       it('should support overriding factory dependencies', () => {
@@ -815,7 +815,7 @@ function declareTests(config?: {useJit: boolean}) {
       it('should use non-type tokens', () => {
         const injector = createInjector([{provide: 'token', useValue: 'value'}]);
 
-        expect(injector.get('token')).toEqual('value');
+        expect(injector.get('token' as any)).toEqual('value');
       });
 
       it('should throw when given invalid providers', () => {
@@ -848,8 +848,8 @@ function declareTests(config?: {useJit: boolean}) {
           }
         }]);
 
-        expect(injector.get('token')).toBeUndefined();
-        expect(injector.get('token')).toBeUndefined();
+        expect(injector.get('token' as any)).toBeUndefined();
+        expect(injector.get('token' as any)).toBeUndefined();
         expect(factoryCounter).toBe(1);
       });
 
@@ -861,7 +861,7 @@ function declareTests(config?: {useJit: boolean}) {
               {provide: 'lazy', useFactory: () => 'lazyValue'},
               {
                 provide: 'eager',
-                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy' as any)}`,
                 deps: [Injector]
               },
             ]
@@ -871,7 +871,7 @@ function declareTests(config?: {useJit: boolean}) {
             constructor(@Inject('eager') eager: any) {}
           }
 
-          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+          expect(createModule(MyModule).injector.get('eager' as any)).toBe('eagerValue: lazyValue');
         });
 
         it('should inject providers that were declared after it', () => {
@@ -879,7 +879,7 @@ function declareTests(config?: {useJit: boolean}) {
             providers: [
               {
                 provide: 'eager',
-                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy' as any)}`,
                 deps: [Injector]
               },
               {provide: 'lazy', useFactory: () => 'lazyValue'},
@@ -890,7 +890,7 @@ function declareTests(config?: {useJit: boolean}) {
             constructor(@Inject('eager') eager: any) {}
           }
 
-          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+          expect(createModule(MyModule).injector.get('eager' as any)).toBe('eagerValue: lazyValue');
         });
       });
 
@@ -902,7 +902,7 @@ function declareTests(config?: {useJit: boolean}) {
               {provide: 'eager1', useFactory: () => 'v1'},
               {
                 provide: 'eager2',
-                useFactory: (i: Injector) => `v2: ${i.get('eager1')}`,
+                useFactory: (i: Injector) => `v2: ${i.get('eager1' as any)}`,
                 deps: [Injector]
               },
             ]
@@ -912,7 +912,7 @@ function declareTests(config?: {useJit: boolean}) {
             constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
           }
 
-          expect(createModule(MyModule).injector.get('eager2')).toBe('v2: v1');
+          expect(createModule(MyModule).injector.get('eager2' as any)).toBe('v2: v1');
         });
 
         it('should inject providers that were declared after it', () => {
@@ -920,7 +920,7 @@ function declareTests(config?: {useJit: boolean}) {
             providers: [
               {
                 provide: 'eager1',
-                useFactory: (i: Injector) => `v1: ${i.get('eager2')}`,
+                useFactory: (i: Injector) => `v1: ${i.get('eager2' as any)}`,
                 deps: [Injector]
               },
               {provide: 'eager2', useFactory: () => 'v2'},
@@ -931,7 +931,7 @@ function declareTests(config?: {useJit: boolean}) {
             constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
           }
 
-          expect(createModule(MyModule).injector.get('eager1')).toBe('v1: v2');
+          expect(createModule(MyModule).injector.get('eager1' as any)).toBe('v1: v2');
         });
 
         it('eager providers should get initialized only once', () => {
@@ -970,7 +970,7 @@ function declareTests(config?: {useJit: boolean}) {
         if (ivyEnabled) {
           errorMsg = `R3InjectorError(SomeModule)[NonExisting]: \n  ` + errorMsg;
         }
-        expect(() => injector.get('NonExisting')).toThrowError(errorMsg);
+        expect(() => injector.get('NonExisting' as any)).toThrowError(errorMsg);
       });
 
       it('should throw when trying to instantiate a cyclic dependency', () => {
@@ -980,7 +980,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       it('should support null values', () => {
         const injector = createInjector([{provide: 'null', useValue: null}]);
-        expect(injector.get('null')).toBe(null);
+        expect(injector.get('null' as any) as any).toBe(null);
       });
 
 
@@ -1139,7 +1139,7 @@ function declareTests(config?: {useJit: boolean}) {
 
           expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
           expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
-          expect(injector.get('token1')).toBe('imported');
+          expect(injector.get('token1' as any)).toBe('imported');
         });
 
 
@@ -1160,7 +1160,7 @@ function declareTests(config?: {useJit: boolean}) {
 
           expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
           expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
-          expect(injector.get('token1')).toBe('imported');
+          expect(injector.get('token1' as any)).toBe('imported');
         });
 
         it('should overwrite the providers of imported modules', () => {
@@ -1174,7 +1174,7 @@ function declareTests(config?: {useJit: boolean}) {
           }
 
           const injector = createModule(SomeModule).injector;
-          expect(injector.get('token1')).toBe('direct');
+          expect(injector.get('token1' as any)).toBe('direct');
         });
 
 
@@ -1193,7 +1193,7 @@ function declareTests(config?: {useJit: boolean}) {
           }
 
           const injector = createModule(SomeModule).injector;
-          expect(injector.get('token1')).toBe('direct');
+          expect(injector.get('token1' as any)).toBe('direct');
         });
 
         it('should overwrite the providers of imported modules on the second import level', () => {
@@ -1213,7 +1213,7 @@ function declareTests(config?: {useJit: boolean}) {
           }
 
           const injector = createModule(SomeModule).injector;
-          expect(injector.get('token1')).toBe('direct');
+          expect(injector.get('token1' as any)).toBe('direct');
         });
 
         it('should add the providers of exported modules', () => {
@@ -1229,7 +1229,7 @@ function declareTests(config?: {useJit: boolean}) {
 
           expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
           expect(injector.get(ExportedValue)).toBeAnInstanceOf(ExportedValue);
-          expect(injector.get('token1')).toBe('exported');
+          expect(injector.get('token1' as any)).toBe('exported');
         });
 
         it('should overwrite the providers of exported modules', () => {
@@ -1243,7 +1243,7 @@ function declareTests(config?: {useJit: boolean}) {
           }
 
           const injector = createModule(SomeModule).injector;
-          expect(injector.get('token1')).toBe('direct');
+          expect(injector.get('token1' as any)).toBe('direct');
         });
 
         it('should overwrite the providers of imported modules by following imported modules',
@@ -1261,7 +1261,7 @@ function declareTests(config?: {useJit: boolean}) {
              }
 
              const injector = createModule(SomeModule).injector;
-             expect(injector.get('token1')).toBe('imported2');
+             expect(injector.get('token1' as any)).toBe('imported2');
            });
 
         it('should overwrite the providers of exported modules by following exported modules',
@@ -1279,7 +1279,7 @@ function declareTests(config?: {useJit: boolean}) {
              }
 
              const injector = createModule(SomeModule).injector;
-             expect(injector.get('token1')).toBe('exported2');
+             expect(injector.get('token1' as any)).toBe('exported2');
            });
 
         it('should overwrite the providers of imported modules by exported modules', () => {
@@ -1296,7 +1296,7 @@ function declareTests(config?: {useJit: boolean}) {
           }
 
           const injector = createModule(SomeModule).injector;
-          expect(injector.get('token1')).toBe('exported');
+          expect(injector.get('token1' as any)).toBe('exported');
         });
 
         it('should not overwrite the providers if a module was already used on the same level',
@@ -1314,7 +1314,7 @@ function declareTests(config?: {useJit: boolean}) {
              }
 
              const injector = createModule(SomeModule).injector;
-             expect(injector.get('token1')).toBe('imported2');
+             expect(injector.get('token1' as any)).toBe('imported2');
            });
 
         it('should not overwrite the providers if a module was already used on a child level',
@@ -1336,7 +1336,7 @@ function declareTests(config?: {useJit: boolean}) {
              }
 
              const injector = createModule(SomeModule).injector;
-             expect(injector.get('token1')).toBe('imported2');
+             expect(injector.get('token1' as any)).toBe('imported2');
            });
 
         it('should throw when given invalid providers in an imported ModuleWithProviders', () => {

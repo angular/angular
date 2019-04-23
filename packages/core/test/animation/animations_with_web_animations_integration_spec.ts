@@ -62,7 +62,8 @@ import {ivyEnabled} from '@angular/private/testing';
       fixture.detectChanges();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer =
+          (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
@@ -76,7 +77,8 @@ import {ivyEnabled} from '@angular/private/testing';
         engine.flush();
 
         expect(engine.players.length).toEqual(1);
-        webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+        webPlayer = (engine.players[0] as TransitionAnimationPlayer)
+                        .getRealPlayer() as ɵWebAnimationsPlayer;
 
         expect(webPlayer.keyframes).toEqual([
           {height: '100px', offset: 0}, {height: '0px', offset: 1}
@@ -116,7 +118,8 @@ import {ivyEnabled} from '@angular/private/testing';
       engine.flush();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      let webPlayer =
+          (engine.players[0] as TransitionAnimationPlayer).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '120px', offset: 1}
@@ -154,7 +157,7 @@ import {ivyEnabled} from '@angular/private/testing';
       engine.flush();
 
       expect(engine.players.length).toEqual(1);
-      let player = engine.players[0];
+      let player = engine.players[0] as TransitionAnimationPlayer;
       let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
@@ -172,7 +175,7 @@ import {ivyEnabled} from '@angular/private/testing';
       engine.flush();
 
       expect(engine.players.length).toEqual(1);
-      player = engine.players[0];
+      player = engine.players[0] as TransitionAnimationPlayer;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
@@ -223,7 +226,7 @@ import {ivyEnabled} from '@angular/private/testing';
       cmp.exp = true;
       fixture.detectChanges();
 
-      let player = engine.players[0] !;
+      let player = engine.players[0] !as TransitionAnimationPlayer;
       let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0},
@@ -234,7 +237,7 @@ import {ivyEnabled} from '@angular/private/testing';
       cmp.exp = false;
       fixture.detectChanges();
 
-      player = engine.players[0] !;
+      player = engine.players[0] !as TransitionAnimationPlayer;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '300px', offset: 0},
@@ -372,14 +375,14 @@ import {ivyEnabled} from '@angular/private/testing';
       cmp.exp = 'a';
       fixture.detectChanges();
 
-      let player = engine.players[0] !;
+      let player = engine.players[0] !as TransitionAnimationPlayer;
       let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       webPlayer.setPosition(0.5);
 
       cmp.exp = 'b';
       fixture.detectChanges();
 
-      player = engine.players[0] !;
+      player = engine.players[0] !as TransitionAnimationPlayer;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(approximate(parseFloat(webPlayer.keyframes[0]['width'] as string), 150))
           .toBeLessThan(0.05);
@@ -428,7 +431,7 @@ import {ivyEnabled} from '@angular/private/testing';
          cmp.items = [0, 1, 2, 3, 4];
          fixture.detectChanges();
 
-         let player = engine.players[0] !;
+         let player = engine.players[0] !as TransitionAnimationPlayer;
          let groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          let players = groupPlayer.players;
          expect(players.length).toEqual(5);
@@ -442,7 +445,7 @@ import {ivyEnabled} from '@angular/private/testing';
          cmp.items = [];
          fixture.detectChanges();
 
-         player = engine.players[0];
+         player = engine.players[0] as TransitionAnimationPlayer;
          groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          players = groupPlayer.players;
 
@@ -504,7 +507,7 @@ import {ivyEnabled} from '@angular/private/testing';
          expect(elm.style.getPropertyValue('display')).toEqual('inline');
          expect(elm.style.getPropertyValue('position')).toEqual('absolute');
 
-         const player = engine.players.pop();
+         const player = engine.players.pop() !;
          player.finish();
          player.destroy();
 

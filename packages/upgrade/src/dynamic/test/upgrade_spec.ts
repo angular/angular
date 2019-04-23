@@ -3092,9 +3092,9 @@ withEachNg1Version(() => {
            adapter.upgradeNg1Provider('testValue', {asToken: 'testToken'});
            adapter.upgradeNg1Provider('testValue', {asToken: String});
            adapter.bootstrap(html('<div>'), ['myExample']).ready((ref) => {
-             expect(ref.ng2Injector.get('testValue')).toBe('secreteToken');
+             expect(ref.ng2Injector.get('testValue' as any)).toBe('secreteToken');
              expect(ref.ng2Injector.get(String)).toBe('secreteToken');
-             expect(ref.ng2Injector.get('testToken')).toBe('secreteToken');
+             expect(ref.ng2Injector.get('testToken' as any)).toBe('secreteToken');
              ref.dispose();
            });
          }));

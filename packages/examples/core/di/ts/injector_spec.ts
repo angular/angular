@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags, InjectionToken, Injector, Type, inject, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
+import {AbstractType, InjectFlags, InjectionToken, Injector, Type, inject, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
 
 class MockRootScopeInjector implements Injector {
   constructor(readonly parent: Injector) {}
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, defaultValue?: any,
+      token: Type<T>|InjectionToken<T>|AbstractType<T>, defaultValue?: T,
       flags: InjectFlags = InjectFlags.Default): T {
     if ((token as any).ngInjectableDef && (token as any).ngInjectableDef.providedIn === 'root') {
       const old = setCurrentInjector(this);
@@ -32,9 +32,9 @@ class MockRootScopeInjector implements Injector {
       // #docregion Injector
       const injector: Injector =
           Injector.create({providers: [{provide: 'validToken', useValue: 'Value'}]});
-      expect(injector.get('validToken')).toEqual('Value');
-      expect(() => injector.get('invalidToken')).toThrowError();
-      expect(injector.get('invalidToken', 'notFound')).toEqual('notFound');
+      expect(injector.get('validToken' as any)).toEqual('Value');
+      expect(() => injector.get('invalidToken' as any)).toThrowError();
+      expect(injector.get('invalidToken' as any, 'notFound')).toEqual('notFound');
       // #enddocregion
     });
 

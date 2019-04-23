@@ -439,8 +439,8 @@ export declare class InjectionToken<T> {
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-    /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
+    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
     static ngInjectableDef: never;
@@ -1099,7 +1099,8 @@ export declare class QueryList<T> {
 export declare abstract class ReflectiveInjector implements Injector {
     abstract readonly parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
-    abstract get(token: any, notFoundValue?: any): any;
+    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
     abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
     abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
     abstract resolveAndInstantiate(provider: Provider): any;
