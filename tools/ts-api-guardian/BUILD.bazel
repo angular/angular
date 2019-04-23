@@ -87,7 +87,8 @@ jasmine_node_test(
 )
 # END-INTERNAL
 
-exports_files(
-    ["bin/ts-api-guardian"],
+filegroup(
+    name = "bin",
+    srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
     visibility = ["//visibility:public"],
 )
