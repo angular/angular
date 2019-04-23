@@ -14,6 +14,7 @@ load(
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
     "NodeModuleInfo",
+    "NodeModuleSources",
     "TsConfigInfo",
     "collect_node_modules_aspect",
     "compile_ts",
@@ -498,10 +499,11 @@ def _compile_action(ctx, inputs, outputs, dts_bundles_out, messages_out, tsconfi
             file_inputs += ctx.attr.tsconfig[TsConfigInfo].deps
 
     # Also include files from npm fine grained deps as action_inputs.
-    # These deps are identified by the NodeModuleInfo provider.
+    # These deps are identified by the NodeModuleSources provider.
     for d in ctx.attr.deps:
-        if NodeModuleInfo in d:
-            file_inputs.extend(_filter_ts_inputs(d.files))
+        if NodeModuleSources in d:
+            # Note: we can't avoid calling .to_list() on sources
+            file_inputs.extend(_filter_ts_inputs(d[NodeModuleSources].sources.to_list()))
 
     # Collect the inputs and summary files from our deps
     action_inputs = depset(
