@@ -101,6 +101,9 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
+/** @deprecated */
+export declare type DeprecatedLoadChildren = string;
+
 export declare type DetachedRouteHandle = {};
 
 export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
@@ -145,7 +148,7 @@ export declare class GuardsCheckStart extends RouterEvent {
     toString(): string;
 }
 
-export declare type LoadChildren = string | LoadChildrenCallback;
+export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
 export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
 
