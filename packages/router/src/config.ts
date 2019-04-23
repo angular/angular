@@ -93,6 +93,18 @@ export type ResolveData = {
 /**
  *
  * A function that is called to resolve a collection of lazy-loaded routes.
+ * 
+ * Often this function will be implemented using an ES dynamic `import()` expression. For example:
+ * 
+ * ```
+ * [{
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
+ * }];
+ * ```
+ * 
+ * This function _must_ match the form above: an arrow function of the form
+ * `() => import('...').then(mod => mod.MODULE)`.
  *
  * @see `Route#loadChildren`.
  * @publicApi
@@ -105,10 +117,24 @@ export type LoadChildrenCallback = () => Type<any>| NgModuleFactory<any>| Observ
  * A string of the form `path/to/file#exportName` that acts as a URL for a set of routes to load,
  * or a function that returns such a set.
  *
+ * The string form of `LoadChildren` is deprecated (see `DeprecatedLoadChildren`). The function
+ * form (`LoadChildrenCallback`) should be used instead.
+ *
  * @see `Route#loadChildren`.
  * @publicApi
  */
-export type LoadChildren = string | LoadChildrenCallback;
+export type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
+
+/**
+ * A string of the form `path/to/file#exportName` that acts as a URL for a set of routes to load.
+ *
+ * @see `Route#loadChildren`
+ * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated in favor of the proposed ES dynamic
+ * `import()` expression, which offers a more natural and standards-based mechanism to dynamically
+ * load an ES module at runtime.
+ */
+export type DeprecatedLoadChildren = string;
 
 /**
  *

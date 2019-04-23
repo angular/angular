@@ -17,6 +17,8 @@ import {NgModuleFactory} from './ng_module_factory';
  * Used to load ng module factories.
  *
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `NgModuleFactoryLoader` is
+ * part of its implementation. See `LoadChildren` for more details.
  */
 export abstract class NgModuleFactoryLoader {
   abstract load(path: string): Promise<NgModuleFactory<any>>;

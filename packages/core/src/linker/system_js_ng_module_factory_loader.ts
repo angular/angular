@@ -24,6 +24,8 @@ declare var System: any;
  * token.
  *
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `SystemJsNgModuleLoaderConfig`
+ * is part of its implementation. See `LoadChildren` for more details.
  */
 export abstract class SystemJsNgModuleLoaderConfig {
   /**
@@ -47,6 +49,8 @@ const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
 /**
  * NgModuleFactoryLoader that uses SystemJS to load NgModuleFactory
  * @publicApi
+ * @deprecated the `string` form of `loadChildren` is deprecated, and `SystemJsNgModuleLoader` is
+ * part of its implementation. See `LoadChildren` for more details.
  */
 @Injectable()
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
