@@ -8,5 +8,8 @@
   "esm2015": "../esm2015/upgrade/upgrade.js",
   "fesm5": "../fesm5/upgrade.js",
   "fesm2015": "../fesm2015/upgrade.js",
-  "sideEffects": false
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/upgrade": "0.0.0-PLACEHOLDER"
+  }
 }
