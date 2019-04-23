@@ -496,7 +496,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.\u0275registerNgModuleType("test", TestModule);');
+    expect(jsContents).toContain('i0.\u0275registerNgModuleType(\'test\', TestModule);');
   });
 
   it('should emit a \u0275registerNgModuleType call when the module id is defined as `module.id`',

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -29,7 +29,7 @@ export interface NgModuleAnalysis {
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
   exports: Reference<ClassDeclaration>[];
-  id: Expression|string|null;
+  id: Expression|null;
 }
 
 /**
@@ -121,28 +121,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
-    let id: Expression|string|null = null;
-    if (ngModule.has('id')) {
-      const expr = ngModule.get('id') !;
-      const value = this.evaluator.evaluate(expr);
-      if (typeof value === 'string') {
-        id = value;
-      } else if (isBuildTimeProvidedModuleId(expr)) {
-        /**
-         * Special case for build-time provided `module.id` (supported by some build tools) that can
-         * be used as the `id` field value of a module. For example:
-         *
-         * @NgModule({
-         *   id: module.id
-         * })
-         * class SomeModule {}
-         */
-        id = new WrappedNodeExpr(expr);
-      } else {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `NgModule.id must be a string`);
-      }
-    }
+    const id: Expression|null =
+        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
 
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
@@ -279,8 +259,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
     if (analysis.id !== null) {
       const registerNgModuleType = new ExternalExpr(R3Identifiers.registerNgModuleType);
-      const id = typeof analysis.id === 'string' ? new LiteralExpr(analysis.id) : analysis.id;
-      const callExpr = registerNgModuleType.callFn([id, new WrappedNodeExpr(node.name)]);
+      const callExpr = registerNgModuleType.callFn([analysis.id, new WrappedNodeExpr(node.name)]);
       ngModuleStatements.push(callExpr.toStmt());
     }
     return [
@@ -451,9 +430,4 @@ function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
   return ref instanceof Reference &&
       (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
        ts.isVariableDeclaration(ref.node));
-}
-
-function isBuildTimeProvidedModuleId(expr: ts.Expression): boolean {
-  return ts.isPropertyAccessExpression(expr) && expr.name.text === 'id' &&
-      ts.isIdentifier(expr.expression) && expr.expression.text === 'module';
 }
