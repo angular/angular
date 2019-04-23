@@ -29,7 +29,7 @@ Currently you will find the next boilerplates:
 
 
 * CLI - For CLI based examples. This is the default one, to be used in the majority of the examples.
-* systemjs - Currently in deprecation, only used in a a few examples.
+* systemjs - Currently in deprecation, only used in a few examples.
 * i18n - Based on the CLI one, features a few scripts for i18n.
 * universal - Based on the cli with a extra server for universal.
 
