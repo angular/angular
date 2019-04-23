@@ -47,7 +47,7 @@ export class LocationUpgradeService {
       private urlCodec: UrlCodec, private locationStrategy: LocationStrategy) {
     const initialUrl = this.browserUrl();
 
-    var parsedUrl = this.urlCodec.parse(initialUrl);
+    let parsedUrl = this.urlCodec.parse(initialUrl);
 
     if (typeof parsedUrl === 'string') {
       throw 'Invalid URL';
@@ -152,7 +152,7 @@ export class LocationUpgradeService {
         const oldUrl = this.browserUrl();
         const newUrl = this.absUrl();
         const oldState = this.browserState();
-        var currentReplace = this.$$replace;
+        let currentReplace = this.$$replace;
 
         const urlOrStateChanged =
             !this.urlCodec.areEqual(oldUrl, newUrl) || oldState !== this.$$state;
@@ -201,6 +201,7 @@ export class LocationUpgradeService {
     this.$$replace = false;
     this.$$state = this.browserState();
     this.updateBrowser = false;
+    this.lastBrowserUrl = this.browserUrl();
   }
 
   private lastHistoryState: unknown;
@@ -217,7 +218,7 @@ export class LocationUpgradeService {
 
     // setter
     if (url) {
-      var sameState = this.lastHistoryState === state;
+      let sameState = this.lastHistoryState === state;
 
       // Normalize the inputted URL
       url = this.urlCodec.parse(url).href;
@@ -247,7 +248,7 @@ export class LocationUpgradeService {
     } else {
       return this.platformLocation.href;
     }
-  };
+  }
 
   // This variable should be used *only* inside the cacheState function.
   private lastCachedState: unknown = null;
@@ -292,15 +293,15 @@ export class LocationUpgradeService {
       throw new Error(`Bad Path - URL cannot start with double slashes: ${url}`);
     }
 
-    var prefixed = (url.charAt(0) !== '/');
+    let prefixed = (url.charAt(0) !== '/');
     if (prefixed) {
       url = '/' + url;
     }
-    var match = this.urlCodec.parse(url, this.getServerBase());
+    let match = this.urlCodec.parse(url, this.getServerBase());
     if (typeof match === 'string') {
-      throw new Error(`Bad URL - Cannot parse URL: ${url}`)
+      throw new Error(`Bad URL - Cannot parse URL: ${url}`);
     }
-    var path =
+    let path =
         prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname;
     this.$$path = this.urlCodec.decodePath(path);
     this.$$search = this.urlCodec.decodeSearch(match.search);
@@ -386,7 +387,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var absUrl = $location.absUrl();
+   * let absUrl = $location.absUrl();
    * // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
    * ```
    */
@@ -402,7 +403,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var url = $location.url();
+   * let url = $location.url();
    * // => "/some/path?foo=bar&baz=xoxo"
    * ```
    */
@@ -435,7 +436,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var protocol = $location.protocol();
+   * let protocol = $location.protocol();
    * // => "http"
    * ```
    */
@@ -452,7 +453,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var host = $location.host();
+   * let host = $location.host();
    * // => "example.com"
    *
    * // given URL http://user:password@example.com:8080/#/some/path?foo=bar&baz=xoxo
@@ -472,7 +473,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var port = $location.port();
+   * let port = $location.port();
    * // => 80
    * ```
    */
@@ -491,7 +492,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var path = $location.path();
+   * let path = $location.path();
    * // => "/some/path"
    * ```
    */
@@ -522,7 +523,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
-   * var searchObject = $location.search();
+   * let searchObject = $location.search();
    * // => {foo: 'bar', baz: 'xoxo'}
    *
    * // set foo to 'yipee'
@@ -607,7 +608,7 @@ export class LocationUpgradeService {
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo#hashValue
-   * var hash = $location.hash();
+   * let hash = $location.hash();
    * // => "hashValue"
    * ```
    */
