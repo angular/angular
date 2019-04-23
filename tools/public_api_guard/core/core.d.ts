@@ -586,6 +586,7 @@ export declare abstract class NgModuleFactory<T> {
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
+/** @deprecated */
 export declare abstract class NgModuleFactoryLoader {
     abstract load(path: string): Promise<NgModuleFactory<any>>;
 }
@@ -1297,11 +1298,13 @@ export interface SkipSelfDecorator {
 
 export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
+/** @deprecated */
 export declare class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
     load(path: string): Promise<NgModuleFactory<any>>;
 }
 
+/** @deprecated */
 export declare abstract class SystemJsNgModuleLoaderConfig {
     factoryPathPrefix: string;
     factoryPathSuffix: string;
