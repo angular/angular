@@ -12,7 +12,7 @@ import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
 
 function getNoOfNativeListeners(): number {
-  return ngDevMode ? ngDevMode.rendererAddEventListener : 0;
+  return ngDevMode && ngDevMode.perfCounters ? ngDevMode.perfCounters.rendererAddEventListener : 0;
 }
 
 describe('event listeners', () => {

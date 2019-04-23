@@ -478,7 +478,7 @@ function i18nStartFirstPass(
 }
 
 function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode | null): TNode {
-  ngDevMode && ngDevMode.rendererMoveNode++;
+  ngDevMode && ngDevMode.perfCounters.rendererMoveNode++;
   const nextNode = tNode.next;
   const viewData = getLView();
   if (!previousTNode) {
@@ -697,7 +697,7 @@ function readCreateOpCodes(
     if (typeof opCode == 'string') {
       const textRNode = createTextNode(opCode, renderer);
       const textNodeIndex = createOpCodes[++i] as number;
-      ngDevMode && ngDevMode.rendererCreateTextNode++;
+      ngDevMode && ngDevMode.perfCounters.rendererCreateTextNode++;
       previousTNode = currentTNode;
       currentTNode = createDynamicNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
@@ -756,7 +756,7 @@ function readCreateOpCodes(
                            typeof commentValue, 'string',
                            `Expected "${commentValue}" to be a comment node value`);
           const commentRNode = renderer.createComment(commentValue);
-          ngDevMode && ngDevMode.rendererCreateComment++;
+          ngDevMode && ngDevMode.perfCounters.rendererCreateComment++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
               commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
@@ -773,7 +773,7 @@ function readCreateOpCodes(
                            typeof tagNameValue, 'string',
                            `Expected "${tagNameValue}" to be an element node tag name`);
           const elementRNode = renderer.createElement(tagNameValue);
-          ngDevMode && ngDevMode.rendererCreateElement++;
+          ngDevMode && ngDevMode.perfCounters.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
               elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
@@ -894,7 +894,7 @@ function removeNode(index: number, viewData: LView) {
     }
   }
 
-  ngDevMode && ngDevMode.rendererRemoveNode++;
+  ngDevMode && ngDevMode.perfCounters.rendererRemoveNode++;
 }
 
 /**

@@ -52,7 +52,7 @@ export function ɵɵelementStart(
                    lView[BINDING_INDEX], tView.bindingStartIndex,
                    'elements should be created before any bindings ');
 
-  ngDevMode && ngDevMode.rendererCreateElement++;
+  ngDevMode && ngDevMode.perfCounters.rendererCreateElement++;
 
   const native = elementCreate(name);
   const renderer = lView[RENDERER];
@@ -211,11 +211,11 @@ export function ɵɵelementAttribute(
     const renderer = lView[RENDERER];
     const element = getNativeByIndex(index, lView) as RElement;
     if (value == null) {
-      ngDevMode && ngDevMode.rendererRemoveAttribute++;
+      ngDevMode && ngDevMode.perfCounters.rendererRemoveAttribute++;
       isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name, namespace) :
                                        element.removeAttribute(name);
     } else {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      ngDevMode && ngDevMode.perfCounters.rendererSetAttribute++;
       const tNode = getTNode(index, lView);
       const strValue =
           sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);

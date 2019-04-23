@@ -158,7 +158,7 @@ function listenerInternal(
         // - or element reference (in all other cases)
         listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
         const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
-        ngDevMode && ngDevMode.rendererAddEventListener++;
+        ngDevMode && ngDevMode.perfCounters.rendererAddEventListener++;
 
         lCleanup.push(listenerFn, cleanupFn);
         tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
@@ -167,7 +167,7 @@ function listenerInternal(
     } else {
       listenerFn = wrapListener(tNode, lView, listenerFn, true /** preventDefault */);
       target.addEventListener(eventName, listenerFn, useCapture);
-      ngDevMode && ngDevMode.rendererAddEventListener++;
+      ngDevMode && ngDevMode.perfCounters.rendererAddEventListener++;
 
       lCleanup.push(listenerFn);
       tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);

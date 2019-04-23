@@ -228,7 +228,7 @@ function executeNodeAction(
   } else if (action === WalkTNodeTreeAction.Detach) {
     nativeRemoveNode(renderer, node, isComponent(tNode));
   } else if (action === WalkTNodeTreeAction.Destroy) {
-    ngDevMode && ngDevMode.rendererDestroyNode++;
+    ngDevMode && ngDevMode.perfCounters.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
   }
 }
@@ -474,7 +474,7 @@ function cleanUpView(view: LView | LContainer): void {
     const hostTNode = view[T_HOST];
     // For component views only, the local renderer is destroyed as clean up time.
     if (hostTNode && hostTNode.type === TNodeType.Element && isProceduralRenderer(view[RENDERER])) {
-      ngDevMode && ngDevMode.rendererDestroy++;
+      ngDevMode && ngDevMode.perfCounters.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
     }
     // For embedded views still attached to a container: remove query result from this view.

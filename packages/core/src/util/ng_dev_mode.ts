@@ -9,7 +9,13 @@
 import {global} from './global';
 
 declare global {
-  const ngDevMode: null|NgDevModePerfCounters;
+  const ngDevMode: null|NgDevMode;
+
+  interface NgDevMode {
+    perfCounters: NgDevModePerfCounters;
+    state: any;
+  }
+
   interface NgDevModePerfCounters {
     firstTemplatePass: number;
     tNode: number;
@@ -44,8 +50,9 @@ declare global {
   }
 }
 
-export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
-  const newCounters: NgDevModePerfCounters = {
+
+export function ngDevModeResetPerfCounters() {
+  const perfCounters: NgDevModePerfCounters = {
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -78,9 +85,13 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     stylingApplyCacheMiss: 0,
   };
 
+  global['ngDevMode'] = global['ngDevMode'] || {
+    perfCounters: null,
+    state: 'state module not loaded yet',
+  };
+
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-  global['ngDevMode'] = newCounters;
-  return newCounters;
+  global['ngDevMode'].perfCounters = perfCounters;
 }
 
 /**

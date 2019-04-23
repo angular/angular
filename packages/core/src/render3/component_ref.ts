@@ -164,7 +164,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
 
     if (rootSelectorOrNode && hostRNode) {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      ngDevMode && ngDevMode.perfCounters.rendererSetAttribute++;
       isProceduralRenderer(renderer) ?
           renderer.setAttribute(hostRNode, 'ng-version', VERSION.full) :
           hostRNode.setAttribute('ng-version', VERSION.full);

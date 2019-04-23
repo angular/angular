@@ -548,7 +548,8 @@ function updateStylingMap(
     context: StylingContext, input: {[key: string]: any} | string |
         BoundPlayerFactory<null|string|{[key: string]: any}>| null,
     entryIsClassBased: boolean, directiveIndex: number = 0): void {
-  ngDevMode && (entryIsClassBased ? ngDevMode.classMap++ : ngDevMode.styleMap++);
+  ngDevMode &&
+      (entryIsClassBased ? ngDevMode.perfCounters.classMap++ : ngDevMode.perfCounters.styleMap++);
   ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
 
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
@@ -609,7 +610,8 @@ function updateStylingMap(
     setContextPlayersDirty(context, true);
   }
 
-  ngDevMode && (entryIsClassBased ? ngDevMode.classMapCacheMiss++ : ngDevMode.styleMapCacheMiss++);
+  ngDevMode && (entryIsClassBased ? ngDevMode.perfCounters.classMapCacheMiss++ :
+                                    ngDevMode.perfCounters.styleMapCacheMiss++);
 }
 
 /**
@@ -914,7 +916,7 @@ function updateSingleStylingValue(
   const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
   const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
 
-  ngDevMode && ngDevMode.stylingProp++;
+  ngDevMode && ngDevMode.perfCounters.stylingProp++;
 
   if (hasValueChanged(currFlag, currValue, value) &&
       (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex))) {
@@ -971,7 +973,7 @@ function updateSingleStylingValue(
       setContextPlayersDirty(context, true);
     }
 
-    ngDevMode && ngDevMode.stylingPropCacheMiss++;
+    ngDevMode && ngDevMode.perfCounters.stylingPropCacheMiss++;
   }
 }
 
@@ -1000,7 +1002,7 @@ export function renderStyling(
     isFirstRender: boolean, classesStore?: BindingStore | null, stylesStore?: BindingStore | null,
     directiveIndex: number = 0): number {
   let totalPlayersQueued = 0;
-  ngDevMode && ngDevMode.stylingApply++;
+  ngDevMode && ngDevMode.perfCounters.stylingApply++;
 
   // this prevents multiple attempts to render style/class values on
   // the same element...
@@ -1015,7 +1017,7 @@ export function renderStyling(
     flushHostInstructionsQueue(context);
 
     if (isContextDirty(context)) {
-      ngDevMode && ngDevMode.stylingApplyCacheMiss++;
+      ngDevMode && ngDevMode.perfCounters.stylingApplyCacheMiss++;
 
       // this is here to prevent things like <ng-container [style] [class]>...</ng-container>
       // or if there are any host style or class bindings present in a directive set on
@@ -1152,12 +1154,12 @@ export function setStyle(
   } else if (value) {
     value = value.toString();  // opacity, z-index and flexbox all have number values which may not
     // assign as numbers
-    ngDevMode && ngDevMode.rendererSetStyle++;
+    ngDevMode && ngDevMode.perfCounters.rendererSetStyle++;
     isProceduralRenderer(renderer) ?
         renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase) :
         native.style.setProperty(prop, value);
   } else {
-    ngDevMode && ngDevMode.rendererRemoveStyle++;
+    ngDevMode && ngDevMode.perfCounters.rendererRemoveStyle++;
     isProceduralRenderer(renderer) ?
         renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase) :
         native.style.removeProperty(prop);
@@ -1191,11 +1193,11 @@ function setClass(
     // DOMTokenList will throw if we try to add or remove an empty string.
   } else if (className !== '') {
     if (add) {
-      ngDevMode && ngDevMode.rendererAddClass++;
+      ngDevMode && ngDevMode.perfCounters.rendererAddClass++;
       isProceduralRenderer(renderer) ? renderer.addClass(native, className) :
                                        native['classList'].add(className);
     } else {
-      ngDevMode && ngDevMode.rendererRemoveClass++;
+      ngDevMode && ngDevMode.perfCounters.rendererRemoveClass++;
       isProceduralRenderer(renderer) ? renderer.removeClass(native, className) :
                                        native['classList'].remove(className);
     }

@@ -18,6 +18,19 @@ import {resetPreOrderHookFlags} from './util/view_utils';
 
 
 
+/** For dev mode, add the state getter methods to `ngDevMode.state` to make them easier to get to */
+if (ngDevMode) {
+  ngDevMode.state = {
+      getElementDepthCount,     getCurrentDirectiveDef,
+      getBindingsEnabled,       getLView,
+      getActiveDirectiveId,     getActiveDirectiveSuperClassDepth,
+      getPreviousOrParentTNode, getIsParent,
+      getContextLView,          getCheckNoChangesMode,
+      getBindingRoot,           getCurrentQueryIndex,
+      getSelectedIndex,         getNamespace,
+  };
+}
+
 /**
  * Store the element depth count. This is used to identify the root elements of the template
  * so that we can than attach `LView` to only those elements.

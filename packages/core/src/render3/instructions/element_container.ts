@@ -41,7 +41,7 @@ export function ɵɵelementContainerStart(
                    lView[BINDING_INDEX], tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
-  ngDevMode && ngDevMode.rendererCreateComment++;
+  ngDevMode && ngDevMode.perfCounters.rendererCreateComment++;
   const native = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);

@@ -552,7 +552,7 @@ export function createDirectivesAndLocals(
   if (!getBindingsEnabled()) return;
   const previousOrParentTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass) {
-    ngDevMode && ngDevMode.firstTemplatePass++;
+    ngDevMode && ngDevMode.perfCounters.firstTemplatePass++;
     resolveDirectives(
         tView, lView, findDirectiveMatches(tView, lView, previousOrParentTNode),
         previousOrParentTNode, localRefs || null);
@@ -627,7 +627,7 @@ export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null): TView {
-  ngDevMode && ngDevMode.tView++;
+  ngDevMode && ngDevMode.perfCounters.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,
   // we don't know which directives are active on this template. As soon as a directive is matched
@@ -754,7 +754,7 @@ export type TsickleIssue1009 = any;
 export function createTNode(
     tParent: TElementNode | TContainerNode | null, type: TNodeType, adjustedIndex: number,
     tagName: string | null, attrs: TAttributes | null): TNode {
-  ngDevMode && ngDevMode.tNode++;
+  ngDevMode && ngDevMode.perfCounters.tNode++;
   return {
     type: type,
     index: adjustedIndex,
@@ -866,7 +866,7 @@ export function elementPropertyInternal<T>(
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
       validateAgainstUnknownProperties(lView, element, propName, tNode);
-      ngDevMode.rendererSetProperty++;
+      ngDevMode.perfCounters.rendererSetProperty++;
     }
 
     savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);

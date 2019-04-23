@@ -314,7 +314,7 @@ export function createContainerRef(
     lContainer[ACTIVE_INDEX] = -1;
   } else {
     const commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
-    ngDevMode && ngDevMode.rendererCreateComment++;
+    ngDevMode && ngDevMode.perfCounters.rendererCreateComment++;
 
     // A container can be created on the root (topmost / bootstrapped) component and in this case we
     // can't use LTree to insert container's marker node (both parent of a comment node and the

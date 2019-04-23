@@ -167,7 +167,7 @@ function containerInternal(
 
   const adjustedIndex = index + HEADER_OFFSET;
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  ngDevMode && ngDevMode.rendererCreateComment++;
+  ngDevMode && ngDevMode.perfCounters.rendererCreateComment++;
   const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs);
   const lContainer = lView[adjustedIndex] =
       createLContainer(lView[adjustedIndex], lView, comment, tNode);

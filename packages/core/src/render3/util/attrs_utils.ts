@@ -62,7 +62,7 @@ export function setUpAttributes(native: RElement, attrs: TAttributes): number {
       const namespaceURI = attrs[i++] as string;
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      ngDevMode && ngDevMode.perfCounters.rendererSetAttribute++;
       isProc ?
           (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
           native.setAttributeNS(namespaceURI, attrName, attrVal);
@@ -71,7 +71,7 @@ export function setUpAttributes(native: RElement, attrs: TAttributes): number {
       const attrName = value as string;
       const attrVal = attrs[++i];
       // Standard attributes
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+      ngDevMode && ngDevMode.perfCounters.rendererSetAttribute++;
       if (isAnimationProp(attrName)) {
         if (isProc) {
           (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);

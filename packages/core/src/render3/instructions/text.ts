@@ -29,7 +29,7 @@ export function ɵɵtext(index: number, value?: any): void {
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'text nodes should be created before any bindings');
-  ngDevMode && ngDevMode.rendererCreateTextNode++;
+  ngDevMode && ngDevMode.perfCounters.rendererCreateTextNode++;
   const textNative = createTextNode(value, lView[RENDERER]);
   const tNode = createNodeAtIndex(index, TNodeType.Element, textNative, null, null);
 
@@ -53,7 +53,7 @@ export function ɵɵtextBinding<T>(index: number, value: T | NO_CHANGE): void {
     ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
     const element = getNativeByIndex(index, lView) as any as RText;
     ngDevMode && assertDefined(element, 'native element should exist');
-    ngDevMode && ngDevMode.rendererSetText++;
+    ngDevMode && ngDevMode.perfCounters.rendererSetText++;
     const renderer = lView[RENDERER];
     isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
                                      element.textContent = renderStringify(value);
