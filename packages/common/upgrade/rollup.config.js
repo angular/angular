@@ -12,6 +12,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
+  '@angular/common/upgrade': 'ng.common.upgrade',
   '@angular/upgrade/static': 'ng.upgrade.static'
 };
 
