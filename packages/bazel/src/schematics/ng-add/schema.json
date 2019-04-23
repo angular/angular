@@ -20,6 +20,5 @@
     }
   },
   "required": [
-    "name"
   ]
 }

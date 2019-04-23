@@ -55,6 +55,7 @@ describe('ng-add schematic', () => {
           },
         },
       },
+      defaultProject: 'demo',
     }));
     schematicRunner =
         new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'));
@@ -200,6 +201,15 @@ describe('ng-add schematic', () => {
     expect(demo.architect['extract-i18n'].builder)
         .toBe('@angular-devkit/build-angular:extract-i18n');
     expect(lint.builder).toBe('@angular-devkit/build-angular:tslint');
+  });
+
+  it('should get defaultProject if name is not provided', () => {
+    const options = {};
+    host = schematicRunner.runSchematic('ng-add', options, host);
+    const content = host.readContent('/angular.json');
+    const json = JSON.parse(content);
+    const builder = json.projects.demo.architect.build.builder;
+    expect(builder).toBe('@angular/bazel:build');
   });
 
   it('should create a backup for original tsconfig.json', () => {
