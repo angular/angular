@@ -22,15 +22,16 @@ import {INJECTABLE_DECORATOR_NAME, addNamedImport, getNamedImports} from './util
  */
 export default function(): Rule {
   return (tree: Tree) => {
-    const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+    const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
+    const allPaths = [...buildPaths, ...testPaths];
 
-    if (!projectTsConfigPaths.length) {
+    if (!allPaths.length) {
       throw new SchematicsException(
           'Could not find any tsconfig file. Cannot add Injectable annotation to pipes.');
     }
 
-    for (const tsconfigPath of projectTsConfigPaths) {
+    for (const tsconfigPath of allPaths) {
       runInjectablePipeMigration(tree, tsconfigPath, basePath);
     }
   };

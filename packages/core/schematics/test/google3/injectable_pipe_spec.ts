@@ -57,9 +57,8 @@ describe('Google3 injectable pipe TSLint rule', () => {
     const linter = runTSLint(false);
     const failures = linter.getResult().failures;
 
-    expect(failures.length).toBe(2);
+    expect(failures.length).toBe(1);
     expect(failures[0].getFailure()).toMatch(/@Pipe should be decorated with @Injectable/);
-    expect(failures[1].getFailure()).toMatch(/Injectable needs to be imported/);
   });
 
   it('should add @Injectable to pipes that do not have it', () => {

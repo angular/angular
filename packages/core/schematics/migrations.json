@@ -16,7 +16,7 @@
       "factory": "./migrations/template-var-assignment/index"
     },
     "migration-v8-injectable-pipe": {
-      "version": "8",
+      "version": "8-beta",
       "description": "Migrates all Pipe classes so that they have an Injectable annotation",
       "factory": "./migrations/injectable-pipe/index"
     }

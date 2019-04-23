@@ -25,35 +25,29 @@ export class Rule extends Rules.TypedRule {
 
     visitor.missingInjectablePipes.forEach(data => {
       const {pipeDecorator, importDeclarationMissingImport} = data;
-      const decoratorFix = new Replacement(
+      const fixes = [new Replacement(
           pipeDecorator.getStart(), pipeDecorator.getWidth(),
-          `@${INJECTABLE_DECORATOR_NAME}()\n${pipeDecorator.getText()}`);
+          `@${INJECTABLE_DECORATOR_NAME}()\n${pipeDecorator.getText()}`)];
+
+      if (importDeclarationMissingImport) {
+        const namedImports = getNamedImports(importDeclarationMissingImport);
+
+        // Add another fix that'll add the missing import.
+        if (namedImports) {
+          fixes.push(new Replacement(
+              namedImports.getStart(), namedImports.getWidth(),
+              printer.printNode(
+                  ts.EmitHint.Unspecified,
+                  addNamedImport(importDeclarationMissingImport, INJECTABLE_DECORATOR_NAME),
+                  sourceFile)));
+        }
+      }
 
       // Add a failure on Pipe decorators that are missing the Injectable decorator.
       failures.push(new RuleFailure(
           sourceFile, pipeDecorator.getStart(), pipeDecorator.getWidth(),
           'Classes with @Pipe should be decorated with @Injectable so that they can be injected.',
-          this.ruleName, decoratorFix));
-
-      if (importDeclarationMissingImport) {
-        const namedImports = getNamedImports(importDeclarationMissingImport);
-
-        if (namedImports) {
-          const importFix = new Replacement(
-              namedImports.getStart(), namedImports.getWidth(),
-              printer.printNode(
-                  ts.EmitHint.Unspecified,
-                  addNamedImport(importDeclarationMissingImport, INJECTABLE_DECORATOR_NAME),
-                  sourceFile));
-
-          // Add another failure at the `@angular/core` import which
-          // will need to import Injectable as well.
-          failures.push(new RuleFailure(
-              sourceFile, namedImports.getStart(), namedImports.getWidth(),
-              'Injectable needs to be imported in order to annotate Pipe classes.', this.ruleName,
-              importFix));
-        }
-      }
+          this.ruleName, fixes));
     });
 
     return failures;
