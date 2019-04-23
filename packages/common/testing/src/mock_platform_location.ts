@@ -12,7 +12,7 @@ import {Subject} from 'rxjs';
 
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
-  let serverBase;
+  let serverBase: string|undefined;
 
   // URL class requires full URL. If the URL string doesn't start with protocol, we need to add
   // an arbitrary base URL which can be removed afterward.
@@ -42,6 +42,8 @@ export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken('MOCK_PLATFORM_L
 
 /**
  * Mock implementation of URL state.
+ *
+ * @publicApi
  */
 @Injectable()
 export class MockPlatformLocation implements PlatformLocation {
@@ -87,23 +89,11 @@ export class MockPlatformLocation implements PlatformLocation {
 
   get href(): string {
     let url = `${this.protocol}//${this.hostname}${this.port ? ':' + this.port : ''}`;
-    url += `${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`
+    url += `${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`;
     return url;
   }
 
   get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
-
-  private setHash(value: string, oldUrl: string) {
-    if (this.hash === value) {
-      // Don't fire events if the hash has not changed.
-      return;
-    }
-    (this as{hash: string}).hash = value;
-    const newUrl = this.url;
-    scheduleMicroTask(() => this.hashUpdate.next({
-      type: 'hashchange', state: null, oldUrl, newUrl
-    } as LocationChangeEvent));
-  }
 
   private parseChanges(state: unknown, url: string, baseHref: string = '') {
     // When the `history.state` value is stored, it is always copied.
@@ -112,24 +102,31 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 
   replaceState(state: any, title: string, newUrl: string): void {
-    const oldUrl = this.url;
-
     const {pathname, search, state: parsedState, hash} = this.parseChanges(state, newUrl);
 
-    this.urlChanges[0] = {...this.urlChanges[0], pathname, search, state: parsedState};
-    this.setHash(hash, oldUrl);
+    this.urlChanges[0] = {...this.urlChanges[0], pathname, search, hash, state: parsedState};
   }
 
   pushState(state: any, title: string, newUrl: string): void {
     const {pathname, search, state: parsedState, hash} = this.parseChanges(state, newUrl);
-    this.urlChanges.unshift({...this.urlChanges[0], pathname, search, state: parsedState});
+    this.urlChanges.unshift({...this.urlChanges[0], pathname, search, hash, state: parsedState});
   }
 
   forward(): void { throw new Error('Not implemented'); }
 
-  back(): void { this.urlChanges.shift(); }
+  back(): void {
+    const oldUrl = this.url;
+    const oldHash = this.hash;
+    this.urlChanges.shift();
+    const newHash = this.hash;
 
-  // History API isn't available on server, therefore return undefined
+    if (oldHash !== newHash) {
+      scheduleMicroTask(() => this.hashUpdate.next({
+        type: 'hashchange', state: null, oldUrl, newUrl: this.url
+      } as LocationChangeEvent));
+    }
+  }
+
   getState(): unknown { return this.state; }
 }
 
