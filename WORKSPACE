@@ -41,7 +41,8 @@ Try running `yarn bazel` instead.
 #   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
 #   - 0.16.8 Supports npm installed bazel workspaces
 #   - 0.26.0 Fix for data files in yarn_install and npm_install
-check_rules_nodejs_version("0.26.0")
+#   - 0.27.12 Adds NodeModuleSources provider for transtive npm deps support
+check_rules_nodejs_version("0.27.12")
 
 # Setup the Node.js toolchain
 node_repositories(
