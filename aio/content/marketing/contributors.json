@@ -786,5 +786,12 @@
     "website": "https://medium.com/@ahsan.ayaz",
     "bio": "Muhammad Ahsan Ayaz is Software Architect at Modus Create. He is absolutely passionate about Angular and Web Technologies. Uses Angular daily and talks about it everywhere. Runs NodeSchool Karachi and is a co-organizer of NgPakistan",
     "groups": ["GDE"]
+  },
+  "andrewkushnir": {
+    "name": "Andrew Kushnir",
+    "picture": "andrew-kushnir.jpg",
+    "bio": "Andrew is a software engineer at Google on the Angular Core team.",
+    "groups": ["Angular"],
+    "lead": "kara"
   }
 }
