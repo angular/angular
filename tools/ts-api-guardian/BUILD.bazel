@@ -16,6 +16,7 @@ ts_library(
         "@npm//@types/diff",
         "@npm//@types/minimist",
         "@npm//@types/node",
+        "@npm//chalk",
         "@npm//diff",
         "@npm//minimist",
         "@npm//typescript",
@@ -41,7 +42,8 @@ npm_package(
         "package.json",
     ],
     replacements = {
-        "@angular//tools/ts-api-guardian": "@npm_ts_api_guardian//",
+        "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
+        "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
         "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
     },
     deps = [
@@ -78,7 +80,6 @@ jasmine_node_test(
         "test/fixtures/*.patch",
     ]) + [
         ":ts-api-guardian",
-        "@npm//chalk",
         # TODO: remove this once the boostrap.js workaround has been removed.
         ":package.json",
     ],
@@ -86,8 +87,7 @@ jasmine_node_test(
 )
 # END-INTERNAL
 
-filegroup(
-    name = "bin",
-    srcs = glob(["lib/*.js"]) + ["bin/ts-api-guardian"],
+exports_files(
+    ["bin/ts-api-guardian"],
     visibility = ["//visibility:public"],
 )
