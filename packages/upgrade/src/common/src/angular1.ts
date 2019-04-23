@@ -296,7 +296,9 @@ export function getAngularJSGlobal(): any {
 export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
     angular.bootstrap(e, modules, config);
 
-export const module: typeof angular.module = (prefix, dependencies?) =>
+// Do not declare as `module` to avoid webpack bug
+// (see https://github.com/angular/angular/issues/30050).
+export const module_: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
 export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;

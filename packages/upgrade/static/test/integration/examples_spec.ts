@@ -64,7 +64,7 @@ withEachNg1Version(() => {
          // This module represents the AngularJS pieces of the application
          const ng1Module =
              angular
-                 .module('myExample', [])
+                 .module_('myExample', [])
                  // This is an AngularJS component that will be upgraded
                  .directive(
                      'ng1',
