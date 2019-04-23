@@ -55,13 +55,19 @@ function addDevDependenciesToPackageJson(options: Schema) {
     };
 
     const recorder = host.beginUpdate(packageJson);
-    const depsToInstall = Object.keys(devDependencies).filter((name) => {
-      return !findPropertyInAstObject(devDeps, name);
-    });
-    for (const packageName of depsToInstall) {
+    for (const packageName of Object.keys(devDependencies)) {
+      const existingDep = findPropertyInAstObject(deps, packageName);
+      if (existingDep) {
+        const content = packageJsonContent.toString();
+        removeKeyValueInAstObject(recorder, content, deps, packageName);
+      }
       const version = devDependencies[packageName];
       const indent = 4;
-      insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
+      if (findPropertyInAstObject(devDeps, packageName)) {
+        replacePropertyInAstObject(recorder, devDeps, packageName, version, indent);
+      } else {
+        insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
+      }
     }
     host.commitUpdate(recorder);
     return host;
