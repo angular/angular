@@ -40,7 +40,7 @@ export function removeKeyValueInAstObject(
       const start = prop.start.offset;
       const end = prop.end.offset;
       let length = end - start;
-      const match = content.slice(end).match(/[,\s]+/);
+      const match = content.slice(end).match(/^[,\s]+/);
       if (match) {
         length += match.pop() !.length;
       }
