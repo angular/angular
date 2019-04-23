@@ -169,7 +169,46 @@ withEachNg1Version(() => {
          }));
     });
 
-    describe('scope/component change-detection', () => {
+    describe('change-detection', () => {
+      it('should not break if a $digest is already in progress', async(() => {
+           @Component({selector: 'my-app', template: ''})
+           class AppComponent {
+           }
+
+           @NgModule({declarations: [AppComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const ng1Module = angular.module('ng1', []);
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const element = html('<my-app></my-app>');
+
+           adapter.bootstrap(element, [ng1Module.name]).ready((ref) => {
+             const $rootScope: any = ref.ng1RootScope;
+             const ngZone: NgZone = ref.ng2ModuleRef.injector.get<NgZone>(NgZone);
+             const digestSpy = spyOn($rootScope, '$digest').and.callThrough();
+
+             // Step 1: Ensure `$digest` is run on `onMicrotaskEmpty`.
+             ngZone.onMicrotaskEmpty.emit(null);
+             expect(digestSpy).toHaveBeenCalledTimes(1);
+
+             digestSpy.calls.reset();
+
+             // Step 2: Cause the issue.
+             $rootScope.$apply(() => ngZone.onMicrotaskEmpty.emit(null));
+
+             // With the fix, `$digest` will only be run once (for `$apply()`).
+             // Without the fix, `$digest()` would have been run an extra time (`onMicrotaskEmpty`).
+             expect(digestSpy).toHaveBeenCalledTimes(1);
+
+             digestSpy.calls.reset();
+
+             // Step 3: Ensure that `$digest()` is still executed on `onMicrotaskEmpty`.
+             ngZone.onMicrotaskEmpty.emit(null);
+             expect(digestSpy).toHaveBeenCalledTimes(1);
+           });
+         }));
+
       it('should interleave scope and component expressions', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
@@ -214,7 +253,6 @@ withEachNg1Version(() => {
              ref.dispose();
            });
          }));
-
 
       it('should propagate changes to a downgraded component inside the ngZone', async(() => {
            let appComponent: AppComponent;
