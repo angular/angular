@@ -10,6 +10,27 @@ import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@an
 import {Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 
+/**
+ * Parser from https://tools.ietf.org/html/rfc3986#appendix-B
+ * ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+ *  12            3  4          5       6  7        8 9
+ *
+ * Example: http://www.ics.uci.edu/pub/ietf/uri/#Related
+ *
+ * Results in:
+ *
+ * $1 = http:
+ * $2 = http
+ * $3 = //www.ics.uci.edu
+ * $4 = www.ics.uci.edu
+ * $5 = /pub/ietf/uri/
+ * $6 = <undefined>
+ * $7 = <undefined>
+ * $8 = #Related
+ * $9 = Related
+ */
+const urlParse = /^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
+
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
   let serverBase: string|undefined;
@@ -19,7 +40,31 @@ function parseUrl(urlStr: string, baseHref: string) {
   if (!verifyProtocol.test(urlStr)) {
     serverBase = 'http://empty.com/';
   }
-  const parsedUrl = new URL(urlStr, serverBase);
+  let parsedUrl: {
+    protocol: string,
+    hostname: string,
+    port: string,
+    pathname: string,
+    search: string,
+    hash: string
+  };
+  try {
+    parsedUrl = new URL(urlStr, serverBase);
+  } catch (e) {
+    const result = urlParse.exec(serverBase || '' + urlStr);
+    if (!result) {
+      throw new Error(`Invalid URL: ${urlStr} with base: ${baseHref}`);
+    }
+    const hostSplit = result[4].split(':');
+    parsedUrl = {
+      protocol: result[1],
+      hostname: hostSplit[0],
+      port: hostSplit[1] || '',
+      pathname: result[5],
+      search: result[6],
+      hash: result[8],
+    };
+  }
   if (parsedUrl.pathname && parsedUrl.pathname.indexOf(baseHref) === 0) {
     parsedUrl.pathname = parsedUrl.pathname.substring(baseHref.length);
   }
