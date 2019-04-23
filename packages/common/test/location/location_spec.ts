@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, Location, LocationStrategy, PlatformLocation} from '@angular/common';
-import {PathLocationStrategy} from '@angular/common/src/common';
+import {CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {TestBed, inject} from '@angular/core/testing';
 
@@ -91,23 +90,22 @@ describe('Location Class', () => {
     });
 
     it('should have onUrlChange method', inject([Location], (location: Location) => {
-      expect(typeof location.onUrlChange).toBe('function');
-    }));
+         expect(typeof location.onUrlChange).toBe('function');
+       }));
 
-    it('should add registered functions to urlChangeListeners', inject([Location], (location: Location) => {
+    it('should add registered functions to urlChangeListeners',
+       inject([Location], (location: Location) => {
 
-      function changeListener(url: string, state: unknown) {
-        return undefined;
-      }
+         function changeListener(url: string, state: unknown) { return undefined; }
 
-      expect((location as any).urlChangeListeners.length).toBe(0);
+         expect((location as any)._urlChangeListeners.length).toBe(0);
 
-      location.onUrlChange(changeListener);
+         location.onUrlChange(changeListener);
 
-      expect((location as any).urlChangeListeners.length).toBe(1);
-      expect((location as any).urlChangeListeners[0]).toEqual(changeListener);
-      
-    }));
+         expect((location as any)._urlChangeListeners.length).toBe(1);
+         expect((location as any)._urlChangeListeners[0]).toEqual(changeListener);
+
+       }));
 
   });
 });
