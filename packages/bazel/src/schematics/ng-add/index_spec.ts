@@ -100,7 +100,7 @@ describe('ng-add schematic', () => {
     expect(devDeps).toContain('@bazel/karma');
   });
 
-  it('should not add an existing dev dependency', () => {
+  it('should replace an existing dev dependency', () => {
     expect(host.files).toContain('/package.json');
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson.devDependencies['@angular/bazel'] = '4.2.42';
@@ -110,7 +110,20 @@ describe('ng-add schematic', () => {
     // It is possible that a dep gets added twice if the package already exists.
     expect(content.match(/@angular\/bazel/g) !.length).toEqual(1);
     const json = JSON.parse(content);
-    expect(json.devDependencies['@angular/bazel']).toBe('4.2.42');
+    expect(json.devDependencies['@angular/bazel']).toBe('1.2.3');
+  });
+
+  it('should remove an existing dependency', () => {
+    expect(host.files).toContain('/package.json');
+    const packageJson = JSON.parse(host.readContent('/package.json'));
+    packageJson.dependencies['@angular/bazel'] = '4.2.42';
+    expect(Object.keys(packageJson.dependencies)).toContain('@angular/bazel');
+    host.overwrite('/package.json', JSON.stringify(packageJson));
+    host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const content = host.readContent('/package.json');
+    const json = JSON.parse(content);
+    expect(Object.keys(json.dependencies)).not.toContain('@angular/bazel');
+    expect(json.devDependencies['@angular/bazel']).toBe('1.2.3');
   });
 
   it('should not create Bazel workspace file', () => {
