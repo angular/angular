@@ -44,7 +44,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -84,7 +84,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -131,7 +131,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -172,7 +172,7 @@ withEachNg1Version(() => {
 
            // Define `ng1Module`
            const ng1Module =
-               angular.module('ng1Module', [])
+               angular.module_('ng1Module', [])
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}))
                    .run(
@@ -216,7 +216,7 @@ withEachNg1Version(() => {
 
            // Define `ng1Module`
            const ng1Module =
-               angular.module('ng1Module', [])
+               angular.module_('ng1Module', [])
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}))
                    .run(
@@ -267,7 +267,7 @@ withEachNg1Version(() => {
 
            // Define `ng1Module`
            const ng1Module =
-               angular.module('ng1Module', [])
+               angular.module_('ng1Module', [])
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}))
                    .run(
@@ -312,7 +312,7 @@ withEachNg1Version(() => {
 
             // Define `ng1Module`
             const ng1Module =
-                angular.module('ng1Module', [])
+                angular.module_('ng1Module', [])
                     .component('ng1', ng1Component)
                     .directive('ng2', downgradeComponent({component: Ng2Component}))
                     .value(
@@ -363,7 +363,7 @@ withEachNg1Version(() => {
 
             // Define `ng1Module`
             const ng1Module =
-                angular.module('ng1Module', [])
+                angular.module_('ng1Module', [])
                     .component('ng1', ng1Component)
                     .directive('ng2', downgradeComponent({component: Ng2Component}))
                     .value(
@@ -433,7 +433,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1A', ng1ComponentA)
                                  .component('ng1B', ng1ComponentB)
                                  .component('ng1C', ng1ComponentC)
@@ -505,7 +505,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -582,7 +582,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -663,7 +663,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -736,7 +736,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -833,7 +833,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -916,7 +916,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1006,7 +1006,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1074,7 +1074,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .component('ng1A', ng1ComponentA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2X', downgradeComponent({component: Ng2ComponentX}));
@@ -1123,7 +1123,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1170,7 +1170,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1218,7 +1218,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1266,7 +1266,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1313,7 +1313,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1', [])
+           const ng1Module = angular.module_('ng1', [])
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1378,7 +1378,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1451,7 +1451,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1505,7 +1505,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1553,7 +1553,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .controller('Ng1Controller', class { text = 'GREAT'; })
                                  .directive('ng1', () => ng1Directive)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1607,7 +1607,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1663,7 +1663,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .directive('ng1', () => ng1Directive)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -1715,7 +1715,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1A', ng1ComponentA)
                                    .component('ng1B', ng1ComponentB)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -1782,7 +1782,7 @@ withEachNg1Version(() => {
              // Define `ng1Module`
              const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
              const ng1Module =
-                 angular.module('ng1Module', [])
+                 angular.module_('ng1Module', [])
                      .component('ng1A', ng1ComponentA)
                      .component('ng1B', ng1ComponentB)
                      .component('ng1C', ng1ComponentC)
@@ -1853,7 +1853,7 @@ withEachNg1Version(() => {
 
              // Define `ng1Module`
              const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1', ng1Component)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}))
                                    .value($EXCEPTION_HANDLER, mockExceptionHandler);
@@ -1928,7 +1928,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1A', ng1ComponentA)
                                    .component('ng1B', ng1ComponentB)
                                    .component('ng1C', ng1ComponentC)
@@ -1994,7 +1994,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1A', ng1ComponentA)
                                    .component('ng1B', ng1ComponentB)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -2051,7 +2051,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1A', ng1ComponentA)
                                    .component('ng1B', ng1ComponentB)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -2109,7 +2109,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const ng1Module = angular.module('ng1Module', [])
+             const ng1Module = angular.module_('ng1Module', [])
                                    .component('ng1A', ng1ComponentA)
                                    .component('ng1B', ng1ComponentB)
                                    .component('ng1C', ng1ComponentC)
@@ -2170,7 +2170,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
@@ -2231,7 +2231,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -2297,7 +2297,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -2372,7 +2372,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -2445,7 +2445,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -2504,7 +2504,7 @@ withEachNg1Version(() => {
 
            // Define `ng1Module`
            const ng1Module =
-               angular.module('ng1Module', [])
+               angular.module_('ng1Module', [])
                    .value($EXCEPTION_HANDLER, (error: Error) => errorMessage = error.message)
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -2567,7 +2567,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -2660,7 +2660,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}))
@@ -2813,7 +2813,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -2943,7 +2943,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3013,7 +3013,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3080,7 +3080,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3150,7 +3150,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3212,7 +3212,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3294,7 +3294,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3373,7 +3373,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3474,7 +3474,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .directive('ng1A', () => ng1DirectiveA)
                                  .directive('ng1B', () => ng1DirectiveB)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
@@ -3552,7 +3552,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -3609,7 +3609,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
@@ -3673,7 +3673,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
@@ -3740,7 +3740,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
@@ -3809,7 +3809,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
@@ -3863,7 +3863,7 @@ withEachNg1Version(() => {
            }
 
            // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
+           const ng1Module = angular.module_('ng1Module', [])
                                  .component('ng1', ng1Component)
                                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -3927,7 +3927,7 @@ withEachNg1Version(() => {
          }
 
          // Define `ng1Module`
-         const ng1Module = angular.module('ng1', [])
+         const ng1Module = angular.module_('ng1', [])
                                .component('ng1X', ng1Component)
                                .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
                                .directive('ng2B', downgradeComponent({component: Ng2ComponentB}));
@@ -4035,7 +4035,7 @@ withEachNg1Version(() => {
          }
 
          // Define `ng1Module`
-         const ng1Module = angular.module('ng1', [])
+         const ng1Module = angular.module_('ng1', [])
                                .component('ng1X', ng1Component)
                                .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
                                .directive('ng2B', downgradeComponent({component: Ng2ComponentB}));
@@ -4180,7 +4180,7 @@ withEachNg1Version(() => {
          }
 
          // Define `ng1Module`
-         const ng1Module = angular.module('ng1', [])
+         const ng1Module = angular.module_('ng1', [])
                                .component('ng1A', ng1ComponentA)
                                .component('ng1B', ng1ComponentB)
                                .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))

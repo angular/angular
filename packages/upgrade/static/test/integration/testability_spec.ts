@@ -31,7 +31,7 @@ withEachNg1Version(() => {
     it('should handle deferred bootstrap', fakeAsync(() => {
          let applicationRunning = false;
          let stayedInTheZone: boolean = undefined !;
-         const ng1Module = angular.module('ng1', []).run(() => {
+         const ng1Module = angular.module_('ng1', []).run(() => {
            applicationRunning = true;
            stayedInTheZone = NgZone.isInAngularZone();
          });
@@ -50,7 +50,7 @@ withEachNg1Version(() => {
        }));
 
     it('should propagate return value of resumeBootstrap', fakeAsync(() => {
-         const ng1Module = angular.module('ng1', []);
+         const ng1Module = angular.module_('ng1', []);
          let a1Injector: angular.IInjectorService|undefined;
          ng1Module.run([
            '$injector', function($injector: angular.IInjectorService) { a1Injector = $injector; }
@@ -69,7 +69,7 @@ withEachNg1Version(() => {
        }));
 
     it('should wait for ng2 testability', fakeAsync(() => {
-         const ng1Module = angular.module('ng1', []);
+         const ng1Module = angular.module_('ng1', []);
          const element = html('<div></div>');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
@@ -95,7 +95,7 @@ withEachNg1Version(() => {
        }));
 
     it('should not wait for $interval', fakeAsync(() => {
-         const ng1Module = angular.module('ng1', []);
+         const ng1Module = angular.module_('ng1', []);
          const element = html('<div></div>');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {

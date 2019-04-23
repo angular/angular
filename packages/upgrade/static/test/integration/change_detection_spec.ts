@@ -60,7 +60,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', [])
+         const ng1Module = angular.module_('ng1', [])
                                .directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}))
                                .directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}))
                                .directive('ng2', downgradeComponent({component: Ng2Component}))
@@ -118,7 +118,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'myApp', downgradeComponent({component: AppComponent}));
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
