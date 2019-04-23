@@ -32,6 +32,13 @@ export interface ShimGenerator {
  */
 export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
+    if (delegate.resolveModuleNames !== undefined) {
+      this.resolveModuleNames =
+          (moduleNames: string[], containingFile: string, reusedNames?: string[],
+           redirectedReference?: ts.ResolvedProjectReference) =>
+              delegate.resolveModuleNames !(
+                  moduleNames, containingFile, reusedNames, redirectedReference);
+    }
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
       // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
@@ -49,6 +56,10 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
       this.getDirectories = (path: string) => delegate.getDirectories !(path);
     }
   }
+
+  resolveModuleNames?:
+      (moduleNames: string[], containingFile: string, reusedNames?: string[],
+       redirectedReference?: ts.ResolvedProjectReference) => (ts.ResolvedModule | undefined)[];
 
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
