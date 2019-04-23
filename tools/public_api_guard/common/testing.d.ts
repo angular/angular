@@ -37,7 +37,7 @@ export declare class MockPlatformLocation implements PlatformLocation {
     replaceState(state: any, title: string, newUrl: string): void;
 }
 
-export declare class SpyLocation extends Location {
+export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;
     forward(): void;
