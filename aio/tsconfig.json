@@ -20,7 +20,6 @@
     ],
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": false,
     "noUnusedLocals": true,
     // disabled because this is on by default in tsc 2.7 breaking our codebase - we need to refactor
     "strictPropertyInitialization": false

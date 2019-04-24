@@ -41,7 +41,7 @@ const DEFAULT_NS = '$$default';
 export class CustomIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {[DEFAULT_NS]: {}};
 
-  constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document,
+  constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document: Document,
               @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
     super(http, sanitizer, document);
     this.loadSvgElements(svgIcons);

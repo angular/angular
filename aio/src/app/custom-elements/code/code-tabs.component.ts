@@ -1,5 +1,5 @@
 /* tslint:disable component-selector */
-import { Component, AfterViewInit, ViewChild, Input, ViewChildren, QueryList, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CodeComponent } from './code.component';
 
 export interface TabInfo {
@@ -48,7 +48,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
 
   @Input() linenums: string;
 
-  @ViewChild('content', { static: true }) content;
+  @ViewChild('content', { static: true }) content: ElementRef;
 
   @ViewChildren(CodeComponent) codeComponents: QueryList<CodeComponent>;
 

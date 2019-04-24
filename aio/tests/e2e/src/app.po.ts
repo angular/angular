@@ -33,12 +33,12 @@ export class SitePage {
     const script = `return arguments[0].parentNode.querySelector('${targetSelector}');`;
     return element(() => browser.executeScript(script, heading));
   }
-  getTopMenuLink(path) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
+  getTopMenuLink(path: string) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
 
   ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
-  navigateTo(pageUrl) {
+  navigateTo(pageUrl: string) {
     // Navigate to the page, disable animations, and wait for Angular.
     return browser.get('/' + pageUrl)
         .then(() => browser.executeScript('document.body.classList.add(\'no-animations\')'))
@@ -49,7 +49,7 @@ export class SitePage {
     return this.docViewer.getText();
   }
 
-  getInnerHtml(elementFinder) {
+  getInnerHtml(elementFinder: ElementFinder) {
     // `getInnerHtml` was removed from webDriver and this is the workaround.
     // See https://github.com/angular/protractor/blob/master/CHANGELOG.md#breaking-changes
     return browser.executeScript('return arguments[0].innerHTML;', elementFinder);

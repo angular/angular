@@ -53,7 +53,7 @@ ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/di
 forkInnerZoneWithAngularBehavior/zone._inner<.onInvokeTask@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:4656:24
 ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:424:17
 Zone.prototype.runTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:192:28
-drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` });
+drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@app.component.ts:31:29
@@ -80,7 +80,7 @@ createDirectiveInstance@core.umd.j`);
       onInvokeTask
       runTask
       drainMicroTaskQueue
-      promiseReactionJob@[native code]` });
+      promiseReactionJob@[native code]` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent
@@ -104,7 +104,7 @@ cr`);
       at Object.debugCreateRootView [as createRootView] (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:14079:12)
       at ComponentFactory_.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:10998:46)
       at ComponentFactoryBoundToModule.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:3958:29)
-      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` });
+      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 new AppComponent@app.component.ts:31:29
@@ -124,7 +124,7 @@ createDirectiveInstance@core.u`);
       at Object.debugCreateRootView [as createRootView] (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:14079:12)
       at ComponentFactory_.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:10998:46)
       at ComponentFactoryBoundToModule.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:3958:29)
-      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` });
+      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 new AppComponent@app.component.ts:31:29
@@ -156,7 +156,7 @@ ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/di
 onInvokeTask@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:4656:24
 ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:424:17
 Zone.prototype.runTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:192:28
-drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` });
+drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@app.component.ts:31:29
@@ -176,7 +176,7 @@ createDirectiveInstance@core.umd.j`);
       at debugCreateRootView (eval code:14079:5)
       at ComponentFactory_.prototype.create (eval code:10998:9)
       at ComponentFactoryBoundToModule.prototype.create (eval code:3958:9)
-      at ApplicationRef.prototype.bootstrap (eval code:5769:9)` });
+      at ApplicationRef.prototype.bootstrap (eval code:5769:9)` } as Error);
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@???:31:21
@@ -185,7 +185,7 @@ createDirectiveInstance@???:12049:5
 createViewNodes@???`);
   });
 
-  async function callOnError(message, url, line, column, error) {
+  async function callOnError(message: string, url?: string, line?: number, column?: number, error?: Error) {
     await browser.executeScript(function() {
       // reset the ga queue
       (window as any).ga.q.length = 0;
