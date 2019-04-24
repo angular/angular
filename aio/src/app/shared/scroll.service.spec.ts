@@ -230,7 +230,7 @@ describe('ScrollService', () => {
 
   describe('#scrollToTop', () => {
     it('should scroll to top', () => {
-      const topOfPageElement = <Element><any> new MockElement();
+      const topOfPageElement = new MockElement() as any as Element;
       document.getElementById.and.callFake(
         (id: string) => id === 'top-of-page' ? topOfPageElement : null
       );
@@ -253,7 +253,7 @@ describe('ScrollService', () => {
     });
   });
 
-  describe('#needToFixScrollPosition', async() => {
+  describe('#needToFixScrollPosition', async () => {
     it('should return true when popState event was fired after a back navigation if the browser supports ' +
       'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
 
@@ -305,7 +305,7 @@ describe('ScrollService', () => {
     });
   });
 
-  describe('#scrollAfterRender', async() => {
+  describe('#scrollAfterRender', async () => {
 
     let scrollSpy: jasmine.Spy;
     let scrollToTopSpy: jasmine.Spy;
