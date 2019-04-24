@@ -25,8 +25,8 @@ export class FirebaseRedirector {
     throw new Error('infinite redirect loop');
   }
   private doRedirect(url: string) {
-    for (let i = 0; i < this.redirects.length; i++) {
-      const newUrl = this.redirects[i].replace(url);
+    for (const redirect of this.redirects) {
+      const newUrl = redirect.replace(url);
       if (newUrl !== undefined) {
         return newUrl;
       }

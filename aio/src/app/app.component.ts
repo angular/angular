@@ -284,10 +284,10 @@ export class AppComponent implements OnInit {
 
   notificationDismissed() {
     this.notificationAnimating = true;
-      // this should be kept in sync with the animation durations in:
-      // - aio/src/styles/2-modules/_notification.scss
-      // - aio/src/app/layout/notification/notification.component.ts
-      setTimeout(() => this.notificationAnimating = false, 250);
+    // this should be kept in sync with the animation durations in:
+    // - aio/src/styles/2-modules/_notification.scss
+    // - aio/src/app/layout/notification/notification.component.ts
+    setTimeout(() => this.notificationAnimating = false, 250);
     this.updateHostClasses();
   }
 

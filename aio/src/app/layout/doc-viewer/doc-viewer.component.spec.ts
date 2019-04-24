@@ -177,9 +177,9 @@ describe('DocViewerComponent', () => {
       });
 
       it('should fall back to `textContent` if `innerText` is not available', () => {
-        const querySelector_ = targetEl.querySelector;
+        const querySelector = targetEl.querySelector;
         spyOn(targetEl, 'querySelector').and.callFake((selector: string) => {
-          const elem = querySelector_.call(targetEl, selector);
+          const elem = querySelector.call(targetEl, selector);
           return elem && Object.defineProperties(elem, {
             innerText: {value: undefined},
             textContent: {value: 'Text Content'},
@@ -192,9 +192,9 @@ describe('DocViewerComponent', () => {
       });
 
       it('should still use `innerText` if available but empty', () => {
-        const querySelector_ = targetEl.querySelector;
+        const querySelector = targetEl.querySelector;
         spyOn(targetEl, 'querySelector').and.callFake((selector: string) => {
-          const elem = querySelector_.call(targetEl, selector);
+          const elem = querySelector.call(targetEl, selector);
           return elem && Object.defineProperties(elem, {
             innerText: { value: '' },
             textContent: { value: 'Text Content' }
