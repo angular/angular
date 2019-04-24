@@ -67,7 +67,7 @@ component by following these steps:
 ## API differences
 The experimental checkbox API closely matches the
 [API of the standard checkbox](https://material.angular.io/components/checkbox/api).
-`@angular/material-experimental/mdc-checkox` exports symbols with the same name and public interface
+`@angular/material-experimental/mdc-checkbox` exports symbols with the same name and public interface
 as all of the symbols found under `@angular/material/checkbox`, except for the following
 differences:
 
