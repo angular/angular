@@ -104,7 +104,7 @@ The following APIs are announced as deprecated in version 8:
 | @angular/core | [defineInjectable](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. |
 | @angular/core | [inject](api/core/inject) | `ɵɵinject` | v8 | Used only in generated code. |
 
-The string syntax for the `loadChildren` route specification is deprecated in Angular version 8, in favor of new syntax that uses an `import` statement. For more information, see [loadChildren string syntax](#loadChildren) below. 
+The string syntax for the `loadChildren` route specification is deprecated in Angular version 8, in favor of new `import()` syntax. For more information, see [loadChildren string syntax](#loadChildren) below. 
 
 
 ## Deprecated APIs
@@ -208,7 +208,7 @@ For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#de
 {@a template-tag}
 ### &lt;template&gt; tag
 
-The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [AOT Compliation](guide/aot-compiler#enablelegacytemplate) guide. 
+The `<template>` tag was deprecated in v4 to avoid colliding with the DOM's element of the same name (such as when using web components). Use `<ng-template>` instead. For more information, see the [Ahead-of-Time Compilation](guide/aot-compiler#enablelegacytemplate) guide. 
 
 
 
@@ -286,9 +286,9 @@ If you use these `Deprecated*` pipes, you should migrate to the current APIs lis
 {@a loadChildren}
 ### loadChildren string syntax
 
-When Angular first introduced lazy routes, there wasn't browser support for dynamically loading additional JavaScript. Angular created our own scheme using the syntax `loadChildren: './lazy/lazy.module#LazyModule'` and built tooling to support it. Now that ECMAScript dynamic import is a standard and is supported in many browsers, it's time for Angular applications to use this new syntax.
+When Angular first introduced lazy routes, there wasn't browser support for dynamically loading additional JavaScript. Angular created our own scheme using the syntax `loadChildren: './lazy/lazy.module#LazyModule'` and built tooling to support it. Now that ECMAScript dynamic import is supported in many browsers, Angular is moving toward this new syntax.
 
-In v8, the string syntax for the [`loadChildren`](api/router/LoadChildren) route specification was deprecated, in favor of new syntax that uses an `import` statement.
+In v8, the string syntax for the [`loadChildren`](api/router/LoadChildren) route specification was deprecated, in favor of new syntax that uses `import()` syntax.
 
 Before: 
 
@@ -305,7 +305,7 @@ After:
 ```
 const routes: Routes = [{
   path: 'lazy',
-  // The new import syntax 
+  // The new import() syntax 
   loadChildren: () => import('./lazy/lazy.module').then(m => m.LazyModule)
 }];
 ```
@@ -314,7 +314,7 @@ const routes: Routes = [{
 <div class="alert is-helpful">
 
 
-**v8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically. 
+**v8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically. Prior to version 7, the `import()` syntax works in JIT mode (with view engine). 
 
 **Ivy:** If you are using Ivy, you must update your lazy routes to the new dynamic import syntax. See the [Ivy guide](guide/ivy) for more information.
 
