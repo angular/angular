@@ -168,7 +168,7 @@ describe('Renderer', () => {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵɵselect(0);
-        ɵngcc0.ɵɵtextBinding(0, ɵngcc0.ɵɵinterpolation1("", ctx.person.name, ""));
+        ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
     } }, encapsulation: 2 });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,

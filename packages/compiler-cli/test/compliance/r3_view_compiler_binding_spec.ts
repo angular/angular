@@ -45,7 +45,7 @@ describe('compiler compliance: bindings', () => {
         }
         if (rf & 2) {
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation1("Hello ", $ctx$.name, ""));
+          $i0$.ɵɵtextInterpolate1("Hello ", $ctx$.name, "");
         }
       }`;
       const result = compile(files, angularFiles);
@@ -567,7 +567,7 @@ describe('compiler compliance: bindings', () => {
           if (rf & 2) {
             const $_r0$ = $i0$.ɵɵreference(1);
             $r3$.ɵɵselect(4);
-            $i0$.ɵɵtextBinding(4, $i0$.ɵɵinterpolation1(" ", $_r0$.id, " "));
+            $i0$.ɵɵtextInterpolate1(" ", $_r0$.id, " ");
           }
         }
       `;

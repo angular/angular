@@ -56,7 +56,7 @@ export class JitEvaluator {
   evaluateCode(
       sourceUrl: string, ctx: EmitterVisitorContext, vars: {[key: string]: any},
       createSourceMap: boolean): any {
-    let fnBody = `${ctx.toSource()}\n//# sourceURL=${sourceUrl}`;
+    let fnBody = `"use strict";${ctx.toSource()}\n//# sourceURL=${sourceUrl}`;
     const fnArgNames: string[] = [];
     const fnArgValues: any[] = [];
     for (const argName in vars) {

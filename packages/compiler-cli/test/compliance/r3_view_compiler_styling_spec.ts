@@ -999,7 +999,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵclassProp(0, $r3$.ɵɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
               $r3$.ɵɵstylingApply();
               $r3$.ɵɵselect(5);
-              $r3$.ɵɵtextBinding(5, $r3$.ɵɵinterpolation1(" ", $ctx$.item, ""));
+              $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
             }
           }
           `;
