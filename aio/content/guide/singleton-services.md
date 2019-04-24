@@ -25,7 +25,7 @@ There are two ways to make a service a singleton in Angular:
 Beginning with Angular 6.0, the preferred way to create a singleton service is to set `providedIn` to `root` on the service's `@Injectable()` decorator. This tells Angular
 to provide the service in the application root.
 
-<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.ts" linenums="false"> </code-example>
 
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
 [Tour of Heroes tutorial](tutorial).
