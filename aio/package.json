@@ -26,7 +26,7 @@
     "e2e": "ng e2e --no-webdriver-update",
     "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",
-    "postsetup": "yarn ~~build-ie-polyfills && yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
+    "postsetup": "yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
     "presetup-local": "yarn presetup",
     "setup-local": "yarn aio-use-local && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
@@ -68,7 +68,6 @@
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build --configuration=stable",
     "post~~build": "yarn build-404-page",
-    "~~build-ie-polyfills": "webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "~~http-server": "http-server"
   },
   "engines": {
@@ -90,8 +89,6 @@
     "@angular/service-worker": "^8.0.0-beta.14",
     "@types/lunr": "^2.3.2",
     "@webcomponents/custom-elements": "^1.2.0",
-    "classlist.js": "^1.1.20150312",
-    "core-js": "^2.4.1",
     "rxjs": "^6.5.1",
     "zone.js": "^0.9.0"
   },
@@ -167,7 +164,6 @@
     "unist-util-visit-parents": "^1.1.1",
     "vrsource-tslint-rules": "^5.8.2",
     "watchr": "^3.0.1",
-    "webpack-cli": "^3.1.2",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
   }
