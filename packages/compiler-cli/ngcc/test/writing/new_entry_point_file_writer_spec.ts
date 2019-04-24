@@ -30,7 +30,7 @@ function createMockFileSystem() {
       'esm5.js': 'export function FooTop() {}',
       'esm5.js.map': 'ORIGINAL MAPPING DATA',
       'es2015': {
-        'index.js': 'import {FooTop} from "./foo";',
+        'index.js': 'export {FooTop} from "./foo";',
         'foo.js': 'export class FooTop {}',
       },
       'a': {
@@ -40,7 +40,7 @@ function createMockFileSystem() {
         'index.metadata.json': '...',
         'esm5.js': 'export function FooA() {}',
         'es2015': {
-          'index.js': 'import {FooA} from "./foo";',
+          'index.js': 'export {FooA} from "./foo";',
           'foo.js': 'export class FooA {}',
         },
       },
@@ -52,8 +52,8 @@ function createMockFileSystem() {
       'lib': {
         'esm5.js': 'export function FooB() {}',
         'es2015': {
-          'index.js': 'import {FooB} from "./foo"; import * from "other";',
-          'foo.js': 'export class FooB {}',
+          'index.js': 'export {FooB} from "./foo"; import * from "other";',
+          'foo.js': 'import {FooA} from "test/a"; import "events"; export class FooB {}',
         },
       },
       'typings': {
@@ -65,6 +65,10 @@ function createMockFileSystem() {
       'package.json': '{"module": "./esm5.js", "typings": "./index.d.ts"}',
       'index.d.ts': 'export declare class OtherClass {}',
       'esm5.js': 'export class OtherClass {}',
+    },
+    '/node_modules/events': {
+      'package.json': '{"main": "./events.js"}',
+      'events.js': 'export class OtherClass {}',
     },
   });
 }
@@ -115,9 +119,9 @@ describe('NewEntryPointFileWriter', () => {
       expect(readFileSync('/node_modules/test/es2015/foo.js', 'utf8'))
           .toEqual('export class FooTop {}');
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/es2015/index.js', 'utf8'))
-          .toEqual('import {FooTop} from "./foo";');
+          .toEqual('export {FooTop} from "./foo";');
       expect(readFileSync('/node_modules/test/es2015/index.js', 'utf8'))
-          .toEqual('import {FooTop} from "./foo";');
+          .toEqual('export {FooTop} from "./foo";');
     });
 
     it('should update the package.json properties', () => {
@@ -187,9 +191,9 @@ describe('NewEntryPointFileWriter', () => {
       expect(readFileSync('/node_modules/test/a/es2015/foo.js', 'utf8'))
           .toEqual('export class FooA {}');
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/a/es2015/index.js', 'utf8'))
-          .toEqual('import {FooA} from "./foo";');
+          .toEqual('export {FooA} from "./foo";');
       expect(readFileSync('/node_modules/test/a/es2015/index.js', 'utf8'))
-          .toEqual('import {FooA} from "./foo";');
+          .toEqual('export {FooA} from "./foo";');
     });
 
     it('should update the package.json properties', () => {
@@ -253,14 +257,25 @@ describe('NewEntryPointFileWriter', () => {
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/lib/es2015/foo.js', 'utf8'))
           .toEqual('export class FooB {} // MODIFIED');
       expect(readFileSync('/node_modules/test/lib/es2015/foo.js', 'utf8'))
-          .toEqual('export class FooB {}');
+          .toEqual('import {FooA} from "test/a"; import "events"; export class FooB {}');
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/lib/es2015/index.js', 'utf8'))
-          .toEqual('import {FooB} from "./foo"; import * from "other";');
+          .toEqual('export {FooB} from "./foo"; import * from "other";');
       expect(readFileSync('/node_modules/test/lib/es2015/index.js', 'utf8'))
-          .toEqual('import {FooB} from "./foo"; import * from "other";');
+          .toEqual('export {FooB} from "./foo"; import * from "other";');
     });
 
-    it('should not copy declaration files outside of the entry-point', () => {
+    it('should not copy typings files within the package (i.e. from a different entry-point)',
+       () => {
+         fileWriter.writeBundle(entryPoint, esm2015bundle, [
+           {
+             path: '/node_modules/test/lib/es2015/foo.js',
+             contents: 'export class FooB {} // MODIFIED'
+           },
+         ]);
+         expect(existsSync('/node_modules/test/__ivy_ngcc__/a/index.d.ts')).toEqual(false);
+       });
+
+    it('should not copy files outside of the package', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
           path: '/node_modules/test/lib/es2015/foo.js',
@@ -268,6 +283,7 @@ describe('NewEntryPointFileWriter', () => {
         },
       ]);
       expect(existsSync('/node_modules/test/other/index.d.ts')).toEqual(false);
+      expect(existsSync('/node_modules/test/events/events.js')).toEqual(false);
     });
 
     it('should update the package.json properties', () => {
