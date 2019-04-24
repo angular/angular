@@ -93,6 +93,7 @@ describe('type check blocks', () => {
     }];
     const BASE_CONFIG: TypeCheckingConfig = {
       applyTemplateContextGuards: true,
+      checkQueries: false,
       checkTemplateBodies: true,
       checkTypeOfBindings: true,
       checkTypeOfPipes: true,
@@ -287,6 +288,7 @@ function tcb(
 
   config = config || {
     applyTemplateContextGuards: true,
+    checkQueries: false,
     checkTypeOfBindings: true,
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
