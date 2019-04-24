@@ -21,17 +21,17 @@ addEventListener('message', handleMessage);
 
 // Create the lunr index - the docs should be an array of objects, each object containing
 // the path and search terms for a page
-function createIndex(loadIndex: IndexLoader): lunr.Index {
+function createIndex(loadIndexFn: IndexLoader): lunr.Index {
   // The lunr typings are missing QueryLexer so we have to add them here manually.
   const queryLexer = (lunr as any as { QueryLexer: { termSeparator: RegExp } }).QueryLexer;
   queryLexer.termSeparator = lunr.tokenizer.separator = /\s+/;
-  return lunr(/** @this */function () {
+  return lunr(/** @this */function() {
     this.ref('path');
     this.field('titleWords', { boost: 10 });
     this.field('headingWords', { boost: 5 });
     this.field('members', { boost: 4 });
     this.field('keywords', { boost: 2 });
-    loadIndex(this);
+    loadIndexFn(this);
   });
 }
 
@@ -42,16 +42,16 @@ function handleMessage(message: { data: WebWorkerMessage }): void {
   const payload = message.data.payload;
   switch (type) {
     case 'load-index':
-      makeRequest(SEARCH_TERMS_URL, function (searchInfo: PageInfo[]) {
+      makeRequest(SEARCH_TERMS_URL, function(searchInfo: PageInfo[]) {
         index = createIndex(loadIndex(searchInfo));
-        postMessage({ type: type, id: id, payload: true });
+        postMessage({ type, id, payload: true });
       });
       break;
     case 'query-index':
-      postMessage({ type: type, id: id, payload: { query: payload, results: queryIndex(payload) } });
+      postMessage({ type, id, payload: { query: payload, results: queryIndex(payload) } });
       break;
     default:
-      postMessage({ type: type, id: id, payload: { error: 'invalid message type' } })
+      postMessage({ type, id, payload: { error: 'invalid message type' } });
   }
 }
 
@@ -60,7 +60,7 @@ function makeRequest(url: string, callback: (response: any) => void): void {
 
   // The JSON file that is loaded should be an array of PageInfo:
   const searchDataRequest = new XMLHttpRequest();
-  searchDataRequest.onload = function () {
+  searchDataRequest.onload = function() {
     callback(JSON.parse(this.responseText));
   };
   searchDataRequest.open('GET', url);
@@ -92,7 +92,7 @@ function queryIndex(query: string): PageInfo[] {
         results = index.search(query + ' ' + titleQuery);
       }
       // Map the hits into info about each page to be returned as results
-      return results.map(function (hit) { return pages[hit.ref]; });
+      return results.map(function(hit) { return pages[hit.ref]; });
     }
   } catch (e) {
     // If the search query cannot be parsed the index throws an error
