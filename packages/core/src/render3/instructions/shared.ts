@@ -35,7 +35,7 @@ import {initializeStaticContext as initializeStaticStylingContext} from '../styl
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf} from '../util/attrs_utils';
-import {INTERPOLATION_DELIMITER, renderStringify} from '../util/misc_utils';
+import {INTERPOLATION_DELIMITER, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
@@ -673,7 +673,7 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
 }
 
 export function createError(text: string, token: any) {
-  return new Error(`Renderer: ${text} [${renderStringify(token)}]`);
+  return new Error(`Renderer: ${text} [${stringifyForError(token)}]`);
 }
 
 
