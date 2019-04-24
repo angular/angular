@@ -39,7 +39,6 @@
       "resources": {
         "files": [
           "/assets/images/favicons/**",
-          "/generated/ie-polyfills.min.js",
           "/*-es5*.js",
           "!/**/_unused/**"
         ]
