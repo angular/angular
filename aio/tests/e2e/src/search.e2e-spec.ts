@@ -1,7 +1,7 @@
 import { SitePage } from './app.po';
 
 describe('site search', () => {
-  let page;
+  let page: SitePage;
 
   beforeEach(() => {
     page = new SitePage();

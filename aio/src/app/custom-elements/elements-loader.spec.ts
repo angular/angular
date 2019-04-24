@@ -249,7 +249,7 @@ class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 class FakeComponentFactoryResolver extends ComponentFactoryResolver {
-  constructor(private modulePath) { super(); }
+  constructor(private modulePath: string) { super(); }
 
   resolveComponentFactory(component: Type<any>): ComponentFactory<any> {
     return new FakeComponentFactory(this.modulePath);
@@ -261,7 +261,7 @@ class FakeModuleRef extends NgModuleRef<WithCustomElementComponent> {
   componentFactoryResolver = new FakeComponentFactoryResolver(this.modulePath);
   instance: WithCustomElementComponent = new FakeCustomElementModule();
 
-  constructor(private modulePath) {
+  constructor(private modulePath: string) {
     super();
 
     this.injector.get.and.returnValue(this.componentFactoryResolver);
@@ -275,7 +275,7 @@ class FakeModuleFactory extends NgModuleFactory<any> {
   moduleType: Type<any>;
   moduleRefToCreate = new FakeModuleRef(this.modulePath);
 
-  constructor(private modulePath) { super(); }
+  constructor(private modulePath: string) { super(); }
 
   create(parentInjector: Injector | null): NgModuleRef<any> {
     return this.moduleRefToCreate;
