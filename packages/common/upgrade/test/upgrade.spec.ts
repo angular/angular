@@ -10,7 +10,7 @@ import {CommonModule, PathLocationStrategy} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationUpgradeService} from '../src/$location';
+import {$locationShim} from '../src/$location_shim';
 
 import {LocationUpgradeTestModule} from './upgrade_location_test_module';
 
@@ -79,17 +79,16 @@ describe('LocationProvider', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  it('should instantiate LocationProvider',
-     inject([LocationUpgradeService], ($location: LocationUpgradeService) => {
+  it('should instantiate LocationProvider', inject([$locationShim], ($location: $locationShim) => {
        expect($location).toBeDefined();
-       expect($location instanceof LocationUpgradeService).toBe(true);
+       expect($location instanceof $locationShim).toBe(true);
      }));
 
 });
 
 
 describe('LocationHtml5Url', function() {
-  let $location: LocationUpgradeService;
+  let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -106,8 +105,7 @@ describe('LocationHtml5Url', function() {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(
-      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
 
 
   it('should set the URL', () => {
@@ -166,7 +164,7 @@ describe('LocationHtml5Url', function() {
 
 
 describe('NewUrl', function() {
-  let $location: LocationUpgradeService;
+  let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -182,8 +180,7 @@ describe('NewUrl', function() {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(
-      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
 
   // Sets the default most of these tests rely on
   function setupUrl(url = '/path/b?search=a&b=c&d#hash') { $location.url(url); }
@@ -472,7 +469,7 @@ describe('NewUrl', function() {
 });
 
 describe('New URL Parsing', () => {
-  let $location: LocationUpgradeService;
+  let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -489,8 +486,7 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(
-      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
 
   it('should prepend path with basePath', function() {
     $location.$$parse('http://server/base/abc?a');
@@ -504,7 +500,7 @@ describe('New URL Parsing', () => {
 });
 
 describe('New URL Parsing', () => {
-  let $location: LocationUpgradeService;
+  let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
   beforeEach(() => {
@@ -520,8 +516,7 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(
-      inject([LocationUpgradeService], (loc: LocationUpgradeService) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
 
   it('should parse new url', function() {
     $location.$$parse('http://host.com/base');
@@ -629,7 +624,7 @@ describe('New URL Parsing', () => {
   });
 });
 
-function parseLinkAndReturn(location: LocationUpgradeService, toUrl: string, relHref?: string) {
+function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {
   const resetUrl = location.$$parseLinkUrl(toUrl, relHref);
   return resetUrl && location.absUrl() || undefined;
 }

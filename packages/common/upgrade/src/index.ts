@@ -7,6 +7,5 @@
  */
 
 export * from './location_upgrade_module';
-export * from './angular_js_module';
-export * from './$location';
+export * from './$location_shim';
 export * from './params';

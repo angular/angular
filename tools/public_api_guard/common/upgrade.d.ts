@@ -1,4 +1,37 @@
-export declare const $locationProvider: Function;
+export declare class $locationShim {
+    constructor($injector: any, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
+    $$parse(url: string): void;
+    $$parseLinkUrl(url: string, relHref?: string | null): boolean;
+    absUrl(): string;
+    hash(hash: string | number | null): this;
+    hash(): string;
+    host(): string;
+    path(): string;
+    path(path: string | number | null): this;
+    port(): number | null;
+    protocol(): string;
+    replace(): this;
+    search(): {
+        [key: string]: unknown;
+    };
+    search(search: string | number | {
+        [key: string]: unknown;
+    }): this;
+    search(search: string | number | {
+        [key: string]: unknown;
+    }, paramValue: null | undefined | string | number | boolean | string[]): this;
+    state(state: unknown): this;
+    state(): unknown;
+    url(): string;
+    url(url: string): this;
+}
+
+export declare class $locationShimProvider {
+    constructor(ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
+    $get(): $locationShim;
+    hashPrefix(prefix?: string): void;
+    html5Mode(mode?: any): void;
+}
 
 export declare class AngularJSUrlCodec implements UrlCodec {
     areEqual(a: string, b: string): boolean;
@@ -30,8 +63,6 @@ export declare class AngularJSUrlCodec implements UrlCodec {
 
 export declare const LOCATION_UPGRADE_CONFIGURATION: InjectionToken<LocationUpgradeConfig>;
 
-export declare const LOCATION_UPGRADE_MODULE = "LOCATION_UPGRADE_MODULE";
-
 export interface LocationUpgradeConfig {
     appBaseHref?: string;
     hashPrefix?: string;
@@ -42,41 +73,6 @@ export interface LocationUpgradeConfig {
 
 export declare class LocationUpgradeModule {
     static config(config?: LocationUpgradeConfig): ModuleWithProviders<LocationUpgradeModule>;
-}
-
-export declare class LocationUpgradeProvider {
-    constructor(ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
-    $get(): LocationUpgradeService;
-    hashPrefix(prefix?: string): void;
-    html5Mode(mode?: any): void;
-}
-
-export declare class LocationUpgradeService {
-    constructor($injector: any, location: Location, platformLocation: PlatformLocation, urlCodec: UrlCodec, locationStrategy: LocationStrategy);
-    $$parse(url: string): void;
-    $$parseLinkUrl(url: string, relHref?: string | null): boolean;
-    absUrl(): string;
-    hash(hash: string | number | null): this;
-    hash(): string;
-    host(): string;
-    path(): string;
-    path(path: string | number | null): this;
-    port(): number | null;
-    protocol(): string;
-    replace(): this;
-    search(): {
-        [key: string]: unknown;
-    };
-    search(search: string | number | {
-        [key: string]: unknown;
-    }): this;
-    search(search: string | number | {
-        [key: string]: unknown;
-    }, paramValue: null | undefined | string | number | boolean | string[]): this;
-    state(state: unknown): this;
-    state(): unknown;
-    url(): string;
-    url(url: string): this;
 }
 
 export declare abstract class UrlCodec {

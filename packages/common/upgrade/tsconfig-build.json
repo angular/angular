@@ -12,9 +12,6 @@
       ],
       "@angular/platform-browser": [
         "../../../dist/packages/platform-browser"
-      ],
-      "@angular/upgrade/static": [
-        "../../../dist/packages/upgrade/static"
       ]
     },
     "outDir": "../../../dist/packages/common"
