@@ -44,4 +44,14 @@ describe('ngtsc incremental compilation', () => {
     expect(written).toContain('/test.js');
     expect(written).not.toContain('/service.js');
   });
+
+  it('should compile incrementally with template type-checking turned on', () => {
+    env.tsconfig({ivyTemplateTypeCheck: true});
+    env.write('main.ts', 'export class Foo {}');
+    env.driveMain();
+    env.invalidateCachedFile('main.ts');
+    env.driveMain();
+    // If program reuse were configured incorrectly (as was responsible for
+    // https://github.com/angular/angular/issues/30079), this would have crashed.
+  });
 });
