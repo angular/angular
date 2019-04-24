@@ -21,7 +21,7 @@ export function addAllToArray(items: any[], arr: any[]) {
 /**
  * Flattens an array in non-recursive way. Input arrays are not modified.
  */
-export function flatten(list: any[]): any[] {
+export function flatten(list: any[], mapFn?: (value: any) => any): any[] {
   const result: any[] = [];
   let i = 0;
   while (i < list.length) {
@@ -34,7 +34,7 @@ export function flatten(list: any[]): any[] {
         i++;
       }
     } else {
-      result.push(item);
+      result.push(mapFn ? mapFn(item) : item);
       i++;
     }
   }
