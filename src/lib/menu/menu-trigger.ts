@@ -36,7 +36,7 @@ import {
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
-import {MatMenu} from './menu-directive';
+import {MatMenu} from './menu';
 import {throwMatMenuMissingError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';

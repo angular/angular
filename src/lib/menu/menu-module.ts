@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatMenuContent} from './menu-content';
-import {MatMenu} from './menu-directive';
+import {MatMenu} from './menu';
 import {MatMenuItem} from './menu-item';
 import {
   MatMenuTrigger,
