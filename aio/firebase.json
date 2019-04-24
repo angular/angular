@@ -54,9 +54,9 @@
       {"type": 301, "source": "/**/api/common/SelectControlValueAccessor-*", "destination": "/api/forms/SelectControlValueAccessor"},
       {"type": 301, "source": "/**/api/common/NgModel", "destination": "/api/forms/NgModel"},
 
-      // APIs under `http` package is deprecated and new APIs are available under `common/http` package
-      {"type": 301, "source": "/api/http/:rest*", "destination": "/guide/deprecation#http"},
-      {"type": 301, "source": "/api/http", "destination": "/guide/deprecation#http"},
+      // `@angular/http` package was removed, and new `HttpClient` APIs are available under `@angular/common/http` package
+      {"type": 301, "source": "/api/http/:rest*", "destination": "/guide/deprecations#http"},
+      {"type": 301, "source": "/api/http", "destination": "/guide/deprecations#http"},
 
       // Animations moves, renames and removals
       {"type": 301, "source": "/api/animate/:rest*", "destination": "/api/animations/:rest*"},
