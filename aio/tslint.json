@@ -6,6 +6,11 @@
   "rules": {
     "array-type": false,
     "arrow-parens": false,
+    "ban": [
+      true,
+      {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
+      {"name": "fit", "message": "Don't keep jasmine focus methods."}
+    ],
     "component-class-suffix": true,
     "component-selector": [
       true,
@@ -64,7 +69,6 @@
     ],
     "no-input-rename": true,
     "no-inputs-metadata-property": true,
-    "no-jasmine-focus": true,
     "no-output-native": true,
     "no-output-on-prefix": true,
     "no-output-rename": true,
