@@ -37,6 +37,7 @@ import {getRootDirs, isDtsPath} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
+  private reuseTsProgram: ts.Program;
   private resourceManager: HostResourceLoader;
   private compilation: IvyCompilation|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
@@ -68,7 +69,7 @@ export class NgtscProgram implements api.Program {
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
-      host: api.CompilerHost, oldProgram?: api.Program) {
+      host: api.CompilerHost, oldProgram?: NgtscProgram) {
     if (shouldEnablePerfTracing(options)) {
       this.perfTracker = PerfTracker.zeroedToNow();
       this.perfRecorder = this.perfTracker;
@@ -146,7 +147,8 @@ export class NgtscProgram implements api.Program {
     }
 
     this.tsProgram =
-        ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.getTsProgram());
+        ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.reuseTsProgram);
+    this.reuseTsProgram = this.tsProgram;
 
     this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
@@ -155,9 +157,8 @@ export class NgtscProgram implements api.Program {
     if (oldProgram === undefined) {
       this.incrementalState = IncrementalState.fresh();
     } else {
-      const oldNgtscProgram = oldProgram as NgtscProgram;
       this.incrementalState = IncrementalState.reconcile(
-          oldNgtscProgram.incrementalState, oldNgtscProgram.tsProgram, this.tsProgram);
+          oldProgram.incrementalState, oldProgram.reuseTsProgram, this.tsProgram);
     }
   }
 
@@ -415,8 +416,10 @@ export class NgtscProgram implements api.Program {
 
     // Get the diagnostics.
     const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
-    const diagnostics = ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
+    const {diagnostics, program} =
+        ctx.calculateTemplateDiagnostics(this.tsProgram, this.host, this.options);
     this.perfRecorder.stop(typeCheckSpan);
+    this.reuseTsProgram = program;
 
     return diagnostics;
   }

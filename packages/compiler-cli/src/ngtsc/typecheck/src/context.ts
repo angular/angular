@@ -164,7 +164,10 @@ export class TypeCheckContext {
 
   calculateTemplateDiagnostics(
       originalProgram: ts.Program, originalHost: ts.CompilerHost,
-      originalOptions: ts.CompilerOptions): ts.Diagnostic[] {
+      originalOptions: ts.CompilerOptions): {
+    diagnostics: ts.Diagnostic[],
+    program: ts.Program,
+  } {
     const typeCheckSf = this.typeCheckFile.render();
     // First, build the map of original source files.
     const sfMap = new Map<string, ts.SourceFile>();
@@ -191,17 +194,23 @@ export class TypeCheckContext {
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(sf));
     }
 
-    return diagnostics.filter((diag: ts.Diagnostic): boolean => {
-      if (diag.code === 6133 /* $var is declared but its value is never read. */) {
-        return false;
-      } else if (diag.code === 6199 /* All variables are unused. */) {
-        return false;
-      } else if (
-          diag.code === 2695 /* Left side of comma operator is unused and has no side effects. */) {
-        return false;
-      }
-      return true;
-    });
+    return {
+      diagnostics: diagnostics.filter(
+          (diag: ts.Diagnostic):
+              boolean => {
+                if (diag.code === 6133 /* $var is declared but its value is never read. */) {
+                  return false;
+                } else if (diag.code === 6199 /* All variables are unused. */) {
+                  return false;
+                } else if (
+                    diag.code ===
+                    2695 /* Left side of comma operator is unused and has no side effects. */) {
+                  return false;
+                }
+                return true;
+              }),
+      program: typeCheckProgram,
+    };
   }
 
   private addInlineTypeCheckBlock(
