@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {RElement} from '../interfaces/renderer';
-import {CONTEXT, LView, RootContext} from '../interfaces/view';
-import {getRootView} from './view_traversal_utils';
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -25,14 +22,28 @@ export function isDifferent(a: any, b: any): boolean {
 
 /**
  * Used for stringify render output in Ivy.
+ * Important! This function is very performance-sensitive and we should
+ * be extra careful not to introduce megamorphic reads in it.
  */
 export function renderStringify(value: any): string {
-  if (typeof value == 'function') return value.name || value;
-  if (typeof value == 'string') return value;
+  if (typeof value === 'function') return value.name || value;
+  if (typeof value === 'string') return value;
   if (value == null) return '';
-  if (typeof value == 'object' && typeof value.type == 'function')
-    return value.type.name || value.type;
   return '' + value;
+}
+
+
+/**
+ * Used to stringify a value so that it can be displayed in an error message.
+ * Important! This function contains a megamorphic read and should only be
+ * used for error messages.
+ */
+export function stringifyForError(value: any) {
+  if (typeof value === 'object' && value != null && typeof value.type === 'function') {
+    return value.type.name || value.type;
+  }
+
+  return renderStringify(value);
 }
 
 

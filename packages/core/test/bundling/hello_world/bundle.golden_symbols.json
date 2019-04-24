@@ -486,6 +486,9 @@
     "name": "setTNodeAndViewData"
   },
   {
+    "name": "stringifyForError"
+  },
+  {
     "name": "syncViewWithBlueprint"
   },
   {

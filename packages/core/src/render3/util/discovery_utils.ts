@@ -15,7 +15,7 @@ import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
-import {renderStringify} from './misc_utils';
+import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {unwrapRNode} from './view_utils';
 
@@ -191,7 +191,7 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
   const context = getLContext(target);
   if (!context && throwOnNotFound) {
     throw new Error(
-        ngDevMode ? `Unable to find context associated with ${renderStringify(target)}` :
+        ngDevMode ? `Unable to find context associated with ${stringifyForError(target)}` :
                     'Invalid ng target');
   }
   return context;
