@@ -80,7 +80,7 @@ export class Environment {
           queries: dir.queries,
         }
       };
-      const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName);
+      const typeCtor = generateTypeCtorDeclarationFn(node, meta, nodeTypeRef.typeName, this.config);
       this.typeCtorStatements.push(typeCtor);
       const fnId = ts.createIdentifier(fnName);
       this.typeCtors.set(node, fnId);
