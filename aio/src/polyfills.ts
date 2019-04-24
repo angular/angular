@@ -11,41 +11,63 @@
  * automatically update themselves. This includes Safari >= 10, Chrome >= 55 (including Opera),
  * Edge >= 13 on the desktop, and iOS 10 and Chrome on mobile.
  *
- * Learn more in https://angular.io/docs/ts/latest/guide/browser-support.html
+ * Learn more in https://angular.io/guide/browser-support
  */
 
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
 
-/**
- * INTERNET EXPLORER
- *
- * All the Internet Explorer polyfills are defined separately, in the `ie-polyfills.js` file.
- * They are also built separately from the main app, via the `yarn build-ie-polyfills` task.
- * The output of this build is conditionally loaded (only if we are running IE) in the browser,
- * and executed before the rest of the application files are executed.
- */
+/** IE10 and IE11 requires the following for NgClass support on SVG elements */
+// import 'classlist.js';  // Run `npm install --save classlist.js`.
 
-/** ALL Firefox browsers require the following to support `@angular/animation`. **/
+/**
+ * Web Animations `@angular/platform-browser/animations`
+ * Only required if AnimationBuilder is used within the application and using IE/Edge or Safari.
+ * Standard animation support in Angular DOES NOT require any polyfills (as of Angular 6.0).
+ */
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 
-
+/**
+ * By default, zone.js will patch all possible macroTask and DomEvents
+ * user can disable parts of macroTask/DomEvents patch by setting following flags
+ * because those flags need to be set before `zone.js` being loaded, and webpack
+ * will put import in the top of bundle, so user need to create a separate file
+ * in this directory (for example: zone-flags.ts), and put the following flags
+ * into that file, and then add the following code before importing zone.js.
+ * import './zone-flags.ts';
+ *
+ * The flags allowed in zone-flags.ts are listed here.
+ *
+ * The following flags will work for all browsers.
+ *
+ * (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+ * (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
+ * (window as any).__zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+ *
+ *  in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
+ *  with the following flag, it will bypass `zone.js` patch for IE/Edge
+ *
+ *  (window as any).__Zone_enable_cross_context_check = true;
+ *
+ */
 
 /***************************************************************************************************
- * Zone JS is required by Angular itself.
+ * Zone JS is required by default for Angular itself.
  */
 import 'zone.js/dist/zone';  // Included with Angular CLI.
-import '@webcomponents/custom-elements'; //  Custom Elements Polyfill
-import '@webcomponents/custom-elements/src/native-shim';
 
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
-
-/**
- * Date, currency, decimal and percent pipes.
- * Needed for: All but Chrome, Firefox, Edge, IE11 and Safari 10
- */
-// import 'intl';  // Run `npm install --save intl`.
+// Custom Elements polyfill. Required for browsers that do not natively support Custom Elements.
+import '@webcomponents/custom-elements';
+// Custom Element ES5 shim. Required for browsers that natively support Custom Elements, but do not
+// support ES2015 modules.
+// NOTE: Chrome, Firefox and Safari should not need this, because they added support for ES2015
+//       modules before Custom Elements. It is still required for some other (less common) browsers:
+//       - UC browser for android 11.8 (~3.5% global usage)
+//       - Samsung browser 5.0-8.1 (~0.43% global usage)
+//       - Opera 41-47 (~0.02% global usage)
+import '@webcomponents/custom-elements/src/native-shim';
