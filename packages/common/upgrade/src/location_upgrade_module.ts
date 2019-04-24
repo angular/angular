@@ -10,8 +10,9 @@ import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStr
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationUpgradeProvider, LocationUpgradeService} from './$location';
+import {$locationShim, $locationShimProvider} from './$location_shim';
 import {AngularJSUrlCodec, UrlCodec} from './params';
+
 
 /**
  * Configuration options for LocationUpgrade.
@@ -49,7 +50,7 @@ export class LocationUpgradeModule {
       providers: [
         Location,
         {
-          provide: LocationUpgradeService,
+          provide: $locationShim,
           useFactory: provide$location,
           deps: [UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy]
         },
@@ -101,8 +102,8 @@ export function provideLocationStrategy(
 export function provide$location(
     ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation,
     urlCodec: UrlCodec, locationStrategy: LocationStrategy) {
-  const $locationProvider = new LocationUpgradeProvider(
-      ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
+  const $locationProvider =
+      new $locationShimProvider(ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
 
   return $locationProvider.$get();
 }
