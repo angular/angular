@@ -20,7 +20,7 @@ import {getBaseDef, getComponentDef, getDirectiveDef} from '../definition';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
-import {renderStringify} from '../util/misc_utils';
+import {stringifyForError} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
@@ -45,9 +45,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
       const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
-          const error = [`Component '${renderStringify(type)}' is not resolved:`];
+          const error = [`Component '${type.name}' is not resolved:`];
           if (metadata.templateUrl) {
-            error.push(` - templateUrl: ${renderStringify(metadata.templateUrl)}`);
+            error.push(` - templateUrl: ${metadata.templateUrl}`);
           }
           if (metadata.styleUrls && metadata.styleUrls.length) {
             error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
@@ -56,11 +56,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
-        const templateUrl = metadata.templateUrl || `ng:///${renderStringify(type)}/template.html`;
+        const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
-          typeSourceSpan:
-              compiler.createParseSourceSpan('Component', renderStringify(type), templateUrl),
+          typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
@@ -127,8 +126,7 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
         const sourceMapUrl = `ng://${name}/ngDirectiveDef.js`;
         const compiler = getCompilerFacade();
         const facade = directiveMetadata(type as ComponentType<any>, directive);
-        facade.typeSourceSpan =
-            compiler.createParseSourceSpan('Directive', renderStringify(type), sourceMapUrl);
+        facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
         if (facade.usesInheritance) {
           addBaseDefToUndecoratedParents(type);
         }
@@ -269,7 +267,7 @@ function extractQueriesMetadata(
           if (!ann.selector) {
             throw new Error(
                 `Can't construct a query for the property "${field}" of ` +
-                `"${renderStringify(type)}" since the query selector wasn't defined.`);
+                `"${stringifyForError(type)}" since the query selector wasn't defined.`);
           }
           if (annotations.some(isInputAnn)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);

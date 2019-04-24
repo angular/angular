@@ -672,6 +672,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "stringifyForError"
+  },
+  {
     "name": "syncViewWithBlueprint"
   },
   {
