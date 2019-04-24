@@ -120,15 +120,15 @@
         "!host": "\\[class\\]"
       },
       "NgModule": "^(?!\\s*$).+"
-    }, "src/+(lib|cdk|material-experimental|cdk-experimental)/**/!(*.spec).ts"],
+    }, "src/+(material|cdk|material-experimental|cdk-experimental)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/+(lib|cdk|material-experimental|cdk-experimental|dev-app)/**/!(*.spec).ts"
+      "src/+(material|cdk|material-experimental|cdk-experimental|dev-app)/**/!(*.spec).ts"
     ],
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "src/+(lib|cdk|material-examples|material-experimental|cdk-experimental)/!(schematics)**/*.ts"
+      "src/+(material|cdk|material-examples|material-experimental|cdk-experimental)/!(schematics)**/*.ts"
     ],
     "file-name-casing": [true, {
       // Exclude custom lint rule files since they have to always be camel-cased and end
@@ -143,10 +143,10 @@
       // Exclude the API golden files
       "tools/public_api_guard/**/*.d.ts",
       // Exclude schematic template files and test cases that can't be linted.
-      "src/lib/schematics/ng-generate/*/files/**/*",
+      "src/material/schematics/ng-generate/*/files/**/*",
       "src/cdk/schematics/ng-generate/*/files/**/*",
       "src/cdk/schematics/ng-update/test-cases/**/*",
-      "src/lib/schematics/ng-update/test-cases/**/*"
+      "src/material/schematics/ng-update/test-cases/**/*"
     ]
   }
 }

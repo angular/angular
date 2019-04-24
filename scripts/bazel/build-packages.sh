@@ -19,14 +19,10 @@ mkdir -p ${packages_dist}
 for p in ${packages[@]}
 do
   bazel build src/${p}:npm_package
-
-  # The output for "lib" should go into a directory named "material"
-  [[ ${p} = "lib" ]] && out_dir="material" || out_dir="${p}"
-
   # Copy without preserving the read-only mode from bazel so that we can make final modifications
   # to the generated package.
-  mkdir -p ${packages_dist}/${out_dir}
-  cp -r --no-preserve=mode ${bazel_bin}/src/${p}/npm_package/* ${packages_dist}/${out_dir}
+  mkdir -p ${packages_dist}/${p}
+  cp -r --no-preserve=mode ${bazel_bin}/src/${p}/npm_package/* ${packages_dist}/${p}
 done
 
 # Update the root @angular/material metadata file to re-export metadata from each entry-point.

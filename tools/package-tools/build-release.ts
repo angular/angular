@@ -130,13 +130,13 @@ function copySecondaryEntryPointStylesheets(buildPackage: BuildPackage, releaseP
   });
 }
 
-/** Mapping of released package names to directory name under `src`. */
-const packageDirs: {[key: string]: string} = {
-  'cdk': 'cdk',
-  'material': 'lib',
-  'material-experimental': 'material-experimental',
-  'cdk-experimental': 'cdk-experimental',
-};
+/** List of released package names under `src`. */
+const packageDirs: string[] = [
+  'cdk',
+  'material',
+  'material-experimental',
+  'cdk-experimental',
+];
 
 /**
  * Copies the partial for the given secondary entry point to the root of the release directory and
@@ -154,8 +154,7 @@ function copyPartialToRootAndUpdateImports(
   let sassPartialData = readFileSync(sassPartialPath).toString('utf8');
 
   // Iterate over the packages published from this repo and update any Sass imports from each one.
-  for (let packageName of Object.keys(packageDirs)) {
-    const packageDir = packageDirs[packageName];
+  for (let packageName of packageDirs) {
     let importPattern: string;
 
     if (packageName === buildPackage.name) {
@@ -165,7 +164,7 @@ function copyPartialToRootAndUpdateImports(
     } else {
       // If importing from another package in this repo, the import path will start with
       // `../../${packageDir}/`.
-      importPattern = String.raw`\.\.\/\.\.\/${packageDir}\/`;
+      importPattern = String.raw`\.\.\/\.\.\/${packageName}\/`;
     }
     if (packageName === 'material') {
       // If importing from the material package, the rest of the path can be anything (it doesn't

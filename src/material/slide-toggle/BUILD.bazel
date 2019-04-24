@@ -1,0 +1,67 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
+
+ng_module(
+  name = "slide-toggle",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/slide-toggle",
+  assets = [":slide-toggle.css"] + glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/animations",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/cdk/observers",
+    "//src/material/core",
+  ],
+)
+
+sass_library(
+  name = "slide_toggle_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "slide_toggle_scss",
+  src = "slide-toggle.scss",
+  deps = [
+    "//src/cdk/a11y:a11y_scss_lib",
+    "//src/material/core:core_scss_lib",
+  ],
+)
+
+ng_test_library(
+  name = "slide_toggle_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
+    "//src/cdk/bidi",
+    "//src/cdk/observers",
+    "//src/cdk/testing",
+    "//src/material/testing",
+    ":slide-toggle",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":slide_toggle_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":slide-toggle.md"],
+)
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

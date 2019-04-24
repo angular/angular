@@ -129,6 +129,6 @@ sass_library(
   srcs = glob(["**/_*.scss"]),
   deps = [
     ":mdc_scss_deps_lib",
-    "//src/lib/core:core_scss_lib",
+    "//src/material/core:core_scss_lib",
   ],
 )

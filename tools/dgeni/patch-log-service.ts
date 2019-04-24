@@ -7,8 +7,8 @@ const mixinNameRegex = /_\w+Base/;
  * unresolved TypeScript symbols for the mixin base classes.
  *
  * ```
- * warn:    Unresolved TypeScript symbol(s): _MatToolbarMixinBase - doc "lib/toolbar/MatToolbar"
- *    (class)  - from file "lib/toolbar/toolbar.ts" - starting at line 37, ending at line 98
+ * warn:   Unresolved TypeScript symbol(s): _MatToolbarMixinBase - doc "material/toolbar/MatToolbar"
+ *    (class)  - from file "material/toolbar/toolbar.ts" - starting at line 37, ending at line 98
  * ```
  *
  * Those warnings are valid, but are not fixable because the base class is created dynamically

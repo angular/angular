@@ -6,8 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
-      "@angular/material/*": ["../lib/*"],
-      "@angular/material": ["../lib/public_api"],
+      "@angular/material/*": ["../material/*"],
+      "@angular/material": ["../material/public_api"],
       "@angular/cdk-experimental": ["../cdk-experimental"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
       "@angular/material-experimental": ["../material-experimental"],

@@ -6,8 +6,8 @@
 @import '@material/theme/functions';
 @import '@material/theme/variables';
 @import '@material/typography/variables';
-@import '../../lib/core/theming/theming';
-@import '../../lib/core/typography/typography';
+@import '../../material/core/theming/theming';
+@import '../../material/core/typography/typography';
 
 // A set of standard queries to use with MDC's queryable mixins.
 $mat-base-styles-query: mdc-feature-without(mdc-feature-any(color, typography));

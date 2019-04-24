@@ -15,7 +15,7 @@ import * as minimatch from 'minimatch';
  *     "!styles": ".*"
  *   },
  *   "NgModule": "^(?!\\s*$).+"
- * }, "src/lib"]
+ * }, "src/material"]
  * ```
  */
 export class Rule extends Lint.Rules.AbstractRule {

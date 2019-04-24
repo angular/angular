@@ -1,0 +1,78 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
+
+ng_module(
+  name = "select",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/select",
+  assets = [":select.css"] + glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/animations",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "@npm//rxjs",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/cdk/collections",
+    "//src/cdk/keycodes",
+    "//src/cdk/overlay",
+    "//src/cdk/scrolling",
+    "//src/material/core",
+    "//src/material/form-field",
+  ],
+)
+
+sass_library(
+  name = "select_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "select_scss",
+  src = "select.scss",
+  deps = [
+    "//src/cdk/a11y:a11y_scss_lib",
+    "//src/material/core:core_scss_lib"
+  ],
+)
+
+ng_test_library(
+  name = "select_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
+    "@npm//rxjs",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/keycodes",
+    "//src/cdk/overlay",
+    "//src/cdk/platform",
+    "//src/cdk/scrolling",
+    "//src/cdk/testing",
+    "//src/material/core",
+    "//src/material/form-field",
+    ":select",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":select_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":select.md"],
+)
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

@@ -98,7 +98,7 @@ because the non-separated upgrade data would just include: _`onChange` => `onVal
 Also besides separating the upgrade data based on the target version, we split the upgrade data
 based on the type of code that is affected by these migrations:  
   
-* See here: [src/lib/schematics/update/material/data](https://github.com/angular/material2/tree/master/src/lib/schematics/update/material/data)  
+* See here: [src/material/schematics/update/material/data](https://github.com/angular/material2/tree/master/src/material/schematics/update/material/data)  
   
 ### Adding upgrade data
   
@@ -119,7 +119,7 @@ First, look for an existing upgrade data file that covers similar breaking chang
 an existing upgrade data file for `property-names` already exists. Insert the new breaking change
 within the proper `VersionTarget`.  
   
-_src/lib/schematics/ng-update/material/data/property-names.ts_
+_src/material/schematics/ng-update/material/data/property-names.ts_
 ```ts
 export const propertyNames: VersionChanges<MaterialPropertyNameData> = {
   [TargetVersion.V7]: [
@@ -155,7 +155,7 @@ In the scenario where a property from `MatRipple` has been renamed in V7, we don
 a new test-case file because there is already a test case for the `property-names` upgrade data.
 In that case, we just need to add the breaking change to the existing test case.  
   
-_src/lib/schematics/ng-update/test-cases/v7/property-names_input.ts_
+_src/material/schematics/ng-update/test-cases/v7/property-names_input.ts_
 ```ts
 ...
 
@@ -178,7 +178,7 @@ class A implements OnInit {
 }
 ```
 
-_src/lib/schematics/ng-update/test-cases/v7/property-names_expected_output.ts_  
+_src/material/schematics/ng-update/test-cases/v7/property-names_expected_output.ts_  
 ```ts
 ...
 

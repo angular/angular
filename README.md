@@ -103,7 +103,7 @@ label for a list of issues where we could use help from the community.
 [16]: https://material.angular.io/components/slider/overview
 [17]: https://material.angular.io/components/menu/overview
 [18]: https://material.angular.io/components/tooltip/overview
-[19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/ripple.md
+[19]: https://github.com/angular/material2/blob/master/src/material/core/ripple/ripple.md
 [20]: https://material.angular.io/guide/theming
 [21]: https://material.angular.io/components/snack-bar/overview
 [22]: https://material.angular.io/components/dialog/overview

@@ -1,0 +1,80 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
+
+ng_module(
+  name = "stepper",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/stepper",
+  assets = [
+    ":stepper.css",
+    ":step-header.css",
+  ] + glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/animations",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "@npm//rxjs",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/portal",
+    "//src/cdk/stepper",
+    "//src/material/button",
+    "//src/material/core",
+    "//src/material/icon",
+  ],
+)
+
+sass_library(
+  name = "stepper_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "stepper_scss",
+  src = "stepper.scss",
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "step_header_scss",
+  src = "step-header.scss",
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+ng_test_library(
+  name = "stepper_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
+    "@npm//rxjs",
+    "//src/cdk/bidi",
+    "//src/cdk/keycodes",
+    "//src/cdk/stepper",
+    "//src/cdk/testing",
+    "//src/material/form-field",
+    "//src/material/input",
+    "//src/material/core",
+    ":stepper",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":stepper_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":stepper.md"],
+)
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

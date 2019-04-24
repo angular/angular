@@ -20,7 +20,7 @@ function generateRollupEntryPoints(packageName: string, entryPoints: string[]):
 const cdkSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'cdk'));
 
 /** List of potential secondary entry-points for the material package. */
-const matSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'lib'));
+const matSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'material'));
 
 /** List of potential secondary entry-points for the cdk-experimental package. */
 const cdkExperimentalSecondaryEntryPoints =

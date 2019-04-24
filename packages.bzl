@@ -70,12 +70,12 @@ MATERIAL_PACKAGES = [
   "tree",
 ]
 
-MATERIAL_TARGETS = ["//src/lib:material"] + ["//src/lib/%s" % p for p in MATERIAL_PACKAGES]
+MATERIAL_TARGETS = ["//src/material:material"] + ["//src/material/%s" % p for p in MATERIAL_PACKAGES]
 
 # List that references the sass libraries for each Material package. This can be used to create
 # the theming scss-bundle or to specify dependencies for the all-theme.scss file.
 MATERIAL_SCSS_LIBS = [
-  "//src/lib/%s:%s_scss_lib" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
+  "//src/material/%s:%s_scss_lib" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
 ]
 
 # Each individual package uses a placeholder for the version of Angular to ensure they're

@@ -22,7 +22,7 @@ sass_library(
   name = "checkbox_scss_lib",
   srcs = glob(["**/_*.scss"]),
   deps = [
-    "//src/lib/core:core_scss_lib",
+    "//src/material/core:core_scss_lib",
     "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ],
@@ -36,7 +36,7 @@ sass_binary(
   ],
   deps = [
     ":checkbox_scss_lib",
-    "//src/lib/core:all_themes",
+    "//src/material/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ]
 )

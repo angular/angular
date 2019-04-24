@@ -50,7 +50,7 @@ package_docs_content(
     ":example-source-files": "examples-source",
 
     # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
-    "//src/lib:overviews": "overviews/material",
+    "//src/material:overviews": "overviews/material",
     "//src/cdk:overviews": "overviews/cdk",
 
     # Package the API docs for the Material and CDK package into the docs-content

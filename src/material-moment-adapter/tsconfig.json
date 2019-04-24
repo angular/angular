@@ -8,8 +8,8 @@
     "baseUrl": ".",
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
-      "@angular/material/*": ["../lib/*"],
-      "@angular/material": ["../lib/public-api.ts"]
+      "@angular/material/*": ["../material/*"],
+      "@angular/material": ["../material/public-api.ts"]
     }
   },
   "include": ["./**/*.ts"]

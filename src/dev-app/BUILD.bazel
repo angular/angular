@@ -42,7 +42,7 @@ sass_binary(
     "external/npm/node_modules",
   ],
   deps = [
-    "//src/lib/core:all_themes",
+    "//src/material/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     "//src/material-experimental/mdc-button:button_scss_lib",
     "//src/material-experimental/mdc-card:card_scss_lib",

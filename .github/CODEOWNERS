@@ -1,61 +1,61 @@
 # Angular Material components
-/src/lib/*                                         @jelbourn
-/src/lib/autocomplete/**                           @crisbeto
-/src/lib/badge/**                                  @jelbourn
-/src/lib/bottom-sheet/**                           @jelbourn @crisbeto
-/src/lib/button-toggle/**                          @jelbourn
-/src/lib/button/**                                 @jelbourn @josephperrott
-/src/lib/card/**                                   @jelbourn
-/src/lib/checkbox/**                               @jelbourn @devversion @josephperrott
-/src/lib/chips/**                                  @jelbourn
-/src/lib/datepicker/**                             @mmalerba
-/src/lib/dialog/**                                 @jelbourn @crisbeto
-/src/lib/divider/**                                @jelbourn @crisbeto
-/src/lib/expansion/**                              @josephperrott @jelbourn
-/src/lib/form-field/**                             @mmalerba
-/src/lib/grid-list/**                              @jelbourn
-/src/lib/icon/**                                   @jelbourn
-/src/lib/input/**                                  @mmalerba
-/src/lib/list/**                                   @jelbourn @crisbeto @devversion
-/src/lib/menu/**                                   @crisbeto
-/src/lib/paginator/**                              @andrewseguin
-/src/lib/prebuilt-themes/**                        @jelbourn
-/src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
-/src/lib/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
-/src/lib/radio/**                                  @jelbourn @devversion
-/src/lib/schematics/**                             @devversion @jelbourn
-/src/lib/select/**                                 @crisbeto
-/src/lib/sidenav/**                                @mmalerba
-/src/lib/slide-toggle/**                           @devversion
-/src/lib/slider/**                                 @mmalerba
-/src/lib/snack-bar/**                              @jelbourn @crisbeto @josephperrott
-/src/lib/sort/**                                   @andrewseguin
-/src/lib/stepper/**                                @mmalerba
-/src/lib/table/**                                  @andrewseguin
-/src/lib/tabs/**                                   @andrewseguin
-/src/lib/testing/**                                @jelbourn
-/src/lib/toolbar/**                                @devversion
-/src/lib/tooltip/**                                @andrewseguin
-/src/lib/tree/**                                   @jelbourn @andrewseguin
+/src/material/*                                         @jelbourn
+/src/material/autocomplete/**                           @crisbeto
+/src/material/badge/**                                  @jelbourn
+/src/material/bottom-sheet/**                           @jelbourn @crisbeto
+/src/material/button-toggle/**                          @jelbourn
+/src/material/button/**                                 @jelbourn @josephperrott
+/src/material/card/**                                   @jelbourn
+/src/material/checkbox/**                               @jelbourn @devversion @josephperrott
+/src/material/chips/**                                  @jelbourn
+/src/material/datepicker/**                             @mmalerba
+/src/material/dialog/**                                 @jelbourn @crisbeto
+/src/material/divider/**                                @jelbourn @crisbeto
+/src/material/expansion/**                              @josephperrott @jelbourn
+/src/material/form-field/**                             @mmalerba
+/src/material/grid-list/**                              @jelbourn
+/src/material/icon/**                                   @jelbourn
+/src/material/input/**                                  @mmalerba
+/src/material/list/**                                   @jelbourn @crisbeto @devversion
+/src/material/menu/**                                   @crisbeto
+/src/material/paginator/**                              @andrewseguin
+/src/material/prebuilt-themes/**                        @jelbourn
+/src/material/progress-bar/**                           @jelbourn @crisbeto @josephperrott
+/src/material/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
+/src/material/radio/**                                  @jelbourn @devversion
+/src/material/schematics/**                             @devversion @jelbourn
+/src/material/select/**                                 @crisbeto
+/src/material/sidenav/**                                @mmalerba
+/src/material/slide-toggle/**                           @devversion
+/src/material/slider/**                                 @mmalerba
+/src/material/snack-bar/**                              @jelbourn @crisbeto @josephperrott
+/src/material/sort/**                                   @andrewseguin
+/src/material/stepper/**                                @mmalerba
+/src/material/table/**                                  @andrewseguin
+/src/material/tabs/**                                   @andrewseguin
+/src/material/testing/**                                @jelbourn
+/src/material/toolbar/**                                @devversion
+/src/material/tooltip/**                                @andrewseguin
+/src/material/tree/**                                   @jelbourn @andrewseguin
 
 # Angular Material core
-/src/lib/core/*                                    @jelbourn
-/src/lib/core/animation/**                         @jelbourn
-/src/lib/core/common-behaviors/**                  @jelbourn @devversion
-/src/lib/core/datetime/**                          @mmalerba
-/src/lib/core/error/**                             @crisbeto @mmalerba
-/src/lib/core/gestures/**                          @jelbourn
-/src/lib/core/label/**                             @mmalerba
-/src/lib/core/line/**                              @jelbourn
-/src/lib/core/option/**                            @crisbeto
-/src/lib/core/placeholder/**                       @mmalerba
-/src/lib/core/ripple/**                            @devversion
-/src/lib/core/selection/**                         @jelbourn
-/src/lib/core/selection/pseudo*/**                 @crisbeto @jelbourn
-/src/lib/core/style/**                             @jelbourn
-/src/lib/core/theming/**                           @jelbourn
-/src/lib/core/typography/**                        @crisbeto
-/src/lib/core/util/**                              @jelbourn
+/src/material/core/*                                    @jelbourn
+/src/material/core/animation/**                         @jelbourn
+/src/material/core/common-behaviors/**                  @jelbourn @devversion
+/src/material/core/datetime/**                          @mmalerba
+/src/material/core/error/**                             @crisbeto @mmalerba
+/src/material/core/gestures/**                          @jelbourn
+/src/material/core/label/**                             @mmalerba
+/src/material/core/line/**                              @jelbourn
+/src/material/core/option/**                            @crisbeto
+/src/material/core/placeholder/**                       @mmalerba
+/src/material/core/ripple/**                            @devversion
+/src/material/core/selection/**                         @jelbourn
+/src/material/core/selection/pseudo*/**                 @crisbeto @jelbourn
+/src/material/core/style/**                             @jelbourn
+/src/material/core/theming/**                           @jelbourn
+/src/material/core/typography/**                        @crisbeto
+/src/material/core/util/**                              @jelbourn
 
 # CDK
 /src/cdk/*                                         @jelbourn
@@ -252,42 +252,42 @@
 /tools/public_api_guard/cdk/table.d.ts             @andrewseguin
 /tools/public_api_guard/cdk/text-field.d.ts        @mmalerba
 /tools/public_api_guard/cdk/tree.d.ts              @jelbourn @andrewseguin
-/tools/public_api_guard/lib/autocomplete.d.ts      @crisbeto
-/tools/public_api_guard/lib/badge.d.ts             @jelbourn
-/tools/public_api_guard/lib/bottom-sheet.d.ts      @jelbourn @crisbeto
-/tools/public_api_guard/lib/button-toggle.d.ts     @jelbourn
-/tools/public_api_guard/lib/button.d.ts            @jelbourn @josephperrott
-/tools/public_api_guard/lib/card.d.ts              @jelbourn
-/tools/public_api_guard/lib/checkbox.d.ts          @jelbourn @devversion @josephperrott
-/tools/public_api_guard/lib/chips.d.ts             @jelbourn
-/tools/public_api_guard/lib/core.d.ts              @jelbourn
-/tools/public_api_guard/lib/datepicker.d.ts        @mmalerba
-/tools/public_api_guard/lib/dialog.d.ts            @jelbourn @crisbeto
-/tools/public_api_guard/lib/divider.d.ts           @jelbourn @crisbeto
-/tools/public_api_guard/lib/expansion.d.ts         @josephperrott @jelbourn
-/tools/public_api_guard/lib/form-field.d.ts        @mmalerba
-/tools/public_api_guard/lib/grid-list.d.ts         @jelbourn
-/tools/public_api_guard/lib/icon.d.ts              @jelbourn
-/tools/public_api_guard/lib/input.d.ts             @mmalerba
-/tools/public_api_guard/lib/list.d.ts              @jelbourn @crisbeto @devversion
-/tools/public_api_guard/lib/menu.d.ts              @crisbeto
-/tools/public_api_guard/lib/paginator.d.ts         @andrewseguin
-/tools/public_api_guard/lib/progress-bar.d.ts      @jelbourn @crisbeto @josephperrott
-/tools/public_api_guard/lib/progress-spinner.d.ts  @jelbourn @crisbeto @josephperrott
-/tools/public_api_guard/lib/radio.d.ts             @jelbourn @devversion
-/tools/public_api_guard/lib/select.d.ts            @crisbeto
-/tools/public_api_guard/lib/sidenav.d.ts           @mmalerba
-/tools/public_api_guard/lib/slide-toggle.d.ts      @devversion
-/tools/public_api_guard/lib/slider.d.ts            @mmalerba
-/tools/public_api_guard/lib/snack-bar.d.ts         @jelbourn @crisbeto @josephperrott
-/tools/public_api_guard/lib/sort.d.ts              @andrewseguin
-/tools/public_api_guard/lib/stepper.d.ts           @mmalerba
-/tools/public_api_guard/lib/table.d.ts             @andrewseguin
-/tools/public_api_guard/lib/tabs.d.ts              @andrewseguin
-/tools/public_api_guard/lib/toolbar.d.ts           @devversion
-/tools/public_api_guard/lib/tooltip.d.ts           @andrewseguin
-/tools/public_api_guard/lib/tree.d.ts              @jelbourn @andrewseguin
-/tools/public_api_guard/lib/lib.d.ts               @jelbourn
+/tools/public_api_guard/material/autocomplete.d.ts      @crisbeto
+/tools/public_api_guard/material/badge.d.ts             @jelbourn
+/tools/public_api_guard/material/bottom-sheet.d.ts      @jelbourn @crisbeto
+/tools/public_api_guard/material/button-toggle.d.ts     @jelbourn
+/tools/public_api_guard/material/button.d.ts            @jelbourn @josephperrott
+/tools/public_api_guard/material/card.d.ts              @jelbourn
+/tools/public_api_guard/material/checkbox.d.ts          @jelbourn @devversion @josephperrott
+/tools/public_api_guard/material/chips.d.ts             @jelbourn
+/tools/public_api_guard/material/core.d.ts              @jelbourn
+/tools/public_api_guard/material/datepicker.d.ts        @mmalerba
+/tools/public_api_guard/material/dialog.d.ts            @jelbourn @crisbeto
+/tools/public_api_guard/material/divider.d.ts           @jelbourn @crisbeto
+/tools/public_api_guard/material/expansion.d.ts         @josephperrott @jelbourn
+/tools/public_api_guard/material/form-field.d.ts        @mmalerba
+/tools/public_api_guard/material/grid-list.d.ts         @jelbourn
+/tools/public_api_guard/material/icon.d.ts              @jelbourn
+/tools/public_api_guard/material/input.d.ts             @mmalerba
+/tools/public_api_guard/material/list.d.ts              @jelbourn @crisbeto @devversion
+/tools/public_api_guard/material/menu.d.ts              @crisbeto
+/tools/public_api_guard/material/paginator.d.ts         @andrewseguin
+/tools/public_api_guard/material/progress-bar.d.ts      @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/material/progress-spinner.d.ts  @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/material/radio.d.ts             @jelbourn @devversion
+/tools/public_api_guard/material/select.d.ts            @crisbeto
+/tools/public_api_guard/material/sidenav.d.ts           @mmalerba
+/tools/public_api_guard/material/slide-toggle.d.ts      @devversion
+/tools/public_api_guard/material/slider.d.ts            @mmalerba
+/tools/public_api_guard/material/snack-bar.d.ts         @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/material/sort.d.ts              @andrewseguin
+/tools/public_api_guard/material/stepper.d.ts           @mmalerba
+/tools/public_api_guard/material/table.d.ts             @andrewseguin
+/tools/public_api_guard/material/tabs.d.ts              @andrewseguin
+/tools/public_api_guard/material/toolbar.d.ts           @devversion
+/tools/public_api_guard/material/tooltip.d.ts           @andrewseguin
+/tools/public_api_guard/material/tree.d.ts              @jelbourn @andrewseguin
+/tools/public_api_guard/material/material.d.ts          @jelbourn
 
 # Misc
 /*                                                 @jelbourn

@@ -141,12 +141,12 @@ function getModulePackageInfo(doc: Document): ModuleInfo {
   const basePath = doc.fileInfo.basePath;
   const filePath = doc.fileInfo.filePath;
 
-  // All of the component documentation is under either `src/lib` or `src/cdk`.
+  // All of the component documentation is under either `src/material` or `src/cdk`.
   // We group the docs up by the directory immediately under that root.
   const pathSegments = path.relative(basePath, filePath).split(path.sep);
 
   // The module name is usually the entry-point (e.g. slide-toggle, toolbar), but this is not
-  // guaranteed because we can also export a module from lib/core. e.g. the ripple module.
+  // guaranteed because we can also export a module from material/core. e.g. the ripple module.
   let moduleName = pathSegments[1];
 
   // The ripples are technically part of the `@angular/material/core` entry-point, but we
@@ -158,7 +158,7 @@ function getModulePackageInfo(doc: Document): ModuleInfo {
 
   return {
     name: moduleName,
-    packageName: pathSegments[0] === 'lib' ? 'material' : pathSegments[0],
+    packageName: pathSegments[0],
     entryPointName: pathSegments[1],
   };
 }

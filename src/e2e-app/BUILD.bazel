@@ -21,7 +21,7 @@ ng_module(
     "//src/cdk/overlay",
     "//src/cdk/scrolling",
     # TODO(devversion): be more explicit by using "@angular/material" with individual entry points.
-    "//src/lib:material",
+    "//src/material:material",
     "//src/material-examples:examples",
     "//src/cdk-experimental/dialog",
     "//src/cdk-experimental/scrolling",
@@ -41,7 +41,7 @@ sass_binary(
     "external/npm/node_modules",
   ],
   deps = [
-    "//src/lib/core:all_themes",
+    "//src/material/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     "//src/material-experimental/mdc-button:button_scss_lib",
     "//src/material-experimental/mdc-card:card_scss_lib",
@@ -71,7 +71,7 @@ ts_devserver(
       "@npm//core-js",
       "@npm//hammerjs",
       "@npm//@webcomponents/custom-elements",
-      "//src/lib/prebuilt-themes:indigo-pink",
+      "//src/material/prebuilt-themes:indigo-pink",
       ":index.html",
       ":theme",
     ],

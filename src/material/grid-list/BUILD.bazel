@@ -1,0 +1,55 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
+
+ng_module(
+  name = "grid-list",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/grid-list",
+  assets = [":grid-list.css"] + glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/core",
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/material/core",
+  ],
+)
+
+sass_library(
+  name = "grid_list_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "grid_list_scss",
+  src = "grid-list.scss",
+  deps = ["//src/material/core:core_scss_lib"],
+)
+
+ng_test_library(
+  name = "grid_list_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@npm//@angular/platform-browser",
+    "//src/cdk/bidi",
+    ":grid-list",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":grid_list_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":grid-list.md"],
+)
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)
