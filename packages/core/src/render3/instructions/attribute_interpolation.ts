@@ -8,7 +8,7 @@
 import {SanitizerFn} from '../interfaces/sanitization';
 import {getSelectedIndex} from '../state';
 import {ɵɵelementAttribute} from './element';
-import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './property_interpolation';
+import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './interpolation';
 import {TsickleIssue1009} from './shared';
 
 
