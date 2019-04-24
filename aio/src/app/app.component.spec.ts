@@ -652,11 +652,11 @@ describe('AppComponent', () => {
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-        expect(tocContainer!.style['max-height']).toBe('100px');
+        expect(tocContainer!.style.maxHeight).toBe('100px');
 
         component.tocMaxHeight = '200';
         fixture.detectChanges();
-        expect(tocContainer!.style['max-height']).toBe('200px');
+        expect(tocContainer!.style.maxHeight).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {

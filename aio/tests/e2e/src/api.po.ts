@@ -28,15 +28,15 @@ export class ApiPage extends SitePage {
     return element.all(by.css(selector)).map<string>(item => item && item.getText());
   }
 
-  getOverview(docType) {
+  getOverview(docType: string) {
     return element(by.css(`.${docType}-overview`));
   }
 
-  getSection(cls) {
+  getSection(cls: string) {
     return element(by.css(`section.${cls}`));
   }
 
-  getBadge(cls) {
+  getBadge(cls: string) {
     return element(by.css('.api-status-label.' +  cls));
   }
 }
