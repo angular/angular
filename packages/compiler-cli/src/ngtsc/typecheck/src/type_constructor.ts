@@ -9,12 +9,13 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration} from '../../reflection';
-import {TypeCtorMetadata} from './api';
+
+import {TypeCheckingConfig, TypeCtorMetadata} from './api';
 import {checkIfGenericTypesAreUnbound} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    nodeTypeRef: ts.Identifier | ts.QualifiedName): ts.Statement {
+    nodeTypeRef: ts.Identifier | ts.QualifiedName, config: TypeCheckingConfig): ts.Statement {
   if (requiresInlineTypeCtor(node)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
@@ -23,7 +24,7 @@ export function generateTypeCtorDeclarationFn(
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
   const rawType: ts.TypeNode = ts.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType);
+  const initParam = constructTypeCtorParameter(node, meta, rawType, config.checkQueries);
 
   const typeParameters = typeParametersWithDefaultTypes(node.typeParameters);
 
@@ -83,7 +84,8 @@ export function generateTypeCtorDeclarationFn(
  * @returns a `ts.MethodDeclaration` for the type constructor.
  */
 export function generateInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata): ts.MethodDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
+    config: TypeCheckingConfig): ts.MethodDeclaration {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
@@ -91,7 +93,7 @@ export function generateInlineTypeCtor(
       node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
   const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
-  const initParam = constructTypeCtorParameter(node, meta, rawType);
+  const initParam = constructTypeCtorParameter(node, meta, rawType, config.checkQueries);
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
@@ -117,8 +119,8 @@ export function generateInlineTypeCtor(
 }
 
 function constructTypeCtorParameter(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    rawType: ts.TypeNode): ts.ParameterDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, rawType: ts.TypeNode,
+    includeQueries: boolean): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, outputs, or queries, its initType will be:
   //
@@ -134,8 +136,10 @@ function constructTypeCtorParameter(
   const keys: string[] = [
     ...meta.fields.inputs,
     ...meta.fields.outputs,
-    ...meta.fields.queries,
   ];
+  if (includeQueries) {
+    keys.push(...meta.fields.queries);
+  }
   if (keys.length === 0) {
     // Special case - no inputs, outputs, or other fields which could influence the result type.
     initType = ts.createTypeLiteralNode([]);

@@ -393,6 +393,7 @@ export class NgtscProgram implements api.Program {
     if (this.options.fullTemplateTypeCheck) {
       typeCheckingConfig = {
         applyTemplateContextGuards: true,
+        checkQueries: false,
         checkTemplateBodies: true,
         checkTypeOfBindings: true,
         checkTypeOfPipes: true,
@@ -401,6 +402,7 @@ export class NgtscProgram implements api.Program {
     } else {
       typeCheckingConfig = {
         applyTemplateContextGuards: false,
+        checkQueries: false,
         checkTemplateBodies: false,
         checkTypeOfBindings: false,
         checkTypeOfPipes: false,
