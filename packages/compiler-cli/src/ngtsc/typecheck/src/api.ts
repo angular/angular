@@ -95,4 +95,11 @@ export interface TypeCheckingConfig {
    * Whether to descend into template bodies and check any bindings there.
    */
   checkTemplateBodies: boolean;
+
+  /**
+   * Whether to check resolvable queries.
+   *
+   * This is currently an unsupported feature.
+   */
+  checkQueries: false;
 }
