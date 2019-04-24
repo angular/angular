@@ -11,7 +11,7 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationUpgradeProvider, LocationUpgradeService} from '../src/$location';
+import {$locationShim, $locationShimProvider} from '../src/$location_shim';
 import {LocationUpgradeModule} from '../src/location_upgrade_module';
 import {UrlCodec} from '../src/params';
 
@@ -60,7 +60,7 @@ export class LocationUpgradeTestModule {
           deps: [[new Inject(APP_BASE_HREF), new Optional()]]
         },
         {
-          provide: LocationUpgradeService,
+          provide: $locationShim,
           useFactory: provide$location,
           deps: [
             UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy,
@@ -81,8 +81,8 @@ export class LocationUpgradeTestModule {
 export function provide$location(
     ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation,
     urlCodec: UrlCodec, locationStrategy: LocationStrategy, config?: LocationUpgradeTestingConfig) {
-  const $locationProvider = new LocationUpgradeProvider(
-      ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
+  const $locationProvider =
+      new $locationShimProvider(ngUpgrade, location, platformLocation, urlCodec, locationStrategy);
 
   $locationProvider.hashPrefix(config && config.hashPrefix);
   $locationProvider.html5Mode(config && !config.useHash);

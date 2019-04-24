@@ -26,7 +26,7 @@ const DEFAULT_PORTS: {[key: string]: number} = {
  *
  * @publicApi
  */
-export class LocationUpgradeService {
+export class $locationShim {
   private initalizing = true;
   private updateBrowser = false;
   private $$absUrl: string = '';
@@ -664,14 +664,14 @@ export class LocationUpgradeService {
  *
  * @publicApi
  */
-export class LocationUpgradeProvider {
+export class $locationShimProvider {
   constructor(
       private ngUpgrade: UpgradeModule, private location: Location,
       private platformLocation: PlatformLocation, private urlCodec: UrlCodec,
       private locationStrategy: LocationStrategy) {}
 
   $get() {
-    return new LocationUpgradeService(
+    return new $locationShim(
         this.ngUpgrade.$injector, this.location, this.platformLocation, this.urlCodec,
         this.locationStrategy);
   }
