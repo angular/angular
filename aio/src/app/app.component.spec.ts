@@ -789,7 +789,7 @@ describe('AppComponent', () => {
             { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
           ];
 
-          searchService.searchResults.next({ query: 'something', results: results });
+          searchService.searchResults.next({ query: 'something', results });
           component.showSearchResults = true;
           fixture.detectChanges();
 
