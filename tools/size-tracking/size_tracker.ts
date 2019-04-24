@@ -7,10 +7,9 @@
  */
 
 import {readFileSync} from 'fs';
-import {dirname} from 'path';
 import {SourceMapConsumer} from 'source-map';
 
-import {FileSizeData, sortFileSizeData} from './file_size_data';
+import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
 
 export class SizeTracker {
   private fileContent: string;
@@ -36,8 +35,7 @@ export class SizeTracker {
     const lines = this.fileContent.split(/(\r?\n)/);
     const result: FileSizeData = {
       unmapped: 0,
-      files: {},
-      directories: {},
+      files: {size: 0},
     };
 
     // Walk through the columns for each line in the input file and find the
@@ -50,24 +48,41 @@ export class SizeTracker {
         // Note that the "originalPositionFor" line number is one-based.
         let {source} = this.consumer.originalPositionFor({line: lineIdx + 1, column: colIdx});
 
+        // Increase the amount of total bytes.
+        result.files.size += 1;
+
         if (!source) {
           result.unmapped += 1;
-        } else {
-          source = this._resolveMappedPath(source);
-          result.files[source] = (result.files[source] || 0) + 1;
+          continue;
         }
+
+        const pathSegments = this._resolveMappedPath(source).split('/');
+        let currentEntry = result.files;
+
+        // Walk through each path segment and update the size entries with
+        // new size. This makes it possibly to create na hierarchical tree
+        // that matches the actual file system.
+        pathSegments.forEach((segmentName, index) => {
+          // The last segment always refers to a file and we therefore can
+          // store the size verbatim as property value.
+          if (index === pathSegments.length - 1) {
+            currentEntry[segmentName] = (<number>currentEntry[segmentName] || 0) + 1;
+          } else {
+            // Append a trailing slash to the segment so that it
+            // is clear that this size entry represents a folder.
+            segmentName = `${segmentName}/`;
+            const newEntry = <DirectorySizeEntry>currentEntry[segmentName] || {size: 0};
+            newEntry.size += 1;
+            currentEntry = currentEntry[segmentName] = newEntry;
+          }
+        });
       }
     }
 
-    Object.keys(result.files).forEach(filePath => {
-      const pathSegments = [];
-      const fileSize = result.files[filePath];
-      for (let pathSegment of dirname(filePath).split('/')) {
-        pathSegments.push(pathSegment);
-        const name = pathSegments.join('/');
-        result.directories[name] = (result.directories[name] || 0) + fileSize;
-      }
-    });
+    // Omit size entries which are not needed and just bloat up the file
+    // size data. e.g. if all paths start with "../../", we want to omit
+    // this prefix to make the size data less confusing.
+    result.files = omitCommonPathPrefix(result.files);
 
     return sortFileSizeData(result);
   }
@@ -80,8 +95,8 @@ export class SizeTracker {
     // Workaround for https://github.com/angular/angular/issues/30060
     if (process.env['BAZEL_TARGET'].includes('test/bundling/core_all:size_test')) {
       return filePath.replace(/^(\.\.\/)+external/, 'external')
-          .replace(/^(\.\.\/)+packages\/core\//, '')
-          .replace(/^(\.\.\/){3}/, '');
+          .replace(/^(\.\.\/)+packages\/core\//, '@angular/core/')
+          .replace(/^(\.\.\/){3}/, '@angular/core/');
     }
 
     return filePath;

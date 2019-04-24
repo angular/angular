@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FileSizeData, SizeMap} from './file_size_data';
+import {DirectorySizeEntry, FileSizeData, getChildEntryNames} from './file_size_data';
 
 export interface SizeDifference {
   filePath?: string;
@@ -16,11 +16,7 @@ export interface SizeDifference {
 /** Compares two file size data objects and returns an array of size differences. */
 export function compareFileSizeData(
     actual: FileSizeData, expected: FileSizeData, threshold: number) {
-  const diffs: SizeDifference[] = [
-    ...compareSizeMap(actual.files, expected.files, threshold),
-    ...compareSizeMap(actual.directories, expected.directories, threshold),
-  ];
-
+  const diffs: SizeDifference[] = compareSizeEntry(actual.files, expected.files, '/', threshold);
   const unmappedBytesDiff = getDifferencePercentage(actual.unmapped, expected.unmapped);
   if (unmappedBytesDiff > threshold) {
     diffs.push({
@@ -31,37 +27,66 @@ export function compareFileSizeData(
   return diffs;
 }
 
-/** Compares two size maps with a specified threshold in percentage. */
-function compareSizeMap(actual: SizeMap, expected: SizeMap, threshold: number) {
-  const diffs: SizeDifference[] = [];
+/** Compares two file size entries and returns an array of size differences. */
+function compareSizeEntry(
+    actual: DirectorySizeEntry | number, expected: DirectorySizeEntry | number, filePath: string,
+    threshold: number) {
+  if (typeof actual !== 'number' && typeof expected !== 'number') {
+    return compareDirectorySizeEntry(
+        <DirectorySizeEntry>actual, <DirectorySizeEntry>expected, filePath, threshold);
+  } else {
+    return compareActualSizeToExpected(<number>actual, <number>expected, filePath, threshold);
+  }
+}
 
-  Object.keys(expected).forEach(filePath => {
-    // In case the golden file expects a given file, but there is no data for
-    // that file, the difference needs to be reported.
-    if (actual[filePath] === undefined) {
-      diffs.push({filePath, message: 'Expected file/directory is not included.'});
+/**
+ * Compares two size numbers and returns a size difference when the percentage difference
+ * exceeds the specified threshold.
+ */
+function compareActualSizeToExpected(
+    actualSize: number, expectedSize: number, filePath: string,
+    threshold: number): SizeDifference[] {
+  const diffPercentage = getDifferencePercentage(actualSize, expectedSize);
+  if (diffPercentage > threshold) {
+    return [{
+      filePath: filePath,
+      message: `Differs by ${diffPercentage.toFixed(2)}% from the expected size ` +
+          `(actual = ${actualSize}, expected = ${expectedSize})`
+    }];
+  }
+  return [];
+}
+
+/**
+ * Compares two size directory size entries and returns an array of found size
+ * differences within that directory.
+ */
+function compareDirectorySizeEntry(
+    actual: DirectorySizeEntry, expected: DirectorySizeEntry, filePath: string,
+    threshold: number): SizeDifference[] {
+  const diffs: SizeDifference[] =
+      [...compareActualSizeToExpected(actual.size, expected.size, filePath, threshold)];
+
+  getChildEntryNames(expected).forEach(childName => {
+    if (actual[childName] === undefined) {
+      diffs.push(
+          {filePath: filePath + childName, message: 'Expected file/directory is not included.'});
       return;
     }
 
-    const actualSize = actual[filePath];
-    const expectedSize = expected[filePath];
-    const diffPercentage = getDifferencePercentage(actualSize, expectedSize);
+    diffs.push(...compareSizeEntry(
+        actual[childName], expected[childName], filePath + childName, threshold));
+  });
 
-    if (diffPercentage > threshold) {
+  getChildEntryNames(actual).forEach(childName => {
+    if (expected[childName] === undefined) {
       diffs.push({
-        filePath: filePath,
-        message: `Differs by ${diffPercentage.toFixed(2)}% from the expected size ` +
-            `(actual = ${actualSize}, expected = ${expectedSize})`
+        filePath: filePath + childName,
+        message: 'Unexpected file/directory included (not part of golden).'
       });
     }
   });
 
-  // Ensure that there is no new file that is not part of the golden file.
-  Object.keys(actual).forEach(filePath => {
-    if (expected[filePath] === undefined) {
-      diffs.push({filePath, message: 'Unexpected file/directory included (not part of golden).'});
-    }
-  });
   return diffs;
 }
 

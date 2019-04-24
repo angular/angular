@@ -32,7 +32,7 @@ js_size_tracking_test(
         ":bundle",
         ":bundle.golden_size_map.json",
     ],
-    diffThreshold = 2,
+    diffThreshold = 3,
     goldenFile = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map.json",
     sourceMap = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
