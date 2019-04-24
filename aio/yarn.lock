@@ -10726,11 +10726,6 @@ void-elements@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
 
-vrsource-tslint-rules@^5.8.2:
-  version "5.8.3"
-  resolved "https://registry.yarnpkg.com/vrsource-tslint-rules/-/vrsource-tslint-rules-5.8.3.tgz#b050f25e5967547a3c5e12539b4530d4d3f0d0e0"
-  integrity sha512-3tYS1zn+d9QtgmQIYmQ9e1i0kipmUjp6cvvYWLC+lZ3z8CQUle7rPKsTFMexOTIVXDpBt9JSJlhDWbwljl3DMQ==
-
 walkdir@^0.0.11:
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/walkdir/-/walkdir-0.0.11.tgz#a16d025eb931bd03b52f308caed0f40fcebe9532"

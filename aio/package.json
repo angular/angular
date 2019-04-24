@@ -163,7 +163,6 @@
     "unist-util-source": "^1.0.1",
     "unist-util-visit": "^1.1.1",
     "unist-util-visit-parents": "^1.1.1",
-    "vrsource-tslint-rules": "^5.8.2",
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
