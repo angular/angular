@@ -1573,5 +1573,11 @@
   },
   {
     "name": "ɵɵtextBinding"
+  },
+  {
+    "name": "ɵɵtextInterpolate"
+  },
+  {
+    "name": "ɵɵtextInterpolate1"
   }
 ]

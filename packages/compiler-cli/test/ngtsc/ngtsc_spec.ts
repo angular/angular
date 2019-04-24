@@ -1961,7 +1961,7 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('interpolation1("", ctx.text, "")');
+    expect(jsContents).toContain('ɵɵtextInterpolate(ctx.text)');
   });
 
   it('should handle `encapsulation` field', () => {

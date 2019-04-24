@@ -810,7 +810,7 @@ describe('compiler compliance', () => {
             const $myComp$ = $r3$.ɵɵnextContext();
             const $foo$ = $r3$.ɵɵreference(1);
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2("", $myComp$.salutation, " ", $foo$, ""));
+            $r3$.ɵɵtextInterpolate2("", $myComp$.salutation, " ", $foo$, "");
           }
         }
         …
@@ -2074,9 +2074,9 @@ describe('compiler compliance', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵtextBinding(0, $r3$.ɵɵinterpolation1("", $r3$.ɵɵpipeBind2(1, 3, $r3$.ɵɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
+                  $r3$.ɵɵtextInterpolate($r3$.ɵɵpipeBind2(1, 3, $r3$.ɵɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size));
                   $r3$.ɵɵselect(4);
-                  $r3$.ɵɵtextBinding(4, $r3$.ɵɵinterpolation2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2), ""));
+                  $r3$.ɵɵtextInterpolate2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2), "");
                 }
               },
               pipes: [MyPurePipe, MyPipe],
@@ -2139,14 +2139,14 @@ describe('compiler compliance', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵtextBinding(0, $r3$.ɵɵinterpolation5(
+                  $r3$.ɵɵtextInterpolate5(
                     "0:", i0.ɵɵpipeBind1(1, 5, ctx.name),
                     "1:", i0.ɵɵpipeBind2(2, 7, ctx.name, 1),
                     "2:", i0.ɵɵpipeBind3(3, 10, ctx.name, 1, 2),
                     "3:", i0.ɵɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
                     "4:", i0.ɵɵpipeBindV(5, 19, $r3$.ɵɵpureFunction1(25, $c0$, ctx.name)),
                     ""
-                  ));
+                  );
                 }
               },
               pipes: [MyPipe],
@@ -2192,7 +2192,7 @@ describe('compiler compliance', () => {
             if (rf & 2) {
               const $user$ = $r3$.ɵɵreference(1);
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1("Hello ", $user$.value, "!"));
+              $r3$.ɵɵtextInterpolate1("Hello ", $user$.value, "!");
             }
           },
           encapsulation: 2
@@ -2255,7 +2255,7 @@ describe('compiler compliance', () => {
             const $foo$ = $r3$.ɵɵreference(1);
             const $baz$ = $r3$.ɵɵreference(5);
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
+            $r3$.ɵɵtextInterpolate3("", $foo$, "-", $bar$, "-", $baz$, "");
           }
         }
         function MyComponent_div_3_Template(rf, ctx) {
@@ -2271,7 +2271,7 @@ describe('compiler compliance', () => {
             $r3$.ɵɵnextContext();
             const $foo$ = $r3$.ɵɵreference(1);
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2(" ", $foo$, "-", $bar$, " "));
+            $r3$.ɵɵtextInterpolate2(" ", $foo$, "-", $bar$, " ");
           }
         }
         …
@@ -2291,7 +2291,7 @@ describe('compiler compliance', () => {
             if (rf & 2) {
               const $foo$ = $r3$.ɵɵreference(1);
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1(" ", $foo$, " "));
+              $r3$.ɵɵtextInterpolate1(" ", $foo$, " ");
             }
           },
           directives:[IfDirective],
@@ -2300,9 +2300,7 @@ describe('compiler compliance', () => {
 
       const result = compile(files, angularFiles);
       const source = result.source;
-
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
-
     });
 
     it('should support local refs mixed with context assignments', () => {
@@ -2344,7 +2342,7 @@ describe('compiler compliance', () => {
           const $item$ = $i0$.ɵɵnextContext().$implicit;
           const $foo$ = $i0$.ɵɵreference(2);
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation2(" ", $foo$, " - ", $item$, " "));
+          $i0$.ɵɵtextInterpolate2(" ", $foo$, " - ", $item$, " ");
         }
       }
 
@@ -2648,7 +2646,7 @@ describe('compiler compliance', () => {
             if (rf & 2) {
               const $item$ = ctx.$implicit;
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation1("", $item$.name, ""));
+              $r3$.ɵɵtextInterpolate($item$.name);
             }
           }
           …
@@ -2731,7 +2729,7 @@ describe('compiler compliance', () => {
               const $info$ = ctx.$implicit;
               const $item$ = $r3$.ɵɵnextContext().$implicit;
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2(" ", $item$.name, ": ", $info$.description, " "));
+              $r3$.ɵɵtextInterpolate2(" ", $item$.name, ": ", $info$.description, " ");
             }
           }
 
@@ -2749,7 +2747,7 @@ describe('compiler compliance', () => {
             if (rf & 2) {
               const $item$ = ctx.$implicit;
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1("", IDENT.name, ""));
+              $r3$.ɵɵtextInterpolate(IDENT.name);
               $r3$.ɵɵselect(4);
               $r3$.ɵɵproperty("forOf", IDENT.infos);
             }
