@@ -726,6 +726,7 @@ testing/**                                                      @angular/fw-test
 
 /aio/*                                                          @angular/docs-infra @angular/framework-global-approvers
 /aio/aio-builds-setup/**                                        @angular/docs-infra @angular/framework-global-approvers
+/aio/content/examples/*                                         @angular/docs-infra @angular/framework-global-approvers
 /aio/scripts/**                                                 @angular/docs-infra @angular/framework-global-approvers
 /aio/src/**                                                     @angular/docs-infra @angular/framework-global-approvers
 /aio/tests/**                                                   @angular/docs-infra @angular/framework-global-approvers
