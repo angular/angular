@@ -35,15 +35,17 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     const relativeEntryPointPath = relative(entryPoint.package, entryPoint.path);
     const relativeNewDir = join(NGCC_DIRECTORY, relativeEntryPointPath);
     const newDir = AbsoluteFsPath.fromUnchecked(join(entryPoint.package, relativeNewDir));
-    this.copyBundle(bundle, entryPoint.path, newDir);
+    this.copyBundle(bundle, entryPoint.package, entryPoint.path, newDir);
     transformedFiles.forEach(file => this.writeFile(file, entryPoint.path, newDir));
     this.updatePackageJson(entryPoint, bundle.formatProperty, newDir);
   }
 
   protected copyBundle(
-      bundle: EntryPointBundle, entryPointPath: AbsoluteFsPath, newDir: AbsoluteFsPath) {
+      bundle: EntryPointBundle, packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath,
+      newDir: AbsoluteFsPath) {
     bundle.src.program.getSourceFiles().forEach(sourceFile => {
-      if (!sourceFile.isDeclarationFile) {
+      const isOutsidePackage = relative(packagePath, sourceFile.fileName).startsWith('..');
+      if (!sourceFile.isDeclarationFile && !isOutsidePackage) {
         const relativePath = relative(entryPointPath, sourceFile.fileName);
         const newFilePath = join(newDir, relativePath);
         mkdir('-p', dirname(newFilePath));
