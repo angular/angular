@@ -941,9 +941,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const value = text.value.visit(this._valueConverter);
     this.allocateBindingSlots(value);
-    this.updateInstruction(
-        nodeIndex, text.sourceSpan, R3.textBinding,
-        () => [o.literal(nodeIndex), this.convertPropertyBinding(o.variable(CONTEXT_NAME), value)]);
+
+    if (value instanceof Interpolation) {
+      this.updateInstruction(
+          nodeIndex, text.sourceSpan, getTextInterpolationExpression(value),
+          () => this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value));
+    } else {
+      this.updateInstruction(
+          nodeIndex, text.sourceSpan, R3.textBinding,
+          () =>
+              [o.literal(nodeIndex), this.convertPropertyBinding(o.variable(CONTEXT_NAME), value)]);
+    }
   }
 
   visitText(text: t.Text) {
@@ -1733,6 +1741,35 @@ function getAttributeInterpolationExpression(interpolation: Interpolation) {
       return R3.attributeInterpolate8;
     default:
       return R3.attributeInterpolateV;
+  }
+}
+
+/**
+ * Gets the instruction to generate for interpolated text.
+ * @param interpolation An Interpolation AST
+ */
+function getTextInterpolationExpression(interpolation: Interpolation): o.ExternalReference {
+  switch (getInterpolationArgsLength(interpolation)) {
+    case 1:
+      return R3.textInterpolate;
+    case 3:
+      return R3.textInterpolate1;
+    case 5:
+      return R3.textInterpolate2;
+    case 7:
+      return R3.textInterpolate3;
+    case 9:
+      return R3.textInterpolate4;
+    case 11:
+      return R3.textInterpolate5;
+    case 13:
+      return R3.textInterpolate6;
+    case 15:
+      return R3.textInterpolate7;
+    case 17:
+      return R3.textInterpolate8;
+    default:
+      return R3.textInterpolateV;
   }
 }
 

@@ -78,7 +78,7 @@ describe('compiler compliance: template', () => {
           $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("title", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component));
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " "));
+          $i0$.ɵɵtextInterpolate1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " ");
         }
       }
 
@@ -215,7 +215,7 @@ describe('compiler compliance: template', () => {
           const $item$ = ctx.$implicit;
           const $i$ = ctx.index;
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation2(" ", $i$, " - ", $item$, " "));
+          $i0$.ɵɵtextInterpolate2(" ", $i$, " - ", $item$, " ");
         }
       }
       // ...
@@ -272,7 +272,7 @@ describe('compiler compliance: template', () => {
           const $i$ = $div$.index;
           const $item$ = $div$.$implicit;
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation2(" ", $i$, " - ", $item$, " "));
+          $i0$.ɵɵtextInterpolate2(" ", $i$, " - ", $item$, " ");
         }
       }
 
@@ -343,7 +343,7 @@ describe('compiler compliance: template', () => {
           const $middle$ = $i0$.ɵɵnextContext().$implicit;
           const $myComp$ = $i0$.ɵɵnextContext(2);
           $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation2(" ", $middle$.value, " - ", $myComp$.name, " "));
+          $i0$.ɵɵtextInterpolate2(" ", $middle$.value, " - ", $myComp$.name, " ");
         }
       }
 
