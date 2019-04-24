@@ -95,6 +95,12 @@ export interface TokenizeOptions {
    * but the new line should increment the current line for source mapping.
    */
   escapedString?: boolean;
+  /**
+   * An array of characters that should be considered as leading trivia.
+   * Leading trivia are characters that are not important to the developer, and so should not be
+   * included in source-map segments.  A common example is whitespace.
+   */
+  leadingTriviaChars?: string[];
 }
 
 export function tokenize(
@@ -123,11 +129,11 @@ class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
   private _interpolationConfig: InterpolationConfig;
+  private _leadingTriviaCodePoints: number[]|undefined;
   private _currentTokenStart: CharacterCursor|null = null;
   private _currentTokenType: TokenType|null = null;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
-
   tokens: Token[] = [];
   errors: TokenError[] = [];
 
@@ -141,6 +147,8 @@ class _Tokenizer {
       options: TokenizeOptions) {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
+    this._leadingTriviaCodePoints =
+        options.leadingTriviaChars && options.leadingTriviaChars.map(c => c.codePointAt(0) || 0);
     const range =
         options.range || {endPos: _file.content.length, startPos: 0, startLine: 0, startCol: 0};
     this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
@@ -236,8 +244,9 @@ class _Tokenizer {
           'Programming error - attempted to end a token which has no token type', null,
           this._cursor.getSpan(this._currentTokenStart));
     }
-    const token =
-        new Token(this._currentTokenType, parts, this._cursor.getSpan(this._currentTokenStart));
+    const token = new Token(
+        this._currentTokenType, parts,
+        this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -772,7 +781,7 @@ interface CharacterCursor {
   /** Advance the cursor by one parsed character. */
   advance(): void;
   /** Get a span from the marked start point to the current point. */
-  getSpan(start?: this): ParseSourceSpan;
+  getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan;
   /** Get the parsed characters from the marked start point to the current point. */
   getChars(start: this): string;
   /** The number of characters left before the end of the cursor. */
@@ -831,8 +840,14 @@ class PlainCharacterCursor implements CharacterCursor {
 
   init(): void { this.updatePeek(this.state); }
 
-  getSpan(start?: this): ParseSourceSpan {
+  getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
     start = start || this;
+    if (leadingTriviaCodePoints) {
+      start = start.clone() as this;
+      while (this.diff(start) > 0 && leadingTriviaCodePoints.indexOf(start.peek()) !== -1) {
+        start.advance();
+      }
+    }
     return new ParseSourceSpan(
         new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
         new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column));
