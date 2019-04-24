@@ -315,7 +315,7 @@ If you want to produce a progressive web app and are using [Lighthouse](https://
 You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserver-proxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
-1. Create a file `proxy.conf.json` in the projects `src/` folder, next to `package.json`.
+1. Create a file `proxy.conf.json` in the projects `src/` folder, in the same directory as `package.json`.
 
 1. Add the following content to the new proxy file:
     ```
