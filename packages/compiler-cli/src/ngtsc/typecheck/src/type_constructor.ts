@@ -25,9 +25,11 @@ export function generateTypeCtorDeclarationFn(
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
 
+  const typeParameters = typeParametersWithDefaultTypes(node.typeParameters);
+
   if (meta.body) {
     const fnType = ts.createFunctionTypeNode(
-        /* typeParameters */ node.typeParameters,
+        /* typeParameters */ typeParameters,
         /* parameters */[initParam],
         /* type */ rawType, );
 
@@ -45,7 +47,7 @@ export function generateTypeCtorDeclarationFn(
         /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
         /* asteriskToken */ undefined,
         /* name */ meta.fnName,
-        /* typeParameters */ node.typeParameters,
+        /* typeParameters */ typeParameters,
         /* parameters */[initParam],
         /* type */ rawType,
         /* body */ undefined);
@@ -108,7 +110,7 @@ export function generateInlineTypeCtor(
       /* asteriskToken */ undefined,
       /* name */ meta.fnName,
       /* questionToken */ undefined,
-      /* typeParameters */ node.typeParameters,
+      /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
       /* parameters */[initParam],
       /* type */ rawType,
       /* body */ body, );
@@ -167,4 +169,66 @@ function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>)
 export function requiresInlineTypeCtor(node: ClassDeclaration<ts.ClassDeclaration>): boolean {
   // The class requires an inline type constructor if it has constrained (bound) generics.
   return !checkIfGenericTypesAreUnbound(node);
+}
+
+/**
+ * Add a default `= any` to type parameters that don't have a default value already.
+ *
+ * TypeScript uses the default type of a type parameter whenever inference of that parameter fails.
+ * This can happen when inferring a complex type from 'any'. For example, if `NgFor`'s inference is
+ * done with the TCB code:
+ *
+ * ```
+ * class NgFor<T> {
+ *   ngForOf: T[];
+ * }
+ *
+ * declare function ctor<T>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ * ```
+ *
+ * An invocation looks like:
+ *
+ * ```
+ * var _t1 = ctor({ngForOf: [1, 2]});
+ * ```
+ *
+ * This correctly infers the type `NgFor<number>` for `_t1`, since `T` is inferred from the
+ * assignment of type `number[]` to `ngForOf`'s type `T[]`. However, if `any` is passed instead:
+ *
+ * ```
+ * var _t2 = ctor({ngForOf: [1, 2] as any});
+ * ```
+ *
+ * then inference for `T` fails (it cannot be inferred from `T[] = any`). In this case, `T` takes
+ * the type `{}`, and so `_t2` is inferred as `NgFor<{}>`. This is obviously wrong.
+ *
+ * Adding a default type to the generic declaration in the constructor solves this problem, as the
+ * default type will be used in the event that inference fails.
+ *
+ * ```
+ * declare function ctor<T = any>(o: Partial<Pick<NgFor<T>, 'ngForOf'>>): NgFor<T>;
+ *
+ * var _t3 = ctor({ngForOf: [1, 2] as any});
+ * ```
+ *
+ * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
+ */
+function typeParametersWithDefaultTypes(
+    params: ReadonlyArray<ts.TypeParameterDeclaration>| undefined): ts.TypeParameterDeclaration[]|
+    undefined {
+  if (params === undefined) {
+    return undefined;
+  }
+
+  return params.map(param => {
+    if (param.default === undefined) {
+      return ts.updateTypeParameterDeclaration(
+          /* node */ param,
+          /* name */ param.name,
+          /* constraint */ param.constraint,
+          /* defaultType */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    } else {
+      return param;
+    }
+  });
 }

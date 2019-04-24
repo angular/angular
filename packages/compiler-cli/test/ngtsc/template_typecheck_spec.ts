@@ -148,6 +148,29 @@ describe('ngtsc type checking', () => {
     expect(diags[0].messageText).toContain('does_not_exist');
   });
 
+  it('should accept an NgFor iteration over an any-typed value', () => {
+    env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngFor="let user of users">{{user.name}}</div>',
+    })
+    export class TestCmp {
+      users: any;
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    export class Module {}
+    `);
+
+    env.driveMain();
+  });
+
   it('should report an error with pipe bindings', () => {
     env.write('test.ts', `
     import {CommonModule} from '@angular/common';
