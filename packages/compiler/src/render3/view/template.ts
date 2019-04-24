@@ -53,6 +53,8 @@ const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
 const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
     [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
 
+const LEADING_TRIVIA_CHARS = [' ', '\n', '\r', '\t'];
+
 //  if (rf & flags) { .. }
 export function renderFlagCheckIfStmt(
     flags: core.RenderFlags, statements: o.Statement[]): o.IfStmt {
@@ -1733,8 +1735,9 @@ export function parseTemplate(
   const {interpolationConfig, preserveWhitespaces} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
-  const parseResult =
-      htmlParser.parse(template, templateUrl, {...options, tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(
+      template, templateUrl,
+      {...options, tokenizeExpansionForms: true, leadingTriviaChars: LEADING_TRIVIA_CHARS});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {errors: parseResult.errors, nodes: [], styleUrls: [], styles: []};
