@@ -26,7 +26,7 @@ import {applyOnCreateInstructions} from './node_util';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setActiveHostElement} from './state';
 import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
-import {defaultScheduler, renderStringify} from './util/misc_utils';
+import {defaultScheduler, stringifyForError} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
 import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
 
@@ -87,7 +87,7 @@ type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
   get: (token: any, notFoundValue?: any) => {
-    throw new Error('NullInjector: Not found: ' + renderStringify(token));
+    throw new Error('NullInjector: Not found: ' + stringifyForError(token));
   }
 };
 

@@ -1287,6 +1287,9 @@
     "name": "stringify"
   },
   {
+    "name": "stringifyForError"
+  },
+  {
     "name": "stylingContext"
   },
   {
