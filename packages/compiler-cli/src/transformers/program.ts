@@ -899,7 +899,7 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   host: CompilerHost, oldProgram?: Program
 }): Program {
   if (options.enableIvy === true) {
-    return new NgtscProgram(rootNames, options, host, oldProgram);
+    return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
   } else if (options.enableIvy === 'tsc') {
     return new TscPassThroughProgram(rootNames, options, host, oldProgram);
   }
