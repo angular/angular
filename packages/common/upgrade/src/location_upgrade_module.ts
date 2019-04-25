@@ -10,7 +10,7 @@ import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStr
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {$locationShim, $locationShimProvider} from './$location_shim';
+import {$locationShim, $locationShimProvider} from './location_shim';
 import {AngularJSUrlCodec, UrlCodec} from './params';
 
 
