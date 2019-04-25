@@ -269,7 +269,7 @@ jobs:
       - *attach_workspace
       - *init_environment
         # Deploy angular.io to production (if necessary)
-      - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
+      - run: setPublicVar_CI_STABLE_BRANCH
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
@@ -495,6 +495,12 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
+      - run: setPublicVar_CI_STABLE_BRANCH
+      - run:
+          name: Check out `aio/` from the stable branch
+          command: |
+            git fetch origin $CI_STABLE_BRANCH
+            git checkout --force origin/$CI_STABLE_BRANCH -- aio/
       - run:
           name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
