@@ -23,6 +23,7 @@ ng_package(
         "//packages/common/http:package.json",
         "//packages/common/http/testing:package.json",
         "//packages/common/testing:package.json",
+        "//packages/common/upgrade:package.json",
     ],
     entry_point = "packages/common/index.js",
     packages = ["//packages/common/locales:package"],
@@ -46,5 +47,6 @@ ng_package(
         "//packages/common/http",
         "//packages/common/http/testing",
         "//packages/common/testing",
+        "//packages/common/upgrade",
     ],
 )

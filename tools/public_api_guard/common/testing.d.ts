@@ -1,3 +1,5 @@
+export declare const MOCK_PLATFORM_LOCATION_CONFIG: InjectionToken<{}>;
+
 export declare class MockLocationStrategy extends LocationStrategy {
     internalBaseHref: string;
     internalPath: string;
@@ -35,6 +37,11 @@ export declare class MockPlatformLocation implements PlatformLocation {
     onPopState(fn: LocationChangeListener): void;
     pushState(state: any, title: string, newUrl: string): void;
     replaceState(state: any, title: string, newUrl: string): void;
+}
+
+export interface MockPlatformLocationConfig {
+    appBaseHref?: string;
+    startUrl?: string;
 }
 
 export declare class SpyLocation implements Location {

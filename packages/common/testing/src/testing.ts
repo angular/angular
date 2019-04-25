@@ -13,4 +13,4 @@
  */
 export {SpyLocation} from './location_mock';
 export {MockLocationStrategy} from './mock_location_strategy';
-export {MockPlatformLocation} from './mock_platform_location';
+export {MOCK_PLATFORM_LOCATION_CONFIG, MockPlatformLocation, MockPlatformLocationConfig} from './mock_platform_location';

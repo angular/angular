@@ -48,6 +48,10 @@ describe('@angular/common ng_package', () => {
       'common-testing.umd.js.map',
       'common-testing.umd.min.js',
       'common-testing.umd.min.js.map',
+      'common-upgrade.umd.js',
+      'common-upgrade.umd.js.map',
+      'common-upgrade.umd.min.js',
+      'common-upgrade.umd.min.js.map',
       'common.umd.js',
       'common.umd.js.map',
       'common.umd.min.js',
@@ -69,6 +73,8 @@ describe('@angular/common ng_package', () => {
       'http/testing.js.map',
       'testing.js',
       'testing.js.map',
+      'upgrade.js',
+      'upgrade.js.map',
     ];
     expect(shx.ls('-R', 'fesm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
@@ -91,6 +97,10 @@ describe('@angular/common ng_package', () => {
         .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm5/upgrade.js'))
+        .toMatch('//# sourceMappingURL=upgrade.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/upgrade.js'))
+        .toMatch('//# sourceMappingURL=upgrade.js.map');
   });
 
   describe('secondary entry-point', () => {
@@ -128,6 +138,14 @@ describe('@angular/common ng_package', () => {
       expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
       expect(actual['module']).toEqual('../../fesm5/http/testing.js');
       expect(actual['typings']).toEqual('./testing.d.ts');
+    });
+    // https://github.com/angular/common-builds/blob/master/upgrade/package.json
+    it('/upgrade', () => {
+      const actual = JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'}));
+      expect(actual['main']).toEqual('../bundles/common-upgrade.umd.js');
+      expect(actual['es2015']).toEqual('../fesm2015/upgrade.js');
+      expect(actual['module']).toEqual('../fesm5/upgrade.js');
+      expect(actual['typings']).toEqual('./upgrade.d.ts');
     });
   });
 });

@@ -7,7 +7,7 @@
  */
 
 import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
-import {Injectable, InjectionToken, Optional} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 
 /**
@@ -78,11 +78,21 @@ function parseUrl(urlStr: string, baseHref: string) {
   };
 }
 
+/**
+ * Mock platform location config
+ *
+ * @publicApi
+ */
 export interface MockPlatformLocationConfig {
   startUrl?: string;
   appBaseHref?: string;
 }
 
+/**
+ * Provider for mock platform location config
+ *
+ * @publicApi
+ */
 export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken('MOCK_PLATFORM_LOCATION_CONFIG');
 
 /**
@@ -104,7 +114,8 @@ export class MockPlatformLocation implements PlatformLocation {
     state: unknown
   }[] = [{hostname: '', protocol: '', port: '', pathname: '/', search: '', hash: '', state: null}];
 
-  constructor(@Optional() config?: MockPlatformLocationConfig) {
+  constructor(@Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?:
+                  MockPlatformLocationConfig) {
     if (config) {
       this.baseHref = config.appBaseHref || '';
 
