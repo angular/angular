@@ -17,6 +17,7 @@ describe('Attribute directives', () => {
   it('should be able to select green highlight', () => {
     const highlightedEle = element(by.cssContainingText('p', 'Highlight me!'));
     const lightGreen = 'rgba(144, 238, 144, 1)';
+    const getBgColor = () => highlightedEle.getCssValue('background-color');
 
     expect(highlightedEle.getCssValue('background-color')).not.toEqual(lightGreen);
 
@@ -24,6 +25,8 @@ describe('Attribute directives', () => {
     greenRb.click();
     browser.actions().mouseMove(highlightedEle).perform();
 
-    expect(highlightedEle.getCssValue('background-color')).toEqual(lightGreen);
+    // Wait for up to 2s for the background color to be updated,
+    // to account for slow environments (e.g. CI).
+    browser.wait(() => highlightedEle.getCssValue('background-color').then(c => c === lightGreen), 2000);
   });
 });
