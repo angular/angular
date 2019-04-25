@@ -39,21 +39,12 @@
 }
 
 @mixin mat-menu-typography-mdc($config) {
-  @if config {
-    @include mat-using-mdc-typography($config) {
-      @include mdc-menu-surface-core-styles($mat-typography-styles-query);
-
-      .mat-mdc-menu-content {
-        // Note that we include this private mixin, because the public
-        // one adds a bunch of styles that we aren't using for the menu.
-        @include mdc-list-base_($mat-typography-styles-query);
-      }
-    }
-  }
-  @else {
+  @include mat-using-mdc-typography($config) {
     @include mdc-menu-surface-core-styles($mat-typography-styles-query);
 
     .mat-mdc-menu-content {
+      // Note that we include this private mixin, because the public
+      // one adds a bunch of styles that we aren't using for the menu.
       @include mdc-list-base_($mat-typography-styles-query);
     }
   }

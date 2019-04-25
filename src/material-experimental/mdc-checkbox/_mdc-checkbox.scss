@@ -66,13 +66,7 @@
 }
 
 @mixin mat-checkbox-typography-mdc($config: null) {
-  @if $config {
-    @include mat-using-mdc-typography($config) {
-      @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
-      @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
-    }
-  }
-  @else {
+  @include mat-using-mdc-typography($config) {
     @include mdc-checkbox-without-ripple($query: $mat-typography-styles-query);
     @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
   }

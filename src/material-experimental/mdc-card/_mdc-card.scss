@@ -7,12 +7,7 @@
 }
 
 @mixin mat-card-typography-mdc($config) {
-  @if config {
-    @include mat-using-mdc-typography($config) {
-      // TODO: MDC typography styles here.
-    }
-  }
-  @else {
+  @include mat-using-mdc-typography($config) {
     // TODO: MDC typography styles here.
   }
 }

@@ -199,7 +199,9 @@ $mat-typography-level-mappings: (
   $orig-mdc-typography-styles: $mdc-typography-styles;
 
   // Set new values based on the given Angular Material typography configuration.
-  $mdc-typography-styles: mat-typography-config-to-mdc($config) !global;
+  @if $config {
+    $mdc-typography-styles: mat-typography-config-to-mdc($config) !global;
+  }
 
   // Apply given rules.
   @content;
