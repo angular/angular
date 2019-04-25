@@ -1,8 +1,10 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, element, by } from 'protractor';
+import { browser, element, ElementFinder, by } from 'protractor';
 
 describe('Lifecycle hooks', () => {
+  const sendKeys = (el: ElementFinder, input: string) =>
+    input.split('').reduce((prev, c) => prev.then(() => el.sendKeys(c)), Promise.resolve());
 
   beforeAll(() => {
     browser.get('');
@@ -69,17 +71,16 @@ describe('Lifecycle hooks', () => {
     expect(count).toEqual(3, 'should start with 3 messages');
 
     logCount = count;
-    await heroNameInputEle.sendKeys('-foo-');
-    expect(titleEle.getText()).toContain('Windstorm-foo- can sing');
-
+    await sendKeys(heroNameInputEle, '-foo-');
     count = await changeLogEles.count();
-    // one more for each keystroke
-    expect(count).toEqual(logCount + 5, 'should add 5 more messages');
+    expect(titleEle.getText()).toContain('Windstorm-foo- can sing');
+    expect(count).toBeGreaterThanOrEqual(logCount + 5, 'should add at least one more message for each keystroke');
 
     logCount = count;
-    await powerInputEle.sendKeys('-bar-');
+    await sendKeys(powerInputEle, '-bar-');
+    count = await changeLogEles.count();
     expect(titleEle.getText()).toContain('Windstorm-foo- can sing-bar-');
-    expect(changeLogEles.count()).toEqual(logCount + 6, 'should add 6 more messages');
+    expect(count).toBeGreaterThanOrEqual(logCount + 5, 'should add at least one more message for each keystroke');
   });
 
   it('should support AfterView hooks', async () => {
@@ -115,19 +116,17 @@ describe('Lifecycle hooks', () => {
     let commentEle = parentEle.element(by.className('comment'));
     let logEles = parentEle.all(by.css('h4 ~ div'));
     let childViewInputEle = parentEle.element(by.css('app-child input'));
-    let logCount: number;
+    let logCount = await logEles.count();
 
     expect(childViewInputEle.getAttribute('value')).toContain('Magneta');
     expect(commentEle.isPresent()).toBe(false, 'comment should not be in DOM');
 
-    logCount = await logEles.count();
-    await childViewInputEle.sendKeys('-test-');
+    await sendKeys(childViewInputEle, '-test-');
+    let count = await logEles.count();
     expect(childViewInputEle.getAttribute('value')).toContain('-test-');
     expect(commentEle.isPresent()).toBe(true, 'should have comment because >10 chars');
     expect(commentEle.getText()).toContain('long name');
-
-    let count = await logEles.count();
-    expect(logCount + 5).toEqual(count, '5 additional log messages should have been added');
+    expect(count).toBeGreaterThanOrEqual(logCount + 5, 'additional log messages should have been added');
 
     logCount = count;
     await buttonEle.click();
