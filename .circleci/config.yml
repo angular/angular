@@ -603,7 +603,10 @@ workflows:
                 - master
   aio_monitoring:
     jobs:
-      - aio_monitoring
+      - setup
+      - aio_monitoring:
+          requires:
+            - setup
     triggers:
       - schedule:
           # Runs AIO monitoring job at 00:00AM every day.
