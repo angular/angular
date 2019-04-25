@@ -28,7 +28,7 @@ Angular 애플리케이션의 구성 요소 중 가장 중요한 것은 *컴포�
 <!--
 Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
 -->
-컴폰넌트와 서비스는 단순한 클래스지만, *데코레이터*와 메타데이터를 사용해서 이 클래스가 Angular에서 어떤 역할을 할지 지정할 수 있습니다.
+컴포넌트와 서비스는 단순한 클래스지만, *데코레이터*와 메타데이터를 사용해서 이 클래스가 Angular에서 어떤 역할을 할지 지정할 수 있습니다.
 
 <!--
 * The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
