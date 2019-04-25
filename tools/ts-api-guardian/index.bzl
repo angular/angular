@@ -51,7 +51,8 @@ def ts_api_guardian_test(
     ]
 
     for i in strip_export_pattern:
-        args += ["--stripExportPattern", i]
+        # The below replacement is needed because under Windows '^' needs to be escaped twice
+        args += ["--stripExportPattern", i.replace("^", "^^^^")]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
