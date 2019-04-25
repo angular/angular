@@ -104,8 +104,6 @@ export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectF
   return (_injectImplementation || injectInjectorOnly)(token, flags);
 }
 /**
- * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
- * code should now use ɵɵinject instead.
  * @publicApi
  */
 export const inject = ɵɵinject;
