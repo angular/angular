@@ -59,7 +59,6 @@ export class MatSidenavContent extends MatDrawerContent {
   host: {
     'class': 'mat-drawer mat-sidenav',
     'tabIndex': '-1',
-    '[@transform]': '_animationState',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',

@@ -36,6 +36,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   HostListener,
+  HostBinding,
 } from '@angular/core';
 import {fromEvent, merge, Observable, Subject} from 'rxjs';
 import {
@@ -116,7 +117,6 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
   animations: [matDrawerAnimations.transformDrawer],
   host: {
     'class': 'mat-drawer',
-    '[@transform]': '_animationState',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',
@@ -179,6 +179,11 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   _animationEnd = new Subject<AnimationEvent>();
 
   /** Current state of the sidenav animation. */
+  // @HostBinding is used in the class as it is expected to be extended.  Since @Component decorator
+  // metadata is not inherited by child classes, instead the host binding data is defined in a way
+  // that can be inherited.
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostBinding('@transform')
   _animationState: 'open-instant' | 'open' | 'void' = 'void';
 
   /** Event emitted when the drawer open state is changed. */
