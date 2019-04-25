@@ -139,4 +139,25 @@ describe('Angular Language Service', () => {
     });
     expect(resp2).toMatchGolden('definition.json');
   });
+
+  it('should perform definitionAndBoundSpan', async () => {
+    client.sendRequest('open', {
+      file: `${PWD}/project/app/app.component.ts`,
+    });
+
+     const resp1 = await client.sendRequest('reload', {
+      file: `${PWD}/project/app/app.component.ts`,
+      tmpFile: `${PWD}/project/app/app.component.ts`,
+    }) as any;
+    expect(resp1.command).toBe('reload');
+    expect(resp1.success).toBe(true);
+
+     const resp2 = await client.sendRequest('definitionAndBoundSpan', {
+      file: `${PWD}/project/app/app.component.ts`,
+      line: 5,
+      offset: 28,
+    });
+    expect(resp2).toMatchGolden('definitionAndBoundSpan.json');
+  });
+
 });
