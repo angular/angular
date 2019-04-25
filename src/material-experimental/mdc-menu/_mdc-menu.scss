@@ -1,18 +1,60 @@
+@import '@material/menu-surface/mixins';
+@import '@material/menu-surface/variables';
+@import '@material/list/mixins';
+@import '@material/list/variables';
+@import '@material/theme/functions';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-menu-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    @include mdc-menu-surface-core-styles($mat-theme-styles-query);
+    @include mdc-list-without-ripple($mat-theme-styles-query);
+
+    // MDC doesn't appear to have disabled styling for menu
+    // items so we have to grey them out ourselves.
+    .mat-mdc-menu-item[disabled] {
+      &, &::after {
+        @include mdc-theme-prop(color, text-disabled-on-background);
+      }
+    }
+
+    // Since we're creating `mat-icon` and the submenu trigger
+    // chevron ourselves, we have to handle the color as well.
+    .mat-mdc-menu-item .mat-icon-no-color,
+    .mat-mdc-menu-item-submenu-trigger::after {
+      @include mdc-theme-prop(color, text-icon-on-background);
+    }
+
+    // MDC's hover and focus styles are tied to their ripples which we aren't using.
+    .mat-mdc-menu-item:hover,
+    .mat-mdc-menu-item.cdk-program-focused,
+    .mat-mdc-menu-item.cdk-keyboard-focused,
+    .mat-mdc-menu-item-highlighted {
+      &:not([disabled]) {
+        $color: $mdc-theme-on-surface;
+        background: rgba($color, mdc-states-opacity($color, hover));
+      }
+    }
   }
 }
 
 @mixin mat-menu-typography-mdc($config) {
   @if config {
     @include mat-using-mdc-typography($config) {
-      // TODO: MDC typography styles here.
+      @include mdc-menu-surface-core-styles($mat-typography-styles-query);
+
+      .mat-mdc-menu-content {
+        // Note that we include this private mixin, because the public
+        // one adds a bunch of styles that we aren't using for the menu.
+        @include mdc-list-base_($mat-typography-styles-query);
+      }
     }
   }
   @else {
-    // TODO: MDC typography styles here.
+    @include mdc-menu-surface-core-styles($mat-typography-styles-query);
+
+    .mat-mdc-menu-content {
+      @include mdc-list-base_($mat-typography-styles-query);
+    }
   }
 }

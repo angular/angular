@@ -89,24 +89,10 @@ export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
  */
 const MAT_MENU_BASE_ELEVATION = 4;
 
-
-@Component({
-  moduleId: module.id,
-  selector: 'mat-menu',
-  templateUrl: 'menu.html',
-  styleUrls: ['menu.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-  exportAs: 'matMenu',
-  animations: [
-    matMenuAnimations.transformMenu,
-    matMenuAnimations.fadeInItems
-  ],
-  providers: [
-    {provide: MAT_MENU_PANEL, useExisting: MatMenu}
-  ]
-})
-export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
+/** Base class with all of the `MatMenu` functionality. */
+// tslint:disable-next-line:class-name
+export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit,
+  OnDestroy {
   private _keyManager: FocusKeyManager<MatMenuItem>;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
@@ -425,4 +411,38 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnI
       event.element.scrollTop = 0;
     }
   }
+}
+
+export class MatMenu extends _MatMenuBase {}
+
+// Note on the weird inheritance setup: we need three classes, because the MDC-based menu has to
+// extend `MatMenu`, however keeping a reference to it will cause the inlined template and styles
+// to be retained as well. The MDC menu also has to provide itself as a `MatMenu` in order for
+// queries and DI to work correctly, while still not referencing the actual menu class.
+// Class responsibility is split up as follows:
+// * _MatMenuBase - provides all the functionality without any of the Angular metadata.
+// * MatMenu - keeps the same name symbol name as the current menu and
+// is used as a provider for DI and query purposes.
+// * _MatMenu - the actual menu component implementation with the Angular metadata that should
+// be tree shaken away for MDC.
+
+@Component({
+  moduleId: module.id,
+  selector: 'mat-menu',
+  templateUrl: 'menu.html',
+  styleUrls: ['menu.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  exportAs: 'matMenu',
+  animations: [
+    matMenuAnimations.transformMenu,
+    matMenuAnimations.fadeInItems
+  ],
+  providers: [
+    {provide: MAT_MENU_PANEL, useExisting: MatMenu},
+    {provide: MatMenu, useExisting: _MatMenu}
+  ]
+})
+// tslint:disable-next-line:class-name
+export class _MatMenu extends MatMenu {
 }

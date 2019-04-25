@@ -10,6 +10,9 @@ ng_module(
   module_name = "@angular/material-experimental/mdc-menu",
   assets = [":menu_scss"] + glob(["**/*.html"]),
   deps = [
+    "@npm//@angular/animations",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
     "@npm//material-components-web",
   ] + CDK_TARGETS + MATERIAL_TARGETS,
 )
@@ -20,10 +23,19 @@ sass_library(
   deps = [
     "//src/material/core:core_scss_lib",
     "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ],
 )
 
 sass_binary(
   name = "menu_scss",
   src = "menu.scss",
+  include_paths = [
+    "external/npm/node_modules",
+  ],
+  deps = [
+    ":menu_scss_lib",
+    "//src/material/core:all_themes",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+  ]
 )

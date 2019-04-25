@@ -1,5 +1,6 @@
 @import './variables';
 @import './list-common';
+@import './layout-common';
 @import './vendor-prefixes';
 
 /** The mixins below are shared between mat-menu and mat-select */
@@ -56,4 +57,47 @@ $mat-menu-icon-margin: 16px !default;
       margin-right: 0;
     }
   }
+}
+
+@mixin mat-menu-item-submenu-trigger($side-padding, $triangle-height: 10px) {
+  // Increase the side padding to prevent the indicator from overlapping the text.
+  padding-right: $side-padding * 2;
+
+  // Renders a triangle to indicate that the menu item will open a sub-menu.
+  &::after {
+    $size: $triangle-height / 2;
+
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: $size 0 $size $size;
+    border-color: transparent transparent transparent currentColor;
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: $side-padding;
+    transform: translateY(-50%);
+  }
+
+  [dir='rtl'] & {
+    padding-right: $side-padding;
+    padding-left: $side-padding * 2;
+
+    &::after {
+      right: auto;
+      left: $side-padding;
+      transform: rotateY(180deg) translateY(-50%);
+    }
+  }
+}
+
+@mixin mat-menu-item-ripple() {
+  @include mat-fill;
+
+  // Prevent any pointer events on the ripple container for a menu item. The ripple container is
+  // not the trigger element for the ripples and can be therefore disabled like that. Disabling
+  // the pointer events ensures that there is no `click` event that can bubble up and cause
+  // the menu panel to close.
+  pointer-events: none;
 }

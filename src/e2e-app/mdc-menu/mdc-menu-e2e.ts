@@ -12,7 +12,17 @@ import {Component} from '@angular/core';
   moduleId: module.id,
   selector: 'mdc-menu-e2e',
   templateUrl: 'mdc-menu-e2e.html',
+  styles: [`
+    #before-t, #above-t, #combined-t {
+      width: 60px;
+      height: 20px;
+    }
+
+    .bottom-row {
+      margin-top: 5px;
+    }
+  `]
 })
 export class MdcMenuE2e {
-  // TODO: copy implementation from existing mat-menu e2e page.
+  selected: string = '';
 }

@@ -1,1 +1,68 @@
-// TODO: MDC core styles here.
+@import '@material/menu-surface/mixins';
+@import '@material/list/mixins';
+@import '@material/list/variables';
+@import '../../material/core/style/menu-common';
+@import '../../material/core/style/button-common';
+
+@include mdc-menu-surface-core-styles($query: structure);
+
+.mat-mdc-menu-content {
+  // Note that we include this private mixin, because the public
+  // one adds a bunch of styles that we aren't using for the menu.
+  @include mdc-list-base_($query: structure);
+}
+
+.mat-mdc-menu-panel {
+  // Include Material's base menu panel styling which contain the `min-width`, `max-width` and some
+  // styling to make scrolling smoother. MDC doesn't include the `min-width` and `max-width`, even
+  // though they're explicitly defined in spec.
+  @include mat-menu-base;
+
+  // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
+  position: static;
+}
+
+.mat-mdc-menu-item {
+  // Note that we include this private mixin, because the public
+  // one adds a bunch of styles that we aren't using for the menu.
+  @include mdc-list-item-base_;
+
+  // MDC's menu items are `<li>` nodes which don't need resets, however ours
+  // can be anything, including buttons, so we need to do the reset ourselves.
+  @include mat-button-reset;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+  color: inherit;
+  font-size: inherit;
+  background: none;
+
+  &[disabled] {
+    cursor: default;
+  }
+
+  .mat-icon {
+    margin-right: $mdc-list-side-padding;
+  }
+
+  [dir='rtl'] & {
+    text-align: right;
+
+    .mat-icon {
+      margin-right: 0;
+      margin-left: $mdc-list-side-padding;
+    }
+  }
+}
+
+// Renders out a chevron on menu items that trigger a sub-menu.
+.mat-mdc-menu-item-submenu-trigger {
+  @include mat-menu-item-submenu-trigger($mdc-list-side-padding);
+}
+
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-mdc-menu-item .mat-mdc-menu-ripple {
+  @include mat-menu-item-ripple;
+}

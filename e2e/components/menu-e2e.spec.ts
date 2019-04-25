@@ -13,7 +13,7 @@ const not = ExpectedConditions.not;
 describe('menu', () => {
   const menuSelector = '.mat-menu-panel';
   const page = {
-    menu: () => element(by.css('.mat-menu-panel')),
+    menu: () => element(by.css(menuSelector)),
     start: () => element(by.id('start')),
     trigger: () => element(by.id('trigger')),
     triggerTwo: () => element(by.id('trigger-two')),
@@ -23,9 +23,9 @@ describe('menu', () => {
     beforeTrigger: () => element(by.id('before-t')),
     aboveTrigger: () => element(by.id('above-t')),
     combinedTrigger: () => element(by.id('combined-t')),
-    beforeMenu: () => element(by.css('.mat-menu-panel.before')),
-    aboveMenu: () => element(by.css('.mat-menu-panel.above')),
-    combinedMenu: () => element(by.css('.mat-menu-panel.combined')),
+    beforeMenu: () => element(by.css(`${menuSelector}.before`)),
+    aboveMenu: () => element(by.css(`${menuSelector}.above`)),
+    combinedMenu: () => element(by.css(`${menuSelector}.combined`)),
     getResultText: () => page.textArea().getText(),
   };
 

@@ -1,10 +1,7 @@
-export declare const fadeInItems: AnimationTriggerMetadata;
+export declare class _MatMenu extends MatMenu {
+}
 
-export declare const MAT_MENU_DEFAULT_OPTIONS: InjectionToken<MatMenuDefaultOptions>;
-
-export declare const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
-
-export declare class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
+export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
     _animationDone: Subject<AnimationEvent>;
     _classList: {
         [key: string]: boolean;
@@ -41,6 +38,20 @@ export declare class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuIt
     resetActiveItem(): void;
     setElevation(depth: number): void;
     setPositionClasses(posX?: MenuPositionX, posY?: MenuPositionY): void;
+}
+
+export declare class _MatMenuDirectivesModule {
+}
+
+export declare const fadeInItems: AnimationTriggerMetadata;
+
+export declare const MAT_MENU_DEFAULT_OPTIONS: InjectionToken<MatMenuDefaultOptions>;
+
+export declare const MAT_MENU_PANEL: InjectionToken<MatMenuPanel<any>>;
+
+export declare const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
+
+export declare class MatMenu extends _MatMenuBase {
 }
 
 export declare const matMenuAnimations: {

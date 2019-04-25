@@ -1,1 +1,13 @@
-// TODO: copy in demo styles from existing mat-menu demo.
+.demo-menu {
+  display: flex;
+  flex-flow: row wrap;
+
+  .demo-menu-section {
+    width: 300px;
+    margin: 20px;
+  }
+
+  .demo-end-icon {
+    justify-content: flex-end;
+  }
+}

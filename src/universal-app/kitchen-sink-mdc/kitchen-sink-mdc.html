@@ -17,9 +17,12 @@ Not yet implemented.
 <mat-checkbox>with a label</mat-checkbox>
 
 <h2>MDC menu</h2>
-
-<!-- TODO: Copy kitchen sink examples for mat-menu here -->
-Not yet implemented.
+<button mat-button [matMenuTriggerFor]="menu">Open</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Mercy</button>
+  <button mat-menu-item>Lucio</button>
+  <button mat-menu-item disabled>Sombra</button>
+</mat-menu>
 
 <h2>MDC radio</h2>
 

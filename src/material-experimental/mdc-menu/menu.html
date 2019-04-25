@@ -1,1 +1,16 @@
-<!-- TODO: MDC template here. -->
+<ng-template>
+  <div
+    class="mat-mdc-menu-panel mdc-menu-surface mdc-menu-surface--open"
+    [ngClass]="_classList"
+    (keydown)="_handleKeydown($event)"
+    (click)="closed.emit('click')"
+    [@transformMenu]="_panelAnimationState"
+    (@transformMenu.start)="_onAnimationStart($event)"
+    (@transformMenu.done)="_onAnimationDone($event)"
+    tabindex="-1"
+    role="menu">
+    <div class="mat-mdc-menu-content mdc-list">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</ng-template>

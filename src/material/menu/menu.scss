@@ -1,6 +1,5 @@
 // TODO(kara): update vars for desktop when MD team responds
 @import '../core/style/button-common';
-@import '../core/style/layout-common';
 @import '../core/style/menu-common';
 @import '../../cdk/a11y/a11y';
 
@@ -51,36 +50,7 @@ $mat-menu-submenu-indicator-size: 10px !default;
 }
 
 .mat-menu-item-submenu-trigger {
-  // Increase the side padding to prevent the indicator from overlapping the text.
-  padding-right: $mat-menu-side-padding * 2;
-
-  // Renders a triangle to indicate that the menu item will open a sub-menu.
-  &::after {
-    $size: $mat-menu-submenu-indicator-size / 2;
-
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: $size 0 $size $size;
-    border-color: transparent transparent transparent currentColor;
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 50%;
-    right: $mat-menu-side-padding;
-    transform: translateY(-50%);
-  }
-
-  [dir='rtl'] & {
-    padding-right: $mat-menu-side-padding;
-    padding-left: $mat-menu-side-padding * 2;
-
-    &::after {
-      right: auto;
-      left: $mat-menu-side-padding;
-      transform: rotateY(180deg) translateY(-50%);
-    }
-  }
+  @include mat-menu-item-submenu-trigger($mat-menu-side-padding);
 }
 
 button.mat-menu-item {
@@ -90,11 +60,5 @@ button.mat-menu-item {
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-menu-item .mat-menu-ripple {
-  @include mat-fill;
-
-  // Prevent any pointer events on the ripple container for a menu item. The ripple container is
-  // not the trigger element for the ripples and can be therefore disabled like that. Disabling
-  // the pointer events ensures that there is no `click` event that can bubble up and cause
-  // the menu panel to close.
-  pointer-events: none;
+  @include mat-menu-item-ripple;
 }
