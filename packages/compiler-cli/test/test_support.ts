@@ -122,20 +122,21 @@ export function setupBazelTo(tmpDirPath: string) {
   fs.mkdirSync(nodeModulesPath);
   fs.mkdirSync(angularDirectory);
 
-  getAngularPackagesFromRunfiles().forEach(
-      ({pkgPath, name}) => { fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'dir'); });
+  getAngularPackagesFromRunfiles().forEach(({pkgPath, name}) => {
+    fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'junction');
+  });
 
   // Link typescript
   const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
-  fs.symlinkSync(typeScriptSource, typescriptDest, 'dir');
+  fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
 
   // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
   // not all compiler-cli tests need "rxjs" set up.
   try {
     const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
     const rxjsDest = path.join(nodeModulesPath, 'rxjs');
-    fs.symlinkSync(rxjsSource, rxjsDest, 'dir');
+    fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') throw e;
   }
