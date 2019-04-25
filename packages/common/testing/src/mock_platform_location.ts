@@ -88,6 +88,11 @@ export interface MockPlatformLocationConfig {
   appBaseHref?: string;
 }
 
+/**
+ * Provider for mock platform location config
+ *
+ * @publicApi
+ */
 export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken('MOCK_PLATFORM_LOCATION_CONFIG');
 
 /**
