@@ -179,6 +179,10 @@ export class Driver implements Debuggable, UpdateSource {
     const scopeUrl = this.scope.registration.scope;
     const requestUrlObj = this.adapter.parseUrl(req.url, scopeUrl);
 
+    if (req.headers.has('ngsw-bypass') || /[?&]ngsw-bypass(?:[=&]|$)/i.test(requestUrlObj.search)) {
+      return;
+    }
+
     // The only thing that is served unconditionally is the debug page.
     if (requestUrlObj.path === '/ngsw/state') {
       // Allow the debugger to handle the request, but don't affect SW state in any other way.

@@ -711,6 +711,74 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
     });
 
+    async_it('should bypass serviceworker on ngsw-bypass parameter', async() => {
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'true'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': 'anything'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypass': null}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'NGSW-bypass': 'upperCASE'}});
+      server.assertNoRequestFor('/foo.txt');
+
+      await makeRequest(scope, '/foo.txt', undefined, {headers: {'ngsw-bypasss': 'anything'}});
+      server.assertSawRequestFor('/foo.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypass=true');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypasss=true');
+      server.assertSawRequestFor('/bar.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar.txt?ngsw-bypaSS=something');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?testparam=test&ngsw-byPASS=anything');
+      server.assertNoRequestFor('/bar.txt');
+
+      await makeRequest(scope, '/bar.txt?testparam=test&angsw-byPASS=anything');
+      server.assertSawRequestFor('/bar.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
+      server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+
+      server.clearRequests();
+
+      await makeRequest(scope, '/bar&ngsw-bypass=true.txt');
+      server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
+
+      server.clearRequests();
+
+      await makeRequest(
+          scope, '/bar&ngsw-bypass=true.txt?testparam=test&ngSW-BYPASS=SOMETHING&testparam2=test');
+      server.assertNoRequestFor('/bar&ngsw-bypass=true.txt');
+
+      await makeRequest(scope, '/bar?testparam=test&ngsw-bypass');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?testparam=test&ngsw-bypass&testparam2');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-bypass&testparam2');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-bypass=&foo=ngsw-bypass');
+      server.assertNoRequestFor('/bar');
+
+      await makeRequest(scope, '/bar?ngsw-byapass&testparam2');
+      server.assertSawRequestFor('/bar');
+
+    });
+
     async_it('unregisters when manifest 404s', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
