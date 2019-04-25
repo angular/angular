@@ -17,7 +17,6 @@ describe('Attribute directives', () => {
   it('should be able to select green highlight', () => {
     const highlightedEle = element(by.cssContainingText('p', 'Highlight me!'));
     const lightGreen = 'rgba(144, 238, 144, 1)';
-    const getBgColor = () => highlightedEle.getCssValue('background-color');
 
     expect(highlightedEle.getCssValue('background-color')).not.toEqual(lightGreen);
 
