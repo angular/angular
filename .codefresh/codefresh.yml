@@ -22,3 +22,4 @@ steps:
     # Run tests
     - yarn bazel test //tools/ts-api-guardian:all
     - yarn test-ivy-aot //packages/animations/test //packages/common/test //packages/forms/test //packages/http/test //packages/platform-browser/test //packages/platform-browser-dynamic/test //packages/router/test
+    - yarn bazel test //tools/public_api_guard/...
