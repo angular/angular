@@ -740,15 +740,15 @@ import {async_beforeEach, async_fit, async_it} from './async';
       await makeRequest(scope, '/bar.txt?ngsw-bypaSS=something');
       server.assertNoRequestFor('/bar.txt');
 
-      await makeRequest(scope, '/bar.txt?testparam=test&ngsw-bypASS=anything');
+      await makeRequest(scope, '/bar.txt?testparam=test&ngsw-byPASS=anything');
       server.assertNoRequestFor('/bar.txt');
 
-      await makeRequest(scope, '/bar.txt?testparam=test&angsw-bypASS=anything');
+      await makeRequest(scope, '/bar.txt?testparam=test&angsw-byPASS=anything');
       server.assertSawRequestFor('/bar.txt');
 
       server.clearRequests();
 
-      await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-bypASS=anything');
+      await makeRequest(scope, '/bar&ngsw-bypass=true.txt?testparam=test&angsw-byPASS=anything');
       server.assertSawRequestFor('/bar&ngsw-bypass=true.txt');
 
       server.clearRequests();

@@ -155,7 +155,7 @@ workers (e.g.
 [reporting progress on uploaded files](https://github.com/w3c/ServiceWorker/issues/1141)).
 
 To bypass the service worker you can set `ngsw-bypass` as a request header, or as a query parameter.
-(The value of the header or query param is ignored and can be empty or omitted.)
+(The value of the header or query parameter is ignored and can be empty or omitted.)
 
 ## Debugging the Angular service worker
 
