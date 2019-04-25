@@ -905,15 +905,20 @@ export function setNgReflectProperty(
   attrName = normalizeDebugBindingName(attrName);
   const debugValue = normalizeDebugBindingValue(value);
   if (type === TNodeType.Element) {
-    isProceduralRenderer(renderer) ?
-        renderer.setAttribute((element as RElement), attrName, debugValue) :
-        (element as RElement).setAttribute(attrName, debugValue);
-  } else if (value !== undefined) {
-    const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
-    if (isProceduralRenderer(renderer)) {
-      renderer.setValue((element as RComment), value);
+    if (value == null) {
+      isProceduralRenderer(renderer) ? renderer.removeAttribute((element as RElement), attrName) :
+                                       (element as RElement).removeAttribute(attrName);
     } else {
-      (element as RComment).textContent = value;
+      isProceduralRenderer(renderer) ?
+          renderer.setAttribute((element as RElement), attrName, debugValue) :
+          (element as RElement).setAttribute(attrName, debugValue);
+    }
+  } else {
+    const textContent = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    if (isProceduralRenderer(renderer)) {
+      renderer.setValue((element as RComment), textContent);
+    } else {
+      (element as RComment).textContent = textContent;
     }
   }
 }
