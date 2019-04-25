@@ -14,7 +14,7 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
-export abstract class RegistrationOptions {
+export abstract class SwRegistrationOptions {
   scope?: string;
   enabled?: boolean;
 }
@@ -22,7 +22,7 @@ export abstract class RegistrationOptions {
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: RegistrationOptions,
+    injector: Injector, script: string, options: SwRegistrationOptions,
     platformId: string): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
@@ -50,7 +50,7 @@ export function ngswAppInitializer(
 }
 
 export function ngswCommChannelFactory(
-    opts: RegistrationOptions, platformId: string): NgswCommChannel {
+    opts: SwRegistrationOptions, platformId: string): NgswCommChannel {
   return new NgswCommChannel(
       isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
                                                                 undefined);
@@ -75,16 +75,16 @@ export class ServiceWorkerModule {
       ngModule: ServiceWorkerModule,
       providers: [
         {provide: SCRIPT, useValue: script},
-        {provide: RegistrationOptions, useValue: opts},
+        {provide: SwRegistrationOptions, useValue: opts},
         {
           provide: NgswCommChannel,
           useFactory: ngswCommChannelFactory,
-          deps: [RegistrationOptions, PLATFORM_ID]
+          deps: [SwRegistrationOptions, PLATFORM_ID]
         },
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
+          deps: [Injector, SCRIPT, SwRegistrationOptions, PLATFORM_ID],
           multi: true,
         },
       ],
