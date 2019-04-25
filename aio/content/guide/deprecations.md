@@ -245,7 +245,7 @@ const routes: Routes = [{
 For more information see the [Router guide](guide/router#activated-route). 
 
 
-{@a removed-v8}
+{@a removed}
 ## Removed APIs
 
 The following APIs have been removed starting with version 8.0.0: 
