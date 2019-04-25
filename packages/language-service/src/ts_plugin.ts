@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript/lib/tsserverlibrary';
+import * as ts from 'typescript'; // used as value, passed in by tsserver at runtime
+import * as tss from 'typescript/lib/tsserverlibrary'; // used as type only
 
 import {createLanguageService} from './language_service';
 import {Completion, Diagnostic, DiagnosticMessageChain} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
-const projectHostMap = new WeakMap<ts.server.Project, TypeScriptServiceHost>();
+const projectHostMap = new WeakMap<tss.server.Project, TypeScriptServiceHost>();
 
-export function getExternalFiles(project: ts.server.Project): string[]|undefined {
+export function getExternalFiles(project: tss.server.Project): string[]|undefined {
   const host = projectHostMap.get(project);
   if (host) {
     const externalFiles = host.getTemplateReferences();
@@ -63,7 +64,7 @@ function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnost
   return result;
 }
 
-export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
+export function create(info: tss.server.PluginCreateInfo): ts.LanguageService {
   const oldLS: ts.LanguageService = info.languageService;
   const proxy: ts.LanguageService = Object.assign({}, oldLS);
   const logger = info.project.projectService.logger;
