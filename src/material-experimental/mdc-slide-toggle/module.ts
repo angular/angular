@@ -8,11 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatCommonModule} from '@angular/material/core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatSlideToggle} from './slide-toggle';
 
 @NgModule({
-  imports: [MatCommonModule, CommonModule],
+  imports: [MatCommonModule, MatRippleModule, CommonModule],
   exports: [MatSlideToggle, MatCommonModule],
   declarations: [MatSlideToggle],
 })

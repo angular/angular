@@ -9,12 +9,14 @@
 import {NgModule} from '@angular/core';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 import {RouterModule} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 import {MdcSlideToggleDemo} from './mdc-slide-toggle-demo';
 
 @NgModule({
   imports: [
     MatSlideToggleModule,
     RouterModule.forChild([{path: '', component: MdcSlideToggleDemo}]),
+    FormsModule,
   ],
   declarations: [MdcSlideToggleDemo],
 })

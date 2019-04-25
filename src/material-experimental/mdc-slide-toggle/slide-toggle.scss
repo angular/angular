@@ -1,1 +1,43 @@
-// TODO: MDC core styles here.
+@import '@material/switch/functions';
+@import '@material/switch/mixins';
+@import '@material/form-field/mixins';
+@import '@material/ripple/variables';
+@import '../mdc-helpers/mdc-helpers';
+@import '../../material/core/style/layout-common';
+
+@include mdc-switch-without-ripple($query: $mat-base-styles-query);
+@include mdc-form-field-core-styles($query: $mat-base-styles-query);
+
+.mat-mdc-slide-toggle {
+  display: inline-block;
+
+  // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
+  .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::before {
+    @include mat-fill;
+  }
+
+  // The MDC switch styles related to the hover state are intertwined with the MDC ripple styles.
+  // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
+  // additional styles to restore the hover state.
+  .mdc-switch__thumb-underlay::before {
+    border-radius: 50%;
+    content: '';
+    opacity: 0;
+  }
+
+  .mdc-switch:hover .mdc-switch__thumb-underlay::before {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+    transition: mdc-switch-transition-enter(opacity, 0, 75ms);
+  }
+
+  // Needs a little more specificity so the :hover styles don't override it.
+  &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::before {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
+  }
+
+  // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
+  // style it appropriately.
+  .mat-ripple-element {
+    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+  }
+}

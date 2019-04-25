@@ -1,13 +1,70 @@
+@import '@material/switch/mixins';
+@import '@material/switch/variables';
+@import '@material/form-field/mixins';
+@import '@material/ripple/variables';
+@import '@material/theme/functions';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-slide-toggle-theme-mdc($theme) {
+  $primary: mat-color(map-get($theme, primary));
+  $accent: mat-color(map-get($theme, accent));
+  $warn: mat-color(map-get($theme, warn));
+
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-mdc-switch-baseline-theme-color: $mdc-switch-baseline-theme-color;
+
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    $mdc-switch-baseline-theme-color: primary !global;
+
+    @include mdc-switch-without-ripple($query: $mat-theme-styles-query);
+    @include mdc-form-field-core-styles($query: $mat-theme-styles-query);
+
+    // MDC's switch doesn't support a `color` property. We add support
+    // for it by adding a CSS class for accent and warn style.
+    .mat-mdc-slide-toggle {
+      .mdc-switch__thumb-underlay::before, .mat-ripple-element {
+        background: $mdc-switch-toggled-off-ripple-color;
+      }
+
+      &.mat-accent {
+        $mdc-switch-baseline-theme-color: secondary !global;
+        @include mdc-switch-without-ripple($query: $mat-theme-styles-query);
+      }
+
+      &.mat-warn {
+        $mdc-switch-baseline-theme-color: error !global;
+        @include mdc-switch-without-ripple($query: $mat-theme-styles-query);
+      }
+    }
+
+    // The ripple color matches the palette only when it's checked.
+    .mat-mdc-slide-toggle-checked {
+      .mdc-switch__thumb-underlay::before, .mat-ripple-element {
+        background: $primary;
+      }
+
+      &.mat-accent {
+        .mdc-switch__thumb-underlay::before, .mat-ripple-element {
+          background: $accent;
+        }
+      }
+
+      &.mat-warn {
+        .mdc-switch__thumb-underlay::before, .mat-ripple-element {
+          background: $warn;
+        }
+      }
+    }
   }
+
+  // Restore original values of MDC global variables.
+  $mdc-switch-baseline-theme-color: $orig-mdc-switch-baseline-theme-color !global;
 }
 
 @mixin mat-slide-toggle-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-switch-without-ripple($query: $mat-typography-styles-query);
+    @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
   }
 }

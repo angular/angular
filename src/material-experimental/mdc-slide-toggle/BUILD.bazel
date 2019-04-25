@@ -10,6 +10,10 @@ ng_module(
   module_name = "@angular/material-experimental/mdc-slide-toggle",
   assets = [":slide_toggle_scss"] + glob(["**/*.html"]),
   deps = [
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "@npm//@angular/animations",
     "@npm//material-components-web",
   ] + CDK_TARGETS + MATERIAL_TARGETS,
 )
@@ -20,10 +24,18 @@ sass_library(
   deps = [
     "//src/material/core:core_scss_lib",
     "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ],
 )
 
 sass_binary(
   name = "slide_toggle_scss",
   src = "slide-toggle.scss",
+  include_paths = [
+    "external/npm/node_modules",
+  ],
+  deps = [
+    ":slide_toggle_scss_lib",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+  ]
 )

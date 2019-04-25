@@ -13,6 +13,4 @@ import {Component} from '@angular/core';
   selector: 'mdc-slide-toggle-e2e',
   templateUrl: 'mdc-slide-toggle-e2e.html',
 })
-export class MdcSlideToggleE2e {
-  // TODO: copy implementation from existing mat-slide-toggle e2e page.
-}
+export class MdcSlideToggleE2e {}

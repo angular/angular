@@ -7,4 +7,5 @@
  */
 
 export * from './slide-toggle';
+export * from './slide-toggle-config';
 export * from './module';
