@@ -155,21 +155,69 @@ export function convertPropertyBinding(
     localResolver = new DefaultLocalResolver();
   }
   const currValExpr = createCurrValueExpr(bindingId);
-  const stmts: o.Statement[] = [];
   const visitor =
       new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
+  const stmts: o.Statement[] = getStatementsFromVisitor(visitor, bindingId);
 
-  if (visitor.temporaryCount) {
-    for (let i = 0; i < visitor.temporaryCount; i++) {
-      stmts.push(temporaryDeclaration(bindingId, i));
-    }
-  } else if (form == BindingForm.TrySimple) {
+  if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
     return new ConvertPropertyBindingResult([], outputExpr);
   }
 
   stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
+}
+
+/**
+ * Given some expression, such as a binding or interpolation expression, and a context expression to
+ * look values up on, visit each facet of the given expression resolving values from the context
+ * expression such that a list of arguments can be derived from the found values that can be used as
+ * arguments to an external update instruction.
+ *
+ * @param localResolver The resolver to use to look up expressions by name appropriately
+ * @param contextVariableExpression The expression representing the context variable used to create
+ * the final argument expressions
+ * @param expressionWithArgumentsToExtract The expression to visit to figure out what values need to
+ * be resolved and what arguments list to build.
+ * @param bindingId A name prefix used to create temporary variable names if they're needed for the
+ * arguments generated
+ * @returns An array of expressions that can be passed as arguments to instruction expressions like
+ * `o.importExpr(R3.propertyInterpolate).callFn(result)`
+ */
+export function convertUpdateArguments(
+    localResolver: LocalResolver, contextVariableExpression: o.Expression,
+    expressionWithArgumentsToExtract: cdAst.AST, bindingId: string) {
+  const visitor =
+      new _AstToIrVisitor(localResolver, contextVariableExpression, bindingId, undefined);
+  const outputExpr: o.InvokeFunctionExpr =
+      expressionWithArgumentsToExtract.visit(visitor, _Mode.Expression);
+
+  const stmts = getStatementsFromVisitor(visitor, bindingId);
+
+  // Removing the first argument, because it was a length for ViewEngine, not Ivy.
+  let args = outputExpr.args.slice(1);
+  if (expressionWithArgumentsToExtract instanceof cdAst.Interpolation) {
+    // If we're dealing with an interpolation of 1 value with an empty prefix and suffix, reduce the
+    // args returned to just the value, because we're going to pass it to a special instruction.
+    const strings = expressionWithArgumentsToExtract.strings;
+    if (args.length === 3 && strings[0] === '' && strings[1] === '') {
+      // Single argument interpolate instructions.
+      args = [args[1]];
+    } else if (args.length >= 19) {
+      // 19 or more arguments must be passed to the `interpolateV`-style instructions, which accept
+      // an array of arguments
+      args = [o.literalArr(args)];
+    }
+  }
+  return {stmts, args};
+}
+
+function getStatementsFromVisitor(visitor: _AstToIrVisitor, bindingId: string) {
+  const stmts: o.Statement[] = [];
+  for (let i = 0; i < visitor.temporaryCount; i++) {
+    stmts.push(temporaryDeclaration(bindingId, i));
+  }
+  return stmts;
 }
 
 function convertBuiltins(converterFactory: BuiltinConverterFactory, ast: cdAst.AST): cdAst.AST {
