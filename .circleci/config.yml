@@ -601,6 +601,17 @@ workflows:
             branches:
               only:
                 - master
+  aio_monitoring:
+    jobs:
+      - aio_monitoring
+    triggers:
+      - schedule:
+          # Runs AIO monitoring job at 00:00AM every day.
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
 
 # TODO:
 # - don't build the g3 branch
