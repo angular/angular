@@ -501,7 +501,7 @@ export class UpgradeAdapter {
     let rootScopePrototype: any;
     let rootScope: angular.IRootScopeService;
     const upgradeAdapter = this;
-    const ng1Module = this.ng1Module = angular.module(this.idPrefix, modules);
+    const ng1Module = this.ng1Module = angular.module_(this.idPrefix, modules);
     const platformRef = platformBrowserDynamic();
 
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
