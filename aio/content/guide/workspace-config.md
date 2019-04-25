@@ -179,7 +179,7 @@ Some additional options (listed below) can only be set through the configuration
 
 ## Project asset configuration
 
-Each `build` target configuration can include as `assets` array that lists files or folders you want to copy as-is when building your project.
+Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
 By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
 
 <code-example format="." language="json" linenums="false">
