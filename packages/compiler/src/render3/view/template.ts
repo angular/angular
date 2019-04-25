@@ -7,7 +7,7 @@
  */
 
 import {flatten, sanitizeIdentifier} from '../../compile_metadata';
-import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
+import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding, convertUpdateArguments} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -750,23 +750,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
           if (inputType === BindingType.Property) {
             if (value instanceof Interpolation) {
-              // Interpolated properties
-              const {currValExpr} = convertPropertyBinding(
-                  this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
-
-              let args: o.Expression[] = (currValExpr as any).args;
-              args.shift();  // ViewEngine required a count, we don't need that.
-
-              // For interpolations like attr="{{foo}}", we don't need ["", foo, ""], just [foo].
-              if (args.length === 3 && isEmptyStringExpression(args[0]) &&
-                  isEmptyStringExpression(args[2])) {
-                args = [args[1]];
-              }
-
               this.updateInstruction(
-                  elementIndex, input.sourceSpan, propertyInterpolate(args.length), () => {
-                    return [o.literal(attrName), ...args, ...params];
-                  });
+                  elementIndex, input.sourceSpan, getPropertyInterpolationExpression(value),
+                  () =>
+                      [o.literal(attrName),
+                       ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value),
+                       ...params]);
+
             } else {
               // Bound, un-interpolated properties
               this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
@@ -1074,6 +1064,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const valExpr = convertedPropertyBinding.currValExpr;
     return value instanceof Interpolation || skipBindFn ? valExpr :
                                                           o.importExpr(R3.bind).callFn([valExpr]);
+  }
+
+  /**
+   * Gets a list of argument expressions to pass to an update instruction expression. Also updates
+   * the temp variables state with temp variables that were identified as needing to be created
+   * while visiting the arguments.
+   * @param contextExpression The expression for the context variable used to create arguments
+   * @param value The original expression we will be resolving an arguments list from.
+   */
+  private getUpdateInstructionArguments(contextExpression: o.Expression, value: AST):
+      o.Expression[] {
+    const {args, stmts} =
+        convertUpdateArguments(this, contextExpression, value, this.bindingContext());
+    this._tempVariables.push(...stmts);
+    return args;
   }
 
   private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
@@ -1646,16 +1651,12 @@ function interpolate(args: o.Expression[]): o.Expression {
   return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
 }
 
-function isEmptyStringExpression(exp: o.Expression) {
-  return exp instanceof o.LiteralExpr && exp.value === '';
-}
-
-function propertyInterpolate(argsLength: number) {
-  if (argsLength % 2 !== 1) {
-    error(`Invalid propertyInterpolate argument length ${argsLength}`);
-  }
-
-  switch (argsLength) {
+/**
+ * Gets the instruction to generate for an interpolated property
+ * @param interpolation An Interpolation AST
+ */
+function getPropertyInterpolationExpression(interpolation: Interpolation) {
+  switch (getInterpolationArgsLength(interpolation)) {
     case 1:
       return R3.propertyInterpolate;
     case 3:
@@ -1679,6 +1680,22 @@ function propertyInterpolate(argsLength: number) {
   }
 }
 
+/**
+ * Gets the number of arguments expected to be passed to a generated instruction in the case of
+ * interpolation instructions.
+ * @param interpolation An interpolation ast
+ */
+function getInterpolationArgsLength(interpolation: Interpolation) {
+  const {expressions, strings} = interpolation;
+  if (expressions.length === 1 && strings.length === 2 && strings[0] === '' && strings[1] === '') {
+    // If the interpolation has one interpolated value, but the prefix and suffix are both empty
+    // strings, we only pass one argument, to a special instruction like `propertyInterpolate` or
+    // `textInterpolate`.
+    return 1;
+  } else {
+    return expressions.length + strings.length;
+  }
+}
 /**
  * Options that can be used to modify how a template is parsed by `parseTemplate()`.
  */
