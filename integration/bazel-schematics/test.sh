@@ -9,7 +9,7 @@ function installLocalPackages() {
   readonly pwd=$(pwd)
   readonly packages=(
     animations common compiler core forms platform-browser
-    platform-browser-dynamic router bazel compiler-cli language-service upgrade
+    platform-browser-dynamic router bazel compiler-cli language-service
   )
   local local_packages=()
   for package in "${packages[@]}"; do
