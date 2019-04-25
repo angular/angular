@@ -23,7 +23,7 @@ import {E2eAppLayout, Home} from './e2e-app-layout';
   exports: [E2eAppLayout],
 
   // We need to pass this in here, because the gesture config currently doesn't for lazy-loaded
-  // modules. See https://github.com/angular/material2/issues/4595#issuecomment-416641018.
+  // modules. See https://github.com/angular/components/issues/4595#issuecomment-416641018.
   providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]
 })
 export class E2eAppModule {

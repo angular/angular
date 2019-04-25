@@ -52,7 +52,7 @@
   // child element cannot expand to the same boundaries as the parent element with a border.
   // In order to work around this issue by *not* hiding overflow, we adjust the child elements
   // to fully cover the actual button element. This means that the border-radius would be correct
-  // then. See: https://github.com/angular/material2/issues/13738
+  // then. See: https://github.com/angular/components/issues/13738
   .mat-button-ripple.mat-ripple, .mat-button-focus-overlay {
     top: -$mat-stroked-button-border-width;
     left: -$mat-stroked-button-border-width;

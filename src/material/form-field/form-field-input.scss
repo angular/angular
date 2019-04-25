@@ -92,7 +92,7 @@
 
     &:-ms-input-placeholder {
       // fix IE11 not able to focus programmatically with css style -ms-user-select: none
-      // see https://github.com/angular/material2/issues/15093
+      // see https://github.com/angular/components/issues/15093
       -ms-user-select: text;
     }
 
@@ -113,7 +113,7 @@
 
       // Overwrite browser specific CSS properties that can overwrite the `color` property.
       // Some developers seem to use this approach to easily overwrite the placeholder and
-      // label color. See: https://github.com/angular/material2/issues/12074
+      // label color. See: https://github.com/angular/components/issues/12074
       -webkit-text-fill-color: transparent;
 
       // Remove the transition to prevent the placeholder

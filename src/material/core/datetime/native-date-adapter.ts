@@ -18,7 +18,7 @@ let SUPPORTS_INTL_API: boolean;
 // cause IE to throw. These cases are tied to particular versions of Windows and can happen if
 // the consumer is providing a polyfilled `Map`. See:
 // https://github.com/Microsoft/ChakraCore/issues/3189
-// https://github.com/angular/material2/issues/15687
+// https://github.com/angular/components/issues/15687
 try {
   SUPPORTS_INTL_API = typeof Intl != 'undefined';
 } catch {

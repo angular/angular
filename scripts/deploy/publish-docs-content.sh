@@ -27,7 +27,7 @@ docsContentPath="${projectPath}/tmp/material2-docs-content"
 examplesPackagePath="$(bazel info bazel-bin)/src/material-examples/npm_package"
 
 # Git clone URL for the material2-docs-content repository.
-docsContentRepoUrl="https://github.com/angular/material2-docs-content"
+docsContentRepoUrl="https://github.com/angular/components-docs-content"
 
 # Current version of Angular Material from the package.json file
 buildVersion=$(node -pe "require('./package.json').version")

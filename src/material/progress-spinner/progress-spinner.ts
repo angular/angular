@@ -74,7 +74,7 @@ export function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinn
 // .0001 percentage difference is necessary in order to avoid unwanted animation frames
 // for example because the animation duration is 4 seconds, .1% accounts to 4ms
 // which are enough to see the flicker described in
-// https://github.com/angular/material2/issues/8984
+// https://github.com/angular/components/issues/8984
 const INDETERMINATE_ANIMATION_TEMPLATE = `
  @keyframes mat-progress-spinner-stroke-rotate-DIAMETER {
     0%      { stroke-dashoffset: START_VALUE;  transform: rotate(0); }

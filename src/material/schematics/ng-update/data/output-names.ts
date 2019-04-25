@@ -11,7 +11,7 @@ import {OutputNameUpgradeData, TargetVersion, VersionChanges} from '@angular/cdk
 export const outputNames: VersionChanges<OutputNameUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10163',
+      pr: 'https://github.com/angular/components/pull/10163',
       changes: [
         {
           replace: 'change',
@@ -38,7 +38,7 @@ export const outputNames: VersionChanges<OutputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10279',
+      pr: 'https://github.com/angular/components/pull/10279',
       changes: [
         {
           replace: 'align-changed',
@@ -65,7 +65,7 @@ export const outputNames: VersionChanges<OutputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10309',
+      pr: 'https://github.com/angular/components/pull/10309',
       changes: [
         {
           replace: 'selectChange',
@@ -78,7 +78,7 @@ export const outputNames: VersionChanges<OutputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10311',
+      pr: 'https://github.com/angular/components/pull/10311',
       changes: [
         {
           replace: 'remove',

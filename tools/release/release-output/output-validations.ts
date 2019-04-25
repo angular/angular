@@ -32,7 +32,7 @@ export function checkReleaseBundle(bundlePath: string): string[] {
  * Checks the specified TypeScript definition file by ensuring it does not contain invalid
  * dynamic import statements. There can be invalid type imports paths because we compose the
  * release package by moving things in a desired output structure. See Angular package format
- * specification and https://github.com/angular/material2/pull/12876
+ * specification and https://github.com/angular/components/pull/12876
  */
 export function checkTypeDefinitionFile(filePath: string): string[] {
   const baseDir = dirname(filePath);

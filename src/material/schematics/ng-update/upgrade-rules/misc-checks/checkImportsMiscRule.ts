@@ -39,7 +39,7 @@ export class Walker extends ProgramAwareRuleWalker {
 
   /**
    * Checks for named imports that refer to the deleted animation constants.
-   * https://github.com/angular/material2/commit/9f3bf274c4f15f0b0fbd8ab7dbf1a453076e66d9
+   * https://github.com/angular/components/commit/9f3bf274c4f15f0b0fbd8ab7dbf1a453076e66d9
    */
   private _checkAnimationConstants(namedImports: ts.NamedImports) {
     namedImports.elements.filter(element => ts.isIdentifier(element.name)).forEach(element => {

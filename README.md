@@ -1,7 +1,7 @@
 # Components and Material Design for Angular
 [![npm version](https://badge.fury.io/js/%40angular%2Fmaterial.svg)](https://www.npmjs.com/package/%40angular%2Fmaterial)
-[![Build status](https://circleci.com/gh/angular/material2.svg?style=svg)](https://circleci.com/gh/angular/material2)
-[![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build status](https://circleci.com/gh/angular/components.svg?style=svg)](https://circleci.com/gh/angular/components)
+[![Gitter](https://badges.gitter.im/angular/components.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is the home for the Angular team's UI components built for and with Angular.
 These include Material Design components and the Angular Component Development Kit (CDK).
@@ -9,7 +9,7 @@ These include Material Design components and the Angular Component Development K
 #### Quick links
 [Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
-[Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
+[Contributing](https://github.com/angular/components/blob/master/CONTRIBUTING.md) |
 [StackBlitz Template](https://goo.gl/wwnhMV)
 
 ### Getting started
@@ -17,18 +17,18 @@ These include Material Design components and the Angular Component Development K
 See our [Getting Started Guide][getting-started]
 if you're building your first project with Angular Material.
 
-Check out our [directory of design documents](https://github.com/angular/material2/wiki/Design-doc-directory)
+Check out our [directory of design documents](https://github.com/angular/components/wiki/Design-doc-directory)
 for more insight into our process.
 
-If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/material2/blob/master/CONTRIBUTING.md).
+If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/components/blob/master/CONTRIBUTING.md).
 You can look through the GitHub issues (which should be up-to-date on who is working on which features
 and which pieces are blocked) and make a comment.
 
-Please see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+Please see our [`help wanted`](https://github.com/angular/components/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label for a list of issues where we could use help from the community.
 
 #### High level stuff planned for Q1 → Q2 2019 (January - June):
-* Most of the Angular Material team is on loan to the framework team
+* Most of the Angular Components team is on loan to the framework team
   helping with [Ivy](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7).
   We've been using the Angular CDK and Angular Material tests to validate code paths as well
   as helping debug issues in switching Google applications to the new rendering pipeline.
@@ -103,7 +103,7 @@ label for a list of issues where we could use help from the community.
 [16]: https://material.angular.io/components/slider/overview
 [17]: https://material.angular.io/components/menu/overview
 [18]: https://material.angular.io/components/tooltip/overview
-[19]: https://github.com/angular/material2/blob/master/src/material/core/ripple/ripple.md
+[19]: https://github.com/angular/components/blob/master/src/material/core/ripple/ripple.md
 [20]: https://material.angular.io/guide/theming
 [21]: https://material.angular.io/components/snack-bar/overview
 [22]: https://material.angular.io/components/dialog/overview

@@ -70,13 +70,13 @@ chances of your issue being dealt with quickly:
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
     causing the problem (line of code or commit)
 
-You can file new issues by providing the above information [here](https://github.com/angular/material2/issues/new).
+You can file new issues by providing the above information [here](https://github.com/angular/components/issues/new).
 
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-* Search [GitHub](https://github.com/angular/material2/pulls) for an open or closed PR
+* Search [GitHub](https://github.com/angular/components/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 * Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
   We cannot accept code without this.
@@ -106,7 +106,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git push my-fork my-fix-branch
     ```
 
-* In GitHub, send a pull request to `material2:master`.
+* In GitHub, send a pull request to `components:master`.
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular Material test suites to ensure tests are still passing.
@@ -239,9 +239,9 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/preview
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
-[dev-doc]: https://github.com/angular/material2/blob/master/DEV_ENVIRONMENT.md
-[github]: https://github.com/angular/material2
-[gitter]: https://gitter.im/angular/material2
+[dev-doc]: https://github.com/angular/components/blob/master/DEV_ENVIRONMENT.md
+[github]: https://github.com/angular/components
+[gitter]: https://gitter.im/angular/components
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [js-style-guide]: https://google.github.io/styleguide/jsguide.html
 [codepen]: http://codepen.io/

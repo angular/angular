@@ -8,7 +8,7 @@
   "typings": "./cdk.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/material2.git"
+    "url": "https://github.com/angular/components.git"
   },
   "keywords": [
     "angular",
@@ -19,9 +19,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/angular/material2/issues"
+    "url": "https://github.com/angular/components/issues"
   },
-  "homepage": "https://github.com/angular/material2#readme",
+  "homepage": "https://github.com/angular/components#readme",
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG"

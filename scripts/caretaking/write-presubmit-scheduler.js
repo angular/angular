@@ -8,7 +8,7 @@ const github = new GitHubApi();
 
 /** CONFIGURATION: change these things if you want to tweak how the runs are made. */
 
-/** Path to the local material2. By default based on the location of this script. */
+/** Path to the local components repo. By default based on the location of this script. */
 const localRepo = path.resolve(__dirname, '..', '..');
 
 /** Where to write the output from the presubmit script. */
@@ -32,7 +32,7 @@ const githubSearchOptions = {
   // Use the maximum of allowed items per Github API query. 100 pull requests should be
   // enough to continuously run presubmits through night.
   per_page: 100,
-  q: 'repo:angular/material2 is:open type:pr label:"pr: merge ready" -label:"pr: merge safe"',
+  q: 'repo:angular/components is:open type:pr label:"pr: merge ready" -label:"pr: merge safe"',
 };
 
 /** END OF CONFIGURATION. */

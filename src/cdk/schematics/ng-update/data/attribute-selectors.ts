@@ -19,7 +19,7 @@ export interface AttributeSelectorUpgradeData {
 export const attributeSelectors: VersionChanges<AttributeSelectorUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10257',
+      pr: 'https://github.com/angular/components/pull/10257',
       changes: [
         {
           replace: 'cdkPortalHost',

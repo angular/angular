@@ -11,7 +11,7 @@ import {ElementSelectorUpgradeData, TargetVersion, VersionChanges} from '@angula
 export const elementSelectors: VersionChanges<ElementSelectorUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10297',
+      pr: 'https://github.com/angular/components/pull/10297',
       changes: [
         {
           replace: 'mat-input-container',

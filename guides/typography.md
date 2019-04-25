@@ -101,7 +101,7 @@ If you're using Material's theming, you can also pass in your typography config 
 ```
 
 For more details about the typography functions and default config, see the
-[source](https://github.com/angular/material2/blob/master/src/material/core/typography/_typography.scss).
+[source](https://github.com/angular/components/blob/master/src/material/core/typography/_typography.scss).
 
 
 ### Material typography in your custom CSS

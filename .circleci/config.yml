@@ -1,4 +1,4 @@
-# Configuration file for https://circleci.com/gh/angular/material2
+# Configuration file for https://circleci.com/gh/angular/components
 
 # Note: YAML anchors allow an object to be re-used, reducing duplication.
 # The ampersand declares an alias for an object, then later the `<<: *name`

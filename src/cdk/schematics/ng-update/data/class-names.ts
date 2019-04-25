@@ -19,7 +19,7 @@ export interface ClassNameUpgradeData {
 export const classNames: VersionChanges<ClassNameUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10161',
+      pr: 'https://github.com/angular/components/pull/10161',
       changes: [
         {
           replace: 'ConnectedOverlayDirective',
@@ -33,7 +33,7 @@ export const classNames: VersionChanges<ClassNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10267',
+      pr: 'https://github.com/angular/components/pull/10267',
       changes: [
         {
           replace: 'ObserveContent',
@@ -43,7 +43,7 @@ export const classNames: VersionChanges<ClassNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10325',
+      pr: 'https://github.com/angular/components/pull/10325',
       changes: [
         {
           replace: 'FocusTrapDirective',

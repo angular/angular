@@ -16,73 +16,73 @@ import {ConstructorChecksUpgradeData, TargetVersion, VersionChanges} from '@angu
 export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
   [TargetVersion.V8]: [
     {
-      pr: 'https://github.com/angular/material2/pull/15647',
+      pr: 'https://github.com/angular/components/pull/15647',
       changes: ['MatFormField', 'MatTabLink', 'MatVerticalStepper']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15757',
+      pr: 'https://github.com/angular/components/pull/15757',
       changes: ['MatBadge']
     },
     {
-      pr: 'https://github.com/angular/material2/issues/15734',
+      pr: 'https://github.com/angular/components/issues/15734',
       changes: ['MatButton', 'MatAnchor']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15761',
+      pr: 'https://github.com/angular/components/pull/15761',
       changes: ['MatSpinner', 'MatProgressSpinner']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15723',
+      pr: 'https://github.com/angular/components/pull/15723',
       changes: ['MatList', 'MatListItem']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15722',
+      pr: 'https://github.com/angular/components/pull/15722',
       changes: ['MatExpansionPanel']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15737',
+      pr: 'https://github.com/angular/components/pull/15737',
       changes: ['MatTabHeader', 'MatTabBody']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15806',
+      pr: 'https://github.com/angular/components/pull/15806',
       changes: ['MatSlideToggle']
     },
     {
-      pr: 'https://github.com/angular/material2/pull/15773',
+      pr: 'https://github.com/angular/components/pull/15773',
       changes: ['MatDrawerContainer']
     }
   ],
 
   [TargetVersion.V7]: [
     {
-      pr: 'https://github.com/angular/material2/pull/11706',
+      pr: 'https://github.com/angular/components/pull/11706',
       changes: ['MatDrawerContent'],
     },
     {
-      pr: 'https://github.com/angular/material2/pull/11706',
+      pr: 'https://github.com/angular/components/pull/11706',
       changes: ['MatSidenavContent']
     }
   ],
 
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/9190',
+      pr: 'https://github.com/angular/components/pull/9190',
       changes: ['NativeDateAdapter'],
     },
     {
-      pr: 'https://github.com/angular/material2/pull/10319',
+      pr: 'https://github.com/angular/components/pull/10319',
       changes: ['MatAutocomplete'],
     },
     {
-      pr: 'https://github.com/angular/material2/pull/10344',
+      pr: 'https://github.com/angular/components/pull/10344',
       changes: ['MatTooltip'],
     },
     {
-      pr: 'https://github.com/angular/material2/pull/10389',
+      pr: 'https://github.com/angular/components/pull/10389',
       changes: ['MatIconRegistry'],
     },
     {
-      pr: 'https://github.com/angular/material2/pull/9775',
+      pr: 'https://github.com/angular/components/pull/9775',
       changes: ['MatCalendar'],
     },
   ]

@@ -82,7 +82,7 @@ $mat-form-field-outline-subscript-padding:
 
   .mat-form-field-outline-gap {
     // hack for Chrome's treatment of borders with non-integer (scaled) widths
-    // refer to https://github.com/angular/material2/issues/10710
+    // refer to https://github.com/angular/components/issues/10710
     border-radius: 0.000001px;
 
     border: $mat-form-field-outline-width solid currentColor;

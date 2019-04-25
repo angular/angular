@@ -311,6 +311,6 @@ class PublishReleaseTask extends BaseReleaseTask {
 
 /** Entry-point for the create release script. */
 if (require.main === module) {
-  new PublishReleaseTask(join(__dirname, '../../'), 'angular', 'material2').run();
+  new PublishReleaseTask(join(__dirname, '../../'), 'angular', 'components').run();
 }
 

@@ -74,7 +74,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   // overlay for `.cdk-program-focused` because mouse clicks on the <label> element would be always
   // treated as programmatic focus. Note that it needs the extra `:not` in order to have more
   // specificity than the `:hover` above.
-  // TODO(paul): support `program` as well. See https://github.com/angular/material2/issues/9889
+  // TODO(paul): support `program` as well. See https://github.com/angular/components/issues/9889
   &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
     opacity: 0.12;
 

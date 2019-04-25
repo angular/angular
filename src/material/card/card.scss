@@ -137,7 +137,7 @@ $mat-card-header-size: 40px !default;
 
 // This should normally also extend the `%mat-card-title-img`, but in order to avoid breaking
 // changes, we need to keep the horizontal margin reversion for now.
-// See: https://github.com/angular/material2/issues/12203
+// See: https://github.com/angular/components/issues/12203
 .mat-card-xl-image {
   width: 240px;
   height: 240px;

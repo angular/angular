@@ -39,5 +39,5 @@ require.config({
   }
 });
 
-// Workaround until https://github.com/angular/material2/issues/13883 has been addressed.
+// Workaround until https://github.com/angular/components/issues/13883 has been addressed.
 var module = {id: ''};

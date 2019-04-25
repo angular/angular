@@ -210,7 +210,7 @@ export function buildComponent(options: ComponentOptions,
     // In case the specified style extension is not part of the supported CSS supersets,
     // we generate the stylesheets with the "css" extension. This ensures that we don't
     // accidentally generate invalid stylesheets (e.g. drag-drop-comp.styl) which will
-    // break the Angular CLI project. See: https://github.com/angular/material2/issues/15164
+    // break the Angular CLI project. See: https://github.com/angular/components/issues/15164
     if (!supportedCssExtensions.includes(options.style!)) {
       // TODO: Cast is necessary as we can't use the Style enum which has been introduced
       // within CLI v7.3.0-rc.0. This would break the schematic for older CLI versions.

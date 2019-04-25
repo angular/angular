@@ -21,7 +21,7 @@ export interface MethodCallUpgradeData {
 export const methodCallChecks: VersionChanges<MethodCallUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10325',
+      pr: 'https://github.com/angular/components/pull/10325',
       changes: [
         {
           className: 'FocusMonitor',

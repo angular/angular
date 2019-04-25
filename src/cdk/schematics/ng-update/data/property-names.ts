@@ -24,7 +24,7 @@ export interface PropertyNameUpgradeData {
 export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
   [TargetVersion.V7]: [
     {
-      pr: 'https://github.com/angular/material2/pull/8286',
+      pr: 'https://github.com/angular/components/pull/8286',
       changes: [
         {
           replace: 'onChange',
@@ -37,7 +37,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/12927',
+      pr: 'https://github.com/angular/components/pull/12927',
       changes: [
         {
           replace: 'flexibleDiemsions',
@@ -52,7 +52,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
 
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10161',
+      pr: 'https://github.com/angular/components/pull/10161',
       changes: [
         {
           replace: '_deprecatedOrigin',
@@ -142,7 +142,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10257',
+      pr: 'https://github.com/angular/components/pull/10257',
       changes: [
         {
           replace: '_deprecatedPortal',

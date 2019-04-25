@@ -185,7 +185,7 @@ export class UnicornCandyAppModule {
 ```
 
 #### Theming only certain components
-The `angular-material-theme` mixin will output styles for [all components in the library](https://github.com/angular/material2/blob/master/src/material/core/theming/_all-theme.scss).
+The `angular-material-theme` mixin will output styles for [all components in the library](https://github.com/angular/components/blob/master/src/material/core/theming/_all-theme.scss).
 If you are only using a subset of the components (or if you want to change the theme for specific
 components), you can include component-specific theme mixins. You also will need to include
 the `mat-core-theme` mixin as well, which contains theme-specific styles for common behaviors

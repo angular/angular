@@ -1,11 +1,11 @@
 {
-  "name": "material2-srcs",
+  "name": "components-srcs",
   "description": "Material Design components for Angular",
-  "homepage": "https://github.com/angular/material2",
-  "bugs": "https://github.com/angular/material2/issues",
+  "homepage": "https://github.com/angular/components",
+  "bugs": "https://github.com/angular/components/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/material2.git"
+    "url": "https://github.com/angular/components.git"
   },
   "license": "MIT",
   "engines": {

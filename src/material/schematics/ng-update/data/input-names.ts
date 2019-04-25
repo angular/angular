@@ -11,7 +11,7 @@ import {InputNameUpgradeData, TargetVersion, VersionChanges} from '@angular/cdk/
 export const inputNames: VersionChanges<InputNameUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10218',
+      pr: 'https://github.com/angular/components/pull/10218',
       changes: [
         {
           replace: 'align',
@@ -24,7 +24,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10279',
+      pr: 'https://github.com/angular/components/pull/10279',
       changes: [
         {
           replace: 'align',
@@ -37,7 +37,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10294',
+      pr: 'https://github.com/angular/components/pull/10294',
       changes: [
         {
           replace: 'dividerColor',
@@ -57,7 +57,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10309',
+      pr: 'https://github.com/angular/components/pull/10309',
       changes: [
         {
           replace: 'mat-dynamic-height',
@@ -70,7 +70,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10342',
+      pr: 'https://github.com/angular/components/pull/10342',
       changes: [
         {
           replace: 'align',
@@ -83,7 +83,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10344',
+      pr: 'https://github.com/angular/components/pull/10344',
       changes: [
         {
           replace: 'tooltip-position',
@@ -96,7 +96,7 @@ export const inputNames: VersionChanges<InputNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10373',
+      pr: 'https://github.com/angular/components/pull/10373',
       changes: [
         {
           replace: 'thumb-label',

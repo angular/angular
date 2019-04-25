@@ -79,7 +79,7 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
     // .0001 percentage difference is necessary in order to avoid unwanted animation frames
     // for example because the animation duration is 4 seconds, .1% accounts to 4ms
     // which are enough to see the flicker described in
-    // https://github.com/angular/material2/issues/8984
+    // https://github.com/angular/components/issues/8984
     //
     // NOTE: this is replaced by js for any diameter other that 100
     0%      { stroke-dashoffset: $start;  transform: rotate(0); }

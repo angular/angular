@@ -164,6 +164,6 @@ class StageReleaseTask extends BaseReleaseTask {
 
 /** Entry-point for the release staging script. */
 if (require.main === module) {
-  new StageReleaseTask(join(__dirname, '../../'), 'angular', 'material2').run();
+  new StageReleaseTask(join(__dirname, '../../'), 'angular', 'components').run();
 }
 

@@ -11,7 +11,7 @@ import {PropertyNameUpgradeData, TargetVersion, VersionChanges} from '@angular/c
 export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10163',
+      pr: 'https://github.com/angular/components/pull/10163',
       changes: [
         {
           replace: 'change',
@@ -38,7 +38,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10218',
+      pr: 'https://github.com/angular/components/pull/10218',
       changes: [
         {
           replace: 'align',
@@ -51,7 +51,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10253',
+      pr: 'https://github.com/angular/components/pull/10253',
       changes: [
         {
           replace: 'extraClasses',
@@ -64,7 +64,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10279',
+      pr: 'https://github.com/angular/components/pull/10279',
       changes: [
         {
           replace: 'align',
@@ -98,7 +98,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10293',
+      pr: 'https://github.com/angular/components/pull/10293',
       changes: [
         {
           replace: 'shouldPlaceholderFloat',
@@ -111,7 +111,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10294',
+      pr: 'https://github.com/angular/components/pull/10294',
       changes: [
         {
           replace: 'dividerColor',
@@ -131,7 +131,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10309',
+      pr: 'https://github.com/angular/components/pull/10309',
       changes: [
         {
           replace: 'selectChange',
@@ -151,7 +151,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10311',
+      pr: 'https://github.com/angular/components/pull/10311',
       changes: [
         {
           replace: 'destroy',
@@ -171,7 +171,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10342',
+      pr: 'https://github.com/angular/components/pull/10342',
       changes: [
         {
           replace: 'align',
@@ -184,7 +184,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10344',
+      pr: 'https://github.com/angular/components/pull/10344',
       changes: [
         {
           replace: '_positionDeprecated',
@@ -197,7 +197,7 @@ export const propertyNames: VersionChanges<PropertyNameUpgradeData> = {
     },
 
     {
-      pr: 'https://github.com/angular/material2/pull/10373',
+      pr: 'https://github.com/angular/components/pull/10373',
       changes: [
         {
           replace: '_thumbLabelDeprecated',

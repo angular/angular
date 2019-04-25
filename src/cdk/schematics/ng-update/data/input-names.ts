@@ -26,7 +26,7 @@ export interface InputNameUpgradeData {
 export const inputNames: VersionChanges<InputNameUpgradeData> = {
   [TargetVersion.V6]: [
     {
-      pr: 'https://github.com/angular/material2/pull/10161',
+      pr: 'https://github.com/angular/components/pull/10161',
       changes: [
         {
           replace: 'origin',

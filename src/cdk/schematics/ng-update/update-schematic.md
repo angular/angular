@@ -98,7 +98,7 @@ because the non-separated upgrade data would just include: _`onChange` => `onVal
 Also besides separating the upgrade data based on the target version, we split the upgrade data
 based on the type of code that is affected by these migrations:  
   
-* See here: [src/material/schematics/update/material/data](https://github.com/angular/material2/tree/master/src/material/schematics/update/material/data)  
+* See here: [src/material/schematics/update/material/data](https://github.com/angular/components/tree/master/src/material/schematics/update/material/data)  
   
 ### Adding upgrade data
   
