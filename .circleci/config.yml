@@ -496,7 +496,7 @@ jobs:
       - *attach_workspace
       - *init_environment
       - run:
-          name: Run tests against the deployed app
+          name: Run tests against https://angular.io/
           command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
       - run:
           name: Notify caretaker about failure
@@ -515,7 +515,7 @@ jobs:
       - *attach_workspace
       - *init_environment
       - run:
-          name: Run tests against the deployed app
+          name: Run tests against https://next.angular.io/
           command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
       - run:
           name: Notify caretaker about failure
