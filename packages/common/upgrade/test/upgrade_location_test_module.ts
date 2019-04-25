@@ -11,7 +11,7 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {$locationShim, $locationShimProvider} from '../src/$location_shim';
+import {$locationShim, $locationShimProvider} from '../src/location_shim';
 import {LocationUpgradeModule} from '../src/location_upgrade_module';
 import {UrlCodec} from '../src/params';
 

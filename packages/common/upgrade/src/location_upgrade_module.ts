@@ -10,7 +10,7 @@ import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStr
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {$locationShim, $locationShimProvider} from './$location_shim';
+import {$locationShim, $locationShimProvider} from './location_shim';
 import {AngularJSUrlCodec, UrlCodec} from './params';
 
 
@@ -75,7 +75,6 @@ export class LocationUpgradeModule {
   }
 }
 
-/** @internal */
 export function provideAppBaseHref(config: LocationUpgradeConfig, appBaseHref?: string) {
   if (config && config.appBaseHref != null) {
     return config.appBaseHref;
@@ -85,20 +84,17 @@ export function provideAppBaseHref(config: LocationUpgradeConfig, appBaseHref?: 
   return '';
 }
 
-/** @internal */
 export function provideUrlCodec(config: LocationUpgradeConfig) {
   const codec = config && config.urlCodec || AngularJSUrlCodec;
   return new (codec as any)();
 }
 
-/** @internal */
 export function provideLocationStrategy(
     platformLocation: PlatformLocation, baseHref: string, options: LocationUpgradeConfig = {}) {
   return options.useHash ? new HashLocationStrategy(platformLocation, baseHref) :
                            new PathLocationStrategy(platformLocation, baseHref);
 }
 
-/** @internal */
 export function provide$location(
     ngUpgrade: UpgradeModule, location: Location, platformLocation: PlatformLocation,
     urlCodec: UrlCodec, locationStrategy: LocationStrategy) {

@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './location_upgrade_module';
-export * from './$location_shim';
-export * from './params';
+export {$locationShim, $locationShimProvider} from './location_shim';
+export {LOCATION_UPGRADE_CONFIGURATION, LocationUpgradeConfig, LocationUpgradeModule} from './location_upgrade_module';
+export {AngularJSUrlCodec, UrlCodec} from './params';
