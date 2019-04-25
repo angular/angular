@@ -63,7 +63,7 @@ withEachNg1Version(() => {
 
            const downModA = doDowngradeModule(Ng2ModuleA);
            const downModB = doDowngradeModule(Ng2ModuleB);
-           const ng1Module = angular.module('ng1', [downModA, downModB])
+           const ng1Module = angular.module_('ng1', [downModA, downModB])
                                  .directive('ng2A', downgradeComponent({
                                               component: Ng2ComponentA,
                                               downgradedModule: downModA, propagateDigest,
@@ -131,7 +131,7 @@ withEachNg1Version(() => {
            const downModA = doDowngradeModule(Ng2ModuleA);
            const downModB = doDowngradeModule(Ng2ModuleB);
            const ng1Module =
-               angular.module('ng1', [downModA, downModB])
+               angular.module_('ng1', [downModA, downModB])
                    .directive('ng1A', () => ({template: 'ng1A(<ng2-b ng-if="showB"></ng2-b>)'}))
                    .directive('ng2A', downgradeComponent({
                                 component: Ng2ComponentA,
@@ -205,7 +205,7 @@ withEachNg1Version(() => {
 
                 const downModA = doDowngradeModule(Ng2ModuleA);
                 const downModB = doDowngradeModule(Ng2ModuleB);
-                const ng1Module = angular.module('ng1', [downModA, downModB])
+                const ng1Module = angular.module_('ng1', [downModA, downModB])
                                       .directive('ng2A', downgradeComponent({
                                                    component: Ng2ComponentA,
                                                    downgradedModule: downModA, propagateDigest,
@@ -299,7 +299,7 @@ withEachNg1Version(() => {
 
                 const downModA = doDowngradeModule(Ng2ModuleA);
                 const downModB = doDowngradeModule(Ng2ModuleB);
-                const ng1Module = angular.module('ng1', [downModA, downModB])
+                const ng1Module = angular.module_('ng1', [downModA, downModB])
                                       .directive('ng2A', downgradeComponent({
                                                    component: Ng2ComponentA,
                                                    downgradedModule: downModA, propagateDigest,
@@ -391,7 +391,7 @@ withEachNg1Version(() => {
 
                 const downMod = downgradeModule(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [downMod])
+                    angular.module_('ng1', [downMod])
                         .directive(
                             'ng2A', downgradeComponent({component: Ng2ComponentA, propagateDigest}))
                         .directive(
@@ -501,7 +501,7 @@ withEachNg1Version(() => {
 
                 const downModA = doDowngradeModule(Ng2ModuleA);
                 const downModB = doDowngradeModule(Ng2ModuleB);
-                const ng1Module = angular.module('ng1', [downModA, downModB])
+                const ng1Module = angular.module_('ng1', [downModA, downModB])
                                       .directive('ng2A', downgradeComponent({
                                                    component: Ng2ComponentA,
                                                    downgradedModule: downModA, propagateDigest,
@@ -568,7 +568,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2AComponent, propagateDigest}))
                    .run(($rootScope: angular.IRootScopeService) => $rootScope.value = 0);
@@ -631,7 +631,7 @@ withEachNg1Version(() => {
                     platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
                 const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
+                    angular.module_('ng1', [lazyModuleName])
                         .directive(
                             'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
                         .value('ng1Value', 'foo');
@@ -676,7 +676,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -711,7 +711,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -752,7 +752,7 @@ withEachNg1Version(() => {
                     platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
                 const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
+                    angular.module_('ng1', [lazyModuleName])
                         .directive(
                             'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
                         .run(($rootScope: angular.IRootScopeService) => {
@@ -822,7 +822,7 @@ withEachNg1Version(() => {
                     platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
                 const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
+                    angular.module_('ng1', [lazyModuleName])
                         .directive(
                             'test', downgradeComponent({component: TestComponent, propagateDigest}))
                         .directive(
@@ -871,7 +871,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -924,7 +924,7 @@ withEachNg1Version(() => {
                     platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
                 const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
+                    angular.module_('ng1', [lazyModuleName])
                         .directive(
                             'test', downgradeComponent({component: TestComponent, propagateDigest}))
                         .directive(
@@ -996,7 +996,7 @@ withEachNg1Version(() => {
                     platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
                 const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
                 const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
+                    angular.module_('ng1', [lazyModuleName])
                         .directive(
                             'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
                         .run(($rootScope: angular.IRootScopeService) => {
@@ -1140,7 +1140,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -1197,7 +1197,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -1252,7 +1252,7 @@ withEachNg1Version(() => {
                platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
            const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
            const ng1Module =
-               angular.module('ng1', [lazyModuleName])
+               angular.module_('ng1', [lazyModuleName])
                    .directive(
                        'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
@@ -1317,7 +1317,7 @@ withEachNg1Version(() => {
         afterEach(() => setTempInjectorRef(null !));
 
         it('should throw if no downgraded module is included', async(() => {
-             const ng1Module = angular.module('ng1', [])
+             const ng1Module = angular.module_('ng1', [])
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,
@@ -1349,7 +1349,7 @@ withEachNg1Version(() => {
            }));
 
         it('should throw if the corresponding downgraded module is not included', async(() => {
-             const ng1Module = angular.module('ng1', [downModA])
+             const ng1Module = angular.module_('ng1', [downModA])
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,
@@ -1375,7 +1375,7 @@ withEachNg1Version(() => {
 
         it('should throw if `downgradedModule` is not specified and there are multiple downgraded modules',
            async(() => {
-             const ng1Module = angular.module('ng1', [downModA, downModB])
+             const ng1Module = angular.module_('ng1', [downModA, downModB])
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,

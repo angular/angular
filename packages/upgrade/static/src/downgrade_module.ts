@@ -143,7 +143,7 @@ export function downgradeModule<T>(
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
-  angular.module(lazyModuleName, [])
+  angular.module_(lazyModuleName, [])
       .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
       .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
       .factory(

@@ -45,7 +45,7 @@ withEachNg1Version(() => {
 
               // the ng1 app module that will consume the downgraded component
               const ng1Module = angular
-                                    .module('ng1', [])
+                                    .module_('ng1', [])
                                     // create an ng1 facade of the ng2 component
                                     .directive('ng2', downgradeComponent({component: Ng2Component}))
                                     .run(($rootScope: angular.IRootScopeService) => {
@@ -79,7 +79,7 @@ withEachNg1Version(() => {
               }
 
               const ng1Module =
-                  angular.module('ng1', [])
+                  angular.module_('ng1', [])
                       .directive('ng2', downgradeComponent({component: Ng2Component}))
                       .run(($rootScope: angular.IRootScopeService) => {
                         $rootScope['items'] = [
@@ -128,7 +128,7 @@ withEachNg1Version(() => {
          }
 
          const ng1Module =
-             angular.module('ng1', [])
+             angular.module_('ng1', [])
                  .directive('ng1', () => ({
                                      transclude: true,
                                      template: '{{ prop }}(<ng-transclude></ng-transclude>)'
@@ -167,7 +167,7 @@ withEachNg1Version(() => {
                 ngDoBootstrap() {}
               }
 
-              const ng1Module = angular.module('ng1', []).directive(
+              const ng1Module = angular.module_('ng1', []).directive(
                   'ng2', downgradeComponent({component: Ng2Component}));
 
               // The ng-if on one of the projected children is here to make sure

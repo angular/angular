@@ -171,7 +171,7 @@ export class UpgradeModule {
     // Create an ng1 module to bootstrap
     const initModule =
         angular
-            .module(INIT_MODULE_NAME, [])
+            .module_(INIT_MODULE_NAME, [])
 
             .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
 
@@ -262,7 +262,7 @@ export class UpgradeModule {
               }
             ]);
 
-    const upgradeModule = angular.module(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
+    const upgradeModule = angular.module_(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
     const windowAngular = (window as any)['angular'];
