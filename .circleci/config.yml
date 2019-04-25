@@ -493,9 +493,7 @@ jobs:
       # which does not load the browser through the Bazel webtesting rules.
       - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - *attach_workspace
       - *init_environment
       - run:
           name: Run tests against the deployed apps
@@ -691,7 +689,10 @@ workflows:
 
   aio_monitoring:
     jobs:
-      - aio_monitoring
+      - setup
+      - aio_monitoring:
+          requires:
+            - setup
     triggers:
       - schedule:
           # Runs AIO monitoring job at 00:00AM every day.
