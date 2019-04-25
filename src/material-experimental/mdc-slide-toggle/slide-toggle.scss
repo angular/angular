@@ -40,4 +40,14 @@
   .mat-ripple-element {
     opacity: map-get($mdc-ripple-dark-ink-opacities, press);
   }
+
+  // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
+  // TODO(mmalerba): Look into using MDC's Sass queries to separate the animation styles and
+  //  conditionally add them. Consider the size cost when deciding whether to switch.
+  &._mat-animation-noopable {
+    .mdc-switch__thumb-underlay,
+    .mdc-switch__thumb-underlay::before {
+      transition: none;
+    }
+  }
 }
