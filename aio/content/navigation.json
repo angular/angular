@@ -667,8 +667,8 @@
         },
         {
           "url": "guide/deprecations",
-          "title": "Deprecation Summary",
-          "tooltip": "Summary of Angular features and APIs that are deprecated."
+          "title": "Deprecations",
+          "tooltip": "Summary of Angular APIs and features that are deprecated."
         }
       ]
     },
