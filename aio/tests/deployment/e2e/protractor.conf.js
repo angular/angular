@@ -1,6 +1,10 @@
+// @ts-check
 // Protractor configuration file, see link for more information
 // https://github.com/angular/protractor/blob/master/lib/config.ts
 
+/**
+ * @type { import("protractor").Config }
+ */
 exports.config = {
   allScriptsTimeout: 11000,
   suites: {
@@ -23,8 +27,10 @@ exports.config = {
     legacyUrls: [],
   },
   beforeLaunch() {
+    const {join} = require('path');
     const {register} = require('ts-node');
-    register({});
+
+    register({project: join(__dirname, './tsconfig.json')});
   },
   onPrepare() {
     const {SpecReporter} = require('jasmine-spec-reporter');

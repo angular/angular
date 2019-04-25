@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { WebWorkerMessage } from '../shared/web-worker-message';
 import * as lunr from 'lunr';
 

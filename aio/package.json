@@ -50,8 +50,8 @@
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
     "docs-test": "node tools/transforms/test.js",
-    "redirects-test": "jasmine-ts tests/deployment/unit/**/*.spec.ts",
-    "firebase-utils-test": "jasmine-ts tools/firebase-test-utils/*.spec.ts",
+    "redirects-test": "jasmine-ts --project=tests/deployment/unit tests/deployment/unit/**/*.spec.ts",
+    "firebase-utils-test": "jasmine-ts --project=tools/firebase-test-utils tools/firebase-test-utils/*.spec.ts",
     "tools-lint": "tslint -c \"tools/tslint.json\" \"tools/firebase-test-utils/**/*.ts\"",
     "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && yarn firebase-utils-test",
     "preserve-and-sync": "yarn docs",
@@ -96,8 +96,8 @@
     "zone.js": "^0.9.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.800.0-beta.13",
-    "@angular/cli": "8.0.0-beta.13",
+    "@angular-devkit/build-angular": "0.800.0-beta.18",
+    "@angular/cli": "8.0.0-beta.18",
     "@angular/compiler": "^8.0.0-beta.14",
     "@angular/compiler-cli": "^8.0.0-beta.14",
     "@angular/language-service": "^8.0.0-beta.14",
