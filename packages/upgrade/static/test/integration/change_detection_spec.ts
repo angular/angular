@@ -38,7 +38,7 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         const ng1Module = angular.module('ng1', []).directive(
+         const ng1Module = angular.module_('ng1', []).directive(
              'myApp', downgradeComponent({component: AppComponent}));
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
@@ -193,7 +193,7 @@ withEachNg1Version(() => {
     //      }
 
     //      const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-    //      const ng1Module = angular.module('ng1', []).directive(
+    //      const ng1Module = angular.module_('ng1', []).directive(
     //          'myApp', adapter.downgradeNg2Component(AppComponent));
 
     //      const element = html('<my-app></my-app>');

@@ -179,7 +179,7 @@ withEachNg1Version(() => {
            class Ng2Module {
            }
 
-           const ng1Module = angular.module('ng1', []);
+           const ng1Module = angular.module_('ng1', []);
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const element = html('<my-app></my-app>');
 
@@ -315,7 +315,7 @@ withEachNg1Version(() => {
       //      }
 
       //      const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-      //      const ng1Module = angular.module('ng1', []).directive(
+      //      const ng1Module = angular.module_('ng1', []).directive(
       //          'myApp', adapter.downgradeNg2Component(AppComponent));
 
       //      const element = html('<my-app></my-app>');
