@@ -1,8 +1,5 @@
 export declare class ServiceWorkerModule {
-    static register(script: string, opts?: {
-        scope?: string;
-        enabled?: boolean;
-    }): ModuleWithProviders<ServiceWorkerModule>;
+    static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
 }
 
 export declare class SwPush {
@@ -20,6 +17,11 @@ export declare class SwPush {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
     unsubscribe(): Promise<void>;
+}
+
+export declare abstract class SwRegistrationOptions {
+    enabled?: boolean;
+    scope?: string;
 }
 
 export declare class SwUpdate {
