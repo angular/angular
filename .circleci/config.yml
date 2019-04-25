@@ -689,19 +689,17 @@ workflows:
           cron: "0 * * * *"
           filters: *publish_branches_filter
 
-# This job is currently disabled due to a version skew problem.
-# More info is available here: https://github.com/angular/angular/issues/30101
-#  aio_monitoring:
-#    jobs:
-#      - aio_monitoring
-#    triggers:
-#      - schedule:
-#          # Runs AIO monitoring job at 00:00AM every day.
-#          cron: "0 0 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - master
+  aio_monitoring:
+    jobs:
+      - aio_monitoring
+    triggers:
+      - schedule:
+          # Runs AIO monitoring job at 00:00AM every day.
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
 
 # TODO:
 # - don't build the g3 branch
