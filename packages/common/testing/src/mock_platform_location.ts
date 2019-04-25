@@ -78,6 +78,11 @@ function parseUrl(urlStr: string, baseHref: string) {
   };
 }
 
+/**
+ * Mock platform location config
+ *
+ * @publicApi
+ */
 export interface MockPlatformLocationConfig {
   startUrl?: string;
   appBaseHref?: string;
