@@ -43,7 +43,7 @@ function main(argv: [string, string, string] | [string, string]): boolean {
       const defineFlag = (compile !== 'legacy') ? `--define=compile=${compile} ` : '';
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);
-      console.error(`    yarn bazel run ${defineFlag}${process.env['BAZEL_TARGET']}.accept`);
+      console.error(`    yarn bazel run ${defineFlag}${process.env['TEST_TARGET']}.accept`);
     }
   }
   return passed;
