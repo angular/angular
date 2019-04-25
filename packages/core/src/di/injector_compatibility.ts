@@ -71,7 +71,23 @@ export function injectInjectorOnly<T>(
 /**
  * Generated instruction: Injects a token from the currently active injector.
  *
- * https://github.com/angular/angular/blob/master/packages/core/src/render3/DELTA_INSTRUCTIONS.md
+ * Must be used in the context of a factory function such as one defined for an
+ * `InjectionToken`. Throws an error if not called from such a context.
+ *
+ * (Additional documentation moved to `inject`, as it is the public API, and an alias for this instruction)
+ *
+ * @see inject
+ * @codeGenApi
+ */
+export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
+export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
+    null {
+  return (_injectImplementation || injectInjectorOnly)(token, flags);
+}
+
+/**
+ * Injects a token from the currently active injector.
  *
  * Must be used in the context of a factory function such as one defined for an
  * `InjectionToken`. Throws an error if not called from such a context.
@@ -92,16 +108,6 @@ export function injectInjectorOnly<T>(
  *
  * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
  *
- * @publicApi
- */
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
-    null {
-  return (_injectImplementation || injectInjectorOnly)(token, flags);
-}
-
-/**
  * @publicApi
  */
 export const inject = ɵɵinject;
