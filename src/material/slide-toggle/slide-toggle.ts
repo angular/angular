@@ -66,10 +66,10 @@ export class MatSlideToggleChange {
 
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
-export class MatSlideToggleBase {
+class MatSlideToggleBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatSlideToggleMixinBase:
+const _MatSlideToggleMixinBase:
     HasTabIndexCtor &
     CanColorCtor &
     CanDisableRippleCtor &

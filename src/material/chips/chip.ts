@@ -63,15 +63,12 @@ export class MatChipSelectionChange {
 
 // Boilerplate for applying mixins to MatChip.
 /** @docs-private */
-export class MatChipBase {
+class MatChipBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
-export const _MatChipMixinBase:
-    CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatChipBase =
-        mixinColor(mixinDisableRipple(mixinDisabled(MatChipBase)), 'primary');
-
-const CHIP_ATTRIBUTE_NAMES = ['mat-basic-chip'];
+const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatChipBase =
+    mixinColor(mixinDisableRipple(mixinDisabled(MatChipBase)), 'primary');
 
 /**
  * Dummy directive to add CSS class to chip avatar.
@@ -242,15 +239,16 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   }
 
   _addHostClassName() {
-    // Add class for the different chips
-    for (const attr of CHIP_ATTRIBUTE_NAMES) {
-      if (this._elementRef.nativeElement.hasAttribute(attr) ||
-        this._elementRef.nativeElement.tagName.toLowerCase() === attr) {
-        (this._elementRef.nativeElement as HTMLElement).classList.add(attr);
-        return;
-      }
+    const basicChipAttrName = 'mat-basic-chip';
+    const element = this._elementRef.nativeElement as HTMLElement;
+
+    if (element.hasAttribute(basicChipAttrName) ||
+        element.tagName.toLowerCase() === basicChipAttrName) {
+      element.classList.add(basicChipAttrName);
+      return;
+    } else {
+      element.classList.add('mat-standard-chip');
     }
-    (this._elementRef.nativeElement as HTMLElement).classList.add('mat-standard-chip');
   }
 
   ngOnDestroy() {

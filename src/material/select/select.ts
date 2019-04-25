@@ -159,14 +159,14 @@ export class MatSelectChange {
 
 // Boilerplate for applying mixins to MatSelect.
 /** @docs-private */
-export class MatSelectBase {
+class MatSelectBase {
   constructor(public _elementRef: ElementRef,
               public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
               public ngControl: NgControl) {}
 }
-export const _MatSelectMixinBase:
+const _MatSelectMixinBase:
     CanDisableCtor &
     HasTabIndexCtor &
     CanDisableRippleCtor &

@@ -348,8 +348,8 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
 
 // Boilerplate for applying mixins to the MatButtonToggle class.
 /** @docs-private */
-export class MatButtonToggleBase {}
-export const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBase =
+class MatButtonToggleBase {}
+const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBase =
     mixinDisableRipple(MatButtonToggleBase);
 
 /** Single button inside of a toggle group. */

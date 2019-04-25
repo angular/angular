@@ -1,5 +1,3 @@
-export declare const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBase;
-
 export declare const MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatButtonToggleDefaultOptions>;
 
 export declare const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any;
@@ -28,9 +26,6 @@ export declare class MatButtonToggle extends _MatButtonToggleMixinBase implement
 }
 
 export declare type MatButtonToggleAppearance = 'legacy' | 'standard';
-
-export declare class MatButtonToggleBase {
-}
 
 export declare class MatButtonToggleChange {
     source: MatButtonToggle;

@@ -32,11 +32,10 @@ import {MatIconRegistry} from './icon-registry';
 
 // Boilerplate for applying mixins to MatIcon.
 /** @docs-private */
-export class MatIconBase {
+class MatIconBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatIconMixinBase: CanColorCtor & typeof MatIconBase =
-    mixinColor(MatIconBase);
+const _MatIconMixinBase: CanColorCtor & typeof MatIconBase = mixinColor(MatIconBase);
 
 /**
  * Injection token used to provide the current location to `MatIcon`.

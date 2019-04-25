@@ -1,5 +1,3 @@
-export declare const _MatSliderMixinBase: HasTabIndexCtor & CanColorCtor & CanDisableCtor & typeof MatSliderBase;
-
 export declare const MAT_SLIDER_VALUE_ACCESSOR: any;
 
 export declare class MatSlider extends _MatSliderMixinBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
@@ -57,11 +55,6 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-}
-
-export declare class MatSliderBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatSliderChange {

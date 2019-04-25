@@ -1,7 +1,3 @@
-export declare const _MatSortHeaderMixinBase: CanDisableCtor & typeof MatSortHeaderBase;
-
-export declare const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBase;
-
 export declare type ArrowViewState = SortDirection | 'hint' | 'active';
 
 export interface ArrowViewStateTransition {
@@ -49,9 +45,6 @@ export declare const matSortAnimations: {
     readonly allowChildren: AnimationTriggerMetadata;
 };
 
-export declare class MatSortBase {
-}
-
 export declare class MatSortHeader extends _MatSortHeaderMixinBase implements CanDisable, MatSortable, OnDestroy, OnInit {
     _arrowDirection: SortDirection;
     _columnDef: MatSortHeaderColumnDef;
@@ -77,9 +70,6 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _updateArrowDirection(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-}
-
-export declare class MatSortHeaderBase {
 }
 
 export declare class MatSortHeaderIntl {

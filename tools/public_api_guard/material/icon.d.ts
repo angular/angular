@@ -1,5 +1,3 @@
-export declare const _MatIconMixinBase: CanColorCtor & typeof MatIconBase;
-
 export declare function getMatIconFailedToSanitizeLiteralError(literal: SafeHtml): Error;
 
 export declare function getMatIconFailedToSanitizeUrlError(url: SafeResourceUrl): Error;
@@ -31,11 +29,6 @@ export declare class MatIcon extends _MatIconMixinBase implements OnChanges, OnI
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-}
-
-export declare class MatIconBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export interface MatIconLocation {

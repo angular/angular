@@ -30,8 +30,8 @@ import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
 
 // Boilerplate for applying mixins to MatMenuItem.
 /** @docs-private */
-export class MatMenuItemBase {}
-export const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatMenuItemBase =
+class MatMenuItemBase {}
+const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & typeof MatMenuItemBase =
     mixinDisableRipple(mixinDisabled(MatMenuItemBase));
 
 /**

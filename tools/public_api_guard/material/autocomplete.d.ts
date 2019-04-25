@@ -1,5 +1,3 @@
-export declare const _MatAutocompleteMixinBase: CanDisableRippleCtor & typeof MatAutocompleteBase;
-
 export declare const AUTOCOMPLETE_OPTION_HEIGHT = 48;
 
 export declare const AUTOCOMPLETE_PANEL_HEIGHT = 256;
@@ -48,9 +46,6 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;
     ngAfterContentInit(): void;
-}
-
-export declare class MatAutocompleteBase {
 }
 
 export interface MatAutocompleteDefaultOptions {

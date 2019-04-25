@@ -12,8 +12,8 @@ import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core'
 
 // Boilerplate for applying mixins to MatTabLabelWrapper.
 /** @docs-private */
-export class MatTabLabelWrapperBase {}
-export const _MatTabLabelWrapperMixinBase: CanDisableCtor & typeof MatTabLabelWrapperBase =
+class MatTabLabelWrapperBase {}
+const _MatTabLabelWrapperMixinBase: CanDisableCtor & typeof MatTabLabelWrapperBase =
     mixinDisabled(MatTabLabelWrapperBase);
 
 /**

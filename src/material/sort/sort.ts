@@ -56,8 +56,8 @@ export interface Sort {
 
 // Boilerplate for applying mixins to MatSort.
 /** @docs-private */
-export class MatSortBase {}
-export const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBase =
+class MatSortBase {}
+const _MatSortMixinBase: HasInitializedCtor & CanDisableCtor & typeof MatSortBase =
     mixinInitialized(mixinDisabled(MatSortBase));
 
 /** Container for MatSortables to manage the sort state and provide default sort parameters. */

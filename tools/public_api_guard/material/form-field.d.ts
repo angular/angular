@@ -1,5 +1,3 @@
-export declare const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase;
-
 export declare function getMatFormFieldDuplicatedHintError(align: string): Error;
 
 export declare function getMatFormFieldMissingControlError(): Error;
@@ -62,11 +60,6 @@ export declare const matFormFieldAnimations: {
 };
 
 export declare type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
-
-export declare class MatFormFieldBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
-}
 
 export declare abstract class MatFormFieldControl<T> {
     readonly autofilled?: boolean;

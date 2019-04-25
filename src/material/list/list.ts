@@ -33,14 +33,14 @@ import {takeUntil} from 'rxjs/operators';
 
 // Boilerplate for applying mixins to MatList.
 /** @docs-private */
-export class MatListBase {}
-export const _MatListMixinBase: CanDisableRippleCtor & typeof MatListBase =
+class MatListBase {}
+const _MatListMixinBase: CanDisableRippleCtor & typeof MatListBase =
     mixinDisableRipple(MatListBase);
 
 // Boilerplate for applying mixins to MatListItem.
 /** @docs-private */
-export class MatListItemBase {}
-export const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
+class MatListItemBase {}
+const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
     mixinDisableRipple(MatListItemBase);
 
 @Component({

@@ -45,14 +45,14 @@ import {MatChipTextControl} from './chip-text-control';
 
 // Boilerplate for applying mixins to MatChipList.
 /** @docs-private */
-export class MatChipListBase {
+class MatChipListBase {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
               /** @docs-private */
               public ngControl: NgControl) {}
 }
-export const _MatChipListMixinBase: CanUpdateErrorStateCtor & typeof MatChipListBase =
+const _MatChipListMixinBase: CanUpdateErrorStateCtor & typeof MatChipListBase =
     mixinErrorState(MatChipListBase);
 
 

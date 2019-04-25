@@ -31,18 +31,18 @@ import {DOCUMENT} from '@angular/common';
 // TODO(josephperrott): Benchpress tests.
 // TODO(josephperrott): Add ARIA attributes for progress bar "for".
 
-// Boilerplate for applying mixins to MatProgressBar.
-/** @docs-private */
-export class MatProgressBarBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-
 /** Last animation end data. */
 export interface ProgressAnimationEnd {
   value: number;
 }
 
-export const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
+// Boilerplate for applying mixins to MatProgressBar.
+/** @docs-private */
+class MatProgressBarBase {
+  constructor(public _elementRef: ElementRef) { }
+}
+
+const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
     mixinColor(MatProgressBarBase, 'primary');
 
 /**

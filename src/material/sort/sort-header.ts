@@ -29,8 +29,8 @@ import {MatSortHeaderIntl} from './sort-header-intl';
 
 // Boilerplate for applying mixins to the sort header.
 /** @docs-private */
-export class MatSortHeaderBase {}
-export const _MatSortHeaderMixinBase: CanDisableCtor & typeof MatSortHeaderBase =
+class MatSortHeaderBase {}
+const _MatSortHeaderMixinBase: CanDisableCtor & typeof MatSortHeaderBase =
     mixinDisabled(MatSortHeaderBase);
 
 /**

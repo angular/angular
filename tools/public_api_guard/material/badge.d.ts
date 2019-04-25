@@ -1,5 +1,3 @@
-export declare const _MatBadgeMixinBase: CanDisableCtor & typeof MatBadgeBase;
-
 export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges, CanDisable {
     _hasContent: boolean;
     _id: number;
@@ -15,9 +13,6 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, O
     isAfter(): boolean;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
-}
-
-export declare class MatBadgeBase {
 }
 
 export declare class MatBadgeModule {

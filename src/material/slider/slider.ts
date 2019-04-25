@@ -91,10 +91,10 @@ export class MatSliderChange {
 
 // Boilerplate for applying mixins to MatSlider.
 /** @docs-private */
-export class MatSliderBase {
+class MatSliderBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatSliderMixinBase:
+const _MatSliderMixinBase:
     HasTabIndexCtor &
     CanColorCtor &
     CanDisableCtor &

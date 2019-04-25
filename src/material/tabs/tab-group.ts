@@ -65,10 +65,10 @@ export const MAT_TABS_CONFIG = new InjectionToken('MAT_TABS_CONFIG');
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
-export class MatTabGroupBase {
+class MatTabGroupBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupBase =
+const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupBase =
     mixinColor(mixinDisableRipple(MatTabGroupBase), 'primary');
 
 /**

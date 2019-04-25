@@ -21,10 +21,5 @@ export {
    * @deprecated
    * @breaking-change 9.0.0
    */
-  MatCheckboxBase,
-  /**
-   * @deprecated
-   * @breaking-change 9.0.0
-   */
   TransitionCheckState,
 } from '@angular/material/checkbox';

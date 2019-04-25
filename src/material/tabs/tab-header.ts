@@ -69,8 +69,8 @@ const HEADER_SCROLL_INTERVAL = 100;
 
 // Boilerplate for applying mixins to MatTabHeader.
 /** @docs-private */
-export class MatTabHeaderBase {}
-export const _MatTabHeaderMixinBase: CanDisableRippleCtor & typeof MatTabHeaderBase =
+class MatTabHeaderBase {}
+const _MatTabHeaderMixinBase: CanDisableRippleCtor & typeof MatTabHeaderBase =
     mixinDisableRipple(MatTabHeaderBase);
 
 /**

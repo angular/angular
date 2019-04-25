@@ -52,14 +52,14 @@ let nextUniqueId = 0;
 
 // Boilerplate for applying mixins to MatInput.
 /** @docs-private */
-export class MatInputBase {
+class MatInputBase {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
               /** @docs-private */
               public ngControl: NgControl) {}
 }
-export const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
+const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     mixinErrorState(MatInputBase);
 
 /** Directive that allows a native input to work inside a `MatFormField`. */

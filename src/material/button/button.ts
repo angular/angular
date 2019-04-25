@@ -51,13 +51,12 @@ const BUTTON_HOST_ATTRIBUTES = [
 
 // Boilerplate for applying mixins to MatButton.
 /** @docs-private */
-export class MatButtonBase {
+class MatButtonBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
-export const _MatButtonMixinBase:
-    CanDisableRippleCtor & CanDisableCtor & CanColorCtor & typeof MatButtonBase =
-        mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
+const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor &
+    typeof MatButtonBase = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
 
 /**
  * Material design button.

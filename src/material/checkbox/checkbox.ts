@@ -85,10 +85,10 @@ export class MatCheckboxChange {
 
 // Boilerplate for applying mixins to MatCheckbox.
 /** @docs-private */
-export class MatCheckboxBase {
+class MatCheckboxBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatCheckboxMixinBase:
+const _MatCheckboxMixinBase:
     HasTabIndexCtor &
     CanColorCtor &
     CanDisableRippleCtor &

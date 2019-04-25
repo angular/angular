@@ -1,5 +1,3 @@
-export declare const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase;
-
 export declare const MAT_PROGRESS_BAR_LOCATION: InjectionToken<MatProgressBarLocation>;
 
 export declare function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation;
@@ -25,11 +23,6 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     };
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
-}
-
-export declare class MatProgressBarBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export interface MatProgressBarLocation {

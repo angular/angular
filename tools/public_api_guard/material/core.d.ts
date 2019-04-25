@@ -2,8 +2,6 @@ export declare function _countGroupLabelsBeforeOption(optionIndex: number, optio
 
 export declare function _getOptionScrollPosition(optionIndex: number, optionHeight: number, currentScrollPosition: number, panelHeight: number): number;
 
-export declare const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase;
-
 export declare class AnimationCurves {
     static ACCELERATION_CURVE: string;
     static DECELERATION_CURVE: string;
@@ -226,9 +224,6 @@ export declare class MatNativeDateModule {
 export declare class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
     _labelId: string;
     label: string;
-}
-
-export declare class MatOptgroupBase {
 }
 
 export declare class MatOption implements AfterViewChecked, OnDestroy {

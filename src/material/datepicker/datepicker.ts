@@ -73,10 +73,10 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */
-export class MatDatepickerContentBase {
+class MatDatepickerContentBase {
   constructor(public _elementRef: ElementRef) { }
 }
-export const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContentBase =
+const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContentBase =
     mixinColor(MatDatepickerContentBase);
 
 /**

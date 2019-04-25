@@ -1,11 +1,3 @@
-export declare const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase;
-
-export declare const _MatListMixinBase: CanDisableRippleCtor & typeof MatListBase;
-
-export declare const _MatListOptionMixinBase: CanDisableRippleCtor & typeof MatListOptionBase;
-
-export declare const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof MatSelectionListBase;
-
 export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 export declare class MatList extends _MatListMixinBase implements CanDisableRipple, OnChanges, OnDestroy {
@@ -17,9 +9,6 @@ export declare class MatList extends _MatListMixinBase implements CanDisableRipp
 }
 
 export declare class MatListAvatarCssMatStyler {
-}
-
-export declare class MatListBase {
 }
 
 export declare class MatListIconCssMatStyler {
@@ -34,9 +23,6 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
     _isRippleDisabled(): boolean;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
-}
-
-export declare class MatListItemBase {
 }
 
 export declare class MatListModule {
@@ -68,9 +54,6 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     ngOnDestroy(): void;
     ngOnInit(): void;
     toggle(): void;
-}
-
-export declare class MatListOptionBase {
 }
 
 export declare class MatListSubheaderCssMatStyler {
@@ -108,9 +91,6 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     selectAll(): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(values: string[]): void;
-}
-
-export declare class MatSelectionListBase {
 }
 
 export declare class MatSelectionListChange {

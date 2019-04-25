@@ -1,5 +1,3 @@
-export declare const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase;
-
 export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 export declare class MatRadioButton extends _MatRadioButtonMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple, HasTabIndex {
@@ -27,12 +25,6 @@ export declare class MatRadioButton extends _MatRadioButtonMixinBase implements 
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-}
-
-export declare class MatRadioButtonBase {
-    _elementRef: ElementRef;
-    disabled: boolean;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatRadioChange {

@@ -1,5 +1,3 @@
-export declare const _MatCheckboxMixinBase: HasTabIndexCtor & CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatCheckboxBase;
-
 export declare class _MatCheckboxRequiredValidatorModule {
 }
 
@@ -41,11 +39,6 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
-}
-
-export declare class MatCheckboxBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatCheckboxChange {

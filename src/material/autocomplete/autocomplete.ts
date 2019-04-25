@@ -53,8 +53,8 @@ export class MatAutocompleteSelectedEvent {
 
 // Boilerplate for applying mixins to MatAutocomplete.
 /** @docs-private */
-export class MatAutocompleteBase {}
-export const _MatAutocompleteMixinBase: CanDisableRippleCtor & typeof MatAutocompleteBase =
+class MatAutocompleteBase {}
+const _MatAutocompleteMixinBase: CanDisableRippleCtor & typeof MatAutocompleteBase =
     mixinDisableRipple(MatAutocompleteBase);
 
 /** Default `mat-autocomplete` options that can be overridden. */

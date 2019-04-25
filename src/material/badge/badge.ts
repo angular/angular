@@ -28,9 +28,9 @@ let nextId = 0;
 
 // Boilerplate for applying mixins to MatBadge.
 /** @docs-private */
-export class MatBadgeBase {}
+class MatBadgeBase {}
 
-export const _MatBadgeMixinBase:
+const _MatBadgeMixinBase:
     CanDisableCtor & typeof MatBadgeBase = mixinDisabled(MatBadgeBase);
 
 export type MatBadgePosition = 'above after' | 'above before' | 'below before' | 'below after';

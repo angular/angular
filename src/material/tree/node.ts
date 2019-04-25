@@ -35,10 +35,10 @@ import {
 
 import {MatTreeNodeOutlet} from './outlet';
 
-export const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
+const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
     mixinTabIndex(mixinDisabled(CdkTreeNode));
 
-export const _MatNestedTreeNodeMixinBase:
+const _MatNestedTreeNodeMixinBase:
     HasTabIndexCtor & CanDisableCtor & typeof CdkNestedTreeNode =
         mixinTabIndex(mixinDisabled(CdkNestedTreeNode));
 

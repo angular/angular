@@ -7,8 +7,6 @@ export interface _MatInkBarPositioner {
     };
 }
 
-export declare const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupBase;
-
 export declare const MAT_TABS_CONFIG: InjectionToken<{}>;
 
 export declare class MatInkBar {
@@ -101,11 +99,6 @@ export declare class MatTabGroup extends _MatTabGroupMixinBase implements AfterC
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     realignInkBar(): void;
-}
-
-export declare class MatTabGroupBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatTabHeader extends _MatTabHeaderMixinBase implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy, CanDisableRipple {

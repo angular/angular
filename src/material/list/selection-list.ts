@@ -54,13 +54,13 @@ import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
 
 /** @docs-private */
-export class MatSelectionListBase {}
-export const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof MatSelectionListBase =
+class MatSelectionListBase {}
+const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof MatSelectionListBase =
     mixinDisableRipple(MatSelectionListBase);
 
 /** @docs-private */
-export class MatListOptionBase {}
-export const _MatListOptionMixinBase: CanDisableRippleCtor & typeof MatListOptionBase =
+class MatListOptionBase {}
+const _MatListOptionMixinBase: CanDisableRippleCtor & typeof MatListOptionBase =
     mixinDisableRipple(MatListOptionBase);
 
 /** @docs-private */

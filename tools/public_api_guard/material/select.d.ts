@@ -1,5 +1,3 @@
-export declare const _MatSelectMixinBase: CanDisableCtor & HasTabIndexCtor & CanDisableRippleCtor & CanUpdateErrorStateCtor & typeof MatSelectBase;
-
 export declare const fadeInContent: AnimationTriggerMetadata;
 
 export declare const MAT_SELECT_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
@@ -99,15 +97,6 @@ export declare const matSelectAnimations: {
     readonly transformPanel: AnimationTriggerMetadata;
     readonly fadeInContent: AnimationTriggerMetadata;
 };
-
-export declare class MatSelectBase {
-    _defaultErrorStateMatcher: ErrorStateMatcher;
-    _elementRef: ElementRef;
-    _parentForm: NgForm;
-    _parentFormGroup: FormGroupDirective;
-    ngControl: NgControl;
-    constructor(_elementRef: ElementRef, _defaultErrorStateMatcher: ErrorStateMatcher, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, ngControl: NgControl);
-}
 
 export declare class MatSelectChange {
     source: MatSelect;

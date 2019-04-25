@@ -40,10 +40,10 @@ const BASE_STROKE_WIDTH = 10;
 
 // Boilerplate for applying mixins to MatProgressSpinner.
 /** @docs-private */
-export class MatProgressSpinnerBase {
+class MatProgressSpinnerBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatProgressSpinnerMixinBase: CanColorCtor & typeof MatProgressSpinnerBase =
+const _MatProgressSpinnerMixinBase: CanColorCtor & typeof MatProgressSpinnerBase =
     mixinColor(MatProgressSpinnerBase, 'primary');
 
 /** Default `mat-progress-spinner` options that can be overridden. */

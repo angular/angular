@@ -64,7 +64,7 @@ const outlineGapPadding = 5;
  * Boilerplate for applying mixins to MatFormField.
  * @docs-private
  */
-export class MatFormFieldBase {
+class MatFormFieldBase {
   constructor(public _elementRef: ElementRef) { }
 }
 
@@ -72,7 +72,7 @@ export class MatFormFieldBase {
  * Base class to which we're applying the form field mixins.
  * @docs-private
  */
-export const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
+const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
     mixinColor(MatFormFieldBase, 'primary');
 
 /** Possible appearance styles for the form field. */

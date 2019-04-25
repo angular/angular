@@ -29,8 +29,8 @@ import {MatTabLabel} from './tab-label';
 
 // Boilerplate for applying mixins to MatTab.
 /** @docs-private */
-export class MatTabBase {}
-export const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
+class MatTabBase {}
+const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
     mixinDisabled(MatTabBase);
 
 @Component({

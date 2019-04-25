@@ -292,7 +292,7 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
 
 // Boilerplate for applying mixins to MatRadioButton.
 /** @docs-private */
-export class MatRadioButtonBase {
+class MatRadioButtonBase {
   // Since the disabled property is manually defined for the MatRadioButton and isn't set up in
   // the mixin base class. To be able to use the tabindex mixin, a disabled property must be
   // defined to properly work.
@@ -302,8 +302,8 @@ export class MatRadioButtonBase {
 }
 // As per Material design specifications the selection control radio should use the accent color
 // palette by default. https://material.io/guidelines/components/selection-controls.html
-export const _MatRadioButtonMixinBase:
-    CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase =
+const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor &
+    typeof MatRadioButtonBase =
         mixinColor(mixinDisableRipple(mixinTabIndex(MatRadioButtonBase)), 'accent');
 
 /**

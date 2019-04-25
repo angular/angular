@@ -77,8 +77,8 @@ export abstract class BaseRowDef implements OnChanges {
 
 // Boilerplate for applying mixins to CdkHeaderRowDef.
 /** @docs-private */
-export class CdkHeaderRowDefBase extends BaseRowDef {}
-export const _CdkHeaderRowDefBase: CanStickCtor&typeof CdkHeaderRowDefBase =
+class CdkHeaderRowDefBase extends BaseRowDef {}
+const _CdkHeaderRowDefBase: CanStickCtor&typeof CdkHeaderRowDefBase =
     mixinHasStickyInput(CdkHeaderRowDefBase);
 
 /**
@@ -103,8 +103,8 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
 
 // Boilerplate for applying mixins to CdkFooterRowDef.
 /** @docs-private */
-export class CdkFooterRowDefBase extends BaseRowDef {}
-export const _CdkFooterRowDefBase: CanStickCtor&typeof CdkFooterRowDefBase =
+class CdkFooterRowDefBase extends BaseRowDef {}
+const _CdkFooterRowDefBase: CanStickCtor&typeof CdkFooterRowDefBase =
     mixinHasStickyInput(CdkFooterRowDefBase);
 
 /**

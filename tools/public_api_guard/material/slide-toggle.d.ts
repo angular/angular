@@ -1,5 +1,3 @@
-export declare const _MatSlideToggleMixinBase: HasTabIndexCtor & CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatSlideToggleBase;
-
 export declare const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatSlideToggleDefaultOptions>;
 
 export declare const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any;
@@ -36,11 +34,6 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
-}
-
-export declare class MatSlideToggleBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatSlideToggleChange {

@@ -51,10 +51,10 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 
 // Boilerplate for applying mixins to MatTabNav.
 /** @docs-private */
-export class MatTabNavBase {
+class MatTabNavBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatTabNavMixinBase: CanDisableRippleCtor & CanColorCtor & typeof MatTabNavBase =
+const _MatTabNavMixinBase: CanDisableRippleCtor & CanColorCtor & typeof MatTabNavBase =
     mixinDisableRipple(mixinColor(MatTabNavBase, 'primary'));
 
 /**
@@ -161,8 +161,8 @@ export class MatTabNav extends _MatTabNavMixinBase
 
 
 // Boilerplate for applying mixins to MatTabLink.
-export class MatTabLinkBase {}
-export const _MatTabLinkMixinBase:
+class MatTabLinkBase {}
+const _MatTabLinkMixinBase:
     HasTabIndexCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatTabLinkBase =
         mixinTabIndex(mixinDisableRipple(mixinDisabled(MatTabLinkBase)));
 

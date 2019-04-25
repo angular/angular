@@ -1,7 +1,3 @@
-export declare const _MatChipListMixinBase: CanUpdateErrorStateCtor & typeof MatChipListBase;
-
-export declare const _MatChipMixinBase: CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatChipBase;
-
 export declare const MAT_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatChipsDefaultOptions>;
 
 export declare class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisable, CanDisableRipple, RippleTarget {
@@ -43,11 +39,6 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
 }
 
 export declare class MatChipAvatar {
-}
-
-export declare class MatChipBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export interface MatChipEvent {
@@ -145,15 +136,6 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     setDescribedByIds(ids: string[]): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-}
-
-export declare class MatChipListBase {
-    _defaultErrorStateMatcher: ErrorStateMatcher;
-    _parentForm: NgForm;
-    _parentFormGroup: FormGroupDirective;
-    ngControl: NgControl;
-    constructor(_defaultErrorStateMatcher: ErrorStateMatcher, _parentForm: NgForm, _parentFormGroup: FormGroupDirective,
-    ngControl: NgControl);
 }
 
 export declare class MatChipListChange {

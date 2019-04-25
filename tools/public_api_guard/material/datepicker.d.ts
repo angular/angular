@@ -1,5 +1,3 @@
-export declare const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContentBase;
-
 export declare const MAT_DATEPICKER_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare function MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy;
@@ -146,11 +144,6 @@ export declare class MatDatepickerContent<D> extends _MatDatepickerContentMixinB
     datepicker: MatDatepicker<D>;
     constructor(elementRef: ElementRef);
     ngAfterViewInit(): void;
-}
-
-export declare class MatDatepickerContentBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, Validator {

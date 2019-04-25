@@ -1,5 +1,3 @@
-export declare const _MatButtonMixinBase: CanDisableRippleCtor & CanDisableCtor & CanColorCtor & typeof MatButtonBase;
-
 export declare class MatAnchor extends MatButton {
     tabIndex: number;
     constructor(focusMonitor: FocusMonitor, elementRef: ElementRef, animationMode: string);
@@ -17,11 +15,6 @@ export declare class MatButton extends _MatButtonMixinBase implements OnDestroy,
     _isRippleDisabled(): boolean;
     focus(): void;
     ngOnDestroy(): void;
-}
-
-export declare class MatButtonBase {
-    _elementRef: ElementRef;
-    constructor(_elementRef: ElementRef);
 }
 
 export declare class MatButtonModule {

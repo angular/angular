@@ -45,8 +45,8 @@ export class CdkFooterCellDef implements CellDef {
 
 // Boilerplate for applying mixins to CdkColumnDef.
 /** @docs-private */
-export class CdkColumnDefBase {}
-export const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
+class CdkColumnDefBase {}
+const _CdkColumnDefBase: CanStickCtor&typeof CdkColumnDefBase =
     mixinHasStickyInput(CdkColumnDefBase);
 
 /**

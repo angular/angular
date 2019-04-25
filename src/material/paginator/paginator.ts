@@ -56,8 +56,8 @@ export class PageEvent {
 
 // Boilerplate for applying mixins to MatPaginator.
 /** @docs-private */
-export class MatPaginatorBase {}
-export const _MatPaginatorBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginatorBase =
+class MatPaginatorBase {}
+const _MatPaginatorBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginatorBase =
     mixinDisabled(mixinInitialized(MatPaginatorBase));
 
 /**

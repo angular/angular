@@ -12,8 +12,8 @@ import {CanDisable, CanDisableCtor, mixinDisabled} from '../common-behaviors/dis
 
 // Boilerplate for applying mixins to MatOptgroup.
 /** @docs-private */
-export class MatOptgroupBase { }
-export const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase =
+class MatOptgroupBase { }
+const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase =
     mixinDisabled(MatOptgroupBase);
 
 // Counter for unique group ids.

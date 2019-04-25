@@ -1,5 +1,3 @@
-export declare const _MatPaginatorBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginatorBase;
-
 export declare const MAT_PAGINATOR_INTL_PROVIDER: {
     provide: typeof MatPaginatorIntl;
     deps: Optional[][];
@@ -32,9 +30,6 @@ export declare class MatPaginator extends _MatPaginatorBase implements OnInit, O
     ngOnDestroy(): void;
     ngOnInit(): void;
     previousPage(): void;
-}
-
-export declare class MatPaginatorBase {
 }
 
 export declare class MatPaginatorIntl {

@@ -1,9 +1,3 @@
-export declare const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase;
-
-export declare const _CdkFooterRowDefBase: CanStickCtor & typeof CdkFooterRowDefBase;
-
-export declare const _CdkHeaderRowDefBase: CanStickCtor & typeof CdkHeaderRowDefBase;
-
 export declare class BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
 }
@@ -81,9 +75,6 @@ export declare class CdkColumnDef extends _CdkColumnDefBase implements CanStick 
     stickyEnd: boolean;
 }
 
-export declare class CdkColumnDefBase {
-}
-
 export declare class CdkFooterCell extends BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
 }
@@ -101,9 +92,6 @@ export declare class CdkFooterRowDef extends _CdkFooterRowDefBase implements Can
     ngOnChanges(changes: SimpleChanges): void;
 }
 
-export declare class CdkFooterRowDefBase extends BaseRowDef {
-}
-
 export declare class CdkHeaderCell extends BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
 }
@@ -119,9 +107,6 @@ export declare class CdkHeaderRow {
 export declare class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, OnChanges {
     constructor(template: TemplateRef<any>, _differs: IterableDiffers);
     ngOnChanges(changes: SimpleChanges): void;
-}
-
-export declare class CdkHeaderRowDefBase extends BaseRowDef {
 }
 
 export declare class CdkRow {

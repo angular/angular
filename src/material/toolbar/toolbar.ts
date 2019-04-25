@@ -25,11 +25,10 @@ import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
 
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
-export class MatToolbarBase {
+class MatToolbarBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatToolbarMixinBase: CanColorCtor & typeof MatToolbarBase =
-    mixinColor(MatToolbarBase);
+const _MatToolbarMixinBase: CanColorCtor & typeof MatToolbarBase = mixinColor(MatToolbarBase);
 
 @Directive({
   selector: 'mat-toolbar-row',

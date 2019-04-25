@@ -1,5 +1,3 @@
-export declare const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase;
-
 export declare function getMatInputUnsupportedTypeError(type: string): Error;
 
 export declare const MAT_INPUT_VALUE_ACCESSOR: InjectionToken<{
@@ -50,15 +48,6 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     ngOnInit(): void;
     onContainerClick(): void;
     setDescribedByIds(ids: string[]): void;
-}
-
-export declare class MatInputBase {
-    _defaultErrorStateMatcher: ErrorStateMatcher;
-    _parentForm: NgForm;
-    _parentFormGroup: FormGroupDirective;
-    ngControl: NgControl;
-    constructor(_defaultErrorStateMatcher: ErrorStateMatcher, _parentForm: NgForm, _parentFormGroup: FormGroupDirective,
-    ngControl: NgControl);
 }
 
 export declare class MatInputModule {
