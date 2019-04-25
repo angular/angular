@@ -8,7 +8,8 @@
 
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {JitEmitterVisitor} from '@angular/compiler/src/output/output_jit';
+import {JitEmitterVisitor, JitEvaluator} from '@angular/compiler/src/output/output_jit';
+import {R3JitReflector} from '@angular/compiler/src/render3/r3_jit';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 const anotherModuleUrl = 'somePackage/someOtherPath';
@@ -31,6 +32,20 @@ const anotherModuleUrl = 'somePackage/someOtherPath';
         const args = converter.getArgs();
         expect(Object.keys(args).length).toBe(20);
       });
+    });
+
+    it('should use strict mode', () => {
+      const evaluator = new JitEvaluator();
+      expect(() => {
+        evaluator.evaluateStatements(
+            'http://angular.io/something.ts',
+            [
+              // Set an undeclared variable
+              // foo = "bar";
+              o.variable('foo').equals(o.literal('bar')).toStmt(),
+            ],
+            new R3JitReflector({}), false);
+      }).toThrowError();
     });
   });
 }
