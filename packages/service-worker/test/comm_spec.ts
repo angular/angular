@@ -9,7 +9,7 @@
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
-import {RegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
+import {SwRegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
 import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
@@ -52,10 +52,10 @@ import {async_fit, async_it} from './async';
         TestBed.configureTestingModule({
           providers: [
             {provide: PLATFORM_ID, useValue: 'server'},
-            {provide: RegistrationOptions, useValue: {enabled: true}}, {
+            {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [RegistrationOptions, PLATFORM_ID]
+              deps: [SwRegistrationOptions, PLATFORM_ID]
             }
           ]
         });
@@ -66,10 +66,10 @@ import {async_fit, async_it} from './async';
         TestBed.configureTestingModule({
           providers: [
             {provide: PLATFORM_ID, useValue: 'browser'},
-            {provide: RegistrationOptions, useValue: {enabled: false}}, {
+            {provide: SwRegistrationOptions, useValue: {enabled: false}}, {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [RegistrationOptions, PLATFORM_ID]
+              deps: [SwRegistrationOptions, PLATFORM_ID]
             }
           ]
         });
@@ -80,11 +80,11 @@ import {async_fit, async_it} from './async';
         TestBed.configureTestingModule({
           providers: [
             {provide: PLATFORM_ID, useValue: 'browser'},
-            {provide: RegistrationOptions, useValue: {enabled: true}},
+            {provide: SwRegistrationOptions, useValue: {enabled: true}},
             {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [RegistrationOptions, PLATFORM_ID],
+              deps: [SwRegistrationOptions, PLATFORM_ID],
             },
           ],
         });
@@ -110,10 +110,10 @@ import {async_fit, async_it} from './async';
            TestBed.configureTestingModule({
              providers: [
                {provide: PLATFORM_ID, useValue: 'browser'},
-               {provide: RegistrationOptions, useValue: {enabled: true}}, {
+               {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
                  provide: NgswCommChannel,
                  useFactory: ngswCommChannelFactory,
-                 deps: [RegistrationOptions, PLATFORM_ID]
+                 deps: [SwRegistrationOptions, PLATFORM_ID]
                }
              ]
            });
