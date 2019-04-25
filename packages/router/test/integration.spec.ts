@@ -4644,6 +4644,82 @@ describe('Integration', () => {
          expect(teamCmp.route.firstChild.snapshot.params).toEqual({p: '2'});
        })));
 
+    describe('reuse', () => {
+      it('should never reuse routes',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {
+               path: 'a',
+               component: WrapperCmp,
+               reuse: 'never',
+               children: [
+                 {path: 'b', component: SimpleCmp},
+                 {path: 'c', component: SimpleCmp},
+               ]
+             },
+           ]);
+
+           router.navigateByUrl('/a/b');
+           advance(fixture);
+           const wrapperCmp = fixture.debugElement.children[1].componentInstance;
+           const simpleCmp = fixture.debugElement.children[1].children[1].componentInstance;
+           expect(location.path()).toEqual('/a/b');
+           expect(wrapperCmp).toBeDefined();
+           expect(simpleCmp).toBeDefined();
+
+           router.navigateByUrl('/a/c');
+           advance(fixture);
+           expect(location.path()).toEqual('/a/c');
+           expect(fixture.debugElement.children[1].children[1].componentInstance)
+               .toBeAnInstanceOf(SimpleCmp);
+
+           router.navigateByUrl('/a/b');
+           advance(fixture);
+           const wrapperCmp2 = fixture.debugElement.children[1].componentInstance;
+           expect(location.path()).toEqual('/a/b');
+           expect(wrapperCmp2).not.toBe(wrapperCmp);
+         })));
+
+      it('should delegate route reusing to a RouteReuseStrategy',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {
+               path: 'a',
+               component: WrapperCmp,
+               reuse: 'delegate',
+               children: [
+                 {path: 'b', component: SimpleCmp},
+                 {path: 'c', component: SimpleCmp},
+               ]
+             },
+           ]);
+
+           router.navigateByUrl('/a/b');
+           advance(fixture);
+           const wrapperCmp = fixture.debugElement.children[1].componentInstance;
+           const simpleCmp = fixture.debugElement.children[1].children[1].componentInstance;
+           expect(location.path()).toEqual('/a/b');
+           expect(wrapperCmp).toBeDefined();
+           expect(simpleCmp).toBeDefined();
+
+           router.navigateByUrl('/a/c');
+           advance(fixture);
+           expect(location.path()).toEqual('/a/c');
+           expect(fixture.debugElement.children[1].children[1].componentInstance)
+               .toBeAnInstanceOf(SimpleCmp);
+
+           router.navigateByUrl('/a/b');
+           advance(fixture);
+           const wrapperCmp2 = fixture.debugElement.children[1].componentInstance;
+           expect(location.path()).toEqual('/a/b');
+           expect(wrapperCmp2).toBe(wrapperCmp);
+         })));
+    });
+
     it('should support shorter lifecycles',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = createRoot(router, RootCmp);

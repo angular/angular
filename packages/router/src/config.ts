@@ -448,6 +448,13 @@ export interface Route {
    */
   loadChildren?: LoadChildren;
   /**
+   * Determines if a route should be reused.
+   *
+   * - `delegate` : the default, delegates to a RouteReuseStrategy.
+   * - `never` : a route should never be reused.
+   */
+  reuse?: 'delegate'|'never';
+  /**
    * Defines when guards and resolvers will be run. One of
    * - `paramsOrQueryParamsChange` : Run when query parameters change.
    * - `always` : Run on every execution.

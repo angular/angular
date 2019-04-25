@@ -22,8 +22,11 @@ export function createRouterState(
 function createNode(
     routeReuseStrategy: RouteReuseStrategy, curr: TreeNode<ActivatedRouteSnapshot>,
     prevState?: TreeNode<ActivatedRoute>): TreeNode<ActivatedRoute> {
+  const shouldNeverReuseRoute =
+      curr.value.routeConfig && curr.value.routeConfig !.reuse === 'never';
   // reuse an activated route that is currently displayed on the screen
-  if (prevState && routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
+  if (!shouldNeverReuseRoute && prevState &&
+      routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
     const value = prevState.value;
     value._futureSnapshot = curr.value;
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState);
@@ -65,7 +68,10 @@ function createOrReuseChildren(
     prevState: TreeNode<ActivatedRoute>) {
   return curr.children.map(child => {
     for (const p of prevState.children) {
-      if (routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
+      const shouldNeverReuseRoute =
+          p.value.snapshot.routeConfig && p.value.snapshot.routeConfig.reuse === 'never';
+      if (!shouldNeverReuseRoute &&
+          routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
         return createNode(routeReuseStrategy, child, p);
       }
     }
