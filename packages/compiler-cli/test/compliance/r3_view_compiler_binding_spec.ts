@@ -470,7 +470,7 @@ describe('compiler compliance: bindings', () => {
       …
         if (rf & 2) {
           i0.ɵɵselect(0);
-          i0.ɵɵpropertyInterpolateV("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j");
+          i0.ɵɵpropertyInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
           i0.ɵɵselect(1);
           i0.ɵɵpropertyInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
           i0.ɵɵselect(2);
