@@ -81,6 +81,11 @@ export class MatStepHeader extends CdkStepHeader implements OnDestroy {
     this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
+  /** Focuses the step header. */
+  focus() {
+    this._focusMonitor.focusVia(this._elementRef, 'program');
+  }
+
   /** Returns string label of given step if it is a text label. */
   _stringLabel(): string | null {
     return this.label instanceof MatStepLabel ? null : this.label;

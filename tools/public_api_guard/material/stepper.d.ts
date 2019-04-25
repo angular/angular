@@ -35,6 +35,7 @@ export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
     _getIconContext(): MatStepperIconContext;
     _stringLabel(): string | null;
     _templateLabel(): MatStepLabel | null;
+    focus(): void;
     ngOnDestroy(): void;
 }
 
