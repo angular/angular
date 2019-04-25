@@ -298,7 +298,7 @@ class ResolvedDeclarationEmitter {
         const jsdocComment = this.processJsDocTags(node, tagOptions);
         if (jsdocComment) {
           // Add the annotation after the leading whitespace
-          output = output.replace(/^(\n\s*)/, `$1${jsdocComment} `);
+          output = output.replace(/^(\r?\n\s*)/, `$1${jsdocComment} `);
         }
       }
 
