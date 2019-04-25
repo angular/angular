@@ -47,5 +47,17 @@ const anotherModuleUrl = 'somePackage/someOtherPath';
             new R3JitReflector({}), false);
       }).toThrowError();
     });
+
+    it('should not add more than one strict mode statement if there is already one present', () => {
+      const converter = new JitEmitterVisitor(new JitReflector());
+      const ctx = EmitterVisitorContext.createRoot();
+      converter.visitAllStatements(
+          [
+            o.literal('use strict').toStmt(),
+          ],
+          ctx);
+      const matches = ctx.toSource().match(/'use strict';/g) !;
+      expect(matches.length).toBe(1);
+    });
   });
 }
