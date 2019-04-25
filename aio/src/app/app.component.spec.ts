@@ -3,7 +3,8 @@ import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/cor
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MatProgressBar, MatSidenav } from '@angular/material';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatSidenav } from '@angular/material/sidenav';
 import { By } from '@angular/platform-browser';
 
 import { of, timer } from 'rxjs';
