@@ -31,6 +31,13 @@ export class JitEvaluator {
       createSourceMaps: boolean): {[key: string]: any} {
     const converter = new JitEmitterVisitor(reflector);
     const ctx = EmitterVisitorContext.createRoot();
+    // Ensure generated code is in strict mode
+    if (statements.length > 0 && !isUseStrictStatement(statements[0])) {
+      statements = [
+        o.literal('use strict').toStmt(),
+        ...statements,
+      ];
+    }
     converter.visitAllStatements(statements, ctx);
     converter.createReturnStmt(ctx);
     return this.evaluateCode(sourceUrl, ctx, converter.getArgs(), createSourceMaps);
@@ -149,4 +156,9 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
     }
     ctx.print(ast, this._evalArgNames[id]);
   }
+}
+
+
+function isUseStrictStatement(statement: o.Statement): boolean {
+  return statement.isEquivalent(o.literal('use strict').toStmt());
 }
