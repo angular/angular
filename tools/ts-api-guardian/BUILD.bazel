@@ -16,9 +16,6 @@ ts_library(
         "@npm//@types/diff",
         "@npm//@types/minimist",
         "@npm//@types/node",
-        "@npm//chalk",
-        "@npm//diff",
-        "@npm//minimist",
         "@npm//typescript",
     ],
 )
