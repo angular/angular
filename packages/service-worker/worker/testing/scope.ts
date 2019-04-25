@@ -192,7 +192,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     return {
       origin: parsedUrl.origin || `${parsedUrl.protocol}//${parsedUrl.host}`,
       path: parsedUrl.pathname,
-      search: parsedUrl.search || ''
+      search: parsedUrl.search || '',
     };
   }
 
