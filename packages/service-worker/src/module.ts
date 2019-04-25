@@ -18,11 +18,29 @@ import {SwUpdate} from './update';
  * Token that can be used to provide options for `ServiceWorkerModule` outside of
  * `ServiceWorkerModule.register()`.
  *
+ * You can use this token to define a provider that generates the registration options at runtime,
+ * for example via a function call:
+ *
+ * {@example service-worker/registration-options/module.ts region="registration-options"
+ *     header="app.module.ts" linenums="false"}
+ *
  * @publicApi
  */
 export abstract class SwRegistrationOptions {
-  scope?: string;
+  /**
+   * Whether the ServiceWorker will be registered and the related services (such as `SwPush` and
+   * `SwUpdate`) will attempt to communicate and interact with it.
+   *
+   * Default: true
+   */
   enabled?: boolean;
+
+  /**
+   * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can
+   * control. It will be used when calling
+   * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+   */
+  scope?: string;
 }
 
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
