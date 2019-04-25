@@ -73,8 +73,12 @@ describe('Dependency Injection Cookbook', function () {
       let yellow = 'rgba(255, 255, 0, 1)';
 
       expect(target.getCssValue('background-color')).not.toEqual(yellow);
-      browser.actions().mouseMove(target.getWebElement()).perform();
-      expect(target.getCssValue('background-color')).toEqual(yellow);
+
+      browser.actions().mouseMove(target).perform();
+
+      // Wait for up to 2s for the background color to be updated,
+      // to account for slow environments (e.g. CI).
+      browser.wait(() => target.getCssValue('background-color').then(c => c === yellow), 2000);
     });
 
     describe('in Parent Finder', function () {
