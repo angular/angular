@@ -52,9 +52,9 @@ export class Adapter {
   /**
    * Extract the pathname of a URL.
    */
-  parseUrl(url: string, relativeTo?: string): {origin: string, path: string} {
+  parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
     const parsed = new URL(url, relativeTo);
-    return {origin: parsed.origin, path: parsed.pathname};
+    return {origin: parsed.origin, path: parsed.pathname, search: parsed.search};
   }
 
   /**

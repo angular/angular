@@ -184,7 +184,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }, new MockHeaders());
   }
 
-  parseUrl(url: string, relativeTo?: string): {origin: string, path: string} {
+  parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
     const parsedUrl: URL = (typeof URL === 'function') ?
         new URL(url, relativeTo) :
         require('url').parse(require('url').resolve(relativeTo || '', url));
@@ -192,6 +192,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     return {
       origin: parsedUrl.origin || `${parsedUrl.protocol}//${parsedUrl.host}`,
       path: parsedUrl.pathname,
+      search: parsedUrl.search || '',
     };
   }
 
