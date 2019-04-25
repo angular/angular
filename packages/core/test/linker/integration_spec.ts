@@ -1772,6 +1772,99 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
       });
+
+      it('should not reflect undefined values', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+        TestBed.overrideComponent(
+            MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+        const fixture = TestBed.createComponent(MyComp);
+
+        fixture.componentInstance.ctxProp = 'hello';
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement))
+            .toContain('ng-reflect-dir-prop="hello"');
+
+        fixture.componentInstance.ctxProp = undefined !;
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).not.toContain('ng-reflect-');
+      });
+
+      it('should not reflect null values', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+        TestBed.overrideComponent(
+            MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+        const fixture = TestBed.createComponent(MyComp);
+
+        fixture.componentInstance.ctxProp = 'hello';
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement))
+            .toContain('ng-reflect-dir-prop="hello"');
+
+        fixture.componentInstance.ctxProp = null !;
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).not.toContain('ng-reflect-');
+      });
+
+      it('should reflect empty strings', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir, MyDir2]});
+        TestBed.overrideComponent(
+            MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+        const fixture = TestBed.createComponent(MyComp);
+
+        fixture.componentInstance.ctxProp = '';
+        fixture.detectChanges();
+
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-dir-prop=""');
+      });
+
+      it('should not reflect in comment nodes when the value changes to undefined', () => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(
+                    MyComp, {set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`}})
+                .createComponent(MyComp);
+
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
+
+        let html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('bindings={');
+        expect(html).toContain('"ng-reflect-ng-if": "true"');
+
+        fixture.componentInstance.ctxBoolProp = undefined !;
+        fixture.detectChanges();
+
+        html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('bindings={');
+        expect(html).not.toContain('ng-reflect');
+      });
+
+      it('should reflect in comment nodes when the value changes to null', () => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(
+                    MyComp, {set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`}})
+                .createComponent(MyComp);
+
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
+
+        let html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('bindings={');
+        expect(html).toContain('"ng-reflect-ng-if": "true"');
+
+        fixture.componentInstance.ctxBoolProp = null !;
+        fixture.detectChanges();
+
+        html = getDOM().getInnerHTML(fixture.nativeElement);
+        expect(html).toContain('bindings={');
+        expect(html).toContain('"ng-reflect-ng-if": null');
+      });
+
     });
 
     describe('property decorators', () => {
