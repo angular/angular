@@ -486,7 +486,7 @@ jobs:
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
-  aio_monitoring:
+  aio_monitoring_stable:
     <<: *job_defaults
     docker:
       # This job needs Chrome to be globally installed because the tests run with Protractor
@@ -496,8 +496,27 @@ jobs:
       - *attach_workspace
       - *init_environment
       - run:
-          name: Run tests against the deployed apps
-          command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
+          name: Run tests against https://angular.io/
+          command: ./aio/scripts/test-production.sh https://angular.io/ $CI_AIO_MIN_PWA_SCORE
+      - run:
+          name: Notify caretaker about failure
+          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $SLACK_CARETAKER_WEBHOOK_URL'
+          when: on_fail
+
+  aio_monitoring_next:
+    <<: *job_defaults
+    docker:
+      # This job needs Chrome to be globally installed because the tests run with Protractor
+      # which does not load the browser through the Bazel webtesting rules.
+      - image: *browsers_docker_image
+    steps:
+      - *attach_workspace
+      - *init_environment
+      - run:
+          name: Run tests against https://next.angular.io/
+          command: ./aio/scripts/test-production.sh https://next.angular.io/ $CI_AIO_MIN_PWA_SCORE
       - run:
           name: Notify caretaker about failure
           # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
@@ -690,12 +709,15 @@ workflows:
   aio_monitoring:
     jobs:
       - setup
-      - aio_monitoring:
+      - aio_monitoring_stable:
+          requires:
+            - setup
+      - aio_monitoring_next:
           requires:
             - setup
     triggers:
       - schedule:
-          # Runs AIO monitoring job at 00:00AM every day.
+          # Runs AIO monitoring jobs at 00:00AM every day.
           cron: "0 0 * * *"
           filters:
             branches:
