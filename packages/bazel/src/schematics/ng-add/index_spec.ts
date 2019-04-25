@@ -212,26 +212,16 @@ describe('ng-add schematic', () => {
     expect(builder).toBe('@angular/bazel:build');
   });
 
-  it('should create a backup for original tsconfig.json', () => {
-    expect(host.files).toContain('/tsconfig.json');
-    const original = host.readContent('/tsconfig.json');
-    host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
-    expect(host.files).toContain('/tsconfig.json.bak');
-    const content = host.readContent('/tsconfig.json.bak');
-    expect(content.startsWith('// This is a backup file')).toBe(true);
-    expect(content).toMatch(original);
-  });
-
-  it('should remove Bazel-controlled options from tsconfig.json', () => {
+  it('should add "bazelOptions" to tsconfig.json', () => {
     host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
     expect(host.files).toContain('/tsconfig.json');
-    const content = host.readContent('/tsconfig.json');
+    let content = host.readContent('/tsconfig.json');
+    expect(content).toMatch(/^\/\/ Warning:/);
+    // JSON.parse() would fail if there're comments in the JSON file
+    content = content.replace(/^\/\/.*/gm, '');
     expect(() => JSON.parse(content)).not.toThrow();
-    expect(JSON.parse(content)).toEqual({
-      compileOnSave: false,
-      compilerOptions: {
-        outDir: './dist/out-tsc',
-      }
+    expect(JSON.parse(content).bazelOptions).toEqual({
+      suppressTsconfigOverrideWarnings: true,
     });
   });
 
