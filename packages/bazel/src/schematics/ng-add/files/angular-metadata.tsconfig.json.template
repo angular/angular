@@ -20,6 +20,7 @@
     "node_modules/@angular/core/schematics/**",
     "node_modules/@angular/compiler-cli/**",
     "node_modules/@angular/**/testing/**",
+    "node_modules/@angular/common/upgrade*",
     "node_modules/@angular/router/upgrade*"
   ]
 }
