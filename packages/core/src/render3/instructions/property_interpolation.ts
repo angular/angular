@@ -7,12 +7,14 @@
  */
 import {assertEqual, assertLessThan} from '../../util/assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
+import {SanitizerFn} from '../interfaces/sanitization';
 import {BINDING_INDEX, TVIEW} from '../interfaces/view';
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 
 import {TsickleIssue1009, elementPropertyInternal, storeBindingMetadata} from './shared';
+
 
 
 /**
@@ -290,12 +292,6 @@ export function ɵɵinterpolation8(
 /// NEW INSTRUCTIONS
 /////////////////////////////////////////////////////////////////////
 
-
-/**
- * Shared reference to a string, used in `ɵɵpropertyInterpolate`.
- */
-const EMPTY_STRING = '';
-
 /**
  *
  * Update an interpolated property on an element with a lone bound value
@@ -321,11 +317,13 @@ const EMPTY_STRING = '';
  * @param prefix Static value used for concatenation only.
  * @param v0 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ɵɵpropertyInterpolate(propName: string, v0: any): TsickleIssue1009 {
-  ɵɵpropertyInterpolate1(propName, EMPTY_STRING, v0, EMPTY_STRING);
+export function ɵɵpropertyInterpolate(
+    propName: string, v0: any, sanitizer?: SanitizerFn): TsickleIssue1009 {
+  ɵɵpropertyInterpolate1(propName, '', v0, '', sanitizer);
   return ɵɵpropertyInterpolate;
 }
 
@@ -354,13 +352,15 @@ export function ɵɵpropertyInterpolate(propName: string, v0: any): TsickleIssue
  * @param prefix Static value used for concatenation only.
  * @param v0 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate1(
-    propName: string, prefix: string, v0: any, suffix: string): TsickleIssue1009 {
+    propName: string, prefix: string, v0: any, suffix: string,
+    sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, ɵɵinterpolation1(prefix, v0, suffix));
+  elementPropertyInternal(index, propName, ɵɵinterpolation1(prefix, v0, suffix), sanitizer);
   return ɵɵpropertyInterpolate1;
 }
 
@@ -390,14 +390,15 @@ export function ɵɵpropertyInterpolate1(
  * @param i0 Static value used for concatenation only.
  * @param v1 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate2(
-    propName: string, prefix: string, v0: any, i0: string, v1: any,
-    suffix: string): TsickleIssue1009 {
+    propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
+    sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, ɵɵinterpolation2(prefix, v0, i0, v1, suffix));
+  elementPropertyInternal(index, propName, ɵɵinterpolation2(prefix, v0, i0, v1, suffix), sanitizer);
   return ɵɵpropertyInterpolate2;
 }
 
@@ -430,14 +431,16 @@ export function ɵɵpropertyInterpolate2(
  * @param i1 Static value used for concatenation only.
  * @param v2 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate3(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    suffix: string): TsickleIssue1009 {
+    suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix));
+  elementPropertyInternal(
+      index, propName, ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix), sanitizer);
   return ɵɵpropertyInterpolate3;
 }
 
@@ -472,15 +475,16 @@ export function ɵɵpropertyInterpolate3(
  * @param i2 Static value used for concatenation only.
  * @param v3 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate4(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, suffix: string): TsickleIssue1009 {
+    v3: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix));
+      index, propName, ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix), sanitizer);
   return ɵɵpropertyInterpolate4;
 }
 
@@ -517,15 +521,17 @@ export function ɵɵpropertyInterpolate4(
  * @param i3 Static value used for concatenation only.
  * @param v4 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate5(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, suffix: string): TsickleIssue1009 {
+    v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName, ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix));
+      index, propName, ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix),
+      sanitizer);
   return ɵɵpropertyInterpolate5;
 }
 
@@ -564,16 +570,18 @@ export function ɵɵpropertyInterpolate5(
  * @param i4 Static value used for concatenation only.
  * @param v5 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate6(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string): TsickleIssue1009 {
+    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
+    sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
-      index, propName,
-      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix));
+      index, propName, ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix),
+      sanitizer);
   return ɵɵpropertyInterpolate6;
 }
 
@@ -614,17 +622,19 @@ export function ɵɵpropertyInterpolate6(
  * @param i5 Static value used for concatenation only.
  * @param v6 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate7(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
-    suffix: string): TsickleIssue1009 {
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
+    sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
       index, propName,
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix));
+      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix),
+      sanitizer);
   return ɵɵpropertyInterpolate7;
 }
 
@@ -667,17 +677,19 @@ export function ɵɵpropertyInterpolate7(
  * @param i6 Static value used for concatenation only.
  * @param v7 Value checked for change.
  * @param suffix Static value used for concatenation only.
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate8(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
-    suffix: string): TsickleIssue1009 {
+    suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
   elementPropertyInternal(
       index, propName,
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix));
+      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix),
+      sanitizer);
   return ɵɵpropertyInterpolate8;
 }
 
@@ -707,12 +719,14 @@ export function ɵɵpropertyInterpolate8(
  * @param values The a collection of values and the strings inbetween those values, beginning with a
  * string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
+ * @param sanitizer An optional sanitizer function
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ɵɵpropertyInterpolateV(propName: string, values: any[]): TsickleIssue1009 {
+export function ɵɵpropertyInterpolateV(
+    propName: string, values: any[], sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
 
-  elementPropertyInternal(index, propName, ɵɵinterpolationV(values));
+  elementPropertyInternal(index, propName, ɵɵinterpolationV(values), sanitizer);
   return ɵɵpropertyInterpolateV;
 }
