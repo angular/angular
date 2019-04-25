@@ -147,6 +147,13 @@ normally. However, occasionally a bugfix or feature in the Angular
 service worker requires the invalidation of old caches. In this case,
 the app will be refreshed transparently from the network.
 
+### Bypassing the service worker
+
+In some cases you may want to avoid that the service worker is
+handling the request. An example is when uploading files, where
+you will not see progress events if the request is going through
+the service worker. To bypass the serviceworker you can set `ngsw-bypass`
+as a request header, or as a query parameter.
 
 ## Debugging the Angular service worker
 
