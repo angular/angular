@@ -6,11 +6,8 @@ set +x -eu -o pipefail
   readonly aioDir="$(realpath $thisDir/..)"
 
   readonly protractorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"
-  readonly minPwaScore="$1"
-  readonly urls=(
-    "https://angular.io/"
-    "https://next.angular.io/"
-  )
+  readonly targetUrl="$1"
+  readonly minPwaScore="$2"
 
   cd "$aioDir"
 
@@ -19,16 +16,14 @@ set +x -eu -o pipefail
   yarn install --frozen-lockfile --non-interactive
   yarn update-webdriver
 
-  # Run checks for all URLs.
-  for url in "${urls[@]}"; do
-    echo -e "\nChecking '$url'...\n-----"
+  # Run checks for target URL.
+  echo -e "\nChecking '$targetUrl'...\n-----"
 
-    # Run basic e2e and deployment config tests.
-    yarn protractor "$protractorConf" --baseUrl "$url"
+  # Run basic e2e and deployment config tests.
+  yarn protractor "$protractorConf" --baseUrl "$targetUrl"
 
-    # Run PWA-score tests.
-    yarn test-pwa-score "$url" "$minPwaScore"
-  done
+  # Run PWA-score tests.
+  yarn test-pwa-score "$targetUrl" "$minPwaScore"
 
   echo -e "\nAll checks passed!"
 )
