@@ -35,6 +35,13 @@ setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
 
 
 ####################################################################################################
+# Define "lazy" PUBLIC environment variables for CircleCI.
+# (I.e. functions to set an environment variable when called.)
+####################################################################################################
+createPublicVarSetter CI_STABLE_BRANCH "\$(npm info @angular/core dist-tags.latest | sed -r 's/^\\s*([0-9]+\\.[0-9]+)\\.[0-9]+.*$/\\1.x/')";
+
+
+####################################################################################################
 # Define SECRET environment variables for CircleCI.
 ####################################################################################################
 setSecretVar CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN "$AIO_DEPLOY_TOKEN";
