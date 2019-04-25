@@ -24,6 +24,8 @@ describe('reflector_host_spec', () => {
     const reflectorHost = new ReflectorHost(() => undefined as any, mockHost, {basePath: '\\app'});
 
     if (process.platform !== 'win32') {
+      // If we call this in Windows it will cause a 'Maximum call stack size exceeded error'
+      // Because we are spying on the same function that we are call faking
       spyOn(path, 'join').and.callFake((...args: string[]) => { return path.win32.join(...args); });
     }
 
