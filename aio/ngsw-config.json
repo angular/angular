@@ -12,7 +12,8 @@
           "/assets/images/favicons/favicon.ico",
           "/assets/js/*.js",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "!/*-es5*.js"
         ],
         "urls": [
           "https://fonts.googleapis.com/**",
@@ -39,6 +40,7 @@
         "files": [
           "/assets/images/favicons/**",
           "/generated/ie-polyfills.min.js",
+          "/*-es5*.js",
           "!/**/_unused/**"
         ]
       }
