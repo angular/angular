@@ -138,7 +138,7 @@ To make these transitions as easy as possible, we make these commitments to you:
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
-* **Announcement:** We announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience, a [Deprecation Summary](guide/deprecation) is also provided. 
+* **Announcement:** We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough.~~ When we announce a deprecation, we also announce a recommended update path. For convenience,  [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features. 
 
 
 * **Deprecation period:** When an API or a feature is deprecated, it will still be present in the [next two major releases](#schedule). After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed. 
