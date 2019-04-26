@@ -8,12 +8,14 @@
 
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatIconModule} from '@angular/material/icon';
 import {RouterModule} from '@angular/router';
 import {MdcButtonDemo} from './mdc-button-demo';
 
 @NgModule({
   imports: [
     MatButtonModule,
+    MatIconModule,
     RouterModule.forChild([{path: '', component: MdcButtonDemo}]),
   ],
   declarations: [MdcButtonDemo],

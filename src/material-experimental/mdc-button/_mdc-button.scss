@@ -1,13 +1,40 @@
+@import '@material/button/mixins';
+@import '@material/fab/mixins';
+@import '@material/icon-button/mixins';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-button-theme-mdc($theme) {
   @include mat-using-mdc-theme($theme) {
-    // TODO: MDC theme styles here.
+    @include mdc-button-without-ripple($query: $mat-theme-styles-query);
   }
 }
 
 @mixin mat-button-typography-mdc($config) {
   @include mat-using-mdc-typography($config) {
-    // TODO: MDC typography styles here.
+    @include mdc-button-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-fab-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    @include mdc-fab-without-ripple($query: $mat-theme-styles-query);
+  }
+}
+
+@mixin mat-fab-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    @include mdc-fab-without-ripple($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-icon-button-theme-mdc($theme) {
+  @include mat-using-mdc-theme($theme) {
+    @include mdc-icon-button-without-ripple($query: $mat-theme-styles-query);
+  }
+}
+
+@mixin mat-icon-button-typography-mdc($config) {
+  @include mat-using-mdc-typography($config) {
+    @include mdc-icon-button-without-ripple($query: $mat-typography-styles-query);
   }
 }

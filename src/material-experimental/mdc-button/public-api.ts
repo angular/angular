@@ -7,4 +7,6 @@
  */
 
 export * from './button';
+export * from './fab';
+export * from './icon-button';
 export * from './module';

@@ -9,12 +9,29 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatButton} from './button';
+import {MatAnchor, MatButton} from './button';
+import {MatFabAnchor, MatFabButton} from './fab';
+import {MatIconAnchor, MatIconButton} from './icon-button';
 
 @NgModule({
   imports: [MatCommonModule, CommonModule],
-  exports: [MatButton, MatCommonModule],
-  declarations: [MatButton],
+  exports: [
+    MatAnchor,
+    MatButton,
+    MatIconAnchor,
+    MatIconButton,
+    MatFabAnchor,
+    MatFabButton,
+    MatCommonModule,
+  ],
+  declarations: [
+    MatAnchor,
+    MatButton,
+    MatIconAnchor,
+    MatIconButton,
+    MatFabAnchor,
+    MatFabButton,
+  ],
 })
 export class MatButtonModule {
 }

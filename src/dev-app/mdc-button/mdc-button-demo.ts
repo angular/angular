@@ -15,4 +15,7 @@ import {Component} from '@angular/core';
   styleUrls: ['mdc-button-demo.css'],
 })
 export class MdcButtonDemo {
+  isDisabled: boolean = false;
+  clickCounter: number = 0;
+  toggleDisable: boolean = false;
 }
