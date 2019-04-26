@@ -1,8 +1,8 @@
-@import '../../lib/core/style/variables';
-@import '../../lib/core/style/elevation';
-@import '../../lib/core/theming/palette';
-@import '../../lib/core/theming/theming';
-@import '../../lib/core/typography/typography-utils';
+@import '../../material/core/style/variables';
+@import '../../material/core/style/elevation';
+@import '../../material/core/theming/palette';
+@import '../../material/core/theming/theming';
+@import '../../material/core/typography/typography-utils';
 
 @function mat-edit-hover-content-background($direction, $background-color) {
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
