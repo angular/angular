@@ -26,15 +26,22 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     describe('supports', () => {
       it('should support strings', () => { expect(() => pipe.transform(str, 0)).not.toThrow(); });
       it('should support lists', () => { expect(() => pipe.transform(list, 0)).not.toThrow(); });
+      it('should support readonly lists',
+         () => { expect(() => pipe.transform(list as ReadonlyArray<number>, 0)).not.toThrow(); });
 
       it('should not support other objects',
-         () => { expect(() => pipe.transform({}, 0)).toThrow(); });
+         // this would not compile
+         // so we cast as `any` to check that it throws for unsupported objects
+         () => { expect(() => pipe.transform({} as any, 0)).toThrow(); });
     });
 
     describe('transform', () => {
 
       it('should return null if the value is null',
          () => { expect(pipe.transform(null, 1)).toBe(null); });
+
+      it('should return undefined if the value is undefined',
+         () => { expect(pipe.transform(undefined, 1)).toBe(undefined); });
 
       it('should return all items after START index when START is positive and END is omitted',
          () => {

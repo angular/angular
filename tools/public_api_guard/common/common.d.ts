@@ -410,7 +410,10 @@ export interface PopStateEvent {
 export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 export declare class SlicePipe implements PipeTransform {
-    transform(value: any, start: number, end?: number): any;
+    transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
+    transform(value: string, start: number, end?: number): string;
+    transform(value: null, start: number, end?: number): null;
+    transform(value: undefined, start: number, end?: number): undefined;
 }
 
 export declare type Time = {
