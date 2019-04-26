@@ -37,6 +37,11 @@ def ts_api_guardian_test(
         # But it will replaced to @npm//ts-api-guardian when publishing
         "@angular//tools/ts-api-guardian:lib",
         "@angular//tools/ts-api-guardian:bin",
+        # The below are required during runtime
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//minimist",
+        "@npm//typescript",
     ]
 
     args = [
