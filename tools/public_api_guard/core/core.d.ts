@@ -383,7 +383,6 @@ export interface HostListenerDecorator {
     new (eventName: string, args?: string[]): any;
 }
 
-/** @deprecated */
 export declare const inject: typeof ɵɵinject;
 
 export interface Inject {
