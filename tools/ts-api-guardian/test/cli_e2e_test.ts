@@ -124,7 +124,11 @@ function execute(args: string[]): {stdout: string, stderr: string, status: numbe
   // We need to determine the directory that includes the `ts-api-guardian` npm_package that
   // will be used to spawn the CLI binary. This is a workaround because technically we shouldn't
   // spawn a child process that doesn't have the custom NodeJS module resolution for Bazel.
-  const nodePath = path.join(path.dirname(require.resolve('../lib/cli.js')), '../');
+  const nodePath = [
+    path.join(require.resolve('npm/node_modules/chalk/package.json'), '../../'),
+    path.join(require.resolve('../lib/cli.js'), '../../'),
+  ].join(process.platform === 'win32' ? ';' : ':');
+
   const output = child_process.spawnSync(process.execPath, [BINARY_PATH, ...args], {
     env: {
       'NODE_PATH': nodePath,
