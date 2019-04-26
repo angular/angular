@@ -37,5 +37,6 @@ js_size_tracking_test(
     sourceMap = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
     tags = [
         "ivy-only",
+        "manual",
     ],
 )
