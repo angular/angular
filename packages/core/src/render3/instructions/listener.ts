@@ -110,6 +110,8 @@ function listenerInternal(
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
 
+  let processOutputs = true;
+
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
@@ -149,6 +151,7 @@ function listenerInternal(
         // Attach a new listener at the head of the coalesced listeners list.
         (<any>listenerFn).__ngNextListenerFn__ = (<any>existingListener).__ngNextListenerFn__;
         (<any>existingListener).__ngNextListenerFn__ = listenerFn;
+        processOutputs = false;
       } else {
         // The first argument of `listen` function in Procedural Renderer is:
         // - either a target name (as a string) in case of global target (window, document, body)
@@ -180,7 +183,7 @@ function listenerInternal(
 
   const outputs = tNode.outputs;
   let props: PropertyAliasValue|undefined;
-  if (outputs && (props = outputs[eventName])) {
+  if (processOutputs && outputs && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);

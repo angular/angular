@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {Component, Directive, ErrorHandler, EventEmitter, HostListener, Input, Output, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -203,5 +203,40 @@ describe('event listeners', () => {
       expect(returnsFalseDir.event.preventDefault).toHaveBeenCalled();
     });
 
+    it('should not subscribe twice to the output when there are 2 coalesced listeners', () => {
+      @Directive({selector: '[foo]'})
+      class FooDirective {
+        @Input('foo') model: any;
+        @Output('fooChange') update = new EventEmitter();
+
+        updateValue(value: any) { this.update.emit(value); }
+      }
+
+      @Component({
+        selector: 'test-component',
+        template: `<div [(foo)]="someValue" (fooChange)="fooChange($event)"></div>`
+      })
+      class TestComponent {
+        count = 0;
+        someValue = -1;
+
+        @ViewChild(FooDirective) fooDirective: FooDirective|null = null;
+
+        fooChange() { this.count++; }
+
+        triggerUpdate(value: any) { this.fooDirective !.updateValue(value); }
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, FooDirective]});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const componentInstance = fixture.componentInstance;
+      componentInstance.triggerUpdate(42);
+      fixture.detectChanges();
+
+      expect(componentInstance.count).toEqual(1);
+      expect(componentInstance.someValue).toEqual(42);
+    });
   });
 });
