@@ -70,7 +70,7 @@ export function createPerformWatchHost(
       const watcher = chokidar.watch(options.basePath, {
         // ignore .dotfiles, .js and .map files.
         // can't ignore other files as we e.g. want to recompile if an `.html` file changes as well.
-        ignored: /((^[\/\\])\..)|(\.js$)|(\.map$)|(\.metadata\.json)/,
+        ignored: /((^[\/\\])\..)|(\.js$)|(\.map$)|(\.metadata\.json|node_modules)/,
         ignoreInitial: true,
         persistent: true,
       });
