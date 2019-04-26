@@ -35,7 +35,8 @@ merge:
     # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
     include:
       - "LICENSE"
-      - "modules/**"
+      - "modules/benchmarks/**"
+      - "modules/system.d.ts"
       - "packages/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
