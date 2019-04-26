@@ -19,7 +19,7 @@ export function makeTempDir(): string {
   let dir: string;
   while (true) {
     const id = (Math.random() * 1000000).toFixed(0);
-    dir = path.join(tmpdir, `tmp.${id}`);
+    dir = path.posix.join(tmpdir, `tmp.${id}`);
     if (!fs.existsSync(dir)) break;
   }
   fs.mkdirSync(dir);
