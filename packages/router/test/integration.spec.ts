@@ -631,6 +631,7 @@ describe('Integration', () => {
          advance(fixture);
          expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
        })));
+
     it('should eagerly update the URL with urlUpdateStrategy="eagar"',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
          const fixture = TestBed.createComponent(RootCmp);
@@ -722,6 +723,33 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
        })));
 
+    it('should should set `state` with urlUpdateStrategy="eagar"',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+
+         router.urlUpdateStrategy = 'eager';
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         let navigation: Navigation = null !;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             navigation = router.getCurrentNavigation() !;
+           }
+         });
+
+         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         tick();
+
+         const history = (location as any)._history;
+         expect(history[history.length - 1].state.foo).toBe('bar');
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
+         expect(navigation.extras.state).toBeDefined();
+         expect(navigation.extras.state).toEqual({foo: 'bar'});
+       })));
   });
 
   it('should navigate back and forward',
