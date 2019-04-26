@@ -91,6 +91,7 @@
 /src/material-experimental/mdc-menu/**             @mmalerba # Note to implementer: please repossess
 /src/material-experimental/mdc-radio/**            @mmalerba # Note to implementer: please repossess
 /src/material-experimental/mdc-slide-toggle/**     @mmalerba # Note to implementer: please repossess
+/src/material-experimental/popover-edit/**         @kseamon @andrewseguin
 
 # CDK experimental package
 /src/cdk-experimental/**                           @jelbourn

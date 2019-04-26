@@ -91,6 +91,7 @@ System.config({
 
     '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
     '@angular/cdk-experimental/dialog': 'dist/packages/cdk-experimental/dialog/index.js',
+    '@angular/cdk-experimental/popover-edit': 'dist/packages/cdk-experimental/popover-edit/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',
@@ -143,6 +144,8 @@ System.config({
         'dist/packages/material-experimental/mdc-radio/index.js',
     '@angular/material-experimental/mdc-slide-toggle':
         'dist/packages/material-experimental/mdc-slide-toggle/index.js',
+    '@angular/material-experimental/popover-edit':
+        'dist/packages/material-experimental/popover-edit/index.js',
   },
   packages: {
     // Thirdparty barrels.

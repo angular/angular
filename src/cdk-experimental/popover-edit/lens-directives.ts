@@ -7,7 +7,7 @@
  */
 
 import {ReplaySubject} from 'rxjs';
-import {Directive, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, OnDestroy, OnInit} from '@angular/core';
 import {EDIT_PANE_SELECTOR} from './constants';
 import {closest} from './polyfill';
 import {EditRef} from './edit-ref';
@@ -30,6 +30,12 @@ export type PopoverEditClickOutBehavior = 'close' | 'submit' | 'noop';
     '(keyup.escape)': 'close()',
     '(document:click)': 'handlePossibleClickOut($event)',
   },
+  inputs: [
+    'clickOutBehavior: cdkEditControlClickOutBehavior',
+    'preservedFormValue: cdkEditControlPreservedFormValue',
+    'ignoreSubmitUnlessValid: cdkEditControlIgnoreSubmitUnlessValid',
+  ],
+  outputs: ['preservedFormValueChange: cdkEditControlPreservedFormValueChange'],
   providers: [EditRef],
 })
 export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
@@ -39,22 +45,21 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
    * Specifies what should happen when the user clicks outside of the edit lens.
    * The default behavior is to close the lens without submitting the form.
    */
-  @Input('cdkEditControlClickOutBehavior') clickOutBehavior: PopoverEditClickOutBehavior = 'close';
+  clickOutBehavior: PopoverEditClickOutBehavior = 'close';
 
   /**
    * A two-way binding for storing unsubmitted form state. If not provided
    * then form state will be discarded on close. The PeristBy directive is offered
    * as a convenient shortcut for these bindings.
    */
-  @Input('cdkEditControlPreservedFormValue') preservedFormValue?: FormValue;
-  @Output('cdkEditControlPreservedFormValueChange') readonly preservedFormValueChange =
-      new EventEmitter<FormValue>();
+  preservedFormValue?: FormValue;
+  readonly preservedFormValueChange = new EventEmitter<FormValue>();
 
   /**
    * Determines whether the lens will close on form submit if the form is not in a valid
    * state. By default the lens will remain open.
    */
-  @Input('cdkEditControlIgnoreSubmitUnlessValid') ignoreSubmitUnlessValid = true;
+  ignoreSubmitUnlessValid = true;
 
   constructor(protected readonly elementRef: ElementRef, readonly editRef: EditRef<FormValue>) {}
 

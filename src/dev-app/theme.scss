@@ -6,6 +6,7 @@
 @import '../material-experimental/mdc-menu/mdc-menu';
 @import '../material-experimental/mdc-radio/mdc-radio';
 @import '../material-experimental/mdc-slide-toggle/mdc-slide-toggle';
+@import '../material-experimental/popover-edit/popover-edit';
 
 // Plus imports for other components in your app.
 
@@ -33,7 +34,8 @@ $candy-app-theme:   mat-light-theme($candy-app-primary, $candy-app-accent);
 @include mat-menu-theme-mdc($candy-app-theme);
 @include mat-radio-theme-mdc($candy-app-theme);
 @include mat-slide-toggle-theme-mdc($candy-app-theme);
-
+@include mat-edit-theme($candy-app-theme);
+@include mat-edit-typography(mat-typography-config());
 
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
@@ -53,4 +55,5 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include mat-menu-theme-mdc($dark-theme);
   @include mat-radio-theme-mdc($dark-theme);
   @include mat-slide-toggle-theme-mdc($dark-theme);
+  @include mat-edit-theme($dark-theme);
 }

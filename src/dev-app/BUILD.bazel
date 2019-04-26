@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//:packages.bzl", "MATERIAL_TARGETS", "CDK_TARGETS", "CDK_EXPERIMENTAL_TARGETS")
+load("//:packages.bzl", "MATERIAL_TARGETS", "CDK_TARGETS", "CDK_EXPERIMENTAL_TARGETS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
 
@@ -32,7 +32,7 @@ ng_module(
     "//src/material-experimental/mdc-radio",
     "//src/material-experimental/mdc-slide-toggle",
     "//src/material-examples:examples",
-  ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS
+  ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS
 )
 
 sass_binary(
@@ -50,5 +50,5 @@ sass_binary(
     "//src/material-experimental/mdc-menu:menu_scss_lib",
     "//src/material-experimental/mdc-radio:radio_scss_lib",
     "//src/material-experimental/mdc-slide-toggle:slide_toggle_scss_lib",
-  ]
+  ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS
 )

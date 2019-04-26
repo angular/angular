@@ -149,6 +149,8 @@ System.config({
         'dist/packages/material-experimental/mdc-slide-toggle/index.js',
     '@angular/material-experimental/mdc-helpers':
         'dist/packages/material-experimental/mdc-helpers/index.js',
+    '@angular/material-experimental/popover-edit':
+        'dist/packages/material-experimental/popover-edit/index.js',
   },
   packages: {
     // Set the default extension for the root package, because otherwise the dev-app can't

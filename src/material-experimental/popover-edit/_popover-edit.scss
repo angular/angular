@@ -1,0 +1,116 @@
+@import '../../lib/core/style/variables';
+@import '../../lib/core/style/elevation';
+@import '../../lib/core/theming/palette';
+@import '../../lib/core/theming/theming';
+@import '../../lib/core/typography/typography-utils';
+
+@function mat-edit-hover-content-background($direction, $background-color) {
+  @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
+}
+
+@mixin mat-edit-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $primary: map-get($theme, primary);
+
+  $background-color: mat-color($background, 'card');
+
+  .mat-row-hover-content {
+    align-items: center;
+    background: mat-edit-hover-content-background(90deg, $background-color);
+    bottom: 0;
+    display: flex;
+    opacity: 0;
+    padding: 0 4px 1px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity $swift-ease-in-duration $swift-ease-in-timing-function;
+  }
+
+  .mat-row-hover-content-rtl {
+    background: mat-edit-hover-content-background(270deg, $background-color);
+    left: 0;
+    right: auto;
+  }
+
+  .mat-row-hover-content-visible {
+    opacity: 1;
+  }
+
+  .mat-popover-edit-cell {
+    position: relative;
+
+    &::after {
+      background-color: mat-color($primary);
+      bottom: 0;
+      content: '';
+      height: 2px;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      transform-origin: 50%;
+      transform: scaleX(0.5);
+      transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+      visibility: hidden;
+    }
+
+    &:focus {
+      outline: none;
+
+      &::after {
+        opacity: 1;
+        transform: scaleX(1);
+        transition: transform 300ms $swift-ease-out-timing-function,
+                    opacity 100ms $swift-ease-out-timing-function,
+                    background-color 300ms $swift-ease-out-timing-function;
+        visibility: visible;
+      }
+    }
+  }
+
+  .mat-edit-pane {
+    @include _mat-theme-elevation(2, $theme);
+    background: $background-color;
+    color: mat-color($foreground, text);
+    display: block;
+    padding: 16px 24px;
+  }
+
+  .mat-edit-lens {
+    display: block;
+    width: 100%;
+  }
+
+  [mat-edit-title] {
+    display: block;
+    margin: 0;
+  }
+
+  [mat-edit-content] {
+    display: block;
+
+    mat-form-field {
+      display: block;
+
+      &:not(.mat-form-field-has-label) .mat-form-field-infix {
+        padding: 0;
+      }
+    }
+  }
+
+  [mat-edit-actions] {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin: 8px -16px -8px;
+  }
+}
+
+@mixin mat-edit-typography($config) {
+  [mat-edit-title] {
+    @include mat-typography-level-to-styles($config, title);
+  }
+}

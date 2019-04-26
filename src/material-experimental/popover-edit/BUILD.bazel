@@ -1,0 +1,44 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+
+ng_module(
+  name = "popover-edit",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material-experimental/popover-edit",
+  deps = [
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "//src/cdk-experimental/popover-edit",
+  ],
+)
+
+sass_library(
+  name = "popover_edit_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = [
+    "//src/lib/core:core_scss_lib",
+  ],
+)
+
+ng_test_library(
+  name = "popover_edit_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    ":popover-edit",
+    "@npm//@angular/common",
+    "@npm//@angular/forms",
+    "@npm//rxjs",
+    "//src/cdk/collections",
+    "//src/cdk/keycodes",
+    "//src/cdk/testing",
+    "//src/cdk-experimental/popover-edit",
+    "//src/lib/table",
+  ],
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":popover_edit_test_sources"]
+)

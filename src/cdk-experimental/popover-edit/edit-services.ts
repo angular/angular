@@ -8,6 +8,7 @@
 
 import {Injectable, NgZone} from '@angular/core';
 import {FocusTrapFactory} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
 import {Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 
@@ -24,6 +25,7 @@ import {PopoverEditPositionStrategyFactory} from './popover-edit-position-strate
 @Injectable()
 export class EditServices {
   constructor(
+      readonly directionality: Directionality,
       readonly editEventDispatcher: EditEventDispatcher, readonly focusDispatcher: FocusDispatcher,
       readonly focusTrapFactory: FocusTrapFactory, readonly ngZone: NgZone,
       readonly overlay: Overlay, readonly positionFactory: PopoverEditPositionStrategyFactory,

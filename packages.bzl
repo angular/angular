@@ -78,6 +78,18 @@ MATERIAL_SCSS_LIBS = [
   "//src/material/%s:%s_scss_lib" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
 ]
 
+MATERIAL_EXPERIMENTAL_PACKAGES = [
+  "popover-edit",
+]
+
+MATERIAL_EXPERIMENTAL_TARGETS = ["//src/material-experimental"] + [
+  "//src/material-experimental/%s" % p for p in MATERIAL_EXPERIMENTAL_PACKAGES
+]
+
+MATERIAL_EXPERIMENTAL_SCSS_LIBS = [
+  "//src/material-experimental/%s:%s_scss_lib" % (p, p.replace('-', '_')) for p in MATERIAL_EXPERIMENTAL_PACKAGES
+]
+
 # Each individual package uses a placeholder for the version of Angular to ensure they're
 # all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
@@ -112,6 +124,11 @@ ROLLUP_GLOBALS.update({
 # Rollup globals for material subpackages, e.g., {"@angular/material/list": "ng.material.list"}
 ROLLUP_GLOBALS.update({
   "@angular/material/%s" % p: "ng.material.%s" % p for p in MATERIAL_PACKAGES
+})
+
+# Rollup globals for material experiemental subpackages, e.g., {"@angular/material-experimental/list": "ng.materialExperimental.list"}
+ROLLUP_GLOBALS.update({
+  "@angular/material-experiemntal/%s" % p: "ng.materialExperimental.%s" % p for p in MATERIAL_EXPERIMENTAL_PACKAGES
 })
 
 # UMD bundles for Angular packages and subpackges we depend on for development and testing.

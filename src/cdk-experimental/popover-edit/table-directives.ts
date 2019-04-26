@@ -13,7 +13,6 @@ import {
   Directive,
   ElementRef,
   EmbeddedViewRef,
-  Input,
   NgZone,
   OnDestroy,
   TemplateRef,
@@ -110,6 +109,18 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
   }
 }
 
+const POPOVER_EDIT_HOST_BINDINGS = {
+  'tabIndex': '0',
+  'class': 'cdk-popover-edit-cell',
+  '[attr.aria-haspopup]': 'true',
+};
+
+const POPOVER_EDIT_INPUTS = [
+  'template: cdkPopoverEdit',
+  'context: cdkPopoverEditContext',
+  'colspan: cdkPopoverEditColspan',
+];
+
 /**
  * Attaches an ng-template to a cell and shows it when instructed to by the
  * EditEventDispatcher service.
@@ -117,27 +128,23 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
  */
 @Directive({
   selector: '[cdkPopoverEdit]:not([cdkPopoverEditTabOut])',
-  host: {
-    'tabIndex': '0',
-    'class': 'cdk-popover-edit-cell',
-    '[attr.aria-haspopup]': 'true',
-  }
+  host: POPOVER_EDIT_HOST_BINDINGS,
+  inputs: POPOVER_EDIT_INPUTS,
 })
 export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   /** The edit lens template shown over the cell on edit. */
-  @Input('cdkPopoverEdit') template: TemplateRef<any>|null = null;
+  template: TemplateRef<any>|null = null;
 
   /**
    * Implicit context to pass along to the template. Can be omitted if the template
    * is defined within the cell.
    */
-  @Input('cdkPopoverEditContext') context?: C;
+  context?: C;
 
   /**
    * Specifies that the popup should cover additional table cells before and/or after
    * this one.
    */
-  @Input('cdkPopoverEditColspan')
   get colspan(): CdkPopoverEditColspan {
     return this._colspan;
   }
@@ -184,6 +191,10 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
     this.services.editEventDispatcher.doneEditingCell(this.elementRef.nativeElement!);
   }
 
+  protected panelClass(): string {
+    return EDIT_PANE_CLASS;
+  }
+
   private _startListeningToEditEvents(): void {
     this.services.editEventDispatcher.editingCell(this.elementRef.nativeElement!)
         .pipe(takeUntil(this.destroyed))
@@ -207,7 +218,7 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
   private _createEditOverlay(): void {
     this.overlayRef = this.services.overlay.create({
       disposeOnNavigation: true,
-      panelClass: EDIT_PANE_CLASS,
+      panelClass: this.panelClass(),
       positionStrategy: this._getPositionStrategy(),
       scrollStrategy: this.services.overlay.scrollStrategies.reposition(),
     });
@@ -276,12 +287,9 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
  * Makes the cell focusable.
  */
 @Directive({
-  selector: '[cdkPopoverEdit] [cdkPopoverEditTabOut]',
-  host: {
-    'tabIndex': '0',
-    'class': 'cdk-popover-edit-cell',
-    '[attr.aria-haspopup]': 'true',
-  }
+  selector: '[cdkPopoverEdit][cdkPopoverEditTabOut]',
+  host: POPOVER_EDIT_HOST_BINDINGS,
+  inputs: POPOVER_EDIT_INPUTS,
 })
 export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
   protected focusTrap?: FocusEscapeNotifier;
@@ -324,9 +332,6 @@ export class CdkPopoverEditTabOut<C> extends CdkPopoverEdit<C> {
  */
 @Directive({
   selector: '[cdkRowHoverContent]',
-  host: {
-    '[attr.aria-hidden]': 'true',
-  }
 })
 export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
   protected readonly destroyed = new ReplaySubject<void>();
@@ -350,6 +355,14 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
     }
   }
 
+  protected initElement(element: HTMLElement): void;
+  protected initElement(): void {
+  }
+
+  protected prepareElement(element: HTMLElement): void;
+  protected prepareElement(): void {
+  }
+
   private _listenForHoverEvents(): void {
     this.services.editEventDispatcher.hoveringOnRow(this.elementRef.nativeElement!)
         .pipe(takeUntil(this.destroyed))
@@ -360,9 +373,11 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
                 // Not doing any positioning in CDK version. Material version
                 // will absolutely position on right edge of cell.
                 this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef, {});
+                this.initElement(this.elementRef.nativeElement!.nextSibling as HTMLElement);
               } else {
                 this.viewContainerRef.insert(this.viewRef);
               }
+              this.prepareElement(this.elementRef.nativeElement!.nextSibling as HTMLElement);
             } else if (this.viewRef) {
               this.viewContainerRef.detach(this.viewContainerRef.indexOf(this.viewRef));
             }

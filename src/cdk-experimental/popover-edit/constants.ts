@@ -22,4 +22,4 @@ export const TABLE_SELECTOR = 'table, cdk-table, mat-table';
 export const EDIT_PANE_CLASS = 'cdk-edit-pane';
 
 /** Selector for finding the edit lens pane. */
-export const EDIT_PANE_SELECTOR = '.' + EDIT_PANE_CLASS;
+export const EDIT_PANE_SELECTOR = `.${EDIT_PANE_CLASS}, .mat-edit-pane`;

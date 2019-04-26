@@ -1,0 +1,86 @@
+<table class="example-table" mat-table editable [dataSource]="dataSource">
+  <ng-template #nameEdit let-ctx>
+    <div>
+      <form #f="ngForm"
+          matEditLens
+          (ngSubmit)="onSubmit(ctx.person, f)"
+          [matEditLensPreservedFormValue]="preservedValues.get(ctx.person)"
+          (matEditLensPreservedFormValueChange)="preservedValues.set(ctx.person, $event)">
+        <div mat-edit-content class="example-input-container">
+          <mat-form-field>
+            <input matInput [ngModel]="ctx.person.firstName" name="firstName" required
+                [attr.cdkFocusInitial]="ctx.focus === 'firstName' || null">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [ngModel]="ctx.person.middleName" name="middleName"
+                [attr.cdkFocusInitial]="ctx.focus === 'middleName' || null">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [ngModel]="ctx.person.lastName" name="lastName" required
+                [attr.cdkFocusInitial]="ctx.focus === 'lastName' || null">
+          </mat-form-field>
+        </div>
+
+        <div mat-edit-actions>
+          <button mat-button type="submit">Confirm</button>
+          <button mat-button cdkEditRevert>Revert</button>
+          <button mat-button cdkEditClose>Close</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> No. </th>
+    <td mat-cell *matCellDef="let person"> {{person.id}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="firstName">
+    <th mat-header-cell *matHeaderCellDef> First Name </th>
+    <td mat-cell *matCellDef="let person"
+        [matPopoverEdit]="nameEdit"
+        [matPopoverEditContext]="{person: person, focus: 'firstName'}"
+        [matPopoverEditColspan]="{after: 2}">
+      {{person.firstName}}
+
+      <span *matRowHoverContent>
+        <button mat-icon-button matEditOpen><mat-icon>edit</mat-icon></button>
+      </span>
+    </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="middleName">
+    <th mat-header-cell *matHeaderCellDef> Middle Name </th>
+    <td mat-cell *matCellDef="let person"
+        [matPopoverEdit]="nameEdit"
+        [matPopoverEditContext]="{person: person, focus: 'middleName'}"
+        [matPopoverEditColspan]="{before:1 , after: 1}">
+      {{person.middleName}}
+
+      <span *matRowHoverContent>
+        <button mat-icon-button matEditOpen><mat-icon>edit</mat-icon></button>
+      </span>
+    </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="lastName">
+    <th mat-header-cell *matHeaderCellDef> Last Name </th>
+    <td mat-cell *matCellDef="let person"
+        [matPopoverEdit]="nameEdit"
+        [matPopoverEditContext]="{person: person, focus: 'lastName'}"
+        [matPopoverEditColspan]="{before: 2}">
+      {{person.lastName}}
+
+      <span *matRowHoverContent>
+        <button mat-icon-button matEditOpen><mat-icon>edit</mat-icon></button>
+      </span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

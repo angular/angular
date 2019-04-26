@@ -1,0 +1,22 @@
+.example-table {
+  width: 100%;
+}
+
+.example-table th {
+  text-align: left;
+}
+
+.example-table td,
+.example-table th {
+  min-width: 300px;
+  width: 25%;
+}
+
+.example-input-container {
+  display: flex;
+  justify-content: stretch;
+}
+
+.example-input-container mat-form-field {
+  flex: 1;
+}
