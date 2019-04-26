@@ -223,9 +223,7 @@ const routes: Routes = [{
 <div class="alert is-helpful">
 
 
-**v8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically. Prior to version 7, the `import()` syntax works in JIT mode (with view engine). 
-
-**Ivy:** If you are using Ivy, you must update your lazy routes to the new dynamic import syntax. See the [Ivy guide](guide/ivy) for more information.
+**v8 update**: When you update to version 8, the [`ng update`](cli/update) command performs the transformation automatically. Prior to version 7, the `import()` syntax only works in JIT mode (with view engine). 
 
 
 </div>
