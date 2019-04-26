@@ -19,7 +19,7 @@ The simplest way to provide data to the table is by passing a data array to the 
 input. The table will take the array and render a row for each object in the data array.
 
 ```html
-<table mat-table [dataSource]=”myDataArray”>
+<table mat-table [dataSource]="myDataArray">
   ...
 </table>
 ```
