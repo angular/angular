@@ -13,7 +13,6 @@ describe('Angular Language Service', () => {
   beforeEach(() => {
     jasmine.addMatchers(goldenMatcher);
     server = fork(SERVER_PATH, [
-      '--globalPlugins', '@angular/language-service',
       '--logVerbosity', 'verbose',
       '--logFile', join(PWD, 'tsserver.log'),
     ], {
