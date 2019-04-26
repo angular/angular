@@ -28,7 +28,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.800.0-beta.11",
+    "@angular-devkit/build-angular": "0.800.0-beta.15",
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
