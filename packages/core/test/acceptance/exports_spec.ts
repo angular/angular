@@ -135,6 +135,86 @@ describe('exports', () => {
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('span').innerHTML).toBe('First');
       });
+
+  describe('forward refs', () => {
+    it('should work with basic text bindings', () => {
+      const fixture = initWithTemplate(AppComp, '{{ myInput.value}} <input value="one" #myInput>');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('one <input value="one">');
+    });
+
+    it('should work with element properties', () => {
+      const fixture = initWithTemplate(
+          AppComp, '<div [title]="myInput.value"></div> <input value="one" #myInput>');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<div title="one"></div><input value="one">');
+    });
+
+    it('should work with element attrs', () => {
+      const fixture = initWithTemplate(
+          AppComp, '<div [attr.aria-label]="myInput.value"></div> <input value="one" #myInput>');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<div aria-label="one"></div><input value="one">');
+    });
+
+    it('should work with element classes', () => {
+      const fixture = initWithTemplate(
+          AppComp,
+          '<div [class.red]="myInput.checked"></div> <input type="checkbox" checked #myInput>');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('<div class="red"></div>');
+    });
+
+    it('should work with component refs', () => {
+      const fixture = initWithTemplate(
+          AppComp, '<div [dirWithInput]="myComp"></div><comp-to-ref #myComp></comp-to-ref>');
+      fixture.detectChanges();
+
+      const dirWithInput = fixture.debugElement.children[0].injector.get(DirWithCompInput);
+      const myComp = fixture.debugElement.children[1].injector.get(ComponentToReference);
+
+      expect(dirWithInput.comp).toEqual(myComp);
+    });
+
+    it('should work with multiple forward refs', () => {
+      const fixture = initWithTemplate(
+          AppComp,
+          '{{ myInput.value }} {{ myComp.name }} <comp-to-ref #myComp></comp-to-ref> <input value="one" #myInput>');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('one Nancy <comp-to-ref></comp-to-ref><input value="one">');
+    });
+
+    it('should support local refs in nested dynamic views', () => {
+      const fixture = initWithTemplate(AppComp, `
+        <input value="one" #outerInput>
+        <div *ngIf="outer">
+          {{ outerInput.value }}
+            <input value = "two" #innerInput>
+            <div *ngIf="inner">
+                {{ outerInput.value }} - {{ innerInput.value}}
+            </div>
+        </div>
+      `);
+      fixture.detectChanges();
+      fixture.componentInstance.outer = true;
+      fixture.componentInstance.inner = true;
+      fixture.detectChanges();
+
+      // result should be <input value="one"><div>one <input value="two"><div>one - two</div></div>
+      // but contains bindings comments for ngIf
+      // so we check the outer div
+      expect(fixture.nativeElement.innerHTML).toContain('one <input value="two">');
+      // and the inner div
+      expect(fixture.nativeElement.innerHTML).toContain('one - two');
+    });
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
@@ -149,6 +229,8 @@ class ComponentToReference {
 
 @Component({selector: 'app-comp', template: ``})
 class AppComp {
+  outer = false;
+  inner = false;
 }
 
 @Directive({selector: '[dir]', exportAs: 'dir'})
