@@ -18,3 +18,5 @@ export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl,
 
 export * from './private_export';
 export {VERSION} from './version';
+// This must be exported so it doesn't get tree-shaken away prematurely
+export {ELEMENT_PROBE_PROVIDERS__POST_R3__ as ɵELEMENT_PROBE_PROVIDERS__POST_R3__} from './dom/debug/ng_probe';

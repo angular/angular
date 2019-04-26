@@ -37,9 +37,18 @@ function _ngProbeTokensToMap(tokens: core.NgProbeToken[]): {[name: string]: any}
 }
 
 /**
+ * In Ivy, we don't support NgProbe because we have our own set of testing utilities
+ * with more robust functionality.
+ *
+ * We shouldn't bring in NgProbe because it prevents DebugNode and friends from
+ * tree-shaking properly.
+ */
+export const ELEMENT_PROBE_PROVIDERS__POST_R3__ = [];
+
+/**
  * Providers which support debugging Angular applications (e.g. via `ng.probe`).
  */
-export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [
+export const ELEMENT_PROBE_PROVIDERS__PRE_R3__: core.Provider[] = [
   {
     provide: core.APP_INITIALIZER,
     useFactory: _createNgProbe,
@@ -49,3 +58,5 @@ export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [
     multi: true,
   },
 ];
+
+export const ELEMENT_PROBE_PROVIDERS = ELEMENT_PROBE_PROVIDERS__PRE_R3__;
