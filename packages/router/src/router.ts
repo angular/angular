@@ -516,7 +516,8 @@ export class Router {
                       tap(t => {
                         if (this.urlUpdateStrategy === 'eager') {
                           if (!t.extras.skipLocationChange) {
-                            this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id);
+                            this.setBrowserUrl(
+                                t.urlAfterRedirects, !!t.extras.replaceUrl, t.id, t.extras.state);
                           }
                           this.browserUrlTree = t.urlAfterRedirects;
                         }
