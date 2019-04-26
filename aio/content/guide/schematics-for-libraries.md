@@ -157,7 +157,7 @@ export class <%= classify(name) %>Service {
 
 </code-example>
 
-* The `classify` and `dasherize` methods are utility functions you schematic will use to transform your source template and filename.
+* The `classify` and `dasherize` methods are utility functions that your schematic will use to transform your source template and filename.
 
 * The `name` is provided as a property from your factory function. It is the same `name` you defined in the schema.
 
