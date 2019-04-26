@@ -8,7 +8,6 @@
 
 import {runOneBuild} from '@angular/bazel';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -47,9 +46,7 @@ export function setup(
   const bazelBinPath = path.resolve(basePath, bazelBin);
   fs.mkdirSync(bazelBinPath);
 
-  const angularCorePath = path.resolve(runfilesPath, 'angular', 'packages', 'core');
-  const ngFiles = listFilesRecursive(angularCorePath);
-
+  const angularCorePath = path.dirname(require.resolve('angular/packages/core'));
   const tsConfigJsonPath = path.resolve(basePath, tsconfig);
 
   return {
@@ -107,7 +104,10 @@ export function setup(
     const files = [...compilationTargetSrc];
 
     depPaths = depPaths.concat([angularCorePath]);
-    pathMapping = pathMapping.concat([{moduleName: '@angular/core', path: angularCorePath}]);
+    pathMapping = pathMapping.concat([
+      {moduleName: '@angular/core', path: angularCorePath},
+      {moduleName: 'angular/packages/core', path: angularCorePath}
+    ]);
 
     for (const depPath of depPaths) {
       files.push(...listFilesRecursive(depPath).filter(f => f.endsWith('.d.ts')));
@@ -116,14 +116,12 @@ export function setup(
     const pathMappingObj = {};
     for (const mapping of pathMapping) {
       pathMappingObj[mapping.moduleName] = [mapping.path];
-      pathMappingObj[path.join(mapping.moduleName, '*')] = [path.join(mapping.path, '*')];
+      pathMappingObj[path.posix.join(mapping.moduleName, '*')] =
+          [path.posix.join(mapping.path, '*')];
     }
 
     const emptyTsConfig = ts.readConfigFile(
-        path.resolve(
-            runfilesPath, 'angular', 'packages', 'bazel', 'test', 'ngc-wrapped', 'empty',
-            'empty_tsconfig.json'),
-        read);
+        require.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
 
     const tsconfig = createTsConfig({
       defaultTsConfig: emptyTsConfig.config,
