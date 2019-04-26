@@ -29,7 +29,7 @@ function setupFakeCore(support: TestSupport): void {
   const nodeModulesPath = path.join(support.basePath, 'node_modules');
   const angularCoreDirectory = path.join(nodeModulesPath, '@angular/core');
 
-  fs.symlinkSync(fakeNpmPackageDir, angularCoreDirectory, 'dir');
+  fs.symlinkSync(fakeNpmPackageDir, angularCoreDirectory, 'junction');
 }
 
 /**
@@ -121,7 +121,7 @@ export class NgtscTestEnvironment {
     if (this.multiCompileHostExt === null) {
       throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
     }
-    const outDir = path.join(this.support.basePath, 'built');
+    const outDir = path.posix.join(this.support.basePath, 'built');
     const writtenFiles = new Set<string>();
     this.multiCompileHostExt.getFilesWrittenSinceLastFlush().forEach(rawFile => {
       if (rawFile.startsWith(outDir)) {
