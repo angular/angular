@@ -62,24 +62,7 @@ export interface R3DirectiveMetadata {
    * Mappings indicating how the directive interacts with its host element (host bindings,
    * listeners, etc).
    */
-  host: {
-    /**
-     * A mapping of attribute binding keys to `o.Expression`s.
-     */
-    attributes: {[key: string]: o.Expression};
-
-    /**
-     * A mapping of event binding keys to unparsed expressions.
-     */
-    listeners: {[key: string]: string};
-
-    /**
-     * A mapping of property binding keys to unparsed expressions.
-     */
-    properties: {[key: string]: string};
-
-    specialAttributes: {styleAttr?: string; classAttr?: string;}
-  };
+  host: R3HostMetadata;
 
   /**
    * Information about usage of specific lifecycle events which require special treatment in the
@@ -264,4 +247,27 @@ export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
   statements: o.Statement[];
+}
+
+/**
+ * Mappings indicating how the class interacts with its
+ * host element (host bindings, listeners, etc).
+ */
+export interface R3HostMetadata {
+  /**
+   * A mapping of attribute binding keys to `o.Expression`s.
+   */
+  attributes: {[key: string]: o.Expression};
+
+  /**
+   * A mapping of event binding keys to unparsed expressions.
+   */
+  listeners: {[key: string]: string};
+
+  /**
+   * A mapping of property binding keys to unparsed expressions.
+   */
+  properties: {[key: string]: string};
+
+  specialAttributes: {styleAttr?: string; classAttr?: string;};
 }

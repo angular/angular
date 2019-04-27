@@ -220,22 +220,28 @@ function extractBaseDefMetadata(type: Type<any>): R3BaseMetadataFacade|null {
   const queries = extractQueriesMetadata(type, propMetadata, isContentQuery);
   let inputs: {[key: string]: string | [string, string]}|undefined;
   let outputs: {[key: string]: string}|undefined;
+  // We only need to know whether there are any HostListener or HostBinding
+  // decorators present, the parsing logic is in the compiler already.
+  let hasHostDecorators = false;
 
   for (const field in propMetadata) {
     propMetadata[field].forEach(ann => {
-      if (ann.ngMetadataName === 'Input') {
+      const metadataName = ann.ngMetadataName;
+      if (metadataName === 'Input') {
         inputs = inputs || {};
         inputs[field] = ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
-      } else if (ann.ngMetadataName === 'Output') {
+      } else if (metadataName === 'Output') {
         outputs = outputs || {};
         outputs[field] = ann.bindingPropertyName || field;
+      } else if (metadataName === 'HostBinding' || metadataName === 'HostListener') {
+        hasHostDecorators = true;
       }
     });
   }
 
   // Only generate the base def if there's any info inside it.
-  if (inputs || outputs || viewQueries.length || queries.length) {
-    return {inputs, outputs, viewQueries, queries};
+  if (inputs || outputs || viewQueries.length || queries.length || hasHostDecorators) {
+    return {name: type.name, inputs, outputs, viewQueries, queries, propMetadata};
   }
 
   return null;

@@ -666,6 +666,7 @@ export interface ɵɵBaseDef<T> {
     /** @deprecated */ readonly declaredInputs: {
         [P in keyof T]: string;
     };
+    hostBindings: HostBindingsFunction<T> | null;
     readonly inputs: {
         [P in keyof T]: string;
     };
@@ -706,6 +707,7 @@ export declare function ɵɵdefineBase<T>(baseDefinition: {
     };
     contentQueries?: ContentQueriesFunction<T> | null;
     viewQuery?: ViewQueriesFunction<T> | null;
+    hostBindings?: HostBindingsFunction<T>;
 }): ɵɵBaseDef<T>;
 
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
