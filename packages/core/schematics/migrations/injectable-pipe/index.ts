@@ -14,7 +14,7 @@ import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {InjectablePipeVisitor} from './angular/injectable_pipe_visitor';
-import {INJECTABLE_DECORATOR_NAME, addNamedImport, getNamedImports} from './util';
+import {INJECTABLE_DECORATOR_NAME, addImport, getNamedImports} from './util';
 
 /**
  * Runs a migration over a TypeScript project that adds an `@Injectable`
@@ -78,8 +78,7 @@ function runInjectablePipeMigration(tree: Tree, tsconfigPath: string, basePath: 
         update.insertRight(
             namedImports.getStart(),
             printer.printNode(
-                ts.EmitHint.Unspecified,
-                addNamedImport(importDeclarationMissingImport, INJECTABLE_DECORATOR_NAME),
+                ts.EmitHint.Unspecified, addImport(namedImports, INJECTABLE_DECORATOR_NAME),
                 sourceFile));
       }
     }

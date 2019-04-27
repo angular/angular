@@ -70,8 +70,10 @@ describe('injectable pipe migration', () => {
     `);
 
     runMigration();
-    expect(tree.readContent('/index.ts'))
-        .toContain('import { Pipe, Injectable } from \'@angular/core\'');
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain('import { Pipe, Injectable } from \'@angular/core\'');
+    expect((content.match(/import/g) || []).length).toBe(1, 'Expected only one import statement');
   });
 
   it('should not add an import for Injectable if it is imported already', () => {
