@@ -291,4 +291,6 @@ export {
 
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
 
+export {INJECTOR_IMPL__POST_R3__ as ɵINJECTOR_IMPL__POST_R3__} from './di/injector';
+
 // clang-format on

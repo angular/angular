@@ -8,7 +8,8 @@
 
 import {NgModuleRef} from '@angular/core';
 import {InjectFlags, inject} from '@angular/core/src/di';
-import {INJECTOR, Injector} from '@angular/core/src/di/injector';
+import {Injector} from '@angular/core/src/di/injector';
+import {INJECTOR} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef} from '@angular/core/src/view/ng_module';

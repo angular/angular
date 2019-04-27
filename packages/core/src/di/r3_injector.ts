@@ -12,8 +12,8 @@ import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, Injector, NG_TEMP_TOKEN_PATH, NullInjector, USE_VALUE, catchInjectorError} from './injector';
-import {injectArgs, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {Injector} from './injector';
+import {injectArgs, NullInjector, catchInjectorError, USE_VALUE, setCurrentInjector, ɵɵinject, INJECTOR, THROW_IF_NOT_FOUND, NG_TEMP_TOKEN_PATH} from './injector_compatibility';
 import {InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
@@ -157,7 +157,7 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      token: Type<T>|InjectionToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
       flags = InjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
