@@ -53,6 +53,11 @@ export function getSourceFileOrNull(program: ts.Program, fileName: AbsoluteFsPat
 }
 
 
+export function getTokenAtPosition(sf: ts.SourceFile, pos: number): ts.Node {
+  // getTokenAtPosition is part of TypeScript's private API.
+  return (ts as any).getTokenAtPosition(sf, pos);
+}
+
 export function identifierOfNode(decl: ts.Node & {name?: ts.Node}): ts.Identifier|null {
   if (decl.name !== undefined && ts.isIdentifier(decl.name)) {
     return decl.name;

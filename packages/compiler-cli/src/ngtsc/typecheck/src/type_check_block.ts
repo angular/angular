@@ -13,7 +13,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
-import {addParseSpanInfo, addSourceInfo, toAbsoluteSpan, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addSourceReferenceName, toAbsoluteSpan, wrapForDiagnostics} from './diagnostics';
 import {Environment} from './environment';
 import {astToTypescript} from './expression';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateVariable, tsDeclareVariable} from './ts_util';
@@ -60,7 +60,7 @@ export function generateTypeCheckBlock(
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
-  addSourceInfo(fnDecl, ref.node);
+  addSourceReferenceName(fnDecl, ref.node);
   return fnDecl;
 }
 
