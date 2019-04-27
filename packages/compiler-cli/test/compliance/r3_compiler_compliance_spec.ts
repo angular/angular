@@ -3220,6 +3220,89 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
+    it('should add ngBaseDef if a host binding is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, HostBinding} from '@angular/core';
+            export class BaseClass {
+              @HostBinding('attr.tabindex')
+              tabindex = -1;
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = $r3$.ɵɵdefineBase({
+        hostBindings: function (rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵallocHostVars(1);
+          }
+          if (rf & 2) {
+            $r3$.ɵɵelementAttribute(elIndex, "tabindex", $r3$.ɵɵbind(ctx.tabindex));
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a host listener is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, HostListener} from '@angular/core';
+            export class BaseClass {
+              @HostListener('mousedown', ['$event'])
+              handleMousedown(event: any) {}
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = $r3$.ɵɵdefineBase({
+        hostBindings: function (rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵɵlistener("mousedown", function ($event) {
+              return ctx.handleMousedown($event);
+            });
+          }
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
     it('should NOT add ngBaseDef if @Component is present', () => {
       const files = {
         app: {

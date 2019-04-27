@@ -149,6 +149,8 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
 }
 
 export interface R3BaseMetadataFacade {
+  name: string;
+  propMetadata: {[key: string]: any[]};
   inputs?: {[key: string]: string | [string, string]};
   outputs?: {[key: string]: string};
   queries?: R3QueryMetadataFacade[];
