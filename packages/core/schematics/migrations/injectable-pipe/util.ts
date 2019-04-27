@@ -12,28 +12,17 @@ import * as ts from 'typescript';
 export const INJECTABLE_DECORATOR_NAME = 'Injectable';
 
 /**
- * Adds a named import to an import declaration node.
+ * Adds an import to a named import node, if the import does not exist already.
  * @param node Node to which to add the import.
  * @param importName Name of the import that should be added.
  */
-export function addNamedImport(node: ts.ImportDeclaration, importName: string) {
-  const namedImports = getNamedImports(node);
+export function addImport(node: ts.NamedImports, importName: string) {
+  const elements = node.elements;
+  const isAlreadyImported = elements.some(element => element.name.text === importName);
 
-  if (namedImports && ts.isNamedImports(namedImports)) {
-    const elements = namedImports.elements;
-    const isAlreadyImported = elements.some(element => element.name.text === importName);
-
-    if (!isAlreadyImported) {
-      // If there are named imports, there will be an import clause as well.
-      const importClause = node.importClause !;
-      const newImportClause = ts.createNamedImports(
-          [...elements, ts.createImportSpecifier(undefined, ts.createIdentifier(importName))]);
-
-      return ts.updateImportDeclaration(
-          node, node.decorators, node.modifiers,
-          ts.updateImportClause(importClause, importClause.name, newImportClause),
-          node.moduleSpecifier);
-    }
+  if (!isAlreadyImported) {
+    return ts.updateNamedImports(
+        node, [...elements, ts.createImportSpecifier(undefined, ts.createIdentifier(importName))]);
   }
 
   return node;
