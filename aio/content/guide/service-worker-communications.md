@@ -129,4 +129,4 @@ You may also be interested in the following:
 * [Service Worker in Production](guide/service-worker-devops).
 -->
 다음 내용도 확인해 보세요:
-* [운영 환경에서 서비스 워커 사용하기](guide/service-worker-devops)
+* [운영 환경에 서비스 워커 활용하기](guide/service-worker-devops)

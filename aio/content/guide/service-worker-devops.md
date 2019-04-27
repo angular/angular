@@ -1,26 +1,55 @@
+<!--
 # Service worker in production
+-->
+# 운영환경에 서비스 워커 활용하기
 
+<!--
 This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
+-->
+이 문서에서는 Angular 서비스 워커를 운영환경에서 활용할 때 필요한 내용에 대해 소개합니다.
+복잡한 운영환경에 서비스 워커를 어떻게 적용할 수 있는지, 서로 다른 환경에서 서비스 워커의 동작이 어떻게 달라져야 하는지, 리소스를 준비하고 서비스 워커 실행에 실패했을 때 처리해야 하는 내용에 대해서 소개합니다.
 
+<!--
 #### Prerequisites
+-->
+#### 사전지식
 
+<!--
 A basic understanding of the following:
 * [Service Worker Communication](guide/service-worker-communications).
+-->
+이 문서의 내용을 제대로 이해하려면 다음 내용을 미리 확인하는 것이 좋습니다.
+* [서비스 워커 통신](guide/service-worker-communications)
 
 <hr />
 
+<!--
 ## Service worker and caching of app resources
+-->
+## 서비스 워커와 앱 리소스 캐싱
 
+<!--
 Conceptually, you can imagine the Angular service worker as a forward cache or a CDN edge that is installed in the end user's web browser. The service worker's job is to satisfy requests made by the Angular app for resources or data from a local cache, without needing to wait for the network. Like any cache, it has rules for how content is expired and updated.
+-->
+개념으로 보면, Angular 서비스 워커는 사용자의 웹 브라우저에 설치된 캐싱 서버나 CDN 엣지(edge)라고 이해할 수도 있습니다. 서비스 워커의 역할은 Angular 앱이 요청한 리소스를 로컬 캐시에 저장해두었다가, 다음에 똑같은 리소스가 요청되면 네트워크 사용 없이 직접 리소스를 반환하는 것이기 때문입니다. 그리고 일반적인 캐싱 서버와 마찬가지로, 서비스 워커에도 리소스의 만료 시점을 지정하는 룰이 존재합니다.
 
 {@a versions}
 
+<!--
 ### App versions
+-->
+### 앱 버전
 
+<!--
 In the context of an Angular service worker, a "version" is a collection of resources that represent a specific build of the Angular app. Whenever a new build of the app is deployed, the service worker treats that build as a new version of the app. This is true even if only a single file is updated. At any given time, the service worker may have multiple versions of the app in its cache and it may be serving them simultaneously. For more information, see the [App tabs](guide/service-worker-devops#tabs) section below.
 
 To preserve app integrity, the Angular service worker groups all files into a version together. The files grouped into a version usually include HTML, JS, and CSS files. Grouping of these files is essential for integrity because HTML, JS, and CSS files frequently refer to each other and depend on specific content. For example, an `index.html` file might have a `<script>` tag that references `bundle.js` and it might attempt to call a function `startApp()` from within that script. Any time this version of `index.html` is served, the corresponding `bundle.js` must be served with it. For example, assume that the `startApp()` function is renamed to `runApp()` in both files. In this scenario, it is not valid to serve the old `index.html`, which calls `startApp()`, along with the new bundle, which defines `runApp()`.
+-->
+서비스 워커에서 "버전(version)"이라는 용어는 특정 시점에 빌드된 Angular 앱에 존재하는 리소스 집합을 의미합니다. 그래서 애플리케이션이 새롭게 빌드되어 배포되면, 서비스 워커는 이것을 애플리케이션의 새로운 버전으로 간주합니다. 파일이 하나만 바뀌었더라도 마찬가지입니다. 서비스 워커는 캐시에 애플리케이션의 여러 버전을 동시에 보관하고 있을 수도 있습니다. 더 자세한 내용은 아래 [탭 단위로 실행되는 애플리케이션](guide/service-worker-devops#tabs) 섹션을 참고하세요.
 
+애플리케이션을 안정적으로 조합하기 위해 Angular 서비스 워커는 특정 버전에 있는 모든 파일을 그룹으로 묶습니다. 이렇게 그룹으로 묶이는 파일은 보통 HTML, JS, CSS 파일들인데, 이 파일들은 어떤 목적에 따라 서로 연관되기 때문에 같은 그룹으로 묶이는 것이 중요합니다. 예를 들어 `index.html` 파일이 `<script>` 태그로 `bundle.js` 파일을 참조하고, 이 스크립트 파일에 정의된 `startApp()` 함수를 실행한다고 합시다. 그러면 `index.html` 파일이 사용되는 시점에 `bundle.js` 파일도 반드시 존재해야 합니다. 그리고 `bundle.js` 파일에 정의된 `startApp()` 함수의 이름이 `runApp()`으로 변경되면, 이 내용이 `index.html` 파일과 `bundle.js` 파일에 모두 반영되어야 합니다. `bundle.js` 파일에는 `runApp()`으로 변경되었지만 `index.html` 파일에서 `startApp()`을 실행한다면 제대로 동작하지 않을 것입니다.
+
+<!--
 This file integrity is especially important when lazy loading modules.
 A JS bundle may reference many lazy chunks, and the filenames of the
 lazy chunks are unique to the particular build of the app. If a running
@@ -36,13 +65,25 @@ treat the active set of files as a new version.
 
 With the versioning behavior of the Angular service worker, an application
 server can ensure that the Angular app always has a consistent set of files.
+-->
+지연로딩되는 모듈이 있다면 파일이 그룹으로 묶이는 과정이 조금 더 중요합니다. 애플리케이션은 JS 파일을 지연로딩해야 하는데, 지연로딩되는 파일의 이름은 해당 파일이 빌드될 때마다 달라집니다. 그래서 현재 실행되고 있는 앱 버전이 `X`이고 이 앱에서 파일을 지연로딩하려고 하지만, 서버가 제공하는 앱 버전은 `X + 1`이라면 클라이언트가 요청한 파일을 찾을 수 없기 때문에 지연로딩도 실패합니다.
 
+애플리케이션의 버전을 나타내는 id는 해당 버전에 존재하는 모든 리소스를 바탕으로 결정되며, 리소스 중 하나라도 변경되면 id도 변경됩니다. 좀 더 자세하게 이야기하면, 애플리케이션의 버전은 `ngsw.json` 파일에 존재하는 각 리소스의 해시값을 사용해서 결정됩니다. 그래서 캐싱된 파일이 변경되면 `ngsw.json` 파일에서 해당 파일의 해시값이 변경되기 때문에 서비스 워커가 다른 버전으로 인식합니다.
+
+결국 애플리케이션 버전이 서비스 워커로 관리되기 때문에 애플리케이션 서버는 애플리케이션 버전 하나만 확실하게 제공하면 됩니다.
+
+<!--
 #### Update checks
+-->
+#### 업데이트 확인
 
+<!--
 Every time the user opens or refreshes the application, the Angular service worker
 checks for updates to the app by looking for updates to the `ngsw.json` manifest. If
 an update is found, it is downloaded and cached automatically, and will be served
 the next time the application is loaded.
+-->
+서비스 워커는 사용자가 Angular 애플리케이션을 새로 실행하나 브라우저를 새로고침할 때마다 `ngsw.json` 매니페스트에 있는 내용을 기준으로 애플리케이션이 최신버전인지 확인합니다. 이 때 서버에 존재하는 애플리케이션보다 버전이 낮다면, 자동으로 최신 버전을 다운로드하고 캐싱한 후에, 다음 애플리케이션이 실행될 때 최신 버전을 적용합니다.
 
 ### Resource integrity
 
