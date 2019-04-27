@@ -12,17 +12,8 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
-
-const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
-  applyTemplateContextGuards: true,
-  checkQueries: false,
-  checkTemplateBodies: true,
-  checkTypeOfBindings: true,
-  checkTypeOfPipes: true,
-  strictSafeNavigationTypes: true,
-};
+import {ALL_ENABLED_CONFIG} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {

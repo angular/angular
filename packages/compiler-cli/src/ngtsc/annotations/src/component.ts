@@ -34,7 +34,7 @@ const EMPTY_ARRAY: any[] = [];
 
 export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
-  parsedTemplate: TmplAstNode[];
+  parsedTemplate: {nodes: TmplAstNode[]; file: ParseSourceFile};
   metadataStmt: Statement|null;
   parseTemplate: (options?: ParseTemplateOptions) => ParsedTemplate;
 }
@@ -308,7 +308,7 @@ export class ComponentDecoratorHandler implements
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
-        parsedTemplate: template.nodes, parseTemplate,
+        parsedTemplate: template, parseTemplate,
       },
       typeCheck: true,
     };
@@ -360,7 +360,7 @@ export class ComponentDecoratorHandler implements
         const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
       }
-      const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate});
+      const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate.nodes});
       const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
@@ -369,7 +369,7 @@ export class ComponentDecoratorHandler implements
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
-      ctx.addTemplate(new Reference(node), bound, pipes);
+      ctx.addTemplate(new Reference(node), bound, pipes, meta.parsedTemplate.file);
     }
   }
 

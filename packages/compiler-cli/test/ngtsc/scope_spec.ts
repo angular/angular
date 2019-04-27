@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {Diagnostic} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {getTokenAtPosition} from '../../src/ngtsc/util/src/typescript';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
@@ -179,11 +182,12 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diag: ts.Diagnostic, guard: (node: ts.Node) => node is T): T {
+      diagnostic: ts.Diagnostic | Diagnostic, guard: (node: ts.Node) => node is T): T {
+    const diag = diagnostic as ts.Diagnostic;
     if (diag.file === undefined) {
       throw new Error(`Expected ts.Diagnostic to have a file source`);
     }
-    const node = (ts as any).getTokenAtPosition(diag.file, diag.start) as ts.Node;
+    const node = getTokenAtPosition(diag.file, diag.start !);
     expect(guard(node)).toBe(true);
     return node as T;
   }
