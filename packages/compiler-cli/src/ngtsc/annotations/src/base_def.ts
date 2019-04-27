@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
+import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {queriesFromFields} from './directive';
+import {extractHostBindings, queriesFromFields} from './directive';
 import {isAngularDecorator} from './util';
 
 function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
@@ -69,6 +69,12 @@ export class BaseDefDecoratorHandler implements
           result = result || {};
           const queries = result.queries = result.queries || [];
           queries.push({member: property, decorators});
+        } else if (
+            isAngularDecorator(decorator, 'HostBinding', this.isCore) ||
+            isAngularDecorator(decorator, 'HostListener', this.isCore)) {
+          result = result || {};
+          const host = result.host = result.host || [];
+          host.push(property);
         }
       }
     });
@@ -85,7 +91,8 @@ export class BaseDefDecoratorHandler implements
 
   analyze(node: ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
       AnalysisOutput<R3BaseRefMetaData> {
-    const analysis: R3BaseRefMetaData = {};
+    const analysis: R3BaseRefMetaData = {name: node.name.text, typeSourceSpan: null !};
+
     if (metadata.inputs) {
       const inputs = analysis.inputs = {} as{[key: string]: string | [string, string]};
       metadata.inputs.forEach(({decorator, property}) => {
@@ -133,12 +140,17 @@ export class BaseDefDecoratorHandler implements
       analysis.queries = queriesFromFields(metadata.queries, this.reflector, this.evaluator);
     }
 
+    if (metadata.host) {
+      analysis.host = extractHostBindings(
+          metadata.host, this.evaluator, this.isCore ? undefined : '@angular/core');
+    }
+
     return {analysis};
   }
 
   compile(node: ClassDeclaration, analysis: R3BaseRefMetaData, pool: ConstantPool):
       CompileResult[]|CompileResult {
-    const {expression, type} = compileBaseDefFromMetadata(analysis, pool);
+    const {expression, type} = compileBaseDefFromMetadata(analysis, pool, makeBindingParser());
 
     return {
       name: 'ngBaseDef',
@@ -149,8 +161,9 @@ export class BaseDefDecoratorHandler implements
 }
 
 export interface R3BaseRefDecoratorDetection {
-  inputs?: Array<{property: ClassMember, decorator: Decorator}>;
-  outputs?: Array<{property: ClassMember, decorator: Decorator}>;
+  inputs?: {property: ClassMember, decorator: Decorator}[];
+  outputs?: {property: ClassMember, decorator: Decorator}[];
   viewQueries?: {member: ClassMember, decorators: Decorator[]}[];
   queries?: {member: ClassMember, decorators: Decorator[]}[];
+  host?: ClassMember[];
 }

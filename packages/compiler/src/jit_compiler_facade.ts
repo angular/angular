@@ -154,13 +154,17 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileBase(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3BaseMetadataFacade):
       any {
     const constantPool = new ConstantPool();
+    const typeSourceSpan =
+        this.createParseSourceSpan('Base', facade.name, `ng:///${facade.name}.js`);
     const meta = {
       ...facade,
+      typeSourceSpan,
       viewQueries: facade.viewQueries ? facade.viewQueries.map(convertToR3QueryMetadata) :
                                         facade.viewQueries,
-      queries: facade.queries ? facade.queries.map(convertToR3QueryMetadata) : facade.queries
+      queries: facade.queries ? facade.queries.map(convertToR3QueryMetadata) : facade.queries,
+      host: extractHostBindings(facade.propMetadata, typeSourceSpan)
     };
-    const res = compileBaseDefFromMetadata(meta, constantPool);
+    const res = compileBaseDefFromMetadata(meta, constantPool, makeBindingParser());
     return this.jitExpression(
         res.expression, angularCoreEnv, sourceMapUrl, constantPool.statements);
   }
@@ -244,7 +248,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     typeSourceSpan: facade.typeSourceSpan,
     type: new WrappedNodeExpr(facade.type),
     deps: convertR3DependencyMetadataArray(facade.deps),
-    host: extractHostBindings(facade.host, facade.propMetadata, facade.typeSourceSpan),
+    host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
@@ -298,8 +302,8 @@ function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[] 
 }
 
 function extractHostBindings(
-    host: {[key: string]: string}, propMetadata: {[key: string]: any[]},
-    sourceSpan: ParseSourceSpan): ParsedHostBindings {
+    propMetadata: {[key: string]: any[]}, sourceSpan: ParseSourceSpan,
+    host?: {[key: string]: string}): ParsedHostBindings {
   // First parse the declarations from the metadata.
   const bindings = parseHostBindings(host || {});
 
