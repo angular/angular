@@ -72,11 +72,11 @@ export function formatDiagnostic(
     result += `${formatDiagnosticPosition(diagnostic.position, host)}: `;
   }
   if (diagnostic.span && diagnostic.span.details) {
-    result += `: ${diagnostic.span.details}, ${diagnostic.messageText}${newLine}`;
+    result += `${diagnostic.span.details}, ${diagnostic.messageText}${newLine}`;
   } else if (diagnostic.chain) {
     result += `${flattenDiagnosticMessageChain(diagnostic.chain, host)}.${newLine}`;
   } else {
-    result += `: ${diagnostic.messageText}${newLine}`;
+    result += `${diagnostic.messageText}${newLine}`;
   }
   return result;
 }

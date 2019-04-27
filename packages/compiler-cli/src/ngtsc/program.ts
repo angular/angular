@@ -381,7 +381,7 @@ export class NgtscProgram implements api.Program {
     return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
-  private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
+  private getTemplateDiagnostics(): ReadonlyArray<api.Diagnostic|ts.Diagnostic> {
     // Skip template type-checking if it's disabled.
     if (this.options.ivyTemplateTypeCheck === false &&
         this.options.fullTemplateTypeCheck !== true) {

@@ -7,6 +7,7 @@
  */
 
 import {CustomTransformers, Program} from '@angular/compiler-cli';
+import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as ts from 'typescript';
 
 import {createCompilerHost, createProgram} from '../../ngtools2';
@@ -185,9 +186,8 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
-  driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
-    // Cast is safe as ngtsc mode only produces ts.Diagnostics.
-    return mainDiagnosticsForTest(['-p', this.basePath]) as ReadonlyArray<ts.Diagnostic>;
+  driveDiagnostics(): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+    return mainDiagnosticsForTest(['-p', this.basePath]);
   }
 
   driveRoutes(entryPoint?: string): LazyRoute[] {
