@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Diagnostic} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
@@ -171,6 +172,7 @@ export declare class CommonModule {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('does_not_exist');
+      expect(formatSpan(diags[0])).toEqual('/test.ts: 6:51, 6:70');
     });
 
     it('should accept an NgFor iteration over an any-typed value', () => {
@@ -271,6 +273,7 @@ export declare class CommonModule {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('does_not_exist');
+      expect(formatSpan(diags[0])).toEqual('/test.ts: 6:51, 6:70');
     });
 
     it('should property type-check a microsyntax variable with the same name as the expression',
@@ -334,10 +337,48 @@ export declare class CommonModule {
       // Error from the binding to [fromBase].
       expect(diags[0].messageText)
           .toBe(`Type 'number' is not assignable to type 'string | undefined'.`);
+      expect(formatSpan(diags[0])).toEqual('/test.ts: 19:28, 19:42');
 
       // Error from the binding to [fromChild].
       expect(diags[1].messageText)
           .toBe(`Type 'number' is not assignable to type 'boolean | undefined'.`);
+      expect(formatSpan(diags[1])).toEqual('/test.ts: 19:43, 19:58');
+    });
+
+    it('should report diagnostics for external template files', () => {
+      env.write('test.ts', `
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      templateUrl: './template.html',
+    })
+    export class TestCmp {
+      user: {name: string}[];
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+    })
+    export class Module {}
+    `);
+      env.write('template.html', `<div>
+      <span>{{user.does_not_exist}}</span>
+    </div>`);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('does_not_exist');
+      expect(formatSpan(diags[0])).toEqual('/template.html: 1:14, 1:33');
     });
   });
 });
+
+function formatSpan(diagnostic: ts.Diagnostic | Diagnostic): string {
+  if (diagnostic.source !== 'angular') {
+    return '<unexpected non-angular span>';
+  }
+  const span = (diagnostic as Diagnostic).span !;
+  const fileName = span.start.file.url.replace(/^C:\//, '/');
+  return `${fileName}: ${span.start.line}:${span.start.col}, ${span.end.line}:${span.end.col}`;
+}

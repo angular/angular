@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget} from '@angular/compiler';
+import {BoundTarget, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -15,8 +15,10 @@ import {ClassDeclaration} from '../../reflection';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {Diagnostic, SourceLocation, getSourceReferenceName, shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {Environment} from './environment';
 import {TypeCheckProgramHost} from './host';
+import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile, typeCheckFilePath} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -52,6 +54,13 @@ export class TypeCheckContext {
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
   /**
+   * This map keeps track of all template sources that have been type-checked by the reference name
+   * that is attached to a TCB's function declaration as leading trivia. This enables translation
+   * of diagnostics produced for TCB code to their source location in the template.
+   */
+  private templateSources = new Map<string, TemplateSource>();
+
+  /**
    * Record a template for the given component `node`, with a `SelectorMatcher` for directive
    * matching.
    *
@@ -62,7 +71,10 @@ export class TypeCheckContext {
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>): void {
+      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+      file: ParseSourceFile): void {
+    this.templateSources.set(getSourceReferenceName(ref.node), new TemplateSource(file));
+
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
       const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
@@ -149,7 +161,7 @@ export class TypeCheckContext {
     // the source code in between the original chunks.
     ops.forEach((op, idx) => {
       const text = op.execute(importManager, sf, this.refEmitter, printer);
-      code += text + textParts[idx + 1];
+      code += '\n\n' + text + textParts[idx + 1];
     });
 
     // Write out the imports that need to be added to the beginning of the file.
@@ -165,7 +177,7 @@ export class TypeCheckContext {
   calculateTemplateDiagnostics(
       originalProgram: ts.Program, originalHost: ts.CompilerHost,
       originalOptions: ts.CompilerOptions): {
-    diagnostics: ts.Diagnostic[],
+    diagnostics: Diagnostic[],
     program: ts.Program,
   } {
     const typeCheckSf = this.typeCheckFile.render();
@@ -189,26 +201,32 @@ export class TypeCheckContext {
       rootNames: originalProgram.getRootFileNames(),
     });
 
-    const diagnostics: ts.Diagnostic[] = [];
+    const diagnostics: Diagnostic[] = [];
+    const resolveSpan = (sourceLocation: SourceLocation): ParseSourceSpan | null => {
+      if (!this.templateSources.has(sourceLocation.sourceReference)) {
+        return null;
+      }
+      const templateSource = this.templateSources.get(sourceLocation.sourceReference) !;
+      return templateSource.toParseSourceSpan(sourceLocation.start, sourceLocation.end);
+    };
+    const collectDiagnostics = (diags: readonly ts.Diagnostic[]): void => {
+      for (const diagnostic of diags) {
+        if (shouldReportDiagnostic(diagnostic)) {
+          const translated = translateDiagnostic(diagnostic, resolveSpan);
+
+          if (translated !== null) {
+            diagnostics.push(translated);
+          }
+        }
+      }
+    };
+
     for (const sf of interestingFiles) {
-      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(sf));
+      collectDiagnostics(typeCheckProgram.getSemanticDiagnostics(sf));
     }
 
     return {
-      diagnostics: diagnostics.filter(
-          (diag: ts.Diagnostic):
-              boolean => {
-                if (diag.code === 6133 /* $var is declared but its value is never read. */) {
-                  return false;
-                } else if (diag.code === 6199 /* All variables are unused. */) {
-                  return false;
-                } else if (
-                    diag.code ===
-                    2695 /* Left side of comma operator is unused and has no side effects. */) {
-                  return false;
-                }
-                return true;
-              }),
+      diagnostics,
       program: typeCheckProgram,
     };
   }
@@ -222,6 +240,35 @@ export class TypeCheckContext {
     }
     const ops = this.opMap.get(sf) !;
     ops.push(new TcbOp(ref, tcbMeta, this.config));
+  }
+}
+
+/**
+ * Represents the source of a template that was processed during type-checking. This information is
+ * used when translating parse offsets in diagnostics back to their original line/column location.
+ */
+class TemplateSource {
+  private lineStarts: number[]|null = null;
+
+  constructor(private file: ParseSourceFile) {}
+
+  toParseSourceSpan(start: number, end: number): ParseSourceSpan {
+    const startLoc = this.toParseLocation(start);
+    const endLoc = this.toParseLocation(end);
+    return new ParseSourceSpan(startLoc, endLoc);
+  }
+
+  private toParseLocation(position: number) {
+    const lineStarts = this.acquireLineStarts();
+    const {line, character} = getLineAndCharacterFromPosition(lineStarts, position);
+    return new ParseLocation(this.file, position, line, character);
+  }
+
+  private acquireLineStarts(): number[] {
+    if (this.lineStarts === null) {
+      this.lineStarts = computeLineStartsMap(this.file.content);
+    }
+    return this.lineStarts;
   }
 }
 
