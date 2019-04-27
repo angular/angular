@@ -10,7 +10,7 @@ import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
 import {InjectablePipeVisitor} from '../angular/injectable_pipe_visitor';
-import {INJECTABLE_DECORATOR_NAME, addNamedImport, getNamedImports} from '../util';
+import {INJECTABLE_DECORATOR_NAME, addImport, getNamedImports} from '../util';
 
 /**
  * TSLint rule that flags `@Pipe` classes that haven't been marked as `@Injectable`.
@@ -37,8 +37,7 @@ export class Rule extends Rules.TypedRule {
           fixes.push(new Replacement(
               namedImports.getStart(), namedImports.getWidth(),
               printer.printNode(
-                  ts.EmitHint.Unspecified,
-                  addNamedImport(importDeclarationMissingImport, INJECTABLE_DECORATOR_NAME),
+                  ts.EmitHint.Unspecified, addImport(namedImports, INJECTABLE_DECORATOR_NAME),
                   sourceFile)));
         }
       }

@@ -85,7 +85,10 @@ describe('Google3 injectable pipe TSLint rule', () => {
     `);
 
     runTSLint();
-    expect(getFile('/index.ts')).toContain('import { Pipe, Injectable } from \'@angular/core\'');
+
+    const content = getFile('/index.ts');
+    expect(content).toContain('import { Pipe, Injectable } from \'@angular/core\'');
+    expect((content.match(/import/g) || []).length).toBe(1, 'Expected only one import statement');
   });
 
 });
