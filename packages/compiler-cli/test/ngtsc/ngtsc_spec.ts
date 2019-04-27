@@ -1723,7 +1723,7 @@ describe('ngtsc behavioral tests', () => {
         .toContain('Cannot have a pipe in an action expression');
   });
 
-  it('should throw in case pipes are used in host listeners', () => {
+  it('should throw in case pipes are used in host bindings', () => {
     env.tsconfig();
     env.write(`test.ts`, `
         import {Component} from '@angular/core';

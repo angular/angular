@@ -135,6 +135,11 @@ export interface ɵɵBaseDef<T> {
    * components that extend the directive.
    */
   viewQuery: ViewQueriesFunction<T>|null;
+
+  /**
+   * Refreshes host bindings on the associated directive.
+   */
+  hostBindings: HostBindingsFunction<T>|null;
 }
 
 /**
@@ -172,11 +177,6 @@ export interface DirectiveDef<T> extends ɵɵBaseDef<T> {
    * Factory function used to create a new directive instance.
    */
   factory: FactoryFn<T>;
-
-  /**
-   * Refreshes host bindings on the associated directive.
-   */
-  hostBindings: HostBindingsFunction<T>|null;
 
   /* The following are lifecycle hooks for this component */
   onChanges: (() => void)|null;

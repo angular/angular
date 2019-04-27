@@ -9,7 +9,7 @@
 import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 import {isComponentDef} from '../util/view_utils';
 
@@ -56,6 +56,8 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     if (baseDef) {
       const baseViewQuery = baseDef.viewQuery;
       const baseContentQueries = baseDef.contentQueries;
+      const baseHostBindings = baseDef.hostBindings;
+      baseHostBindings && inheritHostBindings(definition, baseHostBindings);
       baseViewQuery && inheritViewQuery(definition, baseViewQuery);
       baseContentQueries && inheritContentQueries(definition, baseContentQueries);
       fillProperties(definition.inputs, baseDef.inputs);
@@ -65,34 +67,8 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
 
     if (superDef) {
       // Merge hostBindings
-      const prevHostBindings = definition.hostBindings;
       const superHostBindings = superDef.hostBindings;
-      if (superHostBindings) {
-        if (prevHostBindings) {
-          // because inheritance is unknown during compile time, the runtime code
-          // needs to be informed of the super-class depth so that instruction code
-          // can distinguish one host bindings function from another. The reason why
-          // relying on the directive uniqueId exclusively is not enough is because the
-          // uniqueId value and the directive instance stay the same between hostBindings
-          // calls throughout the directive inheritance chain. This means that without
-          // a super-class depth value, there is no way to know whether a parent or
-          // sub-class host bindings function is currently being executed.
-          definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-            // The reason why we increment first and then decrement is so that parent
-            // hostBindings calls have a higher id value compared to sub-class hostBindings
-            // calls (this way the leaf directive is always at a super-class depth of 0).
-            adjustActiveDirectiveSuperClassDepthPosition(1);
-            try {
-              superHostBindings(rf, ctx, elementIndex);
-            } finally {
-              adjustActiveDirectiveSuperClassDepthPosition(-1);
-            }
-            prevHostBindings(rf, ctx, elementIndex);
-          };
-        } else {
-          definition.hostBindings = superHostBindings;
-        }
-      }
+      superHostBindings && inheritHostBindings(definition, superHostBindings);
 
       // Merge queries
       const superViewQuery = superDef.viewQuery;
@@ -188,5 +164,35 @@ function inheritContentQueries(
     };
   } else {
     definition.contentQueries = superContentQueries;
+  }
+}
+
+function inheritHostBindings(
+    definition: DirectiveDef<any>| ComponentDef<any>,
+    superHostBindings: HostBindingsFunction<any>) {
+  const prevHostBindings = definition.hostBindings;
+  if (prevHostBindings) {
+    // because inheritance is unknown during compile time, the runtime code
+    // needs to be informed of the super-class depth so that instruction code
+    // can distinguish one host bindings function from another. The reason why
+    // relying on the directive uniqueId exclusively is not enough is because the
+    // uniqueId value and the directive instance stay the same between hostBindings
+    // calls throughout the directive inheritance chain. This means that without
+    // a super-class depth value, there is no way to know whether a parent or
+    // sub-class host bindings function is currently being executed.
+    definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
+      // The reason why we increment first and then decrement is so that parent
+      // hostBindings calls have a higher id value compared to sub-class hostBindings
+      // calls (this way the leaf directive is always at a super-class depth of 0).
+      adjustActiveDirectiveSuperClassDepthPosition(1);
+      try {
+        superHostBindings(rf, ctx, elementIndex);
+      } finally {
+        adjustActiveDirectiveSuperClassDepthPosition(-1);
+      }
+      prevHostBindings(rf, ctx, elementIndex);
+    };
+  } else {
+    definition.hostBindings = superHostBindings;
   }
 }

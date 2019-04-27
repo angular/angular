@@ -571,6 +571,11 @@ export function ɵɵdefineBase<T>(baseDefinition: {
    * set of instructions to be inserted into the template function.
    */
   viewQuery?: ViewQueriesFunction<T>| null;
+
+  /**
+   * Function executed by the parent template to allow children to apply host bindings.
+   */
+  hostBindings?: HostBindingsFunction<T>;
 }): ɵɵBaseDef<T> {
   const declaredInputs: {[P in keyof T]: string} = {} as any;
   return {
@@ -579,6 +584,7 @@ export function ɵɵdefineBase<T>(baseDefinition: {
     outputs: invertObject<T>(baseDefinition.outputs as any),
     viewQuery: baseDefinition.viewQuery || null,
     contentQueries: baseDefinition.contentQueries || null,
+    hostBindings: baseDefinition.hostBindings || null
   };
 }
 

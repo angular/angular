@@ -194,7 +194,7 @@ export function extractDirectiveMetadata(
     throw new Error(`Directive ${clazz.name.text} has no selector, please add it!`);
   }
 
-  const host = extractHostBindings(directive, decoratedElements, evaluator, coreModule);
+  const host = extractHostBindings(decoratedElements, evaluator, coreModule, directive);
 
   const providers: Expression|null =
       directive.has('providers') ? new WrappedNodeExpr(directive.get('providers') !) : null;
@@ -460,11 +460,11 @@ type StringMap<T> = {
   [key: string]: T;
 };
 
-function extractHostBindings(
-    metadata: Map<string, ts.Expression>, members: ClassMember[], evaluator: PartialEvaluator,
-    coreModule: string | undefined): ParsedHostBindings {
+export function extractHostBindings(
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
+    metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let hostMetadata: StringMap<string|Expression> = {};
-  if (metadata.has('host')) {
+  if (metadata && metadata.has('host')) {
     const expr = metadata.get('host') !;
     const hostMetaMap = evaluator.evaluate(expr);
     if (!(hostMetaMap instanceof Map)) {
@@ -501,7 +501,7 @@ function extractHostBindings(
     throw new FatalDiagnosticError(
         // TODO: provide more granular diagnostic and output specific host expression that triggered
         // an error instead of the whole host object
-        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata.get('host') !,
+        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata !.get('host') !,
         errors.map((error: ParseError) => error.msg).join('\n'));
   }
 

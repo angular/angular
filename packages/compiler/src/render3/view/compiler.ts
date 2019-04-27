@@ -28,7 +28,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
-import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
+import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {Instruction, StylingBuilder} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
@@ -75,32 +75,11 @@ function baseDirectiveFields(
         'viewQuery', createViewQueriesFunction(meta.viewQueries, constantPool, meta.name));
   }
 
-  // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
-  // except 'style' and 'class' properties, since they should *not* allocate host var slots
-  const hostVarsCount = Object.keys(meta.host.properties)
-                            .filter(name => {
-                              const prefix = getStylingPrefix(name);
-                              return prefix !== 'style' && prefix !== 'class';
-                            })
-                            .length;
-
-  const elVarExp = o.variable('elIndex');
-  const contextVarExp = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
-
-  const {styleAttr, classAttr} = meta.host.specialAttributes;
-  if (styleAttr !== undefined) {
-    styleBuilder.registerStyleAttr(styleAttr);
-  }
-  if (classAttr !== undefined) {
-    styleBuilder.registerClassAttr(classAttr);
-  }
-
   // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
       'hostBindings', createHostBindingsFunction(
-                          meta, elVarExp, contextVarExp, meta.host.attributes, styleBuilder,
-                          bindingParser, constantPool, hostVarsCount));
+                          meta.host, meta.typeSourceSpan, bindingParser, constantPool,
+                          meta.selector || '', meta.name));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
@@ -163,17 +142,21 @@ export function compileDirectiveFromMetadata(
 }
 
 export interface R3BaseRefMetaData {
+  name: string;
+  typeSourceSpan: ParseSourceSpan;
   inputs?: {[key: string]: string | [string, string]};
   outputs?: {[key: string]: string};
   viewQueries?: R3QueryMetadata[];
   queries?: R3QueryMetadata[];
+  host?: R3HostMetadata;
 }
 
 /**
  * Compile a base definition for the render3 runtime as defined by {@link R3BaseRefMetadata}
  * @param meta the metadata used for compilation.
  */
-export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData, constantPool: ConstantPool) {
+export function compileBaseDefFromMetadata(
+    meta: R3BaseRefMetaData, constantPool: ConstantPool, bindingParser: BindingParser) {
   const definitionMap = new DefinitionMap();
   if (meta.inputs) {
     const inputs = meta.inputs;
@@ -197,6 +180,12 @@ export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData, constantPool
   }
   if (meta.queries && meta.queries.length > 0) {
     definitionMap.set('contentQueries', createContentQueriesFunction(meta.queries, constantPool));
+  }
+  if (meta.host) {
+    definitionMap.set(
+        'hostBindings',
+        createHostBindingsFunction(
+            meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.name));
   }
 
   const expression = o.importExpr(R3.defineBase).callFn([definitionMap.toLiteralMap()]);
@@ -593,16 +582,35 @@ function createViewQueriesFunction(
 
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
-    meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
-    staticAttributesAndValues: {[name: string]: o.Expression}, styleBuilder: StylingBuilder,
-    bindingParser: BindingParser, constantPool: ConstantPool, hostVarsCount: number): o.Expression|
-    null {
+    hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
+    bindingParser: BindingParser, constantPool: ConstantPool, selector: string,
+    name?: string): o.Expression|null {
+  // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
+  // except 'style' and 'class' properties, since they should *not* allocate host var slots
+  const hostVarsCount = Object.keys(hostBindingsMetadata.properties)
+                            .filter(name => {
+                              const prefix = getStylingPrefix(name);
+                              return prefix !== 'style' && prefix !== 'class';
+                            })
+                            .length;
+  const elVarExp = o.variable('elIndex');
+  const bindingContext = o.variable(CONTEXT_NAME);
+  const styleBuilder = new StylingBuilder(elVarExp, bindingContext);
+
+  const {styleAttr, classAttr} = hostBindingsMetadata.specialAttributes;
+  if (styleAttr !== undefined) {
+    styleBuilder.registerStyleAttr(styleAttr);
+  }
+  if (classAttr !== undefined) {
+    styleBuilder.registerClassAttr(classAttr);
+  }
+
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
   let totalHostVarsCount = hostVarsCount;
-  const hostBindingSourceSpan = meta.typeSourceSpan;
-  const directiveSummary = metadataAsSummary(meta);
+  const hostBindingSourceSpan = typeSourceSpan;
+  const directiveSummary = metadataAsSummary(hostBindingsMetadata);
 
   let valueConverter: ValueConverter;
   const getValueConverter = () => {
@@ -625,7 +633,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
   if (eventBindings && eventBindings.length) {
-    const listeners = createHostListeners(bindingContext, eventBindings, meta);
+    const listeners = createHostListeners(bindingContext, eventBindings, name);
     createStatements.push(...listeners);
   }
 
@@ -643,7 +651,7 @@ function createHostBindingsFunction(
       const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
 
       const securityContexts =
-          bindingParser.calcPossibleSecurityContexts(meta.selector || '', bindingName, isAttribute)
+          bindingParser.calcPossibleSecurityContexts(selector, bindingName, isAttribute)
               .filter(context => context !== core.SecurityContext.NONE);
 
       let sanitizerFn: o.ExternalExpr|null = null;
@@ -696,7 +704,7 @@ function createHostBindingsFunction(
   // that is inside of a host binding within a directive/component) to be attached
   // to the host element alongside any of the provided host attributes that were
   // collected earlier.
-  const hostAttrs = convertAttributesToExpressions(staticAttributesAndValues);
+  const hostAttrs = convertAttributesToExpressions(hostBindingsMetadata.attributes);
   const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
   if (hostInstruction) {
     createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
@@ -729,7 +737,7 @@ function createHostBindingsFunction(
   }
 
   if (createStatements.length > 0 || updateStatements.length > 0) {
-    const hostBindingsFnName = meta.name ? `${meta.name}_HostBindings` : null;
+    const hostBindingsFnName = name ? `${name}_HostBindings` : null;
     const statements: o.Statement[] = [];
     if (createStatements.length > 0) {
       statements.push(renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements));
@@ -787,15 +795,13 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
 }
 
 function createHostListeners(
-    bindingContext: o.Expression, eventBindings: ParsedEvent[],
-    meta: R3DirectiveMetadata): o.Statement[] {
+    bindingContext: o.Expression, eventBindings: ParsedEvent[], name?: string): o.Statement[] {
   return eventBindings.map(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
         prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
         bindingName;
-    const handlerName =
-        meta.name && bindingName ? `${meta.name}_${bindingFnName}_HostBindingHandler` : null;
+    const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
     const params = prepareEventListenerParameters(
         BoundEvent.fromParsedEvent(binding), bindingContext, handlerName);
     const instruction =
@@ -804,14 +810,14 @@ function createHostListeners(
   });
 }
 
-function metadataAsSummary(meta: R3DirectiveMetadata): CompileDirectiveSummary {
+function metadataAsSummary(meta: R3HostMetadata): CompileDirectiveSummary {
   // clang-format off
   return {
     // This is used by the BindingParser, which only deals with listeners and properties. There's no
     // need to pass attributes to it.
     hostAttributes: {},
-    hostListeners: meta.host.listeners,
-    hostProperties: meta.host.properties,
+    hostListeners: meta.listeners,
+    hostProperties: meta.properties,
   } as CompileDirectiveSummary;
   // clang-format on
 }
@@ -909,7 +915,7 @@ export function parseHostBindings(host: {[key: string]: string | o.Expression}):
  */
 export function verifyHostBindings(
     bindings: ParsedHostBindings, sourceSpan: ParseSourceSpan): ParseError[] {
-  const summary = metadataAsSummary({ host: bindings } as any);
+  const summary = metadataAsSummary(bindings);
   // TODO: abstract out host bindings verification logic and use it instead of
   // creating events and properties ASTs to detect errors (FW-996)
   const bindingParser = makeBindingParser();

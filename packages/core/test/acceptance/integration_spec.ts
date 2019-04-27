@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, ContentChild, Directive, EventEmitter, HostListener, Input, Output, QueryList, TemplateRef, ViewChildren} from '@angular/core';
+import {Component, ContentChild, Directive, EventEmitter, HostBinding, HostListener, Input, Output, QueryList, TemplateRef, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -166,6 +166,118 @@ describe('acceptance integration tests', () => {
     const button = fixture.debugElement.query(By.directive(ButtonSubClass)).componentInstance;
 
     button.emitClick();
+    fixture.detectChanges();
+
+    expect(clicks).toBe(1);
+  });
+
+  it('should inherit host bindings from undecorated superclasses', () => {
+    class BaseButton {
+      @HostBinding('attr.tabindex')
+      tabindex = -1;
+    }
+
+    @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button sub-button>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [SubButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton));
+    fixture.detectChanges();
+
+    expect(button.nativeElement.getAttribute('tabindex')).toBe('-1');
+
+    button.componentInstance.tabindex = 2;
+    fixture.detectChanges();
+
+    expect(button.nativeElement.getAttribute('tabindex')).toBe('2');
+  });
+
+  it('should inherit host bindings from undecorated grand superclasses', () => {
+    class SuperBaseButton {
+      @HostBinding('attr.tabindex')
+      tabindex = -1;
+    }
+
+    class BaseButton extends SuperBaseButton {}
+
+    @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button sub-button>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [SubButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton));
+    fixture.detectChanges();
+
+    expect(button.nativeElement.getAttribute('tabindex')).toBe('-1');
+
+    button.componentInstance.tabindex = 2;
+    fixture.detectChanges();
+
+    expect(button.nativeElement.getAttribute('tabindex')).toBe('2');
+  });
+
+  it('should inherit host listeners from undecorated superclasses', () => {
+    let clicks = 0;
+
+    class BaseButton {
+      @HostListener('click')
+      handleClick() { clicks++; }
+    }
+
+    @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button sub-button>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [SubButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(clicks).toBe(1);
+  });
+
+  // TODO(crisbeto): this fails even with decorated classes
+  // in master. To be enabled as a part of FW-1294.
+  xit('should inherit host listeners from undecorated grand superclasses', () => {
+    let clicks = 0;
+
+    class SuperBaseButton {
+      @HostListener('click')
+      handleClick() { clicks++; }
+    }
+
+    class BaseButton extends SuperBaseButton {}
+
+    @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button sub-button>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [SubButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+
+    button.click();
     fixture.detectChanges();
 
     expect(clicks).toBe(1);
