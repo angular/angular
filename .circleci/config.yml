@@ -712,23 +712,25 @@ workflows:
           cron: "0 * * * *"
           filters: *publish_branches_filter
 
-  aio_monitoring:
-    jobs:
-      - setup
-      - aio_monitoring_stable:
-          requires:
-            - setup
-      - aio_monitoring_next:
-          requires:
-            - setup
-    triggers:
-      - schedule:
-          # Runs AIO monitoring jobs at 00:00AM every day.
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
+# This job is currently disabled due to a version skew problem.
+# More info is available here: https://github.com/angular/angular/issues/30101
+#  aio_monitoring:
+#    jobs:
+#      - setup
+#      - aio_monitoring_stable:
+#          requires:
+#            - setup
+#      - aio_monitoring_next:
+#          requires:
+#            - setup
+#    triggers:
+#      - schedule:
+#          # Runs AIO monitoring jobs at 00:00AM every day.
+#          cron: "0 0 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - master
 
 # TODO:
 # - don't build the g3 branch
