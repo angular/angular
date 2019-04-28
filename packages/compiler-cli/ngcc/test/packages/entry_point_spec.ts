@@ -6,24 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
 import {readFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
+
+const _ = AbsoluteFsPath.fromUnchecked;
 
 describe('getEntryPointInfo()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  const _ = AbsoluteFsPath.from;
   const SOME_PACKAGE = _('/some_package');
 
   it('should return an object containing absolute paths to the formats of the specified entry-point',
      () => {
-       const entryPoint =
-           getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/valid_entry_point'));
+       const fs = new NodeJSFileSystem();
+       const entryPoint = getEntryPointInfo(
+           fs, new MockLogger(), SOME_PACKAGE, _('/some_package/valid_entry_point'));
        expect(entryPoint).toEqual({
          name: 'some-package/valid_entry_point',
          package: SOME_PACKAGE,
@@ -35,21 +38,24 @@ describe('getEntryPointInfo()', () => {
      });
 
   it('should return null if there is no package.json at the entry-point path', () => {
-    const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_package_json'));
+    const fs = new NodeJSFileSystem();
+    const entryPoint = getEntryPointInfo(
+        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_package_json'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return null if there is no typings or types field in the package.json', () => {
+    const fs = new NodeJSFileSystem();
     const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_typings'));
+        getEntryPointInfo(fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_typings'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return an object with `compiledByAngular` set to false if there is no metadata.json file next to the typing file',
      () => {
-       const entryPoint =
-           getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_metadata'));
+       const fs = new NodeJSFileSystem();
+       const entryPoint = getEntryPointInfo(
+           fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_metadata'));
        expect(entryPoint).toEqual({
          name: 'some-package/missing_metadata',
          package: SOME_PACKAGE,
@@ -61,8 +67,9 @@ describe('getEntryPointInfo()', () => {
      });
 
   it('should work if the typings field is named `types', () => {
+    const fs = new NodeJSFileSystem();
     const entryPoint = getEntryPointInfo(
-        new MockLogger(), SOME_PACKAGE, _('/some_package/types_rather_than_typings'));
+        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/types_rather_than_typings'));
     expect(entryPoint).toEqual({
       name: 'some-package/types_rather_than_typings',
       package: SOME_PACKAGE,
@@ -74,8 +81,9 @@ describe('getEntryPointInfo()', () => {
   });
 
   it('should work with Angular Material style package.json', () => {
+    const fs = new NodeJSFileSystem();
     const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/material_style'));
+        getEntryPointInfo(fs, new MockLogger(), SOME_PACKAGE, _('/some_package/material_style'));
     expect(entryPoint).toEqual({
       name: 'some_package/material_style',
       package: SOME_PACKAGE,
@@ -87,8 +95,9 @@ describe('getEntryPointInfo()', () => {
   });
 
   it('should return null if the package.json is not valid JSON', () => {
-    const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/unexpected_symbols'));
+    const fs = new NodeJSFileSystem();
+    const entryPoint = getEntryPointInfo(
+        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/unexpected_symbols'));
     expect(entryPoint).toBe(null);
   });
 });

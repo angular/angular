@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
@@ -20,11 +21,16 @@ import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 import {Logger} from '../../src/logging/logger';
 import {MockLogger} from '../helpers/mock_logger';
+import {FileSystem} from '../../src/file_system/file_system';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
+
+const _ = AbsoluteFsPath.fromUnchecked;
 
 class TestRenderer extends Renderer {
   constructor(
-      logger: Logger, host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(logger, host, isCore, bundle);
+      fs: FileSystem, logger: Logger, host: Esm2015ReflectionHost, isCore: boolean,
+      bundle: EntryPointBundle) {
+    super(fs, logger, host, isCore, bundle);
   }
   addImports(
       output: MagicString, imports: {specifier: string, qualifier: string}[], sf: ts.SourceFile) {
@@ -59,8 +65,9 @@ function createTestRenderer(
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
+  const fs = new NodeJSFileSystem();
   const decorationAnalyses = new DecorationAnalyzer(
-                                 bundle.src.program, bundle.src.options, bundle.src.host,
+                                 fs, bundle.src.program, bundle.src.options, bundle.src.host,
                                  typeChecker, host, referencesRegistry, bundle.rootDirs, isCore)
                                  .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
@@ -68,7 +75,7 @@ function createTestRenderer(
       new ModuleWithProvidersAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
-  const renderer = new TestRenderer(logger, host, isCore, bundle);
+  const renderer = new TestRenderer(fs, logger, host, isCore, bundle);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
@@ -354,7 +361,7 @@ describe('Renderer', () => {
 
         // Add a mock export to trigger export rendering
         privateDeclarationsAnalyses.push(
-            {identifier: 'ComponentB', from: '/src/file.js', dtsFrom: '/typings/b.d.ts'});
+            {identifier: 'ComponentB', from: _('/src/file.js'), dtsFrom: _('/typings/b.d.ts')});
 
         const result = renderer.renderProgram(
             decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,

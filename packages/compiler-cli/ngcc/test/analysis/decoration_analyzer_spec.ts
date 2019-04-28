@@ -12,6 +12,7 @@ import {Decorator} from '../../../src/ngtsc/reflection';
 import {DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
 import {CompiledClass, DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {makeTestBundleProgram} from '../helpers/utils';
@@ -136,8 +137,9 @@ describe('DecorationAnalyzer', () => {
       const reflectionHost =
           new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
+      const fs = new NodeJSFileSystem();
       const analyzer = new DecorationAnalyzer(
-          program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
+          fs, program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
           [AbsoluteFsPath.fromUnchecked('/')], false);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];

@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, resolve} from 'canonical-path';
-import {existsSync, lstatSync, readdirSync} from 'fs';
 import * as ts from 'typescript';
+
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {FileSystem} from '../file_system/file_system';
 
 /**
 * An entry point bundle contains one or two programs, e.g. `src` and `dts`,
@@ -21,9 +22,9 @@ export interface BundleProgram {
   program: ts.Program;
   options: ts.CompilerOptions;
   host: ts.CompilerHost;
-  path: string;
+  path: AbsoluteFsPath;
   file: ts.SourceFile;
-  r3SymbolsPath: string|null;
+  r3SymbolsPath: AbsoluteFsPath|null;
   r3SymbolsFile: ts.SourceFile|null;
 }
 
@@ -31,9 +32,10 @@ export interface BundleProgram {
  * Create a bundle program.
  */
 export function makeBundleProgram(
-    isCore: boolean, path: string, r3FileName: string, options: ts.CompilerOptions,
-    host: ts.CompilerHost): BundleProgram {
-  const r3SymbolsPath = isCore ? findR3SymbolsPath(dirname(path), r3FileName) : null;
+    fs: FileSystem, isCore: boolean, path: AbsoluteFsPath, r3FileName: string,
+    options: ts.CompilerOptions, host: ts.CompilerHost): BundleProgram {
+  const r3SymbolsPath =
+      isCore ? findR3SymbolsPath(fs, AbsoluteFsPath.dirname(path), r3FileName) : null;
   const rootPaths = r3SymbolsPath ? [path, r3SymbolsPath] : [path];
   const program = ts.createProgram(rootPaths, options, host);
   const file = program.getSourceFile(path) !;
@@ -45,26 +47,28 @@ export function makeBundleProgram(
 /**
  * Search the given directory hierarchy to find the path to the `r3_symbols` file.
  */
-export function findR3SymbolsPath(directory: string, filename: string): string|null {
-  const r3SymbolsFilePath = resolve(directory, filename);
-  if (existsSync(r3SymbolsFilePath)) {
+export function findR3SymbolsPath(
+    fs: FileSystem, directory: AbsoluteFsPath, filename: string): AbsoluteFsPath|null {
+  const r3SymbolsFilePath = AbsoluteFsPath.resolve(directory, filename);
+  if (fs.exists(r3SymbolsFilePath)) {
     return r3SymbolsFilePath;
   }
 
   const subDirectories =
-      readdirSync(directory)
+      fs.readdir(directory)
           // Not interested in hidden files
           .filter(p => !p.startsWith('.'))
           // Ignore node_modules
           .filter(p => p !== 'node_modules')
           // Only interested in directories (and only those that are not symlinks)
           .filter(p => {
-            const stat = lstatSync(resolve(directory, p));
+            const stat = fs.lstat(AbsoluteFsPath.resolve(directory, p));
             return stat.isDirectory() && !stat.isSymbolicLink();
           });
 
   for (const subDirectory of subDirectories) {
-    const r3SymbolsFilePath = findR3SymbolsPath(resolve(directory, subDirectory, ), filename);
+    const r3SymbolsFilePath =
+        findR3SymbolsPath(fs, AbsoluteFsPath.resolve(directory, subDirectory), filename);
     if (r3SymbolsFilePath) {
       return r3SymbolsFilePath;
     }

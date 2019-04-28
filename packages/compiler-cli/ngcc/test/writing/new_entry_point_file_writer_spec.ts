@@ -10,6 +10,8 @@ import {existsSync, readFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {FileSystem} from '../../src/file_system/file_system';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
@@ -81,6 +83,7 @@ describe('NewEntryPointFileWriter', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
+  let fs: FileSystem;
   let fileWriter: FileWriter;
   let entryPoint: EntryPoint;
   let esm5bundle: EntryPointBundle;
@@ -88,17 +91,21 @@ describe('NewEntryPointFileWriter', () => {
 
   describe('writeBundle() [primary entry-point]', () => {
     beforeEach(() => {
-      fileWriter = new NewEntryPointFileWriter();
-      entryPoint =
-          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
-      esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
-      esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
+      fs = new NodeJSFileSystem();
+      fileWriter = new NewEntryPointFileWriter(fs);
+      entryPoint = getEntryPointInfo(
+          fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
+      esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
+      esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
     });
 
     it('should write the modified files to a new folder', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/esm5.js', contents: 'export function FooTop() {} // MODIFIED'},
-        {path: '/node_modules/test/esm5.js.map', contents: 'MODIFIED MAPPING DATA'},
+        {
+          path: _('/node_modules/test/esm5.js'),
+          contents: 'export function FooTop() {} // MODIFIED'
+        },
+        {path: _('/node_modules/test/esm5.js.map'), contents: 'MODIFIED MAPPING DATA'},
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/esm5.js', 'utf8'))
           .toEqual('export function FooTop() {} // MODIFIED');
@@ -112,7 +119,10 @@ describe('NewEntryPointFileWriter', () => {
 
     it('should also copy unmodified files in the program', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
-        {path: '/node_modules/test/es2015/foo.js', contents: 'export class FooTop {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/es2015/foo.js'),
+          contents: 'export class FooTop {} // MODIFIED'
+        },
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/es2015/foo.js', 'utf8'))
           .toEqual('export class FooTop {} // MODIFIED');
@@ -126,14 +136,20 @@ describe('NewEntryPointFileWriter', () => {
 
     it('should update the package.json properties', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/esm5.js', contents: 'export function FooTop() {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/esm5.js'),
+          contents: 'export function FooTop() {} // MODIFIED'
+        },
       ]);
       expect(loadPackageJson('/node_modules/test')).toEqual(jasmine.objectContaining({
         module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
       }));
 
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
-        {path: '/node_modules/test/es2015/foo.js', contents: 'export class FooTop {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/es2015/foo.js'),
+          contents: 'export class FooTop {} // MODIFIED'
+        },
       ]);
       expect(loadPackageJson('/node_modules/test')).toEqual(jasmine.objectContaining({
         module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
@@ -144,10 +160,10 @@ describe('NewEntryPointFileWriter', () => {
     it('should overwrite and backup typings files', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/index.d.ts',
-          contents: 'export declare class FooTop {} // MODIFIED'
+          path: _('/node_modules/test/index.d.ts'),
+          contents: 'export declare class FooTop {} // MODIFIED',
         },
-        {path: '/node_modules/test/index.d.ts.map', contents: 'MODIFIED MAPPING DATA'},
+        {path: _('/node_modules/test/index.d.ts.map'), contents: 'MODIFIED MAPPING DATA'},
       ]);
       expect(readFileSync('/node_modules/test/index.d.ts', 'utf8'))
           .toEqual('export declare class FooTop {} // MODIFIED');
@@ -165,16 +181,20 @@ describe('NewEntryPointFileWriter', () => {
 
   describe('writeBundle() [secondary entry-point]', () => {
     beforeEach(() => {
-      fileWriter = new NewEntryPointFileWriter();
-      entryPoint =
-          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
-      esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
-      esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
+      fs = new NodeJSFileSystem();
+      fileWriter = new NewEntryPointFileWriter(fs);
+      entryPoint = getEntryPointInfo(
+          fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
+      esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
+      esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
     });
 
     it('should write the modified file to a new folder', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/a/esm5.js', contents: 'export function FooA() {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/a/esm5.js'),
+          contents: 'export function FooA() {} // MODIFIED'
+        },
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/a/esm5.js', 'utf8'))
           .toEqual('export function FooA() {} // MODIFIED');
@@ -184,7 +204,10 @@ describe('NewEntryPointFileWriter', () => {
 
     it('should also copy unmodified files in the program', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
-        {path: '/node_modules/test/a/es2015/foo.js', contents: 'export class FooA {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/a/es2015/foo.js'),
+          contents: 'export class FooA {} // MODIFIED'
+        },
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/a/es2015/foo.js', 'utf8'))
           .toEqual('export class FooA {} // MODIFIED');
@@ -198,14 +221,20 @@ describe('NewEntryPointFileWriter', () => {
 
     it('should update the package.json properties', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/a/esm5.js', contents: 'export function FooA() {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/a/esm5.js'),
+          contents: 'export function FooA() {} // MODIFIED'
+        },
       ]);
       expect(loadPackageJson('/node_modules/test/a')).toEqual(jasmine.objectContaining({
         module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
       }));
 
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
-        {path: '/node_modules/test/a/es2015/foo.js', contents: 'export class FooA {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/a/es2015/foo.js'),
+          contents: 'export class FooA {} // MODIFIED'
+        },
       ]);
       expect(loadPackageJson('/node_modules/test/a')).toEqual(jasmine.objectContaining({
         module_ivy_ngcc: '../__ivy_ngcc__/a/esm5.js',
@@ -216,7 +245,7 @@ describe('NewEntryPointFileWriter', () => {
     it('should overwrite and backup typings files', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/a/index.d.ts',
+          path: _('/node_modules/test/a/index.d.ts'),
           contents: 'export declare class FooA {} // MODIFIED'
         },
       ]);
@@ -230,16 +259,20 @@ describe('NewEntryPointFileWriter', () => {
 
   describe('writeBundle() [entry-point (with files placed outside entry-point folder)]', () => {
     beforeEach(() => {
-      fileWriter = new NewEntryPointFileWriter();
-      entryPoint =
-          getEntryPointInfo(new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
-      esm5bundle = makeTestBundle(entryPoint, 'module', 'esm5');
-      esm2015bundle = makeTestBundle(entryPoint, 'es2015', 'esm2015');
+      fs = new NodeJSFileSystem();
+      fileWriter = new NewEntryPointFileWriter(fs);
+      entryPoint = getEntryPointInfo(
+          fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
+      esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
+      esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
     });
 
     it('should write the modified file to a new folder', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/lib/esm5.js', contents: 'export function FooB() {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/lib/esm5.js'),
+          contents: 'export function FooB() {} // MODIFIED'
+        },
       ]);
       expect(readFileSync('/node_modules/test/__ivy_ngcc__/lib/esm5.js', 'utf8'))
           .toEqual('export function FooB() {} // MODIFIED');
@@ -250,7 +283,7 @@ describe('NewEntryPointFileWriter', () => {
     it('should also copy unmodified files in the program', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/lib/es2015/foo.js',
+          path: _('/node_modules/test/lib/es2015/foo.js'),
           contents: 'export class FooB {} // MODIFIED'
         },
       ]);
@@ -278,7 +311,7 @@ describe('NewEntryPointFileWriter', () => {
     it('should not copy files outside of the package', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/lib/es2015/foo.js',
+          path: _('/node_modules/test/lib/es2015/foo.js'),
           contents: 'export class FooB {} // MODIFIED'
         },
       ]);
@@ -288,7 +321,10 @@ describe('NewEntryPointFileWriter', () => {
 
     it('should update the package.json properties', () => {
       fileWriter.writeBundle(entryPoint, esm5bundle, [
-        {path: '/node_modules/test/lib/esm5.js', contents: 'export function FooB() {} // MODIFIED'},
+        {
+          path: _('/node_modules/test/lib/esm5.js'),
+          contents: 'export function FooB() {} // MODIFIED'
+        },
       ]);
       expect(loadPackageJson('/node_modules/test/b')).toEqual(jasmine.objectContaining({
         module_ivy_ngcc: '../__ivy_ngcc__/lib/esm5.js',
@@ -296,7 +332,7 @@ describe('NewEntryPointFileWriter', () => {
 
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/lib/es2015/foo.js',
+          path: _('/node_modules/test/lib/es2015/foo.js'),
           contents: 'export class FooB {} // MODIFIED'
         },
       ]);
@@ -309,7 +345,7 @@ describe('NewEntryPointFileWriter', () => {
     it('should overwrite and backup typings files', () => {
       fileWriter.writeBundle(entryPoint, esm2015bundle, [
         {
-          path: '/node_modules/test/typings/index.d.ts',
+          path: _('/node_modules/test/typings/index.d.ts'),
           contents: 'export declare class FooB {} // MODIFIED'
         },
       ]);
@@ -323,9 +359,9 @@ describe('NewEntryPointFileWriter', () => {
 });
 
 function makeTestBundle(
-    entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty,
+    fs: FileSystem, entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty,
     format: EntryPointFormat): EntryPointBundle {
   return makeEntryPointBundle(
-      entryPoint.path, entryPoint.packageJson[formatProperty] !, entryPoint.typings, false,
+      fs, entryPoint.path, entryPoint.packageJson[formatProperty] !, entryPoint.typings, false,
       formatProperty, format, true) !;
 }

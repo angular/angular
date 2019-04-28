@@ -5,12 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import * as fs from 'fs';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-
+import {FileSystem} from '../file_system/file_system';
 import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
 
@@ -19,7 +17,7 @@ import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './modu
  * Helper functions for computing dependencies.
  */
 export class EsmDependencyHost implements DependencyHost {
-  constructor(private moduleResolver: ModuleResolver) {}
+  constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
 
   /**
    * Find all the dependencies for the entry-point at the given path.
@@ -54,7 +52,7 @@ export class EsmDependencyHost implements DependencyHost {
   private recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
-    const fromContents = fs.readFileSync(file, 'utf8');
+    const fromContents = this.fs.readFile(file);
     if (!this.hasImportOrReexportStatements(fromContents)) {
       return;
     }
