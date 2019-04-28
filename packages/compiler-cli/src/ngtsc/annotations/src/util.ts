@@ -230,15 +230,21 @@ function expandForwardRef(arg: ts.Expression): ts.Expression|null {
  */
 export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression {
   node = unwrapExpression(node);
-  if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression) ||
-      node.arguments.length !== 1) {
+  if (!ts.isCallExpression(node) || node.arguments.length !== 1) {
     return node;
   }
+
+  const fn =
+      ts.isPropertyAccessExpression(node.expression) ? node.expression.name : node.expression;
+  if (!ts.isIdentifier(fn)) {
+    return node;
+  }
+
   const expr = expandForwardRef(node.arguments[0]);
   if (expr === null) {
     return node;
   }
-  const imp = reflector.getImportOfIdentifier(node.expression);
+  const imp = reflector.getImportOfIdentifier(fn);
   if (imp === null || imp.from !== '@angular/core' || imp.name !== 'forwardRef') {
     return node;
   } else {
