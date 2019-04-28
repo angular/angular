@@ -14,7 +14,7 @@ import {MockFileSystem} from '../helpers/mock_file_system';
 
 const _ = AbsoluteFsPath.from;
 
-describe('DependencyHost', () => {
+describe('EsmDependencyHost', () => {
   let host: EsmDependencyHost;
   beforeEach(() => {
     const fs = createMockFileSystem();

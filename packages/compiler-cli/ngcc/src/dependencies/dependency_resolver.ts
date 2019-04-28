@@ -7,14 +7,10 @@
  */
 
 import {DepGraph} from 'dependency-graph';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Logger} from '../logging/logger';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
-
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost} from './dependency_host';
-
-
 
 /**
  * Holds information about entry points that are removed because
@@ -68,7 +64,8 @@ export interface SortedEntryPointsInfo extends DependencyDiagnostics { entryPoin
  * A class that resolves dependencies between entry-points.
  */
 export class DependencyResolver {
-  constructor(private logger: Logger, private host: DependencyHost) {}
+  constructor(
+      private logger: Logger, private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -118,8 +115,13 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     angularEntryPoints.forEach(entryPoint => {
-      const entryPointPath = getEntryPointPath(entryPoint);
-      const {dependencies, missing, deepImports} = this.host.findDependencies(entryPointPath);
+      const formatInfo = getEntryPointFormatInfo(entryPoint);
+      const host = this.hosts[formatInfo.format];
+      if (!host) {
+        throw new Error(
+            `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
+      }
+      const {dependencies, missing, deepImports} = host.findDependencies(formatInfo.path);
 
       if (missing.size > 0) {
         // This entry point has dependencies that are missing
@@ -164,7 +166,8 @@ export class DependencyResolver {
   }
 }
 
-function getEntryPointPath(entryPoint: EntryPoint): AbsoluteFsPath {
+function getEntryPointFormatInfo(entryPoint: EntryPoint):
+    {format: EntryPointFormat, path: AbsoluteFsPath} {
   const properties = Object.keys(entryPoint.packageJson);
   for (let i = 0; i < properties.length; i++) {
     const property = properties[i] as EntryPointJsonProperty;
@@ -172,7 +175,7 @@ function getEntryPointPath(entryPoint: EntryPoint): AbsoluteFsPath {
 
     if (format === 'esm2015' || format === 'esm5' || format === 'umd') {
       const formatPath = entryPoint.packageJson[property] !;
-      return AbsoluteFsPath.resolve(entryPoint.path, formatPath);
+      return {format, path: AbsoluteFsPath.resolve(entryPoint.path, formatPath)};
     }
   }
   throw new Error(
