@@ -93,20 +93,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
   const {entryPoints} =
       finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
 
-  if (absoluteTargetEntryPointPath && entryPoints.every(entryPoint => {
-        return entryPoint.path !== absoluteTargetEntryPointPath;
-      })) {
-    // If we get here, then the requested entry-point did not contain anything compiled by
-    // the old Angular compiler. Therefore there is nothing for ngcc to do.
-    // So mark all formats in this entry-point as processed so that clients of ngcc can avoid
-    // triggering ngcc for this entry-point in the future.
-    const packageJsonPath =
-        AbsoluteFsPath.from(resolve(absoluteTargetEntryPointPath, 'package.json'));
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-    propertiesToConsider.forEach(formatProperty => {
-      if (packageJson[formatProperty])
-        markAsProcessed(packageJson, packageJsonPath, formatProperty as EntryPointJsonProperty);
-    });
+  if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
+    markNonAngularPackageAsProcessed(absoluteTargetEntryPointPath, propertiesToConsider);
     return;
   }
 
@@ -116,7 +104,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
 
     const compiledFormats = new Set<string>();
     const entryPointPackageJson = entryPoint.packageJson;
-    const entryPointPackageJsonPath = AbsoluteFsPath.from(resolve(entryPoint.path, 'package.json'));
+    const entryPointPackageJsonPath =
+        AbsoluteFsPath.fromUnchecked(`${entryPoint.path}/package.json`);
 
     const hasProcessedDts = hasBeenProcessed(entryPointPackageJson, 'typings');
 
@@ -199,4 +188,19 @@ function hasProcessedTargetEntryPoint(
   // Or only the one matching format needs to be compiled but there was at least one matching
   // property before the first processed format that was unprocessed.
   return true;
+}
+
+/**
+ * If we get here, then the requested entry-point did not contain anything compiled by
+ * the old Angular compiler. Therefore there is nothing for ngcc to do.
+ * So mark all formats in this entry-point as processed so that clients of ngcc can avoid
+ * triggering ngcc for this entry-point in the future.
+ */
+function markNonAngularPackageAsProcessed(path: AbsoluteFsPath, propertiesToConsider: string[]) {
+  const packageJsonPath = AbsoluteFsPath.from(resolve(path, 'package.json'));
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+  propertiesToConsider.forEach(formatProperty => {
+    if (packageJson[formatProperty])
+      markAsProcessed(packageJson, packageJsonPath, formatProperty as EntryPointJsonProperty);
+  });
 }
