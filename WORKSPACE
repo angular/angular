@@ -5,8 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  sha256 = "88e5e579fb9edfbd19791b8a3c6bfbe16ae3444dba4b428e5efd36856db7cf16",
-  urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.27.8/rules_nodejs-0.27.8.tar.gz"],
+  sha256 = "4c702ffeeab2d24dd4101601b6d27cf582d2e0d4cdc3abefddd4834664669b6b",
+  urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.28.0/rules_nodejs-0.28.0.tar.gz"],
 )
 
 # Add sass rules
@@ -67,23 +67,6 @@ rules_sass_dependencies()
 # Setup the Sass rule repositories.
 load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 sass_repositories()
-
-# Temporarily add the Angular repository so that we can set up "ts_api_guardian".
-# TODO(jelbourn): remove this once we can do all the same stuff via @npm//@angular
-http_archive(
-  name = "angular",
-  sha256 = "a542f00adf5cafbcad24268d69da8e4746c22619699f29c3b3b0259d0ce52974",
-  url = "https://github.com/angular/angular/archive/8.0.0-beta.6.zip",
-  strip_prefix = "angular-8.0.0-beta.6",
-)
-
-# Only install the "ts-api-guardian" dependencies as we don't want to install the
-# Angular dev dependencies which are not needed.
-yarn_install(
-    name = "ts-api-guardian_deps",
-    package_json = "@angular//tools/ts-api-guardian:package.json",
-    yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
-)
 
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(

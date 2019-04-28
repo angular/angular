@@ -7,7 +7,7 @@
  */
 
 import {normalize} from '@angular-devkit/core';
-import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
+import {WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
 import {getProjectTargetOptions} from './project-targets';
 
 /** Regular expression that matches all possible Angular CLI default style files. */

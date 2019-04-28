@@ -7,7 +7,7 @@
  */
 
 import {normalize} from '@angular-devkit/core';
-import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/workspace';
+import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   getProjectFromWorkspace,

@@ -1,5 +1,5 @@
 import {normalize} from '@angular-devkit/core';
-import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
+import {WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
@@ -16,9 +16,9 @@ describe('ng-add schematic', () => {
   let runner: SchematicTestRunner;
   let appTree: Tree;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
-    appTree = createTestApp(runner);
+    appTree = await createTestApp(runner);
   });
 
   /** Expects the given file to be in the styles of the specified workspace project. */
@@ -77,9 +77,9 @@ describe('ng-add schematic', () => {
         './node_modules/@angular/material/prebuilt-themes/indigo-pink.css');
   });
 
-  it('should support adding a custom theme', () => {
+  it('should support adding a custom theme', async () => {
     // TODO(devversion): do not re-create test app here.
-    appTree = createTestApp(runner, {style: 'scss'});
+    appTree = await createTestApp(runner, {style: 'scss'});
 
     const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
 
@@ -94,9 +94,9 @@ describe('ng-add schematic', () => {
     expect(themeContent).toContain(`$app-primary: mat-palette(`);
   });
 
-  it('should create a custom theme file if no SCSS file could be found', () => {
+  it('should create a custom theme file if no SCSS file could be found', async () => {
     // TODO(devversion): do not re-create test app here.
-    appTree = createTestApp(runner, {style: 'css'});
+    appTree = await createTestApp(runner, {style: 'css'});
 
     const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
     const workspace = getWorkspace(tree);

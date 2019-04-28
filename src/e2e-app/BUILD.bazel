@@ -70,6 +70,8 @@ ts_devserver(
       "@npm//zone.js",
       "@npm//core-js",
       "@npm//hammerjs",
+      "@npm//material-components-web",
+      "@npm//moment",
       "@npm//@webcomponents/custom-elements",
       "//src/material/prebuilt-themes:indigo-pink",
       ":index.html",

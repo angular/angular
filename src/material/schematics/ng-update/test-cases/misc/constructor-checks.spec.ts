@@ -4,7 +4,7 @@ import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
 describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const {removeTempDir, runFixers} = createTestCaseSetup('migration-v6',
+    const {removeTempDir, runFixers} = await createTestCaseSetup('migration-v6',
       migrationCollection, [require.resolve('./constructor-checks_input.ts')]);
 
     const {logOutput} = await runFixers();

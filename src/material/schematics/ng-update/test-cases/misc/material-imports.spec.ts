@@ -12,7 +12,7 @@ describe('v8 material imports', () => {
   }
 
   it('should report imports for deleted animation constants', async () => {
-    const {runFixers, removeTempDir, tempPath} = createTestCaseSetup(
+    const {runFixers, removeTempDir, tempPath} = await createTestCaseSetup(
       'migration-v8', migrationCollection, [require.resolve('./material-imports_input.ts')]);
     const materialPath = join(tempPath, 'node_modules/@angular/material');
 

@@ -71,7 +71,12 @@ function addImportAs(packageName: string, outputPath: string, secondaryEntryPoin
 function addIdToGlob(outputPath: string, entryPointId: number): void {
   glob(join(outputPath, '**/*.+(js|d.ts|metadata.json)')).forEach(filePath => {
     let fileContent = readFileSync(filePath, 'utf-8');
-    fileContent = fileContent.replace(/(ɵ[a-z]+)/g, `$1${entryPointId}`);
+    // We check for double ɵ to avoid mangling symbols like `ɵɵdefineInjectable`.
+    fileContent = fileContent.replace(/ɵ(ɵ)?[a-z]+/g,
+        (match, isDoubleTheta) => {
+          return isDoubleTheta ? match : match + entryPointId;
+        });
     writeFileSync(filePath, fileContent, 'utf-8');
   });
 }
+

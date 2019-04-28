@@ -6,9 +6,9 @@ describe('CDK ng-add', () => {
   let runner: SchematicTestRunner;
   let appTree: Tree;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
-    appTree = createTestApp(runner);
+    appTree = await createTestApp(runner);
   });
 
   it('should update the package.json', () => {

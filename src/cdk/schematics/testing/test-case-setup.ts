@@ -30,9 +30,9 @@ export function readFileContent(filePath: string): string {
  * Creates a test app schematic tree that will be copied over to a real filesystem location.
  * This is necessary because TSLint is not able to read from the virtual filesystem tree.
  */
-export function createFileSystemTestApp(runner: SchematicTestRunner) {
+export async function createFileSystemTestApp(runner: SchematicTestRunner) {
   const tempFileSystemHost = new TempScopedNodeJsSyncHost();
-  const appTree: UnitTestTree = createTestApp(runner, {name: 'cdk-testing'});
+  const appTree: UnitTestTree = await createTestApp(runner, {name: 'cdk-testing'});
   const tempPath = getSystemPath(tempFileSystemHost.root);
 
   // Since the TSLint fix task expects all files to be present on the real file system, we
@@ -44,7 +44,7 @@ export function createFileSystemTestApp(runner: SchematicTestRunner) {
   return {appTree, tempPath, removeTempDir: () => removeSync(tempPath)};
 }
 
-export function createTestCaseSetup(migrationName: string, collectionPath: string,
+export async function createTestCaseSetup(migrationName: string, collectionPath: string,
                                    inputFiles: string[]) {
 
   const runner = new SchematicTestRunner('schematics', collectionPath);
@@ -53,7 +53,7 @@ export function createTestCaseSetup(migrationName: string, collectionPath: strin
   let logOutput = '';
   runner.logger.subscribe(entry => logOutput += entry.message);
 
-  const {appTree, tempPath, removeTempDir} = createFileSystemTestApp(runner);
+  const {appTree, tempPath, removeTempDir} = await createFileSystemTestApp(runner);
 
   // Write each test-case input to the file-system. This is necessary because otherwise
   // TSLint won't be able to pick up the test cases.
@@ -66,7 +66,7 @@ export function createTestCaseSetup(migrationName: string, collectionPath: strin
   });
 
   const runFixers = async function() {
-    runner.runSchematic(migrationName, {}, appTree);
+    await runner.runSchematicAsync(migrationName, {}, appTree).toPromise();
 
     // Switch to the new temporary directory because otherwise TSLint cannot read the files.
     process.chdir(tempPath);
@@ -149,7 +149,7 @@ export function defineJasmineTestCases(versionName: string, collectionFile: stri
 
   beforeAll(async () => {
     const {tempPath, runFixers, removeTempDir} =
-      createTestCaseSetup(`migration-${versionName}`, collectionFile, inputFiles);
+      await createTestCaseSetup(`migration-${versionName}`, collectionFile, inputFiles);
 
     await runFixers();
 

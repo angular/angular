@@ -1,4 +1,4 @@
-load("@angular//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
+load("@npm_ts_api_guardian//:index.bzl", "ts_api_guardian_test")
 
 """
   Macro for generating ts-api-guardian Bazel test targets. Since there are multiple golden files
