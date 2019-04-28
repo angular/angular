@@ -15,10 +15,8 @@ import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
 
 export class Esm5Renderer extends EsmRenderer {
-  constructor(
-      logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle,
-      sourcePath: string) {
-    super(logger, host, isCore, bundle, sourcePath);
+  constructor(logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
+    super(logger, host, isCore, bundle);
   }
 
   /**

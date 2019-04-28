@@ -73,7 +73,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
                           propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
                           compileAllFormats = true, createNewEntryPointFormats = false,
                           logger = new ConsoleLogger(LogLevel.info)}: NgccOptions): void {
-  const transformer = new Transformer(logger, basePath);
+  const transformer = new Transformer(logger);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(logger, host);
   const finder = new EntryPointFinder(logger, resolver);
