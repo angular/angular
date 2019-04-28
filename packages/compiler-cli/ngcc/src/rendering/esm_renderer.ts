@@ -9,6 +9,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {PathSegment, AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
+import {Import} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/decoration_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {FileSystem} from '../file_system/file_system';
@@ -27,9 +28,7 @@ export class EsmRenderer extends Renderer {
   /**
    *  Add the imports at the top of the file
    */
-  addImports(
-      output: MagicString, imports: {specifier: string; qualifier: string;}[],
-      sf: ts.SourceFile): void {
+  addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void {
     const insertionPoint = findEndOfImports(sf);
     const renderedImports =
         imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');

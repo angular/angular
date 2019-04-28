@@ -9,6 +9,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {Import} from '../../../src/ngtsc/translator';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
@@ -31,8 +32,7 @@ class TestRenderer extends Renderer {
       bundle: EntryPointBundle) {
     super(fs, logger, host, isCore, bundle);
   }
-  addImports(
-      output: MagicString, imports: {specifier: string, qualifier: string}[], sf: ts.SourceFile) {
+  addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
   addExports(output: MagicString, baseEntryPointPath: string, exports: {

@@ -18,6 +18,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
+        "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/test:test_utils",
         "@npm//@types/convert-source-map",
         "@npm//@types/mock-fs",

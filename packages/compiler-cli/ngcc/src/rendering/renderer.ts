@@ -14,8 +14,7 @@ import * as ts from 'typescript';
 import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {CompileResult} from '../../../src/ngtsc/transform';
-import {translateStatement, translateType, ImportManager} from '../../../src/ngtsc/translator';
-
+import {translateStatement, translateType, Import, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
@@ -250,9 +249,7 @@ export abstract class Renderer {
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
-  protected abstract addImports(
-      output: MagicString, imports: {specifier: string, qualifier: string}[],
-      sf: ts.SourceFile): void;
+  protected abstract addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void;
   protected abstract addExports(
       output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[]): void;
   protected abstract addDefinitions(

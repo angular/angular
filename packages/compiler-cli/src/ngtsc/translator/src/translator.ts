@@ -38,6 +38,27 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
 ]);
 
+/**
+ * Information about an import that has been added to a module.
+ */
+export interface Import {
+  /** The name of the module that has been imported. */
+  specifier: string;
+  /** The alias of the imported module. */
+  qualifier: string;
+}
+
+/**
+ * The symbol name and import namespace of an imported symbol,
+ * which has been registered through the ImportManager.
+ */
+export interface NamedImport {
+  /** The import namespace containing this imported symbol. */
+  moduleImport: string|null;
+  /** The (possibly rewritten) name of the imported symbol. */
+  symbol: string;
+}
+
 export class ImportManager {
   private specifierToIdentifier = new Map<string, string>();
   private nextIndex = 0;
@@ -45,8 +66,7 @@ export class ImportManager {
   constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
   }
 
-  generateNamedImport(moduleName: string, originalSymbol: string):
-      {moduleImport: string | null, symbol: string} {
+  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport {
     // First, rewrite the symbol name.
     const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
 
@@ -67,7 +87,7 @@ export class ImportManager {
     return {moduleImport, symbol};
   }
 
-  getAllImports(contextPath: string): {specifier: string, qualifier: string}[] {
+  getAllImports(contextPath: string): Import[] {
     const imports: {specifier: string, qualifier: string}[] = [];
     this.specifierToIdentifier.forEach((qualifier, specifier) => {
       specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
