@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import * as path from 'path';
 import * as ts from 'typescript';
 
 import {isAbsolutePath, normalizeSeparators} from './util';
@@ -62,6 +62,24 @@ export const AbsoluteFsPath = {
     // ts.SourceFile paths are always absolute.
     return sf.fileName as AbsoluteFsPath;
   },
+
+  /**
+   * Wrapper around `path.dirname` that returns an absolute path.
+   */
+  dirname: function(file: AbsoluteFsPath):
+      AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked(path.dirname(file));},
+
+  /**
+   * Wrapper around `path.join` that returns an absolute path.
+   */
+  join: function(basePath: AbsoluteFsPath, ...paths: string[]):
+      AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked(path.posix.join(basePath, ...paths));},
+
+  /**
+   * Wrapper around `path.resolve` that returns an absolute paths.
+   */
+  resolve: function(basePath: string, ...paths: string[]):
+      AbsoluteFsPath { return AbsoluteFsPath.from(path.resolve(basePath, ...paths));},
 };
 
 /**
@@ -83,4 +101,13 @@ export const PathSegment = {
    * Convert the path `str` to a `PathSegment`, while assuming that `str` is already normalized.
    */
   fromUnchecked: function(str: string): PathSegment { return str as PathSegment;},
+
+  /**
+   * Wrapper around `path.relative` that returns a `PathSegment`.
+   */
+  relative: function(from: AbsoluteFsPath, to: AbsoluteFsPath):
+      PathSegment { return PathSegment.fromFsPath(path.relative(from, to));},
+
+  basename: function(filePath: string, extension?: string):
+      PathSegment { return path.basename(filePath, extension) as PathSegment;}
 };
