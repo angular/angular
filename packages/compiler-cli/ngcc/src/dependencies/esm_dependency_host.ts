@@ -11,18 +11,37 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 
+import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
-
 
 
 /**
  * Helper functions for computing dependencies.
  */
-export class DependencyHost {
+export class EsmDependencyHost implements DependencyHost {
   constructor(private moduleResolver: ModuleResolver) {}
+
   /**
-   * Get a list of the resolved paths to all the dependencies of this entry point.
-   * @param from An absolute path to the file whose dependencies we want to get.
+   * Find all the dependencies for the entry-point at the given path.
+   *
+   * @param entryPointPath The absolute path to the JavaScript file that represents an entry-point.
+   * @returns Information about the dependencies of the entry-point, including those that were
+   * missing or deep imports into other entry-points.
+   */
+  findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
+    const dependencies = new Set<AbsoluteFsPath>();
+    const missing = new Set<string>();
+    const deepImports = new Set<string>();
+    const alreadySeen = new Set<AbsoluteFsPath>();
+    this.recursivelyFindDependencies(
+        entryPointPath, dependencies, missing, deepImports, alreadySeen);
+    return {dependencies, missing, deepImports};
+  }
+
+  /**
+   * Compute the dependencies of the given file.
+   *
+   * @param file An absolute path to the file whose dependencies we want to get.
    * @param dependencies A set that will have the absolute paths of resolved entry points added to
    * it.
    * @param missing A set that will have the dependencies that could not be found added to it.
@@ -32,19 +51,17 @@ export class DependencyHost {
    * in a
    * circular dependency loop.
    */
-  computeDependencies(
-      from: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath> = new Set(),
-      missing: Set<string> = new Set(), deepImports: Set<string> = new Set(),
-      alreadySeen: Set<AbsoluteFsPath> = new Set()):
-      {dependencies: Set<AbsoluteFsPath>, missing: Set<string>, deepImports: Set<string>} {
-    const fromContents = fs.readFileSync(from, 'utf8');
+  private recursivelyFindDependencies(
+      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
+      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+    const fromContents = fs.readFileSync(file, 'utf8');
     if (!this.hasImportOrReexportStatements(fromContents)) {
-      return {dependencies, missing, deepImports};
+      return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
     const sf =
-        ts.createSourceFile(from, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
     sf.statements
         // filter out statements that are not imports or reexports
         .filter(this.isStringImportOrReexport)
@@ -52,13 +69,13 @@ export class DependencyHost {
         .map(stmt => stmt.moduleSpecifier.text)
         // Resolve this module id into an absolute path
         .forEach(importPath => {
-          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, from);
+          const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
               const internalDependency = resolvedModule.modulePath;
               if (!alreadySeen.has(internalDependency)) {
                 alreadySeen.add(internalDependency);
-                this.computeDependencies(
+                this.recursivelyFindDependencies(
                     internalDependency, dependencies, missing, deepImports, alreadySeen);
               }
             } else {
@@ -72,7 +89,6 @@ export class DependencyHost {
             missing.add(importPath);
           }
         });
-    return {dependencies, missing, deepImports};
   }
 
   /**

@@ -10,10 +10,10 @@ import * as fs from 'fs';
 import {join, resolve} from 'path';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {PathMappings} from '../utils';
 
-import {DependencyResolver, SortedEntryPointsInfo} from './dependency_resolver';
 import {EntryPoint, getEntryPointInfo} from './entry_point';
 
 
