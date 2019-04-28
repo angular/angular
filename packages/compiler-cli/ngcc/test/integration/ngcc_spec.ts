@@ -41,6 +41,7 @@ describe('ngcc main()', () => {
   describe('with targetEntryPointPath', () => {
     it('should only compile the given package entry-point (and its dependencies).', () => {
       const STANDARD_MARKERS = {
+        main: '0.0.0-PLACEHOLDER',
         module: '0.0.0-PLACEHOLDER',
         es2015: '0.0.0-PLACEHOLDER',
         esm5: '0.0.0-PLACEHOLDER',
@@ -162,29 +163,31 @@ describe('ngcc main()', () => {
 
          });
 
-         // * the `main` property is UMD, which is not yet supported.
-         // * none of the ES2015 formats are compiled as they are not on the `propertiesToConsider`
-         // list.
+         // The ES2015 formats are not compiled as they are not in `propertiesToConsider`.
          expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
+           main: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
+           main: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
+           main: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
          });
          expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
            esm5: '0.0.0-PLACEHOLDER',
+           main: '0.0.0-PLACEHOLDER',
            module: '0.0.0-PLACEHOLDER',
            fesm5: '0.0.0-PLACEHOLDER',
            typings: '0.0.0-PLACEHOLDER',
@@ -196,12 +199,11 @@ describe('ngcc main()', () => {
     it('should only compile the first matching format', () => {
       mainNgcc({
         basePath: '/node_modules',
-        propertiesToConsider: ['main', 'module', 'fesm5', 'esm5'],
+        propertiesToConsider: ['module', 'fesm5', 'esm5'],
         compileAllFormats: false,
         logger: new MockLogger(),
 
       });
-      // * The `main` is UMD, which is not yet supported, and so is not compiled.
       // * In the Angular packages fesm5 and module have the same underlying format,
       //   so both are marked as compiled.
       // * The `esm5` is not compiled because we stopped after the `fesm5` format.
