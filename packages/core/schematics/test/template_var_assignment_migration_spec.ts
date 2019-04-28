@@ -21,7 +21,7 @@ describe('template variable assignment migration', () => {
   let warnOutput: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -58,14 +58,12 @@ describe('template variable assignment migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() {
-    runner.runSchematic('migration-v8-template-local-variables', {}, tree);
-  }
+  function runMigration() { runner.runSchematic('migration-template-local-variables', {}, tree); }
 
   it('should warn for two-way data binding variable assignment', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         template: '<cmp *ngFor="let optionName of options" [(opt)]="optionName"></cmp>',
       })
@@ -81,7 +79,7 @@ describe('template variable assignment migration', () => {
   it('should warn for two-way data binding assigning to "as" variable', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './tmpl.html',
       })
@@ -103,7 +101,7 @@ describe('template variable assignment migration', () => {
   it('should warn for bound event assignments to "as" variable', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -127,7 +125,7 @@ describe('template variable assignment migration', () => {
   it('should warn for bound event assignments to template "let" variables', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -151,7 +149,7 @@ describe('template variable assignment migration', () => {
   it('should not warn for bound event assignments to component property', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -168,7 +166,7 @@ describe('template variable assignment migration', () => {
   it('should not warn for bound event assignments to template variable object property', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -188,7 +186,7 @@ describe('template variable assignment migration', () => {
      () => {
        writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -213,7 +211,7 @@ describe('template variable assignment migration', () => {
   it('should not warn for property writes with template variable name but different scope', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -236,7 +234,7 @@ describe('template variable assignment migration', () => {
   it('should not throw an error if a detected template fails parsing', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         templateUrl: './sub_dir/tmpl.html',
       })
@@ -253,12 +251,12 @@ describe('template variable assignment migration', () => {
   it('should be able to report multiple templates within the same source file', () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         template: '<ng-template let-one><a (sayHello)="one=true"></a></ng-template>',
       })
       export class MyComp {}
-      
+
       @Component({
         template: '<ng-template let-two><b (greet)="two=true"></b></ng-template>',
       })
