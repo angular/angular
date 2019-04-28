@@ -18,10 +18,13 @@ import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {UmdReflectionHost} from '../host/umd_host';
 import {Logger} from '../logging/logger';
-import {Esm5Renderer} from '../rendering/esm5_renderer';
-import {EsmRenderer} from '../rendering/esm_renderer';
-import {FileInfo, Renderer} from '../rendering/renderer';
-import {UmdRenderer} from '../rendering/umd_renderer';
+import {DtsRenderer} from '../rendering/dts_renderer';
+import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
+import {EsmRenderingFormatter} from '../rendering/esm_rendering_formatter';
+import {Renderer} from '../rendering/renderer';
+import {RenderingFormatter} from '../rendering/rendering_formatter';
+import {UmdRenderingFormatter} from '../rendering/umd_rendering_formatter';
+import {FileToWrite} from '../rendering/utils';
 
 import {EntryPointBundle} from './entry_point_bundle';
 
@@ -56,7 +59,7 @@ export class Transformer {
    * @param bundle the bundle to transform.
    * @returns information about the files that were transformed.
    */
-  transform(bundle: EntryPointBundle): FileInfo[] {
+  transform(bundle: EntryPointBundle): FileToWrite[] {
     const isCore = bundle.isCore;
     const reflectionHost = this.getHost(isCore, bundle);
 
@@ -65,10 +68,21 @@ export class Transformer {
            moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, isCore, bundle);
 
     // Transform the source files and source maps.
-    const renderer = this.getRenderer(reflectionHost, isCore, bundle);
-    const renderedFiles = renderer.renderProgram(
-        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-        moduleWithProvidersAnalyses);
+    const srcFormatter = this.getRenderingFormatter(reflectionHost, isCore, bundle);
+
+    const renderer =
+        new Renderer(srcFormatter, this.fs, this.logger, reflectionHost, isCore, bundle);
+    let renderedFiles = renderer.renderProgram(
+        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+
+    if (bundle.dts) {
+      const dtsFormatter = new EsmRenderingFormatter(reflectionHost, isCore);
+      const dtsRenderer =
+          new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, isCore, bundle);
+      const renderedDtsFiles = dtsRenderer.renderProgram(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+      renderedFiles = renderedFiles.concat(renderedDtsFiles);
+    }
 
     return renderedFiles;
   }
@@ -88,17 +102,18 @@ export class Transformer {
     }
   }
 
-  getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
+  getRenderingFormatter(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
+      RenderingFormatter {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderer(this.fs, this.logger, host, isCore, bundle);
+        return new EsmRenderingFormatter(host, isCore);
       case 'esm5':
-        return new Esm5Renderer(this.fs, this.logger, host, isCore, bundle);
+        return new Esm5RenderingFormatter(host, isCore);
       case 'umd':
         if (!(host instanceof UmdReflectionHost)) {
           throw new Error('UmdRenderer requires a UmdReflectionHost');
         }
-        return new UmdRenderer(this.fs, this.logger, host, isCore, bundle);
+        return new UmdRenderingFormatter(host, isCore);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

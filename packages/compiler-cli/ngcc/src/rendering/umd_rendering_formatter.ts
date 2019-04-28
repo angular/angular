@@ -10,25 +10,23 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {FileSystem} from '../file_system/file_system';
 import {UmdReflectionHost} from '../host/umd_host';
-import {Logger} from '../logging/logger';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {Esm5Renderer} from './esm5_renderer';
-import {stripExtension} from './renderer';
+import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
+import {stripExtension} from './utils';
 
 type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
 type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
 
-export class UmdRenderer extends Esm5Renderer {
-  constructor(
-      fs: FileSystem, logger: Logger, protected umdHost: UmdReflectionHost, isCore: boolean,
-      bundle: EntryPointBundle) {
-    super(fs, logger, umdHost, isCore, bundle);
-  }
+/**
+ * A RenderingFormatter that works with UMD files, instead of `import` and `export` statements
+ * the module is an IIFE with a factory function call with dependencies, which are defined in a
+ * wrapper function for AMD, CommonJS and global module formats.
+ */
+export class UmdRenderingFormatter extends Esm5RenderingFormatter {
+  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) { super(umdHost, isCore); }
 
   /**
-   *  Add the imports at the top of the file
+   *  Add the imports to the UMD module IIFE.
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
     // Assume there is only one UMD module in the file
@@ -46,6 +44,9 @@ export class UmdRenderer extends Esm5Renderer {
     renderFactoryParameters(output, wrapperFunction, imports);
   }
 
+  /**
+   * Add the exports to the bottom of the UMD module factory function.
+   */
   addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
@@ -70,6 +71,9 @@ export class UmdRenderer extends Esm5Renderer {
     });
   }
 
+  /**
+   * Add the constants to the top of the UMD factory function.
+   */
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     if (constants === '') {
       return;
@@ -86,6 +90,9 @@ export class UmdRenderer extends Esm5Renderer {
   }
 }
 
+/**
+ * Add dependencies to the CommonJS part of the UMD wrapper function.
+ */
 function renderCommonJsDependencies(
     output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
   const conditional = find(wrapperFunction.body.statements[0], isCommonJSConditional);
@@ -98,6 +105,9 @@ function renderCommonJsDependencies(
   imports.forEach(i => output.appendLeft(injectionPoint, `,require('${i.specifier}')`));
 }
 
+/**
+ * Add dependencies to the AMD part of the UMD wrapper function.
+ */
 function renderAmdDependencies(
     output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
   const conditional = find(wrapperFunction.body.statements[0], isAmdConditional);
@@ -113,17 +123,23 @@ function renderAmdDependencies(
   imports.forEach(i => output.appendLeft(injectionPoint, `,'${i.specifier}'`));
 }
 
+/**
+ * Add dependencies to the global part of the UMD wrapper function.
+ */
 function renderGlobalDependencies(
     output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
   const globalFactoryCall = find(wrapperFunction.body.statements[0], isGlobalFactoryCall);
   if (!globalFactoryCall) {
     return;
   }
-  const injectionPoint = globalFactoryCall.getEnd() -
-      1;  // Backup one char to account for the closing parenthesis on the call
+  // Backup one char to account for the closing parenthesis after the argument list of the call.
+  const injectionPoint = globalFactoryCall.getEnd() - 1;
   imports.forEach(i => output.appendLeft(injectionPoint, `,global.${getGlobalIdentifier(i)}`));
 }
 
+/**
+ * Add dependency parameters to the UMD factory function.
+ */
 function renderFactoryParameters(
     output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
   const wrapperCall = wrapperFunction.parent as ts.CallExpression;
@@ -143,6 +159,9 @@ function renderFactoryParameters(
   imports.forEach(i => output.appendLeft(injectionPoint, `,${i.qualifier}`));
 }
 
+/**
+ * Is this node the CommonJS conditional expression in the UMD wrapper?
+ */
 function isCommonJSConditional(value: ts.Node): value is CommonJsConditional {
   if (!ts.isConditionalExpression(value)) {
     return false;
@@ -160,6 +179,9 @@ function isCommonJSConditional(value: ts.Node): value is CommonJsConditional {
   return value.whenTrue.expression.text === 'factory';
 }
 
+/**
+ * Is this node the AMD conditional expression in the UMD wrapper?
+ */
 function isAmdConditional(value: ts.Node): value is AmdConditional {
   if (!ts.isConditionalExpression(value)) {
     return false;
@@ -177,6 +199,9 @@ function isAmdConditional(value: ts.Node): value is AmdConditional {
   return value.whenTrue.expression.text === 'define';
 }
 
+/**
+ * Is this node the call to setup the global dependencies in the UMD wrapper?
+ */
 function isGlobalFactoryCall(value: ts.Node): value is ts.CallExpression {
   if (ts.isCallExpression(value) && !!value.parent) {
     // Be resilient to the value being inside parentheses
