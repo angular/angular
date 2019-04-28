@@ -10,7 +10,7 @@ import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {FileInfo} from '../rendering/renderer';
+import {FileToWrite} from '../rendering/utils';
 
 import {InPlaceFileWriter} from './in_place_file_writer';
 
@@ -25,7 +25,7 @@ const NGCC_DIRECTORY = '__ivy_ngcc__';
  * `InPlaceFileWriter`).
  */
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
-  writeBundle(entryPoint: EntryPoint, bundle: EntryPointBundle, transformedFiles: FileInfo[]) {
+  writeBundle(entryPoint: EntryPoint, bundle: EntryPointBundle, transformedFiles: FileToWrite[]) {
     // The new folder is at the root of the overall package
     const ngccFolder = AbsoluteFsPath.join(entryPoint.package, NGCC_DIRECTORY);
     this.copyBundle(bundle, entryPoint.package, ngccFolder);
@@ -47,7 +47,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     });
   }
 
-  protected writeFile(file: FileInfo, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath):
+  protected writeFile(file: FileToWrite, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath):
       void {
     if (isDtsPath(file.path.replace(/\.map$/, ''))) {
       // This is either `.d.ts` or `.d.ts.map` file
