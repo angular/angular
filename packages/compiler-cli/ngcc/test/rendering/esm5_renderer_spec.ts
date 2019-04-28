@@ -11,25 +11,26 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
+import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.fromUnchecked;
 
-function setup(file: {name: string, contents: string}) {
+function setup(file: {name: AbsoluteFsPath, contents: string}) {
+  const fs = new MockFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('module', 'esm5', false, [file]);
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm5ReflectionHost(logger, false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const fs = new NodeJSFileSystem();
-  const decorationAnalyses = new DecorationAnalyzer(
-                                 fs, bundle.src.program, bundle.src.options, bundle.src.host,
-                                 typeChecker, host, referencesRegistry, [_('/')], false)
-                                 .analyzeProgram();
+  const decorationAnalyses =
+      new DecorationAnalyzer(
+          fs, bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
+          referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
+          .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new Esm5Renderer(fs, logger, host, false, bundle);
   return {
@@ -40,7 +41,7 @@ function setup(file: {name: string, contents: string}) {
 }
 
 const PROGRAM = {
-  name: '/some/file.js',
+  name: _('/some/file.js'),
   contents: `
 /* A copyright notice */
 import 'some-side-effect';
@@ -100,7 +101,7 @@ export {A, B, C, NoIife, BadIife};`
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: '/some/file.js',
+  name: _('/some/file.js'),
   contents: `
 import * as tslib_1 from "tslib";
 /* A copyright notice */
@@ -179,7 +180,7 @@ import * as i1 from '@angular/common';`);
         {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
         {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
         {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
-        {from: _(PROGRAM.name), dtsFrom: _(PROGRAM.name), identifier: 'TopLevelComponent'},
+        {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
       ]);
       expect(output.toString()).toContain(`
 export {A, B, C, NoIife, BadIife};
@@ -193,10 +194,10 @@ export {TopLevelComponent};`);
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(output, _(PROGRAM.name.replace(/\.js$/, '')), [
-        {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-        {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-        {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
-        {from: _(PROGRAM.name), alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
+        {from: _('/some/a.js'), alias: _('eComponentA1'), identifier: 'ComponentA1'},
+        {from: _('/some/a.js'), alias: _('eComponentA2'), identifier: 'ComponentA2'},
+        {from: _('/some/foo/b.js'), alias: _('eComponentB'), identifier: 'ComponentB'},
+        {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
       ]);
       const outputString = output.toString();
       expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);
@@ -285,14 +286,14 @@ SOME DEFINITION TEXT
 
       const noIifeDeclaration =
           getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
-      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
+      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: _('NoIife')};
       expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
               'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
 
       const badIifeDeclaration =
           getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
-      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
+      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: _('BadIife')};
       expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
               'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
