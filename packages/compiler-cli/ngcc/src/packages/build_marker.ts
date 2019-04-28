@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {writeFileSync} from 'fs';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-
+import {FileSystem} from '../file_system/file_system';
 import {EntryPointJsonProperty, EntryPointPackageJson} from './entry_point';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
@@ -49,9 +47,9 @@ export function hasBeenProcessed(
  * @param format the property in the package.json of the format for which we are writing the marker.
  */
 export function markAsProcessed(
-    packageJson: EntryPointPackageJson, packageJsonPath: AbsoluteFsPath,
+    fs: FileSystem, packageJson: EntryPointPackageJson, packageJsonPath: AbsoluteFsPath,
     format: EntryPointJsonProperty) {
   if (!packageJson.__processed_by_ivy_ngcc__) packageJson.__processed_by_ivy_ngcc__ = {};
   packageJson.__processed_by_ivy_ngcc__[format] = NGCC_VERSION;
-  writeFileSync(packageJsonPath, JSON.stringify(packageJson), 'utf8');
+  fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
 }

@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Declaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
@@ -14,8 +15,8 @@ import {NgccReferencesRegistry} from './ngcc_references_registry';
 
 export interface ExportInfo {
   identifier: string;
-  from: string;
-  dtsFrom?: string|null;
+  from: AbsoluteFsPath;
+  dtsFrom?: AbsoluteFsPath|null;
   alias?: string|null;
 }
 export type PrivateDeclarationsAnalyses = ExportInfo[];
@@ -93,11 +94,12 @@ export class PrivateDeclarationsAnalyzer {
     });
 
     return Array.from(privateDeclarations.keys()).map(id => {
-      const from = id.getSourceFile().fileName;
+      const from = AbsoluteFsPath.fromSourceFile(id.getSourceFile());
       const declaration = privateDeclarations.get(id) !;
       const alias = exportAliasDeclarations.get(id) || null;
       const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);
-      const dtsFrom = dtsDeclaration && dtsDeclaration.getSourceFile().fileName;
+      const dtsFrom =
+          dtsDeclaration && AbsoluteFsPath.fromSourceFile(dtsDeclaration.getSourceFile());
 
       return {identifier: id.text, from, dtsFrom, alias};
     });

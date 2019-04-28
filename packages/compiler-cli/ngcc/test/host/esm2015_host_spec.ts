@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, CtorParameter, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
@@ -1007,7 +1007,7 @@ describe('Esm2015ReflectionHost', () => {
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
-      expect(parameters[0]).toEqual(jasmine.objectContaining({
+      expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
         name: 'arg1',
         decorators: [],
       }));
@@ -1021,7 +1021,7 @@ describe('Esm2015ReflectionHost', () => {
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
-      expect(parameters[0]).toEqual(jasmine.objectContaining({
+      expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
         name: 'arg1',
         decorators: null,
       }));
@@ -1035,7 +1035,7 @@ describe('Esm2015ReflectionHost', () => {
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
-      expect(parameters[0]).toEqual(jasmine.objectContaining({
+      expect(parameters[0]).toEqual(jasmine.objectContaining<CtorParameter>({
         name: 'arg1',
         decorators: null,
       }));
@@ -1115,11 +1115,11 @@ describe('Esm2015ReflectionHost', () => {
         const parameters = host.getConstructorParameters(classNode);
 
         expect(parameters !.length).toBe(2);
-        expect(parameters ![0]).toEqual(jasmine.objectContaining({
+        expect(parameters ![0]).toEqual(jasmine.objectContaining<CtorParameter>({
           name: 'arg1',
           decorators: null,
         }));
-        expect(parameters ![1]).toEqual(jasmine.objectContaining({
+        expect(parameters ![1]).toEqual(jasmine.objectContaining<CtorParameter>({
           name: 'arg2',
           decorators: jasmine.any(Array) as any
         }));

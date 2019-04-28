@@ -12,6 +12,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
 import {MockLogger} from '../helpers/mock_logger';
@@ -22,12 +23,13 @@ describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
   let finder: EntryPointFinder;
   beforeEach(() => {
+    const fs = new NodeJSFileSystem();
     resolver =
-        new DependencyResolver(new MockLogger(), new EsmDependencyHost(new ModuleResolver()));
+        new DependencyResolver(new MockLogger(), new EsmDependencyHost(fs, new ModuleResolver(fs)));
     spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
       return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
     });
-    finder = new EntryPointFinder(new MockLogger(), resolver);
+    finder = new EntryPointFinder(fs, new MockLogger(), resolver);
   });
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);

@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
-import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
-import {readFileSync, statSync} from 'fs';
+import {SourceMapConverter, commentRegex, fromJSON, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
 import MagicString from 'magic-string';
-import {basename, dirname, relative, resolve} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
-import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER} from '@angular/compiler-cli/src/ngtsc/imports';
-import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
+import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {CompileResult} from '../../../src/ngtsc/transform';
 import {translateStatement, translateType, ImportManager} from '../../../src/ngtsc/translator';
-import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
+
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
+import {FileSystem} from '../file_system/file_system';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
 
 interface SourceMapInfo {
   source: string;
@@ -39,7 +40,7 @@ export interface FileInfo {
   /**
    * Path to where the file should be written.
    */
-  path: string;
+  path: AbsoluteFsPath;
   /**
    * The contents of the file to be be written.
    */
@@ -81,8 +82,8 @@ export const RedundantDecoratorMap = Map;
  */
 export abstract class Renderer {
   constructor(
-      protected logger: Logger, protected host: NgccReflectionHost, protected isCore: boolean,
-      protected bundle: EntryPointBundle) {}
+      protected fs: FileSystem, protected logger: Logger, protected host: NgccReflectionHost,
+      protected isCore: boolean, protected bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
@@ -189,7 +190,7 @@ export abstract class Renderer {
     this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
     this.addImports(outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
 
-    this.addExports(outputText, dtsFile.fileName, renderInfo.privateExports);
+    this.addExports(outputText, AbsoluteFsPath.fromSourceFile(dtsFile), renderInfo.privateExports);
 
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
@@ -207,11 +208,12 @@ export abstract class Renderer {
       importManager: ImportManager): void {
     moduleWithProviders.forEach(info => {
       const ngModuleName = info.ngModule.node.name.text;
-      const declarationFile = info.declaration.getSourceFile().fileName;
-      const ngModuleFile = info.ngModule.node.getSourceFile().fileName;
+      const declarationFile = AbsoluteFsPath.fromSourceFile(info.declaration.getSourceFile());
+      const ngModuleFile = AbsoluteFsPath.fromSourceFile(info.ngModule.node.getSourceFile());
       const importPath = info.ngModule.viaModule ||
           (declarationFile !== ngModuleFile ?
-               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
+               stripExtension(
+                   `./${PathSegment.relative(AbsoluteFsPath.dirname(declarationFile), ngModuleFile)}`) :
                null);
       const ngModule = getImportString(importManager, importPath, ngModuleName);
 
@@ -252,7 +254,7 @@ export abstract class Renderer {
       output: MagicString, imports: {specifier: string, qualifier: string}[],
       sf: ts.SourceFile): void;
   protected abstract addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void;
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[]): void;
   protected abstract addDefinitions(
       output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
@@ -288,7 +290,7 @@ export abstract class Renderer {
    */
   protected extractSourceMap(file: ts.SourceFile): SourceMapInfo {
     const inline = commentRegex.test(file.text);
-    const external = mapFileCommentRegex.test(file.text);
+    const external = mapFileCommentRegex.exec(file.text);
 
     if (inline) {
       const inlineSourceMap = fromSource(file.text);
@@ -300,17 +302,22 @@ export abstract class Renderer {
     } else if (external) {
       let externalSourceMap: SourceMapConverter|null = null;
       try {
-        externalSourceMap = fromMapFileSource(file.text, dirname(file.fileName));
+        const fileName = external[1] || external[2];
+        const filePath = AbsoluteFsPath.resolve(
+            AbsoluteFsPath.dirname(AbsoluteFsPath.fromSourceFile(file)), fileName);
+        const mappingFile = this.fs.readFile(filePath);
+        externalSourceMap = fromJSON(mappingFile);
       } catch (e) {
         if (e.code === 'ENOENT') {
           this.logger.warn(
               `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
-          const mapPath = file.fileName + '.map';
-          if (basename(e.path) !== basename(mapPath) && statSync(mapPath).isFile()) {
+          const mapPath = AbsoluteFsPath.fromUnchecked(file.fileName + '.map');
+          if (PathSegment.basename(e.path) !== PathSegment.basename(mapPath) &&
+              this.fs.stat(mapPath).isFile()) {
             this.logger.warn(
-                `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
+                `Guessing the map file name from the source file name: "${PathSegment.basename(mapPath)}"`);
             try {
-              externalSourceMap = fromObject(JSON.parse(readFileSync(mapPath, 'utf8')));
+              externalSourceMap = fromObject(JSON.parse(this.fs.readFile(mapPath)));
             } catch (e) {
               this.logger.error(e);
             }
@@ -333,9 +340,9 @@ export abstract class Renderer {
    */
   protected renderSourceAndMap(
       sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileInfo[] {
-    const outputPath = sourceFile.fileName;
-    const outputMapPath = `${outputPath}.map`;
-    const relativeSourcePath = basename(outputPath);
+    const outputPath = AbsoluteFsPath.fromSourceFile(sourceFile);
+    const outputMapPath = AbsoluteFsPath.fromUnchecked(`${outputPath}.map`);
+    const relativeSourcePath = PathSegment.basename(outputPath);
     const relativeMapPath = `${relativeSourcePath}.map`;
 
     const outputMap = output.generateMap({
@@ -502,8 +509,8 @@ export function renderDefinitions(
   return definitions;
 }
 
-export function stripExtension(filePath: string): string {
-  return filePath.replace(/\.(js|d\.ts)$/, '');
+export function stripExtension<T extends string>(filePath: T): T {
+  return filePath.replace(/\.(js|d\.ts)$/, '') as T;
 }
 
 /**

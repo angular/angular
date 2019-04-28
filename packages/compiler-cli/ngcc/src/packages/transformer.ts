@@ -12,6 +12,7 @@ import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analy
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
+import {FileSystem} from '../file_system/file_system';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -46,7 +47,7 @@ import {EntryPointBundle} from './entry_point_bundle';
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class Transformer {
-  constructor(private logger: Logger) {}
+  constructor(private fs: FileSystem, private logger: Logger) {}
 
   /**
    * Transform the source (and typings) files of a bundle.
@@ -85,9 +86,9 @@ export class Transformer {
   getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderer(this.logger, host, isCore, bundle);
+        return new EsmRenderer(this.fs, this.logger, host, isCore, bundle);
       case 'esm5':
-        return new Esm5Renderer(this.logger, host, isCore, bundle);
+        return new Esm5Renderer(this.fs, this.logger, host, isCore, bundle);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
@@ -102,8 +103,8 @@ export class Transformer {
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
     const decorationAnalyzer = new DecorationAnalyzer(
-        bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, reflectionHost,
-        referencesRegistry, bundle.rootDirs, isCore);
+        this.fs, bundle.src.program, bundle.src.options, bundle.src.host, typeChecker,
+        reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
