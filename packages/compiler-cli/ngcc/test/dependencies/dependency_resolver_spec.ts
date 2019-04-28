@@ -9,6 +9,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {FileSystem} from '../../src/file_system/file_system';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
@@ -18,10 +19,13 @@ const _ = AbsoluteFsPath.from;
 describe('DependencyResolver', () => {
   let host: EsmDependencyHost;
   let resolver: DependencyResolver;
+  let fs: FileSystem;
+  let moduleResolver: ModuleResolver;
   beforeEach(() => {
-    const fs = new MockFileSystem();
-    host = new EsmDependencyHost(fs, new ModuleResolver(fs));
-    resolver = new DependencyResolver(new MockLogger(), host);
+    fs = new MockFileSystem();
+    moduleResolver = new ModuleResolver(fs);
+    host = new EsmDependencyHost(fs, moduleResolver);
+    resolver = new DependencyResolver(new MockLogger(), {esm5: host, esm2015: host});
   });
   describe('sortEntryPointsByDependency()', () => {
     const first = {
@@ -112,6 +116,13 @@ describe('DependencyResolver', () => {
       ])).toThrowError(`There is no appropriate source code format in '/first' entry-point.`);
     });
 
+    it('should error if there is no appropriate DependencyHost for the given formats', () => {
+      resolver = new DependencyResolver(new MockLogger(), {esm2015: host});
+      expect(() => resolver.sortEntryPointsByDependency([first]))
+          .toThrowError(
+              `Could not find a suitable format for computing dependencies of entry-point: '/first'.`);
+    });
+
     it('should capture any dependencies that were ignored', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
@@ -136,6 +147,29 @@ describe('DependencyResolver', () => {
       expect(sorted.entryPoints).toEqual([fifth, fourth]);
       sorted = resolver.sortEntryPointsByDependency(entryPoints, fifth);
       expect(sorted.entryPoints).toEqual([fifth]);
+    });
+
+    it('should use the appropriate DependencyHost for each entry-point', () => {
+      const esm5Host = new EsmDependencyHost(fs, moduleResolver);
+      const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
+      resolver = new DependencyResolver(new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host});
+      spyOn(esm5Host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+      spyOn(esm2015Host, 'findDependencies')
+          .and.callFake(createFakeComputeDependencies(dependencies));
+      const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
+      expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
+
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/first/index.js');
+      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith('/second/sub/index.js');
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/third/index.js');
+      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith('/fourth/sub2/index.js');
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/fifth/index.js');
+
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/first/index.js');
+      expect(esm2015Host.findDependencies).toHaveBeenCalledWith('/second/sub/index.js');
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/third/index.js');
+      expect(esm2015Host.findDependencies).toHaveBeenCalledWith('/fourth/sub2/index.js');
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/fifth/index.js');
     });
 
     interface DepMap {
