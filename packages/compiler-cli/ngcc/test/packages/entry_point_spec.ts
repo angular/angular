@@ -30,6 +30,7 @@ describe('getEntryPointInfo()', () => {
          path: _('/some_package/valid_entry_point'),
          typings: _(`/some_package/valid_entry_point/valid_entry_point.d.ts`),
          packageJson: loadPackageJson('/some_package/valid_entry_point'),
+         compiledByAngular: true,
        });
      });
 
@@ -45,17 +46,19 @@ describe('getEntryPointInfo()', () => {
     expect(entryPoint).toBe(null);
   });
 
-  it('should return null if there is no esm2015 nor fesm2015 field in the package.json', () => {
-    const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_esm2015'));
-    expect(entryPoint).toBe(null);
-  });
-
-  it('should return null if there is no metadata.json file next to the typing file', () => {
-    const entryPoint =
-        getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_metadata.json'));
-    expect(entryPoint).toBe(null);
-  });
+  it('should return an object with `compiledByAngular` set to false if there is no metadata.json file next to the typing file',
+     () => {
+       const entryPoint =
+           getEntryPointInfo(new MockLogger(), SOME_PACKAGE, _('/some_package/missing_metadata'));
+       expect(entryPoint).toEqual({
+         name: 'some-package/missing_metadata',
+         package: SOME_PACKAGE,
+         path: _('/some_package/missing_metadata'),
+         typings: _(`/some_package/missing_metadata/missing_metadata.d.ts`),
+         packageJson: loadPackageJson('/some_package/missing_metadata'),
+         compiledByAngular: false,
+       });
+     });
 
   it('should work if the typings field is named `types', () => {
     const entryPoint = getEntryPointInfo(
@@ -66,6 +69,7 @@ describe('getEntryPointInfo()', () => {
       path: _('/some_package/types_rather_than_typings'),
       typings: _(`/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
       packageJson: loadPackageJson('/some_package/types_rather_than_typings'),
+      compiledByAngular: true,
     });
   });
 
@@ -78,6 +82,7 @@ describe('getEntryPointInfo()', () => {
       path: _('/some_package/material_style'),
       typings: _(`/some_package/material_style/material_style.d.ts`),
       packageJson: JSON.parse(readFileSync('/some_package/material_style/package.json', 'utf8')),
+      compiledByAngular: true,
     });
   });
 
