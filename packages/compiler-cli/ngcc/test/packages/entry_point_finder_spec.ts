@@ -9,11 +9,11 @@
 import * as mockFs from 'mock-fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {DependencyHost} from '../../src/packages/dependency_host';
-import {DependencyResolver} from '../../src/packages/dependency_resolver';
+import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
+import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
+import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
-import {ModuleResolver} from '../../src/packages/module_resolver';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
@@ -22,7 +22,8 @@ describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
   let finder: EntryPointFinder;
   beforeEach(() => {
-    resolver = new DependencyResolver(new MockLogger(), new DependencyHost(new ModuleResolver()));
+    resolver =
+        new DependencyResolver(new MockLogger(), new EsmDependencyHost(new ModuleResolver()));
     spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
       return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
     });
