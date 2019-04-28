@@ -19,7 +19,6 @@ import {MockLogger} from '../helpers/mock_logger';
 
 function setup(file: {name: string, contents: string}) {
   const logger = new MockLogger();
-  const dir = dirname(file.name);
   const bundle = makeTestEntryPointBundle('es2015', 'esm2015', false, [file]) !;
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, false, typeChecker);
@@ -30,7 +29,7 @@ function setup(file: {name: string, contents: string}) {
           referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
           .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
-  const renderer = new EsmRenderer(logger, host, false, bundle, dir);
+  const renderer = new EsmRenderer(logger, host, false, bundle);
   return {
     host,
     program: bundle.src.program,
