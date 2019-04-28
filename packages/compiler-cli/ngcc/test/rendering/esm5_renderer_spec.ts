@@ -281,7 +281,7 @@ SOME DEFINITION TEXT
        });
 
     it('should error if the compiledClass is not valid', () => {
-      const {renderer, host, sourceFile, program} = setup(PROGRAM);
+      const {renderer, sourceFile, program} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
 
       const noIifeDeclaration =
@@ -355,9 +355,7 @@ SOME DEFINITION TEXT
          expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
          expect(output.toString()).toContain(`{ type: OtherB }`);
          expect(output.toString()).toContain(`function C() {}\nSOME DEFINITION TEXT\n  return C;`);
-         expect(output.toString()).not.toContain(`C.decorators = [
-  { type: Directive, args: [{ selector: '[c]' }] },
-];`);
+         expect(output.toString()).not.toContain(`C.decorators`);
        });
 
   });
