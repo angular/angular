@@ -193,19 +193,10 @@ An Angular component class is responsible for exposing data and handling most of
 
 Read more about components, templates, and views in [Architecture Overview](guide/architecture).
 
-{@a cli-config}
-
-{@a config}
-
 ## configuration
 
-A file named `angular.json` at the root level of an Angular [workspace](#workspace) provides workspace-wide and project-specific configuration defaults for build and development tools that are provided by or integrated with the [Angular CLI](#cli).
+See  [workspace configuration](#cli-config)
 
-For more information, see [Workspace Configuration](guide/workspace-config).
-
-Additional project-specific configuration files are used by tools, such as `package.json` for the [npm package manager](#npm-package), `tsconfig.json` for [TypeScript transpilation](#transpile), and `tslint.json` for [TSLint](https://palantir.github.io/tslint/).
-
-For more information, see [Workspace and Project File Structure](guide/file-structure).
 
 {@a custom-element}
 
@@ -818,7 +809,7 @@ The `subscribe()` method takes a JavaScript object (called an [observer](#observ
 
 ## target
 
-An object in the [workspace configuration file](guide/workspace-config#project-tool-configuration-options) that configures an [Architect](#architect) [builder](#builder) for use in a [project](#project) context.
+A buildable or runnable subset of a [project](#project), configured as an object in the [workspace configuration file](guide/workspace-config#project-tool-configuration-options), and executed by an [Architect](#architect) [builder](#builder).
 
 In the `angular.json` file, each project has an "architect" section that contains targets which configure builders. Some of these targets correspond to [CLI commands](#cli), such as `build`, `serve`, `test`, and `lint`.
 
@@ -949,13 +940,28 @@ See [custom element](#custom-element).
 
 ## workspace
 
-An compilation context used by the [Angular CLI](#cli) for [projects](#project) (that is, applications and libraries).
+A collection of Angular [projects](#project) (that is, applications and libraries) powered by the [Angular CLI] (#cli) that are typically co-located in a single source-control repository (such as [git](https://git-scm.com/)).
+
 The [CLI](#cli) [`ng new` command](cli/new) creates a file system directory (the "workspace root").
 In the workspace root, it also creates the workspace [configuration file](#configuration) (`angular.json`) and, by default, an initial application project with the same name.
 
 Commands that create or operate on apps and libraries (such as `add` and `generate`) must be executed from within a workspace folder.
 
 For more information, see [Workspace Configuration](guide/workspace-config).
+
+{@a cli-config}
+
+{@a config}
+
+## workspace configuration
+
+A file named `angular.json` at the root level of an Angular [workspace](#workspace) provides workspace-wide and project-specific configuration defaults for build and development tools that are provided by or integrated with the [Angular CLI](#cli).
+
+For more information, see [Workspace Configuration](guide/workspace-config).
+
+Additional project-specific configuration files are used by tools, such as `package.json` for the [npm package manager](#npm-package), `tsconfig.json` for [TypeScript transpilation](#transpile), and `tslint.json` for [TSLint](https://palantir.github.io/tslint/).
+
+For more information, see [Workspace and Project File Structure](guide/file-structure).
 
 {@a X}
 
