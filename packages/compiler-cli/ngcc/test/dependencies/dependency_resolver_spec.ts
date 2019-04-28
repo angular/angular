@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {DependencyHost} from '../../src/packages/dependency_host';
-import {DependencyResolver, SortedEntryPointsInfo} from '../../src/packages/dependency_resolver';
+import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
+import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
+import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {ModuleResolver} from '../../src/packages/module_resolver';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
 
 describe('DependencyResolver', () => {
-  let host: DependencyHost;
+  let host: EsmDependencyHost;
   let resolver: DependencyResolver;
   beforeEach(() => {
-    host = new DependencyHost(new ModuleResolver());
+    host = new EsmDependencyHost(new ModuleResolver());
     resolver = new DependencyResolver(new MockLogger(), host);
   });
   describe('sortEntryPointsByDependency()', () => {
@@ -57,13 +57,13 @@ describe('DependencyResolver', () => {
     };
 
     it('should order the entry points by their dependency on each other', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
       expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
     });
 
     it('should remove entry-points that have missing direct dependencies', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
         [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
         [_('/second/sub/index.js')]: {resolved: [], missing: []},
       }));
@@ -75,7 +75,7 @@ describe('DependencyResolver', () => {
     });
 
     it('should remove entry points that depended upon an invalid entry-point', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
         [_('/first/index.js')]: {resolved: [second.path], missing: []},
         [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
         [_('/third/index.js')]: {resolved: [], missing: []},
@@ -90,7 +90,7 @@ describe('DependencyResolver', () => {
     });
 
     it('should remove entry points that will depend upon an invalid entry-point', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
         [_('/first/index.js')]: {resolved: [second.path], missing: []},
         [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
         [_('/third/index.js')]: {resolved: [], missing: []},
@@ -111,7 +111,7 @@ describe('DependencyResolver', () => {
     });
 
     it('should capture any dependencies that were ignored', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
       expect(result.ignoredDependencies).toEqual([
         {entryPoint: first, dependencyPath: '/ignored-1'},
@@ -120,7 +120,7 @@ describe('DependencyResolver', () => {
     });
 
     it('should only return dependencies of the target, if provided', () => {
-      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+      spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       const entryPoints = [fifth, first, fourth, second, third];
       let sorted: SortedEntryPointsInfo;
 

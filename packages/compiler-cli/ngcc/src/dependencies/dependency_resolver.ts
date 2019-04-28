@@ -11,9 +11,10 @@ import {resolve} from 'path';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Logger} from '../logging/logger';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 
 import {DependencyHost} from './dependency_host';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat} from './entry_point';
+
 
 
 /**
@@ -119,7 +120,7 @@ export class DependencyResolver {
     // Now add the dependencies between them
     angularEntryPoints.forEach(entryPoint => {
       const entryPointPath = getEntryPointPath(entryPoint);
-      const {dependencies, missing, deepImports} = this.host.computeDependencies(entryPointPath);
+      const {dependencies, missing, deepImports} = this.host.findDependencies(entryPointPath);
 
       if (missing.size > 0) {
         // This entry point has dependencies that are missing

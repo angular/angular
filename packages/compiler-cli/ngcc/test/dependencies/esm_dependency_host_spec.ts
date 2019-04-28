@@ -9,14 +9,14 @@ import * as mockFs from 'mock-fs';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {DependencyHost} from '../../src/packages/dependency_host';
-import {ModuleResolver} from '../../src/packages/module_resolver';
+import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
+import {ModuleResolver} from '../../src/dependencies/module_resolver';
 
 const _ = AbsoluteFsPath.from;
 
 describe('DependencyHost', () => {
-  let host: DependencyHost;
-  beforeEach(() => host = new DependencyHost(new ModuleResolver()));
+  let host: EsmDependencyHost;
+  beforeEach(() => host = new EsmDependencyHost(new ModuleResolver()));
 
   describe('getDependencies()', () => {
     beforeEach(createMockFileSystem);
@@ -25,13 +25,13 @@ describe('DependencyHost', () => {
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
-         host.computeDependencies(_('/no/imports/or/re-exports/index.js'));
+         host.findDependencies(_('/no/imports/or/re-exports/index.js'));
          expect(ts.createSourceFile).not.toHaveBeenCalled();
        });
 
     it('should resolve all the external imports of the source file', () => {
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/external/imports/index.js'));
+          host.findDependencies(_('/external/imports/index.js'));
       expect(dependencies.size).toBe(2);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
@@ -41,7 +41,7 @@ describe('DependencyHost', () => {
 
     it('should resolve all the external re-exports of the source file', () => {
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/external/re-exports/index.js'));
+          host.findDependencies(_('/external/re-exports/index.js'));
       expect(dependencies.size).toBe(2);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
@@ -51,7 +51,7 @@ describe('DependencyHost', () => {
 
     it('should capture missing external imports', () => {
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/external/imports-missing/index.js'));
+          host.findDependencies(_('/external/imports-missing/index.js'));
 
       expect(dependencies.size).toBe(1);
       expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
@@ -65,7 +65,7 @@ describe('DependencyHost', () => {
       // is found that does not map to an entry-point but still exists on disk, i.e. a deep import.
       // Such deep imports are captured for diagnostics purposes.
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/external/deep-import/index.js'));
+          host.findDependencies(_('/external/deep-import/index.js'));
 
       expect(dependencies.size).toBe(0);
       expect(missing.size).toBe(0);
@@ -75,7 +75,7 @@ describe('DependencyHost', () => {
 
     it('should recurse into internal dependencies', () => {
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/internal/outer/index.js'));
+          host.findDependencies(_('/internal/outer/index.js'));
 
       expect(dependencies.size).toBe(1);
       expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
@@ -85,7 +85,7 @@ describe('DependencyHost', () => {
 
     it('should handle circular internal dependencies', () => {
       const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/internal/circular-a/index.js'));
+          host.findDependencies(_('/internal/circular-a/index.js'));
       expect(dependencies.size).toBe(2);
       expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
       expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
@@ -94,15 +94,14 @@ describe('DependencyHost', () => {
     });
 
     it('should support `paths` alias mappings when resolving modules', () => {
-      host = new DependencyHost(new ModuleResolver({
+      host = new EsmDependencyHost(new ModuleResolver({
         baseUrl: '/dist',
         paths: {
           '@app/*': ['*'],
           '@lib/*/test': ['lib/*/test'],
         }
       }));
-      const {dependencies, missing, deepImports} =
-          host.computeDependencies(_('/path-alias/index.js'));
+      const {dependencies, missing, deepImports} = host.findDependencies(_('/path-alias/index.js'));
       expect(dependencies.size).toBe(4);
       expect(dependencies.has(_('/dist/components'))).toBe(true);
       expect(dependencies.has(_('/dist/shared'))).toBe(true);

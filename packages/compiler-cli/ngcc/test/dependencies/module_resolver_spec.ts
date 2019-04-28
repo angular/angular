@@ -9,7 +9,7 @@
 import * as mockFs from 'mock-fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {ModuleResolver, ResolvedDeepImport, ResolvedExternalModule, ResolvedRelativeModule} from '../../src/packages/module_resolver';
+import {ModuleResolver, ResolvedDeepImport, ResolvedExternalModule, ResolvedRelativeModule} from '../../src/dependencies/module_resolver';
 
 const _ = AbsoluteFsPath.from;
 
