@@ -26,7 +26,7 @@ describe('static-queries migration with usage strategy', () => {
   afterAll(() => process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] = '');
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -58,11 +58,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark view queries used in "ngAfterContentInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @ViewChild('test') query: any;
-          
+
           ngAfterContentInit() {
             this.query.classList.add('test');
           }
@@ -78,11 +78,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark view queries used in "ngAfterContentChecked" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @ViewChild('test') query: any;
-          
+
           ngAfterContentChecked() {
             this.query.classList.add('test');
           }
@@ -102,11 +102,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark content queries used in "ngAfterContentInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ContentChild} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @ContentChild('test') query: any;
-          
+
           ngAfterContentInit() {
             this.query.classList.add('test');
           }
@@ -122,11 +122,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark content queries used in "ngAfterContentChecked" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ContentChild} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @ContentChild('test') query: any;
-          
+
           ngAfterContentChecked() {
             this.query.classList.add('test');
           }
@@ -145,19 +145,19 @@ describe('static-queries migration with usage strategy', () => {
   }
 
   async function runMigration() {
-    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
+    await runner.runSchematicAsync('migration-static-queries', {}, tree).toPromise();
   }
 
   function createQueryTests(queryType: 'ViewChild' | 'ContentChild') {
     it('should mark queries as dynamic', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') unused: any;
           @${queryType}('dynamic') dynamic: any;
-          
+
           onClick() {
             this.dynamicQuery.classList.add('test');
           }
@@ -175,13 +175,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark queries used in "ngOnChanges" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           ngOnChanges() {
-            this.query.classList.add('test'); 
+            this.query.classList.add('test');
           }
         }
       `);
@@ -195,13 +195,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark queries used in "ngOnInit" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           ngOnInit() {
-            this.query.classList.add('test'); 
+            this.query.classList.add('test');
           }
         }
       `);
@@ -215,13 +215,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark queries used in "ngDoCheck" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           ngDoCheck() {
-            this.query.classList.add('test'); 
+            this.query.classList.add('test');
           }
         }
       `);
@@ -235,11 +235,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should keep existing query options when updating timing', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test', { /* test */ read: null }) query: any;
-          
+
           ngOnInit() {
             this.query.classList.add('test');
           }
@@ -255,7 +255,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should not overwrite existing explicit query timing', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test', {static: /* untouched */ someVal}) query: any;
@@ -271,26 +271,26 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries used in deep method chain', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           // We intentionally add this comma for the second parameter in order
           // to ensure that the migration does not incorrectly create an invalid
           // decorator call with three parameters. e.g. "ViewQuery('test', {...}, )"
           @${queryType}('test', ) query: any;
-          
+
           ngOnInit() {
             this.a();
           }
-          
+
           a() {
             this.b();
           }
-          
+
           b() {
             this.c();
           }
-          
+
           c() {
             console.log(this.query);
           }
@@ -306,16 +306,16 @@ describe('static-queries migration with usage strategy', () => {
     it('should properly exit if recursive function is analyzed', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           ngOnInit() {
             this.recursive();
           }
-          
-          recursive() {           
+
+          recursive() {
             this.recursive();
           }
         }
@@ -330,27 +330,27 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries used in newly instantiated classes', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
           @${queryType}('test') query2: any;
-          
+
           ngOnInit() {
             new A(this);
-            
+
             new class Inline {
               constructor(private ctx: MyComp) {
                 this.a();
               }
-              
+
               a() {
                 this.ctx.query2.useStatically();
               }
             }(this);
           }
         }
-        
+
         export class A {
           constructor(ctx: MyComp) {
             ctx.query.test();
@@ -369,16 +369,16 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries used in parenthesized new expressions', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           ngOnInit() {
             new ((A))(this);
           }
         }
-        
+
         export class A {
           constructor(ctx: MyComp) {
             ctx.query.test();
@@ -395,11 +395,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries in lifecycle hook with string literal name', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           'ngOnInit'() {
             this.query.test();
           }
@@ -415,19 +415,19 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect static queries within nested inheritance', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
         }
-        
+
         export class A extends MyComp {}
         export class B extends A {
-        
+
           ngOnInit() {
             this.query.testFn();
           }
-        
+
         }
       `);
 
@@ -440,11 +440,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect static queries used within input setters', async() => {
       writeFile('/index.ts', `
         import {Component, Input, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           @Input()
           get myVal() { return null; }
           set myVal(newVal: any) {
@@ -462,14 +462,14 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect inputs defined in metadata', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({
           template: '<span #test></span>',
           inputs: ["myVal"],
         })
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           // We don't use the input decorator here as we want to verify
           // that it properly detects the input through the component metadata.
           get myVal() { return null; }
@@ -488,14 +488,14 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect aliased inputs declared in metadata', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({
           template: '<span #test></span>',
           inputs: ['prop: publicName'],
         })
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           set prop(val: any) {
             this.query.test();
           }
@@ -511,11 +511,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark query as static if query is used in non-input setter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           set myProperty(val: any) {
             this.query.test();
           }
@@ -531,13 +531,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect input decorator on setter', async() => {
       writeFile('/index.ts', `
         import {Input, Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           get myProperty() { return null; }
-          
+
           // Usually the decorator is set on the get accessor, but it's also possible
           // to declare the input on the setter. This ensures that it is handled properly.
           @Input()
@@ -556,7 +556,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect setter inputs in derived classes', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({
           template: '<span #test></span>',
           inputs: ['childSetter'],
@@ -564,7 +564,7 @@ describe('static-queries migration with usage strategy', () => {
         export class MyComp {
           protected @${queryType}('test') query: any;
         }
-        
+
         export class B extends MyComp {
           set childSetter(newVal: any) {
             this.query.test();
@@ -581,7 +581,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should properly detect static query in external derived class', async() => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
@@ -590,7 +590,7 @@ describe('static-queries migration with usage strategy', () => {
 
       writeFile('/src/external.ts', `
         import {MyComp} from './index';
-        
+
         export class ExternalComp extends MyComp {
           ngOnInit() {
             this.query.test();
@@ -614,30 +614,30 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries used in promises as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
           private @${queryType}('test') query2: any;
-        
+
           ngOnInit() {
             const a = Promise.resolve();
-          
+
             Promise.resolve().then(() => {
               this.query.doSomething();
             });
-            
+
             Promise.reject().catch(() => {
               this.query.doSomething();
             });
-            
+
             a.then(() => {}).then(() => {
               this.query.doSomething();
             });
-                        
+
             Promise.resolve().then(this.createPromiseCb());
           }
-          
+
           createPromiseCb() {
             this.query2.doSomething();
             return () => { /* empty callback */}
@@ -656,19 +656,19 @@ describe('static-queries migration with usage strategy', () => {
     it('should handle function callbacks which statically access queries', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-        
-          ngOnInit() {        
+
+          ngOnInit() {
             this.callSync(() => this.query.doSomething());
           }
-          
+
           callSync(cb: Function) {
             this.callSync2(cb);
           }
-          
+
           callSync2(cb: Function) {
             cb();
           }
@@ -686,12 +686,12 @@ describe('static-queries migration with usage strategy', () => {
          writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {External} from './external';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-        
-          ngOnInit() {        
+
+          ngOnInit() {
             new External(() => this.query.doSomething());
           }
         }
@@ -700,7 +700,7 @@ describe('static-queries migration with usage strategy', () => {
          writeFile('/external.ts', `
         export class External {
           constructor(cb: () => void) {
-            // Add extra parentheses to ensure that expression is unwrapped. 
+            // Add extra parentheses to ensure that expression is unwrapped.
             ((cb))();
           }
         }
@@ -715,21 +715,21 @@ describe('static-queries migration with usage strategy', () => {
     it('should handle nested functions with arguments from parent closure', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-        
-          ngOnInit() {        
+
+          ngOnInit() {
             this.callSync(() => this.query.doSomething());
           }
-          
+
           callSync(cb: Function) {
             function callSyncNested() {
               // The "cb" identifier comes from the "callSync" function.
               cb();
             }
-            
+
             callSyncNested();
           }
         }
@@ -744,22 +744,22 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries used in setTimeout as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                                
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
           private @${queryType}('test') query2: any;
           private @${queryType}('test') query3: any;
-        
+
           ngOnInit() {
             setTimeout(function() {
               this.query.doSomething();
             });
-            
+
             setTimeout(createCallback(this));
           }
         }
-        
+
         function createCallback(instance: MyComp) {
           instance.query2.doSomething();
           return () => instance.query3.doSomething();
@@ -779,13 +779,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries used in "addEventListener" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ElementRef, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-        
+
           constructor(private elementRef: ElementRef) {}
-        
+
           ngOnInit() {
             this.elementRef.addEventListener(() => {
               this.query.classList.add('test');
@@ -803,13 +803,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries used in "requestAnimationFrame" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ElementRef, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-        
+
           constructor(private elementRef: ElementRef) {}
-        
+
           ngOnInit() {
             requestAnimationFrame(() => {
               this.query.classList.add('test');
@@ -827,17 +827,17 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark queries used in immediately-invoked function expression as static', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
           private @${queryType}('test') query2: any;
-                
+
           ngOnInit() {
             (() => {
               this.query.usedStatically();
             })();
-            
+
             (function(ctx) {
               ctx.query2.useStatically();
             })(this);
@@ -857,11 +857,11 @@ describe('static-queries migration with usage strategy', () => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {externalFn} from './external';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-                
+
           ngOnInit() {
             externalFn(this);
           }
@@ -870,7 +870,7 @@ describe('static-queries migration with usage strategy', () => {
 
       writeFile('/external.ts', `
         import {MyComp} from './index';
-        
+
         export function externalFn(ctx: MyComp) {
           ctx.query.usedStatically();
         }
@@ -885,15 +885,15 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect static queries used through getter property access', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-                
+
           get myProp() {
             return this.query.myValue;
           }
-          
+
           ngOnInit() {
             this.myProp.test();
           }
@@ -910,17 +910,17 @@ describe('static-queries migration with usage strategy', () => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
         import {External} from './external';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           @${queryType}('test') query: any;
-          
+
           private external = new External(this);
-                
+
           get myProp() {
             return this.query.myValue;
           }
-          
+
           ngOnInit() {
             console.log(this.external.query);
           }
@@ -929,10 +929,10 @@ describe('static-queries migration with usage strategy', () => {
 
       writeFile('/external.ts', `
         import {MyComp} from './index';
-      
+
         export class External {
           constructor(private comp: MyComp) {}
-          
+
           set query() { /** noop */ }
           get query() { return this.comp.query; }
         }
@@ -947,16 +947,16 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries as static if a value is assigned to accessor property', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-              
+
           set myProp(value: any) { /* noop */}
           get myProp() {
             return this.query.myValue;
           }
-          
+
           ngOnInit() {
             this.myProp = true;
           }
@@ -972,16 +972,16 @@ describe('static-queries migration with usage strategy', () => {
     it('should mark queries as static if non-input setter uses query', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-              
+
           get myProp() { return null; }
           set myProp(value: any) {
             this.query.doSomething();
           }
- 
+
           ngOnInit() {
             this.myProp = 'newValue';
           }
@@ -997,17 +997,17 @@ describe('static-queries migration with usage strategy', () => {
     it('should check setter and getter when using compound assignment', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
           private @${queryType}('test') query2: any;
-              
+
           get myProp() { return this.query2 }
           set myProp(value: any) {
             this.query.doSomething();
           }
- 
+
           ngOnInit() {
             this.myProp *= 5;
           }
@@ -1025,14 +1025,14 @@ describe('static-queries migration with usage strategy', () => {
     it('should check getters when using comparison operator in binary expression', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;
-              
+
           get myProp() { return this.query }
           set myProp(value: any) { /* noop */ }
- 
+
           ngOnInit() {
             if (this.myProp === 3) {
               // noop
@@ -1050,29 +1050,29 @@ describe('static-queries migration with usage strategy', () => {
     it('should check derived abstract class methods', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export abstract class RootBaseClass {
           abstract getQuery(): any;
-          
+
           ngOnInit() {
             this.getQuery().doSomething();
           }
         }
-                        
+
         export abstract class BaseClass extends RootBaseClass {
           abstract getQuery2(): any;
-          
+
           getQuery() {
             this.getQuery2();
           }
         }
-        
+
         @Component({template: '<span #test></span>'})
         export class Subclass extends BaseClass {
           @${queryType}('test') query: any;
-        
+
           getQuery2(): any {
-            return this.query; 
+            return this.query;
           }
         }
       `);
@@ -1086,25 +1086,25 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries accessed through deep abstract class method', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export abstract class RootBaseClass {
           abstract getQuery(): any;
-          
+
           ngOnInit() {
             this.getQuery().doSomething();
           }
         }
-                        
+
         export abstract class BaseClass extends RootBaseClass {
           /* additional layer of indirection */
         }
-        
+
         @Component({template: '<span #test></span>'})
         export class Subclass extends BaseClass {
           @${queryType}('test') query: any;
-        
+
           getQuery(): any {
-            return this.query; 
+            return this.query;
           }
         }
       `);
@@ -1118,19 +1118,19 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries accessed through abstract property getter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export abstract class BaseClass {
           abstract myQuery: any;
-          
+
           ngOnInit() {
             this.myQuery.doSomething();
           }
         }
-        
+
         @Component({template: '<span #test></span>'})
         export class Subclass extends BaseClass {
           @${queryType}('test') query: any;
-        
+
           get myQuery() { return this.query; }
         }
       `);
@@ -1144,19 +1144,19 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect queries accessed through abstract property setter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export abstract class BaseClass {
           abstract myQuery: any;
-          
+
           ngOnInit() {
             this.myQuery = "trigger";
           }
         }
-        
+
         @Component({template: '<span #test></span>'})
         export class Subclass extends BaseClass {
           @${queryType}('test') query: any;
-        
+
           set myQuery(val: any) { this.query.doSomething() }
           get myQuery() { /* noop */ }
         }
@@ -1171,27 +1171,27 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect query usage in abstract class methods accessing inherited query', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export abstract class RootBaseClass {
           abstract getQuery(): any;
-          
+
           ngOnInit() {
             this.getQuery().doSomething();
           }
         }
-                        
+
         export abstract class BaseClass extends RootBaseClass {
           @${queryType}('test') query: any;
           abstract getQuery2(): any;
-          
+
           getQuery() {
             this.getQuery2();
           }
         }
-        
+
         @Component({template: '<span #test></span>'})
         export class Subclass extends BaseClass {
-        
+
           getQuery2(): any {
             return this.query;
           }
@@ -1207,7 +1207,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect query usage within component template', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent {
           @${queryType}('test') query: any;
@@ -1228,7 +1228,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect query usage with nested property read within component template', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent {
           @${queryType}('test') query: any;
@@ -1250,7 +1250,7 @@ describe('static-queries migration with usage strategy', () => {
        async() => {
          writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent {
           @${queryType}('test') query: any;
@@ -1274,7 +1274,7 @@ describe('static-queries migration with usage strategy', () => {
        async() => {
          writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent {
           myObject: {someProp: any};
@@ -1299,7 +1299,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should ignore queries accessed within <ng-template> element', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent {
           @${queryType}('test') query: any;
@@ -1308,7 +1308,7 @@ describe('static-queries migration with usage strategy', () => {
 
       writeFile(`/my-template.html`, `
         <foo #test></foo>
-        
+
         <ng-template>
           <my-comp [myInput]="query"></my-comp>
         </ng-template>
@@ -1323,11 +1323,11 @@ describe('static-queries migration with usage strategy', () => {
     it('should detect inherited queries used in templates', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-        
+
         export class ParentClass {
           @${queryType}('test') query: any;
         }
-        
+
         @Component({templateUrl: 'my-template.html'})
         export class MyComponent extends ParentClass {}
       `);
@@ -1346,7 +1346,7 @@ describe('static-queries migration with usage strategy', () => {
     it('should properly handle multiple tsconfig files', async() => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
-                        
+
         @Component({template: '<span #test></span>'})
         export class MyComp {
           private @${queryType}('test') query: any;

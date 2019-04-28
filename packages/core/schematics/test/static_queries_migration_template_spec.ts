@@ -21,7 +21,7 @@ describe('static-queries migration with template strategy', () => {
   let warnOutput: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -97,7 +97,7 @@ describe('static-queries migration with template strategy', () => {
   }
 
   async function runMigration() {
-    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
+    await runner.runSchematicAsync('migration-static-queries', {}, tree).toPromise();
   }
 
   describe('ViewChild', () => {
@@ -105,7 +105,7 @@ describe('static-queries migration with template strategy', () => {
     it('should detect queries selecting elements through template reference', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
-                        
+
         @Component({template: \`
           <ng-template>
             <button #myButton>My Button</button>
@@ -118,7 +118,7 @@ describe('static-queries migration with template strategy', () => {
           private @ViewChild('myButton') query: any;
           private @ViewChild('myStaticButton') query2: any;
         }
-        
+
         @NgModule({declarations: [MyComp]})
         export class MyModule {}
       `);
@@ -134,7 +134,7 @@ describe('static-queries migration with template strategy', () => {
     it('should detect queries selecting ng-template as static', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
-                        
+
         @Component({template: \`
           <ng-template #myTmpl>
             My template
@@ -143,7 +143,7 @@ describe('static-queries migration with template strategy', () => {
         export class MyComp {
           private @ViewChild('myTmpl') query: any;
         }
-        
+
         @NgModule({declarations: [MyComp]})
         export class MyModule {}
       `);
@@ -157,7 +157,7 @@ describe('static-queries migration with template strategy', () => {
     it('should detect queries selecting component view providers through string token', async() => {
       writeFile('/index.ts', `
         import {Component, Directive, NgModule, ViewChild} from '@angular/core';
-                
+
         @Directive({
           selector: '[myDirective]',
           providers: [
@@ -165,7 +165,7 @@ describe('static-queries migration with template strategy', () => {
           ]
         })
         export class MyDirective {}
-        
+
         @Directive({
           selector: '[myDirective2]',
           providers: [
@@ -173,13 +173,13 @@ describe('static-queries migration with template strategy', () => {
           ]
         })
         export class MyDirective2 {}
-             
+
         @Component({templateUrl: './my-tmpl.html'})
         export class MyComp {
           private @ViewChild('my-token') query: any;
           private @ViewChild('my-token-2') query2: any;
         }
-        
+
         @NgModule({declarations: [MyComp, MyDirective, MyDirective2]})
         export class MyModule {}
       `);
@@ -202,28 +202,28 @@ describe('static-queries migration with template strategy', () => {
     it('should detect queries selecting component view providers using class token', async() => {
       writeFile('/index.ts', `
         import {Component, Directive, NgModule, ViewChild} from '@angular/core';
-        
+
         export class MyService {}
         export class MyService2 {}
-                
+
         @Directive({
           selector: '[myDirective]',
           providers: [MyService]
         })
         export class MyDirective {}
-        
+
         @Directive({
           selector: '[myDirective2]',
           providers: [MyService2]
         })
         export class MyDirective2 {}
-             
+
         @Component({templateUrl: './my-tmpl.html'})
         export class MyComp {
           private @ViewChild(MyService) query: any;
           private @ViewChild(MyService2) query2: any;
         }
-        
+
         @NgModule({declarations: [MyComp, MyDirective, MyDirective2]})
         export class MyModule {}
       `);
@@ -247,7 +247,7 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
         import {HomeComponent, HomeComponent2} from './home-comp';
-                        
+
         @Component({
           template: \`
             <home-comp></home-comp>
@@ -260,20 +260,20 @@ describe('static-queries migration with template strategy', () => {
           private @ViewChild(HomeComponent) query: any;
           private @ViewChild(HomeComponent2) query2: any;
         }
-        
+
         @NgModule({declarations: [MyComp, HomeComponent, HomeComponent2]})
         export class MyModule {}
       `);
 
       writeFile(`/home-comp.ts`, `
         import {Component} from '@angular/core';
-        
+
         @Component({
           selector: 'home-comp',
           template: '<span>Home</span>'
         })
         export class HomeComponent {}
-        
+
         @Component({
           selector: 'home-comp2',
           template: '<span>Home 2</span>'
@@ -294,12 +294,12 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
         import {MyLibComponent} from 'my-lib';
-                        
+
         @Component({templateUrl: './my-tmpl.html'})
         export class MyComp {
           private @ViewChild(MyLibComponent) query: any;
         }
-        
+
         @NgModule({declarations: [MyComp, MyLibComponent]})
         export class MyModule {}
       `);
@@ -319,12 +319,12 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
         import {MyLibComponent} from 'my-lib';
-                        
+
         @Component({templateUrl: './my-tmpl.html'})
         export class MyComp {
           private @ViewChild(MyLibComponent) query: any;
         }
-        
+
         @NgModule({declarations: [MyComp, MyLibComponent]})
         export class MyModule {}
       `);
@@ -345,16 +345,16 @@ describe('static-queries migration with template strategy', () => {
     it('should detect queries within structural directive', async() => {
       writeFile('/index.ts', `
         import {Component, Directive, NgModule, ViewChild} from '@angular/core';
-        
+
         @Directive({selector: '[ngIf]'})
         export class FakeNgIf {}
-                        
+
         @Component({templateUrl: 'my-tmpl.html'})
         export class MyComp {
           private @ViewChild('myRef') query: any;
           private @ViewChild('myRef2') query2: any;
         }
-        
+
         @NgModule({declarations: [MyComp, FakeNgIf]})
         export class MyModule {}
       `);
@@ -375,14 +375,14 @@ describe('static-queries migration with template strategy', () => {
     it('should detect inherited queries', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
-        
+
         export class BaseClass {
           @ViewChild('myRef') query: any;
         }
-                        
+
         @Component({templateUrl: 'my-tmpl.html'})
         export class MyComp extends BaseClass {}
-        
+
         @NgModule({declarations: [MyComp]})
         export class MyModule {}
       `);
@@ -400,7 +400,7 @@ describe('static-queries migration with template strategy', () => {
     it('should add a todo if a query is not declared in any component', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild, SomeToken} from '@angular/core';
-          
+
         export class NotAComponent {
           @ViewChild('myRef', {read: SomeToken}) query: any;
         }
@@ -420,17 +420,17 @@ describe('static-queries migration with template strategy', () => {
     it('should add a todo if a query is used multiple times with different timing', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild} from '@angular/core';
-          
+
         export class BaseClass {
           @ViewChild('myRef') query: any;
         }
-        
+
         @Component({template: '<ng-template><p #myRef></p></ng-template>'})
         export class FirstComp extends BaseClass {}
-        
+
         @Component({template: '<span #myRef></span>'})
         export class SecondComp extends BaseClass {}
-        
+
         @NgModule({declarations: [FirstComp, SecondComp]})
         export class MyModule {}
       `);
@@ -448,12 +448,12 @@ describe('static-queries migration with template strategy', () => {
     it('should gracefully exit migration if queries could not be analyzed', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
-             
+
         @Component({template: '<ng-template><p #myRef></p></ng-template>'})
         export class MyComp {
           @ViewChild('myRef') query: any;
         }
-        
+
         // **NOTE**: Analysis will fail as there is no "NgModule" that declares the component.
       `);
 
@@ -533,7 +533,7 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/src/test.ts', `
         import {ViewChild} from '@angular/core';
         import {AppComponent} from './app.component';
-        
+
         @Component({template: '<span #test>Test</span>'})
         class MyTestComponent {
           @ViewChild('test') query: any;
@@ -542,7 +542,7 @@ describe('static-queries migration with template strategy', () => {
 
       writeFile('/src/app.component.ts', `
         import {Component, ViewChild} from '@angular/core';
-        
+
         @Component({template: '<span #test></span>'})
         export class AppComponent {
           @ViewChild('test') query: any;
@@ -552,7 +552,7 @@ describe('static-queries migration with template strategy', () => {
       writeFile('/src/app.module.ts', `
         import {NgModule} from '@angular/core';
         import {AppComponent} from './app.component';
-        
+
         @NgModule({declarations: [AppComponent]})
         export class MyModule {}
       `);
