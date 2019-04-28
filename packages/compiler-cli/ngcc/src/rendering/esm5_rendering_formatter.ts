@@ -8,22 +8,16 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {CompiledClass} from '../analysis/decoration_analyzer';
-import {FileSystem} from '../file_system/file_system';
 import {getIifeBody} from '../host/esm5_host';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {Logger} from '../logging/logger';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {EsmRenderer} from './esm_renderer';
+import {EsmRenderingFormatter} from './esm_rendering_formatter';
 
-export class Esm5Renderer extends EsmRenderer {
-  constructor(
-      fs: FileSystem, logger: Logger, host: NgccReflectionHost, isCore: boolean,
-      bundle: EntryPointBundle) {
-    super(fs, logger, host, isCore, bundle);
-  }
-
+/**
+ * A RenderingFormatter that works with files that use ECMAScript Module `import` and `export`
+ * statements, but instead of `class` declarations it uses ES5 `function` wrappers for classes.
+ */
+export class Esm5RenderingFormatter extends EsmRenderingFormatter {
   /**
-   * Add the definitions to each decorated class
+   * Add the definitions inside the IIFE of each decorated class
    */
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
     const iifeBody = getIifeBody(compiledClass.declaration);
