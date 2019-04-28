@@ -9,7 +9,6 @@
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
 import {existsSync, readFileSync, readdirSync, statSync, writeFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
-import {join} from 'path';
 
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
 import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
@@ -142,8 +141,8 @@ describe('ngcc main()', () => {
 
 
   function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
-    const basePath = '/node_modules';
-    const targetPackageJsonPath = _(join(basePath, packagePath, 'package.json'));
+    const basePath = _('/node_modules');
+    const targetPackageJsonPath = AbsoluteFsPath.join(basePath, packagePath, 'package.json');
     const targetPackage = loadPackage(packagePath);
     const fs = new NodeJSFileSystem();
     markAsProcessed(fs, targetPackage, targetPackageJsonPath, 'typings');
@@ -386,7 +385,7 @@ function loadDirectory(directoryPath: string): Directory {
   const directory: Directory = {};
 
   readdirSync(directoryPath).forEach(item => {
-    const itemPath = join(directoryPath, item);
+    const itemPath = AbsoluteFsPath.resolve(directoryPath, item);
     if (statSync(itemPath).isDirectory()) {
       directory[item] = loadDirectory(itemPath);
     } else {

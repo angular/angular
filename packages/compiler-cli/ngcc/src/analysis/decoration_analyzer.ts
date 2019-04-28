@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
@@ -57,7 +56,7 @@ class NgccResourceLoader implements ResourceLoader {
   preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
   load(url: string): string { return this.fs.readFile(AbsoluteFsPath.resolve(url)); }
   resolve(url: string, containingFile: string): string {
-    return path.resolve(path.dirname(containingFile), url);
+    return AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(AbsoluteFsPath.from(containingFile)), url);
   }
 }
 
