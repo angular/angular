@@ -11,21 +11,21 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderer} from '../../src/rendering/esm_renderer';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.fromUnchecked;
 
-function setup(file: {name: string, contents: string}) {
+function setup(file: {name: AbsoluteFsPath, contents: string}) {
+  const fs = new MockFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('es2015', 'esm2015', false, [file]) !;
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const fs = new NodeJSFileSystem();
   const decorationAnalyses = new DecorationAnalyzer(
                                  fs, bundle.src.program, bundle.src.options, bundle.src.host,
                                  typeChecker, host, referencesRegistry, [_('/')], false)
@@ -40,7 +40,7 @@ function setup(file: {name: string, contents: string}) {
 }
 
 const PROGRAM = {
-  name: '/some/file.js',
+  name: _('/some/file.js'),
   contents: `
 /* A copyright notice */
 import 'some-side-effect';
@@ -76,7 +76,7 @@ function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: '/some/file.js',
+  name: _('/some/file.js'),
   contents: `
 import * as tslib_1 from "tslib";
 var D_1;
@@ -142,7 +142,7 @@ import * as i1 from '@angular/common';`);
         {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
         {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
         {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
-        {from: _(PROGRAM.name), dtsFrom: _(PROGRAM.name), identifier: 'TopLevelComponent'},
+        {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
       ]);
       expect(output.toString()).toContain(`
 // Some other content
@@ -159,7 +159,7 @@ export {TopLevelComponent};`);
         {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
         {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
         {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
-        {from: _(PROGRAM.name), alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
+        {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
       ]);
       const outputString = output.toString();
       expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);
