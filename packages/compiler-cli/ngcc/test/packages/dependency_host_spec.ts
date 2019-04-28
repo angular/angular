@@ -5,24 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import * as path from 'canonical-path';
 import * as mockFs from 'mock-fs';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyHost} from '../../src/packages/dependency_host';
-const Module = require('module');
-
-interface DepMap {
-  [path: string]: {resolved: string[], missing: string[]};
-}
+import {ModuleResolver} from '../../src/packages/module_resolver';
 
 const _ = AbsoluteFsPath.from;
 
 describe('DependencyHost', () => {
   let host: DependencyHost;
-  beforeEach(() => host = new DependencyHost());
+  beforeEach(() => host = new DependencyHost(new ModuleResolver()));
 
   describe('getDependencies()', () => {
     beforeEach(createMockFileSystem);
@@ -31,47 +25,36 @@ describe('DependencyHost', () => {
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
-         host.computeDependencies(
-             _('/no/imports/or/re-exports.js'), new Set(), new Set(), new Set());
+         host.computeDependencies(_('/no/imports/or/re-exports/index.js'));
          expect(ts.createSourceFile).not.toHaveBeenCalled();
        });
 
     it('should resolve all the external imports of the source file', () => {
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/external/imports.js'), resolved, missing, deepImports);
-      expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
-      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/external/imports/index.js'));
+      expect(dependencies.size).toBe(2);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(0);
+      expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+      expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
     });
 
     it('should resolve all the external re-exports of the source file', () => {
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/external/re-exports.js'), resolved, missing, deepImports);
-      expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
-      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/external/re-exports/index.js'));
+      expect(dependencies.size).toBe(2);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(0);
+      expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+      expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
     });
 
     it('should capture missing external imports', () => {
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake(
-              (from: string, importPath: string) =>
-                  importPath === 'missing' ? null : `RESOLVED/${importPath}`);
-      spyOn(host, 'tryResolve').and.callFake(() => null);
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/external/imports-missing.js'), resolved, missing, deepImports);
-      expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/external/imports-missing/index.js'));
+
+      expect(dependencies.size).toBe(1);
+      expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
       expect(missing.size).toBe(1);
       expect(missing.has('missing')).toBe(true);
       expect(deepImports.size).toBe(0);
@@ -81,125 +64,113 @@ describe('DependencyHost', () => {
       // This scenario verifies the behavior of the dependency analysis when an external import
       // is found that does not map to an entry-point but still exists on disk, i.e. a deep import.
       // Such deep imports are captured for diagnostics purposes.
-      const tryResolveEntryPoint = (from: string, importPath: string) =>
-          importPath === 'deep/import' ? null : `RESOLVED/${importPath}`;
-      spyOn(host, 'tryResolveEntryPoint').and.callFake(tryResolveEntryPoint);
-      spyOn(host, 'tryResolve')
-          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/external/deep-import.js'), resolved, missing, deepImports);
-      expect(resolved.size).toBe(0);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/external/deep-import/index.js'));
+
+      expect(dependencies.size).toBe(0);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(1);
-      expect(deepImports.has('deep/import')).toBe(true);
+      expect(deepImports.has('/node_modules/lib-1/deep/import')).toBe(true);
     });
 
     it('should recurse into internal dependencies', () => {
-      spyOn(host, 'resolveInternal')
-          .and.callFake(
-              (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
-      const getDependenciesSpy = spyOn(host, 'computeDependencies').and.callThrough();
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/internal/outer.js'), resolved, missing, deepImports);
-      expect(getDependenciesSpy)
-          .toHaveBeenCalledWith('/internal/outer.js', resolved, missing, deepImports);
-      expect(getDependenciesSpy)
-          .toHaveBeenCalledWith(
-              '/internal/inner.js', resolved, missing, deepImports, jasmine.any(Set));
-      expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/internal/outer/index.js'));
+
+      expect(dependencies.size).toBe(1);
+      expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(0);
     });
 
-
     it('should handle circular internal dependencies', () => {
-      spyOn(host, 'resolveInternal')
-          .and.callFake(
-              (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
-      const resolved = new Set();
-      const missing = new Set();
-      const deepImports = new Set();
-      host.computeDependencies(_('/internal/circular-a.js'), resolved, missing, deepImports);
-      expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
-      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/internal/circular-a/index.js'));
+      expect(dependencies.size).toBe(2);
+      expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+      expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(0);
+    });
+
+    it('should support `paths` alias mappings when resolving modules', () => {
+      host = new DependencyHost(new ModuleResolver({
+        baseUrl: '/dist',
+        paths: {
+          '@app/*': ['*'],
+          '@lib/*/test': ['lib/*/test'],
+        }
+      }));
+      const {dependencies, missing, deepImports} =
+          host.computeDependencies(_('/path-alias/index.js'));
+      expect(dependencies.size).toBe(4);
+      expect(dependencies.has(_('/dist/components'))).toBe(true);
+      expect(dependencies.has(_('/dist/shared'))).toBe(true);
+      expect(dependencies.has(_('/dist/lib/shared/test'))).toBe(true);
+      expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(0);
     });
 
     function createMockFileSystem() {
       mockFs({
-        '/no/imports/or/re-exports.js': 'some text but no import-like statements',
-        '/external/imports.js': `import {X} from 'path/to/x';\nimport {Y} from 'path/to/y';`,
-        '/external/re-exports.js': `export {X} from 'path/to/x';\nexport {Y} from 'path/to/y';`,
-        '/external/imports-missing.js': `import {X} from 'path/to/x';\nimport {Y} from 'missing';`,
-        '/external/deep-import.js': `import {Y} from 'deep/import';`,
-        '/internal/outer.js': `import {X} from './inner';`,
-        '/internal/inner.js': `import {Y} from 'path/to/y';`,
-        '/internal/circular-a.js': `import {B} from './circular-b'; import {X} from 'path/to/x';`,
-        '/internal/circular-b.js': `import {A} from './circular-a'; import {Y} from 'path/to/y';`,
+        '/no/imports/or/re-exports/index.js': '// some text but no import-like statements',
+        '/no/imports/or/re-exports/package.json': '{"esm2015": "./index.js"}',
+        '/no/imports/or/re-exports/index.metadata.json': 'MOCK METADATA',
+        '/external/imports/index.js': `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`,
+        '/external/imports/package.json': '{"esm2015": "./index.js"}',
+        '/external/imports/index.metadata.json': 'MOCK METADATA',
+        '/external/re-exports/index.js': `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
+        '/external/re-exports/package.json': '{"esm2015": "./index.js"}',
+        '/external/re-exports/index.metadata.json': 'MOCK METADATA',
+        '/external/imports-missing/index.js':
+            `import {X} from 'lib-1';\nimport {Y} from 'missing';`,
+        '/external/imports-missing/package.json': '{"esm2015": "./index.js"}',
+        '/external/imports-missing/index.metadata.json': 'MOCK METADATA',
+        '/external/deep-import/index.js': `import {Y} from 'lib-1/deep/import';`,
+        '/external/deep-import/package.json': '{"esm2015": "./index.js"}',
+        '/external/deep-import/index.metadata.json': 'MOCK METADATA',
+        '/internal/outer/index.js': `import {X} from '../inner';`,
+        '/internal/outer/package.json': '{"esm2015": "./index.js"}',
+        '/internal/outer/index.metadata.json': 'MOCK METADATA',
+        '/internal/inner/index.js': `import {Y} from 'lib-1/sub-1'; export declare class X {}`,
+        '/internal/circular-a/index.js':
+            `import {B} from '../circular-b'; import {X} from '../circular-b'; export {Y} from 'lib-1/sub-1';`,
+        '/internal/circular-b/index.js':
+            `import {A} from '../circular-a'; import {Y} from '../circular-a'; export {X} from 'lib-1';`,
+        '/internal/circular-a/package.json': '{"esm2015": "./index.js"}',
+        '/internal/circular-a/index.metadata.json': 'MOCK METADATA',
+        '/re-directed/index.js': `import {Z} from 'lib-1/sub-2';`,
+        '/re-directed/package.json': '{"esm2015": "./index.js"}',
+        '/re-directed/index.metadata.json': 'MOCK METADATA',
+        '/path-alias/index.js':
+            `import {TestHelper} from '@app/components';\nimport {Service} from '@app/shared';\nimport {TestHelper} from '@lib/shared/test';\nimport {X} from 'lib-1';`,
+        '/path-alias/package.json': '{"esm2015": "./index.js"}',
+        '/path-alias/index.metadata.json': 'MOCK METADATA',
+        '/node_modules/lib-1/index.js': 'export declare class X {}',
+        '/node_modules/lib-1/package.json': '{"esm2015": "./index.js"}',
+        '/node_modules/lib-1/index.metadata.json': 'MOCK METADATA',
+        '/node_modules/lib-1/deep/import/index.js': 'export declare class DeepImport {}',
+        '/node_modules/lib-1/sub-1/index.js': 'export declare class Y {}',
+        '/node_modules/lib-1/sub-1/package.json': '{"esm2015": "./index.js"}',
+        '/node_modules/lib-1/sub-1/index.metadata.json': 'MOCK METADATA',
+        '/node_modules/lib-1/sub-2.js': `export * from './sub-2/sub-2';`,
+        '/node_modules/lib-1/sub-2/sub-2.js': `export declare class Z {}';`,
+        '/node_modules/lib-1/sub-2/package.json': '{"esm2015": "./sub-2.js"}',
+        '/node_modules/lib-1/sub-2/sub-2.metadata.json': 'MOCK METADATA',
+        '/dist/components/index.js': `class MyComponent {};`,
+        '/dist/components/package.json': '{"esm2015": "./index.js"}',
+        '/dist/components/index.metadata.json': 'MOCK METADATA',
+        '/dist/shared/index.js': `import {X} from 'lib-1';\nexport class Service {}`,
+        '/dist/shared/package.json': '{"esm2015": "./index.js"}',
+        '/dist/shared/index.metadata.json': 'MOCK METADATA',
+        '/dist/lib/shared/test/index.js': `export class TestHelper {}`,
+        '/dist/lib/shared/test/package.json': '{"esm2015": "./index.js"}',
+        '/dist/lib/shared/test/index.metadata.json': 'MOCK METADATA',
       });
     }
-  });
 
-  describe('resolveInternal', () => {
-    it('should resolve the dependency via `Module._resolveFilename`', () => {
-      spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
-      const result = host.resolveInternal(
-          _('/SOURCE/PATH/FILE'), PathSegment.fromFsPath('../TARGET/PATH/FILE'));
-      expect(result).toEqual('/RESOLVED_PATH');
-    });
-
-    it('should first resolve the `to` on top of the `from` directory', () => {
-      const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
-      host.resolveInternal(_('/SOURCE/PATH/FILE'), PathSegment.fromFsPath('../TARGET/PATH/FILE'));
-      expect(resolveSpy)
-          .toHaveBeenCalledWith('/SOURCE/TARGET/PATH/FILE', jasmine.any(Object), false, undefined);
-    });
-  });
-
-  describe('tryResolveExternal', () => {
-    it('should call `tryResolve`, appending `package.json` to the target path', () => {
-      const tryResolveSpy = spyOn(host, 'tryResolve').and.returnValue('/PATH/TO/RESOLVED');
-      host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
-      expect(tryResolveSpy).toHaveBeenCalledWith('/SOURCE_PATH', 'TARGET_PATH/package.json');
-    });
-
-    it('should return the directory containing the result from `tryResolve', () => {
-      spyOn(host, 'tryResolve').and.returnValue('/PATH/TO/RESOLVED');
-      expect(host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH')))
-          .toEqual(_('/PATH/TO'));
-    });
-
-    it('should return null if `tryResolve` returns null', () => {
-      spyOn(host, 'tryResolve').and.returnValue(null);
-      expect(host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH')))
-          .toEqual(null);
-    });
-  });
-
-  describe('tryResolve()', () => {
-    it('should resolve the dependency via `Module._resolveFilename`, passing the `from` path to the `paths` option',
-       () => {
-         const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
-         const result = host.tryResolve(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
-         expect(resolveSpy).toHaveBeenCalledWith('TARGET_PATH', jasmine.any(Object), false, {
-           paths: ['/SOURCE_PATH']
-         });
-         expect(result).toEqual(_('/RESOLVED_PATH'));
-       });
-
-    it('should return null if `Module._resolveFilename` throws an error', () => {
-      const resolveSpy =
-          spyOn(Module, '_resolveFilename').and.throwError(`Cannot find module 'TARGET_PATH'`);
-      const result = host.tryResolve(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
-      expect(result).toBe(null);
-    });
+    function restoreRealFileSystem() { mockFs.restore(); }
   });
 
   describe('isStringImportOrReexport', () => {
@@ -257,6 +228,4 @@ describe('DependencyHost', () => {
           .toBe(false);
     });
   });
-
-  function restoreRealFileSystem() { mockFs.restore(); }
 });
