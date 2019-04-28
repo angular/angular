@@ -18,7 +18,7 @@ import {generateTypeCheckBlock} from '../src/type_check_block';
 
 describe('type check blocks', () => {
   it('should generate a basic block for a binding',
-     () => { expect(tcb('{{hello}}')).toContain('ctx.hello;'); });
+     () => { expect(tcb('{{hello}} {{world}}')).toContain('"" + ctx.hello + ctx.world;'); });
 
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
@@ -32,7 +32,7 @@ describe('type check blocks', () => {
 
   it('should handle non-null assertions', () => {
     const TEMPLATE = `{{a!}}`;
-    expect(tcb(TEMPLATE)).toContain('ctx.a!;');
+    expect(tcb(TEMPLATE)).toContain('(ctx.a!);');
   });
 
   it('should handle keyed property access', () => {
@@ -45,7 +45,7 @@ describe('type check blocks', () => {
       {{ i.value }}
       <input #i>
     `;
-    expect(tcb(TEMPLATE)).toContain('var _t1 = document.createElement("input"); _t1.value;');
+    expect(tcb(TEMPLATE)).toContain('var _t1 = document.createElement("input"); "" + _t1.value;');
   });
 
   it('should generate a forward directive reference correctly', () => {
@@ -61,7 +61,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t1 = Dir.ngTypeCtor({}); _t1.value; var _t2 = document.createElement("div");');
+            'var _t1 = Dir.ngTypeCtor({}); "" + _t1.value; var _t2 = document.createElement("div");');
   });
 
   it('should handle style and class bindings specially', () => {

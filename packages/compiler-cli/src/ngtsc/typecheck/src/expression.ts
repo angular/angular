@@ -93,7 +93,12 @@ class AstTranslator implements AstVisitor {
   }
 
   visitInterpolation(ast: Interpolation): ts.Expression {
-    return this.astArrayToExpression(ast.expressions);
+    // Build up a chain of binary + operations to simulate the string concatenation of the
+    // interpolation's expressions. The chain is started using an actual string literal to ensure
+    // the type is inferred as 'string'.
+    return ast.expressions.reduce(
+        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
+        ts.createLiteral(''));
   }
 
   visitKeyedRead(ast: KeyedRead): ts.Expression {
@@ -176,20 +181,6 @@ class AstTranslator implements AstVisitor {
     const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
     const whenNull = this.config.strictSafeNavigationTypes ? UNDEFINED : NULL_AS_ANY;
     return safeTernary(receiver, expr, whenNull);
-  }
-
-  /**
-   * Convert an array of `AST` expressions into a single `ts.Expression`, by converting them all
-   * and separating them with commas.
-   */
-  private astArrayToExpression(astArray: AST[]): ts.Expression {
-    // Reduce the `asts` array into a `ts.Expression`. Multiple expressions are combined into a
-    // `ts.BinaryExpression` with a comma separator. First make a copy of the input array, as
-    // it will be modified during the reduction.
-    const asts = astArray.slice();
-    return asts.reduce(
-        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.CommaToken, this.translate(ast)),
-        this.translate(asts.pop() !));
   }
 }
 
