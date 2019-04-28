@@ -12,6 +12,7 @@ import {EntryPointJsonProperty, EntryPointPackageJson} from './src/packages/entr
 export {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 export {Logger} from './src/logging/logger';
 export {NgccOptions, mainNgcc as process} from './src/main';
+export {PathMappings} from './src/utils';
 
 export function hasBeenProcessed(packageJson: object, format: string) {
   // We are wrapping this function to hide the internal types.
