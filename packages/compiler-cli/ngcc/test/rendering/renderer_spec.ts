@@ -80,8 +80,12 @@ function createTestRenderer(
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
 
-  return {renderer, decorationAnalyses, switchMarkerAnalyses, moduleWithProvidersAnalyses,
-          privateDeclarationsAnalyses};
+  return {renderer,
+          decorationAnalyses,
+          switchMarkerAnalyses,
+          moduleWithProvidersAnalyses,
+          privateDeclarationsAnalyses,
+          bundle};
 }
 
 
@@ -488,8 +492,12 @@ describe('Renderer', () => {
             contents: 'export declare class LibraryModule {}'
           },
         ];
-        const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-               moduleWithProvidersAnalyses} =
+        const {renderer,
+               decorationAnalyses,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses,
+               moduleWithProvidersAnalyses,
+               bundle} =
             createTestRenderer(
                 'test-package', MODULE_WITH_PROVIDERS_PROGRAM, MODULE_WITH_PROVIDERS_DTS_PROGRAM);
 
@@ -526,7 +534,7 @@ describe('Renderer', () => {
                   {specifier: '@angular/core', qualifier: 'ɵngcc1'},
                   {specifier: 'some-library', qualifier: 'ɵngcc2'},
                 ],
-                jasmine.anything());
+                bundle.dts !.file);
 
 
         // The following expectation checks that we do not mistake `ModuleWithProviders` types
