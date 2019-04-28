@@ -10,7 +10,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {EntryPoint} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {FileInfo} from '../rendering/renderer';
+import {FileToWrite} from '../rendering/utils';
 import {FileWriter} from './file_writer';
 
 /**
@@ -20,11 +20,11 @@ import {FileWriter} from './file_writer';
 export class InPlaceFileWriter implements FileWriter {
   constructor(protected fs: FileSystem) {}
 
-  writeBundle(_entryPoint: EntryPoint, _bundle: EntryPointBundle, transformedFiles: FileInfo[]) {
+  writeBundle(_entryPoint: EntryPoint, _bundle: EntryPointBundle, transformedFiles: FileToWrite[]) {
     transformedFiles.forEach(file => this.writeFileAndBackup(file));
   }
 
-  protected writeFileAndBackup(file: FileInfo): void {
+  protected writeFileAndBackup(file: FileToWrite): void {
     this.fs.ensureDir(AbsoluteFsPath.dirname(file.path));
     const backPath = AbsoluteFsPath.fromUnchecked(`${file.path}.__ivy_ngcc_bak`);
     if (this.fs.exists(backPath)) {

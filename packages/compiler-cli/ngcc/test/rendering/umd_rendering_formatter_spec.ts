@@ -14,8 +14,8 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {ImportManager} from '../../../src/ngtsc/translator';
-import {UmdRenderer} from '../../src/rendering/umd_renderer';
 import {MockFileSystem} from '../helpers/mock_file_system';
+import {UmdRenderingFormatter} from '../../src/rendering/umd_rendering_formatter';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestEntryPointBundle, createFileSystemFromProgramFiles} from '../helpers/utils';
 
@@ -34,7 +34,7 @@ function setup(file: {name: string, contents: string}) {
                                  referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
                                  .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(src.program);
-  const renderer = new UmdRenderer(fs, logger, host, false, bundle);
+  const renderer = new UmdRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
   return {
     decorationAnalyses,
@@ -169,7 +169,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
 })));`
 };
 
-describe('UmdRenderer', () => {
+describe('UmdRenderingFormatter', () => {
 
   describe('addImports', () => {
     it('should append the given imports into the CommonJS factory call', () => {
