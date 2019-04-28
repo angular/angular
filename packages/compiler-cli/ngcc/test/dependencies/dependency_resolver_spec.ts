@@ -106,10 +106,10 @@ describe('DependencyResolver', () => {
       ]);
     });
 
-    it('should error if the entry point does not have either the esm5 nor esm2015 formats', () => {
+    it('should error if the entry point does not have a suitable format', () => {
       expect(() => resolver.sortEntryPointsByDependency([
         { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
-      ])).toThrowError(`There is no format with import statements in '/first' entry-point.`);
+      ])).toThrowError(`There is no appropriate source code format in '/first' entry-point.`);
     });
 
     it('should capture any dependencies that were ignored', () => {
