@@ -20,7 +20,7 @@ describe('injectable pipe migration', () => {
   let previousWorkingDir: string;
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -123,5 +123,5 @@ describe('injectable pipe migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() { runner.runSchematic('migration-v8-injectable-pipe', {}, tree); }
+  function runMigration() { runner.runSchematic('migration-injectable-pipe', {}, tree); }
 });
