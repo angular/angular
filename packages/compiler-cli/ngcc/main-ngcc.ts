@@ -6,9 +6,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
+import {AbsoluteFsPath} from '../src/ngtsc/path';
 import {mainNgcc} from './src/main';
 import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 
@@ -56,7 +56,7 @@ if (require.main === module) {
         'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
     process.exit(1);
   }
-  const baseSourcePath = path.resolve(options['s'] || './node_modules');
+  const baseSourcePath = AbsoluteFsPath.resolve(options['s'] || './node_modules');
   const propertiesToConsider: string[] = options['p'];
   const targetEntryPointPath = options['t'] ? options['t'] : undefined;
   const compileAllFormats = !options['first-only'];
