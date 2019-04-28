@@ -312,7 +312,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   findDecoratedClasses(sourceFile: ts.SourceFile): DecoratedClass[] {
     const classes: DecoratedClass[] = [];
-    sourceFile.statements.map(statement => {
+    this.getModuleStatements(sourceFile).forEach(statement => {
       if (ts.isVariableStatement(statement)) {
         statement.declarationList.declarations.forEach(declaration => {
           const decoratedClass = this.getDecoratedClassFromSymbol(this.getClassSymbol(declaration));
@@ -472,6 +472,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
     }
     this.aliasedClassDeclarations.set(aliasedDeclaration.node, declaration.name);
+  }
+
+  /** Get the top level statements for a module.
+   *
+   * In ES5 and ES2015 this is just the top level statements of the file.
+   * @param sourceFile The module whose statements we want.
+   * @returns An array of top level statements for the given module.
+   */
+  protected getModuleStatements(sourceFile: ts.SourceFile): ts.Statement[] {
+    return Array.from(sourceFile.statements);
   }
 
   protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
