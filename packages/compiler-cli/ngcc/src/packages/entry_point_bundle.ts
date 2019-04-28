@@ -9,10 +9,10 @@ import {resolve} from 'canonical-path';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {PathMappings} from '../utils';
+
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPointFormat, EntryPointJsonProperty} from './entry_point';
-
-
 
 /**
  * A bundle of files and paths (and TS programs) that correspond to a particular
@@ -39,13 +39,13 @@ export interface EntryPointBundle {
  */
 export function makeEntryPointBundle(
     entryPointPath: string, formatPath: string, typingsPath: string, isCore: boolean,
-    formatProperty: EntryPointJsonProperty, format: EntryPointFormat,
-    transformDts: boolean): EntryPointBundle|null {
+    formatProperty: EntryPointJsonProperty, format: EntryPointFormat, transformDts: boolean,
+    pathMappings?: PathMappings): EntryPointBundle|null {
   // Create the TS program and necessary helpers.
   const options: ts.CompilerOptions = {
     allowJs: true,
     maxNodeModuleJsDepth: Infinity,
-    rootDir: entryPointPath,
+    rootDir: entryPointPath, ...pathMappings
   };
   const host = ts.createCompilerHost(options);
   const rootDirs = [AbsoluteFsPath.from(entryPointPath)];

@@ -21,10 +21,10 @@ import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
 import {ModuleResolver} from './packages/module_resolver';
 import {Transformer} from './packages/transformer';
+import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
-
 
 
 /**
@@ -58,6 +58,11 @@ export interface NgccOptions {
    * Provide a logger that will be called with log messages.
    */
   logger?: Logger;
+  /**
+   * Paths mapping configuration (`paths` and `baseUrl`), as found in `ts.CompilerOptions`.
+   * These are used to resolve paths to locally built Angular libraries.
+   */
+  pathMappings?: PathMappings;
 }
 
 const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
@@ -70,12 +75,12 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({basePath, targetEntryPointPath,
-                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-                          compileAllFormats = true, createNewEntryPointFormats = false,
-                          logger = new ConsoleLogger(LogLevel.info)}: NgccOptions): void {
+export function mainNgcc(
+    {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+     compileAllFormats = true, createNewEntryPointFormats = false,
+     logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
   const transformer = new Transformer(logger);
-  const moduleResolver = new ModuleResolver();
+  const moduleResolver = new ModuleResolver(pathMappings);
   const host = new DependencyHost(moduleResolver);
   const resolver = new DependencyResolver(logger, host);
   const finder = new EntryPointFinder(logger, resolver);
@@ -92,8 +97,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
     return;
   }
 
-  const {entryPoints} =
-      finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
+  const {entryPoints} = finder.findEntryPoints(
+      AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath, pathMappings);
 
   if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
     markNonAngularPackageAsProcessed(absoluteTargetEntryPointPath, propertiesToConsider);
@@ -132,7 +137,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
       // the property as processed even if its underlying format has been built already.
       if (!compiledFormats.has(formatPath) && (compileAllFormats || isFirstFormat)) {
         const bundle = makeEntryPointBundle(
-            entryPoint.path, formatPath, entryPoint.typings, isCore, property, format, processDts);
+            entryPoint.path, formatPath, entryPoint.typings, isCore, property, format, processDts,
+            pathMappings);
         if (bundle) {
           logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
           const transformedFiles = transformer.transform(bundle);
