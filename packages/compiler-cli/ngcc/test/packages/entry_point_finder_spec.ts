@@ -22,8 +22,8 @@ describe('findEntryPoints()', () => {
   let finder: EntryPointFinder;
   beforeEach(() => {
     const fs = createMockFileSystem();
-    resolver =
-        new DependencyResolver(new MockLogger(), new EsmDependencyHost(fs, new ModuleResolver(fs)));
+    resolver = new DependencyResolver(
+        new MockLogger(), {esm2015: new EsmDependencyHost(fs, new ModuleResolver(fs))});
     spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
       return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
     });
