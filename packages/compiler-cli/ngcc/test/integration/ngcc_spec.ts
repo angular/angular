@@ -309,6 +309,24 @@ describe('ngcc main()', () => {
       expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
     });
   });
+
+  describe('with pathMappings', () => {
+    it('should find and compile packages accessible via the pathMappings', () => {
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['es2015'],
+        pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
+      });
+      expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+        es2015: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
+      });
+      expect(loadPackage('local-package', '/dist').__processed_by_ivy_ngcc__).toEqual({
+        es2015: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
+      });
+    });
+  });
 });
 
 
@@ -321,10 +339,23 @@ function createMockFileSystem() {
       'package.json': '{"name": "test-package", "es2015": "./index.js", "typings": "./index.d.ts"}',
       // no metadata.json file so not compiled by Angular.
       'index.js':
-          'import {AppModule} from "@angular/common"; export class MyApp extends AppModule;',
+          'import {AppModule} from "@angular/common"; export class MyApp extends AppModule {};',
       'index.d.ts':
           'import {AppModule} from "@angular/common"; export declare class MyApp extends AppModule;',
-    }
+    },
+    '/dist/local-package': {
+      'package.json':
+          '{"name": "local-package", "es2015": "./index.js", "typings": "./index.d.ts"}',
+      'index.metadata.json': 'DUMMY DATA',
+      'index.js': `
+          import {Component} from '@angular/core';
+          export class AppComponent {};
+          AppComponent.decorators = [
+            { type: Component, args: [{selector: 'app', template: '<h2>Hello</h2>'}] }
+          ];`,
+      'index.d.ts': `
+          export declare class AppComponent {};`,
+    },
   });
 }
 
@@ -367,6 +398,6 @@ interface Directory {
   [pathSegment: string]: string|Directory;
 }
 
-function loadPackage(packageName: string): EntryPointPackageJson {
-  return JSON.parse(readFileSync(`/node_modules/${packageName}/package.json`, 'utf8'));
+function loadPackage(packageName: string, basePath = '/node_modules'): EntryPointPackageJson {
+  return JSON.parse(readFileSync(`${basePath}/${packageName}/package.json`, 'utf8'));
 }
