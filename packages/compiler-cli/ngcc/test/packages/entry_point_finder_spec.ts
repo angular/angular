@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as mockFs from 'mock-fs';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
+import {MockFileSystem, SymLink} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
@@ -23,7 +21,7 @@ describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
   let finder: EntryPointFinder;
   beforeEach(() => {
-    const fs = new NodeJSFileSystem();
+    const fs = createMockFileSystem();
     resolver =
         new DependencyResolver(new MockLogger(), new EsmDependencyHost(fs, new ModuleResolver(fs)));
     spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
@@ -31,8 +29,6 @@ describe('findEntryPoints()', () => {
     });
     finder = new EntryPointFinder(fs, new MockLogger(), resolver);
   });
-  beforeEach(createMockFileSystem);
-  afterEach(restoreRealFileSystem);
 
   it('should find sub-entry-points within a package', () => {
     const {entryPoints} = finder.findEntryPoints(_('/sub_entry_points'));
@@ -90,7 +86,7 @@ describe('findEntryPoints()', () => {
   });
 
   function createMockFileSystem() {
-    mockFs({
+    return new MockFileSystem({
       '/sub_entry_points': {
         'common': {
           'package.json': createPackageJson('common'),
@@ -142,7 +138,7 @@ describe('findEntryPoints()', () => {
         },
       },
       '/symlinked_folders': {
-        'common': mockFs.symlink({path: '/sub_entry_points/common'}),
+        'common': new SymLink(_('/sub_entry_points/common')),
       },
       '/nested_node_modules': {
         'outer': {
@@ -158,7 +154,6 @@ describe('findEntryPoints()', () => {
       },
     });
   }
-  function restoreRealFileSystem() { mockFs.restore(); }
 });
 
 function createPackageJson(packageName: string): string {

@@ -9,8 +9,8 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {EntryPoint} from '../../src/packages/entry_point';
+import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
@@ -19,7 +19,7 @@ describe('DependencyResolver', () => {
   let host: EsmDependencyHost;
   let resolver: DependencyResolver;
   beforeEach(() => {
-    const fs = new NodeJSFileSystem();
+    const fs = new MockFileSystem();
     host = new EsmDependencyHost(fs, new ModuleResolver(fs));
     resolver = new DependencyResolver(new MockLogger(), host);
   });

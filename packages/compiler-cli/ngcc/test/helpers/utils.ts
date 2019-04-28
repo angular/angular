@@ -12,6 +12,7 @@ import {makeProgram} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {EntryPointFormat, EntryPointJsonProperty} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
+import {Folder} from './mock_file_system';
 
 export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
 
@@ -120,4 +121,12 @@ export function convertToDirectTsLibImport(filesystem: {name: string, contents: 
             .replace(/tslib_1\./g, '');
     return {...file, contents};
   });
+}
+
+export function createFileSystemFromProgramFiles(
+    ...fileCollections: ({name: string, contents: string}[] | undefined)[]): Folder {
+  const folder: Folder = {};
+  fileCollections.forEach(
+      files => files && files.forEach(file => folder[file.name] = file.contents));
+  return folder;
 }

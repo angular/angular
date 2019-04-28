@@ -5,27 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as mockFs from 'mock-fs';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
+import {MockFileSystem} from '../helpers/mock_file_system';
 
 const _ = AbsoluteFsPath.from;
 
 describe('DependencyHost', () => {
   let host: EsmDependencyHost;
   beforeEach(() => {
-    const fs = new NodeJSFileSystem();
+    const fs = createMockFileSystem();
     host = new EsmDependencyHost(fs, new ModuleResolver(fs));
   });
 
   describe('getDependencies()', () => {
-    beforeEach(createMockFileSystem);
-    afterEach(restoreRealFileSystem);
-
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
@@ -98,7 +94,7 @@ describe('DependencyHost', () => {
     });
 
     it('should support `paths` alias mappings when resolving modules', () => {
-      const fs = new NodeJSFileSystem();
+      const fs = createMockFileSystem();
       host = new EsmDependencyHost(fs, new ModuleResolver(fs, {
                                      baseUrl: '/dist',
                                      paths: {
@@ -115,67 +111,64 @@ describe('DependencyHost', () => {
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
     });
-
-    function createMockFileSystem() {
-      mockFs({
-        '/no/imports/or/re-exports/index.js': '// some text but no import-like statements',
-        '/no/imports/or/re-exports/package.json': '{"esm2015": "./index.js"}',
-        '/no/imports/or/re-exports/index.metadata.json': 'MOCK METADATA',
-        '/external/imports/index.js': `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`,
-        '/external/imports/package.json': '{"esm2015": "./index.js"}',
-        '/external/imports/index.metadata.json': 'MOCK METADATA',
-        '/external/re-exports/index.js': `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
-        '/external/re-exports/package.json': '{"esm2015": "./index.js"}',
-        '/external/re-exports/index.metadata.json': 'MOCK METADATA',
-        '/external/imports-missing/index.js':
-            `import {X} from 'lib-1';\nimport {Y} from 'missing';`,
-        '/external/imports-missing/package.json': '{"esm2015": "./index.js"}',
-        '/external/imports-missing/index.metadata.json': 'MOCK METADATA',
-        '/external/deep-import/index.js': `import {Y} from 'lib-1/deep/import';`,
-        '/external/deep-import/package.json': '{"esm2015": "./index.js"}',
-        '/external/deep-import/index.metadata.json': 'MOCK METADATA',
-        '/internal/outer/index.js': `import {X} from '../inner';`,
-        '/internal/outer/package.json': '{"esm2015": "./index.js"}',
-        '/internal/outer/index.metadata.json': 'MOCK METADATA',
-        '/internal/inner/index.js': `import {Y} from 'lib-1/sub-1'; export declare class X {}`,
-        '/internal/circular-a/index.js':
-            `import {B} from '../circular-b'; import {X} from '../circular-b'; export {Y} from 'lib-1/sub-1';`,
-        '/internal/circular-b/index.js':
-            `import {A} from '../circular-a'; import {Y} from '../circular-a'; export {X} from 'lib-1';`,
-        '/internal/circular-a/package.json': '{"esm2015": "./index.js"}',
-        '/internal/circular-a/index.metadata.json': 'MOCK METADATA',
-        '/re-directed/index.js': `import {Z} from 'lib-1/sub-2';`,
-        '/re-directed/package.json': '{"esm2015": "./index.js"}',
-        '/re-directed/index.metadata.json': 'MOCK METADATA',
-        '/path-alias/index.js':
-            `import {TestHelper} from '@app/components';\nimport {Service} from '@app/shared';\nimport {TestHelper} from '@lib/shared/test';\nimport {X} from 'lib-1';`,
-        '/path-alias/package.json': '{"esm2015": "./index.js"}',
-        '/path-alias/index.metadata.json': 'MOCK METADATA',
-        '/node_modules/lib-1/index.js': 'export declare class X {}',
-        '/node_modules/lib-1/package.json': '{"esm2015": "./index.js"}',
-        '/node_modules/lib-1/index.metadata.json': 'MOCK METADATA',
-        '/node_modules/lib-1/deep/import/index.js': 'export declare class DeepImport {}',
-        '/node_modules/lib-1/sub-1/index.js': 'export declare class Y {}',
-        '/node_modules/lib-1/sub-1/package.json': '{"esm2015": "./index.js"}',
-        '/node_modules/lib-1/sub-1/index.metadata.json': 'MOCK METADATA',
-        '/node_modules/lib-1/sub-2.js': `export * from './sub-2/sub-2';`,
-        '/node_modules/lib-1/sub-2/sub-2.js': `export declare class Z {}';`,
-        '/node_modules/lib-1/sub-2/package.json': '{"esm2015": "./sub-2.js"}',
-        '/node_modules/lib-1/sub-2/sub-2.metadata.json': 'MOCK METADATA',
-        '/dist/components/index.js': `class MyComponent {};`,
-        '/dist/components/package.json': '{"esm2015": "./index.js"}',
-        '/dist/components/index.metadata.json': 'MOCK METADATA',
-        '/dist/shared/index.js': `import {X} from 'lib-1';\nexport class Service {}`,
-        '/dist/shared/package.json': '{"esm2015": "./index.js"}',
-        '/dist/shared/index.metadata.json': 'MOCK METADATA',
-        '/dist/lib/shared/test/index.js': `export class TestHelper {}`,
-        '/dist/lib/shared/test/package.json': '{"esm2015": "./index.js"}',
-        '/dist/lib/shared/test/index.metadata.json': 'MOCK METADATA',
-      });
-    }
-
-    function restoreRealFileSystem() { mockFs.restore(); }
   });
+
+  function createMockFileSystem() {
+    return new MockFileSystem({
+      '/no/imports/or/re-exports/index.js': '// some text but no import-like statements',
+      '/no/imports/or/re-exports/package.json': '{"esm2015": "./index.js"}',
+      '/no/imports/or/re-exports/index.metadata.json': 'MOCK METADATA',
+      '/external/imports/index.js': `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`,
+      '/external/imports/package.json': '{"esm2015": "./index.js"}',
+      '/external/imports/index.metadata.json': 'MOCK METADATA',
+      '/external/re-exports/index.js': `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
+      '/external/re-exports/package.json': '{"esm2015": "./index.js"}',
+      '/external/re-exports/index.metadata.json': 'MOCK METADATA',
+      '/external/imports-missing/index.js': `import {X} from 'lib-1';\nimport {Y} from 'missing';`,
+      '/external/imports-missing/package.json': '{"esm2015": "./index.js"}',
+      '/external/imports-missing/index.metadata.json': 'MOCK METADATA',
+      '/external/deep-import/index.js': `import {Y} from 'lib-1/deep/import';`,
+      '/external/deep-import/package.json': '{"esm2015": "./index.js"}',
+      '/external/deep-import/index.metadata.json': 'MOCK METADATA',
+      '/internal/outer/index.js': `import {X} from '../inner';`,
+      '/internal/outer/package.json': '{"esm2015": "./index.js"}',
+      '/internal/outer/index.metadata.json': 'MOCK METADATA',
+      '/internal/inner/index.js': `import {Y} from 'lib-1/sub-1'; export declare class X {}`,
+      '/internal/circular-a/index.js':
+          `import {B} from '../circular-b'; import {X} from '../circular-b'; export {Y} from 'lib-1/sub-1';`,
+      '/internal/circular-b/index.js':
+          `import {A} from '../circular-a'; import {Y} from '../circular-a'; export {X} from 'lib-1';`,
+      '/internal/circular-a/package.json': '{"esm2015": "./index.js"}',
+      '/internal/circular-a/index.metadata.json': 'MOCK METADATA',
+      '/re-directed/index.js': `import {Z} from 'lib-1/sub-2';`,
+      '/re-directed/package.json': '{"esm2015": "./index.js"}',
+      '/re-directed/index.metadata.json': 'MOCK METADATA',
+      '/path-alias/index.js':
+          `import {TestHelper} from '@app/components';\nimport {Service} from '@app/shared';\nimport {TestHelper} from '@lib/shared/test';\nimport {X} from 'lib-1';`,
+      '/path-alias/package.json': '{"esm2015": "./index.js"}',
+      '/path-alias/index.metadata.json': 'MOCK METADATA',
+      '/node_modules/lib-1/index.js': 'export declare class X {}',
+      '/node_modules/lib-1/package.json': '{"esm2015": "./index.js"}',
+      '/node_modules/lib-1/index.metadata.json': 'MOCK METADATA',
+      '/node_modules/lib-1/deep/import/index.js': 'export declare class DeepImport {}',
+      '/node_modules/lib-1/sub-1/index.js': 'export declare class Y {}',
+      '/node_modules/lib-1/sub-1/package.json': '{"esm2015": "./index.js"}',
+      '/node_modules/lib-1/sub-1/index.metadata.json': 'MOCK METADATA',
+      '/node_modules/lib-1/sub-2.js': `export * from './sub-2/sub-2';`,
+      '/node_modules/lib-1/sub-2/sub-2.js': `export declare class Z {}';`,
+      '/node_modules/lib-1/sub-2/package.json': '{"esm2015": "./sub-2.js"}',
+      '/node_modules/lib-1/sub-2/sub-2.metadata.json': 'MOCK METADATA',
+      '/dist/components/index.js': `class MyComponent {};`,
+      '/dist/components/package.json': '{"esm2015": "./index.js"}',
+      '/dist/components/index.metadata.json': 'MOCK METADATA',
+      '/dist/shared/index.js': `import {X} from 'lib-1';\nexport class Service {}`,
+      '/dist/shared/package.json': '{"esm2015": "./index.js"}',
+      '/dist/shared/index.metadata.json': 'MOCK METADATA',
+      '/dist/lib/shared/test/index.js': `export class TestHelper {}`,
+      '/dist/lib/shared/test/package.json': '{"esm2015": "./index.js"}',
+      '/dist/lib/shared/test/index.metadata.json': 'MOCK METADATA',
+    });
+  }
 
   describe('isStringImportOrReexport', () => {
     it('should return true if the statement is an import', () => {
