@@ -521,6 +521,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     name: '/src/functions.js',
     contents: `
     import {ExternalModule} from './module';
+    import * as mod from './module';
     export class SomeService {}
     export class InternalModule {}
     export function aNumber() { return 42; }
@@ -534,12 +535,14 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     export function ngModuleString() { return { ngModule: 'foo' }; }
     export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
     export function externalNgModule() { return { ngModule: ExternalModule }; }
+    export function namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
     `
   },
   {
     name: '/src/methods.js',
     contents: `
     import {ExternalModule} from './module';
+    import * as mod from './module';
     export class SomeService {}
     export class InternalModule {
       static aNumber() { return 42; }
@@ -553,11 +556,13 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
       static ngModuleString() { return { ngModule: 'foo' }; }
       static ngModuleObject() { return { ngModule: { foo: 42 } }; }
       static externalNgModule() { return { ngModule: ExternalModule }; }
+      static namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
 
       instanceNgModuleIdentifier() { return { ngModule: InternalModule }; }
       instanceNgModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
       instanceNgModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
       instanceExternalNgModule() { return { ngModule: ExternalModule }; }
+      instanceNamespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
     }
     `
   },
@@ -573,6 +578,19 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
   },
   {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
+
+const NAMESPACED_IMPORT_FILE = {
+  name: '/some_directive.js',
+  contents: `
+    import * as core from '@angular/core';
+
+    class SomeDirective {
+    }
+    SomeDirective.decorators = [
+      { type: core.Directive, args: [{ selector: '[someDirective]' },] }
+    ];
+    `
+};
 
 describe('Esm2015ReflectionHost', () => {
 
@@ -1348,6 +1366,25 @@ describe('Esm2015ReflectionHost', () => {
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
 
+    it('should return the source-file of an import namespace', () => {
+      const {program} = makeTestBundleProgram([NAMESPACED_IMPORT_FILE]);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, NAMESPACED_IMPORT_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
+      const identifier = (((classDecorators[0].node as ts.ObjectLiteralExpression)
+                               .properties[0] as ts.PropertyAssignment)
+                              .initializer as ts.PropertyAccessExpression)
+                             .expression as ts.Identifier;
+
+      const expectedDeclarationNode =
+          program.getSourceFile('node_modules/@angular/core/index.d.ts') !;
+      const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
+      expect(actualDeclaration).not.toBe(null);
+      expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+      expect(actualDeclaration !.viaModule).toBe(null);
+    });
+
     it('should return the original declaration of an aliased class', () => {
       const program = makeTestProgram(CLASS_EXPRESSION_FILE);
       const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -1649,6 +1686,7 @@ describe('Esm2015ReflectionHost', () => {
                ['ngModuleWithEmptyProviders', 'InternalModule'],
                ['ngModuleWithProviders', 'InternalModule'],
                ['externalNgModule', 'ExternalModule'],
+               ['namespacedExternalNgModule', 'ExternalModule'],
              ]);
        });
 
@@ -1665,6 +1703,7 @@ describe('Esm2015ReflectionHost', () => {
                ['ngModuleWithEmptyProviders', 'InternalModule'],
                ['ngModuleWithProviders', 'InternalModule'],
                ['externalNgModule', 'ExternalModule'],
+               ['namespacedExternalNgModule', 'ExternalModule'],
              ]);
        });
 

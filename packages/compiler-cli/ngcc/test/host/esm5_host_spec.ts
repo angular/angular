@@ -643,6 +643,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     name: '/src/functions.js',
     contents: `
     import {ExternalModule} from './module';
+    import * as mod from './module';
 
     var SomeService = (function() {
       function SomeService() {}
@@ -664,6 +665,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     export function ngModuleString() { return { ngModule: 'foo' }; }
     export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
     export function externalNgModule() { return { ngModule: ExternalModule }; }
+    export function namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
     export {SomeService, InternalModule};
     `
   },
@@ -671,6 +673,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     name: '/src/methods.js',
     contents: `
     import {ExternalModule} from './module';
+    import * as mod from './module';
     var SomeService = (function() {
       function SomeService() {}
       return SomeService;
@@ -683,6 +686,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
         instanceNgModuleWithEmptyProviders: function() { return { ngModule: InternalModule, providers: [] }; },
         instanceNgModuleWithProviders: function() { return { ngModule: InternalModule, providers: [SomeService] }; },
         instanceExternalNgModule: function() { return { ngModule: ExternalModule }; },
+        namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; },
       };
       InternalModule.aNumber = function() { return 42; };
       InternalModule.aString = function() { return 'foo'; };
@@ -695,6 +699,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
       InternalModule.ngModuleString = function() { return { ngModule: 'foo' }; };
       InternalModule.ngModuleObject = function() { return { ngModule: { foo: 42 } }; };
       InternalModule.externalNgModule = function() { return { ngModule: ExternalModule }; };
+      InternalModule.namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; };
       return InternalModule;
     }());
     export {SomeService, InternalModule};
@@ -715,6 +720,22 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
   },
   {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
+
+const NAMESPACED_IMPORT_FILE = {
+  name: '/some_directive.js',
+  contents: `
+    import * as core from '@angular/core';
+
+    var SomeDirective = (function() {
+      function SomeDirective() {
+      }
+      SomeDirective.decorators = [
+        { type: core.Directive, args: [{ selector: '[someDirective]' },] }
+      ];
+      return SomeDirective;
+    }());
+    `
+};
 
 describe('Esm5ReflectionHost', () => {
 
@@ -1500,6 +1521,25 @@ describe('Esm5ReflectionHost', () => {
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
 
+    it('should return the source-file of an import namespace', () => {
+      const program = makeTestProgram(NAMESPACED_IMPORT_FILE);
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, NAMESPACED_IMPORT_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
+      const identifier = (((classDecorators[0].node as ts.ObjectLiteralExpression)
+                               .properties[0] as ts.PropertyAssignment)
+                              .initializer as ts.PropertyAccessExpression)
+                             .expression as ts.Identifier;
+
+      const expectedDeclarationNode =
+          program.getSourceFile('node_modules/@angular/core/index.d.ts') !;
+      const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
+      expect(actualDeclaration).not.toBe(null);
+      expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+      expect(actualDeclaration !.viaModule).toBe(null);
+    });
+
     it('should return the correct declaration for an inner function identifier inside an ES5 IIFE',
        () => {
          const superGetDeclarationOfIdentifierSpy =
@@ -1851,6 +1891,7 @@ describe('Esm5ReflectionHost', () => {
                ['ngModuleWithEmptyProviders', 'InternalModule'],
                ['ngModuleWithProviders', 'InternalModule'],
                ['externalNgModule', 'ExternalModule'],
+               ['namespacedExternalNgModule', 'ExternalModule'],
              ]);
        });
 
@@ -1875,6 +1916,10 @@ describe('Esm5ReflectionHost', () => {
            ],
            [
              'function() { return { ngModule: ExternalModule }; }',
+             'ExternalModule',
+           ],
+           [
+             'function() { return { ngModule: mod.ExternalModule }; }',
              'ExternalModule',
            ],
          ]);
