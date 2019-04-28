@@ -33,6 +33,8 @@ export interface EntryPoint {
   path: AbsoluteFsPath;
   /** The path to a typings (.d.ts) file for this entry-point. */
   typings: AbsoluteFsPath;
+  /** Is this EntryPoint compiled with the Angular View Engine compiler? */
+  compiledByAngular: boolean;
 }
 
 interface PackageJsonFormatProperties {
@@ -89,9 +91,6 @@ export function getEntryPointInfo(
   // Also there must exist a `metadata.json` file next to the typings entry-point.
   const metadataPath =
       path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
-  if (!fs.existsSync(metadataPath)) {
-    return null;
-  }
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
@@ -99,6 +98,7 @@ export function getEntryPointInfo(
     package: packagePath,
     path: entryPointPath,
     typings: AbsoluteFsPath.from(path.resolve(entryPointPath, typings)),
+    compiledByAngular: fs.existsSync(metadataPath),
   };
 
   return entryPointInfo;

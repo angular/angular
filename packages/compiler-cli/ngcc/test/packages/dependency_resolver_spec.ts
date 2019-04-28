@@ -21,18 +21,38 @@ describe('DependencyResolver', () => {
     resolver = new DependencyResolver(new MockLogger(), host);
   });
   describe('sortEntryPointsByDependency()', () => {
-    const first = { path: _('/first'), packageJson: {esm5: 'index.ts'} } as EntryPoint;
-    const second = { path: _('/second'), packageJson: {esm2015: 'sub/index.ts'} } as EntryPoint;
-    const third = { path: _('/third'), packageJson: {esm5: 'index.ts'} } as EntryPoint;
-    const fourth = { path: _('/fourth'), packageJson: {esm2015: 'sub2/index.ts'} } as EntryPoint;
-    const fifth = { path: _('/fifth'), packageJson: {esm5: 'index.ts'} } as EntryPoint;
+    const first = {
+      path: _('/first'),
+      packageJson: {esm5: './index.js'},
+      compiledByAngular: true
+    } as EntryPoint;
+    const second = {
+      path: _('/second'),
+      packageJson: {esm2015: './sub/index.js'},
+      compiledByAngular: true
+    } as EntryPoint;
+    const third = {
+      path: _('/third'),
+      packageJson: {fesm5: './index.js'},
+      compiledByAngular: true
+    } as EntryPoint;
+    const fourth = {
+      path: _('/fourth'),
+      packageJson: {fesm2015: './sub2/index.js'},
+      compiledByAngular: true
+    } as EntryPoint;
+    const fifth = {
+      path: _('/fifth'),
+      packageJson: {module: './index.js'},
+      compiledByAngular: true
+    } as EntryPoint;
 
     const dependencies = {
-      [_('/first/index.ts')]: {resolved: [second.path, third.path, '/ignored-1'], missing: []},
-      [_('/second/sub/index.ts')]: {resolved: [third.path, fifth.path], missing: []},
-      [_('/third/index.ts')]: {resolved: [fourth.path, '/ignored-2'], missing: []},
-      [_('/fourth/sub2/index.ts')]: {resolved: [fifth.path], missing: []},
-      [_('/fifth/index.ts')]: {resolved: [], missing: []},
+      [_('/first/index.js')]: {resolved: [second.path, third.path, '/ignored-1'], missing: []},
+      [_('/second/sub/index.js')]: {resolved: [third.path, fifth.path], missing: []},
+      [_('/third/index.js')]: {resolved: [fourth.path, '/ignored-2'], missing: []},
+      [_('/fourth/sub2/index.js')]: {resolved: [fifth.path], missing: []},
+      [_('/fifth/index.js')]: {resolved: [], missing: []},
     };
 
     it('should order the entry points by their dependency on each other', () => {
@@ -43,8 +63,8 @@ describe('DependencyResolver', () => {
 
     it('should remove entry-points that have missing direct dependencies', () => {
       spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.ts')]: {resolved: [], missing: ['/missing']},
-        [_('/second/sub/index.ts')]: {resolved: [], missing: []},
+        [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
+        [_('/second/sub/index.js')]: {resolved: [], missing: []},
       }));
       const result = resolver.sortEntryPointsByDependency([first, second]);
       expect(result.entryPoints).toEqual([second]);
@@ -55,9 +75,9 @@ describe('DependencyResolver', () => {
 
     it('should remove entry points that depended upon an invalid entry-point', () => {
       spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.ts')]: {resolved: [second.path], missing: []},
-        [_('/second/sub/index.ts')]: {resolved: [], missing: ['/missing']},
-        [_('/third/index.ts')]: {resolved: [], missing: []},
+        [_('/first/index.js')]: {resolved: [second.path], missing: []},
+        [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
+        [_('/third/index.js')]: {resolved: [], missing: []},
       }));
       // Note that we will process `first` before `second`, which has the missing dependency.
       const result = resolver.sortEntryPointsByDependency([first, second, third]);
@@ -70,9 +90,9 @@ describe('DependencyResolver', () => {
 
     it('should remove entry points that will depend upon an invalid entry-point', () => {
       spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.ts')]: {resolved: [second.path], missing: []},
-        [_('/second/sub/index.ts')]: {resolved: [], missing: ['/missing']},
-        [_('/third/index.ts')]: {resolved: [], missing: []},
+        [_('/first/index.js')]: {resolved: [second.path], missing: []},
+        [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
+        [_('/third/index.js')]: {resolved: [], missing: []},
       }));
       // Note that we will process `first` after `second`, which has the missing dependency.
       const result = resolver.sortEntryPointsByDependency([second, first, third]);
@@ -85,7 +105,7 @@ describe('DependencyResolver', () => {
 
     it('should error if the entry point does not have either the esm5 nor esm2015 formats', () => {
       expect(() => resolver.sortEntryPointsByDependency([
-        { path: '/first', packageJson: {} } as EntryPoint
+        { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
       ])).toThrowError(`There is no format with import statements in '/first' entry-point.`);
     });
 
