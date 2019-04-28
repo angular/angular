@@ -7,7 +7,6 @@
  */
 
 import {DepGraph} from 'dependency-graph';
-import {resolve} from 'path';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Logger} from '../logging/logger';
@@ -171,7 +170,7 @@ function getEntryPointPath(entryPoint: EntryPoint): AbsoluteFsPath {
 
     if (format === 'esm2015' || format === 'esm5') {
       const formatPath = entryPoint.packageJson[property] !;
-      return AbsoluteFsPath.from(resolve(entryPoint.path, formatPath));
+      return AbsoluteFsPath.resolve(entryPoint.path, formatPath);
     }
   }
   throw new Error(`There is no format with import statements in '${entryPoint.path}' entry-point.`);
