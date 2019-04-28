@@ -82,7 +82,7 @@ export const RedundantDecoratorMap = Map;
 export abstract class Renderer {
   constructor(
       protected logger: Logger, protected host: NgccReflectionHost, protected isCore: boolean,
-      protected bundle: EntryPointBundle, protected sourcePath: string) {}
+      protected bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,

@@ -24,7 +24,7 @@ import {MockLogger} from '../helpers/mock_logger';
 class TestRenderer extends Renderer {
   constructor(
       logger: Logger, host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(logger, host, isCore, bundle, '/src');
+    super(logger, host, isCore, bundle);
   }
   addImports(
       output: MagicString, imports: {specifier: string, qualifier: string}[], sf: ts.SourceFile) {
