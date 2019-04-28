@@ -9,11 +9,14 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../../src/ngtsc/imports';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
+
+const _ = AbsoluteFsPath.fromUnchecked;
 
 describe('PrivateDeclarationsAnalyzer', () => {
   describe('analyzeProgram()', () => {
@@ -147,11 +150,11 @@ describe('PrivateDeclarationsAnalyzer', () => {
          // not added to the ReferencesRegistry (i.e. they were not declared in an NgModule).
          expect(analyses.length).toEqual(2);
          expect(analyses).toEqual([
-           {identifier: 'PrivateComponent1', from: '/src/b.js', dtsFrom: null, alias: null},
+           {identifier: 'PrivateComponent1', from: _('/src/b.js'), dtsFrom: null, alias: null},
            {
              identifier: 'InternalComponent1',
-             from: '/src/c.js',
-             dtsFrom: '/typings/c.d.ts',
+             from: _('/src/c.js'),
+             dtsFrom: _('/typings/c.d.ts'),
              alias: null
            },
          ]);
@@ -207,7 +210,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
       const analyses = analyzer.analyzeProgram(program);
       expect(analyses).toEqual([{
         identifier: 'ComponentOne',
-        from: '/src/a.js',
+        from: _('/src/a.js'),
         dtsFrom: null,
         alias: 'aliasedComponentOne',
       }]);

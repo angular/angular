@@ -5,18 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+import {CompiledClass} from '../analysis/decoration_analyzer';
+import {FileSystem} from '../file_system/file_system';
 import {getIifeBody} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {CompiledClass} from '../analysis/decoration_analyzer';
-import {EsmRenderer} from './esm_renderer';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {Logger} from '../logging/logger';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {EsmRenderer} from './esm_renderer';
 
 export class Esm5Renderer extends EsmRenderer {
-  constructor(logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(logger, host, isCore, bundle);
+  constructor(
+      fs: FileSystem, logger: Logger, host: NgccReflectionHost, isCore: boolean,
+      bundle: EntryPointBundle) {
+    super(fs, logger, host, isCore, bundle);
   }
 
   /**

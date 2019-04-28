@@ -5,13 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import * as path from 'canonical-path';
-import * as fs from 'fs';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {FileSystem} from '../file_system/file_system';
 import {Logger} from '../logging/logger';
-
 
 /**
  * The possible values for the format of an entry-point.
@@ -70,13 +66,14 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
  * @returns An entry-point if it is valid, `null` otherwise.
  */
 export function getEntryPointInfo(
-    logger: Logger, packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPoint|null {
-  const packageJsonPath = path.resolve(entryPointPath, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
+    fs: FileSystem, logger: Logger, packagePath: AbsoluteFsPath,
+    entryPointPath: AbsoluteFsPath): EntryPoint|null {
+  const packageJsonPath = AbsoluteFsPath.resolve(entryPointPath, 'package.json');
+  if (!fs.exists(packageJsonPath)) {
     return null;
   }
 
-  const entryPointPackageJson = loadEntryPointPackage(logger, packageJsonPath);
+  const entryPointPackageJson = loadEntryPointPackage(fs, logger, packageJsonPath);
   if (!entryPointPackageJson) {
     return null;
   }
@@ -90,15 +87,15 @@ export function getEntryPointInfo(
 
   // Also there must exist a `metadata.json` file next to the typings entry-point.
   const metadataPath =
-      path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+      AbsoluteFsPath.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     packageJson: entryPointPackageJson,
     package: packagePath,
     path: entryPointPath,
-    typings: AbsoluteFsPath.from(path.resolve(entryPointPath, typings)),
-    compiledByAngular: fs.existsSync(metadataPath),
+    typings: AbsoluteFsPath.resolve(entryPointPath, typings),
+    compiledByAngular: fs.exists(metadataPath),
   };
 
   return entryPointInfo;
@@ -136,10 +133,10 @@ export function getEntryPointFormat(property: string): EntryPointFormat|undefine
  * @param packageJsonPath the absolute path to the package.json file.
  * @returns JSON from the package.json file if it is valid, `null` otherwise.
  */
-function loadEntryPointPackage(logger: Logger, packageJsonPath: string): EntryPointPackageJson|
-    null {
+function loadEntryPointPackage(
+    fs: FileSystem, logger: Logger, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|null {
   try {
-    return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    return JSON.parse(fs.readFile(packageJsonPath));
   } catch (e) {
     // We may have run into a package.json with unexpected symbols
     logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
