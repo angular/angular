@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
-
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {FileSystem} from '../file_system/file_system';
 import {PathMappings, isRelativePath} from '../utils';
-
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.
@@ -28,7 +26,9 @@ import {PathMappings, isRelativePath} from '../utils';
 export class ModuleResolver {
   private pathMappings: ProcessedPathMapping[];
 
-  constructor(pathMappings?: PathMappings, private relativeExtensions = ['.js', '/index.js']) {
+  constructor(private fs: FileSystem, pathMappings?: PathMappings, private relativeExtensions = [
+    '.js', '/index.js'
+  ]) {
     this.pathMappings = pathMappings ? this.processPathMappings(pathMappings) : [];
   }
 
@@ -139,11 +139,11 @@ export class ModuleResolver {
    * to the `path` and checking if the file exists on disk.
    * @returns An absolute path to the first matching existing file, or `null` if none exist.
    */
-  private resolvePath(path: string, postFixes: string[]): AbsoluteFsPath|null {
+  private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
     for (const postFix of postFixes) {
-      const testPath = path + postFix;
-      if (fs.existsSync(testPath)) {
-        return AbsoluteFsPath.from(testPath);
+      const testPath = AbsoluteFsPath.fromUnchecked(path + postFix);
+      if (this.fs.exists(testPath)) {
+        return testPath;
       }
     }
     return null;
@@ -155,7 +155,7 @@ export class ModuleResolver {
    * This is achieved by checking for the existence of `${modulePath}/package.json`.
    */
   private isEntryPoint(modulePath: AbsoluteFsPath): boolean {
-    return fs.existsSync(AbsoluteFsPath.join(modulePath, 'package.json'));
+    return this.fs.exists(AbsoluteFsPath.join(modulePath, 'package.json'));
   }
 
   /**
@@ -227,7 +227,7 @@ export class ModuleResolver {
     let folder = path;
     while (folder !== '/') {
       folder = AbsoluteFsPath.dirname(folder);
-      if (fs.existsSync(AbsoluteFsPath.join(folder, 'package.json'))) {
+      if (this.fs.exists(AbsoluteFsPath.join(folder, 'package.json'))) {
         return folder;
       }
     }

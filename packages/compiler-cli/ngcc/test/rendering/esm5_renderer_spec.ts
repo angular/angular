@@ -5,17 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 import {MockLogger} from '../helpers/mock_logger';
+
+const _ = AbsoluteFsPath.fromUnchecked;
 
 function setup(file: {name: string, contents: string}) {
   const logger = new MockLogger();
@@ -23,13 +25,13 @@ function setup(file: {name: string, contents: string}) {
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm5ReflectionHost(logger, false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses =
-      new DecorationAnalyzer(
-          bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
-          referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
-          .analyzeProgram();
+  const fs = new NodeJSFileSystem();
+  const decorationAnalyses = new DecorationAnalyzer(
+                                 fs, bundle.src.program, bundle.src.options, bundle.src.host,
+                                 typeChecker, host, referencesRegistry, [_('/')], false)
+                                 .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
-  const renderer = new Esm5Renderer(logger, host, false, bundle);
+  const renderer = new Esm5Renderer(fs, logger, host, false, bundle);
   return {
     host,
     program: bundle.src.program,
@@ -173,11 +175,11 @@ import * as i1 from '@angular/common';`);
     it('should insert the given exports at the end of the source file', () => {
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
-        {from: '/some/a.js', dtsFrom: '/some/a.d.ts', identifier: 'ComponentA1'},
-        {from: '/some/a.js', dtsFrom: '/some/a.d.ts', identifier: 'ComponentA2'},
-        {from: '/some/foo/b.js', dtsFrom: '/some/foo/b.d.ts', identifier: 'ComponentB'},
-        {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
+      renderer.addExports(output, _(PROGRAM.name.replace(/\.js$/, '')), [
+        {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
+        {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
+        {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+        {from: _(PROGRAM.name), dtsFrom: _(PROGRAM.name), identifier: 'TopLevelComponent'},
       ]);
       expect(output.toString()).toContain(`
 export {A, B, C, NoIife, BadIife};
@@ -190,11 +192,11 @@ export {TopLevelComponent};`);
     it('should not insert alias exports in js output', () => {
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
-        {from: '/some/a.js', alias: 'eComponentA1', identifier: 'ComponentA1'},
-        {from: '/some/a.js', alias: 'eComponentA2', identifier: 'ComponentA2'},
-        {from: '/some/foo/b.js', alias: 'eComponentB', identifier: 'ComponentB'},
-        {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
+      renderer.addExports(output, _(PROGRAM.name.replace(/\.js$/, '')), [
+        {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
+        {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
+        {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+        {from: _(PROGRAM.name), alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
       ]);
       const outputString = output.toString();
       expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);

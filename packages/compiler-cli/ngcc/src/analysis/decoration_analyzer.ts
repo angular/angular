@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
-import * as path from 'canonical-path';
-import * as fs from 'fs';
+import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
@@ -19,6 +17,7 @@ import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../../src/ngtsc/path';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {FileSystem} from '../file_system/file_system';
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
@@ -53,9 +52,10 @@ export interface MatchingHandler<A, M> {
  * Simple class that resolves and loads files directly from the filesystem.
  */
 class NgccResourceLoader implements ResourceLoader {
+  constructor(private fs: FileSystem) {}
   canPreload = false;
   preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
-  load(url: string): string { return fs.readFileSync(url, 'utf8'); }
+  load(url: string): string { return this.fs.readFile(AbsoluteFsPath.resolve(url)); }
   resolve(url: string, containingFile: string): string {
     return path.resolve(path.dirname(containingFile), url);
   }
@@ -65,7 +65,7 @@ class NgccResourceLoader implements ResourceLoader {
  * This Analyzer will analyze the files that have decorated classes that need to be transformed.
  */
 export class DecorationAnalyzer {
-  resourceManager = new NgccResourceLoader();
+  resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
   fullMetaReader = new CompoundMetadataReader([this.metaRegistry, this.dtsMetaReader]);
@@ -73,8 +73,8 @@ export class DecorationAnalyzer {
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(this.program, this.typeChecker, this.options, this.host),
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
-    // projects only ever have one rootDir. Instead, ngcc should just switch its emitted imort based
-    // on whether a bestGuessOwningModule is present in the Reference.
+    // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
+    // based on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.typeChecker, new LogicalFileSystem(this.rootDirs)),
   ]);
   dtsModuleScopeResolver =
@@ -110,7 +110,7 @@ export class DecorationAnalyzer {
   ];
 
   constructor(
-      private program: ts.Program, private options: ts.CompilerOptions,
+      private fs: FileSystem, private program: ts.Program, private options: ts.CompilerOptions,
       private host: ts.CompilerHost, private typeChecker: ts.TypeChecker,
       private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
       private rootDirs: AbsoluteFsPath[], private isCore: boolean) {}

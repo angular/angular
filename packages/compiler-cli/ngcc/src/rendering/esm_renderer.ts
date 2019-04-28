@@ -5,20 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
-import {CompiledClass} from '../analysis/decoration_analyzer';
-import {RedundantDecoratorMap, Renderer, stripExtension} from './renderer';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {ExportInfo} from '../analysis/private_declarations_analyzer';
+import {PathSegment, AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
+import {CompiledClass} from '../analysis/decoration_analyzer';
+import {ExportInfo} from '../analysis/private_declarations_analyzer';
+import {FileSystem} from '../file_system/file_system';
+import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {Logger} from '../logging/logger';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {RedundantDecoratorMap, Renderer, stripExtension} from './renderer';
 
 export class EsmRenderer extends Renderer {
-  constructor(logger: Logger, host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
-    super(logger, host, isCore, bundle);
+  constructor(
+      fs: FileSystem, logger: Logger, host: NgccReflectionHost, isCore: boolean,
+      bundle: EntryPointBundle) {
+    super(fs, logger, host, isCore, bundle);
   }
 
   /**
@@ -33,7 +36,7 @@ export class EsmRenderer extends Renderer {
     output.appendLeft(insertionPoint, renderedImports);
   }
 
-  addExports(output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void {
+  addExports(output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[]): void {
     exports.forEach(e => {
       let exportFrom = '';
       const isDtsFile = isDtsPath(entryPointBasePath);
@@ -41,7 +44,8 @@ export class EsmRenderer extends Renderer {
 
       if (from) {
         const basePath = stripExtension(from);
-        const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+        const relativePath =
+            './' + PathSegment.relative(AbsoluteFsPath.dirname(entryPointBasePath), basePath);
         exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
       }
 

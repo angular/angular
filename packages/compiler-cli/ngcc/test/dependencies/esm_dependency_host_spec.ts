@@ -11,12 +11,16 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 
 const _ = AbsoluteFsPath.from;
 
 describe('DependencyHost', () => {
   let host: EsmDependencyHost;
-  beforeEach(() => host = new EsmDependencyHost(new ModuleResolver()));
+  beforeEach(() => {
+    const fs = new NodeJSFileSystem();
+    host = new EsmDependencyHost(fs, new ModuleResolver(fs));
+  });
 
   describe('getDependencies()', () => {
     beforeEach(createMockFileSystem);
@@ -94,13 +98,14 @@ describe('DependencyHost', () => {
     });
 
     it('should support `paths` alias mappings when resolving modules', () => {
-      host = new EsmDependencyHost(new ModuleResolver({
-        baseUrl: '/dist',
-        paths: {
-          '@app/*': ['*'],
-          '@lib/*/test': ['lib/*/test'],
-        }
-      }));
+      const fs = new NodeJSFileSystem();
+      host = new EsmDependencyHost(fs, new ModuleResolver(fs, {
+                                     baseUrl: '/dist',
+                                     paths: {
+                                       '@app/*': ['*'],
+                                       '@lib/*/test': ['lib/*/test'],
+                                     }
+                                   }));
       const {dependencies, missing, deepImports} = host.findDependencies(_('/path-alias/index.js'));
       expect(dependencies.size).toBe(4);
       expect(dependencies.has(_('/dist/components'))).toBe(true);

@@ -9,9 +9,13 @@
 import {existsSync, readFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {InPlaceFileWriter} from '../../src/writing/in_place_file_writer';
+
+const _ = AbsoluteFsPath.fromUnchecked;
 
 function createMockFileSystem() {
   mockFs({
@@ -39,12 +43,13 @@ describe('InPlaceFileWriter', () => {
   afterEach(restoreRealFileSystem);
 
   it('should write all the FileInfo to the disk', () => {
-    const fileWriter = new InPlaceFileWriter();
+    const fs = new NodeJSFileSystem();
+    const fileWriter = new InPlaceFileWriter(fs);
     fileWriter.writeBundle({} as EntryPoint, {} as EntryPointBundle, [
-      {path: '/package/path/top-level.js', contents: 'MODIFIED TOP LEVEL'},
-      {path: '/package/path/folder-1/file-1.js', contents: 'MODIFIED FILE 1'},
-      {path: '/package/path/folder-2/file-4.js', contents: 'MODIFIED FILE 4'},
-      {path: '/package/path/folder-3/file-5.js', contents: 'NEW FILE 5'},
+      {path: _('/package/path/top-level.js'), contents: 'MODIFIED TOP LEVEL'},
+      {path: _('/package/path/folder-1/file-1.js'), contents: 'MODIFIED FILE 1'},
+      {path: _('/package/path/folder-2/file-4.js'), contents: 'MODIFIED FILE 4'},
+      {path: _('/package/path/folder-3/file-5.js'), contents: 'NEW FILE 5'},
     ]);
     expect(readFileSync('/package/path/top-level.js', 'utf8')).toEqual('MODIFIED TOP LEVEL');
     expect(readFileSync('/package/path/folder-1/file-1.js', 'utf8')).toEqual('MODIFIED FILE 1');
@@ -55,12 +60,13 @@ describe('InPlaceFileWriter', () => {
   });
 
   it('should create backups of all files that previously existed', () => {
-    const fileWriter = new InPlaceFileWriter();
+    const fs = new NodeJSFileSystem();
+    const fileWriter = new InPlaceFileWriter(fs);
     fileWriter.writeBundle({} as EntryPoint, {} as EntryPointBundle, [
-      {path: '/package/path/top-level.js', contents: 'MODIFIED TOP LEVEL'},
-      {path: '/package/path/folder-1/file-1.js', contents: 'MODIFIED FILE 1'},
-      {path: '/package/path/folder-2/file-4.js', contents: 'MODIFIED FILE 4'},
-      {path: '/package/path/folder-3/file-5.js', contents: 'NEW FILE 5'},
+      {path: _('/package/path/top-level.js'), contents: 'MODIFIED TOP LEVEL'},
+      {path: _('/package/path/folder-1/file-1.js'), contents: 'MODIFIED FILE 1'},
+      {path: _('/package/path/folder-2/file-4.js'), contents: 'MODIFIED FILE 4'},
+      {path: _('/package/path/folder-3/file-5.js'), contents: 'NEW FILE 5'},
     ]);
     expect(readFileSync('/package/path/top-level.js.__ivy_ngcc_bak', 'utf8'))
         .toEqual('ORIGINAL TOP LEVEL');
@@ -74,12 +80,13 @@ describe('InPlaceFileWriter', () => {
   });
 
   it('should error if the backup file already exists', () => {
-    const fileWriter = new InPlaceFileWriter();
+    const fs = new NodeJSFileSystem();
+    const fileWriter = new InPlaceFileWriter(fs);
     expect(
         () => fileWriter.writeBundle(
             {} as EntryPoint, {} as EntryPointBundle,
             [
-              {path: '/package/path/already-backed-up.js', contents: 'MODIFIED BACKED UP'},
+              {path: _('/package/path/already-backed-up.js'), contents: 'MODIFIED BACKED UP'},
             ]))
         .toThrowError(
             'Tried to overwrite /package/path/already-backed-up.js.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.');

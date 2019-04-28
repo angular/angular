@@ -15,6 +15,7 @@ import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
 
+const _ = AbsoluteFsPath.fromUnchecked;
 /**
  *
  * @param format The format of the bundle.
@@ -28,11 +29,7 @@ export function makeTestEntryPointBundle(
   const src = makeTestBundleProgram(files);
   const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
-  return {
-    formatProperty,
-    format,
-    rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isCore, isFlatCore
-  };
+  return {formatProperty, format, rootDirs: [_('/')], src, dts, isCore, isFlatCore};
 }
 
 /**
@@ -41,10 +38,10 @@ export function makeTestEntryPointBundle(
  */
 export function makeTestBundleProgram(files: {name: string, contents: string}[]): BundleProgram {
   const {program, options, host} = makeTestProgramInternal(...files);
-  const path = files[0].name;
+  const path = _(files[0].name);
   const file = program.getSourceFile(path) !;
   const r3SymbolsInfo = files.find(file => file.name.indexOf('r3_symbols') !== -1) || null;
-  const r3SymbolsPath = r3SymbolsInfo && r3SymbolsInfo.name;
+  const r3SymbolsPath = r3SymbolsInfo && _(r3SymbolsInfo.name);
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
   return {program, options, host, path, file, r3SymbolsPath, r3SymbolsFile};
 }

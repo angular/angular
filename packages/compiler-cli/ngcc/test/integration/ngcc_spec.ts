@@ -12,6 +12,7 @@ import * as mockFs from 'mock-fs';
 import {join} from 'path';
 
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
+import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {mainNgcc} from '../../src/main';
 import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
@@ -144,8 +145,10 @@ describe('ngcc main()', () => {
     const basePath = '/node_modules';
     const targetPackageJsonPath = _(join(basePath, packagePath, 'package.json'));
     const targetPackage = loadPackage(packagePath);
-    markAsProcessed(targetPackage, targetPackageJsonPath, 'typings');
-    properties.forEach(property => markAsProcessed(targetPackage, targetPackageJsonPath, property));
+    const fs = new NodeJSFileSystem();
+    markAsProcessed(fs, targetPackage, targetPackageJsonPath, 'typings');
+    properties.forEach(
+        property => markAsProcessed(fs, targetPackage, targetPackageJsonPath, property));
   }
 
 
