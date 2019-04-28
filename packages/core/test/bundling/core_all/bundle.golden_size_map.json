@@ -1,13 +1,13 @@
 {
   "unmapped": 25,
   "files": {
-    "size": 267845,
+    "size": 268455,
     "@angular/": {
-      "size": 247994,
+      "size": 248616,
       "core/": {
-        "size": 247994,
+        "size": 248616,
         "src/": {
-          "size": 247913,
+          "size": 248535,
           "application_init.ts": 626,
           "application_module.ts": 634,
           "application_ref.ts": 7371,
@@ -76,14 +76,14 @@
           },
           "ivy_switch.ts": 936,
           "linker/": {
-            "size": 4921,
+            "size": 4923,
             "compiler.ts": 825,
             "component_factory.ts": 91,
             "component_factory_resolver.ts": 1003,
             "element_ref.ts": 119,
             "ng_module_factory.ts": 78,
             "ng_module_factory_loader.ts": 449,
-            "query_list.ts": 1009,
+            "query_list.ts": 1011,
             "system_js_ng_module_factory_loader.ts": 957,
             "template_ref.ts": 97,
             "view_container_ref.ts": 97,
@@ -115,7 +115,7 @@
             "api.ts": 482
           },
           "render3/": {
-            "size": 103374,
+            "size": 103297,
             "bindings.ts": 300,
             "component.ts": 4000,
             "component_ref.ts": 2512,
@@ -135,7 +135,7 @@
             "hooks.ts": 1843,
             "i18n.ts": 14527,
             "instructions/": {
-              "size": 19987,
+              "size": 20030,
               "alloc_host_vars.ts": 290,
               "change_detection.ts": 91,
               "container.ts": 758,
@@ -144,11 +144,11 @@
               "element_container.ts": 335,
               "embedded_view.ts": 678,
               "get_current_view.ts": 26,
-              "listener.ts": 1388,
+              "listener.ts": 1401,
               "next_context.ts": 44,
               "projection.ts": 348,
               "property.ts": 193,
-              "property_interpolation.ts": 2554,
+              "property_interpolation.ts": 2584,
               "select.ts": 51,
               "shared.ts": 10205,
               "storage.ts": 169,
@@ -165,10 +165,10 @@
               "view.ts": 110
             },
             "jit/": {
-              "size": 9599,
+              "size": 9479,
               "directive.ts": 3409,
               "environment.ts": 2758,
-              "module.ts": 3167,
+              "module.ts": 3047,
               "pipe.ts": 265
             },
             "metadata.ts": 615,
@@ -207,9 +207,9 @@
             "view_ref.ts": 2212
           },
           "sanitization/": {
-            "size": 9079,
+            "size": 9766,
             "bypass.ts": 669,
-            "html_sanitizer.ts": 4034,
+            "html_sanitizer.ts": 4721,
             "inert_body.ts": 2066,
             "sanitization.ts": 1057,
             "security.ts": 206,
@@ -221,8 +221,8 @@
             "testability.ts": 3796
           },
           "util/": {
-            "size": 4307,
-            "array_utils.ts": 200,
+            "size": 4317,
+            "array_utils.ts": 210,
             "assert.ts": 81,
             "closure.ts": 37,
             "comparison.ts": 90,
@@ -275,20 +275,20 @@
       }
     },
     "external/": {
-      "size": 19826,
+      "size": 19814,
       "npm/": {
-        "size": 19826,
+        "size": 19814,
         "node_modules/": {
-          "size": 19826,
+          "size": 19814,
           "rxjs/": {
-            "size": 18765,
+            "size": 18753,
             "_esm5/": {
-              "size": 18765,
+              "size": 18753,
               "internal/": {
-                "size": 18765,
+                "size": 18753,
                 "InnerSubscriber.js": 415,
                 "Notification.js": 15,
-                "Observable.js": 1432,
+                "Observable.js": 1420,
                 "Observer.js": 137,
                 "OuterSubscriber.js": 298,
                 "Subject.js": 1910,
