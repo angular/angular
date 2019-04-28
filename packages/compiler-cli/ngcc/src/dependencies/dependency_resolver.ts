@@ -170,12 +170,13 @@ function getEntryPointPath(entryPoint: EntryPoint): AbsoluteFsPath {
     const property = properties[i] as EntryPointJsonProperty;
     const format = getEntryPointFormat(property);
 
-    if (format === 'esm2015' || format === 'esm5') {
+    if (format === 'esm2015' || format === 'esm5' || format === 'umd') {
       const formatPath = entryPoint.packageJson[property] !;
       return AbsoluteFsPath.resolve(entryPoint.path, formatPath);
     }
   }
-  throw new Error(`There is no format with import statements in '${entryPoint.path}' entry-point.`);
+  throw new Error(
+      `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
 }
 
 interface DependencyGraph extends DependencyDiagnostics {

@@ -63,7 +63,7 @@ export interface NgccOptions {
   pathMappings?: PathMappings;
 }
 
-const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
+const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'umd'];
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
