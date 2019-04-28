@@ -64,13 +64,13 @@ export class Rule extends Rules.TypedRule {
     queries.forEach(q => {
       const queryExpr = q.decorator.node.expression;
       const {timing, message} = usageStrategy.detectTiming(q);
-      const transformedNode = getTransformedQueryCallExpr(q, timing, !!message);
+      const result = getTransformedQueryCallExpr(q, timing, !!message);
 
-      if (!transformedNode) {
+      if (!result) {
         return;
       }
 
-      const newText = printer.printNode(ts.EmitHint.Unspecified, transformedNode, sourceFile);
+      const newText = printer.printNode(ts.EmitHint.Unspecified, result.node, sourceFile);
 
       // Replace the existing query decorator call expression with the
       // updated call expression node.

@@ -492,6 +492,31 @@ describe('static-queries migration with template strategy', () => {
           .toMatch(/^⮑ {3}index.ts@6:11: Content queries cannot be migrated automatically\./);
     });
 
+    it('should add a todo if query options cannot be migrated inline', async() => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+        
+        const myOptionsVar = {};
+
+        @Component({template: '<p #myRef></p>'})
+        export class MyComp {
+          @ViewChild('myRef', myOptionsVar) query: any;
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef', /* TODO: add static flag */ myOptionsVar) query: any;`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(/^⮑ {3}index.ts@8:11: Cannot update query declaration to explicit timing./);
+      expect(warnOutput[0]).toMatch(/Please manually set the query timing to.*static: true/);
+    });
+
     it('should not normalize stylesheets which are referenced in component', async() => {
       writeFile('sub_dir/index.ts', `
         import {Component, NgModule, ContentChild} from '@angular/core';
