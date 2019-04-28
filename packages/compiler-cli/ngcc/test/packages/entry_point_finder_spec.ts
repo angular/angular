@@ -13,6 +13,7 @@ import {DependencyHost} from '../../src/packages/dependency_host';
 import {DependencyResolver} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
+import {ModuleResolver} from '../../src/packages/module_resolver';
 import {MockLogger} from '../helpers/mock_logger';
 
 const _ = AbsoluteFsPath.from;
@@ -21,7 +22,7 @@ describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
   let finder: EntryPointFinder;
   beforeEach(() => {
-    resolver = new DependencyResolver(new MockLogger(), new DependencyHost());
+    resolver = new DependencyResolver(new MockLogger(), new DependencyHost(new ModuleResolver()));
     spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
       return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
     });
