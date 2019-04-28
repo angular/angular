@@ -346,7 +346,7 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
               null;
 
           const expectedDeclarationNode = getDeclaration(
-              program, 'node_modules/@angular/core/index.ts', 'Directive',
+              program, 'node_modules/@angular/core/index.d.ts', 'Directive',
               isNamedVariableDeclaration);
           const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective !);
           expect(actualDeclaration).not.toBe(null);
