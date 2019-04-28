@@ -11,20 +11,21 @@ import {readFileSync} from 'fs';
 
 import {AbsoluteFsPath} from '../../src/ngtsc/path';
 
+import {DependencyResolver} from './dependencies/dependency_resolver';
+import {EsmDependencyHost} from './dependencies/esm_dependency_host';
+import {ModuleResolver} from './dependencies/module_resolver';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
-import {DependencyHost} from './packages/dependency_host';
-import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
-import {ModuleResolver} from './packages/module_resolver';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
+
 
 
 /**
@@ -81,7 +82,7 @@ export function mainNgcc(
      logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
   const transformer = new Transformer(logger);
   const moduleResolver = new ModuleResolver(pathMappings);
-  const host = new DependencyHost(moduleResolver);
+  const host = new EsmDependencyHost(moduleResolver);
   const resolver = new DependencyResolver(logger, host);
   const finder = new EntryPointFinder(logger, resolver);
   const fileWriter = getFileWriter(createNewEntryPointFormats);
