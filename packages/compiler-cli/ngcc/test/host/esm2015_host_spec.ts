@@ -1359,7 +1359,8 @@ describe('Esm2015ReflectionHost', () => {
                                         .initializer as ts.Identifier;
 
       const expectedDeclarationNode = getDeclaration(
-          program, 'node_modules/@angular/core/index.ts', 'Directive', isNamedVariableDeclaration);
+          program, 'node_modules/@angular/core/index.d.ts', 'Directive',
+          isNamedVariableDeclaration);
       const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1419,9 +1420,7 @@ describe('Esm2015ReflectionHost', () => {
       const values = Array.from(exportDeclarations !.values())
                          .map(declaration => [declaration.node.getText(), declaration.viaModule]);
       expect(values).toEqual([
-        // TODO clarify what is expected here...
-        // [`Directive = callableClassDecorator()`, '@angular/core'],
-        [`Directive = callableClassDecorator()`, null],
+        [`Directive: FnWithArg<(clazz: any) => any>`, null],
         [`a = 'a'`, null],
         [`b = a`, null],
         [`c = foo`, null],
