@@ -16,10 +16,12 @@ import {FileSystem} from '../file_system/file_system';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {UmdReflectionHost} from '../host/umd_host';
 import {Logger} from '../logging/logger';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
+import {UmdRenderer} from '../rendering/umd_renderer';
 
 import {EntryPointBundle} from './entry_point_bundle';
 
@@ -78,6 +80,9 @@ export class Transformer {
         return new Esm2015ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
       case 'esm5':
         return new Esm5ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
+      case 'umd':
+        return new UmdReflectionHost(
+            this.logger, isCore, bundle.src.program, bundle.src.host, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
@@ -89,6 +94,11 @@ export class Transformer {
         return new EsmRenderer(this.fs, this.logger, host, isCore, bundle);
       case 'esm5':
         return new Esm5Renderer(this.fs, this.logger, host, isCore, bundle);
+      case 'umd':
+        if (!(host instanceof UmdReflectionHost)) {
+          throw new Error('UmdRenderer requires a UmdReflectionHost');
+        }
+        return new UmdRenderer(this.fs, this.logger, host, isCore, bundle);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
