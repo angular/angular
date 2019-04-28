@@ -402,7 +402,7 @@ const IMPORTS_FILES = [
   {
     name: '/a.js',
     contents: `
-      export const a = 'a';
+      export var a = 'a';
     `,
   },
   {
@@ -422,7 +422,7 @@ const EXPORTS_FILES = [
   {
     name: '/a.js',
     contents: `
-      export const a = 'a';
+      export var a = 'a';
     `,
   },
   {
