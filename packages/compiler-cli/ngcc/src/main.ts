@@ -19,6 +19,7 @@ import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
+import {ModuleResolver} from './packages/module_resolver';
 import {Transformer} from './packages/transformer';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
@@ -74,7 +75,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
                           compileAllFormats = true, createNewEntryPointFormats = false,
                           logger = new ConsoleLogger(LogLevel.info)}: NgccOptions): void {
   const transformer = new Transformer(logger);
-  const host = new DependencyHost();
+  const moduleResolver = new ModuleResolver();
+  const host = new DependencyHost(moduleResolver);
   const resolver = new DependencyResolver(logger, host);
   const finder = new EntryPointFinder(logger, resolver);
   const fileWriter = getFileWriter(createNewEntryPointFormats);
