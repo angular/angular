@@ -192,23 +192,24 @@ async function runStaticQueryMigration(
     queries.forEach(q => {
       const queryExpr = q.decorator.node.expression;
       const {timing, message} = strategy.detectTiming(q);
-      const transformedNode = getTransformedQueryCallExpr(q, timing, !!message);
+      const result = getTransformedQueryCallExpr(q, timing, !!message);
 
-      if (!transformedNode) {
+      if (!result) {
         return;
       }
 
-      const newText = printer.printNode(ts.EmitHint.Unspecified, transformedNode, sourceFile);
+      const newText = printer.printNode(ts.EmitHint.Unspecified, result.node, sourceFile);
 
       // Replace the existing query decorator call expression with the updated
       // call expression node.
       update.remove(queryExpr.getStart(), queryExpr.getWidth());
       update.insertRight(queryExpr.getStart(), newText);
 
-      if (message) {
+      if (result.failureMessage || message) {
         const {line, character} =
             ts.getLineAndCharacterOfPosition(sourceFile, q.decorator.node.getStart());
-        failureMessages.push(`${relativePath}@${line + 1}:${character + 1}: ${message}`);
+        failureMessages.push(
+            `${relativePath}@${line + 1}:${character + 1}: ${result.failureMessage || message}`);
       }
     });
 
