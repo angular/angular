@@ -83,8 +83,12 @@ export class DependencyResolver {
 
     let sortedEntryPointNodes: string[];
     if (target) {
-      sortedEntryPointNodes = graph.dependenciesOf(target.path);
-      sortedEntryPointNodes.push(target.path);
+      if (target.compiledByAngular) {
+        sortedEntryPointNodes = graph.dependenciesOf(target.path);
+        sortedEntryPointNodes.push(target.path);
+      } else {
+        sortedEntryPointNodes = [];
+      }
     } else {
       sortedEntryPointNodes = graph.overallOrder();
     }
@@ -107,11 +111,13 @@ export class DependencyResolver {
     const ignoredDependencies: IgnoredDependency[] = [];
     const graph = new DepGraph<EntryPoint>();
 
-    // Add the entry points to the graph as nodes
-    entryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
+    const angularEntryPoints = entryPoints.filter(entryPoint => entryPoint.compiledByAngular);
+
+    // Add the Angular compiled entry points to the graph as nodes
+    angularEntryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
 
     // Now add the dependencies between them
-    entryPoints.forEach(entryPoint => {
+    angularEntryPoints.forEach(entryPoint => {
       const entryPointPath = getEntryPointPath(entryPoint);
       const {dependencies, missing, deepImports} = this.host.computeDependencies(entryPointPath);
 
