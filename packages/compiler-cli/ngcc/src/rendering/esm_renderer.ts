@@ -9,7 +9,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {PathSegment, AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {Import} from '../../../src/ngtsc/translator';
+import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/decoration_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {FileSystem} from '../file_system/file_system';
@@ -35,7 +35,9 @@ export class EsmRenderer extends Renderer {
     output.appendLeft(insertionPoint, renderedImports);
   }
 
-  addExports(output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[]): void {
+  addExports(
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
+      importManager: ImportManager, file: ts.SourceFile): void {
     exports.forEach(e => {
       let exportFrom = '';
       const isDtsFile = isDtsPath(entryPointBasePath);

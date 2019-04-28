@@ -127,6 +127,7 @@ export abstract class Renderer {
       sourceFile: ts.SourceFile, compiledFile: CompiledFile|undefined,
       switchMarkerAnalysis: SwitchMarkerAnalysis|undefined,
       privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileInfo[] {
+    const isEntryPoint = sourceFile === this.bundle.src.file;
     const input = this.extractSourceMap(sourceFile);
     const outputText = new MagicString(input.source);
 
@@ -135,11 +136,11 @@ export abstract class Renderer {
           outputText, switchMarkerAnalysis.sourceFile, switchMarkerAnalysis.declarations);
     }
 
-    if (compiledFile) {
-      const importManager = new ImportManager(
-          this.getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isFlatCore),
-          IMPORT_PREFIX);
+    const importManager = new ImportManager(
+        this.getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isFlatCore),
+        IMPORT_PREFIX);
 
+    if (compiledFile) {
       // TODO: remove constructor param metadata and property decorators (we need info from the
       // handlers to do this)
       const decoratorsToRemove = this.computeDecoratorsToRemove(compiledFile.compiledClasses);
@@ -154,19 +155,24 @@ export abstract class Renderer {
           outputText,
           renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
           compiledFile.sourceFile);
-
-      this.addImports(
-          outputText, importManager.getAllImports(compiledFile.sourceFile.fileName),
-          compiledFile.sourceFile);
     }
 
     // Add exports to the entry-point file
-    if (sourceFile === this.bundle.src.file) {
+    if (isEntryPoint) {
       const entryPointBasePath = stripExtension(this.bundle.src.path);
-      this.addExports(outputText, entryPointBasePath, privateDeclarationsAnalyses);
+      this.addExports(
+          outputText, entryPointBasePath, privateDeclarationsAnalyses, importManager, sourceFile);
     }
 
-    return this.renderSourceAndMap(sourceFile, input, outputText);
+    if (isEntryPoint || compiledFile) {
+      this.addImports(outputText, importManager.getAllImports(sourceFile.fileName), sourceFile);
+    }
+
+    if (compiledFile || switchMarkerAnalysis || isEntryPoint) {
+      return this.renderSourceAndMap(sourceFile, input, outputText);
+    } else {
+      return [];
+    }
   }
 
   renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
@@ -189,7 +195,9 @@ export abstract class Renderer {
     this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
     this.addImports(outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
 
-    this.addExports(outputText, AbsoluteFsPath.fromSourceFile(dtsFile), renderInfo.privateExports);
+    this.addExports(
+        outputText, AbsoluteFsPath.fromSourceFile(dtsFile), renderInfo.privateExports,
+        importManager, dtsFile);
 
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
@@ -251,7 +259,8 @@ export abstract class Renderer {
       void;
   protected abstract addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void;
   protected abstract addExports(
-      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[]): void;
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
+      importManager: ImportManager, file: ts.SourceFile): void;
   protected abstract addDefinitions(
       output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(

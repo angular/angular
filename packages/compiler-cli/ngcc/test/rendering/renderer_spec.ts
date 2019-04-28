@@ -13,7 +13,7 @@ import {Import} from '../../../src/ngtsc/translator';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
-import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
+import {PrivateDeclarationsAnalyzer, ExportInfo} from '../../src/analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {RedundantDecoratorMap, Renderer} from '../../src/rendering/renderer';
@@ -35,10 +35,7 @@ class TestRenderer extends Renderer {
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
-  addExports(output: MagicString, baseEntryPointPath: string, exports: {
-    identifier: string,
-    from: string
-  }[]) {
+  addExports(output: MagicString, baseEntryPointPath: string, exports: ExportInfo[]) {
     output.prepend('\n// ADD EXPORTS\n');
   }
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
@@ -76,8 +73,10 @@ function createTestRenderer(
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const renderer = new TestRenderer(fs, logger, host, isCore, bundle);
+  spyOn(renderer, 'addExports').and.callThrough();
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
+  spyOn(renderer, 'addConstants').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
 
   return {renderer,
@@ -117,9 +116,17 @@ describe('Renderer', () => {
     'sourcesContent': [INPUT_PROGRAM.contents]
   });
 
-  const RENDERED_CONTENTS =
-      `\n// ADD EXPORTS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n\n// REMOVE DECORATORS\n` +
-      INPUT_PROGRAM.contents;
+  const RENDERED_CONTENTS = `
+// ADD IMPORTS
+
+// ADD EXPORTS
+
+// ADD CONSTANTS
+
+// ADD DEFINITIONS
+
+// REMOVE DECORATORS
+` + INPUT_PROGRAM.contents;
 
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
@@ -240,6 +247,22 @@ describe('Renderer', () => {
            expect(values[0][0].getText())
                .toEqual(`{ type: Directive, args: [{ selector: '[a]' }] }`);
          });
+
+      it('should call renderImports after other abstract methods', () => {
+        // This allows the other methods to add additional imports if necessary
+        const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+               moduleWithProvidersAnalyses} = createTestRenderer('test-package', [INPUT_PROGRAM]);
+        const addExportsSpy = renderer.addExports as jasmine.Spy;
+        const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
+        const addConstantsSpy = renderer.addConstants as jasmine.Spy;
+        const addImportsSpy = renderer.addImports as jasmine.Spy;
+        renderer.renderProgram(
+            decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+            moduleWithProvidersAnalyses);
+        expect(addExportsSpy).toHaveBeenCalledBefore(addImportsSpy);
+        expect(addDefinitionsSpy).toHaveBeenCalledBefore(addImportsSpy);
+        expect(addConstantsSpy).toHaveBeenCalledBefore(addImportsSpy);
+      });
     });
 
     describe('source map merging', () => {
@@ -355,7 +378,7 @@ describe('Renderer', () => {
             moduleWithProvidersAnalyses);
 
         const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-        expect(typingsFile.contents).toContain(`// ADD IMPORTS\nexport declare class A`);
+        expect(typingsFile.contents).toContain(`\n// ADD IMPORTS\n`);
       });
 
       it('should render exports into typings files', () => {
@@ -372,8 +395,7 @@ describe('Renderer', () => {
             moduleWithProvidersAnalyses);
 
         const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
-        expect(typingsFile.contents)
-            .toContain(`// ADD EXPORTS\n\n// ADD IMPORTS\nexport declare class A`);
+        expect(typingsFile.contents).toContain(`\n// ADD EXPORTS\n`);
       });
 
       it('should fixup functions/methods that return ModuleWithProviders structures', () => {

@@ -7,10 +7,13 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {IMPORT_PREFIX} from '../../src/constants';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderer} from '../../src/rendering/esm_renderer';
 import {makeTestEntryPointBundle} from '../helpers/utils';
@@ -32,10 +35,11 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
                                  .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderer(fs, logger, host, false, bundle);
+  const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
     host,
     program: bundle.src.program,
-    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses
+    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses, importManager,
   };
 }
 
@@ -136,14 +140,17 @@ import * as i1 from '@angular/common';`);
 
   describe('addExports', () => {
     it('should insert the given exports at the end of the source file', () => {
-      const {renderer} = setup(PROGRAM);
+      const {importManager, renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addExports(output, _(PROGRAM.name.replace(/\.js$/, '')), [
-        {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
-        {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
-        {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
-        {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
-      ]);
+      renderer.addExports(
+          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          [
+            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
+            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
+            {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+            {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
+          ],
+          importManager, sourceFile);
       expect(output.toString()).toContain(`
 // Some other content
 export {ComponentA1} from './a';
@@ -153,14 +160,17 @@ export {TopLevelComponent};`);
     });
 
     it('should not insert alias exports in js output', () => {
-      const {renderer} = setup(PROGRAM);
+      const {importManager, renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addExports(output, _(PROGRAM.name.replace(/\.js$/, '')), [
-        {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-        {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-        {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
-        {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
-      ]);
+      renderer.addExports(
+          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          [
+            {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
+            {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
+            {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+            {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
+          ],
+          importManager, sourceFile);
       const outputString = output.toString();
       expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);
       expect(outputString).not.toContain(`{eComponentB as ComponentB}`);
