@@ -7,7 +7,8 @@
  */
 
 import {assertDefined} from '../util/assert';
-import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
+
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from './interfaces/i18n';
 import {TNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
@@ -207,7 +208,8 @@ export class LContainerDebug {
 
   get activeIndex(): number { return this._raw_lContainer[ACTIVE_INDEX]; }
   get views(): LViewDebug[] {
-    return this._raw_lContainer[VIEWS].map(toDebug as(l: LView) => LViewDebug);
+    return this._raw_lContainer.slice(CONTAINER_HEADER_OFFSET)
+        .map(toDebug as(l: LView) => LViewDebug);
   }
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lContainer[PARENT]); }
   get queries(): LQueries|null { return this._raw_lContainer[QUERIES]; }

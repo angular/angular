@@ -30,6 +30,9 @@
     "name": "CLEAN_PROMISE"
   },
   {
+    "name": "CONTAINER_HEADER_OFFSET"
+  },
+  {
     "name": "CONTEXT"
   },
   {
@@ -253,9 +256,6 @@
   },
   {
     "name": "UnsubscriptionErrorImpl"
-  },
-  {
-    "name": "VIEWS"
   },
   {
     "name": "ViewContainerRef"

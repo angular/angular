@@ -8,7 +8,7 @@
 
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainerOrUndefined} from '../assert';
-import {ACTIVE_INDEX, LContainer, VIEWS} from '../interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
 import {FLAGS, LView, LViewFlags, PARENT, QUERIES, TVIEW, TView, T_HOST} from '../interfaces/view';
@@ -104,17 +104,15 @@ function getOrCreateEmbeddedTView(
  * @param lContainer to search for views
  * @param startIdx starting index in the views array to search from
  * @param viewBlockId exact view block id to look for
- * @returns index of a found view or -1 if not found
  */
 function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: number): LView|null {
-  const views = lContainer[VIEWS];
-  for (let i = startIdx; i < views.length; i++) {
-    const viewAtPositionId = views[i][TVIEW].id;
+  for (let i = startIdx + CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+    const viewAtPositionId = lContainer[i][TVIEW].id;
     if (viewAtPositionId === viewBlockId) {
-      return views[i];
+      return lContainer[i];
     } else if (viewAtPositionId < viewBlockId) {
       // found a view that should not be at this position - remove
-      removeView(lContainer, i);
+      removeView(lContainer, i - CONTAINER_HEADER_OFFSET);
     } else {
       // found a view with id greater than the one we are searching for
       // which means that required view doesn't exist and can't be found at
