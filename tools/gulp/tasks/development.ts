@@ -146,10 +146,14 @@ task(':watch:devapp', () => {
 
   // Material package watchers.
   watchFilesAndReload([
-    join(materialPackage.sourceDir, '**/!(*-theme.scss)'), `!${materialCoreThemingGlob}`
+    join(materialPackage.sourceDir, '**/!(*-theme.scss)'),
+    join(materialExperimentalPackage.sourceDir, '**/!(*_mdc-*.scss)'),
+    `!${materialCoreThemingGlob}`
   ], ['material:build-no-bundles']);
   watchFilesAndReload([
-    join(materialPackage.sourceDir, '**/*-theme.scss'), materialCoreThemingGlob
+    join(materialPackage.sourceDir, '**/*-theme.scss'),
+    join(materialExperimentalPackage.sourceDir, '**/*_mdc-*.scss'),
+    materialCoreThemingGlob
   ], [':build:devapp:scss']);
 
   // Moment adapter package watchers
