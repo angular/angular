@@ -20,7 +20,7 @@ describe('injectable pipe migration', () => {
   let previousWorkingDir: string;
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('./test-migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 

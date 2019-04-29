@@ -26,7 +26,7 @@ describe('static-queries migration with usage strategy', () => {
   afterAll(() => process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] = '');
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -145,7 +145,7 @@ describe('static-queries migration with usage strategy', () => {
   }
 
   async function runMigration() {
-    await runner.runSchematicAsync('migration-static-queries', {}, tree).toPromise();
+    await runner.runSchematicAsync('migration-v8-static-queries', {}, tree).toPromise();
   }
 
   function createQueryTests(queryType: 'ViewChild' | 'ContentChild') {
