@@ -8,6 +8,7 @@
 
 import {DepGraph} from 'dependency-graph';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {FileSystem} from '../file_system/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost} from './dependency_host';
@@ -65,7 +66,8 @@ export interface SortedEntryPointsInfo extends DependencyDiagnostics { entryPoin
  */
 export class DependencyResolver {
   constructor(
-      private logger: Logger, private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
+      private fs: FileSystem, private logger: Logger,
+      private hosts: Partial<Record<EntryPointFormat, DependencyHost>>) {}
   /**
    * Sort the array of entry points so that the dependant entry points always come later than
    * their dependencies in the array.
@@ -115,7 +117,7 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     angularEntryPoints.forEach(entryPoint => {
-      const formatInfo = getEntryPointFormatInfo(entryPoint);
+      const formatInfo = this.getEntryPointFormatInfo(entryPoint);
       const host = this.hosts[formatInfo.format];
       if (!host) {
         throw new Error(
@@ -164,22 +166,22 @@ export class DependencyResolver {
       });
     }
   }
-}
 
-function getEntryPointFormatInfo(entryPoint: EntryPoint):
-    {format: EntryPointFormat, path: AbsoluteFsPath} {
-  const properties = Object.keys(entryPoint.packageJson);
-  for (let i = 0; i < properties.length; i++) {
-    const property = properties[i] as EntryPointJsonProperty;
-    const format = getEntryPointFormat(property);
+  private getEntryPointFormatInfo(entryPoint: EntryPoint):
+      {format: EntryPointFormat, path: AbsoluteFsPath} {
+    const properties = Object.keys(entryPoint.packageJson);
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i] as EntryPointJsonProperty;
+      const format = getEntryPointFormat(this.fs, entryPoint, property);
 
-    if (format === 'esm2015' || format === 'esm5' || format === 'umd') {
-      const formatPath = entryPoint.packageJson[property] !;
-      return {format, path: AbsoluteFsPath.resolve(entryPoint.path, formatPath)};
+      if (format === 'esm2015' || format === 'esm5' || format === 'umd' || format === 'commonjs') {
+        const formatPath = entryPoint.packageJson[property] !;
+        return {format, path: AbsoluteFsPath.resolve(entryPoint.path, formatPath)};
+      }
     }
+    throw new Error(
+        `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
   }
-  throw new Error(
-      `There is no appropriate source code format in '${entryPoint.path}' entry-point.`);
 }
 
 interface DependencyGraph extends DependencyDiagnostics {
