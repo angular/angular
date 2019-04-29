@@ -9,6 +9,7 @@
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
+import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
 import {getInjectableDef, ɵɵInjectableDef} from './interface/defs';
@@ -134,7 +135,7 @@ export function injectRootLimpMode<T>(
 export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): any[] {
   const args: any[] = [];
   for (let i = 0; i < types.length; i++) {
-    const arg = types[i];
+    const arg = resolveForwardRef(types[i]);
     if (Array.isArray(arg)) {
       if (arg.length === 0) {
         throw new Error('Arguments array must have arguments.');

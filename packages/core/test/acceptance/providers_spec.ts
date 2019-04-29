@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Inject, Injectable, InjectionToken} from '@angular/core';
+import {Component, Directive, Inject, Injectable, InjectionToken, NgModule, forwardRef} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -283,4 +283,42 @@ describe('providers', () => {
          })));
     });
   });
+
+  describe('forward refs', () => {
+
+    it('should support forward refs in provider deps', () => {
+      class MyService {
+        constructor(public dep: {value: string}) {}
+      }
+
+      class OtherService {
+        value = 'one';
+      }
+
+      @Component({selector: 'app-comp', template: ``})
+      class AppComp {
+        constructor(public myService: MyService) {}
+      }
+
+      @NgModule({
+        providers: [
+          OtherService, {
+            provide: MyService,
+            useFactory: (dep: {value: string}) => new MyService(dep),
+            deps: [forwardRef(() => OtherService)]
+          }
+        ],
+        declarations: [AppComp]
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      const fixture = TestBed.createComponent(AppComp);
+      expect(fixture.componentInstance.myService.dep.value).toBe('one');
+    });
+
+  });
+
 });
