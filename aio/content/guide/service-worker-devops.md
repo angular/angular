@@ -85,8 +85,12 @@ the next time the application is loaded.
 -->
 서비스 워커는 사용자가 Angular 애플리케이션을 새로 실행하나 브라우저를 새로고침할 때마다 `ngsw.json` 매니페스트에 있는 내용을 기준으로 애플리케이션이 최신버전인지 확인합니다. 이 때 서버에 존재하는 애플리케이션보다 버전이 낮다면, 자동으로 최신 버전을 다운로드하고 캐싱한 후에, 다음 애플리케이션이 실행될 때 최신 버전을 적용합니다.
 
+<!--
 ### Resource integrity
+-->
+### 리소스 정합성 유지
 
+<!--
 One of the potential side effects of long caching is inadvertently
 caching an invalid resource. In a normal HTTP cache, a hard refresh
 or cache expiration limits the negative effects of caching an invalid
@@ -98,7 +102,12 @@ To ensure resource integrity, the Angular service worker validates
 the hashes of all resources for which it has a hash. Typically for
 an app created with the [Angular CLI](cli), this is everything in the `dist` directory covered by
 the user's `src/ngsw-config.json` configuration.
+-->
+캐싱을 오랫동안 유지하면 유효하지 않은 리소스를 참조하는 상황이 발생할 수 있습니다. 그래서 HTTP 캐시는 일반적으로 잘못된 파일을 참조하는 것을 방지하기 위해 만료 기한을 두고 캐시를 강제로 비우기도 합니다. 물론 변경되지 않는 리소스라면 오랫동안 캐싱해도 상관없습니다. 어디까지나 만료기한은 서비스 워커가 올바른 리소스를 제공하기 위한 용도로 사용합니다.
 
+리소스가 올바르게 존재하는 것을 보장하려면 서비스 워커가 모든 리소스의 해시값을 검사하면 됩니다. [Angular CLI](cli)를 사용해서 만든 앱이라면 `dist` 폴더에 존재하는 모든 파일에는 `src/ngsw-config.json` 설정에 따라 해시값이 할당됩니다.
+
+<!--
 If a particular file fails validation, the Angular service worker
 attempts to re-fetch the content using a "cache-busting" URL
 parameter to eliminate the effects of browser or intermediate
@@ -113,9 +122,21 @@ Hash mismatches can occur for a variety of reasons:
 * Caching layers in between the origin server and the end user could serve stale content.
 * A non-atomic deployment could result in the Angular service worker having visibility of partially updated content.
 * Errors during the build process could result in updated resources without `ngsw.json` being updated. The reverse could also happen resulting in an updated `ngsw.json` without updated resources.
+-->
+해시값을 검사하던 중에 유효하지 않은 파일을 발견하면 서비스 워커가 캐시를 무시하고 해당 파일을 다운받으려고 시도합니다. 그리고 새로 받은 파일도 유효성검사를 통과하지 못하면 애플리케이션 전체가 유효하지 않은 것으로 판단하고 애플리케이션을 중단합니다. 하지만 이 상태에서 안전모드로 앱을 실행할 수 있는데, 안전모드에서는 HTTP 요청이 실패할 수 있으며, 캐시가 제대로 동작하지 않고, 이미 캐싱하고 있는 내용의 유효성도 보장할 수 없습니다.
 
+해시값은 다음과 같은 이유로 틀어질 수 있습니다:
+
+* 앱을 제공하는 서버와 오래된 컨텐츠를 동기화하는 레이어
+* 애플리케이션이 한번에 배포되지 않고 부분적으로 배포되어 갱신된 경우
+* 빌드과정에서 에러가 발생하면 `ngsw.json` 파일이 업데이트되지 않을 수 있습니다. 아니면 `ngsw.json`만 업데이트되고 실제 리소스가 업데이트되지 않을 수 있습니다.
+
+<!--
 #### Unhashed content
+-->
+#### 해시값이 존재하지 않는 리소스
 
+<!--
 The only resources that have hashes in the `ngsw.json`
 manifest are resources that were present in the `dist`
 directory at the time the manifest was built. Other
@@ -132,11 +153,19 @@ service worker continues to serve the content and it attempts
 to refresh the resource in the background. This way, broken
 unhashed resources do not remain in the cache beyond their
 configured lifetimes.
+-->
+빌드하면서 `dist` 폴더에 생성된 리소스들의 해시값은 모두 `ngsw.json` 파일에 저장됩니다. 하지만 CDN에서 로드하거나 빌드 시점에 함께 빌드되지 않는 리소스들은 해시값이 존재하지 않거나 애플리케이션이 배포된 후에도 변경될 수 있습니다.
+
+서비스 워커는 해시값이 없는 리소스를 발견해도 이 파일을 그대로 제공하지만, HTTP 헤더를 설정해서 이 파일을 잠재적으로 유효하지 않은 것으로 판단합니다. 그래서 이 파일은 캐싱기한이 만료된 것으로 판단하고 백그라운드에서 이 파일을 새로 받아오려고 합니다. 해시값이 존재하지 않는 리소스는 새롭게 받아오기 전까지만 유지되며, 리소스를 새로 받아온 후에는 HTTP 캐싱 정책을 활용합니다.
 
 {@a tabs}
 
+<!--
 ### App tabs
+-->
+### 탭 단위로 실행되는 애플리케이션
 
+<!--
 It can be problematic for an app if the version of resources
 it's receiving changes suddenly or without warning. See the
 [Versions](guide/service-worker-devops#versions) section above
@@ -154,7 +183,14 @@ than that provided by the normal web deployment model. Without
 a service worker, there is no guarantee that code lazily loaded
 later in a running app is from the same version as the initial
 code for the app.
+-->
+애플리케이션을 사용하고 있는 도중에 아무런 알림없이 갑자기 앱 버전이 변경된다면 앱을 실행하고 있던 사용자가 굉장히 불편할 것입니다. [버전](guide/service-worker-devops#versions)에 대해서는 위에서 언급한 내용을 참고하세요.
 
+Angular 서비스 워커는 완충장치를 제공합니다. 그래서 일단 실행하고 있던 앱은 사용자가 종료하기 전까지 계속 실행할 수 있습니다. 하지만 웹브라우저의 새로운 탭에 애플리케이션 인스턴스가 생성되면 , 이 애플리케이션은 최신버전으로 실행됩니다. 그래서 두 탭에 서로 다른 버전의 앱이 동작하게 됩니다.
+
+이 방식은 일반적인 웹 배포 모델보다 더 **안전**합니다. 서비스 워커가 이런 완충장치를 제공하기 때문에, 먼저 실행되고 있던 앱에서 지연로딩하는 파일이 있으면 해당 버전의 리소스를 올바르게 로드할 수 있습니다.
+
+<!--
 There are a few limited reasons why the Angular service worker
 might change the version of a running app. Some of them are
 error conditions:
@@ -171,9 +207,25 @@ of a running app are normal events:
 
 * The page is reloaded/refreshed.
 * The page requests an update be immediately activated via the `SwUpdate` service.
+-->
+하지만 다음과 같은 에러가 발생하며 서비스 워커가 실행하던 앱을 종료합니다:
 
+* 해시값 검사에 실패해서 애플리케이션의 현재 버전이 유효하지 않은 경우
+* 에러가 발생해서 안전모드로도 실행하지 못한 경우. 이 경우에는 서비스 워커가 잠시 비활성화됩니다.
+
+이런 경우에는 서비스 워커가 적절한 애플리케이션 버전을 찾고, 이 버전이 아닌 애플리케이션 코드는 모두 정리합니다.
+
+그리고 에러가 발생하지 않더라도 다음과 같은 경우에는 서비스 워커가 애플리케이션 버전을 최신 버전으로 변경합니다:
+
+* 페이지를 새로고침한 경우
+* `SwUpdate` 서비스를 사용해서 애플리케이션의 최신 버전을 직접 활성화하는 경우
+
+<!--
 ### Service worker updates
+-->
+### 서비스 워커 업데이트하기
 
+<!--
 The Angular service worker is a small script that runs in web browsers.
 From time to time, the service worker will be updated with bug
 fixes and feature improvements.
@@ -187,7 +239,12 @@ app&mdash;the old caches are still valid and content is still served
 normally. However, occasionally a bugfix or feature in the Angular
 service worker requires the invalidation of old caches. In this case,
 the app will be refreshed transparently from the network.
+-->
+Angular 서비스 워커는 사실 웹 브라우저에서 실행되는 간단한 스크립트입니다. 그래서 서비스 워커도 버그를 수정하거나 새로운 기능을 추가하기 위해 업데이트할 필요가 있습니다.
 
+서비스 워커는 애플리케이션이 처음 실행될 때 다운로드되며 비활성화되어도 브라우저에 계속 남아있습니다. 그래서 서비스 워커는 보통 백그라운드에서 업데이트됩니다.
+
+서비스 워커가 업데이트되더라도 이 과정은 애플리케이션에 영향을 주지 않습니다. 그래서 업데이트하기 이전에 캐싱한 리소스는 서비스 워커를 업데이트한 이후에도 여전히 유효합니다. 하지만 서비스 워커의 버그를 수정하거나 기능이 추가된 경우라면 이전에 있던 캐시를 폐기하고 새로 받아와야 하는 경우도 있습니다. 이 경우에는 앱 전체가 새로 실행될 수 있습니다.
 
 ## Debugging the Angular service worker
 
