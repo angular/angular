@@ -13,11 +13,13 @@ import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {FileSystem} from '../file_system/file_system';
+import {CommonJsReflectionHost} from '../host/commonjs_host';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {UmdReflectionHost} from '../host/umd_host';
 import {Logger} from '../logging/logger';
+import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter';
 import {DtsRenderer} from '../rendering/dts_renderer';
 import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
 import {EsmRenderingFormatter} from '../rendering/esm_rendering_formatter';
@@ -97,6 +99,9 @@ export class Transformer {
       case 'umd':
         return new UmdReflectionHost(
             this.logger, isCore, bundle.src.program, bundle.src.host, bundle.dts);
+      case 'commonjs':
+        return new CommonJsReflectionHost(
+            this.logger, isCore, bundle.src.program, bundle.src.host, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
@@ -114,6 +119,8 @@ export class Transformer {
           throw new Error('UmdRenderer requires a UmdReflectionHost');
         }
         return new UmdRenderingFormatter(host, isCore);
+      case 'commonjs':
+        return new CommonJsRenderingFormatter(host, isCore);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }

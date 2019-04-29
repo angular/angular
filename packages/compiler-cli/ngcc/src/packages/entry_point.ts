@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
+import {parseStatementForUmdModule} from '../host/umd_host';
 import {Logger} from '../logging/logger';
 
 /**
@@ -107,7 +109,8 @@ export function getEntryPointInfo(
  * @param property The property to convert to a format.
  * @returns An entry-point format or `undefined` if none match the given property.
  */
-export function getEntryPointFormat(property: string): EntryPointFormat|undefined {
+export function getEntryPointFormat(
+    fs: FileSystem, entryPoint: EntryPoint, property: string): EntryPointFormat|undefined {
   switch (property) {
     case 'fesm2015':
       return 'esm2015';
@@ -120,7 +123,8 @@ export function getEntryPointFormat(property: string): EntryPointFormat|undefine
     case 'esm5':
       return 'esm5';
     case 'main':
-      return 'umd';
+      const pathToMain = AbsoluteFsPath.join(entryPoint.path, entryPoint.packageJson['main'] !);
+      return isUmdModule(fs, pathToMain) ? 'umd' : 'commonjs';
     case 'module':
       return 'esm5';
     default:
@@ -142,4 +146,11 @@ function loadEntryPointPackage(
     logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
     return null;
   }
+}
+
+function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
+  const sourceFile =
+      ts.createSourceFile(sourceFilePath, fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
+  return sourceFile.statements.length > 0 &&
+      parseStatementForUmdModule(sourceFile.statements[0]) !== null;
 }
