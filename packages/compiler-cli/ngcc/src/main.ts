@@ -7,6 +7,7 @@
  */
 import {AbsoluteFsPath} from '../../src/ngtsc/path';
 
+import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver} from './dependencies/dependency_resolver';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
@@ -64,7 +65,7 @@ export interface NgccOptions {
   pathMappings?: PathMappings;
 }
 
-const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'umd'];
+const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'umd', 'commonjs'];
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -83,8 +84,13 @@ export function mainNgcc(
   const moduleResolver = new ModuleResolver(fs, pathMappings);
   const esmDependencyHost = new EsmDependencyHost(fs, moduleResolver);
   const umdDependencyHost = new UmdDependencyHost(fs, moduleResolver);
-  const resolver = new DependencyResolver(
-      logger, {esm5: esmDependencyHost, esm2015: esmDependencyHost, umd: umdDependencyHost});
+  const commonJsDependencyHost = new CommonJsDependencyHost(fs, moduleResolver);
+  const resolver = new DependencyResolver(fs, logger, {
+    esm5: esmDependencyHost,
+    esm2015: esmDependencyHost,
+    umd: umdDependencyHost,
+    commonjs: commonJsDependencyHost
+  });
   const finder = new EntryPointFinder(fs, logger, resolver);
   const fileWriter = getFileWriter(fs, createNewEntryPointFormats);
 
@@ -127,7 +133,7 @@ export function mainNgcc(
     for (let i = 0; i < propertiesToConsider.length; i++) {
       const property = propertiesToConsider[i] as EntryPointJsonProperty;
       const formatPath = entryPointPackageJson[property];
-      const format = getEntryPointFormat(property);
+      const format = getEntryPointFormat(fs, entryPoint, property);
 
       // No format then this property is not supposed to be compiled.
       if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;

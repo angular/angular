@@ -25,7 +25,7 @@ describe('DependencyResolver', () => {
     fs = new MockFileSystem();
     moduleResolver = new ModuleResolver(fs);
     host = new EsmDependencyHost(fs, moduleResolver);
-    resolver = new DependencyResolver(new MockLogger(), {esm5: host, esm2015: host});
+    resolver = new DependencyResolver(fs, new MockLogger(), {esm5: host, esm2015: host});
   });
   describe('sortEntryPointsByDependency()', () => {
     const first = {
@@ -117,7 +117,7 @@ describe('DependencyResolver', () => {
     });
 
     it('should error if there is no appropriate DependencyHost for the given formats', () => {
-      resolver = new DependencyResolver(new MockLogger(), {esm2015: host});
+      resolver = new DependencyResolver(fs, new MockLogger(), {esm2015: host});
       expect(() => resolver.sortEntryPointsByDependency([first]))
           .toThrowError(
               `Could not find a suitable format for computing dependencies of entry-point: '${first.path}'.`);
@@ -152,7 +152,8 @@ describe('DependencyResolver', () => {
     it('should use the appropriate DependencyHost for each entry-point', () => {
       const esm5Host = new EsmDependencyHost(fs, moduleResolver);
       const esm2015Host = new EsmDependencyHost(fs, moduleResolver);
-      resolver = new DependencyResolver(new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host});
+      resolver =
+          new DependencyResolver(fs, new MockLogger(), {esm5: esm5Host, esm2015: esm2015Host});
       spyOn(esm5Host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       spyOn(esm2015Host, 'findDependencies')
           .and.callFake(createFakeComputeDependencies(dependencies));
