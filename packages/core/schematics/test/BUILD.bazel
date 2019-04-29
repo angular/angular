@@ -5,7 +5,8 @@ ts_library(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     data = [
-        "//packages/core/schematics:test-migrations.json",
+        "test-migrations.json",
+        "//packages/core/schematics:migrations.json",
     ],
     deps = [
         "//packages/core/schematics/migrations/injectable-pipe",
