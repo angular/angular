@@ -28,7 +28,14 @@ export const ACTIVE_INDEX = 2;
 // PARENT, NEXT, QUERIES and T_HOST are indices 3, 4, 5 and 6.
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 7;
-export const VIEWS = 8;
+
+/**
+ * Size of LContainer's header. Represents the index after which all views in the
+ * container will be inserted. We need to keep a record of current views so we know
+ * which views are already in the DOM (and don't need to be re-added) and so we can
+ * remove views from the DOM when they are no longer required.
+ */
+export const CONTAINER_HEADER_OFFSET = 8;
 
 /**
  * The state associated with a container.
@@ -92,15 +99,6 @@ export interface LContainer extends Array<any> {
   /** The comment element that serves as an anchor for this LContainer. */
   readonly[NATIVE]:
       RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
-
-  /**
-*A list of the container's currently active child views. Views will be inserted
-*here as they are added and spliced from here when they are removed. We need
-*to keep a record of current views so we know which views are already in the DOM
-*(and don't need to be re-added) and so we can remove views from the DOM when they
-*are no longer required.
-*/
-  [VIEWS]: LView[];
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

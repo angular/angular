@@ -7,11 +7,10 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {assertDefined} from '../util/assert';
 
 import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
-import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
@@ -99,8 +98,9 @@ function walkTNodeTree(
         // This element has an LContainer, and its comment needs to be handled
         executeNodeAction(
             action, renderer, renderParent, nodeOrContainer[NATIVE], tNode, beforeNode);
-        if (nodeOrContainer[VIEWS].length) {
-          currentView = nodeOrContainer[VIEWS][0];
+        const firstView = nodeOrContainer[CONTAINER_HEADER_OFFSET];
+        if (firstView) {
+          currentView = firstView;
           nextTNode = currentView[TVIEW].node;
 
           // When the walker enters a container, then the beforeNode has to become the local native
@@ -111,9 +111,9 @@ function walkTNodeTree(
     } else if (tNode.type === TNodeType.Container) {
       const lContainer = currentView ![tNode.index] as LContainer;
       executeNodeAction(action, renderer, renderParent, lContainer[NATIVE], tNode, beforeNode);
-
-      if (lContainer[VIEWS].length) {
-        currentView = lContainer[VIEWS][0];
+      const firstView = lContainer[CONTAINER_HEADER_OFFSET];
+      if (firstView) {
+        currentView = firstView;
         nextTNode = currentView[TVIEW].node;
 
         // When the walker enters a container, then the beforeNode has to become the local native
@@ -302,8 +302,8 @@ export function destroyViewTree(rootView: LView): void {
     } else {
       ngDevMode && assertLContainer(lViewOrLContainer);
       // If container, traverse down to its first LView.
-      const views = lViewOrLContainer[VIEWS] as LView[];
-      if (views.length > 0) next = views[0];
+      const firstView: LView|undefined = lViewOrLContainer[CONTAINER_HEADER_OFFSET];
+      if (firstView) next = firstView;
     }
 
     if (!next) {
@@ -335,18 +335,18 @@ export function destroyViewTree(rootView: LView): void {
 export function insertView(lView: LView, lContainer: LContainer, index: number) {
   ngDevMode && assertLView(lView);
   ngDevMode && assertLContainer(lContainer);
-  const views = lContainer[VIEWS];
-  ngDevMode && assertDefined(views, 'Container must have views');
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const containerLength = lContainer.length;
+
   if (index > 0) {
     // This is a new view, we need to add it to the children.
-    views[index - 1][NEXT] = lView;
+    lContainer[indexInContainer - 1][NEXT] = lView;
   }
-
-  if (index < views.length) {
-    lView[NEXT] = views[index];
-    views.splice(index, 0, lView);
+  if (index < containerLength - CONTAINER_HEADER_OFFSET) {
+    lView[NEXT] = lContainer[indexInContainer];
+    lContainer.splice(CONTAINER_HEADER_OFFSET + index, 0, lView);
   } else {
-    views.push(lView);
+    lContainer.push(lView);
     lView[NEXT] = null;
   }
 
@@ -372,13 +372,15 @@ export function insertView(lView: LView, lContainer: LContainer, index: number) 
  * @returns Detached LView instance.
  */
 export function detachView(lContainer: LContainer, removeIndex: number): LView|undefined {
-  const views = lContainer[VIEWS];
-  const viewToDetach = views[removeIndex];
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + removeIndex;
+  const viewToDetach = lContainer[indexInContainer];
   if (viewToDetach) {
     if (removeIndex > 0) {
-      views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
+      lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
     }
-    views.splice(removeIndex, 1);
+    lContainer.splice(CONTAINER_HEADER_OFFSET + removeIndex, 1);
     addRemoveViewFromContainer(viewToDetach, false);
 
     if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
@@ -400,11 +402,8 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
  * @param removeIndex The index of the view to remove
  */
 export function removeView(lContainer: LContainer, removeIndex: number) {
-  const view = lContainer[VIEWS][removeIndex];
-  if (view) {
-    detachView(lContainer, removeIndex);
-    destroyLView(view);
-  }
+  const detachedView = detachView(lContainer, removeIndex);
+  detachedView && destroyLView(detachedView);
 }
 
 /**
@@ -678,9 +677,8 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
 function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
   if (parentTNode.type === TNodeType.View) {
     const lContainer = getLContainer(parentTNode as TViewNode, lView) !;
-    const views = lContainer[VIEWS];
-    const index = views.indexOf(lView);
-    return getBeforeNodeForView(index, views, lContainer[NATIVE]);
+    const index = lContainer.indexOf(lView, CONTAINER_HEADER_OFFSET) - CONTAINER_HEADER_OFFSET;
+    return getBeforeNodeForView(index, lContainer);
   } else if (
       parentTNode.type === TNodeType.ElementContainer ||
       parentTNode.type === TNodeType.IcuContainer) {
@@ -729,9 +727,11 @@ function getHighestElementOrICUContainer(tNode: TNode): TNode {
   return tNode;
 }
 
-export function getBeforeNodeForView(index: number, views: LView[], containerNative: RComment) {
-  if (index + 1 < views.length) {
-    const view = views[index + 1] as LView;
+export function getBeforeNodeForView(index: number, lContainer: LContainer) {
+  const containerNative = lContainer[NATIVE];
+
+  if (index + 1 < lContainer.length - CONTAINER_HEADER_OFFSET) {
+    const view = lContainer[CONTAINER_HEADER_OFFSET + index + 1] as LView;
     const viewTNode = view[T_HOST] as TViewNode;
     return viewTNode.child ? getNativeByTNode(viewTNode.child, view) : containerNative;
   } else {
@@ -817,9 +817,8 @@ function appendProjectedNode(
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
     // Assign the final projection location in those cases.
-    const views = nodeOrContainer[VIEWS];
-    for (let i = 0; i < views.length; i++) {
-      addRemoveViewFromContainer(views[i], true, nodeOrContainer[NATIVE]);
+    for (let i = CONTAINER_HEADER_OFFSET; i < nodeOrContainer.length; i++) {
+      addRemoveViewFromContainer(nodeOrContainer[i], true, nodeOrContainer[NATIVE]);
     }
   } else {
     if (projectedTNode.type === TNodeType.ElementContainer) {

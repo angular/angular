@@ -8,10 +8,10 @@
 
 import {Injector} from '../di';
 import {getViewComponent} from '../render3/global_utils_api';
-import {LContainer, NATIVE, VIEWS} from '../render3/interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
-import {LView, NEXT, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
+import {LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContextFromLView} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
@@ -502,8 +502,8 @@ function _queryNodeChildrenR3(
 function _queryNodeChildrenInContainerR3(
     lContainer: LContainer, predicate: Predicate<DebugNode>, matches: DebugNode[],
     elementsOnly: boolean, rootNativeNode: any) {
-  for (let i = 0; i < lContainer[VIEWS].length; i++) {
-    const childView = lContainer[VIEWS][i];
+  for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+    const childView = lContainer[i];
     _queryNodeChildrenR3(
         childView[TVIEW].node !, childView, predicate, matches, elementsOnly, rootNativeNode);
   }
