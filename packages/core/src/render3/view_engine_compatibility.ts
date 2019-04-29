@@ -19,7 +19,7 @@ import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/shared';
-import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
@@ -201,14 +201,19 @@ export function createContainerRef(
       }
 
       clear(): void {
-        while (this._lContainer[VIEWS].length) {
+        while (this.length) {
           this.remove(0);
         }
       }
 
       get(index: number): viewEngine_ViewRef|null { return this._viewRefs[index] || null; }
 
-      get length(): number { return this._lContainer[VIEWS].length; }
+      get length(): number {
+        // Note that if there are no views, the container
+        // length will be smaller than the header offset.
+        const viewAmount = this._lContainer.length - CONTAINER_HEADER_OFFSET;
+        return viewAmount > 0 ? viewAmount : 0;
+      }
 
       createEmbeddedView<C>(templateRef: ViewEngine_TemplateRef<C>, context?: C, index?: number):
           viewEngine_EmbeddedViewRef<C> {
@@ -250,8 +255,7 @@ export function createContainerRef(
 
         insertView(lView, this._lContainer, adjustedIdx);
 
-        const beforeNode =
-            getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], this._lContainer[NATIVE]);
+        const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
@@ -287,12 +291,12 @@ export function createContainerRef(
 
       private _adjustIndex(index?: number, shift: number = 0) {
         if (index == null) {
-          return this._lContainer[VIEWS].length + shift;
+          return this.length + shift;
         }
         if (ngDevMode) {
           assertGreaterThan(index, -1, 'index must be positive');
           // +1 because it's legal to insert at the end.
-          assertLessThan(index, this._lContainer[VIEWS].length + 1 + shift, 'index');
+          assertLessThan(index, this.length + 1 + shift, 'index');
         }
         return index;
       }
