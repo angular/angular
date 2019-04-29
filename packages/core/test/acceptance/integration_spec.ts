@@ -253,27 +253,91 @@ describe('acceptance integration tests', () => {
     expect(clicks).toBe(1);
   });
 
-  // TODO(crisbeto): this fails even with decorated classes
-  // in master. To be enabled as a part of FW-1294.
-  xit('should inherit host listeners from undecorated grand superclasses', () => {
+  it('should inherit host listeners from superclasses once', () => {
     let clicks = 0;
 
+    @Directive({selector: '[baseButton]'})
+    class BaseButton {
+      @HostListener('click')
+      handleClick() { clicks++; }
+    }
+
+    @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button subButton>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [SubButton, BaseButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(clicks).toBe(1);
+  });
+
+  it('should inherit host listeners from grand superclasses once', () => {
+    let clicks = 0;
+
+    @Directive({selector: '[superBaseButton]'})
     class SuperBaseButton {
       @HostListener('click')
       handleClick() { clicks++; }
     }
 
-    class BaseButton extends SuperBaseButton {}
+    @Directive({selector: '[baseButton]'})
+    class BaseButton extends SuperBaseButton {
+    }
 
-    @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
+    @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
     class SubButton extends BaseButton {
     }
 
-    @Component({template: '<button sub-button>Click me</button>'})
+    @Component({template: '<button subButton>Click me</button>'})
     class App {
     }
 
-    TestBed.configureTestingModule({declarations: [SubButton, App]});
+    TestBed.configureTestingModule({declarations: [SubButton, SuperBaseButton, BaseButton, App]});
+    const fixture = TestBed.createComponent(App);
+    const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(clicks).toBe(1);
+  });
+
+  it('should inherit host listeners from grand grand superclasses once', () => {
+    let clicks = 0;
+
+    @Directive({selector: '[superSuperBaseButton]'})
+    class SuperSuperBaseButton {
+      @HostListener('click')
+      handleClick() { clicks++; }
+    }
+
+    @Directive({selector: '[superBaseButton]'})
+    class SuperBaseButton extends SuperSuperBaseButton {
+    }
+
+    @Directive({selector: '[baseButton]'})
+    class BaseButton extends SuperBaseButton {
+    }
+
+    @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
+    class SubButton extends BaseButton {
+    }
+
+    @Component({template: '<button subButton>Click me</button>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule(
+        {declarations: [SubButton, SuperBaseButton, SuperSuperBaseButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
     const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
 
