@@ -21,7 +21,7 @@ describe('template variable assignment migration', () => {
   let warnOutput: string[];
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../test-migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -58,7 +58,9 @@ describe('template variable assignment migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() { runner.runSchematic('migration-template-local-variables', {}, tree); }
+  function runMigration() {
+    runner.runSchematic('migration-v8-template-local-variables', {}, tree);
+  }
 
   it('should warn for two-way data binding variable assignment', () => {
     writeFile('/index.ts', `
