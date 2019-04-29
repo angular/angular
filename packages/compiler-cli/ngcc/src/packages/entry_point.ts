@@ -12,7 +12,7 @@ import {Logger} from '../logging/logger';
 /**
  * The possible values for the format of an entry-point.
  */
-export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd';
+export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd' | 'commonjs';
 
 /**
  * An object containing information about an entry-point, including paths
