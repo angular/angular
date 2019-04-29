@@ -10,6 +10,7 @@ export const examplesPackage = new BuildPackage('material-examples', [
   cdkPackage,
   cdkExperimentalPackage,
   materialPackage,
+  materialExperimentalPackage,
   momentAdapterPackage
 ]);
 

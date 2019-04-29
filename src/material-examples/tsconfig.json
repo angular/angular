@@ -8,8 +8,10 @@
     "baseUrl": ".",
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
+      "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
       "@angular/material/*": ["../material/*"],
       "@angular/material": ["../material/public-api.ts"],
+      "@angular/material-experimental/*": ["../material-experimental/*"],
       "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"]
     }
   },
