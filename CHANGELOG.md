@@ -1,3 +1,14 @@
+<a name="8.0.0-rc.2"></a>
+# [8.0.0-rc.2](https://github.com/angular/angular/compare/8.0.0-rc.1...8.0.0-rc.2) (2019-04-29)
+
+
+### Bug Fixes
+
+* **language-service:** Remove tsserverlibrary from rollup globals ([#30123](https://github.com/angular/angular/issues/30123)) ([b706800](https://github.com/angular/angular/commit/b706800))
+* disable injectable-pipe migration ([#30180](https://github.com/angular/angular/issues/30180)) ([4b2fcfd](https://github.com/angular/angular/commit/4b2fcfd))
+
+
+
 <a name="8.0.0-rc.1"></a>
 # [8.0.0-rc.1](https://github.com/angular/angular/compare/8.0.0-rc.0...8.0.0-rc.1) (2019-04-26)
 
