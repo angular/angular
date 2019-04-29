@@ -70,7 +70,7 @@ export interface ControlValueAccessor {
    *
    * ```ts
    * host: {
-   *    (change): '_onChange($event.target.value)'
+   *    '(change)': '_onChange($event.target.value)'
    * }
    * ```
    *
