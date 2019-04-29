@@ -28,7 +28,7 @@
     "preinstall": "node ./tools/npm/check-npm.js",
     "format": "git-clang-format HEAD $(git diff HEAD --name-only | grep -v \"\\.d\\.ts\")"
   },
-  "version": "8.0.0-beta.2",
+  "version": "8.0.0-rc.0",
   "requiredAngularVersion": ">=8.0.0-rc.1",
   "requiredMDCVersion": "^1.1.0",
   "dependencies": {

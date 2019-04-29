@@ -1,3 +1,25 @@
+# 8.0.0-rc.0 "plastic-portal" (2019-04-29)
+
+
+### Project Organization
+
+* The repo name has changed from `angular/material2` to `angular/components`
+* All files under `src/lib` have been moved under `src/material`
+
+
+### Bug Fixes
+
+* **autocomplete:** make template ViewChild query `static: true` ([#15877](https://github.com/angular/components/issues/15877)) ([388baa2](https://github.com/angular/components/commit/388baa2))
+* **drag-drop:** not reacting to changes in the cdkDragFreeDragPosition ([#15805](https://github.com/angular/components/issues/15805)) ([021b85a](https://github.com/angular/components/commit/021b85a)), closes [#15765](https://github.com/angular/components/issues/15765)
+* **stepper:** Fix visual flake in focusing stepper header ([#15870](https://github.com/angular/components/issues/15870)) ([8b5c0f1](https://github.com/angular/components/commit/8b5c0f1))
+
+
+### Features
+
+* **table:** add text column for simple columns ([#14841](https://github.com/angular/components/issues/14841)) ([cf76707](https://github.com/angular/components/commit/cf76707))
+
+
+
 # 8.0.0-beta.2 "helium-blockade" (2019-04-15)
 
 **Imminent Important Import Deprecation**:
