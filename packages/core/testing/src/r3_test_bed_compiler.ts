@@ -548,9 +548,8 @@ export class R3TestBedCompiler {
     }
 
     // TODO(ocombe): make this work with an Injector directly instead of creating a module for it
-    @NgModule({providers})
-    class CompilerModule {
-    }
+    class CompilerModule {}
+    compileNgModuleDefs(CompilerModule as NgModuleType<any>, {providers});
 
     const CompilerModuleFactory = new R3NgModuleFactory(CompilerModule);
     this._injector = CompilerModuleFactory.create(this.platform.injector).injector;
