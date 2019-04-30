@@ -27,7 +27,7 @@ export class NgccCompilerHost implements ts.CompilerHost {
   }
 
   getDefaultLibLocation(): string {
-    const nodeLibPath = AbsoluteFsPath.fromUnchecked(require.resolve('typescript'));
+    const nodeLibPath = AbsoluteFsPath.from(require.resolve('typescript'));
     return AbsoluteFsPath.join(nodeLibPath, '..');
   }
 
