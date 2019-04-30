@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -24,7 +24,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (focus)="doFocus()"
     (click)="doSearch()">`
 })
-export class SearchBoxComponent implements OnInit {
+export class SearchBoxComponent implements AfterViewInit {
 
   private searchDebounce = 300;
   private searchSubject = new Subject<string>();
@@ -40,7 +40,7 @@ export class SearchBoxComponent implements OnInit {
   /**
    * When we first show this search box we trigger a search if there is a search query in the URL
    */
-  ngOnInit() {
+  ngAfterViewInit() {
     const query = this.locationService.search()['search'];
     if (query) {
       this.query = query;

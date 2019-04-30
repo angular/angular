@@ -292,11 +292,21 @@ jobs:
 
   test_aio_local_ivy:
     <<: *job_defaults
+    docker:
+      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+      - image: *browsers_docker_image
     steps:
       - *attach_workspace
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
+        # Run PWA-score tests
+        # (Run before unit and e2e tests, which destroy the `dist/` directory.)
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+        # Run unit tests
+      - run: yarn --cwd aio test --progress=false --watch=false
+        # Run e2e tests
+      - run: yarn --cwd aio e2e --configuration=ci
 
   test_aio_tools:
     <<: *job_defaults
