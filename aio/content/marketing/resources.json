@@ -490,6 +490,12 @@
             "rev": true,
             "title": "Carbon Components Angular",
             "url": "https://angular.carbondesignsystem.com/"
+          },
+          "jigsaw": {
+            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "rev": true,
+            "title": "Awade Jigsaw (Chinese)",
+            "url": "http://rdk.zte.com.cn/components"
           }
         }
       }
