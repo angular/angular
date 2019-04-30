@@ -576,8 +576,8 @@ function readBazelWrittenFilesFrom(
   function processDirectory(dir: string, dest: string) {
     const entries = fs.readdirSync(dir);
     for (const name of entries) {
-      const fullName = path.join(dir, name);
-      const destName = path.join(dest, name);
+      const fullName = path.posix.join(dir, name);
+      const destName = path.posix.join(dest, name);
       const stat = fs.statSync(fullName);
       if (!skip(name, fullName)) {
         if (stat.isDirectory()) {
@@ -590,11 +590,11 @@ function readBazelWrittenFilesFrom(
     }
   }
   try {
-    processDirectory(bazelPackageRoot, path.join('/node_modules/@angular', packageName));
+    processDirectory(bazelPackageRoot, path.posix.join('/node_modules/@angular', packageName));
     // todo: check why we always need an index.d.ts
     if (fs.existsSync(path.join(bazelPackageRoot, `${packageName}.d.ts`))) {
       const content = fs.readFileSync(path.join(bazelPackageRoot, `${packageName}.d.ts`), 'utf8');
-      map.set(path.join('/node_modules/@angular', packageName, 'index.d.ts'), content);
+      map.set(path.posix.join('/node_modules/@angular', packageName, 'index.d.ts'), content);
     }
   } catch (e) {
     console.error(
@@ -632,24 +632,25 @@ export function setup(options: {
       if (options.compileAngular) {
         // If this fails please add //packages/core:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/core/npm_package'), 'core', angularFiles,
+            resolveNpmTreeArtifact('angular/packages/core/npm_package'), 'core', angularFiles,
             skipDirs);
       }
       if (options.compileFakeCore) {
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
+            resolveNpmTreeArtifact(
+                'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
             'core', angularFiles, skipDirs);
       }
       if (options.compileAnimations) {
         // If this fails please add //packages/animations:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/animations/npm_package'), 'animations',
+            resolveNpmTreeArtifact('angular/packages/animations/npm_package'), 'animations',
             angularFiles, skipDirs);
       }
       if (options.compileCommon) {
         // If this fails please add //packages/common:npm_package as a test data dependency.
         readBazelWrittenFilesFrom(
-            path.join(sources, 'angular/packages/common/npm_package'), 'common', angularFiles,
+            resolveNpmTreeArtifact('angular/packages/common/npm_package'), 'common', angularFiles,
             skipDirs);
       }
       return;
@@ -748,6 +749,10 @@ function isDts(fileName: string): boolean {
 
 function isSourceOrDts(fileName: string): boolean {
   return /\.ts$/.test(fileName);
+}
+
+function resolveNpmTreeArtifact(manifestPath: string, resolveFile = 'package.json') {
+  return path.dirname(require.resolve(path.posix.join(manifestPath, resolveFile)));
 }
 
 export function compile(
