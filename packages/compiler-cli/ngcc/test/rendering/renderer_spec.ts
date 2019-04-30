@@ -158,7 +158,7 @@ describe('Renderer', () => {
           decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
           moduleWithProvidersAnalyses);
       const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
-      expect(addDefinitionsSpy.calls.first().args[2])
+      expect(addDefinitionsSpy.calls.first().args[2].replace(/\r\n/g, '\n'))
           .toEqual(
               `A.ngComponentDef = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
@@ -203,7 +203,7 @@ describe('Renderer', () => {
              name: _('A'),
              decorators: [jasmine.objectContaining({name: _('Directive')})]
            }));
-           expect(addDefinitionsSpy.calls.first().args[2])
+           expect(addDefinitionsSpy.calls.first().args[2].replace(/\r\n/g, '\n'))
                .toEqual(
                    `A.ngDirectiveDef = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });
 /*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
