@@ -38,7 +38,7 @@ describe('SearchBoxComponent', () => {
     it('should get the current search query from the location service',
           fakeAsync(inject([LocationService], (location: MockLocationService) => {
       location.search.and.returnValue({ search: 'initial search' });
-      component.ngOnInit();
+      component.ngAfterViewInit();
       expect(location.search).toHaveBeenCalled();
       tick(300);
       expect(host.searchHandler).toHaveBeenCalledWith('initial search');
