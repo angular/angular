@@ -12,7 +12,7 @@ import {getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _ = AbsoluteFsPath.from;
 
 describe('getEntryPointInfo()', () => {
   const SOME_PACKAGE = _('/some_package');

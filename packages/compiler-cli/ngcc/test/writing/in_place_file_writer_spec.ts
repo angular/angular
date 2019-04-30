@@ -11,7 +11,7 @@ import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {InPlaceFileWriter} from '../../src/writing/in_place_file_writer';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _ = AbsoluteFsPath.from;
 
 function createMockFileSystem() {
   return new MockFileSystem({
@@ -71,13 +71,14 @@ describe('InPlaceFileWriter', () => {
   it('should error if the backup file already exists', () => {
     const fs = createMockFileSystem();
     const fileWriter = new InPlaceFileWriter(fs);
+    const absoluteBackupPath = _('/package/path/already-backed-up.js');
     expect(
         () => fileWriter.writeBundle(
             {} as EntryPoint, {} as EntryPointBundle,
             [
-              {path: _('/package/path/already-backed-up.js'), contents: 'MODIFIED BACKED UP'},
+              {path: absoluteBackupPath, contents: 'MODIFIED BACKED UP'},
             ]))
         .toThrowError(
-            'Tried to overwrite /package/path/already-backed-up.js.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.');
+            `Tried to overwrite ${absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.`);
   });
 });

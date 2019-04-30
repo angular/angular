@@ -173,7 +173,7 @@ export abstract class Renderer {
   renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
-    const printer = ts.createPrinter();
+    const printer = createPrinter();
     const importManager = new ImportManager(
         this.getImportRewriter(this.bundle.dts !.r3SymbolsFile, false), IMPORT_PREFIX);
 
@@ -476,7 +476,7 @@ export function mergeSourceMaps(
  */
 export function renderConstantPool(
     sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
-  const printer = ts.createPrinter();
+  const printer = createPrinter();
   return constantPool.statements
       .map(stmt => translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
@@ -493,7 +493,7 @@ export function renderConstantPool(
  */
 export function renderDefinitions(
     sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
-  const printer = ts.createPrinter();
+  const printer = createPrinter();
   const name = compiledClass.declaration.name;
   const translate = (stmt: Statement) =>
       translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
@@ -528,4 +528,8 @@ function getImportString(
     importManager: ImportManager, importPath: string | null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
+}
+
+function createPrinter(): ts.Printer {
+  return ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 }
