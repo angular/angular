@@ -31,23 +31,21 @@ Installing the Angular service worker is as simple as including an `NgModule`. I
 
 ## Prerequisites
 
-To use Angular service workers, you must have the following Angular and CLI versions:
+To make use of all the features of Angular service workers, use the latest versions of the Angular and the Angular CLI.
 
-* Angular 5.0.0 or later.
-* Angular CLI 1.6.0 or later.
+### Browser support
 
-Your application must run in a web browser that supports service workers. Currently, service workers are supported in the latest versions of Chrome, Firefox, Edge, Safari, Opera, UC Browser (Android version) and Samsung Internet. Browsers like IE and Opera Mini do not provide the support.
+To benefit from the Angular service workers, your app must run in a web browser that supports service workers in general. Currently, service workers are supported in the latest versions of Chrome, Firefox, Edge, Safari, Opera, UC Browser (Android version) and Samsung Internet. Browsers like IE and Opera Mini do not provide support to service workers.
 
- <div class="l-sub-section">
+It is highly recommended to ensure that your app works even without service worker support in the browser.
 
-  If the browser does not support service workers, then the Angular service worker will not function correctly:
+If the user is accessing your app via a browser that does not support service workers, then the service worker will not be registered, and related behavior such as offline cache management and push notifications will not happen. More specifically:
 
-* The service worker script and `ngsw.json` are not downloaded.
+* The browser will not download the service worker script and `ngsw.json` manifest file.
 * Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()`, return rejected promises.
-* The service worker observable properties such as `SwUpdate.available` are not triggered.
- </div>
+* The observable events of related services, such as `SwUpdate.available`, are not triggered.
 
- To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
 ## Related resources
 
@@ -58,7 +56,7 @@ For more information about browser support, see the [browser support](https://de
 
 The remainder of this Angular documentation specifically addresses the Angular implementation of service workers.
 
-## More on Angular service workers
+## Next Steps
 
-You may also be interested in the following:
+To begin using Angular service workers, see the following guide:
 * [Getting Started with service workers](guide/service-worker-getting-started).
