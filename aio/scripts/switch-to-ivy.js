@@ -33,7 +33,7 @@ function _main() {
   const oldTsConfigStr = readFileSync(tsConfigPath, 'utf8');
   const oldTsConfigObj = parse(oldTsConfigStr);
   const newTsConfigObj = extend(true, oldTsConfigObj, NG_COMPILER_OPTS);
-  const newTsConfigStr = JSON.stringify(newTsConfigObj, null, 2);
+  const newTsConfigStr = `${JSON.stringify(newTsConfigObj, null, 2)}\n`;
   console.log(`\nNew config: ${newTsConfigStr}`);
   writeFileSync(tsConfigPath, newTsConfigStr);
 
