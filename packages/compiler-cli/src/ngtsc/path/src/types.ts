@@ -40,6 +40,12 @@ export const AbsoluteFsPath = {
    * Convert the path `str` to an `AbsoluteFsPath`, throwing an error if it's not an absolute path.
    */
   from: function(str: string): AbsoluteFsPath {
+    if (str.startsWith('/') && process.platform === 'win32') {
+      // in Windows if it's absolute path and starts with `/` we shall
+      // resolve it and return it including the drive.
+      str = path.resolve(str);
+    }
+
     const normalized = normalizeSeparators(str);
     if (!isAbsolutePath(normalized)) {
       throw new Error(`Internal Error: AbsoluteFsPath.from(${str}): path is not absolute`);
@@ -80,6 +86,9 @@ export const AbsoluteFsPath = {
    */
   resolve: function(basePath: string, ...paths: string[]):
       AbsoluteFsPath { return AbsoluteFsPath.from(path.resolve(basePath, ...paths));},
+
+  /** Returns true when the path provided is the root path. */
+  isRoot: function(path: AbsoluteFsPath): boolean { return AbsoluteFsPath.dirname(path) === path;},
 };
 
 /**

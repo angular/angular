@@ -14,7 +14,7 @@ import {FileStats, FileSystem} from '../../src/file_system/file_system';
 export class MockFileSystem implements FileSystem {
   files: Folder = {};
   constructor(...folders: Folder[]) {
-    folders.forEach(files => this.processFiles(this.files, files));
+    folders.forEach(files => this.processFiles(this.files, files, true));
   }
 
   exists(path: AbsoluteFsPath): boolean { return this.findFromPath(path) !== null; }
@@ -67,7 +67,7 @@ export class MockFileSystem implements FileSystem {
     return new MockFileStats(fileOrFolder);
   }
 
-  pwd(): AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked('/'); }
+  pwd(): AbsoluteFsPath { return AbsoluteFsPath.from('/'); }
 
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void {
     this.writeFile(to, this.readFile(from));
@@ -82,9 +82,10 @@ export class MockFileSystem implements FileSystem {
 
   ensureDir(path: AbsoluteFsPath): void { this.ensureFolders(this.files, path.split('/')); }
 
-  private processFiles(current: Folder, files: Folder): void {
+  private processFiles(current: Folder, files: Folder, isRootPath = false): void {
     Object.keys(files).forEach(path => {
-      const segments = path.split('/');
+      const pathResolved = isRootPath ? AbsoluteFsPath.from(path) : path;
+      const segments = pathResolved.split('/');
       const lastSegment = segments.pop() !;
       const containingFolder = this.ensureFolders(current, segments);
       const entity = files[path];
