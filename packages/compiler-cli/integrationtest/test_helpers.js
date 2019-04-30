@@ -162,5 +162,5 @@ function resolveNpmTreeArtifact(manifestPath, resolveFile = 'package.json') {
 
 /** Finds all files within a specified directory. */
 function findFilesWithinDirectory(directoryPath) {
-  return shx.find(directoryPath).filter(filePath => !fs.statSync(filePath).isDirectory());
+  return shx.find(directoryPath).filter(filePath => !fs.lstatSync(filePath).isDirectory());
 }
