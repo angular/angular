@@ -145,13 +145,14 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
-        if (meta instanceof Optional || meta.ngMetadataName === 'Optional') {
+        if (meta instanceof Optional || meta.ngMetadataName === 'Optional' || meta === Optional) {
           flags |= InjectFlags.Optional;
-        } else if (meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf') {
+        } else if (
+            meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf' || meta === SkipSelf) {
           flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.ngMetadataName === 'Self') {
+        } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
           flags |= InjectFlags.Self;
-        } else if (meta instanceof Inject) {
+        } else if (meta instanceof Inject || meta === Inject) {
           type = meta.token;
         } else {
           type = meta;
