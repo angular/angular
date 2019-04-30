@@ -63,178 +63,182 @@ describe('TocComponent', () => {
       expect(tocComponent.type).toEqual('None');
     });
 
-    it('should not display anything when no h2 or h3 TocItems', () => {
-      tocService.tocList.next([tocItem('H1', 'h1')]);
-      fixture.detectChanges();
-      expect(tocComponentDe.children.length).toEqual(0);
-    });
+    describe('(once the lifecycle hooks have run)', () => {
+      beforeEach(() => fixture.detectChanges());
 
-    it('should update when the TocItems are updated', () => {
-      tocService.tocList.next([tocItem('Heading A')]);
-      fixture.detectChanges();
-      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
-
-      tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C')]);
-      fixture.detectChanges();
-      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(3);
-    });
-
-    it('should only display H2 and H3 TocItems', () => {
-      tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C', 'h3')]);
-      fixture.detectChanges();
-
-      const tocItems = tocComponentDe.queryAll(By.css('li'));
-      const textContents = tocItems.map(item => item.nativeNode.textContent.trim());
-
-      expect(tocItems.length).toBe(2);
-      expect(textContents.find(text => text === 'Heading A')).toBeFalsy();
-      expect(textContents.find(text => text === 'Heading B')).toBeTruthy();
-      expect(textContents.find(text => text === 'Heading C')).toBeTruthy();
-      expect(setPage().tocH1Heading).toBeFalsy();
-    });
-
-    it('should stop listening for TocItems once destroyed', () => {
-      tocService.tocList.next([tocItem('Heading A')]);
-      fixture.detectChanges();
-      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
-
-      tocComponent.ngOnDestroy();
-      tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C')]);
-      fixture.detectChanges();
-      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
-    });
-
-    describe('when fewer than `maxPrimary` TocItems', () => {
-
-      beforeEach(() => {
-        tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D')]);
+      it('should not display anything when no h2 or h3 TocItems', () => {
+        tocService.tocList.next([tocItem('H1', 'h1')]);
         fixture.detectChanges();
-        page = setPage();
+        expect(tocComponentDe.children.length).toEqual(0);
       });
 
-      it('should have four displayed items', () => {
-        expect(page.listItems.length).toEqual(4);
-      });
-
-      it('should not have secondary items', () => {
-        expect(tocComponent.type).toEqual('EmbeddedSimple');
-        const aSecond = page.listItems.find(item => item.classes.secondary);
-        expect(aSecond).toBeFalsy('should not find a secondary');
-      });
-
-      it('should not display expando buttons', () => {
-        expect(page.tocHeadingButtonEmbedded).toBeFalsy('top expand/collapse button');
-        expect(page.tocMoreButton).toBeFalsy('bottom more button');
-      });
-    });
-
-    describe('when many TocItems', () => {
-      let scrollToTopSpy: jasmine.Spy;
-
-      beforeEach(() => {
+      it('should update when the TocItems are updated', () => {
+        tocService.tocList.next([tocItem('Heading A')]);
         fixture.detectChanges();
-        page = setPage();
-        scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
+        expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
+
+        tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C')]);
+        fixture.detectChanges();
+        expect(tocComponentDe.queryAll(By.css('li')).length).toBe(3);
       });
 
-      it('should have more than 4 displayed items', () => {
-        expect(page.listItems.length).toBeGreaterThan(4);
+      it('should only display H2 and H3 TocItems', () => {
+        tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C', 'h3')]);
+        fixture.detectChanges();
+
+        const tocItems = tocComponentDe.queryAll(By.css('li'));
+        const textContents = tocItems.map(item => item.nativeNode.textContent.trim());
+
+        expect(tocItems.length).toBe(2);
+        expect(textContents.find(text => text === 'Heading A')).toBeFalsy();
+        expect(textContents.find(text => text === 'Heading B')).toBeTruthy();
+        expect(textContents.find(text => text === 'Heading C')).toBeTruthy();
+        expect(setPage().tocH1Heading).toBeFalsy();
       });
 
-      it('should not display the h1 item', () => {
-        expect(page.listItems.find(item => item.classes.h1)).toBeFalsy('should not find h1 item');
+      it('should stop listening for TocItems once destroyed', () => {
+        tocService.tocList.next([tocItem('Heading A')]);
+        fixture.detectChanges();
+        expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
+
+        tocComponent.ngOnDestroy();
+        tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C')]);
+        fixture.detectChanges();
+        expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
       });
 
-      it('should be in "collapsed" (not expanded) state at the start', () => {
-        expect(tocComponent.isCollapsed).toBeTruthy();
-      });
-
-      it('should have "collapsed" class at the start', () => {
-        expect(tocComponentDe.children[0].classes.collapsed).toEqual(true);
-      });
-
-      it('should display expando buttons', () => {
-        expect(page.tocHeadingButtonEmbedded).toBeTruthy('top expand/collapse button');
-        expect(page.tocMoreButton).toBeTruthy('bottom more button');
-      });
-
-      it('should have secondary items', () => {
-        expect(tocComponent.type).toEqual('EmbeddedExpandable');
-      });
-
-      // CSS will hide items with the secondary class when collapsed
-      it('should have secondary item with a secondary class', () => {
-        const aSecondary = page.listItems.find(item => item.classes.secondary);
-        expect(aSecondary).toBeTruthy('should find a secondary');
-      });
-
-      describe('after click tocHeading button', () => {
+      describe('when fewer than `maxPrimary` TocItems', () => {
 
         beforeEach(() => {
-          page.tocHeadingButtonEmbedded.nativeElement.click();
+          tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C'), tocItem('Heading D')]);
           fixture.detectChanges();
+          page = setPage();
         });
 
-        it('should not be "collapsed"', () => {
-          expect(tocComponent.isCollapsed).toEqual(false);
+        it('should have four displayed items', () => {
+          expect(page.listItems.length).toEqual(4);
         });
 
-        it('should not have "collapsed" class', () => {
-          expect(tocComponentDe.children[0].classes.collapsed).toBeFalsy();
+        it('should not have secondary items', () => {
+          expect(tocComponent.type).toEqual('EmbeddedSimple');
+          const aSecond = page.listItems.find(item => item.classes.secondary);
+          expect(aSecond).toBeFalsy('should not find a secondary');
         });
 
-        it('should not scroll', () => {
-          expect(scrollToTopSpy).not.toHaveBeenCalled();
-        });
-
-        it('should be "collapsed" after clicking again', () => {
-          page.tocHeadingButtonEmbedded.nativeElement.click();
-          fixture.detectChanges();
-          expect(tocComponent.isCollapsed).toEqual(true);
-        });
-
-        it('should not scroll after clicking again', () => {
-          page.tocHeadingButtonEmbedded.nativeElement.click();
-          fixture.detectChanges();
-          expect(scrollToTopSpy).not.toHaveBeenCalled();
+        it('should not display expando buttons', () => {
+          expect(page.tocHeadingButtonEmbedded).toBeFalsy('top expand/collapse button');
+          expect(page.tocMoreButton).toBeFalsy('bottom more button');
         });
       });
 
-      describe('after click tocMore button', () => {
+      describe('when many TocItems', () => {
+        let scrollToTopSpy: jasmine.Spy;
 
         beforeEach(() => {
-          page.tocMoreButton.nativeElement.click();
           fixture.detectChanges();
+          page = setPage();
+          scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
         });
 
-        it('should not be "collapsed"', () => {
-          expect(tocComponent.isCollapsed).toEqual(false);
+        it('should have more than 4 displayed items', () => {
+          expect(page.listItems.length).toBeGreaterThan(4);
         });
 
-        it('should not have "collapsed" class', () => {
-          expect(tocComponentDe.children[0].classes.collapsed).toBeFalsy();
+        it('should not display the h1 item', () => {
+          expect(page.listItems.find(item => item.classes.h1)).toBeFalsy('should not find h1 item');
         });
 
-        it('should not scroll', () => {
-          expect(scrollToTopSpy).not.toHaveBeenCalled();
+        it('should be in "collapsed" (not expanded) state at the start', () => {
+          expect(tocComponent.isCollapsed).toBeTruthy();
         });
 
-        it('should be "collapsed" after clicking again', () => {
-          page.tocMoreButton.nativeElement.click();
-          fixture.detectChanges();
-          expect(tocComponent.isCollapsed).toEqual(true);
+        it('should have "collapsed" class at the start', () => {
+          expect(tocComponentDe.children[0].classes.collapsed).toEqual(true);
         });
 
-        it('should be "collapsed" after clicking tocHeadingButton', () => {
-          page.tocMoreButton.nativeElement.click();
-          fixture.detectChanges();
-          expect(tocComponent.isCollapsed).toEqual(true);
+        it('should display expando buttons', () => {
+          expect(page.tocHeadingButtonEmbedded).toBeTruthy('top expand/collapse button');
+          expect(page.tocMoreButton).toBeTruthy('bottom more button');
         });
 
-        it('should scroll after clicking again', () => {
-          page.tocMoreButton.nativeElement.click();
-          fixture.detectChanges();
-          expect(scrollToTopSpy).toHaveBeenCalled();
+        it('should have secondary items', () => {
+          expect(tocComponent.type).toEqual('EmbeddedExpandable');
+        });
+
+        // CSS will hide items with the secondary class when collapsed
+        it('should have secondary item with a secondary class', () => {
+          const aSecondary = page.listItems.find(item => item.classes.secondary);
+          expect(aSecondary).toBeTruthy('should find a secondary');
+        });
+
+        describe('after click tocHeading button', () => {
+
+          beforeEach(() => {
+            page.tocHeadingButtonEmbedded.nativeElement.click();
+            fixture.detectChanges();
+          });
+
+          it('should not be "collapsed"', () => {
+            expect(tocComponent.isCollapsed).toEqual(false);
+          });
+
+          it('should not have "collapsed" class', () => {
+            expect(tocComponentDe.children[0].classes.collapsed).toBeFalsy();
+          });
+
+          it('should not scroll', () => {
+            expect(scrollToTopSpy).not.toHaveBeenCalled();
+          });
+
+          it('should be "collapsed" after clicking again', () => {
+            page.tocHeadingButtonEmbedded.nativeElement.click();
+            fixture.detectChanges();
+            expect(tocComponent.isCollapsed).toEqual(true);
+          });
+
+          it('should not scroll after clicking again', () => {
+            page.tocHeadingButtonEmbedded.nativeElement.click();
+            fixture.detectChanges();
+            expect(scrollToTopSpy).not.toHaveBeenCalled();
+          });
+        });
+
+        describe('after click tocMore button', () => {
+
+          beforeEach(() => {
+            page.tocMoreButton.nativeElement.click();
+            fixture.detectChanges();
+          });
+
+          it('should not be "collapsed"', () => {
+            expect(tocComponent.isCollapsed).toEqual(false);
+          });
+
+          it('should not have "collapsed" class', () => {
+            expect(tocComponentDe.children[0].classes.collapsed).toBeFalsy();
+          });
+
+          it('should not scroll', () => {
+            expect(scrollToTopSpy).not.toHaveBeenCalled();
+          });
+
+          it('should be "collapsed" after clicking again', () => {
+            page.tocMoreButton.nativeElement.click();
+            fixture.detectChanges();
+            expect(tocComponent.isCollapsed).toEqual(true);
+          });
+
+          it('should be "collapsed" after clicking tocHeadingButton', () => {
+            page.tocMoreButton.nativeElement.click();
+            fixture.detectChanges();
+            expect(tocComponent.isCollapsed).toEqual(true);
+          });
+
+          it('should scroll after clicking again', () => {
+            page.tocMoreButton.nativeElement.click();
+            fixture.detectChanges();
+            expect(scrollToTopSpy).toHaveBeenCalled();
+          });
         });
       });
     });
