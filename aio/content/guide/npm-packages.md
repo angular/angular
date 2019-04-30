@@ -89,7 +89,7 @@ Package name                               | Description
 
 Many browsers lack native support for some features in the latest HTML standards,
 features that Angular requires.
-[_Polyfills_](https://en.wikipedia.org/wiki/Polyfill) can emulate the missing features.
+[_Polyfills_](https://en.wikipedia.org/wiki/Polyfill_(programming)) can emulate the missing features.
 The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and 
 how you can add them.
 
