@@ -67,7 +67,7 @@ export class MockFileSystem implements FileSystem {
     return new MockFileStats(fileOrFolder);
   }
 
-  pwd(): AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked('/'); }
+  pwd(): AbsoluteFsPath { return AbsoluteFsPath.from('/'); }
 
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void {
     this.writeFile(to, this.readFile(from));
@@ -84,7 +84,7 @@ export class MockFileSystem implements FileSystem {
 
   private processFiles(current: Folder, files: Folder): void {
     Object.keys(files).forEach(path => {
-      const segments = path.split('/');
+      const segments = (path.startsWith('/') ? AbsoluteFsPath.from(path) : path).split('/');
       const lastSegment = segments.pop() !;
       const containingFolder = this.ensureFolders(current, segments);
       const entity = files[path];
