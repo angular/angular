@@ -91,3 +91,20 @@ export function nodeDebugInfo(node: ts.Node): string {
   const {line, character} = ts.getLineAndCharacterOfPosition(sf, node.pos);
   return `[${sf.fileName}: ${ts.SyntaxKind[node.kind]} @ ${line}:${character}]`;
 }
+
+/**
+ * Resolve the specified `moduleName` using the given `compilerOptions` and `compilerHost`.
+ *
+ * This helper will attempt to use the `CompilerHost.resolveModuleNames()` method if available.
+ * Otherwise it will fallback on the `ts.ResolveModuleName()` function.
+ */
+export function resolveModuleName(
+    moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
+    compilerHost: ts.CompilerHost): ts.ResolvedModule|undefined {
+  if (compilerHost.resolveModuleNames) {
+    return compilerHost.resolveModuleNames([moduleName], containingFile)[0];
+  } else {
+    return ts.resolveModuleName(moduleName, containingFile, compilerOptions, compilerHost)
+        .resolvedModule;
+  }
+}
