@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
+import {isRelativePath} from '../utils';
 
 export class NgccCompilerHost implements ts.CompilerHost {
   private _caseSensitive = this.fs.exists(AbsoluteFsPath.fromUnchecked(__filename.toUpperCase()));
@@ -72,7 +73,7 @@ export class NgccCompilerHost implements ts.CompilerHost {
  * would otherwise let TypeScript prefer the .d.ts file instead of the JavaScript source file.
  */
 export class NgccSourcesCompilerHost extends NgccCompilerHost {
-  readonly cache = ts.createModuleResolutionCache(
+  private cache = ts.createModuleResolutionCache(
       this.getCurrentDirectory(), file => this.getCanonicalFileName(file));
 
   constructor(fs: FileSystem, options: ts.CompilerOptions, protected entryPointPath: string) {
@@ -89,12 +90,10 @@ export class NgccSourcesCompilerHost extends NgccCompilerHost {
       // If the module request originated from a relative import in a JavaScript source file,
       // TypeScript may have resolved the module to its .d.ts declaration file if the .js source
       // file was in the same directory. This is undesirable, as we need to have the actual
-      // JavaScript being present in the program. This logic recognizes this scenario and rewires
+      // JavaScript being present in the program. This logic recognizes this scenario and rewrites
       // the resolved .d.ts declaration file to its .js counterpart, if it exists.
       if (resolvedModule !== undefined && resolvedModule.extension === ts.Extension.Dts &&
-          containingFile.endsWith('js') &&
-          (moduleName.startsWith('./') || moduleName.startsWith('../')) &&
-          resolvedModule.resolvedFileName.startsWith(this.entryPointPath)) {
+          containingFile.endsWith('.js') && isRelativePath(moduleName)) {
         const jsFile = resolvedModule.resolvedFileName.replace(/\.d\.ts$/, '.js');
         if (this.fileExists(jsFile)) {
           return {...resolvedModule, resolvedFileName: jsFile, extension: ts.Extension.Js};
