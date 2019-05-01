@@ -116,7 +116,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng1'}
  *
- * Finally, kick off the whole process, by bootstraping your top level Angular `NgModule`.
+ * Finally, kick off the whole process, by bootstrapping your top level Angular `NgModule`.
  *
  * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng2'}
  *
@@ -236,7 +236,17 @@ export class UpgradeModule {
                         });
                       };
 
-                  (wrappedInterval as any)['cancel'] = intervalDelegate.cancel;
+                  (Object.keys(intervalDelegate) as (keyof IIntervalService)[])
+                      .forEach(prop => (wrappedInterval as any)[prop] = intervalDelegate[prop]);
+
+                  // the `flush` method will be present when ngMocks is used
+                  if (intervalDelegate.hasOwnProperty('flush')) {
+                    (wrappedInterval as any)['flush'] = () => {
+                      (intervalDelegate as any)['flush']();
+                      return wrappedInterval;
+                    };
+                  }
+
                   return wrappedInterval;
                 }
               ]);
