@@ -11,7 +11,7 @@ import {ExternalReference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {LogicalFileSystem, LogicalProjectPath} from '../../path';
-import {getSourceFile, isDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {getSourceFile, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {ImportMode, Reference} from './references';
@@ -162,12 +162,12 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
   private enumerateExportsOfModule(specifier: string, fromFile: string):
       Map<ts.Declaration, string>|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
-    const resolved = ts.resolveModuleName(specifier, fromFile, this.options, this.host);
-    if (resolved.resolvedModule === undefined) {
+    const resolvedModule = resolveModuleName(specifier, fromFile, this.options, this.host);
+    if (resolvedModule === undefined) {
       return null;
     }
 
-    const entryPointFile = this.program.getSourceFile(resolved.resolvedModule.resolvedFileName);
+    const entryPointFile = this.program.getSourceFile(resolvedModule.resolvedFileName);
     if (entryPointFile === undefined) {
       return null;
     }

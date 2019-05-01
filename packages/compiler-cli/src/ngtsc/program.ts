@@ -33,7 +33,7 @@ import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from '
 import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
-import {getRootDirs, isDtsPath} from './util/src/typescript';
+import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
@@ -253,10 +253,10 @@ export class NgtscProgram implements api.Program {
       // of the root files.
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
-      const resolved = ts.resolveModuleName(entryPath, containingFile, this.options, this.host);
+      const resolvedModule = resolveModuleName(entryPath, containingFile, this.options, this.host);
 
-      if (resolved.resolvedModule) {
-        entryRoute = entryPointKeyFor(resolved.resolvedModule.resolvedFileName, moduleName);
+      if (resolvedModule) {
+        entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
       }
     }
 
