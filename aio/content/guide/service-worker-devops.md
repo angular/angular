@@ -246,19 +246,31 @@ Angular 서비스 워커는 사실 웹 브라우저에서 실행되는 간단한
 
 서비스 워커가 업데이트되더라도 이 과정은 애플리케이션에 영향을 주지 않습니다. 그래서 업데이트하기 이전에 캐싱한 리소스는 서비스 워커를 업데이트한 이후에도 여전히 유효합니다. 하지만 서비스 워커의 버그를 수정하거나 기능이 추가된 경우라면 이전에 있던 캐시를 폐기하고 새로 받아와야 하는 경우도 있습니다. 이 경우에는 앱 전체가 새로 실행될 수 있습니다.
 
+<!--
 ## Debugging the Angular service worker
+-->
+## 서비스 워커 디버깅하기
 
+<!--
 Occasionally, it may be necessary to examine the Angular service
 worker in a running state to investigate issues or to ensure that
 it is operating as designed. Browsers provide built-in tools for
 debugging service workers and the Angular service worker itself
 includes useful debugging features.
+-->
+필요하다면, 동작하고 있는 서비스 워커의 내부 상태값을 확인해서 예상한대로 동작하고 있는지 확인할 수 있습니다. 그리고 마침 브라우저는 서비스 워커 디버깅 툴을 직접 제공하기 때문에, Angular가 제공하는 서비스 워커도 이 디버깅 툴을 활용해서 디버깅할 수 있습니다.
 
+<!--
 ### Locating and analyzing debugging information
+-->
+### 디버깅 정보 확인하기
 
+<!--
 The Angular service worker exposes debugging information under
 the `ngsw/` virtual directory. Currently, the single exposed URL
 is `ngsw/state`. Here is an example of this debug page's contents:
+-->
+서비스 워커의 디버깅 정보는 `ngsw/` 라는 가상 폴더 아래 존재합니다. 그래서 `ngsw/state`와 같은 URL로 이 주소에 접근할 수 있으며, 디버깅 정보는 다음과 같이 표시됩니다.
 
 ```
 NGSW Debug Info:
@@ -280,14 +292,21 @@ Task queue:
 Debug log:
 ```
 
+<!--
 #### Driver state
+-->
+#### 드라이버 상태
 
+<!--
 The first line indicates the driver state:
+-->
+이 화면의 첫번째 줄은 드라이버의 상태를 표시합니다:
 
 ```
 Driver state: NORMAL ((nominal))
 ```
 
+<!--
 `NORMAL` indicates that the service worker is operating normally and is not in a degraded state.
 
 There are two possible degraded states:
@@ -304,28 +323,55 @@ network, running as little service worker code as possible.
 
 In both cases, the parenthetical annotation provides the
 error that caused the service worker to enter the degraded state.
+-->
+드라이버 상태가 `NORMAL`이기 때문에 서비스 워커가 정상적으로 동작하고 있다는 것을 확인할 수 있습니다.
 
+이 상태값은 `NORMAL` 상태가 아니라 비정상(degraded) 상태가 될 수도 있습니다. 비정상 상태는 2종류가 있습니다:
 
+* `EXISTING_CLIENTS_ONLY`: 클라이언트에 저장된 서비스 워커가 최신버전이 아니라는 것을 의미합니다. 이미 캐싱된 버전의 앱은 사용하는 데에 문제가 없고, 이미 탭에서 실행되고 있는 앱도 계속 사용할 수 있지만, 새로운 탭에서 실행되는 앱은 네트워크로 직접 받아오는 최신 버전으로 실행될 것입니다.
+
+* `SAFE_MODE`: 서비스 워커가 캐싱된 데이터의 안전성을 보장할 수 없는 상태를 의미합니다. 다르게 표현하면, 캐싱된 앱을 실행하다가 에러가 발생했거나 캐싱된 앱 버전 자체가 유효하지 않은 상태를 의미합니다. 앱에서 주고받는 모든 트래픽은 캐싱된 앱이 아니라 네트워크를 통해 전송되며, 서비스 워커의 실행은 최소화됩니다.
+
+비정상 상태로 앱을 실행하게 되면, 현재 상태에서 발생한 문제들을 화면에서 확인할 수 있습니다.
+
+<!--
 #### Latest manifest hash
+-->
+#### 매니페스트 해시값 (Latest manifest hash)
 
 ```
 Latest manifest hash: eea7f5f464f90789b621170af5a569d6be077e5c
 ```
 
+<!--
 This is the SHA1 hash of the most up-to-date version of the app that the service worker knows about.
+-->
+서비스 워커가 애플리케이션의 유효성을 검사하는 SHA1 해시값을 표시합니다.
 
 
+<!--
 #### Last update check
+-->
+#### 업데이트 체크 상태
 
 ```
 Last update check: never
 ```
 
+<!--
 This indicates the last time the service worker checked for a new version, or update, of the app. `never` indicates that the service worker has never checked for an update.
 
 In this example debug file, the update check is currently scheduled, as explained the next section.
+-->
+서비스 워커가 새 버전을 체크했거나, 업데이트한 상황을 표시합니다.
+그리고 `never`는 서비스 워커가 업데이트가 있는지 아직 체크하지 않은 상황을 의미합니다.
 
+위에서 보는 디버깅 화면에 따르면, 업데이트 체크는 스케쥴된 상태입니다. 이 내용은 아래 섹션에서 설명합니다.
+
+<!--
 #### Version
+-->
+#### 버전
 
 ```
 === Version eea7f5f464f90789b621170af5a569d6be077e5c ===
@@ -333,14 +379,19 @@ In this example debug file, the update check is currently scheduled, as explaine
 Clients: 7b79a015-69af-4d3d-9ae6-95ba90c79486, 5bc08295-aaf2-42f3-a4cc-9e4ef9100f65
 ```
 
+<!--
 In this example, the service worker has one version of the app cached and
 being used to serve two different tabs. Note that this version hash
 is the "latest manifest hash" listed above. Both clients are on the
 latest version. Each client is listed by its ID from the `Clients`
 API in the browser.
+-->
+이 예제에서 두 탭에 실행되고 있는 애플리케이션은 서비스 워커에 캐싱된 버전이 실행된 것입니다. 그래서 두 앱의 버전은 같으며, "latest manifest hash" 값도 같습니다. 실행되고 있는 클라인트 ID는 브라우저에서 `Clients` API로 확인할 수 있습니다.
 
-
+<!--
 #### Idle task queue
+-->
+#### 대기 태스크 큐 (Idle task queue)
 
 ```
 === Idle Task Queue ===
@@ -350,6 +401,7 @@ Task queue:
  * init post-load (update, cleanup)
 ```
 
+<!--
 The Idle Task Queue is the queue of all pending tasks that happen
 in the background in the service worker. If there are any tasks
 in the queue, they are listed with a description. In this example,
@@ -361,19 +413,32 @@ events happened related to the idle queue. The "Last update run"
 counter shows the last time idle tasks were actually executed.
 "Last update tick" shows the time since the last event after
 which the queue might be processed.
+-->
+대기 태스크 큐 목록에는 백그라운드로 실행되는 서비스 워커가 처리해야하는 태스크 목록이 표시됩니다. 이 목록은 큐에 태스크가 있을 때만 표시되며, 태스크 이름과 함께 간단한 설명도 표시됩니다. 이 예제에서는 서비스 워커에 스케쥴이 예약된 태스크가 하나 존재합니다. 이 태스크는 서비스 워커가 시작된 이후에 업데이트할 버전이 있는지 확인하고 캐시를 초기화하는 태스크입니다.
 
+"Last update tick"과 "Last update run"은 이 대기 태스크 큐에서 일어난 이벤트를 표현합니다.
+그래서 "Last update run"은 대기 태스크 큐가 마지막으로 실행된 시점을 나타내며, "Last update tick"은 대기 태스크 큐에서 마지막으로 실행된 이벤트의 실행시점을 표현합니다.
 
+<!--
 #### Debug log
+-->
+#### 디버그 로그
 
 ```
 Debug log:
 ```
 
+<!--
 Errors that occur within the service worker will be logged here.
+-->
+서비스 워커가 실행되면서 출력하는 로그는 이 섹션에 표히됩니다.
 
-
+<!--
 ### Developer Tools
+-->
+### 개발자 도구
 
+<!--
 Browsers such as Chrome provide developer tools for interacting
 with service workers. Such tools can be powerful when used properly,
 but there are a few things to keep in mind.
@@ -387,6 +452,14 @@ out of date. Right click the Cache Storage title and refresh the caches.
 
 Stopping and starting the service worker in the Service Worker
 pane triggers a check for updates.
+-->
+Chrome과 같은 브라우저에서 제공하는 개발자 도구를 활용하면 서비스 워커의 동작을 확인할 수 있습니다. 이런 개발자 도구는 많은 내용을 알고 사용할수록 개발에 큰 도움이 되지만, 지금은 필요한 내용만 간단하게 짚고 넘어가 봅시다.
+
+* 개발자 도구를 사용해서 서비스 워커를 확인하려면 서비스 워커가 백그라운드에서 실행중이어야 하며, 재시작되지 않아야 합니다. 서비스 워커가 재시작되면 개발자 도구에 표시되는 내용과 실제 동작이 다를 수 있습니다.
+
+* Cache Storage 탭을 보고 캐싱된 지 오래된 컨텐츠가 있다면, 이 컨텐츠에 마우스 오른쪽 버튼을 클릭하고 직접 갱신할 수 있습니다.
+
+그리고 Service Worker 탭에서 서비스 워커 실행을 중단시키거나 다시 실행시키면, 이 때마다 서비스 워커가 업데이트를 체크합니다.
 
 ## Service Worker Safety
 
