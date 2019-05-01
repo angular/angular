@@ -232,10 +232,7 @@ function bootstrap(
          ]).then(null, (e: Error) => {
            let errorMsg: string;
            if (ivyEnabled) {
-             errorMsg = `R3InjectorError(TestModule)[IDontExist]: \n` +
-                 '  StaticInjectorError(TestModule)[IDontExist]: \n' +
-                 '    StaticInjectorError(Platform: core)[IDontExist]: \n' +
-                 '      NullInjectorError: No provider for IDontExist!';
+             errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
            } else {
              errorMsg = `StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n` +
                  '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
