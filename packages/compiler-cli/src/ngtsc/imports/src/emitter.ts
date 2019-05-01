@@ -11,10 +11,12 @@ import {ExternalReference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {LogicalFileSystem, LogicalProjectPath} from '../../path';
+import {ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {ImportMode, Reference} from './references';
+
 
 /**
  * A host which supports an operation to convert a file name into a module name.
@@ -115,8 +117,9 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
   private moduleExportsCache = new Map<string, Map<ts.Declaration, string>|null>();
 
   constructor(
-      private program: ts.Program, private checker: ts.TypeChecker,
-      private options: ts.CompilerOptions, private host: ts.CompilerHost) {}
+      protected program: ts.Program, protected checker: ts.TypeChecker,
+      protected options: ts.CompilerOptions, protected host: ts.CompilerHost,
+      private reflectionHost: ReflectionHost) {}
 
   emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportMode): Expression|null {
     if (ref.bestGuessOwningModule === null) {
@@ -159,7 +162,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     return this.moduleExportsCache.get(moduleName) !;
   }
 
-  private enumerateExportsOfModule(specifier: string, fromFile: string):
+  protected enumerateExportsOfModule(specifier: string, fromFile: string):
       Map<ts.Declaration, string>|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
     const resolvedModule = resolveModuleName(specifier, fromFile, this.options, this.host);
@@ -172,34 +175,12 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       return null;
     }
 
-    const entryPointSymbol = this.checker.getSymbolAtLocation(entryPointFile);
-    if (entryPointSymbol === undefined) {
+    const exports = this.reflectionHost.getExportsOfModule(entryPointFile);
+    if (exports === null) {
       return null;
     }
-
-    // Next, build a Map of all the ts.Declarations exported via the specifier and their exported
-    // names.
     const exportMap = new Map<ts.Declaration, string>();
-
-    const exports = this.checker.getExportsOfModule(entryPointSymbol);
-    for (const expSymbol of exports) {
-      // Resolve export symbols to their actual declarations.
-      const declSymbol = expSymbol.flags & ts.SymbolFlags.Alias ?
-          this.checker.getAliasedSymbol(expSymbol) :
-          expSymbol;
-
-      // At this point the valueDeclaration of the symbol should be defined.
-      const decl = declSymbol.valueDeclaration;
-      if (decl === undefined) {
-        continue;
-      }
-
-      // Prefer importing the symbol via its declared name, but take any export of it otherwise.
-      if (declSymbol.name === expSymbol.name || !exportMap.has(decl)) {
-        exportMap.set(decl, expSymbol.name);
-      }
-    }
-
+    exports.forEach((declaration, name) => { exportMap.set(declaration.node, name); });
     return exportMap;
   }
 }

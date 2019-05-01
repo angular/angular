@@ -70,7 +70,8 @@ export class DecorationAnalyzer {
   fullMetaReader = new CompoundMetadataReader([this.metaRegistry, this.dtsMetaReader]);
   refEmitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
-    new AbsoluteModuleStrategy(this.program, this.typeChecker, this.options, this.host),
+    new AbsoluteModuleStrategy(
+        this.program, this.typeChecker, this.options, this.host, this.reflectionHost),
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
     // based on whether a bestGuessOwningModule is present in the Reference.

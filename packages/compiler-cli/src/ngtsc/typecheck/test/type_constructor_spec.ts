@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../path';
-import {isNamedClassDeclaration} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckingConfig} from '../src/api';
@@ -54,7 +54,8 @@ TestClass.ngTypeCtor({value: 'test'});
       const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
       const emitter = new ReferenceEmitter([
         new LocalIdentifierStrategy(),
-        new AbsoluteModuleStrategy(program, checker, options, host),
+        new AbsoluteModuleStrategy(
+            program, checker, options, host, new TypeScriptReflectionHost(checker)),
         new LogicalProjectStrategy(checker, logicalFs),
       ]);
       const ctx = new TypeCheckContext(
@@ -84,7 +85,8 @@ TestClass.ngTypeCtor({value: 'test'});
       const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
       const emitter = new ReferenceEmitter([
         new LocalIdentifierStrategy(),
-        new AbsoluteModuleStrategy(program, checker, options, host),
+        new AbsoluteModuleStrategy(
+            program, checker, options, host, new TypeScriptReflectionHost(checker)),
         new LogicalProjectStrategy(checker, logicalFs),
       ]);
       const ctx = new TypeCheckContext(

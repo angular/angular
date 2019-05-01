@@ -438,7 +438,8 @@ export class NgtscProgram implements api.Program {
         // First, try to use local identifiers if available.
         new LocalIdentifierStrategy(),
         // Next, attempt to use an absolute import.
-        new AbsoluteModuleStrategy(this.tsProgram, checker, this.options, this.host),
+        new AbsoluteModuleStrategy(
+            this.tsProgram, checker, this.options, this.host, this.reflector),
         // Finally, check if the reference is being written into a file within the project's logical
         // file system, and use a relative import if so. If this fails, ReferenceEmitter will throw
         // an error.
