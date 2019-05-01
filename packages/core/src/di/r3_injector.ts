@@ -8,12 +8,13 @@
 
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
+import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, Injector, NG_TEMP_TOKEN_PATH, NullInjector, USE_VALUE, catchInjectorError} from './injector';
-import {injectArgs, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {Injector} from './injector';
+import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, injectArgs, setCurrentInjector, ɵɵinject} from './injector_compatibility';
 import {InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
@@ -131,7 +132,7 @@ export class R3Injector {
     this.injectorDefTypes.forEach(defType => this.get(defType));
 
     // Source name, used for debugging
-    this.source = source || (def instanceof Array ? null : stringify(def));
+    this.source = source || (typeof def === 'object' ? null : stringify(def));
   }
 
   /**
@@ -157,7 +158,7 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      token: Type<T>|InjectionToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
       flags = InjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
@@ -208,6 +209,12 @@ export class R3Injector {
     }
   }
 
+  toString() {
+    const tokens = <string[]>[], records = this.records;
+    records.forEach((v, token) => tokens.push(stringify(token)));
+    return `R3Injector[${tokens.join(', ')}]`;
+  }
+
   private assertNotDestroyed(): void {
     if (this._destroyed) {
       throw new Error('Injector has already been destroyed.');
@@ -242,7 +249,8 @@ export class R3Injector {
         (ngModule === undefined) ? (defOrWrappedDef as InjectorType<any>) : ngModule;
 
     // Check for circular dependencies.
-    if (ngDevMode && parents.indexOf(defType) !== -1) {
+    // TODO(FW-1307): Re-add ngDevMode when closure can handle it
+    if (parents.indexOf(defType) !== -1) {
       const defName = stringify(defType);
       throw new Error(
           `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
@@ -278,7 +286,8 @@ export class R3Injector {
     if (def.imports != null && !isDuplicate) {
       // Before processing defType's imports, add it to the set of parents. This way, if it ends
       // up deeply importing itself, this can be detected.
-      ngDevMode && parents.push(defType);
+      // TODO(FW-1307): Re-add ngDevMode when closure can handle it
+      parents.push(defType);
       // Add it to the set of dedups. This way we can detect multiple imports of the same module
       dedupStack.push(defType);
 
@@ -287,7 +296,8 @@ export class R3Injector {
             def.imports, imported => this.processInjectorType(imported, parents, dedupStack));
       } finally {
         // Remove it from the parents set when finished.
-        ngDevMode && parents.pop();
+        // TODO(FW-1307): Re-add ngDevMode when closure can handle it
+        parents.pop();
       }
     }
 
@@ -325,7 +335,7 @@ export class R3Injector {
       if (multiRecord) {
         // It has. Throw a nice error if
         if (multiRecord.multi === undefined) {
-          throw new Error(`Mixed multi-provider for ${token}.`);
+          throwMixedMultiProviderError();
         }
       } else {
         multiRecord = makeRecord(undefined, NOT_YET, true);
@@ -337,7 +347,7 @@ export class R3Injector {
     } else {
       const existing = this.records.get(token);
       if (existing && existing.multi !== undefined) {
-        throw new Error(`Mixed multi-provider for ${stringify(token)}`);
+        throwMixedMultiProviderError();
       }
     }
     this.records.set(token, record);
@@ -345,7 +355,7 @@ export class R3Injector {
 
   private hydrate<T>(token: Type<T>|InjectionToken<T>, record: Record<T>): T {
     if (record.value === CIRCULAR) {
-      throw new Error(`Cannot instantiate cyclic dependency! ${stringify(token)}`);
+      throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
       record.value = CIRCULAR;
       record.value = record.factory !();
@@ -421,14 +431,7 @@ export function providerToFactory(
           provider &&
           ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide));
       if (!classRef) {
-        let ngModuleDetail = '';
-        if (ngModuleType && providers) {
-          const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');
-          ngModuleDetail =
-              ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(', ')}]`;
-        }
-        throw new Error(
-            `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail);
+        throwInvalidProviderError(ngModuleType, providers, provider);
       }
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
