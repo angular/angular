@@ -173,6 +173,7 @@ def protractor_web_test(
         data = [],
         server = None,
         tags = [],
+        protractor_node_options = [],
         **kwargs):
     """Runs a protractor test in a browser.
 
@@ -198,6 +199,7 @@ def protractor_web_test(
         data = srcs + deps + data,
         testonly = 1,
         visibility = ["//visibility:private"],
+        templated_args = protractor_node_options,
     )
 
     # Our binary dependency must be in data[] for collect_data to pick it up
@@ -244,6 +246,7 @@ def protractor_web_test_suite(
         visibility = None,
         web_test_data = [],
         wrapped_test_tags = None,
+        protractor_node_options = [],
         **remaining_keyword_args):
     """Defines a test_suite of web_test targets that wrap a protractor_web_test target.
 
@@ -298,6 +301,7 @@ def protractor_web_test_suite(
         data = srcs + deps + data,
         testonly = 1,
         visibility = ["//visibility:private"],
+        templated_args = protractor_node_options,
     )
 
     # Our binary dependency must be in data[] for collect_data to pick it up
