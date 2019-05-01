@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {INJECTOR, Injector} from '../di/injector';
+import {Injector} from '../di/injector';
+import {INJECTOR} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
 import {StaticProvider} from '../di/interface/provider';
 import {R3Injector, createInjector} from '../di/r3_injector';
