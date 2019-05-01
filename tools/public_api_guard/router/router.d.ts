@@ -297,6 +297,7 @@ export interface Route {
     pathMatch?: string;
     redirectTo?: string;
     resolve?: ResolveData;
+    reuse?: 'delegate' | 'never';
     runGuardsAndResolvers?: RunGuardsAndResolvers;
 }
 
