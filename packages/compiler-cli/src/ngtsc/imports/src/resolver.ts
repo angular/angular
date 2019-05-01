@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {resolveModuleName} from '../../util/src/typescript';
 import {Reference} from './references';
 
 export interface ReferenceResolver {
@@ -28,8 +29,7 @@ export class ModuleResolver {
 
   resolveModuleName(module: string, containingFile: ts.SourceFile): ts.SourceFile|null {
     const resolved =
-        ts.resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host)
-            .resolvedModule;
+        resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host);
     if (resolved === undefined) {
       return null;
     }
