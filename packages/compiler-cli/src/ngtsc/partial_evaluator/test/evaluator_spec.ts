@@ -122,6 +122,20 @@ describe('ngtsc metadata', () => {
     expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
   });
 
+  it('resolves access from external variable declarations as dynamic value', () => {
+    const value = evaluate('declare const window: any;', 'window.location');
+    if (!(value instanceof DynamicValue)) {
+      return fail(`Should have resolved to a DynamicValue`);
+    }
+    expect(value.isFromDynamicInput()).toEqual(true);
+    expect(value.node.getText()).toEqual('window.location');
+    if (!(value.reason instanceof DynamicValue)) {
+      return fail(`Should have a DynamicValue as reason`);
+    }
+    expect(value.reason.isFromExternalReference()).toEqual(true);
+    expect(value.reason.node.getText()).toEqual('window: any');
+  });
+
   it('imports work', () => {
     const {program} = makeProgram([
       {name: 'second.ts', contents: 'export function foo(bar) { return bar; }'},
