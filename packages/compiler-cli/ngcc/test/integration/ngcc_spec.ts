@@ -99,7 +99,7 @@ describe('ngcc main()', () => {
           basePath: '/node_modules',
           targetEntryPointPath: '@angular/common/http/testing', logger,
         });
-        expect(logger.logs.info).toContain(['The target entry-point has already been processed']);
+        expect(logger.logs.debug).toContain(['The target entry-point has already been processed']);
       });
 
       it('should process the target if any `propertyToConsider` is not marked as processed', () => {
@@ -110,7 +110,7 @@ describe('ngcc main()', () => {
           targetEntryPointPath: '@angular/common/http/testing',
           propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'], logger,
         });
-        expect(logger.logs.info).not.toContain([
+        expect(logger.logs.debug).not.toContain([
           'The target entry-point has already been processed'
         ]);
       });
@@ -128,7 +128,7 @@ describe('ngcc main()', () => {
              compileAllFormats: false, logger,
            });
 
-           expect(logger.logs.info).not.toContain([
+           expect(logger.logs.debug).not.toContain([
              'The target entry-point has already been processed'
            ]);
          });
@@ -145,7 +145,7 @@ describe('ngcc main()', () => {
              compileAllFormats: false, logger,
            });
 
-           expect(logger.logs.info).toContain([
+           expect(logger.logs.debug).toContain([
              'The target entry-point has already been processed'
            ]);
          });
