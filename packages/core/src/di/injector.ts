@@ -117,7 +117,6 @@ const enum OptionFlags {
   CheckParent = 1 << 2,
   Default = CheckSelf | CheckParent
 }
-const NULL_INJECTOR = Injector.NULL;
 const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
@@ -127,7 +126,7 @@ export class StaticInjector implements Injector {
   private _records: Map<any, Record>;
 
   constructor(
-      providers: StaticProvider[], parent: Injector = NULL_INJECTOR, source: string|null = null) {
+      providers: StaticProvider[], parent: Injector = Injector.NULL, source: string|null = null) {
     this.parent = parent;
     this.source = source;
     const records = this._records = new Map<any, Record>();
@@ -304,7 +303,7 @@ function resolveToken(
               records,
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
-              !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
+              !childRecord && !(options & OptionFlags.CheckParent) ? Injector.NULL : parent,
               options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
               InjectFlags.Default));
         }
