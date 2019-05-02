@@ -263,7 +263,7 @@ export declare class NgIf {
     ngIfElse: TemplateRef<NgIfContext> | null;
     ngIfThen: TemplateRef<NgIfContext> | null;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
-    static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>;
+    static ngTemplateGuard_ngIf: 'binding';
 }
 
 export declare class NgIfContext {
