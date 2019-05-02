@@ -185,7 +185,10 @@ function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
 
 const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
+// tslint:disable-next-line:no-toplevel-property-access
 const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
+// tslint:disable-next-line:no-toplevel-property-access
 const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
+// tslint:disable-next-line:no-toplevel-property-access
 export const ArrayBuffer: ArrayBufferConstructor =
     (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;

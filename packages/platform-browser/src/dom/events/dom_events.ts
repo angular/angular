@@ -17,7 +17,9 @@ import {EventManagerPlugin} from './event_manager';
  * efficient bookkeeping than Zone can, because we have additional information. This speeds up
  * addEventListener by 3x.
  */
+// It's ok to access a property on Zone because it's a global polyfill.
 const __symbol__ =
+    // tslint:disable-next-line:no-toplevel-property-access
     (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function(v: string): string {
       return '__zone_symbol__' + v;
     };
@@ -35,13 +37,18 @@ const NATIVE_REMOVE_LISTENER = 'removeEventListener';
 const stopSymbol = '__zone_symbol__propagationStopped';
 const stopMethodSymbol = '__zone_symbol__stopImmediatePropagation';
 
-const blackListedEvents: string[] =
-    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
-let blackListedMap: {[eventName: string]: string};
-if (blackListedEvents) {
-  blackListedMap = {};
-  blackListedEvents.forEach(eventName => { blackListedMap[eventName] = eventName; });
-}
+
+const blackListedMap = (() => {
+  const blackListedEvents: string[] =
+      (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
+  if (blackListedEvents) {
+    const res: {[eventName: string]: string} = {};
+    blackListedEvents.forEach(eventName => { res[eventName] = eventName; });
+    return res;
+  }
+  return undefined;
+})();
+
 
 const isBlackListedEvent = function(eventName: string) {
   if (!blackListedMap) {

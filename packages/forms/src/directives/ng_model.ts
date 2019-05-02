@@ -43,6 +43,7 @@ export const formControlBinding: any = {
  * - this is just one extra run no matter how many `ngModel` have been changed.
  * - this is a general problem when using `exportAs` for directives!
  */
+// tslint:disable-next-line:no-toplevel-property-access
 const resolvedPromise = Promise.resolve(null);
 
 /**

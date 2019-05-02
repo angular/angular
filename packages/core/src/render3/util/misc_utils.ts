@@ -48,9 +48,10 @@ export function stringifyForError(value: any) {
 
 
 export const defaultScheduler =
-    (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
-     setTimeout                                                                // everything else
-     ).bind(global);
+    (() =>
+         (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
+          setTimeout  // everything else
+          ).bind(global))();
 
 /**
  *

@@ -7,8 +7,12 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
+// It's ok to keep this access because Element is a native global.
+// tslint:disable-next-line:no-toplevel-property-access
 const elProto = Element.prototype as any;
+// tslint:disable-next-line:no-toplevel-property-access
 const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+    // tslint:disable-next-line:no-toplevel-property-access
     elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
 
 /**

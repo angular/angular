@@ -65,7 +65,10 @@ const _chromeNumKeyPadMap = {
 
 let nodeContains: (a: any, b: any) => boolean;
 
+// It's ok to access a property on global['Node'] because it's a native construct.
+// tslint:disable-next-line:no-toplevel-property-access
 if (global['Node']) {
+  // tslint:disable-next-line:no-toplevel-property-access
   nodeContains = global['Node'].prototype.contains || function(node) {
     return !!(this.compareDocumentPosition(node) & 16);
   };

@@ -45,6 +45,8 @@ import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, i
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
  */
+// It's ok to access a property on Promise because it's a native global.
+// tslint:disable-next-line:no-toplevel-property-access
 const _CLEAN_PROMISE = Promise.resolve(null);
 
 export const enum BindingDirection {
