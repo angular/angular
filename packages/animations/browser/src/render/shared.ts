@@ -158,16 +158,20 @@ if (_isNode || typeof Element !== 'undefined') {
   // this is well supported in all browsers
   _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
 
-  if (_isNode || Element.prototype.matches) {
-    _matches = (element: any, selector: string) => element.matches(selector);
-  } else {
-    const proto = Element.prototype as any;
-    const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
-        proto.oMatchesSelector || proto.webkitMatchesSelector;
-    if (fn) {
-      _matches = (element: any, selector: string) => fn.apply(element, [selector]);
+  _matches = (() => {
+    if (_isNode || Element.prototype.matches) {
+      return (element: any, selector: string) => element.matches(selector);
+    } else {
+      const proto = Element.prototype as any;
+      const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
+          proto.oMatchesSelector || proto.webkitMatchesSelector;
+      if (fn) {
+        return (element: any, selector: string) => fn.apply(element, [selector]);
+      } else {
+        return _matches;
+      }
     }
-  }
+  })();
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
     let results: any[] = [];

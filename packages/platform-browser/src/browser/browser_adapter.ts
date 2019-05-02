@@ -63,13 +63,15 @@ const _chromeNumKeyPadMap = {
   '\x90': 'NumLock'
 };
 
-let nodeContains: (a: any, b: any) => boolean;
+const nodeContains: (a: any, b: any) => boolean = (() => {
+  if (global['Node']) {
+    return global['Node'].prototype.contains || function(node: any) {
+      return !!(this.compareDocumentPosition(node) & 16);
+    };
+  }
 
-if (global['Node']) {
-  nodeContains = global['Node'].prototype.contains || function(node) {
-    return !!(this.compareDocumentPosition(node) & 16);
-  };
-}
+  return undefined as any;
+})();
 
 /**
  * A `DomAdapter` powered by full browser DOM APIs.

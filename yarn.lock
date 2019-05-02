@@ -10977,6 +10977,11 @@ tslint-eslint-rules@4.1.1:
     tslib "^1.0.0"
     tsutils "^1.4.0"
 
+tslint-no-toplevel-property-access@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/tslint-no-toplevel-property-access/-/tslint-no-toplevel-property-access-0.0.2.tgz#c9b19bbd525ea7b8577e5ada601cc8625b4ed004"
+  integrity sha512-Oc+UUurlGLBkgeUSGxMoTpRUpaXsjqzQCEAYrYQyuU8330fi5FKlye5n53y87EJ24AlfdoxMPV7DJfFOADapfg==
+
 tslint@5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.7.0.tgz#c25e0d0c92fa1201c2bc30e844e08e682b4f3552"

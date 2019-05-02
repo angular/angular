@@ -7,9 +7,11 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-const elProto = Element.prototype as any;
-const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-    elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+const matches = (() => {
+  const elProto = Element.prototype as any;
+  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+})();
 
 /**
  * Provide methods for scheduling the execution of a callback.

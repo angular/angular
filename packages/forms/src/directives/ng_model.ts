@@ -43,7 +43,7 @@ export const formControlBinding: any = {
  * - this is just one extra run no matter how many `ngModel` have been changed.
  * - this is a general problem when using `exportAs` for directives!
  */
-const resolvedPromise = Promise.resolve(null);
+const resolvedPromise = (() => Promise.resolve(null))();
 
 /**
  * @description
