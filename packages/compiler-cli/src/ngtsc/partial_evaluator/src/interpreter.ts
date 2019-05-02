@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {Declaration, ReflectionHost} from '../../reflection';
+import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
@@ -361,12 +362,15 @@ export class StaticInterpreter {
           }
         }
         return value;
+      } else if (isDeclaration(ref)) {
+        return DynamicValue.fromDynamicInput(
+            node, DynamicValue.fromExternalReference(ref, lhs as Reference<ts.Declaration>));
       }
     } else if (lhs instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, lhs);
-    } else {
-      throw new Error(`Invalid dot property access: ${lhs} dot ${rhs}`);
     }
+
+    return DynamicValue.fromUnknown(node);
   }
 
   private visitCallExpression(node: ts.CallExpression, context: Context): ResolvedValue {
