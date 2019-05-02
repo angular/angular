@@ -91,7 +91,7 @@ export function mainNgcc(
   if (absoluteTargetEntryPointPath &&
       hasProcessedTargetEntryPoint(
           fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
-    logger.info('The target entry-point has already been processed');
+    logger.debug('The target entry-point has already been processed');
     return;
   }
 
@@ -124,7 +124,7 @@ export function mainNgcc(
 
       if (hasBeenProcessed(entryPointPackageJson, property)) {
         compiledFormats.add(formatPath);
-        logger.info(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+        logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
         continue;
       }
 
@@ -147,7 +147,7 @@ export function mainNgcc(
               `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
         }
       } else if (!compileAllFormats) {
-        logger.info(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+        logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
       }
 
       // Either this format was just compiled or its underlying format was compiled because of a

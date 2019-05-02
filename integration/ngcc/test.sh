@@ -63,7 +63,7 @@ if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?
 # And check that it logged skipping compilation as expected
-ivy-ngcc | grep 'Skipping'
+ivy-ngcc -l debug | grep 'Skipping'
 if [[ $? != 0 ]]; then exit 1; fi
 
 # Check that running it with logging level error outputs nothing
