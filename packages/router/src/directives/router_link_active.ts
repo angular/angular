@@ -87,7 +87,7 @@ export class RouterLinkActive implements OnChanges,
 
   private classes: string[] = [];
   private subscription: Subscription;
-  public readonly isActive: boolean = false;
+  public isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
@@ -123,7 +123,7 @@ export class RouterLinkActive implements OnChanges,
     Promise.resolve().then(() => {
       const hasActiveLinks = this.hasActiveLinks();
       if (this.isActive !== hasActiveLinks) {
-        (this as any).isActive = hasActiveLinks;
+        this.isActive = hasActiveLinks;
         this.classes.forEach((c) => {
           if (hasActiveLinks) {
             this.renderer.addClass(this.element.nativeElement, c);
