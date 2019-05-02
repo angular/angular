@@ -45,7 +45,7 @@ import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, i
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
  */
-const _CLEAN_PROMISE = Promise.resolve(null);
+const _CLEAN_PROMISE = (() => Promise.resolve(null))();
 
 export const enum BindingDirection {
   Input,
