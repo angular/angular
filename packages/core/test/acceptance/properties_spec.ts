@@ -212,4 +212,22 @@ describe('property instructions', () => {
 
     expect(img.src.indexOf('unsafe:')).toBe(0);
   });
+
+  it('should handle interpolations with 10+ values', () => {
+    @Component({
+      selector: 'app-comp',
+      template: `
+        <a href="http://g.com/?one={{'1'}}&two={{'2'}}&three={{'3'}}&four={{'4'}}&five={{'5'}}&six={{'6'}}&seven={{'7'}}&eight={{'8'}}&nine={{'9'}}&ten={{'10'}}">link2</a>`
+    })
+    class AppComp {
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComp]});
+    const fixture = TestBed.createComponent(AppComp);
+    fixture.detectChanges();
+    const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+    expect(anchor.getAttribute('href'))
+        .toEqual(
+            `http://g.com/?one=1&two=2&three=3&four=4&five=5&six=6&seven=7&eight=8&nine=9&ten=10`);
+  });
 });
