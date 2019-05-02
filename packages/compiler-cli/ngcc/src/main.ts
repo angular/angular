@@ -31,7 +31,7 @@ export interface NgccOptions {
   /** The absolute path to the `node_modules` folder that contains the packages to process. */
   basePath: string;
   /**
-   * The path, relative to `basePath` to the primary package to be processed.
+   * The absolute path or relative to `basePath` of the primary package to be processed.
    *
    * All its dependencies will need to be processed too.
    */
