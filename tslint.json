@@ -18,6 +18,7 @@
     "no-jasmine-focus": true,
     "no-var-keyword": true,
     "require-internal-with-underscore": true,
+    "no-toplevel-property-access": true,
     "semicolon": [
       true
     ],
