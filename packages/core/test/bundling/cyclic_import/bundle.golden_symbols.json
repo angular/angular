@@ -45,9 +45,6 @@
     "name": "EMPTY_OBJ"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "FLAGS"
   },
   {
@@ -102,9 +99,6 @@
     "name": "NodeInjectorFactory"
   },
   {
-    "name": "ObjectUnsubscribedErrorImpl"
-  },
-  {
     "name": "PARENT"
   },
   {
@@ -139,9 +133,6 @@
   },
   {
     "name": "TriggerComponent"
-  },
-  {
-    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "ViewEncapsulation"

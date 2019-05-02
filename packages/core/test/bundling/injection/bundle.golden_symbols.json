@@ -9,9 +9,6 @@
     "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -51,9 +48,6 @@
     "name": "NullInjector"
   },
   {
-    "name": "ObjectUnsubscribedErrorImpl"
-  },
-  {
     "name": "Optional"
   },
   {
@@ -79,9 +73,6 @@
   },
   {
     "name": "USE_VALUE"
-  },
-  {
-    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "__forward_ref__"

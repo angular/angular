@@ -9482,6 +9482,12 @@ rxjs@6.4.0, rxjs@^6.4.0:
   dependencies:
     tslib "^1.9.0"
 
+"rxjs@https://github.com/filipesilva/rxjs-6.4.0-without-toplevel-prop-assignment":
+  version "6.4.0"
+  resolved "https://github.com/filipesilva/rxjs-6.4.0-without-toplevel-prop-assignment#d0ecd1c3d7218cdef6962fa84b93cca5febf992c"
+  dependencies:
+    tslib "^1.9.0"
+
 safe-buffer@5.1.2, safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
