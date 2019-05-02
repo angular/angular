@@ -31,7 +31,7 @@ export interface DirectiveMeta extends T2DirectiveMeta {
    */
   selector: string;
   queries: string[];
-  ngTemplateGuards: string[];
+  ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
 
   /**
@@ -41,6 +41,25 @@ export interface DirectiveMeta extends T2DirectiveMeta {
    * another type, it could not statically determine the base class.
    */
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+}
+
+/**
+ * Metadata that describes a template guard for one of the directive's inputs.
+ */
+export interface TemplateGuardMeta {
+  /**
+   * The input name that this guard should be applied to.
+   */
+  inputName: string;
+
+  /**
+   * Represents the type of the template guard.
+   *
+   * - 'invocation' means that a call to the template guard function is emitted so that its return
+   *   type can result in narrowing of the input type.
+   * - 'binding' means that the input binding expression itself is used as template guard.
+   */
+  type: 'invocation'|'binding';
 }
 
 /**
