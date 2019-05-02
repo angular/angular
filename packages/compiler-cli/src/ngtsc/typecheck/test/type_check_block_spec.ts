@@ -82,6 +82,40 @@ describe('type check blocks', () => {
     expect(block).toContain('(ctx.a as any);');
   });
 
+  describe('template guards', () => {
+    it('should emit invocation guards', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'NgIf',
+        selector: '[ngIf]',
+        inputs: {'ngIf': 'ngIf'},
+        ngTemplateGuards: [{
+          inputName: 'ngIf',
+          type: 'invocation',
+        }]
+      }];
+      const TEMPLATE = `<div *ngIf="person"></div>`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('if (NgIf.ngTemplateGuard_ngIf(_t1, ctx.person))');
+    });
+
+    it('should emit binding guards', () => {
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'NgIf',
+        selector: '[ngIf]',
+        inputs: {'ngIf': 'ngIf'},
+        ngTemplateGuards: [{
+          inputName: 'ngIf',
+          type: 'binding',
+        }]
+      }];
+      const TEMPLATE = `<div *ngIf="person !== null"></div>`;
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('if (ctx.person !== null)');
+    });
+  });
+
   describe('config', () => {
     const DIRECTIVES: TestDeclaration[] = [{
       type: 'directive',

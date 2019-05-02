@@ -185,22 +185,28 @@ class TcbTemplateBodyOp extends TcbOp {
         // There are two kinds of guards. Template guards (ngTemplateGuards) allow type narrowing of
         // the expression passed to an @Input of the directive. Scan the directive to see if it has
         // any template guards, and generate them if needed.
-        dir.ngTemplateGuards.forEach(inputName => {
+        dir.ngTemplateGuards.forEach(guard => {
           // For each template guard function on the directive, look for a binding to that input.
-          const boundInput = this.template.inputs.find(i => i.name === inputName) ||
+          const boundInput = this.template.inputs.find(i => i.name === guard.inputName) ||
               this.template.templateAttrs.find(
                   (i: TmplAstTextAttribute | TmplAstBoundAttribute): i is TmplAstBoundAttribute =>
-                      i instanceof TmplAstBoundAttribute && i.name === inputName);
+                      i instanceof TmplAstBoundAttribute && i.name === guard.inputName);
           if (boundInput !== undefined) {
             // If there is such a binding, generate an expression for it.
             const expr = tcbExpression(boundInput.value, this.tcb, this.scope);
-            // Call the guard function on the directive with the directive instance and that
-            // expression.
-            const guardInvoke = tsCallMethod(dirId, `ngTemplateGuard_${inputName}`, [
-              dirInstId,
-              expr,
-            ]);
-            directiveGuards.push(guardInvoke);
+
+            if (guard.type === 'binding') {
+              // Use the binding expression itself as guard.
+              directiveGuards.push(expr);
+            } else {
+              // Call the guard function on the directive with the directive instance and that
+              // expression.
+              const guardInvoke = tsCallMethod(dirId, `ngTemplateGuard_${guard.inputName}`, [
+                dirInstId,
+                expr,
+              ]);
+              directiveGuards.push(guardInvoke);
+            }
           }
         });
 

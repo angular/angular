@@ -39,7 +39,7 @@ export declare class NgForOf<T> {
 
 export declare class NgIf {
   ngIf: any;
-  static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>
+  static ngTemplateGuard_ngIf: 'binding';
   static ngDirectiveDef: i0.ΔDirectiveDefWithMeta<NgForOf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
@@ -85,6 +85,29 @@ describe('ngtsc type checking', () => {
     @Component({
       selector: 'test',
       template: '<div *ngIf="user">{{user.name}}</div>',
+    })
+    class TestCmp {
+      user: {name: string}|null;
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    class Module {}
+    `);
+
+    env.driveMain();
+  });
+
+  it('should check usage of NgIf with explicit non-null guard', () => {
+    env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngIf="user !== null">{{user.name}}</div>',
     })
     class TestCmp {
       user: {name: string}|null;

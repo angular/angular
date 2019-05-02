@@ -9,10 +9,10 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
@@ -80,20 +80,39 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
 
 
 export function extractDirectiveGuards(node: ClassDeclaration, reflector: ReflectionHost): {
-  ngTemplateGuards: string[],
+  ngTemplateGuards: TemplateGuardMeta[],
   hasNgTemplateContextGuard: boolean,
 } {
-  const methods = nodeStaticMethodNames(node, reflector);
-  const ngTemplateGuards = methods.filter(method => method.startsWith('ngTemplateGuard_'))
-                               .map(method => method.split('_', 2)[1]);
-  const hasNgTemplateContextGuard = methods.some(name => name === 'ngTemplateContextGuard');
+  const staticMembers = reflector.getMembersOfClass(node).filter(member => member.isStatic);
+  const ngTemplateGuards = staticMembers.map(extractTemplateGuard)
+                               .filter((guard): guard is TemplateGuardMeta => guard !== null);
+  const hasNgTemplateContextGuard = staticMembers.some(
+      member => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard');
   return {hasNgTemplateContextGuard, ngTemplateGuards};
 }
 
-function nodeStaticMethodNames(node: ClassDeclaration, reflector: ReflectionHost): string[] {
-  return reflector.getMembersOfClass(node)
-      .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
-      .map(member => member.name);
+function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
+  if (!member.name.startsWith('ngTemplateGuard_')) {
+    return null;
+  }
+  const inputName = member.name.split('_', 2)[1];
+  if (member.kind === ClassMemberKind.Property) {
+    let type: string|null = null;
+    if (member.type !== null && ts.isLiteralTypeNode(member.type) &&
+        ts.isStringLiteral(member.type.literal)) {
+      type = member.type.literal.text;
+    }
+
+    // Only property members with string literal type 'binding' are considered as template guard.
+    if (type !== 'binding') {
+      return null;
+    }
+    return {inputName, type};
+  } else if (member.kind === ClassMemberKind.Method) {
+    return {inputName, type: 'invocation'};
+  } else {
+    return null;
+  }
 }
 
 /**
