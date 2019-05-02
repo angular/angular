@@ -92,7 +92,7 @@ export class Identifiers {
     name: 'ɵinlineInterpolate',
     moduleName: CORE,
   };
-  static interpolate: o.ExternalReference = {name: 'ɵɵinterpolate', moduleName: CORE};
+  static interpolate: o.ExternalReference = {name: 'ɵinterpolate', moduleName: CORE};
   static EMPTY_ARRAY: o.ExternalReference = {name: 'ɵEMPTY_ARRAY', moduleName: CORE};
   static EMPTY_MAP: o.ExternalReference = {name: 'ɵEMPTY_MAP', moduleName: CORE};
   static Renderer: o.ExternalReference = {name: 'Renderer', moduleName: CORE};
