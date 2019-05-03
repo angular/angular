@@ -26,7 +26,7 @@ import {
   ɵRuntimeError as RuntimeError,
   Signal,
   input,
-  computed,
+  Component,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -531,4 +531,18 @@ export class RoutedComponentInputBinder {
 
     this.outletDataSubscriptions.set(outlet, dataSubscription);
   }
+}
+/**
+ * This component is used internally within the router to be a placeholder when an empty
+ * router-outlet is needed. For example, with a config such as:
+ *
+ * `{path: 'parent', outlet: 'nav', children: [...]}`
+ *
+ * In order to render, there needs to be a component on this config, which will default
+ * to this `EmptyOutletComponent`.
+ *
+ * In order to avoid circular references this component was moved from its own file and placed here.
+ */
+@Component({template: `<router-outlet></router-outlet>`, standalone: true, imports: [RouterOutlet]})
+export class EmptyOutletComponent {
 }
