@@ -219,6 +219,9 @@
     "name": "EmptyError"
   },
   {
+    "name": "EmptyOutletComponent"
+  },
+  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -1005,9 +1008,6 @@
     "name": "createContainerRef"
   },
   {
-    "name": "createContentQuery"
-  },
-  {
     "name": "createElementNode"
   },
   {
@@ -1033,6 +1033,9 @@
   },
   {
     "name": "createLFrame"
+  },
+  {
+    "name": "createLQuery"
   },
   {
     "name": "createLView"
@@ -1063,6 +1066,9 @@
   },
   {
     "name": "createSegmentGroupFromRoute"
+  },
+  {
+    "name": "createTQuery"
   },
   {
     "name": "createTView"
@@ -2133,9 +2139,6 @@
     "name": "{isArray:isArray}"
   },
   {
-    "name": "ɵEmptyOutletComponent"
-  },
-  {
     "name": "ɵɵInputTransformsFeature"
   },
   {
@@ -2176,6 +2179,12 @@
   },
   {
     "name": "ɵɵlistener"
+  },
+  {
+    "name": "ɵɵloadQuery"
+  },
+  {
+    "name": "ɵɵqueryRefresh"
   },
   {
     "name": "ɵɵsanitizeResourceUrl"
