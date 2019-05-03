@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -831,10 +831,9 @@ const ATTR_TO_PROP: {[name: string]: string} = {
 };
 
 export function elementPropertyInternal<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean,
+    index: number, propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean,
     loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
-  if (value === NO_CHANGE) return;
+  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const lView = getLView();
   const element = getNativeByIndex(index, lView) as RElement | RComment;
   const tNode = getTNode(index, lView);
