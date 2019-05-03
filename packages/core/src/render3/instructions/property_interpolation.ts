@@ -360,7 +360,10 @@ export function ɵɵpropertyInterpolate1(
     propName: string, prefix: string, v0: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, ɵɵinterpolation1(prefix, v0, suffix), sanitizer);
+  const interpolatedValue = ɵɵinterpolation1(prefix, v0, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate1;
 }
 
@@ -398,7 +401,10 @@ export function ɵɵpropertyInterpolate2(
     propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(index, propName, ɵɵinterpolation2(prefix, v0, i0, v1, suffix), sanitizer);
+  const interpolatedValue = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate2;
 }
 
@@ -439,8 +445,10 @@ export function ɵɵpropertyInterpolate3(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName, ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix), sanitizer);
+  const interpolatedValue = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate3;
 }
 
@@ -483,8 +491,10 @@ export function ɵɵpropertyInterpolate4(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName, ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix), sanitizer);
+  const interpolatedValue = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate4;
 }
 
@@ -529,9 +539,10 @@ export function ɵɵpropertyInterpolate5(
     propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName, ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix),
-      sanitizer);
+  const interpolatedValue = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate5;
 }
 
@@ -579,9 +590,11 @@ export function ɵɵpropertyInterpolate6(
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName, ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix),
-      sanitizer);
+  const interpolatedValue =
+      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate6;
 }
 
@@ -631,10 +644,11 @@ export function ɵɵpropertyInterpolate7(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
     sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName,
-      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix),
-      sanitizer);
+  const interpolatedValue =
+      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate7;
 }
 
@@ -686,10 +700,11 @@ export function ɵɵpropertyInterpolate8(
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string, sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
-  elementPropertyInternal(
-      index, propName,
-      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix),
-      sanitizer);
+  const interpolatedValue =
+      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolate8;
 }
 
@@ -727,6 +742,9 @@ export function ɵɵpropertyInterpolateV(
     propName: string, values: any[], sanitizer?: SanitizerFn): TsickleIssue1009 {
   const index = getSelectedIndex();
 
-  elementPropertyInternal(index, propName, ɵɵinterpolationV(values), sanitizer);
+  const interpolatedValue = ɵɵinterpolationV(values);
+  if (interpolatedValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, interpolatedValue, sanitizer);
+  }
   return ɵɵpropertyInterpolateV;
 }

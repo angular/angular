@@ -41,7 +41,9 @@ export function ɵɵproperty<T>(
   const index = getSelectedIndex();
   ngDevMode && assertNotEqual(index, -1, 'selected index cannot be -1');
   const bindReconciledValue = ɵɵbind(value);
-  elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
+  if (bindReconciledValue !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, bindReconciledValue, sanitizer, nativeOnly);
+  }
   return ɵɵproperty;
 }
 
@@ -80,7 +82,9 @@ export function ɵɵbind<T>(value: T): T|NO_CHANGE {
 export function ɵɵelementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): void {
-  elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
+  if (value !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
+  }
 }
 
 /**
@@ -109,5 +113,7 @@ export function ɵɵelementProperty<T>(
 export function ɵɵcomponentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean) {
-  elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
+  if (value !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
+  }
 }
