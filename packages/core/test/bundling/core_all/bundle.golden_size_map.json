@@ -1,17 +1,17 @@
 {
   "unmapped": 25,
   "files": {
-    "size": 268455,
+    "size": 266196,
     "@angular/": {
-      "size": 248616,
+      "size": 246357,
       "core/": {
-        "size": 248616,
+        "size": 246357,
         "src/": {
-          "size": 248535,
-          "application_init.ts": 626,
+          "size": 246276,
+          "application_init.ts": 625,
           "application_module.ts": 634,
-          "application_ref.ts": 7371,
-          "application_tokens.ts": 307,
+          "application_ref.ts": 7369,
+          "application_tokens.ts": 302,
           "change_detection/": {
             "size": 14119,
             "change_detection.ts": 46,
@@ -32,52 +32,52 @@
           },
           "console.ts": 217,
           "debug/": {
-            "size": 7621,
-            "debug_node.ts": 7621
+            "size": 7614,
+            "debug_node.ts": 7614
           },
           "di/": {
-            "size": 20079,
+            "size": 17344,
             "forward_ref.ts": 211,
             "injectable.ts": 82,
-            "injection_token.ts": 322,
-            "injector.ts": 3872,
-            "injector_compatibility.ts": 1005,
+            "injection_token.ts": 325,
+            "injector.ts": 312,
+            "injector_compatibility.ts": 1850,
             "interface/": {
               "size": 484,
               "defs.ts": 339,
               "injector.ts": 145
             },
             "jit/": {
-              "size": 1988,
-              "environment.ts": 162,
+              "size": 1985,
+              "environment.ts": 158,
               "injectable.ts": 803,
-              "util.ts": 1023
+              "util.ts": 1024
             },
             "metadata.ts": 157,
-            "r3_injector.ts": 4765,
+            "r3_injector.ts": 4750,
             "reflective_errors.ts": 1376,
-            "reflective_injector.ts": 3062,
+            "reflective_injector.ts": 3059,
             "reflective_key.ts": 661,
-            "reflective_provider.ts": 2000,
-            "scope.ts": 90,
+            "reflective_provider.ts": 1999,
+            "scope.ts": 89,
             "util.ts": 4
           },
           "error_handler.ts": 444,
           "errors.ts": 175,
           "event_emitter.ts": 952,
           "i18n/": {
-            "size": 178,
-            "tokens.ts": 178
+            "size": 175,
+            "tokens.ts": 175
           },
           "interface/": {
-            "size": 222,
+            "size": 223,
             "simple_change.ts": 170,
-            "type.ts": 52
+            "type.ts": 53
           },
-          "ivy_switch.ts": 936,
+          "ivy_switch.ts": 937,
           "linker/": {
-            "size": 4923,
-            "compiler.ts": 825,
+            "size": 4922,
+            "compiler.ts": 824,
             "component_factory.ts": 91,
             "component_factory_resolver.ts": 1003,
             "element_ref.ts": 119,
@@ -90,12 +90,12 @@
             "view_ref.ts": 196
           },
           "metadata/": {
-            "size": 3522,
-            "di.ts": 547,
+            "size": 3519,
+            "di.ts": 546,
             "directives.ts": 604,
             "ng_module.ts": 95,
             "resource_loading.ts": 839,
-            "schema.ts": 1306,
+            "schema.ts": 1304,
             "view.ts": 131
           },
           "platform_core_providers.ts": 118,
@@ -105,9 +105,9 @@
             "wtf_impl.ts": 272
           },
           "reflection/": {
-            "size": 4878,
-            "reflection.ts": 15,
-            "reflection_capabilities.ts": 3678,
+            "size": 4896,
+            "reflection.ts": 16,
+            "reflection_capabilities.ts": 3695,
             "reflector.ts": 1185
           },
           "render/": {
@@ -115,19 +115,19 @@
             "api.ts": 482
           },
           "render3/": {
-            "size": 103297,
+            "size": 103782,
             "bindings.ts": 300,
             "component.ts": 4000,
-            "component_ref.ts": 2512,
+            "component_ref.ts": 2510,
             "context_discovery.ts": 2098,
-            "definition.ts": 2486,
+            "definition.ts": 2520,
             "di.ts": 3651,
             "di_setup.ts": 1584,
             "empty.ts": 16,
-            "errors.ts": 89,
+            "errors.ts": 472,
             "features/": {
-              "size": 2677,
-              "inherit_definition_feature.ts": 1993,
+              "size": 2725,
+              "inherit_definition_feature.ts": 2041,
               "ng_onchanges_feature.ts": 571,
               "providers_feature.ts": 113
             },
@@ -135,14 +135,14 @@
             "hooks.ts": 1843,
             "i18n.ts": 14527,
             "instructions/": {
-              "size": 20030,
+              "size": 20007,
               "alloc_host_vars.ts": 290,
               "change_detection.ts": 91,
-              "container.ts": 758,
+              "container.ts": 757,
               "di.ts": 129,
               "element.ts": 1214,
               "element_container.ts": 335,
-              "embedded_view.ts": 678,
+              "embedded_view.ts": 676,
               "get_current_view.ts": 26,
               "listener.ts": 1401,
               "next_context.ts": 44,
@@ -150,7 +150,7 @@
               "property.ts": 193,
               "property_interpolation.ts": 2584,
               "select.ts": 51,
-              "shared.ts": 10205,
+              "shared.ts": 10185,
               "storage.ts": 169,
               "styling.ts": 1329,
               "text.ts": 185
@@ -165,15 +165,15 @@
               "view.ts": 110
             },
             "jit/": {
-              "size": 9479,
-              "directive.ts": 3409,
+              "size": 9550,
+              "directive.ts": 3480,
               "environment.ts": 2758,
               "module.ts": 3047,
               "pipe.ts": 265
             },
             "metadata.ts": 615,
-            "ng_module_ref.ts": 986,
-            "node_manipulation.ts": 4571,
+            "ng_module_ref.ts": 985,
+            "node_manipulation.ts": 4563,
             "node_selector_matcher.ts": 1780,
             "node_util.ts": 335,
             "pipe.ts": 958,
@@ -191,18 +191,18 @@
               "state.ts": 55,
               "util.ts": 1381
             },
-            "tokens.ts": 10,
+            "tokens.ts": 6,
             "util/": {
-              "size": 4102,
+              "size": 4133,
               "attrs_utils.ts": 423,
               "discovery_utils.ts": 1489,
-              "global_utils.ts": 374,
+              "global_utils.ts": 405,
               "injector_utils.ts": 150,
               "misc_utils.ts": 625,
               "view_traversal_utils.ts": 221,
               "view_utils.ts": 820
             },
-            "view_engine_compatibility.ts": 3815,
+            "view_engine_compatibility.ts": 3771,
             "view_engine_compatibility_prebound.ts": 38,
             "view_ref.ts": 2212
           },
@@ -221,13 +221,13 @@
             "testability.ts": 3796
           },
           "util/": {
-            "size": 4317,
+            "size": 4313,
             "array_utils.ts": 210,
             "assert.ts": 81,
             "closure.ts": 37,
             "comparison.ts": 90,
             "decorators.ts": 1640,
-            "errors.ts": 164,
+            "errors.ts": 160,
             "global.ts": 271,
             "is_dev_mode.ts": 358,
             "lang.ts": 109,
@@ -240,20 +240,20 @@
           },
           "version.ts": 179,
           "view/": {
-            "size": 55747,
+            "size": 55744,
             "element.ts": 3814,
             "entrypoint.ts": 962,
             "errors.ts": 642,
             "ng_content.ts": 447,
-            "ng_module.ts": 2448,
-            "provider.ts": 5363,
+            "ng_module.ts": 2447,
+            "provider.ts": 5362,
             "pure_expression.ts": 2279,
             "query.ts": 2385,
             "refs.ts": 9337,
             "services.ts": 11639,
             "text.ts": 1551,
             "types.ts": 768,
-            "util.ts": 4728,
+            "util.ts": 4727,
             "view.ts": 8143,
             "view_attach.ts": 1241
           },
