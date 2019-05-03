@@ -13,7 +13,7 @@
     "reflect-metadata": "0.1.12",
     "rxjs": "6.4.0",
     "tslib": "1.9.3",
-    "zone.js": "0.9.0"
+    "zone.js": "0.9.1"
   },
   "devDependencies": {
     "@angular/bazel": "packages-dist:bazel",
