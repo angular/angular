@@ -10,7 +10,6 @@ import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../../utils/ng_component_template';
-import {visitAllNodes} from '../../../utils/typescript/visit_nodes';
 import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
 import {QueryTiming} from '../angular/query-definition';
 import {QueryUsageStrategy} from '../strategies/usage_strategy/usage_strategy';
@@ -35,10 +34,8 @@ export class Rule extends Rules.TypedRule {
 
     // Analyze source files by detecting queries, class relations and component templates.
     rootSourceFiles.forEach(sourceFile => {
-      // The visit utility function only traverses the source file once. We don't want to
-      // traverse through all source files multiple times for each visitor as this could be
-      // slow.
-      visitAllNodes(sourceFile, [queryVisitor, templateVisitor]);
+      queryVisitor.visitNode(sourceFile);
+      templateVisitor.visitNode(sourceFile);
     });
 
     const {resolvedQueries, classMetadata} = queryVisitor;

@@ -1367,5 +1367,22 @@ describe('static-queries migration with usage strategy', () => {
       expect(tree.readContent('/src/index.ts'))
           .toContain(`@${queryType}('test', { static: false }) query: any;`);
     });
+
+    it(`should not prompt for migration strategy if no @${queryType} query is used`, async() => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class NoQueriesDeclared {
+        }
+      `);
+
+      const testModule = require('../migrations/static-queries/strategy_prompt');
+      spyOn(testModule, 'promptForMigrationStrategy').and.callThrough();
+
+      await runMigration();
+
+      expect(testModule.promptForMigrationStrategy).toHaveBeenCalledTimes(0);
+    });
   }
 });

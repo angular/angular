@@ -13,21 +13,24 @@ import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {getInquirer, supportsPrompt} from '../../utils/schematics_prompt';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {TypeScriptVisitor, visitAllNodes} from '../../utils/typescript/visit_nodes';
 
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {QueryTemplateStrategy} from './strategies/template_strategy/template_strategy';
 import {QueryTestStrategy} from './strategies/test_strategy/test_strategy';
 import {TimingStrategy} from './strategies/timing-strategy';
 import {QueryUsageStrategy} from './strategies/usage_strategy/usage_strategy';
+import {SELECTED_STRATEGY, promptForMigrationStrategy} from './strategy_prompt';
 import {getTransformedQueryCallExpr} from './transform';
 
-export enum SELECTED_STRATEGY {
-  TEMPLATE,
-  USAGE,
-  TESTS,
+interface AnalyzedProject {
+  program: ts.Program;
+  host: ts.CompilerHost;
+  queryVisitor: NgQueryResolveVisitor;
+  sourceFiles: ts.SourceFile[];
+  basePath: string;
+  typeChecker: ts.TypeChecker;
+  tsconfigPath: string;
 }
 
 /** Entry point for the V8 static-query migration. */
@@ -57,51 +60,37 @@ async function runMigration(tree: Tree, context: SchematicContext) {
         'to explicit timing.');
   }
 
-  // In case prompts are supported, determine the desired migration strategy
-  // by creating a choice prompt. By default the template strategy is used.
-  let selectedStrategy: SELECTED_STRATEGY = SELECTED_STRATEGY.TEMPLATE;
-  if (supportsPrompt()) {
-    logger.info('There are two available migration strategies that can be selected:');
-    logger.info('  • Template strategy  -  migration tool (short-term gains, rare corrections)');
-    logger.info('  • Usage strategy  -  best practices (long-term gains, manual corrections)');
-    logger.info('For an easy migration, the template strategy is recommended. The usage');
-    logger.info('strategy can be used for best practices and a code base that will be more');
-    logger.info('flexible to changes going forward.');
-    const {strategyName} = await getInquirer().prompt<{strategyName: string}>({
-      type: 'list',
-      name: 'strategyName',
-      message: 'What migration strategy do you want to use?',
-      choices: [
-        {name: 'Template strategy', value: 'template'}, {name: 'Usage strategy', value: 'usage'}
-      ],
-      default: 'template',
-    });
-    logger.info('');
-    selectedStrategy =
-        strategyName === 'usage' ? SELECTED_STRATEGY.USAGE : SELECTED_STRATEGY.TEMPLATE;
-  } else {
-    // In case prompts are not supported, we still want to allow developers to opt
-    // into the usage strategy by specifying an environment variable. The tests also
-    // use the environment variable as there is no headless way to select via prompt.
-    selectedStrategy = !!process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] ? SELECTED_STRATEGY.USAGE :
-                                                                         SELECTED_STRATEGY.TEMPLATE;
-  }
-
+  const buildProjects = new Set<AnalyzedProject>();
   const failures = [];
 
   for (const tsconfigPath of buildPaths) {
-    failures.push(...await runStaticQueryMigration(tree, tsconfigPath, basePath, selectedStrategy));
+    const project = analyzeProject(tree, tsconfigPath, basePath);
+    if (project) {
+      buildProjects.add(project);
+    }
   }
+
+  // In case there are projects which contain queries that need to be migrated,
+  // we want to prompt for the migration strategy and run the migration.
+  if (buildProjects.size) {
+    const strategy = await promptForMigrationStrategy(logger);
+    for (let project of Array.from(buildProjects.values())) {
+      failures.push(...await runStaticQueryMigration(tree, project, strategy));
+    }
+  }
+
   // For the "test" tsconfig projects we always want to use the test strategy as
   // we can't detect the proper timing within spec files.
   for (const tsconfigPath of testPaths) {
-    failures.push(
-        ...await runStaticQueryMigration(tree, tsconfigPath, basePath, SELECTED_STRATEGY.TESTS));
+    const project = await analyzeProject(tree, tsconfigPath, basePath);
+    if (project) {
+      failures.push(...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS));
+    }
   }
 
   if (failures.length) {
-    logger.info('Some queries cannot be migrated automatically. Please go through');
-    logger.info('those manually and apply the appropriate timing:');
+    logger.info('Some queries could not be migrated automatically. Please go');
+    logger.info('through those manually and apply the appropriate timing:');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
 
@@ -109,46 +98,57 @@ async function runMigration(tree: Tree, context: SchematicContext) {
 }
 
 /**
- * Runs the static query migration for the given TypeScript project. The schematic
- * analyzes all queries within the project and sets up the query timing based on
- * the current usage of the query property. e.g. a view query that is not used in any
- * lifecycle hook does not need to be static and can be set up with "static: false".
+ * Analyzes the given TypeScript project by looking for queries that need to be
+ * migrated. In case there are no queries that can be migrated, null is returned.
+ */
+function analyzeProject(tree: Tree, tsconfigPath: string, basePath: string):
+    AnalyzedProject|null {
+      const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
+      const host = ts.createCompilerHost(parsed.options, true);
+
+      // We need to overwrite the host "readFile" method, as we want the TypeScript
+      // program to be based on the file contents in the virtual file tree. Otherwise
+      // if we run the migration for multiple tsconfig files which have intersecting
+      // source files, it can end up updating query definitions multiple times.
+      host.readFile = fileName => {
+        const buffer = tree.read(relative(basePath, fileName));
+        return buffer ? buffer.toString() : undefined;
+      };
+
+      const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+      const typeChecker = program.getTypeChecker();
+      const sourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+      const queryVisitor = new NgQueryResolveVisitor(typeChecker);
+
+      // Analyze all project source-files and collect all queries that
+      // need to be migrated.
+      sourceFiles.forEach(sourceFile => queryVisitor.visitNode(sourceFile));
+
+      if (queryVisitor.resolvedQueries.size === 0) {
+        return null;
+      }
+
+      return {program, host, tsconfigPath, typeChecker, basePath, queryVisitor, sourceFiles};
+    }
+
+/**
+ * Runs the static query migration for the given project. The schematic analyzes all
+ * queries within the project and sets up the query timing based on the current usage
+ * of the query property. e.g. a view query that is not used in any lifecycle hook does
+ * not need to be static and can be set up with "static: false".
  */
 async function runStaticQueryMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, selectedStrategy: SELECTED_STRATEGY) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree. Otherwise
-  // if we run the migration for multiple tsconfig files which have intersecting
-  // source files, it can end up updating query definitions multiple times.
-  host.readFile = fileName => {
-    const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
-  };
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
-  const typeChecker = program.getTypeChecker();
-  const queryVisitor = new NgQueryResolveVisitor(typeChecker);
-  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+    tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY) {
+  const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
-  const analysisVisitors: TypeScriptVisitor[] = [queryVisitor];
   const failureMessages: string[] = [];
+  const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
 
   // If the "usage" strategy is selected, we also need to add the query visitor
   // to the analysis visitors so that query usage in templates can be also checked.
   if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
-    analysisVisitors.push(templateVisitor);
+    sourceFiles.forEach(s => templateVisitor.visitNode(s));
   }
-
-  rootSourceFiles.forEach(sourceFile => {
-    // The visit utility function only traverses a source file once. We don't want to
-    // traverse through all source files multiple times for each visitor as this could be
-    // slow.
-    visitAllNodes(sourceFile, analysisVisitors);
-  });
 
   const {resolvedQueries, classMetadata} = queryVisitor;
   const {resolvedTemplates} = templateVisitor;
