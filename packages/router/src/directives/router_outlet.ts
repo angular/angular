@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewChild, ViewContainerRef,} from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -214,7 +215,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
-    return this.activated.instance;
+    const c = this.activated.instance;
+    if (c instanceof ɵEmptyOutletComponent) {
+      return c.component;
+    }
+    return c;
   }
 
   get activatedRoute(): ActivatedRoute {
@@ -258,7 +263,9 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.activated.destroy();
       this.activated = null;
       this._activatedRoute = null;
-      this.deactivateEvents.emit(c);
+      if (!(c instanceof ɵEmptyOutletComponent)) {
+        this.deactivateEvents.emit(c);
+      }
     }
   }
 
@@ -286,7 +293,18 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
-    this.activateEvents.emit(this.activated.instance);
+
+    // If we have an empty outlet component, we want to instead proxy activate/deactivate events
+    // from the inner outlet
+    const c = this.activated.instance;
+    if (c instanceof ɵEmptyOutletComponent) {
+      const sink = new Subscription();
+      sink.add(c.activateEvents.subscribe((ev: any) => this.activateEvents.emit(ev)));
+      sink.add(c.deactivateEvents.subscribe((ev: any) => this.deactivateEvents.emit(ev)));
+      c.destroy$.subscribe(() => sink.unsubscribe());
+    } else {
+      this.activateEvents.emit(this.activated.instance);
+    }
   }
 }
 
@@ -322,8 +340,47 @@ function isComponentFactoryResolver(item: any): item is ComponentFactoryResolver
  *
  * In order to avoid circular references this component was moved from its own file and placed here.
  */
-@Component({template: `<router-outlet></router-outlet>`})
+@Component({
+  template:
+      `<router-outlet (activate)="activate($event)" (deactivate)="deactivate($event)"></router-outlet>`
+})
 export class ɵEmptyOutletComponent {
+  @Output('activate') activateEvents = new EventEmitter<any>();
+  @Output('deactivate') deactivateEvents = new EventEmitter<any>();
+
+  @ViewChild(RouterOutlet) outlet !: RouterOutlet;
+
+  public destroy$ = new Subject();
+
+  get component(): Object {
+    if (!this.outlet) {
+      return null as any;
+    }
+    return this.outlet.component;
+  }
+
+  get activatedRoute(): ActivatedRoute {
+    if (!this.outlet) {
+      return null as any;
+    }
+    return this.outlet.activatedRoute;
+  }
+
+  get activatedRouteData(): Data {
+    if (!this.activatedRoute) {
+      return {};
+    }
+    return this.activatedRoute.snapshot.data;
+  }
+
+  activate(ev: any) { this.activateEvents.emit(ev); }
+
+  deactivate(ev: any) { this.deactivateEvents.emit(ev); }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
 
 export {ɵEmptyOutletComponent as EmptyOutletComponent};

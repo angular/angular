@@ -5480,6 +5480,51 @@ describe('Integration', () => {
          expect(fixture.nativeElement)
              .toHaveText('team 22 [ user john, right: [right outlet component: simple] ]');
          expect(loadSpy.calls.count()).toEqual(1);
+        }));
+
+    it('should return activated component instead of EmptyOutletComponent', fakeAsync(() => {
+         @Component({selector: 'lazy', template: 'lazy-loaded'})
+         class LazyComponent {
+         }
+
+         @NgModule({
+           declarations: [LazyComponent],
+           imports: [RouterModule.forChild([{path: '', component: LazyComponent}])]
+         })
+         class LazyLoadedModule {
+         }
+
+         @Component({
+           selector: 'container',
+           template:
+               `<router-outlet name="aux" (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`
+         })
+         class Container {
+           activations: any[] = [];
+           deactivations: any[] = [];
+
+           recordActivate(component: any): void { this.activations.push(component); }
+
+           recordDeactivate(component: any): void { this.deactivations.push(component); }
+         }
+
+         TestBed.configureTestingModule({declarations: [Container]});
+
+         const router: Router = TestBed.get(Router);
+
+         const fixture = createRoot(router, Container);
+         const cmp = fixture.componentInstance;
+
+         router.resetConfig([{path: 'lazy', loadChildren: () => LazyLoadedModule, outlet: 'aux'}]);
+
+         cmp.activations = [];
+         cmp.deactivations = [];
+
+         router.navigateByUrl('/(aux:lazy)');
+         advance(fixture);
+
+         expect(cmp.activations.length).toEqual(1);
+         expect(cmp.activations[0] instanceof LazyComponent).toBe(true);
        }));
 
     describe('should use the injector of the lazily-loaded configuration', () => {
