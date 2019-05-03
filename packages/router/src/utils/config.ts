@@ -8,7 +8,7 @@
 
 import {createEnvironmentInjector, EnvironmentInjector, Type, ɵisStandalone as isStandalone} from '@angular/core';
 
-import {EmptyOutletComponent} from '../components/empty_outlet';
+import {EmptyOutletComponent} from '../directives/router_outlet';
 import {Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';

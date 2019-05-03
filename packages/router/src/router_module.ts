@@ -11,10 +11,9 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, A
 import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
-import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
-import {RouterOutlet} from './directives/router_outlet';
+import {RouterOutlet, EmptyOutletComponent} from './directives/router_outlet';
 import {Event, stringifyEvent} from './events';
 import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';

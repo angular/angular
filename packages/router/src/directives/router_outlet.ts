@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
 
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -311,3 +311,19 @@ class OutletInjector implements Injector {
 function isComponentFactoryResolver(item: any): item is ComponentFactoryResolver {
   return !!item.resolveComponentFactory;
 }
+/**
+ * This component is used internally within the router to be a placeholder when an empty
+ * router-outlet is needed. For example, with a config such as:
+ *
+ * `{path: 'parent', outlet: 'nav', children: [...]}`
+ *
+ * In order to render, there needs to be a component on this config, which will default
+ * to this `EmptyOutletComponent`.
+ *
+ * In order to avoid circular references this component was moved from its own file and placed here.
+ */
+@Component({template: `<router-outlet></router-outlet>`})
+export class ɵEmptyOutletComponent {
+}
+
+export {ɵEmptyOutletComponent as EmptyOutletComponent};
