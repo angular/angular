@@ -47,6 +47,8 @@ export class NgComponentTemplateVisitor {
     if (node.kind === ts.SyntaxKind.ClassDeclaration) {
       this.visitClassDeclaration(node as ts.ClassDeclaration);
     }
+
+    ts.forEachChild(node, n => this.visitNode(n));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {

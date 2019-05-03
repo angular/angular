@@ -54,6 +54,8 @@ export class NgQueryResolveVisitor {
         this.visitClassDeclaration(node as ts.ClassDeclaration);
         break;
     }
+
+    ts.forEachChild(node, n => this.visitNode(n));
   }
 
   private visitPropertyDeclaration(node: ts.PropertyDeclaration) {
