@@ -13,17 +13,19 @@ import {compareFileSizeData} from './file_size_compare';
 import {FileSizeData} from './file_size_data';
 
 if (require.main === module) {
-  const [filePath, sourceMapPath, goldenPath, thresholdArg, writeGoldenArg] = process.argv.slice(2);
+  const
+      [filePath, sourceMapPath, goldenPath, maxPercentageDiffArg, maxSizeDiffArg, writeGoldenArg] =
+          process.argv.slice(2);
   const status = main(
       require.resolve(filePath), require.resolve(sourceMapPath), require.resolve(goldenPath),
-      writeGoldenArg === 'true', parseInt(thresholdArg));
+      writeGoldenArg === 'true', parseInt(maxPercentageDiffArg), parseInt(maxSizeDiffArg));
 
   process.exit(status ? 0 : 1);
 }
 
 export function main(
     filePath: string, sourceMapPath: string, goldenSizeMapPath: string, writeGolden: boolean,
-    diffThreshold: number): boolean {
+    maxPercentageDiff: number, maxByteDiff: number): boolean {
   const {sizeResult} = new SizeTracker(filePath, sourceMapPath);
 
   if (writeGolden) {
@@ -33,7 +35,8 @@ export function main(
   }
 
   const expectedSizeData = <FileSizeData>JSON.parse(readFileSync(goldenSizeMapPath, 'utf8'));
-  const differences = compareFileSizeData(sizeResult, expectedSizeData, diffThreshold);
+  const differences =
+      compareFileSizeData(sizeResult, expectedSizeData, {maxByteDiff, maxPercentageDiff});
 
   if (!differences.length) {
     return true;

@@ -10,7 +10,7 @@ import {compareFileSizeData} from './file_size_compare';
 
 describe('file size compare', () => {
 
-  it('should report if size entry differ by more than the specified threshold', () => {
+  it('should report if size entry differ by more than the specified max percentage diff', () => {
     const diffs = compareFileSizeData(
         {
           unmapped: 0,
@@ -26,13 +26,48 @@ describe('file size compare', () => {
             'a.ts': 75,
           }
         },
-        0);
+        {maxPercentageDiff: 0, maxByteDiff: 25});
 
     expect(diffs.length).toBe(2);
     expect(diffs[0].filePath).toBe('/');
     expect(diffs[0].message).toMatch(/40.00% from the expected size/);
     expect(diffs[1].filePath).toBe('/a.ts');
     expect(diffs[1].message).toMatch(/40.00% from the expected size/);
+  });
+
+  it('should report if size entry differ by more than the specified max byte diff', () => {
+    const diffs = compareFileSizeData(
+        {
+          unmapped: 0,
+          files: {
+            size: 1000,
+            'a.ts': 1000,
+          }
+        },
+        {
+          unmapped: 0,
+          files: {
+            size: 1055,
+            'a.ts': 1055,
+          }
+        },
+        {maxPercentageDiff: 6, maxByteDiff: 50});
+
+    expect(diffs.length).toBe(2);
+    expect(diffs[0].filePath).toBe('/');
+    expect(diffs[0].message).toMatch(/55B from the expected size/);
+    expect(diffs[1].filePath).toBe('/a.ts');
+    expect(diffs[1].message).toMatch(/55B from the expected size/);
+  });
+
+  it('should report if unmapped bytes differ by more than specified threshold', () => {
+    const diffs = compareFileSizeData(
+        {unmapped: 1000, files: {size: 0}}, {unmapped: 1055, files: {size: 0}},
+        {maxPercentageDiff: 6, maxByteDiff: 50});
+
+    expect(diffs.length).toBe(1);
+    expect(diffs[0].filePath).toBe('<unmapped>');
+    expect(diffs[0].message).toMatch(/55B from the expected size/);
   });
 
   it('should not report if size percentage difference does not exceed threshold', () => {
@@ -51,7 +86,7 @@ describe('file size compare', () => {
             'a.ts': 75,
           }
         },
-        40);
+        {maxPercentageDiff: 40, maxByteDiff: 25});
 
     expect(diffs.length).toBe(0);
   });
@@ -67,7 +102,7 @@ describe('file size compare', () => {
             'b.ts': 1,
           }
         },
-        {unmapped: 0, files: {size: 100, 'a.ts': 100}}, 1);
+        {unmapped: 0, files: {size: 100, 'a.ts': 100}}, {maxByteDiff: 10, maxPercentageDiff: 1});
 
     expect(diffs.length).toBe(1);
     expect(diffs[0].filePath).toBe('/b.ts');
@@ -83,7 +118,8 @@ describe('file size compare', () => {
             'a.ts': 100,
           }
         },
-        {unmapped: 0, files: {size: 101, 'a.ts': 100, 'b.ts': 1}}, 1);
+        {unmapped: 0, files: {size: 101, 'a.ts': 100, 'b.ts': 1}},
+        {maxByteDiff: 10, maxPercentageDiff: 1});
 
     expect(diffs.length).toBe(1);
     expect(diffs[0].filePath).toBe('/b.ts');

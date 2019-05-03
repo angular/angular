@@ -13,24 +13,35 @@ export interface SizeDifference {
   message: string;
 }
 
+export interface Threshold {
+  /**
+   * Maximum difference percentage. Exceeding this causes a reported size
+   * difference. Percentage difference is helpful for small files where
+   * the byte threshold is not exceeded but the change is relatively large
+   * for the small file and should be reported.
+   */
+  maxPercentageDiff: number;
+  /**
+   * Maximum byte difference. Exceeding this causes a reported size difference.
+   * The max byte threshold works good for large files where change is relatively
+   * small but still needs to reported as it causes an overall size regression.
+   */
+  maxByteDiff: number;
+}
+
 /** Compares two file size data objects and returns an array of size differences. */
 export function compareFileSizeData(
-    actual: FileSizeData, expected: FileSizeData, threshold: number) {
-  const diffs: SizeDifference[] = compareSizeEntry(actual.files, expected.files, '/', threshold);
-  const unmappedBytesDiff = getDifferencePercentage(actual.unmapped, expected.unmapped);
-  if (unmappedBytesDiff > threshold) {
-    diffs.push({
-      message: `Unmapped bytes differ by ${unmappedBytesDiff.toFixed(2)}% from ` +
-          `the expected size (actual = ${actual.unmapped}, expected = ${expected.unmapped})`
-    });
-  }
-  return diffs;
+    actual: FileSizeData, expected: FileSizeData, threshold: Threshold) {
+  return [
+    ...compareSizeEntry(actual.files, expected.files, '/', threshold),
+    ...compareActualSizeToExpected(actual.unmapped, expected.unmapped, '<unmapped>', threshold)
+  ];
 }
 
 /** Compares two file size entries and returns an array of size differences. */
 function compareSizeEntry(
     actual: DirectorySizeEntry | number, expected: DirectorySizeEntry | number, filePath: string,
-    threshold: number) {
+    threshold: Threshold) {
   if (typeof actual !== 'number' && typeof expected !== 'number') {
     return compareDirectorySizeEntry(
         <DirectorySizeEntry>actual, <DirectorySizeEntry>expected, filePath, threshold);
@@ -40,21 +51,31 @@ function compareSizeEntry(
 }
 
 /**
- * Compares two size numbers and returns a size difference when the percentage difference
- * exceeds the specified threshold.
+ * Compares two size numbers and returns a size difference if the difference
+ * percentage exceeds the specified maximum percentage or the byte size
+ * difference exceeds the maximum byte difference.
  */
 function compareActualSizeToExpected(
     actualSize: number, expectedSize: number, filePath: string,
-    threshold: number): SizeDifference[] {
+    threshold: Threshold): SizeDifference[] {
   const diffPercentage = getDifferencePercentage(actualSize, expectedSize);
-  if (diffPercentage > threshold) {
-    return [{
+  const byteDiff = Math.abs(expectedSize - actualSize);
+  const diffs: SizeDifference[] = [];
+  if (diffPercentage > threshold.maxPercentageDiff) {
+    diffs.push({
       filePath: filePath,
       message: `Differs by ${diffPercentage.toFixed(2)}% from the expected size ` +
           `(actual = ${actualSize}, expected = ${expectedSize})`
-    }];
+    });
   }
-  return [];
+  if (byteDiff > threshold.maxByteDiff) {
+    diffs.push({
+      filePath: filePath,
+      message: `Differs by ${byteDiff}B from the expected size ` +
+          `(actual = ${actualSize}, expected = ${expectedSize})`
+    });
+  }
+  return diffs;
 }
 
 /**
@@ -63,7 +84,7 @@ function compareActualSizeToExpected(
  */
 function compareDirectorySizeEntry(
     actual: DirectorySizeEntry, expected: DirectorySizeEntry, filePath: string,
-    threshold: number): SizeDifference[] {
+    threshold: Threshold): SizeDifference[] {
   const diffs: SizeDifference[] =
       [...compareActualSizeToExpected(actual.size, expected.size, filePath, threshold)];
 
