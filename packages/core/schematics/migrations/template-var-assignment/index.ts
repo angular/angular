@@ -14,7 +14,6 @@ import * as ts from 'typescript';
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
-import {visitAllNodes} from '../../utils/typescript/visit_nodes';
 
 import {analyzeResolvedTemplate} from './analyze_template';
 
@@ -64,7 +63,7 @@ function runTemplateVariableAssignmentCheck(
   const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
 
   // Analyze source files by detecting HTML templates.
-  rootSourceFiles.forEach(sourceFile => visitAllNodes(sourceFile, [templateVisitor]));
+  rootSourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
   const collectedFailures: string[] = [];
