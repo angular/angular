@@ -11,7 +11,15 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
   file size data against previously approved file size data
 """
 
-def js_size_tracking_test(name, src, sourceMap, goldenFile, diffThreshold, data = [], **kwargs):
+def js_size_tracking_test(
+        name,
+        src,
+        sourceMap,
+        goldenFile,
+        maxPercentageDiff,
+        maxByteDiff,
+        data = [],
+        **kwargs):
     all_data = data + [
         "//tools/size-tracking",
         "@npm//source-map",
@@ -24,7 +32,7 @@ def js_size_tracking_test(name, src, sourceMap, goldenFile, diffThreshold, data 
         data = all_data,
         entry_point = entry_point,
         configuration_env_vars = ["compile"],
-        templated_args = [src, sourceMap, goldenFile, "%d" % diffThreshold, "false"],
+        templated_args = [src, sourceMap, goldenFile, "%d" % maxPercentageDiff, "%d" % maxByteDiff, "false"],
         **kwargs
     )
 
@@ -34,6 +42,6 @@ def js_size_tracking_test(name, src, sourceMap, goldenFile, diffThreshold, data 
         data = all_data,
         entry_point = entry_point,
         configuration_env_vars = ["compile"],
-        templated_args = [src, sourceMap, goldenFile, "%d" % diffThreshold, "true"],
+        templated_args = [src, sourceMap, goldenFile, "0", "0", "true"],
         **kwargs
     )
