@@ -28,10 +28,9 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
-import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
-import {RouterOutlet} from './directives/router_outlet';
+import {RouterOutlet, EmptyOutletComponent} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
