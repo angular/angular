@@ -1888,7 +1888,7 @@ Can't bind to 'invalidProp' since it isn't a known property of 'div'. ("[ERROR -
 
       it('should report errors in expressions', () => {
         expect(() => parse('<div [prop]="a b"></div>', [])).toThrowError(`Template parse errors:
-Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [ERROR ->][prop]="a b"></div>"): TestComp@0:5`);
+Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:13 ("<div [prop]="[ERROR ->]a b"></div>"): TestComp@0:13`);
       });
 
       it('should not throw on invalid property names if the property is used by a directive',
