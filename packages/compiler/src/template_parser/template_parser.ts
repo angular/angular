@@ -426,8 +426,8 @@ class TemplateParseVisitor implements html.Visitor {
       hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, targetMatchableAttrs,
-            targetProps);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attr.valueSpan,
+            targetMatchableAttrs, targetProps);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
@@ -448,19 +448,20 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[KW_BINDON_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, targetMatchableAttrs,
-            targetProps);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attr.valueSpan,
+            targetMatchableAttrs, targetProps);
         this._parseAssignmentEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, attr.valueSpan || srcSpan,
             targetMatchableAttrs, boundEvents);
 
       } else if (bindParts[KW_AT_IDX]) {
         this._bindingParser.parseLiteralAttr(
-            name, value, srcSpan, absoluteOffset, targetMatchableAttrs, targetProps);
+            name, value, srcSpan, absoluteOffset, attr.valueSpan, targetMatchableAttrs,
+            targetProps);
 
       } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
+            bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset, attr.valueSpan,
             targetMatchableAttrs, targetProps);
         this._parseAssignmentEvent(
             bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attr.valueSpan || srcSpan,
@@ -468,7 +469,7 @@ class TemplateParseVisitor implements html.Visitor {
 
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
         this._bindingParser.parsePropertyBinding(
-            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
+            bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset, attr.valueSpan,
             targetMatchableAttrs, targetProps);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
@@ -478,12 +479,12 @@ class TemplateParseVisitor implements html.Visitor {
       }
     } else {
       hasBinding = this._bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, targetMatchableAttrs, targetProps);
+          name, value, srcSpan, attr.valueSpan, targetMatchableAttrs, targetProps);
     }
 
     if (!hasBinding) {
       this._bindingParser.parseLiteralAttr(
-          name, value, srcSpan, absoluteOffset, targetMatchableAttrs, targetProps);
+          name, value, srcSpan, absoluteOffset, attr.valueSpan, targetMatchableAttrs, targetProps);
     }
 
     targetEvents.push(...boundEvents.map(e => t.BoundEventAst.fromParsedEvent(e)));

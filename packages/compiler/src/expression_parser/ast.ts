@@ -691,7 +691,7 @@ export class ParsedProperty {
 
   constructor(
       public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
-      public sourceSpan: ParseSourceSpan) {
+      public sourceSpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {
     this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
     this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
   }
@@ -739,5 +739,6 @@ export const enum BindingType {
 export class BoundElementProperty {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan) {}
+      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
 }

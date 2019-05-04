@@ -37,11 +37,12 @@ export class BoundAttribute implements Node {
   constructor(
       public name: string, public type: BindingType, public securityContext: SecurityContext,
       public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nAST) {}
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
 
   static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nAST) {
     return new BoundAttribute(
-        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan, i18n);
+        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
+        prop.valueSpan, i18n);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundAttribute(this); }
@@ -96,12 +97,16 @@ export class Content implements Node {
 }
 
 export class Variable implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitVariable(this); }
 }
 
 export class Reference implements Node {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
+      public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitReference(this); }
 }
 

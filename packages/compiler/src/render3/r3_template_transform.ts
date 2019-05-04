@@ -297,20 +297,20 @@ class HtmlAstToIvyAst implements html.Visitor {
       hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, matchableAttributes,
-            parsedProperties);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
-          this.parseVariable(identifier, value, srcSpan, variables);
+          this.parseVariable(identifier, value, srcSpan, attribute.valueSpan, variables);
         } else {
           this.reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
 
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
-        this.parseReference(identifier, value, srcSpan, references);
+        this.parseReference(identifier, value, srcSpan, attribute.valueSpan, references);
 
       } else if (bindParts[KW_ON_IDX]) {
         const events: ParsedEvent[] = [];
@@ -320,19 +320,20 @@ class HtmlAstToIvyAst implements html.Visitor {
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, matchableAttributes,
-            parsedProperties);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, absoluteOffset, attribute.valueSpan,
+            matchableAttributes, parsedProperties);
         this.parseAssignmentEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, attribute.valueSpan, matchableAttributes,
             boundEvents);
       } else if (bindParts[KW_AT_IDX]) {
         this.bindingParser.parseLiteralAttr(
-            name, value, srcSpan, absoluteOffset, matchableAttributes, parsedProperties);
+            name, value, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
+            parsedProperties);
 
       } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, absoluteOffset,
-            matchableAttributes, parsedProperties);
+            attribute.valueSpan, matchableAttributes, parsedProperties);
         this.parseAssignmentEvent(
             bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, attribute.valueSpan,
             matchableAttributes, boundEvents);
@@ -340,7 +341,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, absoluteOffset,
-            matchableAttributes, parsedProperties);
+            attribute.valueSpan, matchableAttributes, parsedProperties);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
         const events: ParsedEvent[] = [];
@@ -351,7 +352,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       }
     } else {
       hasBinding = this.bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, matchableAttributes, parsedProperties);
+          name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties);
     }
 
     return hasBinding;
@@ -365,20 +366,22 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseVariable(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan, variables: t.Variable[]) {
+      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      valueSpan: ParseSourceSpan|undefined, variables: t.Variable[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in variable names`, sourceSpan);
     }
-    variables.push(new t.Variable(identifier, value, sourceSpan));
+    variables.push(new t.Variable(identifier, value, sourceSpan, valueSpan));
   }
 
   private parseReference(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan, references: t.Reference[]) {
+      identifier: string, value: string, sourceSpan: ParseSourceSpan,
+      valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
     }
 
-    references.push(new t.Reference(identifier, value, sourceSpan));
+    references.push(new t.Reference(identifier, value, sourceSpan, valueSpan));
   }
 
   private parseAssignmentEvent(
