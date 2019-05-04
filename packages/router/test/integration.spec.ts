@@ -5807,6 +5807,7 @@ describe('Integration', () => {
          const fixture = createRoot(router, RootCmp);
 
          router.routeReuseStrategy = new AttachDetachReuseStrategy();
+         spyOn(router.routeReuseStrategy, 'retrieve').and.callThrough();
 
          router.resetConfig([
            {
@@ -5824,14 +5825,19 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/a/b');
          expect(teamCmp).toBeDefined();
          expect(simpleCmp).toBeDefined();
+         expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 
          router.navigateByUrl('/c');
          advance(fixture);
          expect(location.path()).toEqual('/c');
          expect(fixture.debugElement.children[1].componentInstance).toBeAnInstanceOf(UserCmp);
+         // We have still not encountered a route that should be reattached
+         expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 
          router.navigateByUrl('/a;p=1/b;p=2');
          advance(fixture);
+         // We retrieve both the stored route snapshots
+         expect(router.routeReuseStrategy.retrieve).toHaveBeenCalledTimes(2);
          const teamCmp2 = fixture.debugElement.children[1].componentInstance;
          const simpleCmp2 = fixture.debugElement.children[1].children[1].componentInstance;
          expect(location.path()).toEqual('/a;p=1/b;p=2');
