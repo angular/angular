@@ -52,14 +52,14 @@ export function generateTypeCheckBlock(
   // the `ts.Printer` to format the type-check block nicely.
   const body = ts.createBlock([ts.createIf(ts.createTrue(), innerBody, undefined)]);
   const fnDecl = ts.createFunctionDeclaration(
-    /* decorators */ undefined,
-    /* modifiers */ undefined,
-    /* asteriskToken */ undefined,
-    /* name */ name,
-    /* typeParameters */ ref.node.typeParameters,
-    /* parameters */ paramList,
-    /* type */ undefined,
-    /* body */ body);
+      /* decorators */ undefined,
+      /* modifiers */ undefined,
+      /* asteriskToken */ undefined,
+      /* name */ name,
+      /* typeParameters */ ref.node.typeParameters,
+      /* parameters */ paramList,
+      /* type */ undefined,
+      /* body */ body);
   addSourceInfo(fnDecl, ref.node);
   return fnDecl;
 }
@@ -198,7 +198,9 @@ class TcbTemplateBodyOp extends TcbOp {
                       i instanceof TmplAstBoundAttribute && i.name === guard.inputName);
           if (boundInput !== undefined) {
             // If there is such a binding, generate an expression for it.
-            const expr = tcbExpression(boundInput.value, this.tcb, this.scope, boundInput.sourceSpan);
+            const expr = tcbExpression(
+                boundInput.value, this.tcb, this.scope,
+                boundInput.valueSpan || boundInput.sourceSpan);
 
             if (guard.type === 'binding') {
               // Use the binding expression itself as guard.
@@ -335,7 +337,8 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      let expr = tcbExpression(binding.value, this.tcb, this.scope, binding.sourceSpan);
+      let expr = tcbExpression(
+          binding.value, this.tcb, this.scope, binding.valueSpan || binding.sourceSpan);
 
       // If checking the type of bindings is disabled, cast the resulting expression to 'any' before
       // the assignment.
@@ -768,7 +771,7 @@ function tcbGetInputBindingExpressions(
   function processAttribute(attr: TmplAstBoundAttribute | TmplAstTextAttribute): void {
     if (attr instanceof TmplAstBoundAttribute && propMatch.has(attr.name)) {
       // Produce an expression representing the value of the binding.
-      const expr = tcbExpression(attr.value, tcb, scope, attr.sourceSpan);
+      const expr = tcbExpression(attr.value, tcb, scope, attr.valueSpan || attr.sourceSpan);
       // Call the callback.
       bindings.push({
         property: attr.name,
