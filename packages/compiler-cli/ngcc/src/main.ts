@@ -91,8 +91,16 @@ export function mainNgcc({basePath, targetEntryPointPath,
     return;
   }
 
-  const {entryPoints} =
+  const {entryPoints, invalidEntryPoints} =
       finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
+
+
+  invalidEntryPoints.forEach(invalidEntryPoint => {
+    logger.debug(
+        `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
+        `It is missing required dependencies:\n` +
+            invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
+  });
 
   if (absoluteTargetEntryPointPath && entryPoints.every(entryPoint => {
         return entryPoint.path !== absoluteTargetEntryPointPath;
