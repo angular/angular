@@ -60,10 +60,11 @@ function runTemplateVariableAssignmentCheck(
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting HTML templates.
-  rootSourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
   const collectedFailures: string[] = [];
