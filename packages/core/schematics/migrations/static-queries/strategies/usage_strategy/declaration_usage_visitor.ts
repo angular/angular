@@ -240,6 +240,17 @@ export class DeclarationUsageVisitor {
       callArgs: ts.NodeArray<ts.Expression>, parameters: ts.NodeArray<ts.ParameterDeclaration>) {
     parameters.forEach((parameter, index) => {
       let argumentNode: ts.Node = callArgs[index];
+
+      if (!argumentNode) {
+        if (!parameter.initializer) {
+          return;
+        }
+
+        // Argument can be undefined in case the function parameter has a default
+        // value. In that case we want to store the parameter default value in the context.
+        argumentNode = parameter.initializer;
+      }
+
       if (ts.isIdentifier(argumentNode)) {
         this.context.set(parameter, this._resolveIdentifier(argumentNode));
       } else {
@@ -285,7 +296,7 @@ export class DeclarationUsageVisitor {
   private _getPropertyAccessSymbol(node: ts.PropertyAccessExpression): ts.Symbol|null {
     let propertySymbol = this._getDeclarationSymbolOfNode(node.name);
 
-    if (!propertySymbol) {
+    if (!propertySymbol || !propertySymbol.valueDeclaration) {
       return null;
     }
 
