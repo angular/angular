@@ -117,7 +117,8 @@ function analyzeProject(tree: Tree, tsconfigPath: string, basePath: string):
 
       const program = ts.createProgram(parsed.fileNames, parsed.options, host);
       const typeChecker = program.getTypeChecker();
-      const sourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+      const sourceFiles = program.getSourceFiles().filter(
+          f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
       const queryVisitor = new NgQueryResolveVisitor(typeChecker);
 
       // Analyze all project source-files and collect all queries that

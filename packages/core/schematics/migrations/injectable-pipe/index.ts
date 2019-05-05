@@ -53,10 +53,11 @@ function runInjectablePipeMigration(tree: Tree, tsconfigPath: string, basePath: 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const visitor = new InjectablePipeVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
   const printer = ts.createPrinter();
 
-  rootSourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));
 
   visitor.missingInjectablePipes.forEach(data => {
     const {classDeclaration, importDeclarationMissingImport} = data;
