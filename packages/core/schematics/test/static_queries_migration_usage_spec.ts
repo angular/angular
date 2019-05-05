@@ -1384,5 +1384,29 @@ describe('static-queries migration with usage strategy', () => {
 
       expect(testModule.promptForMigrationStrategy).toHaveBeenCalledTimes(0);
     });
+
+    it('should support function call with default parameter value', async() => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+
+        @Component({template: '<span>Test</span>'})
+        export class MyComponent {
+          @${queryType}('test') query: any;
+          
+          ngOnInit() {
+            this.myFunction();
+          }
+          
+          myFunction(unused?: string, cb = () => this.query.doSomething) {
+            cb();
+          }
+        }
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
   }
 });
