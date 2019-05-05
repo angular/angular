@@ -68,7 +68,8 @@ function getInputNamesFromMetadata(
   // where inputs could be declared. This is an edge case because there
   // always needs to be an object literal, but in case there isn't we just
   // want to skip the invalid decorator and return null.
-  if (!ts.isObjectLiteralExpression(decoratorCall.arguments[0])) {
+  if (decoratorCall.arguments.length !== 1 ||
+      !ts.isObjectLiteralExpression(decoratorCall.arguments[0])) {
     return null;
   }
 
