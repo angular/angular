@@ -54,10 +54,11 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
   const visitor = new DocumentImportVisitor(typeChecker);
-  const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+  const sourceFiles = program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by finding imports.
-  rootSourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));
+  sourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));
 
   const {importsMap} = visitor;
 
