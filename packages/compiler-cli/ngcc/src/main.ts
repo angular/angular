@@ -94,8 +94,14 @@ export function mainNgcc(
     return;
   }
 
-  const {entryPoints} = finder.findEntryPoints(
+  const {entryPoints, invalidEntryPoints} = finder.findEntryPoints(
       AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath, pathMappings);
+
+  invalidEntryPoints.forEach(invalidEntryPoint => {
+    logger.debug(
+        `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
+        `It is missing required dependencies: ${invalidEntryPoint.missingDependencies.join(',')}`);
+  });
 
   if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
     markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath, propertiesToConsider);
