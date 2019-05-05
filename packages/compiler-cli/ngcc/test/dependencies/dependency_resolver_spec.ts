@@ -78,7 +78,7 @@ describe('DependencyResolver', () => {
 
     it('should remove entry points that depended upon an invalid entry-point', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.js')]: {resolved: [second.path], missing: []},
+        [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
         [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
         [_('/third/index.js')]: {resolved: [], missing: []},
       }));
@@ -93,7 +93,7 @@ describe('DependencyResolver', () => {
 
     it('should remove entry points that will depend upon an invalid entry-point', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.js')]: {resolved: [second.path], missing: []},
+        [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
         [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
         [_('/third/index.js')]: {resolved: [], missing: []},
       }));
