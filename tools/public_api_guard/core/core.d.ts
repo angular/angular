@@ -795,6 +795,10 @@ export declare function ɵɵelement(index: number, name: string, attrs?: TAttrib
 
 export declare function ɵɵelementAttribute(index: number, name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
 
+export declare function ɵɵelementClassMap(index: number, classes: {
+    [styleName: string]: any;
+} | NO_CHANGE | string | null): void;
+
 export declare function ɵɵelementClassProp(index: number, classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
 
 export declare function ɵɵelementContainerEnd(): void;
@@ -805,7 +809,15 @@ export declare function ɵɵelementEnd(): void;
 
 export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 
+export declare function ɵɵelementHostClassMap(classes: {
+    [key: string]: any;
+} | string | NO_CHANGE | null): void;
+
 export declare function ɵɵelementHostClassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+
+export declare function ɵɵelementHostStyleMap(styles: {
+    [styleName: string]: any;
+} | NO_CHANGE | null): void;
 
 export declare function ɵɵelementHostStyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
 
@@ -813,27 +825,19 @@ export declare function ɵɵelementHostStyling(classBindingNames?: string[] | nu
 
 export declare function ɵɵelementHostStylingApply(): void;
 
-export declare function ɵɵelementHostStylingMap(classes: {
-    [key: string]: any;
-} | string | NO_CHANGE | null, styles?: {
-    [styleName: string]: any;
-} | NO_CHANGE | null): void;
-
 export declare function ɵɵelementProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
 
 export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
+
+export declare function ɵɵelementStyleMap(index: number, styles: {
+    [styleName: string]: any;
+} | NO_CHANGE | null): void;
 
 export declare function ɵɵelementStyleProp(index: number, styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
 
 export declare function ɵɵelementStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
 
 export declare function ɵɵelementStylingApply(index: number): void;
-
-export declare function ɵɵelementStylingMap(index: number, classes: {
-    [key: string]: any;
-} | string | NO_CHANGE | null, styles?: {
-    [styleName: string]: any;
-} | NO_CHANGE | null): void;
 
 export declare function ɵɵembeddedViewEnd(): void;
 

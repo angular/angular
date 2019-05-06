@@ -34,6 +34,7 @@ export {
 
   ɵɵelement,
   ɵɵelementAttribute,
+  ɵɵelementClassMap,
   ɵɵelementClassProp,
   ɵɵelementContainerEnd,
 
@@ -41,17 +42,18 @@ export {
   ɵɵelementEnd,
 
   ɵɵelementHostAttrs,
+  ɵɵelementHostClassMap,
   ɵɵelementHostClassProp,
+  ɵɵelementHostStyleMap,
   ɵɵelementHostStyleProp,
   ɵɵelementHostStyling,
   ɵɵelementHostStylingApply,
-  ɵɵelementHostStylingMap,
   ɵɵelementProperty,
   ɵɵelementStart,
+  ɵɵelementStyleMap,
   ɵɵelementStyleProp,
   ɵɵelementStyling,
   ɵɵelementStylingApply,
-  ɵɵelementStylingMap,
   ɵɵembeddedViewEnd,
 
   ɵɵembeddedViewStart,
