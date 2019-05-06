@@ -486,17 +486,16 @@ function getMatchingBindingIndex(
 }
 
 /**
- * Registers the provided multi styling (`[style]` and `[class]`) values to the context.
+ * Registers the provided multi class values to the context.
  *
- * This function will iterate over the provided `classesInput` and `stylesInput` map
- * values and insert/update or remove them from the context at exactly the right
- * spot.
+ * This function will iterate over the provided `classesInput` values and
+ * insert/update or remove them from the context at exactly the right spot.
  *
  * This function also takes in a directive which implies that the styling values will
  * be evaluated for that directive with respect to any other styling that already exists
- * on the context. When there are styles that conflict (e.g. say `ngStyle` and `[style]`
- * both update the `width` property at the same time) then the styling algorithm code below
- * will decide which one wins based on the directive styling prioritization mechanism. This
+ * on the context. When there are styles that conflict (e.g. say `ngClass` and `[class]`
+ * both update the `foo` className value at the same time) then the styling algorithm code below
+ * will decide which one wins based on the directive styling prioritization mechanism. (This
  * mechanism is better explained in render3/interfaces/styling.ts#directives).
  *
  * This function will not render any styling values on screen, but is rather designed to
@@ -509,100 +508,108 @@ function getMatchingBindingIndex(
  * @param classesInput The key/value map of CSS class names that will be used for the update.
  * @param stylesInput The key/value map of CSS styles that will be used for the update.
  */
-export function updateStylingMap(
+export function updateClassMap(
     context: StylingContext, classesInput: {[key: string]: any} | string |
         BoundPlayerFactory<null|string|{[key: string]: any}>| null,
-    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| null,
     directiveIndex: number = 0): void {
-  ngDevMode && ngDevMode.stylingMap++;
+  updateStylingMap(context, classesInput, true, directiveIndex);
+}
+
+/**
+ * Registers the provided multi style values to the context.
+ *
+ * This function will iterate over the provided `stylesInput` values and
+ * insert/update or remove them from the context at exactly the right spot.
+ *
+ * This function also takes in a directive which implies that the styling values will
+ * be evaluated for that directive with respect to any other styling that already exists
+ * on the context. When there are styles that conflict (e.g. say `ngStyle` and `[style]`
+ * both update the `width` property at the same time) then the styling algorithm code below
+ * will decide which one wins based on the directive styling prioritization mechanism. (This
+ * mechanism is better explained in render3/interfaces/styling.ts#directives).
+ *
+ * This function will not render any styling values on screen, but is rather designed to
+ * prepare the context for that. `renderStyling` must be called afterwards to render any
+ * styling data that was set in this function (note that `updateClassProp` and
+ * `updateStyleProp` are designed to be run after this function is run).
+ *
+ * @param context The styling context that will be updated with the
+ *    newly provided style values.
+ * @param stylesInput The key/value map of CSS styles that will be used for the update.
+ */
+export function updateStyleMap(
+    context: StylingContext, stylesInput: {[key: string]: any} | string |
+        BoundPlayerFactory<null|string|{[key: string]: any}>| null,
+    directiveIndex: number = 0): void {
+  updateStylingMap(context, stylesInput, false, directiveIndex);
+}
+
+function updateStylingMap(
+    context: StylingContext, input: {[key: string]: any} | string |
+        BoundPlayerFactory<null|string|{[key: string]: any}>| null,
+    entryIsClassBased: boolean, directiveIndex: number = 0): void {
+  ngDevMode && (entryIsClassBased ? ngDevMode.classMap++ : ngDevMode.styleMap++);
   ngDevMode && assertValidDirectiveIndex(context, directiveIndex);
-  classesInput = classesInput || null;
-  stylesInput = stylesInput || null;
-  const ignoreAllClassUpdates = isMultiValueCacheHit(context, true, directiveIndex, classesInput);
-  const ignoreAllStyleUpdates = isMultiValueCacheHit(context, false, directiveIndex, stylesInput);
 
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
-  if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
+  if (isMultiValueCacheHit(context, entryIsClassBased, directiveIndex, input)) return;
 
-  classesInput =
-      classesInput === NO_CHANGE ? readCachedMapValue(context, true, directiveIndex) : classesInput;
-  stylesInput =
-      stylesInput === NO_CHANGE ? readCachedMapValue(context, false, directiveIndex) : stylesInput;
+  input =
+      input === NO_CHANGE ? readCachedMapValue(context, entryIsClassBased, directiveIndex) : input;
 
   const element = context[StylingIndex.ElementPosition] !as HTMLElement;
-  const classesPlayerBuilder = classesInput instanceof BoundPlayerFactory ?
-      new ClassAndStylePlayerBuilder(classesInput as any, element, BindingType.Class) :
-      null;
-  const stylesPlayerBuilder = stylesInput instanceof BoundPlayerFactory ?
-      new ClassAndStylePlayerBuilder(stylesInput as any, element, BindingType.Style) :
+  const playerBuilder = input instanceof BoundPlayerFactory ?
+      new ClassAndStylePlayerBuilder(
+          input as any, element, entryIsClassBased ? BindingType.Class : BindingType.Style) :
       null;
 
-  const classesValue = classesPlayerBuilder ?
-      (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
-      classesInput;
-  const stylesValue = stylesPlayerBuilder ? stylesInput !['value'] : stylesInput;
+  const rawValue =
+      playerBuilder ? (input as BoundPlayerFactory<{[key: string]: any}|string>) !.value : input;
 
-  let classNames: string[] = EMPTY_ARRAY;
-  let applyAllClasses = false;
+  // the position is always the same, but whether the player builder gets set
+  // at all (depending if its set) will be reflected in the index value below...
+  const playerBuilderPosition = entryIsClassBased ? PlayerIndex.ClassMapPlayerBuilderPosition :
+                                                    PlayerIndex.StyleMapPlayerBuilderPosition;
+  let playerBuilderIndex = playerBuilder ? playerBuilderPosition : 0;
   let playerBuildersAreDirty = false;
-
-  const classesPlayerBuilderIndex =
-      classesPlayerBuilder ? PlayerIndex.ClassMapPlayerBuilderPosition : 0;
-  if (hasPlayerBuilderChanged(
-          context, classesPlayerBuilder, PlayerIndex.ClassMapPlayerBuilderPosition)) {
-    setPlayerBuilder(context, classesPlayerBuilder, PlayerIndex.ClassMapPlayerBuilderPosition);
-    playerBuildersAreDirty = true;
-  }
-
-  const stylesPlayerBuilderIndex =
-      stylesPlayerBuilder ? PlayerIndex.StyleMapPlayerBuilderPosition : 0;
-  if (hasPlayerBuilderChanged(
-          context, stylesPlayerBuilder, PlayerIndex.StyleMapPlayerBuilderPosition)) {
-    setPlayerBuilder(context, stylesPlayerBuilder, PlayerIndex.StyleMapPlayerBuilderPosition);
+  if (hasPlayerBuilderChanged(context, playerBuilder, playerBuilderPosition)) {
+    setPlayerBuilder(context, playerBuilder, playerBuilderPosition);
     playerBuildersAreDirty = true;
   }
 
   // each time a string-based value pops up then it shouldn't require a deep
   // check of what's changed.
-  if (!ignoreAllClassUpdates) {
-    if (typeof classesValue == 'string') {
-      classNames = classesValue.split(/\s+/);
+  let startIndex: number;
+  let endIndex: number;
+  let propNames: string[];
+  let applyAll = false;
+  if (entryIsClassBased) {
+    if (typeof rawValue == 'string') {
+      propNames = rawValue.split(/\s+/);
       // this boolean is used to avoid having to create a key/value map of `true` values
-      // since a classname string implies that all those classes are added
-      applyAllClasses = true;
+      // since a className string implies that all those classes are added
+      applyAll = true;
     } else {
-      classNames = classesValue ? Object.keys(classesValue) : EMPTY_ARRAY;
+      propNames = rawValue ? Object.keys(rawValue) : EMPTY_ARRAY;
     }
+    startIndex = getMultiClassesStartIndex(context);
+    endIndex = context.length;
+  } else {
+    startIndex = getMultiStylesStartIndex(context);
+    endIndex = getMultiClassesStartIndex(context);
+    propNames = rawValue ? Object.keys(rawValue) : EMPTY_ARRAY;
   }
 
-  const multiStylesStartIndex = getMultiStylesStartIndex(context);
-  let multiClassesStartIndex = getMultiClassesStartIndex(context);
-  let multiClassesEndIndex = context.length;
-
-  if (!ignoreAllStyleUpdates) {
-    const styleProps = stylesValue ? Object.keys(stylesValue) : EMPTY_ARRAY;
-    const styles = stylesValue || EMPTY_OBJ;
-    const totalNewEntries = patchStylingMapIntoContext(
-        context, directiveIndex, stylesPlayerBuilderIndex, multiStylesStartIndex,
-        multiClassesStartIndex, styleProps, styles, stylesInput, false);
-    if (totalNewEntries) {
-      multiClassesStartIndex += totalNewEntries * StylingIndex.Size;
-      multiClassesEndIndex += totalNewEntries * StylingIndex.Size;
-    }
-  }
-
-  if (!ignoreAllClassUpdates) {
-    const classes = (classesValue || EMPTY_OBJ) as{[key: string]: any};
-    patchStylingMapIntoContext(
-        context, directiveIndex, classesPlayerBuilderIndex, multiClassesStartIndex,
-        multiClassesEndIndex, classNames, applyAllClasses || classes, classesInput, true);
-  }
+  const values = (rawValue || EMPTY_OBJ) as{[key: string]: any};
+  patchStylingMapIntoContext(
+      context, directiveIndex, playerBuilderIndex, startIndex, endIndex, propNames,
+      applyAll || values, input, entryIsClassBased);
 
   if (playerBuildersAreDirty) {
     setContextPlayersDirty(context, true);
   }
 
-  ngDevMode && ngDevMode.stylingMapCacheMiss++;
+  ngDevMode && (entryIsClassBased ? ngDevMode.classMapCacheMiss++ : ngDevMode.styleMapCacheMiss++);
 }
 
 /**

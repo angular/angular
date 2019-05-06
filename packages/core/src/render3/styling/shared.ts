@@ -9,7 +9,7 @@
 /**
  * The default directive styling index value for template-based bindings.
  *
- * All host-level bindings (e.g. `hostStyleProp` and `hostStylingMap`) are
+ * All host-level bindings (e.g. `hostStyleProp` and `hostStyleMap`) are
  * assigned a directive styling index value based on the current directive
  * uniqueId and the directive super-class inheritance depth. But for template
  * bindings they always have the same directive styling index value.

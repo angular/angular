@@ -9,7 +9,7 @@ import {createLView, createTView} from '@angular/core/src/render3/instructions/s
 
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵnamespaceSVG} from '../../../src/render3/index';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵnamespaceSVG} from '../../../src/render3/index';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
@@ -17,7 +17,7 @@ import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/int
 import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
 import {CONTEXT, LView, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {ClassAndStylePlayerBuilder, compareLogSummaries, directiveOwnerPointers, generateConfigSummary, getDirectiveIndexFromEntry, initializeStaticContext, isContextDirty, patchContextWithStaticAttrs, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateContextWithBindings, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
+import {ClassAndStylePlayerBuilder, compareLogSummaries, directiveOwnerPointers, generateConfigSummary, getDirectiveIndexFromEntry, initializeStaticContext, isContextDirty, patchContextWithStaticAttrs, renderStyling as _renderStyling, setContextDirty, updateClassMap, updateClassProp, updateContextWithBindings, updateStyleMap, updateStyleProp} from '../../../src/render3/styling/class_and_style_bindings';
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
 import {registerHostDirective} from '../../../src/render3/styling/host_instructions_queue';
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
@@ -31,6 +31,13 @@ import {MockPlayer} from './mock_player';
 describe('style and class based bindings', () => {
   let element: RElement|null = null;
   beforeEach(() => { element = document.createElement('div') as any; });
+
+  function updateStyleAndClassMaps(
+      context: StylingContext, classes: {} | string | null, styles?: {} | null,
+      directiveIndex?: number) {
+    updateStyleMap(context, styles || null, directiveIndex);
+    updateClassMap(context, classes, directiveIndex);
+  }
 
   function createMockViewData(playerHandler: PlayerHandler, context: StylingContext): LView {
     const rootContext =
@@ -139,11 +146,11 @@ describe('style and class based bindings', () => {
   }
 
   function updateClasses(context: StylingContext, classes: string | {[key: string]: any} | null) {
-    updateStylingMap(context, classes, null);
+    updateStyleAndClassMaps(context, classes, null);
   }
 
   function updateStyles(context: StylingContext, styles: {[key: string]: any} | null) {
-    updateStylingMap(context, null, styles);
+    updateStyleAndClassMaps(context, null, styles);
   }
 
   function cleanStyle(a: number = 0, b: number = 0): number { return _clean(a, b, false, false); }
@@ -389,7 +396,7 @@ describe('style and class based bindings', () => {
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementStylingMap(0, null, ctx.myStyles);
+               ɵɵelementStyleMap(0, ctx.myStyles);
                ɵɵelementStyleProp(0, 0, ctx.myWidth);
                ɵɵelementStylingApply(0);
              }
@@ -1470,9 +1477,9 @@ describe('style and class based bindings', () => {
 
            const ctx = allocStylingContext(element, template);
            let s1, s2, s3;
-           updateStylingMap(ctx, null, s1 = {width: '100px', height: '99px'}, dir1);
-           updateStylingMap(ctx, null, s2 = {width: '200px', opacity: '0.5'}, dir2);
-           updateStylingMap(ctx, null, s3 = {width: '300px', height: '999px'}, dir3);
+           updateStyleAndClassMaps(ctx, null, s1 = {width: '100px', height: '99px'}, dir1);
+           updateStyleAndClassMaps(ctx, null, s2 = {width: '200px', opacity: '0.5'}, dir2);
+           updateStyleAndClassMaps(ctx, null, s3 = {width: '300px', height: '999px'}, dir3);
 
            expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([
              3,
@@ -1526,9 +1533,9 @@ describe('style and class based bindings', () => {
              2,
            ]);
 
-           updateStylingMap(ctx, null, {opacity: '0', width: null}, dir1);
-           updateStylingMap(ctx, null, {width: '200px', opacity: '0.5'}, dir2);
-           updateStylingMap(ctx, null, {width: '300px', height: '999px'}, dir3);
+           updateStyleAndClassMaps(ctx, null, {opacity: '0', width: null}, dir1);
+           updateStyleAndClassMaps(ctx, null, {width: '200px', opacity: '0.5'}, dir2);
+           updateStyleAndClassMaps(ctx, null, {width: '300px', height: '999px'}, dir3);
 
            assertContextOnlyValues(ctx, [
              // #10
@@ -1562,9 +1569,10 @@ describe('style and class based bindings', () => {
              3,
            ]);
 
-           updateStylingMap(ctx, null, null, dir1);
-           updateStylingMap(ctx, null, {width: '500px', opacity: '0.2'}, dir2);
-           updateStylingMap(ctx, null, {width: '300px', height: '999px', color: 'red'}, dir3);
+           updateStyleAndClassMaps(ctx, null, null, dir1);
+           updateStyleAndClassMaps(ctx, null, {width: '500px', opacity: '0.2'}, dir2);
+           updateStyleAndClassMaps(
+               ctx, null, {width: '300px', height: '999px', color: 'red'}, dir3);
 
            assertContextOnlyValues(ctx, [
              // #10
@@ -1619,9 +1627,9 @@ describe('style and class based bindings', () => {
 
            const ctx = allocStylingContext(element, template);
            let c1, c2, c3;
-           updateStylingMap(ctx, c1 = {red: true, orange: true}, null, dir1);
-           updateStylingMap(ctx, c2 = 'black red', null, dir2);
-           updateStylingMap(ctx, c3 = 'silver green', null, dir3);
+           updateStyleAndClassMaps(ctx, c1 = {red: true, orange: true}, null, dir1);
+           updateStyleAndClassMaps(ctx, c2 = 'black red', null, dir2);
+           updateStyleAndClassMaps(ctx, c3 = 'silver green', null, dir3);
 
            expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([
              5, 0, 18, null, 0, 0, 18, c1, 2, 0, 26, c2, 1, 0, 30, c3, 2
@@ -1671,9 +1679,9 @@ describe('style and class based bindings', () => {
              3,
            ]);
 
-           updateStylingMap(ctx, c1 = {orange: true}, null, dir1);
-           updateStylingMap(ctx, c2 = 'black red', null, dir2);
-           updateStylingMap(ctx, c3 = 'green', null, dir3);
+           updateStyleAndClassMaps(ctx, c1 = {orange: true}, null, dir1);
+           updateStyleAndClassMaps(ctx, c2 = 'black red', null, dir2);
+           updateStyleAndClassMaps(ctx, c3 = 'green', null, dir3);
 
            assertContextOnlyValues(ctx, [
              // #10
@@ -1719,9 +1727,9 @@ describe('style and class based bindings', () => {
              1,
            ]);
 
-           updateStylingMap(ctx, c1 = 'green', null, dir1);
-           updateStylingMap(ctx, c2 = null, null, dir2);
-           updateStylingMap(ctx, c3 = 'red', null, dir3);
+           updateStyleAndClassMaps(ctx, c1 = 'green', null, dir1);
+           updateStyleAndClassMaps(ctx, c2 = null, null, dir2);
+           updateStyleAndClassMaps(ctx, c3 = 'red', null, dir3);
 
            assertContextOnlyValues(ctx, [
              // #10
@@ -1848,7 +1856,7 @@ describe('style and class based bindings', () => {
 
            const foreignDir = 2;
            expect(() => {
-             updateStylingMap(ctx, 'foo', null, foreignDir);
+             updateStyleAndClassMaps(ctx, 'foo', null, foreignDir);
            }).toThrowError('The provided directive is not registered with the styling context');
          });
     });
@@ -1862,7 +1870,7 @@ describe('style and class based bindings', () => {
 
          let styles: any = {'font-size': ''};
          updateStyleProp(stylingContext, 0, '');
-         updateStylingMap(stylingContext, null, styles);
+         updateStyleAndClassMaps(stylingContext, null, styles);
 
          getStyles(stylingContext);
          expect(store.getValues()).toEqual({'font-size': '', 'color': ''});
@@ -1871,7 +1879,7 @@ describe('style and class based bindings', () => {
          registerHostDirective(stylingContext, otherDirective);
 
          updateStyleProp(stylingContext, 0, 'red');
-         updateStylingMap(stylingContext, null, styles = {'font-size': '20px'});
+         updateStyleAndClassMaps(stylingContext, null, styles = {'font-size': '20px'});
 
          getStyles(stylingContext);
          expect(store.getValues()).toEqual({'font-size': '', 'color': ''});
@@ -1880,7 +1888,7 @@ describe('style and class based bindings', () => {
          expect(store.getValues()).toEqual({'font-size': '20px', color: 'red'});
 
          updateStyleProp(stylingContext, 0, '');
-         updateStylingMap(stylingContext, null, styles = {});
+         updateStyleAndClassMaps(stylingContext, null, styles = {});
 
          getStyles(stylingContext, otherDirective);
          expect(store.getValues()).toEqual({'font-size': null, color: ''});
@@ -1958,10 +1966,10 @@ describe('style and class based bindings', () => {
          const stylingContext = createStylingContext(null, null, null, ['baz']);
          expect(getClasses(stylingContext)).toEqual({});
 
-         updateStylingMap(stylingContext, 'foo bar baz');
+         updateStyleAndClassMaps(stylingContext, 'foo bar baz');
          expect(getClasses(stylingContext)).toEqual({'foo': true, 'bar': true, 'baz': true});
 
-         updateStylingMap(stylingContext, 'foo car');
+         updateStyleAndClassMaps(stylingContext, 'foo car');
          updateClassProp(stylingContext, 0, true);
          expect(getClasses(stylingContext))
              .toEqual({'foo': true, 'car': true, 'bar': false, 'baz': true});
@@ -2036,7 +2044,7 @@ describe('style and class based bindings', () => {
          expect(getStylesAndClasses(stylingContext)).toEqual([{}, {}]);
 
          let cachedStyleMap: any = {width: '200px', opacity: '0.5'};
-         updateStylingMap(stylingContext, 'tall round', cachedStyleMap);
+         updateStyleAndClassMaps(stylingContext, 'tall round', cachedStyleMap);
          assertContext(stylingContext, [
            element,
            masterConfig(26, true),  //
@@ -2117,7 +2125,7 @@ describe('style and class based bindings', () => {
 
          let cachedClassMap = {tall: true, wide: true};
          cachedStyleMap = {width: '500px'};
-         updateStylingMap(stylingContext, cachedClassMap, cachedStyleMap);
+         updateStyleAndClassMaps(stylingContext, cachedClassMap, cachedStyleMap);
          updateStyleProp(stylingContext, 0, '300px');
 
          assertContext(stylingContext, [
@@ -2198,7 +2206,7 @@ describe('style and class based bindings', () => {
            {width: '300px', opacity: null},
          ]);
 
-         updateStylingMap(stylingContext, {wide: false});
+         updateStyleAndClassMaps(stylingContext, {wide: false});
 
          expect(getStylesAndClasses(stylingContext)).toEqual([
            {wide: false, tall: false, round: false}, {width: '100px', opacity: null}
@@ -2212,7 +2220,7 @@ describe('style and class based bindings', () => {
 
          const stylesMap = {width: '200px'};
          const classesMap = {foo: true};
-         updateStylingMap(stylingContext, classesMap, stylesMap);
+         updateStyleAndClassMaps(stylingContext, classesMap, stylesMap);
 
          // apply the styles
          getStylesAndClasses(stylingContext);
@@ -2239,7 +2247,7 @@ describe('style and class based bindings', () => {
          stylesMap.width = '300px';
          classesMap.foo = false;
 
-         updateStylingMap(stylingContext, classesMap, stylesMap);
+         updateStyleAndClassMaps(stylingContext, classesMap, stylesMap);
 
          // apply the styles
          getStylesAndClasses(stylingContext);
@@ -2269,7 +2277,7 @@ describe('style and class based bindings', () => {
       const getClasses = trackClassesFactory();
 
       const classes = 'apple orange banana';
-      updateStylingMap(stylingContext, classes);
+      updateStyleAndClassMaps(stylingContext, classes);
 
       // apply the styles
       expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
@@ -2307,7 +2315,7 @@ describe('style and class based bindings', () => {
 
       stylingContext[14 + StylingIndex.ValueOffset] = false;
       stylingContext[18 + StylingIndex.ValueOffset] = false;
-      updateStylingMap(stylingContext, classes);
+      updateStyleAndClassMaps(stylingContext, classes);
 
       // apply the styles
       expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
@@ -2320,7 +2328,7 @@ describe('style and class based bindings', () => {
 
       let classes: any = {red: false};
       updateClassProp(stylingContext, 0, false);
-      updateStylingMap(stylingContext, classes);
+      updateStyleAndClassMaps(stylingContext, classes);
 
       // apply the styles
       getClasses(stylingContext, true);
@@ -2328,14 +2336,14 @@ describe('style and class based bindings', () => {
 
       classes = {red: true};
       updateClassProp(stylingContext, 0, true);
-      updateStylingMap(stylingContext, classes);
+      updateStyleAndClassMaps(stylingContext, classes);
 
       getClasses(stylingContext);
       expect(store.getValues()).toEqual({red: true, blue: true});
 
       classes = {red: false};
       updateClassProp(stylingContext, 0, false);
-      updateStylingMap(stylingContext, classes);
+      updateStyleAndClassMaps(stylingContext, classes);
 
       getClasses(stylingContext);
       expect(store.getValues()).toEqual({red: false, blue: false});
@@ -2367,7 +2375,7 @@ describe('style and class based bindings', () => {
           },
           styles);
 
-      updateStylingMap(context, classFactory, styleFactory);
+      updateStyleAndClassMaps(context, classFactory, styleFactory);
       expect(classResult).toBeFalsy();
 
       renderStyles(context);
@@ -2392,15 +2400,15 @@ describe('style and class based bindings', () => {
         return new MockPlayer();
       };
 
-      updateStylingMap(context, null, bindPlayerFactory(buildFn, {width: '100px'}));
+      updateStyleAndClassMaps(context, null, bindPlayerFactory(buildFn, {width: '100px'}));
       renderStyles(context);
       expect(count).toEqual(1);
 
-      updateStylingMap(context, null, bindPlayerFactory(buildFn, {height: '100px'}));
+      updateStyleAndClassMaps(context, null, bindPlayerFactory(buildFn, {height: '100px'}));
       renderStyles(context);
       expect(count).toEqual(2);
 
-      updateStylingMap(
+      updateStyleAndClassMaps(
           context, null, bindPlayerFactory(buildFn, {height: '200px', width: '200px'}));
       renderStyles(context);
       expect(count).toEqual(3);
@@ -2415,15 +2423,16 @@ describe('style and class based bindings', () => {
         return new MockPlayer();
       };
 
-      updateStylingMap(context, bindPlayerFactory(buildFn, {myClass: true}));
+      updateStyleAndClassMaps(context, bindPlayerFactory(buildFn, {myClass: true}));
       renderStyles(context);
       expect(count).toEqual(1);
 
-      updateStylingMap(context, bindPlayerFactory(buildFn, {otherClass: true}));
+      updateStyleAndClassMaps(context, bindPlayerFactory(buildFn, {otherClass: true}));
       renderStyles(context);
       expect(count).toEqual(2);
 
-      updateStylingMap(context, bindPlayerFactory(buildFn, {myClass: false, otherClass: false}));
+      updateStyleAndClassMaps(
+          context, bindPlayerFactory(buildFn, {myClass: false, otherClass: false}));
       renderStyles(context);
       expect(count).toEqual(3);
     });
@@ -2452,7 +2461,7 @@ describe('style and class based bindings', () => {
       const classPlayerBuilder =
           new ClassAndStylePlayerBuilder(classFactory, element as HTMLElement, BindingType.Class);
 
-      updateStylingMap(context, classFactory, styleFactory);
+      updateStyleAndClassMaps(context, classFactory, styleFactory);
       expect(context[StylingIndex.PlayerContext]).toEqual([
         5, classPlayerBuilder, null, stylePlayerBuilder, null
       ]);
@@ -2518,7 +2527,7 @@ describe('style and class based bindings', () => {
          const classMapPlayerBuilder = new ClassAndStylePlayerBuilder(
              classMapFactory, element as HTMLElement, BindingType.Class);
 
-         updateStylingMap(context, classMapFactory, styleMapFactory);
+         updateStyleAndClassMaps(context, classMapFactory, styleMapFactory);
 
          const widthFactory = bindPlayerFactory(styleBuildFn, '100px');
          const barFactory = bindPlayerFactory(classBuildFn, true);
@@ -2604,7 +2613,7 @@ describe('style and class based bindings', () => {
          expect(context[StylingIndex.PlayerContext]).toEqual(null);
 
          let mapFactory = bindPlayerFactory(buildFn, {width: '200px'});
-         updateStylingMap(context, null, mapFactory);
+         updateStyleAndClassMaps(context, null, mapFactory);
          renderStyles(context, false, undefined, lView);
 
          expect(players.length).toEqual(1);
@@ -2612,7 +2621,7 @@ describe('style and class based bindings', () => {
          expect(p1.state).toEqual(PlayState.Pending);
 
          mapFactory = bindPlayerFactory(buildFn, {width: '100px'});
-         updateStylingMap(context, null, mapFactory);
+         updateStyleAndClassMaps(context, null, mapFactory);
          renderStyles(context, false, undefined, lView);
 
          expect(players.length).toEqual(1);
@@ -2684,7 +2693,7 @@ describe('style and class based bindings', () => {
          const classMapWithPlayerFactory = bindPlayerFactory(buildClassFn, cachedClassMap);
          const styleMapPlayerBuilder = makePlayerBuilder(styleMapWithPlayerFactory, false);
          const classMapPlayerBuilder = makePlayerBuilder(classMapWithPlayerFactory, true);
-         updateStylingMap(context, classMapWithPlayerFactory, styleMapWithPlayerFactory);
+         updateStyleAndClassMaps(context, classMapWithPlayerFactory, styleMapWithPlayerFactory);
 
          const colorWithPlayerFactory = bindPlayerFactory(buildStyleFn, 'red');
          const fooWithPlayerFactory = bindPlayerFactory(buildClassFn, true);
@@ -2754,7 +2763,7 @@ describe('style and class based bindings', () => {
            0,
          ]);
 
-         updateStylingMap(context, cachedClassMap, cachedStyleMap);
+         updateStyleAndClassMaps(context, cachedClassMap, cachedStyleMap);
 
          const colorWithoutPlayerFactory = 'blue';
          const fooWithoutPlayerFactory = false;
@@ -2836,7 +2845,7 @@ describe('style and class based bindings', () => {
 
       let styleFactory = bindPlayerFactory(buildStyleFn, {opacity: '1'}) as BoundPlayerFactory<any>;
       let classFactory = bindPlayerFactory(buildClassFn, 'bar') as BoundPlayerFactory<any>;
-      updateStylingMap(context, classFactory, styleFactory);
+      updateStyleAndClassMaps(context, classFactory, styleFactory);
       expect(styleCalls).toEqual(0);
       expect(classCalls).toEqual(0);
 
@@ -2849,18 +2858,18 @@ describe('style and class based bindings', () => {
       expect(classCalls).toEqual(1);
 
       styleFactory = bindPlayerFactory(buildStyleFn, {opacity: '0.5'}) as BoundPlayerFactory<any>;
-      updateStylingMap(context, classFactory, styleFactory);
+      updateStyleAndClassMaps(context, classFactory, styleFactory);
       renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(1);
 
       classFactory = bindPlayerFactory(buildClassFn, 'foo') as BoundPlayerFactory<any>;
-      updateStylingMap(context, classFactory, styleFactory);
+      updateStyleAndClassMaps(context, classFactory, styleFactory);
       renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
 
-      updateStylingMap(context, 'foo', {opacity: '0.5'});
+      updateStyleAndClassMaps(context, 'foo', {opacity: '0.5'});
       renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
@@ -2883,7 +2892,7 @@ describe('style and class based bindings', () => {
          };
 
          const mapFactory = bindPlayerFactory(mapBuildFn, {color: 'black'});
-         updateStylingMap(context, null, mapFactory);
+         updateStyleAndClassMaps(context, null, mapFactory);
          updateStyleProp(context, 0, 'green');
          renderStyles(context, false, undefined, lView);
 
@@ -2907,7 +2916,7 @@ describe('style and class based bindings', () => {
 
          propPlayer = styleMapPlayer = null;
 
-         updateStylingMap(context, null, null);
+         updateStyleAndClassMaps(context, null, null);
          renderStyles(context, false, undefined, lView);
 
          expect(propPlayer).toBeFalsy();
@@ -2929,7 +2938,7 @@ describe('style and class based bindings', () => {
           };
 
       let factory = bindPlayerFactory<{[key: string]: any}>(buildFn, {width: '200px'});
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(previousPlayer).toEqual(null);
@@ -2937,7 +2946,7 @@ describe('style and class based bindings', () => {
 
       factory = bindPlayerFactory(buildFn, {height: '200px'});
 
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(previousPlayer !.value).toEqual({width: '200px'});
@@ -2959,7 +2968,7 @@ describe('style and class based bindings', () => {
           };
 
       let factory = bindPlayerFactory<any>(buildFn, {foo: true});
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(currentPlayer).toBeTruthy();
@@ -2969,7 +2978,7 @@ describe('style and class based bindings', () => {
       previousPlayer = currentPlayer = null;
 
       factory = bindPlayerFactory(buildFn, {bar: true});
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(currentPlayer).toBeTruthy();
@@ -3000,13 +3009,13 @@ describe('style and class based bindings', () => {
 
       let factory = bindPlayerFactory<{[key: string]: any}>(
           buildFn, {width: '200px', height: '100px', opacity: '1'});
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(values !).toEqual({width: '200px-safe!', height: '100px-safe!', opacity: '1'});
 
       factory = bindPlayerFactory(buildFn, {width: 'auto'});
-      updateStylingMap(context, null, factory);
+      updateStyleAndClassMaps(context, null, factory);
       renderStyles(context, false, undefined, lView);
 
       expect(values !).toEqual({width: 'auto-safe!', height: null, opacity: null});
@@ -3035,20 +3044,21 @@ describe('style and class based bindings', () => {
 
          const styleMapFactory = bindPlayerFactory(styleBuildFn, {opacity: '1'});
          const classMapFactory = bindPlayerFactory(classBuildFn, {map: true});
-         updateStylingMap(context, classMapFactory, styleMapFactory);
+         updateStyleAndClassMaps(context, classMapFactory, styleMapFactory);
          updateStyleProp(context, 0, bindPlayerFactory(styleBuildFn, '100px') as any);
          updateClassProp(context, 0, bindPlayerFactory(classBuildFn, true) as any);
          updateClassProp(context, 1, bindPlayerFactory(classBuildFn, true) as any);
          renderStyles(context, false, undefined, lView);
          handler.flushPlayers();
 
+         expect(players.length).toEqual(5);
          const [p1, p2, p3, p4, p5] = players;
          expect(p1.state).toEqual(PlayState.Running);
          expect(p2.state).toEqual(PlayState.Running);
          expect(p3.state).toEqual(PlayState.Running);
          expect(p4.state).toEqual(PlayState.Running);
 
-         updateStylingMap(context, {bar: true}, {height: '200px'});
+         updateStyleAndClassMaps(context, {bar: true}, {height: '200px'});
          updateStyleProp(context, 0, '200px');
          updateClassProp(context, 0, false);
          expect(p1.state).toEqual(PlayState.Running);
@@ -3100,7 +3110,8 @@ describe('style and class based bindings', () => {
                  ɵɵelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 ɵɵelementStylingMap(0, classMapFactory, styleMapFactory);
+                 ɵɵelementStyleMap(0, styleMapFactory);
+                 ɵɵelementClassMap(0, classMapFactory);
                  ɵɵelementStyleProp(0, 0, widthFactory);
                  ɵɵelementClassProp(0, 0, fooFactory);
                  ɵɵelementStylingApply(0);
@@ -3173,7 +3184,8 @@ describe('style and class based bindings', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementStylingMap(0, classMapFactory, styleMapFactory);
+              ɵɵelementStyleMap(0, styleMapFactory);
+              ɵɵelementClassMap(0, classMapFactory);
               ɵɵelementStyleProp(0, 0, widthFactory);
               ɵɵelementClassProp(0, 0, fooFactory);
               ɵɵelementStylingApply(0);

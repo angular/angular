@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {ɵɵpropertyInterpolate, ɵɵpropertyInterpolate1, ɵɵpropertyInterpolate2, ɵɵpropertyInterpolate3, ɵɵpropertyInterpolate4, ɵɵpropertyInterpolate5, ɵɵpropertyInterpolate6, ɵɵpropertyInterpolate7, ɵɵpropertyInterpolate8, ɵɵpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵbind, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {RenderFlags, ɵɵbind, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassMap, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -1063,7 +1063,7 @@ describe('instructions', () => {
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementStylingMap(0, null, {'background-color': 'red'});
+        ɵɵelementStyleMap(0, {'background-color': 'red'});
         ɵɵelementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
@@ -1078,7 +1078,7 @@ describe('instructions', () => {
           sanitizerInterceptor);
 
       fixture.update(() => {
-        ɵɵelementStylingMap(0, null, {
+        ɵɵelementStyleMap(0, {
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -1107,7 +1107,7 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementStylingMap(0, 'multiple classes');
+        ɵɵelementClassMap(0, 'multiple classes');
         ɵɵelementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
