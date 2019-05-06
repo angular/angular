@@ -662,31 +662,31 @@ describe('Integration', () => {
        })));
 
     it('should set browserUrlTree with urlUpdateStrategy="eagar" and false `shouldProcessUrl`',
-        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-          const fixture = TestBed.createComponent(RootCmp);
-          advance(fixture);
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = TestBed.createComponent(RootCmp);
+         advance(fixture);
 
-          router.urlUpdateStrategy = 'eager';
+         router.urlUpdateStrategy = 'eager';
 
-          router.resetConfig([
-            {path: 'team/:id', component: SimpleCmp},
-            {path: 'login', component: AbsoluteSimpleLinkCmp}
-          ]);
+         router.resetConfig([
+           {path: 'team/:id', component: SimpleCmp},
+           {path: 'login', component: AbsoluteSimpleLinkCmp}
+         ]);
 
-          router.navigateByUrl('/team/22');
-          advance(fixture, 1);
+         router.navigateByUrl('/team/22');
+         advance(fixture, 1);
 
-          expect((router as any).browserUrlTree.toString()).toBe('/team/22')
+         expect((router as any).browserUrlTree.toString()).toBe('/team/22');
 
-          // Force to not process URL changes
-          router.urlHandlingStrategy.shouldProcessUrl = (url: UrlTree) => false;
+         // Force to not process URL changes
+         router.urlHandlingStrategy.shouldProcessUrl = (url: UrlTree) => false;
 
-          router.navigateByUrl('/login');
-          advance(fixture, 1);
+         router.navigateByUrl('/login');
+         advance(fixture, 1);
 
-          // Because we now can't process any URL, we will end up back at the root.
-          expect((router as any).browserUrlTree.toString()).toBe('/');
-        })));
+         // Because we now can't process any URL, we will end up back at the root.
+         expect((router as any).browserUrlTree.toString()).toBe('/');
+       })));
 
     it('should eagerly update URL after redirects are applied with urlUpdateStrategy="eagar"',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
