@@ -390,6 +390,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this._implicitReceiver;
   }
 
+  visitLexicalReceiver(ast: cdAst.LexicalReceiver, mode: _Mode): any {
+    ensureExpressionMode(mode, ast);
+    return o.variable(ast.name);
+  }
+
   visitInterpolation(ast: cdAst.Interpolation, mode: _Mode): any {
     ensureExpressionMode(mode, ast);
     const args = [o.literal(ast.expressions.length)];
@@ -537,6 +542,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
+  visitArrowFunction(ast: cdAst.ArrowFunction, mode: _Mode): any {
+    const params = ast.params.map(name => new o.FnParam(name, o.DYNAMIC_TYPE));
+    const fn = o.fn(
+        params, [new o.ReturnStatement(this._visit(ast.body, _Mode.Expression))], o.INFERRED_TYPE,
+        this.convertSourceSpan(ast.span));
+    return convertToStatementIfNeeded(mode, fn);
+  }
+
   visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this._visit(ast, mode)); }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
@@ -652,6 +665,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitConditional(ast: cdAst.Conditional) { return null; },
       visitFunctionCall(ast: cdAst.FunctionCall) { return null; },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return null; },
+      visitLexicalReceiver(ast: cdAst.LexicalReceiver) { return null; },
       visitInterpolation(ast: cdAst.Interpolation) { return null; },
       visitKeyedRead(ast: cdAst.KeyedRead) { return visit(this, ast.obj); },
       visitKeyedWrite(ast: cdAst.KeyedWrite) { return null; },
@@ -668,7 +682,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitSafeMethodCall(ast: cdAst.SafeMethodCall) { return visit(this, ast.receiver) || ast; },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
         return visit(this, ast.receiver) || ast;
-      }
+      },
+      visitArrowFunction(ast: cdAst.ArrowFunction) { return null; },
     });
   }
 
@@ -691,6 +706,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
                       visit(this, ast.falseExp);},
       visitFunctionCall(ast: cdAst.FunctionCall) { return true; },
       visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return false; },
+      visitLexicalReceiver(ast: cdAst.LexicalReceiver) { return false; },
       visitInterpolation(ast: cdAst.Interpolation) { return visitSome(this, ast.expressions); },
       visitKeyedRead(ast: cdAst.KeyedRead) { return false; },
       visitKeyedWrite(ast: cdAst.KeyedWrite) { return false; },
@@ -705,7 +721,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       visitPropertyWrite(ast: cdAst.PropertyWrite) { return false; },
       visitQuote(ast: cdAst.Quote) { return false; },
       visitSafeMethodCall(ast: cdAst.SafeMethodCall) { return true; },
-      visitSafePropertyRead(ast: cdAst.SafePropertyRead) { return false; }
+      visitSafePropertyRead(ast: cdAst.SafePropertyRead) { return false; },
+      visitArrowFunction(ast: cdAst.ArrowFunction) { return true; }
     });
   }
 

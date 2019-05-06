@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
+import {AST, ArrowFunction, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LexicalReceiver, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
@@ -25,13 +25,12 @@ class Unparser implements AstVisitor {
 
   visitPropertyRead(ast: PropertyRead, context: any) {
     this._visit(ast.receiver);
-    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}` : `.${ast.name}`;
+    this._expression += `.${ast.name}`;
   }
 
   visitPropertyWrite(ast: PropertyWrite, context: any) {
     this._visit(ast.receiver);
-    this._expression +=
-        ast.receiver instanceof ImplicitReceiver ? `${ast.name} = ` : `.${ast.name} = `;
+    this._expression += `.${ast.name} = `;
     this._visit(ast.value);
   }
 
@@ -80,7 +79,9 @@ class Unparser implements AstVisitor {
     this._expression += ')';
   }
 
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any) {}
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any) { this._expression += 'this'; }
+
+  visitLexicalReceiver(ast: LexicalReceiver, context: any) { this._expression += ast.name; }
 
   visitInterpolation(ast: Interpolation, context: any) {
     for (let i = 0; i < ast.strings.length; i++) {
@@ -145,7 +146,7 @@ class Unparser implements AstVisitor {
 
   visitMethodCall(ast: MethodCall, context: any) {
     this._visit(ast.receiver);
-    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}(` : `.${ast.name}(`;
+    this._expression += `.${ast.name}(`;
     let isFirst = true;
     ast.args.forEach(arg => {
       if (!isFirst) this._expression += ', ';
@@ -179,6 +180,17 @@ class Unparser implements AstVisitor {
       isFirst = false;
       this._visit(arg);
     });
+    this._expression += ')';
+  }
+
+  visitArrowFunction(ast: ArrowFunction, context: any) {
+    this._expression += '((';
+    ast.params.forEach((param, index) => {
+      if (index !== 0) this._expression += ', ';
+      this._expression += param;
+    });
+    this._expression += ') => ';
+    this._visit(ast.body);
     this._expression += ')';
   }
 

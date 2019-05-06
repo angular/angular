@@ -54,6 +54,7 @@ export function getExpressionCompletions(
     visitConditional(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
+    visitLexicalReceiver(ast) {},
     visitInterpolation(ast) { result = undefined; },
     visitKeyedRead(ast) {},
     visitKeyedWrite(ast) {},
@@ -90,6 +91,7 @@ export function getExpressionCompletions(
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
     },
+    visitArrowFunction(ast) {},
   });
 
   return result && result.values();
@@ -116,6 +118,7 @@ export function getExpressionSymbol(
     visitConditional(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
+    visitLexicalReceiver(ast) {},
     visitInterpolation(ast) {},
     visitKeyedRead(ast) {},
     visitKeyedWrite(ast) {},
@@ -161,6 +164,7 @@ export function getExpressionSymbol(
       symbol = receiverType && receiverType.members().get(ast.name);
       span = ast.span;
     },
+    visitArrowFunction(ast) {},
   });
 
   if (symbol && span) {

@@ -174,6 +174,13 @@ function expectErrorToken(token: Token, index: any, message: string) {
         expectOperatorToken(tokens[8], 22, '!==');
       });
 
+      it('should tokenize fat arrow', () => {
+        const tokens: Token[] = lex('a=>b');
+        expectIdentifierToken(tokens[0], 0, 'a');
+        expectOperatorToken(tokens[1], 1, '=>');
+        expectIdentifierToken(tokens[2], 3, 'b');
+      });
+
       it('should tokenize statements', () => {
         const tokens: Token[] = lex('a;b;');
         expectIdentifierToken(tokens[0], 0, 'a');

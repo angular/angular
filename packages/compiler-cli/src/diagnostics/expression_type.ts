@@ -7,6 +7,7 @@
  */
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
+import {ArrowFunction, LexicalReceiver} from '@angular/compiler/src/compiler';
 
 import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
@@ -230,6 +231,8 @@ export class AstType implements AstVisitor {
     };
   }
 
+  visitLexicalReceiver(ast: LexicalReceiver): Symbol { return this.anyType; }
+
   visitInterpolation(ast: Interpolation): Symbol {
     // If we are producing diagnostics, visit the children.
     if (this.diagnostics) {
@@ -334,6 +337,8 @@ export class AstType implements AstVisitor {
   visitSafePropertyRead(ast: SafePropertyRead) {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
+
+  visitArrowFunction(ast: ArrowFunction) { return this.anyType; }
 
   // TODO(issue/24571): remove '!'.
   private _anyType !: Symbol;

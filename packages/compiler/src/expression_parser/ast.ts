@@ -62,6 +62,14 @@ export class ImplicitReceiver extends AST {
   }
 }
 
+export class LexicalReceiver extends AST {
+  constructor(span: ParseSpan, public name: string) { super(span); }
+
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitLexicalReceiver(this, context);
+  }
+}
+
 /**
  * Multiple expressions separated by a semicolon.
  */
@@ -203,6 +211,13 @@ export class FunctionCall extends AST {
   }
 }
 
+export class ArrowFunction extends AST {
+  constructor(span: ParseSpan, public params: string[], public body: AST) { super(span); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitArrowFunction(this, context);
+  }
+}
+
 export class ASTWithSource extends AST {
   constructor(
       public ast: AST, public source: string|null, public location: string,
@@ -225,6 +240,7 @@ export interface AstVisitor {
   visitConditional(ast: Conditional, context: any): any;
   visitFunctionCall(ast: FunctionCall, context: any): any;
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any;
+  visitLexicalReceiver(ast: LexicalReceiver, context: any): any;
   visitInterpolation(ast: Interpolation, context: any): any;
   visitKeyedRead(ast: KeyedRead, context: any): any;
   visitKeyedWrite(ast: KeyedWrite, context: any): any;
@@ -240,6 +256,7 @@ export interface AstVisitor {
   visitQuote(ast: Quote, context: any): any;
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
+  visitArrowFunction(ast: ArrowFunction, context: any): any;
   visit?(ast: AST, context?: any): any;
 }
 
@@ -249,6 +266,7 @@ export class NullAstVisitor implements AstVisitor {
   visitConditional(ast: Conditional, context: any): any {}
   visitFunctionCall(ast: FunctionCall, context: any): any {}
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any {}
+  visitLexicalReceiver(ast: LexicalReceiver, context: any): any {}
   visitInterpolation(ast: Interpolation, context: any): any {}
   visitKeyedRead(ast: KeyedRead, context: any): any {}
   visitKeyedWrite(ast: KeyedWrite, context: any): any {}
@@ -264,6 +282,7 @@ export class NullAstVisitor implements AstVisitor {
   visitQuote(ast: Quote, context: any): any {}
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any {}
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any {}
+  visitArrowFunction(ast: ArrowFunction, context: any): any {}
 }
 
 export class RecursiveAstVisitor implements AstVisitor {
@@ -290,6 +309,7 @@ export class RecursiveAstVisitor implements AstVisitor {
     return null;
   }
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any { return null; }
+  visitLexicalReceiver(ast: LexicalReceiver, context: any): any { return null; }
   visitInterpolation(ast: Interpolation, context: any): any {
     return this.visitAll(ast.expressions, context);
   }
@@ -338,6 +358,10 @@ export class RecursiveAstVisitor implements AstVisitor {
     ast.receiver.visit(this);
     return this.visitAll(ast.args, context);
   }
+  visitArrowFunction(ast: ArrowFunction, context: any): any {
+    ast.body.visit(this);
+    return null;
+  }
   visitAll(asts: AST[], context: any): any {
     asts.forEach(ast => ast.visit(this, context));
     return null;
@@ -347,6 +371,8 @@ export class RecursiveAstVisitor implements AstVisitor {
 
 export class AstTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+
+  visitLexicalReceiver(ast: LexicalReceiver, context: any): AST { return ast; }
 
   visitInterpolation(ast: Interpolation, context: any): AST {
     return new Interpolation(ast.span, ast.strings, this.visitAll(ast.expressions));
@@ -419,6 +445,10 @@ export class AstTransformer implements AstVisitor {
         ast.span, ast.obj.visit(this), ast.key.visit(this), ast.value.visit(this));
   }
 
+  visitArrowFunction(ast: ArrowFunction, context: any): any {
+    return new ArrowFunction(ast.span, ast.params, ast.body.visit(this));
+  }
+
   visitAll(asts: any[]): any[] {
     const res = new Array(asts.length);
     for (let i = 0; i < asts.length; ++i) {
@@ -440,6 +470,8 @@ export class AstTransformer implements AstVisitor {
 // a change is made a child node.
 export class AstMemoryEfficientTransformer implements AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+
+  visitLexicalReceiver(ast: LexicalReceiver, context: any): AST { return ast; }
 
   visitInterpolation(ast: Interpolation, context: any): Interpolation {
     const expressions = this.visitAll(ast.expressions);
@@ -581,6 +613,14 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
+  visitArrowFunction(ast: ArrowFunction, context: any): any {
+    const body = ast.body.visit(this);
+    if (body !== ast.body) {
+      return new ArrowFunction(ast.span, ast.params, body);
+    }
+    return ast;
+  }
+
   visitAll(asts: any[]): any[] {
     const res = new Array(asts.length);
     let modified = false;
@@ -629,6 +669,7 @@ export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
       visitAll(ast.args);
     },
     visitImplicitReceiver(ast) {},
+    visitLexicalReceiver(ast) {},
     visitInterpolation(ast) { visitAll(ast.expressions); },
     visitKeyedRead(ast) {
       visit(ast.obj);
@@ -663,6 +704,7 @@ export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
       visitAll(ast.args);
     },
     visitSafePropertyRead(ast) { visit(ast.receiver); },
+    visitArrowFunction(ast) { visit(ast.body); }
   });
 }
 

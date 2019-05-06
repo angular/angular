@@ -43,8 +43,8 @@ describe('parser', () => {
 
     it('should parse postfix ! expression', () => {
       checkAction('true!');
-      checkAction('a!.b');
-      checkAction('a!!!!.b');
+      checkAction('a!.b', 'this.a!.b');
+      checkAction('a!!!!.b', 'this.a!!!!.b');
     });
 
     it('should parse multiplicative expressions',
@@ -76,7 +76,7 @@ describe('parser', () => {
 
     it('should parse grouped expressions', () => { checkAction('(1 + 2) * 3', '1 + 2 * 3'); });
 
-    it('should ignore comments in expressions', () => { checkAction('a //comment', 'a'); });
+    it('should ignore comments in expressions', () => { checkAction('a //comment', 'this.a'); });
 
     it('should retain // in string literals',
        () => { checkAction(`"http://www.google.com"`, `"http://www.google.com"`); });
@@ -106,9 +106,9 @@ describe('parser', () => {
 
     describe('member access', () => {
       it('should parse field access', () => {
-        checkAction('a');
-        checkAction('this.a', 'a');
-        checkAction('a.a');
+        checkAction('a', 'this.a');
+        checkAction('this.a');
+        checkAction('a.a', 'this.a.a');
       });
 
       it('should only allow identifier or keyword as member names', () => {
@@ -118,22 +118,22 @@ describe('parser', () => {
       });
 
       it('should parse safe field access', () => {
-        checkAction('a?.a');
-        checkAction('a.a?.a');
+        checkAction('a?.a', 'this.a?.a');
+        checkAction('a.a?.a', 'this.a.a?.a');
       });
     });
 
     describe('method calls', () => {
       it('should parse method calls', () => {
-        checkAction('fn()');
-        checkAction('add(1, 2)');
-        checkAction('a.add(1, 2)');
-        checkAction('fn().add(1, 2)');
+        checkAction('fn()', 'this.fn()');
+        checkAction('add(1, 2)', 'this.add(1, 2)');
+        checkAction('a.add(1, 2)', 'this.a.add(1, 2)');
+        checkAction('fn().add(1, 2)', 'this.fn().add(1, 2)');
       });
     });
 
     describe('functional calls', () => {
-      it('should parse function calls', () => { checkAction('fn()(1, 2)'); });
+      it('should parse function calls', () => { checkAction('fn()(1, 2)', 'this.fn()(1, 2)'); });
     });
 
     describe('conditional', () => {
@@ -149,15 +149,55 @@ describe('parser', () => {
 
     describe('assignment', () => {
       it('should support field assignments', () => {
-        checkAction('a = 12');
-        checkAction('a.a.a = 123');
-        checkAction('a = 123; b = 234;');
+        checkAction('a = 12', 'this.a = 12');
+        checkAction('a.a.a = 123', 'this.a.a.a = 123');
+        checkAction('a = 123; b = 234;', 'this.a = 123; this.b = 234;');
       });
 
       it('should report on safe field assignments',
          () => { expectActionError('a?.a = 123', 'cannot be used in the assignment'); });
 
-      it('should support array updates', () => { checkAction('a[0] = 200'); });
+      it('should support array updates', () => { checkAction('a[0] = 200', 'this.a[0] = 200'); });
+    });
+
+    describe('arrow function', () => {
+      it('should parse arrow function', () => {
+        checkAction('a => a', '((a) => a)');
+        checkAction('() => 0', '(() => 0)');
+        checkAction('(a) => a', '((a) => a)');
+        checkAction('(a, b) => a + b', '((a, b) => a + b)');
+        checkAction('(a, b,) => a + b', '((a, b) => a + b)');
+      });
+
+      it('should properly handle scope', () => {
+        checkAction('() => a', '(() => this.a)');
+        checkAction('a => a + b', '((a) => a + this.b)');
+        checkAction('a => (b => a + b + c) + b', '((a) => ((b) => a + b + this.c) + this.b)');
+      });
+
+      it('should support wrapping into parentheses', () => {
+        checkAction('(() => 0).length', '(() => 0).length');
+        checkAction('(() => 0)["name"]', '(() => 0)["name"]');
+        checkAction('(() => 0)()', '(() => 0)()');
+      });
+
+      it('should support inline expression body', () => {
+        checkAction('() => [0]', '(() => [0])');
+        checkAction('() => ({a: 1})', '(() => {a: 1})');
+        checkAction('() => () => () => 0', '(() => (() => (() => 0)))');
+      });
+
+      it('should support pass as argument', () => {
+        checkAction('fn(() => true)', 'this.fn((() => true))');
+        checkAction('fn(0, () => true, 1)', 'this.fn(0, (() => true), 1)');
+      });
+
+      it('should report error when contain duplicate params',
+         () => { expectActionError('(a, a) => b', 'Duplicate parameter name not allowed'); });
+
+      it('should report error when contain complex body', () => {
+        expectActionError('() => { return 0; }', 'Block body not supported in arrow function');
+      });
     });
 
     it('should error when using pipes',
@@ -189,15 +229,17 @@ describe('parser', () => {
   describe('parseBinding', () => {
     describe('pipes', () => {
       it('should parse pipes', () => {
-        checkBinding('a(b | c)', 'a((b | c))');
-        checkBinding('a.b(c.d(e) | f)', 'a.b((c.d(e) | f))');
+        checkBinding('a(b | c)', 'this.a((this.b | c))');
+        checkBinding('a.b(c.d(e) | f)', 'this.a.b((this.c.d(this.e) | f))');
         checkBinding('[1, 2, 3] | a', '([1, 2, 3] | a)');
         checkBinding('{a: 1, "b": 2} | c', '({a: 1, "b": 2} | c)');
-        checkBinding('a[b] | c', '(a[b] | c)');
-        checkBinding('a?.b | c', '(a?.b | c)');
+        checkBinding('a[b] | c', '(this.a[this.b] | c)');
+        checkBinding('a?.b | c', '(this.a?.b | c)');
         checkBinding('true | a', '(true | a)');
-        checkBinding('a | b:c | d', '((a | b:c) | d)');
-        checkBinding('a | b:(c | d)', '(a | b:(c | d))');
+        checkBinding('a | b:c | d', '((this.a | b:this.c) | d)');
+        checkBinding('a | b:(c | d)', '(this.a | b:(this.c | d))');
+        checkBinding('a => a | c', '(((a) => a) | c)');
+        checkBinding('a | b : c => c', '(this.a | b:((c) => c))');
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -235,9 +277,10 @@ describe('parser', () => {
       expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
     });
 
-    it('should parse conditional expression', () => { checkBinding('a < b ? a : b'); });
+    it('should parse conditional expression',
+       () => { checkBinding('a < b ? a : b', 'this.a < this.b ? this.a : this.b'); });
 
-    it('should ignore comments in bindings', () => { checkBinding('a //comment', 'a'); });
+    it('should ignore comments in bindings', () => { checkBinding('a //comment', 'this.a'); });
 
     it('should retain // in string literals',
        () => { checkBinding(`"http://www.google.com"`, `"http://www.google.com"`); });
@@ -412,7 +455,7 @@ describe('parser', () => {
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
       const ast = parseInterpolation(originalExp) !.ast;
-      expect(unparse(ast)).toEqual(originalExp);
+      expect(unparse(ast)).toEqual('before {{ this.a }} middle {{ this.b }} after');
       validate(ast);
     });
 
@@ -426,7 +469,9 @@ describe('parser', () => {
           'Parser Error: Blank expressions are not allowed in interpolated strings');
     });
 
-    it('should parse conditional expression', () => { checkInterpolation('{{ a < b ? a : b }}'); });
+    it('should parse conditional expression', () => {
+      checkInterpolation('{{ a < b ? a : b }}', '{{ this.a < this.b ? this.a : this.b }}');
+    });
 
     it('should parse expression with newline characters', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
@@ -442,7 +487,7 @@ describe('parser', () => {
 
     describe('comments', () => {
       it('should ignore comments in interpolation expressions',
-         () => { checkInterpolation('{{a //comment}}', '{{ a }}'); });
+         () => { checkInterpolation('{{a //comment}}', '{{ this.a }}'); });
 
       it('should retain // in single quote strings', () => {
         checkInterpolation(`{{ 'http://www.google.com' }}`, `{{ "http://www.google.com" }}`);
@@ -469,7 +514,7 @@ describe('parser', () => {
   describe('parseSimpleBinding', () => {
     it('should parse a field access', () => {
       const p = parseSimpleBinding('name');
-      expect(unparse(p)).toEqual('name');
+      expect(unparse(p)).toEqual('this.name');
       validate(p);
     });
 
@@ -501,13 +546,13 @@ describe('parser', () => {
       const expr = validate(parseAction(text));
       expect(unparse(expr)).toEqual(expected || text);
     }
-    it('should be able to recover from an extra paren', () => recover('((a)))', 'a'));
-    it('should be able to recover from an extra bracket', () => recover('[[a]]]', '[[a]]'));
-    it('should be able to recover from a missing )', () => recover('(a;b', 'a; b;'));
-    it('should be able to recover from a missing ]', () => recover('[a,b', '[a, b]'));
-    it('should be able to recover from a missing selector', () => recover('a.'));
+    it('should be able to recover from an extra paren', () => recover('((a)))', 'this.a'));
+    it('should be able to recover from an extra bracket', () => recover('[[a]]]', '[[this.a]]'));
+    it('should be able to recover from a missing )', () => recover('(a;b', 'this.a; this.b;'));
+    it('should be able to recover from a missing ]', () => recover('[a,b', '[this.a, this.b]'));
+    it('should be able to recover from a missing selector', () => recover('a.', 'this.a.'));
     it('should be able to recover from a missing selector in a array literal',
-       () => recover('[[a.], b, c]'));
+       () => recover('[[a.], b, c]', '[[this.a.], this.b, this.c]'));
   });
 
   describe('offsets', () => {

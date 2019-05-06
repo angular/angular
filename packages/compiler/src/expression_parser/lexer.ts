@@ -131,8 +131,14 @@ class _Scanner {
     this.advance();
   }
 
+  peekAt(offset: number): number {
+    const targetIndex = this.index + offset;
+    return targetIndex >= this.length ? chars.$EOF : this.input.charCodeAt(targetIndex);
+  }
+
   advance() {
-    this.peek = ++this.index >= this.length ? chars.$EOF : this.input.charCodeAt(this.index);
+    this.peek = this.peekAt(1);
+    this.index++;
   }
 
   scanToken(): Token|null {
@@ -193,7 +199,12 @@ class _Scanner {
       case chars.$GT:
         return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
       case chars.$BANG:
+        return this.scanComplexOperator(
+            start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '=');
       case chars.$EQ:
+        if (this.peekAt(1) === chars.$GT) {
+          return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$GT, '>');
+        }
         return this.scanComplexOperator(
             start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '=');
       case chars.$AMPERSAND:

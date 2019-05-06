@@ -565,7 +565,7 @@ class ArrayConsole implements Console {
       });
 
       it('should parse bound text nodes', () => {
-        expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
+        expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ this.a }}']]);
       });
 
       it('should parse with custom interpolation config',
@@ -608,7 +608,7 @@ class ArrayConsole implements Console {
            expect(humanizeTplAst(
                       parser.parse(component, '{%a%}', [], [], [], 'TestComp', true).template,
                       {start: '{%', end: '%}'}))
-               .toEqual([[BoundTextAst, '{% a %}']]);
+               .toEqual([[BoundTextAst, '{% this.a %}']]);
          }));
 
       describe('bound properties', () => {
@@ -616,56 +616,56 @@ class ArrayConsole implements Console {
         it('should parse mixed case bound properties', () => {
           expect(humanizeTplAst(parse('<div [someProp]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'someProp', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'someProp', 'this.v', null]
           ]);
         });
 
         it('should parse dash case bound properties', () => {
           expect(humanizeTplAst(parse('<div [some-prop]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'some-prop', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'some-prop', 'this.v', null]
           ]);
         });
 
         it('should parse dotted name bound properties', () => {
           expect(humanizeTplAst(parse('<div [dot.name]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'dot.name', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'dot.name', 'this.v', null]
           ]);
         });
 
         it('should normalize property names via the element schema', () => {
           expect(humanizeTplAst(parse('<div [mappedAttr]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'mappedProp', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'mappedProp', 'this.v', null]
           ]);
         });
 
         it('should parse mixed case bound attributes', () => {
           expect(humanizeTplAst(parse('<div [attr.someAttr]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Attribute, 'someAttr', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Attribute, 'someAttr', 'this.v', null]
           ]);
         });
 
         it('should parse and dash case bound classes', () => {
           expect(humanizeTplAst(parse('<div [class.some-class]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Class, 'some-class', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Class, 'some-class', 'this.v', null]
           ]);
         });
 
         it('should parse mixed case bound classes', () => {
           expect(humanizeTplAst(parse('<div [class.someClass]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Class, 'someClass', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Class, 'someClass', 'this.v', null]
           ]);
         });
 
         it('should parse mixed case bound styles', () => {
           expect(humanizeTplAst(parse('<div [style.someStyle]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Style, 'someStyle', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Style, 'someStyle', 'this.v', null]
           ]);
         });
 
@@ -719,21 +719,21 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         it('should parse bound properties via [...] and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div [prop]="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'this.v', null]
           ]);
         });
 
         it('should parse bound properties via bind- and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div bind-prop="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'this.v', null]
           ]);
         });
 
         it('should parse bound properties via {{...}} and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div prop="{{v}}">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', '{{ v }}', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', '{{ this.v }}', null]
           ]);
         });
 
@@ -744,7 +744,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                    [ElementAst, 'div'],
                    [
                      BoundElementPropertyAst, PropertyBindingType.Animation, 'someAnimation',
-                     'value2', null
+                     'this.value2', null
                    ]
                  ]);
            });
@@ -806,8 +806,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(humanizeTplAst(parse('<div [@someAnimation]="value2">', [], [], []))).toEqual([
             [ElementAst, 'div'],
             [
-              BoundElementPropertyAst, PropertyBindingType.Animation, 'someAnimation', 'value2',
-              null
+              BoundElementPropertyAst, PropertyBindingType.Animation, 'someAnimation',
+              'this.value2', null
             ]
           ]);
         });
@@ -847,7 +847,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         it('should parse bound events with a target', () => {
           expect(humanizeTplAst(parse('<div (window:event)="v">', []))).toEqual([
             [ElementAst, 'div'],
-            [BoundEventAst, 'event', 'window', 'v'],
+            [BoundEventAst, 'event', 'window', 'this.v'],
           ]);
         });
 
@@ -861,19 +861,19 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         it('should parse bound events via (...) and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div (event)="v">', [
-          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
+          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'this.v']]);
         });
 
         it('should parse event names case sensitive', () => {
           expect(humanizeTplAst(parse('<div (some-event)="v">', [
-          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'some-event', null, 'v']]);
+          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'some-event', null, 'this.v']]);
           expect(humanizeTplAst(parse('<div (someEvent)="v">', [
-          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'someEvent', null, 'v']]);
+          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'someEvent', null, 'this.v']]);
         });
 
         it('should parse bound events via on- and not report them as attributes', () => {
           expect(humanizeTplAst(parse('<div on-event="v">', [
-          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
+          ]))).toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'this.v']]);
         });
 
         it('should allow events on explicit embedded templates that are emitted by a directive',
@@ -887,7 +887,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
              expect(humanizeTplAst(parse('<ng-template (e)="f"></ng-template>', [dirA]))).toEqual([
                [EmbeddedTemplateAst],
-               [BoundEventAst, 'e', null, 'f'],
+               [BoundEventAst, 'e', null, 'this.f'],
                [DirectiveAst, dirA],
              ]);
            });
@@ -898,8 +898,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
            () => {
              expect(humanizeTplAst(parse('<div [(prop)]="v">', []))).toEqual([
                [ElementAst, 'div'],
-               [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null],
-               [BoundEventAst, 'propChange', null, 'v = $event']
+               [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'this.v', null],
+               [BoundEventAst, 'propChange', null, 'this.v = this.$event']
              ]);
            });
 
@@ -907,8 +907,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
            () => {
              expect(humanizeTplAst(parse('<div bindon-prop="v">', []))).toEqual([
                [ElementAst, 'div'],
-               [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null],
-               [BoundEventAst, 'propChange', null, 'v = $event']
+               [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'this.v', null],
+               [BoundEventAst, 'propChange', null, 'this.v = this.$event']
              ]);
            });
 
@@ -949,7 +949,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(humanizeTplAst(parse('<div [dot.name]="expr"></div>', [dirA]))).toEqual([
             [ElementAst, 'div'],
             [DirectiveAst, dirA],
-            [BoundDirectivePropertyAst, 'localName', 'expr'],
+            [BoundDirectivePropertyAst, 'localName', 'this.expr'],
           ]);
         });
 
@@ -966,7 +966,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
               }).toSummary();
           expect(humanizeTplAst(parse('<div [a]="b">', [dirA, dirB]))).toEqual([
             [ElementAst, 'div'],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'b', null],
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'this.b', null],
             [DirectiveAst, dirA]
           ]);
         });
@@ -980,7 +980,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           expect(humanizeTplAst(parse('<div *ngIf="cond">', [ngIf, dirTemplate]))).toEqual([
             [EmbeddedTemplateAst],
             [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'cond'],
+            [BoundDirectivePropertyAst, 'ngIf', 'this.cond'],
             [DirectiveAst, dirTemplate],
             [ElementAst, 'div'],
           ]);
@@ -994,7 +994,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
               }).toSummary();
 
           expect(humanizeTplAst(parse('<div (a)="b">', [dirA]))).toEqual([
-            [ElementAst, 'div'], [BoundEventAst, 'a', null, 'b'], [DirectiveAst, dirA]
+            [ElementAst, 'div'], [BoundEventAst, 'a', null, 'this.b'], [DirectiveAst, dirA]
           ]);
         });
 
@@ -1006,7 +1006,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                        }).toSummary();
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
             [ElementAst, 'div'], [DirectiveAst, dirA],
-            [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'expr', null]
+            [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'this.expr', null]
           ]);
         });
 
@@ -1017,7 +1017,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                          host: {'(a)': 'expr'}
                        }).toSummary();
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
-            [ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a', null, 'expr']
+            [ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a', null, 'this.expr']
           ]);
         });
 
@@ -1029,7 +1029,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                        }).toSummary();
           expect(humanizeTplAst(parse('<div [aProp]="expr"></div>', [dirA]))).toEqual([
             [ElementAst, 'div'], [DirectiveAst, dirA],
-            [BoundDirectivePropertyAst, 'aProp', 'expr']
+            [BoundDirectivePropertyAst, 'aProp', 'this.expr']
           ]);
         });
 
@@ -1040,7 +1040,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                          inputs: ['b:a']
                        }).toSummary();
           expect(humanizeTplAst(parse('<div [a]="expr"></div>', [dirA]))).toEqual([
-            [ElementAst, 'div'], [DirectiveAst, dirA], [BoundDirectivePropertyAst, 'b', 'expr']
+            [ElementAst, 'div'], [DirectiveAst, dirA],
+            [BoundDirectivePropertyAst, 'b', 'this.expr']
           ]);
         });
 
@@ -1594,7 +1595,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
             [EmbeddedTemplateAst],
             [VariableAst, 'local', 'ngIf'],
             [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'expr'],
+            [BoundDirectivePropertyAst, 'ngIf', 'this.expr'],
             [ElementAst, 'div'],
           ];
 
@@ -1615,8 +1616,9 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                   type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirB'}})
                 }).toSummary();
             expect(humanizeTplAst(parse('<div *a="b" b>', [dirA, dirB]))).toEqual([
-              [EmbeddedTemplateAst], [DirectiveAst, dirA], [BoundDirectivePropertyAst, 'a', 'b'],
-              [ElementAst, 'div'], [AttrAst, 'b', ''], [DirectiveAst, dirB]
+              [EmbeddedTemplateAst], [DirectiveAst, dirA],
+              [BoundDirectivePropertyAst, 'a', 'this.b'], [ElementAst, 'div'], [AttrAst, 'b', ''],
+              [DirectiveAst, dirB]
             ]);
           });
 
@@ -1653,7 +1655,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
           expect(humanizeTplAst(parse('<div *ngIf="test">', [ngIf]))).toEqual([
             [EmbeddedTemplateAst],
             [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'test'],
+            [BoundDirectivePropertyAst, 'ngIf', 'this.test'],
             [ElementAst, 'div'],
 
           ]);
@@ -2069,7 +2071,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
       it('should support events', () => {
         expect(humanizeTplAstSourceSpans(parse('<div (window:event)="v">', []))).toEqual([
           [ElementAst, 'div', '<div (window:event)="v">'],
-          [BoundEventAst, 'event', 'window', 'v', '(window:event)="v"']
+          [BoundEventAst, 'event', 'window', 'this.v', '(window:event)="v"']
         ]);
 
       });
@@ -2078,7 +2080,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
         expect(humanizeTplAstSourceSpans(parse('<div [someProp]="v">', []))).toEqual([
           [ElementAst, 'div', '<div [someProp]="v">'],
           [
-            BoundElementPropertyAst, PropertyBindingType.Property, 'someProp', 'v', null,
+            BoundElementPropertyAst, PropertyBindingType.Property, 'someProp', 'this.v', null,
             '[someProp]="v"'
           ]
         ]);
@@ -2086,7 +2088,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
       it('should support bound text', () => {
         expect(humanizeTplAstSourceSpans(parse('{{a}}', [
-        ]))).toEqual([[BoundTextAst, '{{ a }}', '{{a}}']]);
+        ]))).toEqual([[BoundTextAst, '{{ this.a }}', '{{a}}']]);
       });
 
       it('should support text nodes', () => {
@@ -2142,7 +2144,7 @@ Property binding a not used by any directive on an embedded template. Make sure 
                      }).toSummary();
         expect(humanizeTplAstSourceSpans(parse('<div [aProp]="foo"></div>', [dirA]))).toEqual([
           [ElementAst, 'div', '<div [aProp]="foo">'], [DirectiveAst, dirA, '<div [aProp]="foo">'],
-          [BoundDirectivePropertyAst, 'aProp', 'foo', '[aProp]="foo"']
+          [BoundDirectivePropertyAst, 'aProp', 'this.foo', '[aProp]="foo"']
         ]);
       });
 

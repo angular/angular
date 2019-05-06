@@ -137,7 +137,7 @@ describe('R3 template transform', () => {
   describe('Bound text nodes', () => {
     it('should parse bound text nodes', () => {
       expectFromHtml('{{a}}').toEqual([
-        ['BoundText', '{{ a }}'],
+        ['BoundText', '{{ this.a }}'],
       ]);
     });
   });
@@ -146,70 +146,70 @@ describe('R3 template transform', () => {
     it('should parse mixed case bound properties', () => {
       expectFromHtml('<div [someProp]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'someProp', 'v'],
+        ['BoundAttribute', BindingType.Property, 'someProp', 'this.v'],
       ]);
     });
 
     it('should parse bound properties via bind- ', () => {
       expectFromHtml('<div bind-prop="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'this.v'],
       ]);
     });
 
     it('should parse bound properties via {{...}}', () => {
       expectFromHtml('<div prop="{{v}}"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', '{{ v }}'],
+        ['BoundAttribute', BindingType.Property, 'prop', '{{ this.v }}'],
       ]);
     });
 
     it('should parse dash case bound properties', () => {
       expectFromHtml('<div [some-prop]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'some-prop', 'v'],
+        ['BoundAttribute', BindingType.Property, 'some-prop', 'this.v'],
       ]);
     });
 
     it('should parse dotted name bound properties', () => {
       expectFromHtml('<div [d.ot]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'd.ot', 'v'],
+        ['BoundAttribute', BindingType.Property, 'd.ot', 'this.v'],
       ]);
     });
 
     it('should not normalize property names via the element schema', () => {
       expectFromHtml('<div [mappedAttr]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'mappedAttr', 'v'],
+        ['BoundAttribute', BindingType.Property, 'mappedAttr', 'this.v'],
       ]);
     });
 
     it('should parse mixed case bound attributes', () => {
       expectFromHtml('<div [attr.someAttr]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Attribute, 'someAttr', 'v'],
+        ['BoundAttribute', BindingType.Attribute, 'someAttr', 'this.v'],
       ]);
     });
 
     it('should parse and dash case bound classes', () => {
       expectFromHtml('<div [class.some-class]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Class, 'some-class', 'v'],
+        ['BoundAttribute', BindingType.Class, 'some-class', 'this.v'],
       ]);
     });
 
     it('should parse mixed case bound classes', () => {
       expectFromHtml('<div [class.someClass]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Class, 'someClass', 'v'],
+        ['BoundAttribute', BindingType.Class, 'someClass', 'this.v'],
       ]);
     });
 
     it('should parse mixed case bound styles', () => {
       expectFromHtml('<div [style.someStyle]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Style, 'someStyle', 'v'],
+        ['BoundAttribute', BindingType.Style, 'someStyle', 'this.v'],
       ]);
     });
   });
@@ -268,8 +268,8 @@ describe('R3 template transform', () => {
     it('should parse bound attributes', () => {
       expectFromHtml('<ng-template [k1]="v1" [k2]="v2"></ng-template>').toEqual([
         ['Template'],
-        ['BoundAttribute', BindingType.Property, 'k1', 'v1'],
-        ['BoundAttribute', BindingType.Property, 'k2', 'v2'],
+        ['BoundAttribute', BindingType.Property, 'k1', 'this.v1'],
+        ['BoundAttribute', BindingType.Property, 'k2', 'this.v2'],
       ]);
     });
   });
@@ -278,8 +278,8 @@ describe('R3 template transform', () => {
     it('should support attribute and bound attributes', () => {
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template'],
-        ['BoundAttribute', BindingType.Property, 'ngFor', 'item'],
-        ['BoundAttribute', BindingType.Property, 'ngForOf', 'items'],
+        ['BoundAttribute', BindingType.Property, 'ngFor', 'this.item'],
+        ['BoundAttribute', BindingType.Property, 'ngForOf', 'this.items'],
         ['Element', 'div'],
       ]);
     });
@@ -296,7 +296,7 @@ describe('R3 template transform', () => {
     it('should parse variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template'],
-        ['BoundAttribute', BindingType.Property, 'ngIf', 'expr'],
+        ['BoundAttribute', BindingType.Property, 'ngIf', 'this.expr'],
         ['Variable', 'local', 'ngIf'],
         ['Element', 'div'],
       ]);
@@ -307,41 +307,41 @@ describe('R3 template transform', () => {
     it('should parse bound events with a target', () => {
       expectFromHtml('<div (window:event)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'event', 'window', 'v'],
+        ['BoundEvent', 'event', 'window', 'this.v'],
       ]);
     });
 
     it('should parse event names case sensitive', () => {
       expectFromHtml('<div (some-event)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'some-event', null, 'v'],
+        ['BoundEvent', 'some-event', null, 'this.v'],
       ]);
       expectFromHtml('<div (someEvent)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'someEvent', null, 'v'],
+        ['BoundEvent', 'someEvent', null, 'this.v'],
       ]);
     });
 
     it('should parse bound events via on-', () => {
       expectFromHtml('<div on-event="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'event', null, 'v'],
+        ['BoundEvent', 'event', null, 'this.v'],
       ]);
     });
 
     it('should parse bound events and properties via [(...)]', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
-        ['BoundEvent', 'propChange', null, 'v = $event'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'this.v'],
+        ['BoundEvent', 'propChange', null, 'this.v = this.$event'],
       ]);
     });
 
     it('should parse bound events and properties via bindon-', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
-        ['BoundEvent', 'propChange', null, 'v = $event'],
+        ['BoundAttribute', BindingType.Property, 'prop', 'this.v'],
+        ['BoundEvent', 'propChange', null, 'this.v = this.$event'],
       ]);
     });
 

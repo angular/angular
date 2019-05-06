@@ -175,6 +175,25 @@ describe('property instructions', () => {
     expect(img.src).toBe('http://somecooldomain:1234/cool_image.png');
   });
 
+  it('should handle inline arrow function', () => {
+    @Component({template: '', selector: 'my-comp'})
+    class MyComp {
+      @Input() fn !: Function;
+    }
+
+    @Component({template: '<my-comp [fn]="(foo, bar) => foo + bar"></my-comp>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, MyComp]});
+    const fixture = TestBed.createComponent(App);
+    const myCompNode = fixture.debugElement.query(By.directive(MyComp));
+    fixture.detectChanges();
+
+    const myComp = myCompNode.injector.get(MyComp);
+    expect(myComp.fn(1, 2)).toBe(3);
+  });
+
   it('should not allow unsanitary urls in interpolated properties', () => {
     @Component({
       template: `
