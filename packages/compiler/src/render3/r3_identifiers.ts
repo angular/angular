@@ -51,7 +51,9 @@ export class Identifiers {
 
   static elementStyling: o.ExternalReference = {name: 'ɵɵelementStyling', moduleName: CORE};
 
-  static elementStylingMap: o.ExternalReference = {name: 'ɵɵelementStylingMap', moduleName: CORE};
+  static elementStyleMap: o.ExternalReference = {name: 'ɵɵelementStyleMap', moduleName: CORE};
+
+  static elementClassMap: o.ExternalReference = {name: 'ɵɵelementClassMap', moduleName: CORE};
 
   static elementStyleProp: o.ExternalReference = {name: 'ɵɵelementStyleProp', moduleName: CORE};
 
@@ -62,8 +64,11 @@ export class Identifiers {
 
   static elementHostStyling: o.ExternalReference = {name: 'ɵɵelementHostStyling', moduleName: CORE};
 
-  static elementHostStylingMap:
-      o.ExternalReference = {name: 'ɵɵelementHostStylingMap', moduleName: CORE};
+  static elementHostStyleMap:
+      o.ExternalReference = {name: 'ɵɵelementHostStyleMap', moduleName: CORE};
+
+  static elementHostClassMap:
+      o.ExternalReference = {name: 'ɵɵelementHostClassMap', moduleName: CORE};
 
   static elementHostStyleProp:
       o.ExternalReference = {name: 'ɵɵelementHostStyleProp', moduleName: CORE};

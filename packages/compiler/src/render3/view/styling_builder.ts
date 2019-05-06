@@ -61,7 +61,8 @@ interface BoundStylingEntry {
  *   elementStyling(...)
  * }
  * if (updateMode) {
- *   elementStylingMap(...)
+ *   elementStyleMap(...)
+ *   elementClassMap(...)
  *   elementStyleProp(...)
  *   elementClassProp(...)
  *   elementStylingApp(...)
@@ -339,71 +340,65 @@ export class StylingBuilder {
   }
 
   /**
-   * Builds an instruction with all the expressions and parameters for `elementStylingMap`.
+   * Builds an instruction with all the expressions and parameters for `elementClassMap`.
    *
-   * The instruction data will contain all expressions for `elementStylingMap` to function
-   * which include the `[style]` and `[class]` expression params (if they exist) as well as
-   * the sanitizer and directive reference expression.
+   * The instruction data will contain all expressions for `elementClassMap` to function
+   * which includes the `[class]` expression params.
    */
-  buildElementStylingMapInstruction(valueConverter: ValueConverter): Instruction|null {
-    if (this._classMapInput || this._styleMapInput) {
-      const stylingInput = this._classMapInput ! || this._styleMapInput !;
-      let totalBindingSlotsRequired = 0;
-
-      // these values must be outside of the update block so that they can
-      // be evaluted (the AST visit call) during creation time so that any
-      // pipes can be picked up in time before the template is built
-      const mapBasedClassValue =
-          this._classMapInput ? this._classMapInput.value.visit(valueConverter) : null;
-      if (mapBasedClassValue instanceof Interpolation) {
-        totalBindingSlotsRequired += mapBasedClassValue.expressions.length;
-      }
-
-      const mapBasedStyleValue =
-          this._styleMapInput ? this._styleMapInput.value.visit(valueConverter) : null;
-      if (mapBasedStyleValue instanceof Interpolation) {
-        totalBindingSlotsRequired += mapBasedStyleValue.expressions.length;
-      }
-
-      const isHostBinding = this._directiveExpr;
-      const reference = isHostBinding ? R3.elementHostStylingMap : R3.elementStylingMap;
-
-      return {
-        sourceSpan: stylingInput.sourceSpan,
-        reference,
-        allocateBindingSlots: totalBindingSlotsRequired,
-        buildParams: (convertFn: (value: any) => o.Expression) => {
-          // HOST:
-          //   min params => elementHostStylingMap(classMap)
-          //   max params => elementHostStylingMap(classMap, styleMap)
-          // Template:
-          //   min params => elementStylingMap(elmIndex, classMap)
-          //   max params => elementStylingMap(elmIndex, classMap, styleMap)
-
-          const params: o.Expression[] = [];
-          if (!isHostBinding) {
-            params.push(this._elementIndexExpr);
-          }
-
-          let expectedNumberOfArgs = 0;
-          if (mapBasedStyleValue) {
-            expectedNumberOfArgs = 2;
-          } else if (mapBasedClassValue) {
-            // index and class = 2
-            expectedNumberOfArgs = 1;
-          }
-
-          addParam(
-              params, mapBasedClassValue, mapBasedClassValue ? convertFn(mapBasedClassValue) : null,
-              1, expectedNumberOfArgs);
-          addParam(
-              params, mapBasedStyleValue, mapBasedStyleValue ? convertFn(mapBasedStyleValue) : null,
-              2, expectedNumberOfArgs);
-          return params;
-        }
-      };
+  buildElementClassMapInstruction(valueConverter: ValueConverter): Instruction|null {
+    if (this._classMapInput) {
+      return this._buildMapBasedInstruction(valueConverter, true, this._classMapInput);
     }
     return null;
+  }
+
+  /**
+   * Builds an instruction with all the expressions and parameters for `elementStyleMap`.
+   *
+   * The instruction data will contain all expressions for `elementStyleMap` to function
+   * which includes the `[style]` expression params.
+   */
+  buildElementStyleMapInstruction(valueConverter: ValueConverter): Instruction|null {
+    if (this._styleMapInput) {
+      return this._buildMapBasedInstruction(valueConverter, false, this._styleMapInput);
+    }
+    return null;
+  }
+
+  private _buildMapBasedInstruction(
+      valueConverter: ValueConverter, isClassBased: boolean, stylingInput: BoundStylingEntry) {
+    let totalBindingSlotsRequired = 0;
+
+    // these values must be outside of the update block so that they can
+    // be evaluated (the AST visit call) during creation time so that any
+    // pipes can be picked up in time before the template is built
+    const mapValue = stylingInput.value.visit(valueConverter);
+    if (mapValue instanceof Interpolation) {
+      totalBindingSlotsRequired += mapValue.expressions.length;
+    }
+
+    const isHostBinding = this._directiveExpr;
+    let reference: o.ExternalReference;
+    if (isClassBased) {
+      reference = isHostBinding ? R3.elementHostClassMap : R3.elementClassMap;
+    } else {
+      reference = isHostBinding ? R3.elementHostStyleMap : R3.elementStyleMap;
+    }
+
+    return {
+      sourceSpan: stylingInput.sourceSpan,
+      reference,
+      allocateBindingSlots: totalBindingSlotsRequired,
+      buildParams: (convertFn: (value: any) => o.Expression) => {
+        const params: o.Expression[] = [];
+        if (!isHostBinding) {
+          params.push(this._elementIndexExpr);
+        }
+
+        params.push(convertFn(mapValue));
+        return params;
+      }
+    };
   }
 
   private _buildSingleInputs(
@@ -498,9 +493,13 @@ export class StylingBuilder {
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: Instruction[] = [];
     if (this.hasBindings) {
-      const mapInstruction = this.buildElementStylingMapInstruction(valueConverter);
-      if (mapInstruction) {
-        instructions.push(mapInstruction);
+      const styleMapInstruction = this.buildElementStyleMapInstruction(valueConverter);
+      if (styleMapInstruction) {
+        instructions.push(styleMapInstruction);
+      }
+      const classMapInstruction = this.buildElementClassMapInstruction(valueConverter);
+      if (classMapInstruction) {
+        instructions.push(classMapInstruction);
       }
       instructions.push(...this._buildStyleInputs(valueConverter));
       instructions.push(...this._buildClassInputs(valueConverter));
