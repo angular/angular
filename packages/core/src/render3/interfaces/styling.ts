@@ -122,8 +122,8 @@ import {LView} from './view';
  * values are and how they work.
  *
  * Each time a binding property is updated (whether it be through a single
- * property instruction like `elementStyleProp`, `elementClassProp` or
- * `elementStylingMap`) then the values in the context will be updated as
+ * property instruction like `elementStyleProp`, `elementClassProp`,
+ * `elementStyleMap` or `elementClassMap`) then the values in the context will be updated as
  * well.
  *
  * If for example `[style.width]` updates to `555px` then its value will be reflected
@@ -161,7 +161,8 @@ import {LView} from './view';
  * - `elementStyling`
  * - `elementStyleProp`
  * - `elementClassProp`
- * - `elementStylingMap`
+ * - `elementStyleMap`
+ * - `elementClassMap`
  * - `elementStylingApply`
  *
  * Each time a directive value is passed in, it will be converted into an index by examining the
@@ -298,13 +299,13 @@ export interface StylingContext extends
   [StylingIndex.SinglePropOffsetPositions]: SinglePropOffsetValues;
 
   /**
-   * The last class value that was interpreted by elementStylingMap. This is cached
+   * The last class value that was interpreted by `elementStyleMap`. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
   [StylingIndex.CachedMultiClasses]: any|MapBasedOffsetValues;
 
   /**
-   * The last style value that was interpreted by elementStylingMap. This is cached
+   * The last style value that was interpreted by `elementClassMap`. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
   [StylingIndex.CachedMultiStyles]: any|MapBasedOffsetValues;
@@ -313,7 +314,7 @@ export interface StylingContext extends
    * A queue of all hostStyling instructions.
    *
    * This array (queue) is populated only when host-level styling instructions
-   * (e.g. `hostStylingMap` and `hostClassProp`) are used to apply style and
+   * (e.g. `hostStyleMap` and `hostClassProp`) are used to apply style and
    * class values via host bindings to the host element. Despite these being
    * standard angular instructions, they are not designed to immediately apply
    * their values to the styling context when executed. What happens instead is
@@ -336,7 +337,7 @@ export interface StylingContext extends
  * the styling is applied).
  *
  * This queue is used when any `hostStyling` instructions are executed from the `hostBindings`
- * function. Template-level styling functions (e.g. `elementStylingMap` and `elementClassProp`)
+ * function. Template-level styling functions (e.g. `elementStyleMap` and `elementClassProp`)
  * do not make use of this queue (they are applied to the styling context immediately).
  *
  * Due to the nature of how components/directives are evaluated, directives (both parent and
@@ -781,7 +782,7 @@ export const enum DirectiveOwnerAndPlayerBuilderIndex {
 /**
  * The default directive styling index value for template-based bindings.
  *
- * All host-level bindings (e.g. `hostStyleProp` and `hostStylingMap`) are
+ * All host-level bindings (e.g. `hostStyleProp` and `hostClassMap`) are
  * assigned a directive styling index value based on the current directive
  * uniqueId and the directive super-class inheritance depth. But for template
  * bindings they always have the same directive styling index value.

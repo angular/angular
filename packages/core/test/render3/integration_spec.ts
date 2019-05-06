@@ -10,8 +10,8 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵtemplateRefExtractor} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementHostStylingMap, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementHostClassMap, ɵɵelementHostStyleMap, ɵɵelementStyleMap, ɵɵtemplateRefExtractor} from '../../src/render3/index';
+import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -1727,7 +1727,7 @@ describe('render3 integration test', () => {
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementStylingMap(0, 'cucumber grape');
+               ɵɵelementClassMap(0, 'cucumber grape');
                ɵɵelementStylingApply(0);
              }
            }, 1, 0, [DirWithClassDirective]);
@@ -1748,7 +1748,7 @@ describe('render3 integration test', () => {
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementStylingMap(0, null, {width: '200px', height: '500px'});
+               ɵɵelementStyleMap(0, {width: '200px', height: '500px'});
                ɵɵelementStylingApply(0);
              }
            }, 1, 0, [DirWithStyleDirective]);
@@ -1993,7 +1993,8 @@ describe('render3 integration test', () => {
                    ɵɵelementHostStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStylingMap(ctx.classesExp, ctx.stylesExp);
+                   ɵɵelementHostStyleMap(ctx.stylesExp);
+                   ɵɵelementHostClassMap(ctx.classesExp);
                    ɵɵelementHostStylingApply();
                  }
                }
@@ -2020,7 +2021,7 @@ describe('render3 integration test', () => {
                    ɵɵelementHostStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStylingMap(null, ctx.stylesExp);
+                   ɵɵelementHostStyleMap(ctx.stylesExp);
                    ɵɵelementHostStylingApply();
                  }
                }
@@ -2039,7 +2040,8 @@ describe('render3 integration test', () => {
                ɵɵelementStyling();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementStylingMap(0, ctx.classesExp, ctx.stylesExp);
+               ɵɵelementStyleMap(0, ctx.stylesExp);
+               ɵɵelementClassMap(0, ctx.classesExp);
                ɵɵelementStylingApply(0);
              }
            }, 1, 0, [Dir1WithStyling, Dir2WithStyling]);
@@ -2116,7 +2118,7 @@ describe('render3 integration test', () => {
           ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵelementStylingMap(0, ɵɵinterpolation2('-', ctx.name, '-', ctx.age, '-'));
+          ɵɵelementClassMap(0, ɵɵinterpolation2('-', ctx.name, '-', ctx.age, '-'));
           ɵɵelementStylingApply(0);
         }
       }, 1, 2);

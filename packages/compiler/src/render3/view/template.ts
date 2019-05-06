@@ -686,8 +686,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // the code here will collect all update-level styling instructions and add them to the
     // update block of the template function AOT code. Instructions like `elementStyleProp`,
-    // `elementStylingMap`, `elementClassProp` and `elementStylingApply` are all generated
-    // and assign in the code below.
+    // `elementStyleMap`, `elementClassMap`, `elementClassProp` and `elementStylingApply`
+    // are all generated and assigned in the code below.
     stylingBuilder.buildUpdateLevelInstructions(this._valueConverter).forEach(instruction => {
       this._bindingSlots += instruction.allocateBindingSlots;
       this.processStylingInstruction(implicit, instruction, false);
