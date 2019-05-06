@@ -5,82 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {Component, Input} from '@angular/core';
+import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {of } from 'rxjs';
 
-describe('property instructions', () => {
-  it('should bind to properties whose names do not correspond to their attribute names', () => {
-    @Component({template: '<label [for]="forValue"></label>'})
-    class MyComp {
-      forValue?: string;
-    }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    const labelNode = fixture.debugElement.query(By.css('label'));
-
-    fixture.componentInstance.forValue = 'some-input';
-    fixture.detectChanges();
-
-    expect(labelNode.nativeElement.getAttribute('for')).toBe('some-input');
-
-    fixture.componentInstance.forValue = 'some-textarea';
-    fixture.detectChanges();
-
-    expect(labelNode.nativeElement.getAttribute('for')).toBe('some-textarea');
-  });
-
-  it('should not allow unsanitary urls in bound properties', () => {
-    @Component({
-      template: `
-        <img [src]="naughty">
-      `
-    })
-    class App {
-      naughty = 'javascript:alert("haha, I am taking over your computer!!!");';
-    }
-
-    TestBed.configureTestingModule({declarations: [App]});
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const img = fixture.nativeElement.querySelector('img');
-
-    expect(img.src.indexOf('unsafe:')).toBe(0);
-  });
-
-
-  it('should not map properties whose names do not correspond to their attribute names, ' +
-         'if they correspond to inputs',
-     () => {
-
-       @Component({template: '', selector: 'my-comp'})
-       class MyComp {
-        @Input() for !:string;
-       }
-
-       @Component({template: '<my-comp [for]="forValue"></my-comp>'})
-       class App {
-         forValue?: string;
-       }
-
-       TestBed.configureTestingModule({declarations: [App, MyComp]});
-       const fixture = TestBed.createComponent(App);
-       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
-       fixture.componentInstance.forValue = 'hello';
-       fixture.detectChanges();
-       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
-       expect(myCompNode.componentInstance.for).toBe('hello');
-
-       fixture.componentInstance.forValue = 'hej';
-       fixture.detectChanges();
-       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
-       expect(myCompNode.componentInstance.for).toBe('hej');
-     });
-
+describe('property interpolation', () => {
   it('should handle all flavors of interpolated properties', () => {
     @Component({
       template: `
@@ -229,5 +159,71 @@ describe('property instructions', () => {
     expect(anchor.getAttribute('href'))
         .toEqual(
             `http://g.com/?one=1&two=2&three=3&four=4&five=5&six=6&seven=7&eight=8&nine=9&ten=10`);
+  });
+
+  it('should support the chained use cases of propertyInterpolate instructions', () => {
+    // The below *just happens* to have two attributes in a row that have the same interpolation
+    // count.
+    @Component({
+      template: `
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j" alt="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"/>
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i" alt="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"/>
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h" alt="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"/>
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g" alt="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g"/>
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f" alt="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f"/>
+      <img title="a{{one}}b{{two}}c{{three}}d{{four}}e" alt="a{{one}}b{{two}}c{{three}}d{{four}}e"/>
+      <img title="a{{one}}b{{two}}c{{three}}d" alt="a{{one}}b{{two}}c{{three}}d"/>
+      <img title="a{{one}}b{{two}}c" alt="a{{one}}b{{two}}c"/>
+      <img title="a{{one}}b" alt="a{{one}}b"/>
+      <img title="{{one}}" alt="{{one}}"/>
+      `
+    })
+    class AppComp {
+      one = 1;
+      two = 2;
+      three = 3;
+      four = 4;
+      five = 5;
+      six = 6;
+      seven = 7;
+      eight = 8;
+      nine = 9;
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComp]});
+    const fixture = TestBed.createComponent(AppComp);
+    fixture.detectChanges();
+
+    const titles = Array.from(fixture.nativeElement.querySelectorAll('img[title]'))
+                       .map((img: HTMLImageElement) => img.title);
+
+    expect(titles).toEqual([
+      'a1b2c3d4e5f6g7h8i9j',
+      'a1b2c3d4e5f6g7h8i',
+      'a1b2c3d4e5f6g7h',
+      'a1b2c3d4e5f6g',
+      'a1b2c3d4e5f',
+      'a1b2c3d4e',
+      'a1b2c3d',
+      'a1b2c',
+      'a1b',
+      '1',
+    ]);
+
+    const others = Array.from(fixture.nativeElement.querySelectorAll('img[alt]'))
+                       .map((img: HTMLImageElement) => img.alt);
+
+    expect(others).toEqual([
+      'a1b2c3d4e5f6g7h8i9j',
+      'a1b2c3d4e5f6g7h8i',
+      'a1b2c3d4e5f6g7h',
+      'a1b2c3d4e5f6g',
+      'a1b2c3d4e5f',
+      'a1b2c3d4e',
+      'a1b2c3d',
+      'a1b2c',
+      'a1b',
+      '1',
+    ]);
   });
 });
