@@ -18,6 +18,48 @@ For step-by-step instructions on how to update to the latest Angular release, us
 </div>
 
 
+## Index
+
+To help you future-proof your apps, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
+
+<!--
+deprecation -> removal cheat sheet
+v4 - v7
+v5 - v8
+v6 - v9
+v7 - v10
+v8 - v11
+-->
+
+
+| Area | API or Feature | May be removed in |
+| ---- | -------------- | ----------------- |
+| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | <!--v8--> v9 |
+| `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
+| `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
+| `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`Renderer`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`RootRenderer`](#core) | <!--v7--> v9 |
+| `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
+| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
+| `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
+| `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
+| `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
+| `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
+| `@angular/upgrade` | [`getAngularLib`](#upgrade-static) | <!--v8--> v9 |
+| `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
+| template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> v9 |
+| template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
+| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
+| polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
+| `@angular/core` | [`defineInjectable`](#core) | v11 |
+| `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
+| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
+
+
+
 
 ## Deprecated APIs
 
@@ -32,8 +74,8 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 
 
-
-#### @angular/common
+{@a common}
+### @angular/common
 
 
 | API | Replacement | Deprecation announced | Notes |
@@ -45,14 +87,14 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
  | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | See [Pipes](#i18n-pipes) |
 
 
-#### @angular/core
+{@a core}
+### @angular/core
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
-| [`inject`](api/core/inject) | `ɵɵinject` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
 | [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2) and  [`Renderer2`](api/core/Renderer2) | v4 | none |
@@ -61,28 +103,30 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
 
 
-#### @angular/forms
+{@a forms}
+### @angular/forms
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
 
-
-#### @angular/router
+{@a router}
+### @angular/router
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
 
 
-#### @angular/upgrade
+{@a upgrade}
+### @angular/upgrade
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [All entry points](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
 
-
-#### @angular/upgrade/static
+{@a upgrade-static}
+### @angular/upgrade/static
 
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
@@ -98,10 +142,10 @@ This section lists all of the currently-deprecated features, which includes temp
 
 
 
-{@a component-styles}
-### Component styles
+{@a deep-component-style-selector}
+### `/deep/`, `>>>` and `:ng-deep` component style selectors
 
-The shadow-piercing descendant combinator is deprecated and support is being removed from major browsers and tools. As such, in v4 we deprecated support in Angular for all 3 of `/deep/`, `>>>` and `::ng-deep`. Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
+The shadow-dom-piercing descendant combinator is deprecated and support is being [removed from major browsers and tools](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing). As such, in v4 we deprecated support in Angular for all 3 of `/deep/`, `>>>` and `::ng-deep`. Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
 
 For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep")
  in the Component Styles guide.
@@ -182,7 +226,7 @@ In version 4.3, Angular introduced new number, date, and currency pipes that inc
 In version 5.0.0, Angular updated its standard pipes to use the CLRD implementation.
 At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
 
-Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in the next major release.
+Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
 
 
 {@a loadChildren}
@@ -234,6 +278,17 @@ const routes: Routes = [{
 | `queryParams` | `queryParamMap` |
 
 For more information see the [Router guide](guide/router#activated-route).
+
+
+{@a reflect-metadata}
+### Dependency on a reflect-metadata polyfill in JIT mode
+Angular applications, and specifically applications that relied on the JIT compiler, used to require a polyfill for the [reflect-metadata](https://github.com/rbuckton/reflect-metadata) APIs.
+
+The need for this polyfill was removed in Angular version 8.0 ([see #14473](https://github.com/angular/angular-cli/pull/14473)), rendering the presence of the poylfill in most Angular applications unnecessary. Because the polyfill can be depended on by 3rd-party libraries, instead of removing it from all Angular projects, we are deprecating the requirement for this polyfill as of version 8.0. This should give library authors and application developers sufficient time to evaluate if they need the polyfill, and perform any refactoring necessary to remove the dependency on it.
+
+In typical Angular project, the polyfill is not used in production builds, so deprecating it (rather than removing it)  doesn't have impact on the production applications. The goal behind this removal is overall simplification of the build setup and decrease in the number of external dependencies.
+
+We expect to remove the polyfill from most if not all CLI projects via an `ng upgrade` migration from version 8 to 9.
 
 
 {@a removed}
