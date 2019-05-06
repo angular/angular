@@ -79,25 +79,39 @@ export declare class CommonModule {
       env.driveMain();
     });
 
+    it('should check a component with no scope', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+  
+        @Component({
+          selector: 'test',
+          template: '{{does_not_exist}}',
+        })
+        class TestCmp {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+    });
+
     it('should check basic usage of NgIf', () => {
       env.write('test.ts', `
-    import {CommonModule} from '@angular/common';
-    import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
 
-    @Component({
-      selector: 'test',
-      template: '<div *ngIf="user">{{user.name}}</div>',
-    })
-    class TestCmp {
-      user: {name: string}|null;
-    }
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="user">{{user.name}}</div>',
+        })
+        class TestCmp {
+          user: {name: string}|null;
+        }
 
-    @NgModule({
-      declarations: [TestCmp],
-      imports: [CommonModule],
-    })
-    class Module {}
-    `);
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+      `);
 
       env.driveMain();
     });

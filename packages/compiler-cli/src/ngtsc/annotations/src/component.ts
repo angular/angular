@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, ParseSourceFile, ParseTemplateOptions, R3ComponentMetadata, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -355,13 +355,13 @@ export class ComponentDecoratorHandler implements
     }
     const scope = this.scopeRegistry.getScopeForComponent(node);
     const matcher = new SelectorMatcher<DirectiveMeta>();
+    const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+    let schemas: SchemaMetadata[] = [];
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
         const extMeta = flattenInheritedDirectiveMetadata(this.metaReader, meta.ref);
         matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
       }
-      const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate});
-      const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
           throw new Error(
@@ -369,8 +369,10 @@ export class ComponentDecoratorHandler implements
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
-      ctx.addTemplate(new Reference(node), bound, pipes, scope.schemas);
+      schemas = scope.schemas;
     }
+    const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate});
+    ctx.addTemplate(new Reference(node), bound, pipes, schemas);
   }
 
   resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
