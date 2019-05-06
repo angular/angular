@@ -875,11 +875,11 @@ As always, strive for consistency.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-02}
+{@a 02-06}
 
 ### Component selectors
 
-#### Style 05-02
+#### Style 02-06
 
 <div class="s-rule do">
 
