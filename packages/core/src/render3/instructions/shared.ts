@@ -821,14 +821,15 @@ export function generatePropertyAliases(tNode: TNode, direction: BindingDirectio
 /**
 * Mapping between attributes names that don't correspond to their element property names.
 */
-const ATTR_TO_PROP: {[name: string]: string} = {
-  'class': 'className',
-  'for': 'htmlFor',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
-};
+function mapPropertyName(name: string): string {
+  if (name === 'class') return 'className';
+  if (name === 'for') return 'htmlFor';
+  if (name === 'formaction') return 'formAction';
+  if (name === 'innerHtml') return 'innerHTML';
+  if (name === 'readonly') return 'readOnly';
+  if (name === 'tabindex') return 'tabIndex';
+  return name;
+}
 
 export function elementPropertyInternal<T>(
     index: number, propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean,
@@ -860,7 +861,7 @@ export function elementPropertyInternal<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
-    propName = ATTR_TO_PROP[propName] || propName;
+    propName = mapPropertyName(propName);
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
