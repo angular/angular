@@ -129,7 +129,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   public effectiveName(fileName: string): string {
     const prefix = '@angular/';
     return angularSourcePath && fileName.startsWith(prefix) ?
-        path.posix.join(angularSourcePath, fileName.substr(prefix.length)) :
+        path.join(angularSourcePath, fileName.substr(prefix.length)) :
         fileName;
   }
 
@@ -350,7 +350,7 @@ export class MockCompilerHost implements ts.CompilerHost {
     const rxjs = '/rxjs';
     if (name.startsWith('/' + node_modules)) {
       if (nodeModulesPath && name.startsWith('/' + node_modules + rxjs)) {
-        return path.posix.join(nodeModulesPath, name.substr(node_modules.length + 1));
+        return path.join(nodeModulesPath, name.substr(node_modules.length + 1));
       }
     }
     return name;
