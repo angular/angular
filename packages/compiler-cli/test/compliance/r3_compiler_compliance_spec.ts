@@ -506,6 +506,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
+                $r3$.ɵɵselect(0);
                 $r3$.ɵɵelementStyleProp(0, 0, ctx.color);
                 $r3$.ɵɵelementClassProp(0, 0, ctx.error);
                 $r3$.ɵɵelementStylingApply(0);
