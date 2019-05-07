@@ -6,19 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicContext, SchematicsException, Tree, UpdateRecorder} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import * as ts from 'typescript';
-
-import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
 import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
 
 import {NgDirectiveVisitor} from './directive_visitor';
-import {findBaseClassDeclarations} from './find_base_classes';
-import {ImportManager} from './import_manager';
-import {NgModuleDeclarationsManager} from './module_declarations';
+import {UndecoratedBaseClassTransform} from './transform';
+import {UpdateRecorder} from './update_recorder';
 
 
 /** Entry point for the V8 undecorated-base-class schematic. */
@@ -67,7 +63,6 @@ function runUndecoratedBaseClassMigration(
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
   const typeChecker = program.getTypeChecker();
-  const printer = ts.createPrinter();
   const directiveVisitor = new NgDirectiveVisitor(typeChecker);
   const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
 
@@ -75,84 +70,28 @@ function runUndecoratedBaseClassMigration(
   rootSourceFiles.forEach(sourceFile => directiveVisitor.visitNode(sourceFile));
 
   const {resolvedDirectives, directiveModules} = directiveVisitor;
+  const transformer =
+      new UndecoratedBaseClassTransform(typeChecker, directiveModules, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
-  const updatedBaseClasses = new Set<ts.ClassDeclaration>();
-  const importManager = new ImportManager(getUpdateRecorder, printer);
-  const ngModuleManager =
-      new NgModuleDeclarationsManager(importManager, getUpdateRecorder, typeChecker, printer);
-  let selectorIdx = 1;
 
   resolvedDirectives.forEach(classDecl => {
-    // In case the directive has an explicit constructor, we don't need to do
-    // anything because the class is already decorated with "@Directive" or "@Component"
-    if (hasExplicitConstructor(classDecl)) {
-      return;
-    }
-
-    const orderedBaseClasses = findBaseClassDeclarations(classDecl, typeChecker);
-    const ngModules = directiveModules.get(classDecl) || [];
-
-    for (let baseClass of orderedBaseClasses) {
-      // The list of base classes is ordered and we only need to find the first
-      // base class with an explicit constructor class member.
-      if (hasExplicitConstructor(baseClass)) {
-        // In case the first base class with an explicit constructor is already
-        // decorated with the "@Directive" decorator, we don't need to do anything.
-        if (baseClass.decorators &&
-            getAngularDecorators(typeChecker, baseClass.decorators)
-                .some(d => d.name === 'Directive' || d.name === 'Component')) {
-          break;
-        }
-
-        const baseClassFile = baseClass.getSourceFile();
-        const relativePath = relative(basePath, baseClassFile.fileName);
-
-        // In case the base class has already been decorated with other directives,
-        // we don't want to add the @Directive decorator multiple times but still
-        // add the base class to various NgModule declarations.
-        if (!updatedBaseClasses.has(baseClass)) {
-          const recorder = getUpdateRecorder(baseClassFile);
-          const directiveExpr =
-              importManager.addImportToSourceFile(baseClassFile, 'Directive', '@angular/core');
-
-          const newDecorator = ts.createDecorator(ts.createCall(
-              directiveExpr, undefined,
-              [ts.createObjectLiteral(
-                  [ts.createPropertyAssignment(
-                      'selector', ts.createStringLiteral(`_base_class_${selectorIdx++}`))],
-                  false)]));
-
-          const newDecoratorText =
-              printer.printNode(ts.EmitHint.Unspecified, newDecorator, baseClassFile);
-          recorder.insertLeft(baseClass.getStart(), `${newDecoratorText}\n`);
-          updatedBaseClasses.add(baseClass);
-        }
-
-        // In case the directive is used in any NgModule, we want to add the new
-        // dummy directive to the module declarations so that NGC does not complain
-        // about a missing module for the newly annotated directive base class.
-        ngModules.forEach(module => {
-          const failure = ngModuleManager.addDeclarationToNgModule(module, baseClass);
-          if (failure) {
-            const {line, character} =
-                ts.getLineAndCharacterOfPosition(baseClassFile, baseClass.getStart());
-            failures.push(`${relativePath}@${line + 1}:${character + 1}: ${failure}`);
-          }
-        });
-        break;
-      }
-    }
+    transformer.migrateDirective(classDecl).forEach(({message, node}) => {
+      const nodeSourceFile = node.getSourceFile();
+      const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
+      const {line, character} =
+          ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+      failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
+    });
   });
 
   // Record the changes collected in the import manager and NgModule manager. The
   // changes need to be recorded before committing the changes to the host tree.
-  importManager.recordChanges();
-  ngModuleManager.recordChanges();
+  transformer.recordChanges();
 
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source
   // file in order to not incorrectly shift offsets.
-  updateRecorders.forEach(recorder => tree.commitUpdate(recorder));
+  updateRecorders.forEach(recorder => recorder.commitUpdate());
 
   return failures;
 
@@ -161,7 +100,24 @@ function runUndecoratedBaseClassMigration(
     if (updateRecorders.has(sourceFile)) {
       return updateRecorders.get(sourceFile) !;
     }
-    const recorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
+    const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
+    const recorder: UpdateRecorder = {
+      addBaseClassDecorator(node: ts.ClassDeclaration, decoratorText: string) {
+        treeRecorder.insertLeft(node.getStart(), decoratorText);
+      },
+      addNewImport(start: number, importText: string) {
+        treeRecorder.insertRight(start, importText);
+      },
+      updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string) {
+        treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
+        treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
+      },
+      updateModuleDeclarations(node: ts.ArrayLiteralExpression, newDeclarations: string) {
+        treeRecorder.remove(node.getStart(), node.getWidth());
+        treeRecorder.insertRight(node.getStart(), newDeclarations);
+      },
+      commitUpdate() { tree.commitUpdate(treeRecorder); }
+    };
     updateRecorders.set(sourceFile, recorder);
     return recorder;
   }

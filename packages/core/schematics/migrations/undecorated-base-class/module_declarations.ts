@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize} from '@angular-devkit/core';
-import {UpdateRecorder} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {dirname, normalize, relative} from 'path';
 import * as ts from 'typescript';
 
 import {hasModifier} from '../../utils/typescript/nodes';
 
 import {ResolvedNgModule} from './directive_visitor';
 import {ImportManager} from './import_manager';
+import {UpdateRecorder} from './update_recorder';
 
 /**
  * NgModule declarations manager that can be used to add declarations to specified
@@ -104,9 +103,8 @@ export class NgModuleDeclarationsManager {
       const updatedDeclarations = ts.updateArrayLiteral(
           moduleDeclarations, moduleDeclarations.elements.concat(elements.map(e => e.expression)));
 
-      recorder.remove(moduleDeclarations.getStart(), moduleDeclarations.getWidth());
-      recorder.insertRight(
-          moduleDeclarations.getStart(),
+      recorder.updateModuleDeclarations(
+          moduleDeclarations,
           this.printer.printNode(ts.EmitHint.Unspecified, updatedDeclarations, moduleSourceFile));
     });
   }
@@ -142,7 +140,7 @@ export class NgModuleDeclarationsManager {
    * import declaration.
    */
   private _normalizeRelativePath(filePath: string): string {
-    const normalizedPath = normalize(filePath);
+    const normalizedPath = normalize(filePath).replace(/\\/g, '/');
     if (!normalizedPath.startsWith('../')) {
       return `./${normalizedPath}`;
     }

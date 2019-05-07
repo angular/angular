@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UpdateRecorder} from '@angular-devkit/schematics';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
+import {UpdateRecorder} from './update_recorder';
 
 /**
  * Import manager that can be used to add TypeScript imports to given source
@@ -157,7 +157,7 @@ export class ImportManager {
     }
 
     this.getUpdateRecorder(sourceFile)
-        .insertRight(
+        .addNewImport(
             importStartIndex,
             `\n${this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile)}`);
 
@@ -183,9 +183,8 @@ export class ImportManager {
           namedBindings.elements.concat(expressions.map(
               ({propertyName, importName}) => ts.createImportSpecifier(propertyName, importName))));
 
-      recorder.remove(namedBindings.getStart(), namedBindings.getWidth());
-      recorder.insertRight(
-          namedBindings.getStart(),
+      recorder.updateExistingImport(
+          namedBindings,
           this.printer.printNode(ts.EmitHint.Unspecified, newNamedBindings, sourceFile));
     });
   }
