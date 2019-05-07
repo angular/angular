@@ -100,7 +100,8 @@ export function mainNgcc(
   invalidEntryPoints.forEach(invalidEntryPoint => {
     logger.debug(
         `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
-        `It is missing required dependencies: ${invalidEntryPoint.missingDependencies.join(',')}`);
+        `It is missing required dependencies:\n` +
+            invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
   });
 
   if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
