@@ -666,7 +666,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // (things like `elementStyleProp`, `elementClassProp`, etc..) are applied later on in this
       // file
       this.processStylingInstruction(
-          implicit,
+          elementIndex, implicit,
           stylingBuilder.buildElementStylingInstruction(element.sourceSpan, this.constantPool),
           true);
 
@@ -688,10 +688,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // update block of the template function AOT code. Instructions like `elementStyleProp`,
     // `elementStyleMap`, `elementClassMap`, `elementClassProp` and `elementStylingApply`
     // are all generated and assigned in the code below.
-    stylingBuilder.buildUpdateLevelInstructions(this._valueConverter).forEach(instruction => {
+    const stylingInstructions = stylingBuilder.buildUpdateLevelInstructions(this._valueConverter);
+    const limit = stylingInstructions.length - 1;
+    for (let i = 0; i <= limit; i++) {
+      const instruction = stylingInstructions[i];
       this._bindingSlots += instruction.allocateBindingSlots;
-      this.processStylingInstruction(implicit, instruction, false);
-    });
+      this.processStylingInstruction(elementIndex, implicit, instruction, false);
+    }
 
     // the reason why `undefined` is used is because the renderer understands this as a
     // special value to symbolize that there is no RHS to this binding
@@ -1007,14 +1010,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private processStylingInstruction(
-      implicit: any, instruction: Instruction|null, createMode: boolean) {
+      elementIndex: number, implicit: any, instruction: Instruction|null, createMode: boolean) {
     if (instruction) {
       const paramsFn = () =>
           instruction.buildParams(value => this.convertPropertyBinding(implicit, value, true));
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
-        this.updateInstruction(-1, instruction.sourceSpan, instruction.reference, paramsFn);
+        this.updateInstruction(
+            elementIndex, instruction.sourceSpan, instruction.reference, paramsFn);
       }
     }
   }
