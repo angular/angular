@@ -1,3 +1,13 @@
+<a name="7.2.15"></a>
+## [7.2.15](https://github.com/angular/angular/compare/7.2.14...7.2.15) (2019-05-07)
+
+
+### Bug Fixes
+
+* **upgrade:** do not break if `onMicrotaskEmpty` emits while a `$digest` is in progress ([#29794](https://github.com/angular/angular/issues/29794)) ([#30107](https://github.com/angular/angular/issues/30107)) ([1084c19](https://github.com/angular/angular/commit/1084c19)), closes [#24680](https://github.com/angular/angular/issues/24680) [/github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts#L12](https://github.com//github.com/angular/angular/blob/78146c189/packages/core/src/util/ng_dev_mode.ts/issues/L12) [#24680](https://github.com/angular/angular/issues/24680)
+
+
+
 <a name="7.2.14"></a>
 ## [7.2.14](https://github.com/angular/angular/compare/7.2.13...7.2.14) (2019-04-23)
 
