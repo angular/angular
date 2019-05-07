@@ -795,11 +795,11 @@ export declare function ɵɵelement(index: number, name: string, attrs?: TAttrib
 
 export declare function ɵɵelementAttribute(index: number, name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
 
-export declare function ɵɵelementClassMap(index: number, classes: {
+export declare function ɵɵelementClassMap(classes: {
     [styleName: string]: any;
 } | NO_CHANGE | string | null): void;
 
-export declare function ɵɵelementClassProp(index: number, classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+export declare function ɵɵelementClassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
 
 export declare function ɵɵelementContainerEnd(): void;
 
@@ -829,15 +829,15 @@ export declare function ɵɵelementProperty<T>(index: number, propName: string, 
 
 export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
 
-export declare function ɵɵelementStyleMap(index: number, styles: {
+export declare function ɵɵelementStyleMap(styles: {
     [styleName: string]: any;
 } | NO_CHANGE | null): void;
 
-export declare function ɵɵelementStyleProp(index: number, styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
+export declare function ɵɵelementStyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
 
 export declare function ɵɵelementStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
 
-export declare function ɵɵelementStylingApply(index: number): void;
+export declare function ɵɵelementStylingApply(): void;
 
 export declare function ɵɵembeddedViewEnd(): void;
 

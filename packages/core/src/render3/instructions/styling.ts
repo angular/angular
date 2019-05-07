@@ -154,7 +154,6 @@ function initElementStyling(
  *
  * Note that the styling element is updated as part of `elementStylingApply`.
  *
- * @param index Index of the element's with which styling is associated.
  * @param styleIndex Index of style to update. This index value refers to the
  *        index of the style in the style bindings array that was passed into
  *        `elementStyling`.
@@ -171,8 +170,9 @@ function initElementStyling(
  * @codeGenApi
  */
 export function ɵɵelementStyleProp(
-    index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
+    styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
+  const index = getSelectedIndex();
   const valueToAdd = resolveStylePropValue(value, suffix);
   const stylingContext = getStylingContext(index, getLView());
   updateElementStyleProp(
@@ -244,7 +244,6 @@ function resolveStylePropValue(
  * therefore, the class binding itself must already be allocated using
  * `elementStyling` within the creation block.
  *
- * @param index Index of the element's with which styling is associated.
  * @param classIndex Index of class to toggle. This index value refers to the
  *        index of the class in the class bindings array that was passed into
  *        `elementStyling` (which is meant to be called before this
@@ -256,8 +255,8 @@ function resolveStylePropValue(
  * @codeGenApi
  */
 export function ɵɵelementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory,
-    forceOverride?: boolean): void {
+    classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
+  const index = getSelectedIndex();
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
@@ -316,15 +315,14 @@ function booleanOrNull(value: any): boolean|null {
  *
  * Note that the styling instruction will not be applied until `elementStylingApply` is called.
  *
- * @param index Index of the element's with which styling is associated.
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
  *
  * @codeGenApi
  */
-export function ɵɵelementStyleMap(
-    index: number, styles: {[styleName: string]: any} | NO_CHANGE | null): void {
+export function ɵɵelementStyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
+  const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
   const tNode = getTNode(index, lView);
@@ -354,15 +352,15 @@ export function ɵɵelementStyleMap(
  *
  * Note that the styling instruction will not be applied until `elementStylingApply` is called.
  *
- * @param index Index of the element's with which styling is associated.
  * @param classes A key/value map or string of CSS classes that will be added to the
  *        given element. Any missing classes (that have already been applied to the element
  *        beforehand) will be removed (unset) from the element's list of CSS classes.
  *
  * @codeGenApi
  */
-export function ɵɵelementClassMap(
-    index: number, classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
+export function ɵɵelementClassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null):
+    void {
+  const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
   const tNode = getTNode(index, lView);
@@ -442,11 +440,10 @@ export function ɵɵelementHostClassMap(classes: {[key: string]: any} | string |
  * `elementStyleProp` or `elementClassProp` instructions have been run and will
  * only apply styling to the element if any styling bindings have been updated.
  *
- * @param index Index of the element's with which styling is associated.
- *
  * @codeGenApi
  */
-export function ɵɵelementStylingApply(index: number): void {
+export function ɵɵelementStylingApply(): void {
+  const index = getSelectedIndex();
   elementStylingApplyInternal(DEFAULT_TEMPLATE_DIRECTIVE_INDEX, index);
 }
 
