@@ -21,6 +21,13 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(body.getAll('a')).toEqual(['b']);
         expect(body.getAll('c')).toEqual(['d', 'e']);
       });
+
+      it('should ignore question mark when parsing existing url', () => {
+        const body = new HttpParams({fromString: '?a=b&c=d&c=e'});
+        expect(body.keys()).toEqual(['a', 'c'])
+        expect(body.getAll('a')).toEqual(['b']);
+        expect(body.getAll('c')).toEqual(['d', 'e']);
+      });
     });
 
     describe('lazy mutation', () => {

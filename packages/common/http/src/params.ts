@@ -43,7 +43,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
-    const params: string[] = rawParams.split('&');
+    const params: string[] = (rawParams[0] === '?' ? rawParams.slice(1) : rawParams).split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
       const [key, val]: string[] = eqIdx == -1 ?
