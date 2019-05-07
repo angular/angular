@@ -23,8 +23,7 @@ export const formDirectiveProvider: any = {
   useExisting: forwardRef(() => NgForm)
 };
 
-// tslint:disable-next-line:no-toplevel-property-access
-const resolvedPromise = Promise.resolve(null);
+const resolvedPromise = (() => Promise.resolve(null))();
 
 /**
  * @description

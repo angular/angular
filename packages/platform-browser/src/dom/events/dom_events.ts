@@ -17,12 +17,10 @@ import {EventManagerPlugin} from './event_manager';
  * efficient bookkeeping than Zone can, because we have additional information. This speeds up
  * addEventListener by 3x.
  */
-// It's ok to access a property on Zone because it's a global polyfill.
-const __symbol__ =
-    // tslint:disable-next-line:no-toplevel-property-access
+const __symbol__ = (() =>
     (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function(v: string): string {
       return '__zone_symbol__' + v;
-    };
+    })();
 const ADD_EVENT_LISTENER: 'addEventListener' = __symbol__('addEventListener');
 const REMOVE_EVENT_LISTENER: 'removeEventListener' = __symbol__('removeEventListener');
 

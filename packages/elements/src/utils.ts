@@ -7,13 +7,11 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-// It's ok to keep this access because Element is a native global.
-// tslint:disable-next-line:no-toplevel-property-access
-const elProto = Element.prototype as any;
-// tslint:disable-next-line:no-toplevel-property-access
-const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-    // tslint:disable-next-line:no-toplevel-property-access
+const matches = (() => {
+  const elProto = Element.prototype as any;
+  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
     elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+})();
 
 /**
  * Provide methods for scheduling the execution of a callback.
