@@ -390,8 +390,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap(0, $ctx$.myStyleExp);
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -456,8 +456,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap(0, $r3$.ɵɵinterpolation1("foo foo-", $ctx$.fooId, ""));
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementClassMap($r3$.ɵɵinterpolation1("foo foo-", $ctx$.fooId, ""));
+              $r3$.ɵɵelementStylingApply();
             }
           }
         …
@@ -471,8 +471,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap(0, $r3$.ɵɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementClassMap($r3$.ɵɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
+              $r3$.ɵɵelementStylingApply();
             }
           }
         …
@@ -486,8 +486,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap(0, $ctx$.exp);
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementClassMap($ctx$.exp);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -543,10 +543,10 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵelementStyleMap(0, $ctx$.myStyleExp);
-                  $r3$.ɵɵelementStyleProp(0, 0, $ctx$.myWidth);
-                  $r3$.ɵɵelementStyleProp(0, 1, $ctx$.myHeight);
-                  $r3$.ɵɵelementStylingApply(0);
+                  $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
+                  $r3$.ɵɵelementStyleProp(0, $ctx$.myWidth);
+                  $r3$.ɵɵelementStyleProp(1, $ctx$.myHeight);
+                  $r3$.ɵɵelementStylingApply();
                   $r3$.ɵɵelementAttribute(0, "style", $r3$.ɵɵbind("border-width: 10px"), $r3$.ɵɵsanitizeStyle);
                 }
               },
@@ -603,8 +603,8 @@ describe('compiler compliance: styling', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementStyleProp(0, 0, ctx.myImage);
-                $r3$.ɵɵelementStylingApply(0);
+                $r3$.ɵɵelementStyleProp(0, ctx.myImage);
+                $r3$.ɵɵelementStylingApply();
               }
             },
             encapsulation: 2
@@ -645,8 +645,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleProp(0, 0, 12, "px");
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleProp(0, 12, "px");
+              $r3$.ɵɵelementStylingApply();
             }
           }
      `;
@@ -711,8 +711,8 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap(0,$ctx$.myClassExp);
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementClassMap($ctx$.myClassExp);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -768,10 +768,10 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵelementClassMap(0, $ctx$.myClassExp);
-                  $r3$.ɵɵelementClassProp(0, 0, $ctx$.yesToApple);
-                  $r3$.ɵɵelementClassProp(0, 1, $ctx$.yesToOrange);
-                  $r3$.ɵɵelementStylingApply(0);
+                  $r3$.ɵɵelementClassMap($ctx$.myClassExp);
+                  $r3$.ɵɵelementClassProp(0, $ctx$.yesToApple);
+                  $r3$.ɵɵelementClassProp(1, $ctx$.yesToOrange);
+                  $r3$.ɵɵelementStylingApply();
                   $r3$.ɵɵelementAttribute(0, "class", $r3$.ɵɵbind("banana"));
                 }
               },
@@ -890,9 +890,9 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap(0, $ctx$.myStyleExp);
-              $r3$.ɵɵelementClassMap(0, $ctx$.myClassExp);
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵelementClassMap($ctx$.myClassExp);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -934,9 +934,9 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap(0, $r3$.ɵɵpipeBind1(1, 0, $ctx$.myStyleExp));
-              $r3$.ɵɵelementClassMap(0, $r3$.ɵɵpipeBind1(2, 2, $ctx$.myClassExp));
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleMap($r3$.ɵɵpipeBind1(1, 0, $ctx$.myStyleExp));
+              $r3$.ɵɵelementClassMap($r3$.ɵɵpipeBind1(2, 2, $ctx$.myClassExp));
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -992,12 +992,12 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap(0, $r3$.ɵɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
-              $r3$.ɵɵelementClassMap(0, $e2_styling$);
-              $r3$.ɵɵelementStyleProp(0, 0, $r3$.ɵɵpipeBind2(2, 4, $ctx$.barExp, 3000));
-              $r3$.ɵɵelementStyleProp(0, 1, $r3$.ɵɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
-              $r3$.ɵɵelementClassProp(0, 0, $r3$.ɵɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleMap($r3$.ɵɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
+              $r3$.ɵɵelementClassMap($e2_styling$);
+              $r3$.ɵɵelementStyleProp(0, $r3$.ɵɵpipeBind2(2, 4, $ctx$.barExp, 3000));
+              $r3$.ɵɵelementStyleProp(1, $r3$.ɵɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
+              $r3$.ɵɵelementClassProp(0, $r3$.ɵɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
+              $r3$.ɵɵelementStylingApply();
               $r3$.ɵɵselect(5);
               $r3$.ɵɵtextBinding(5, $r3$.ɵɵinterpolation1(" ", $ctx$.item, ""));
             }
@@ -1042,17 +1042,17 @@ describe('compiler compliance: styling', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleProp(0, 0, $ctx$.w1);
-              $r3$.ɵɵelementStylingApply(0);
+              $r3$.ɵɵelementStyleProp(0, $ctx$.w1);
+              $r3$.ɵɵelementStylingApply();
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵelementStyleProp(1, 0, $ctx$.h1);
-              $r3$.ɵɵelementStylingApply(1);
+              $r3$.ɵɵelementStyleProp(0, $ctx$.h1);
+              $r3$.ɵɵelementStylingApply();
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵelementClassProp(2, 0, $ctx$.a1);
-              $r3$.ɵɵelementStylingApply(2);
+              $r3$.ɵɵelementClassProp(0, $ctx$.a1);
+              $r3$.ɵɵelementStylingApply();
               $r3$.ɵɵselect(3);
-              $r3$.ɵɵelementClassProp(3, 0, $ctx$.r1);
-              $r3$.ɵɵelementStylingApply(3);
+              $r3$.ɵɵelementClassProp(0, $ctx$.r1);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           `;
@@ -1235,11 +1235,11 @@ describe('compiler compliance: styling', () => {
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementStyleMap(0, ctx.myStyleExp);
-                $r3$.ɵɵelementClassMap(0, ctx.myClassExp);
-                $r3$.ɵɵelementStyleProp(0, 0, ctx.myHeightExp, null, true);
-                $r3$.ɵɵelementClassProp(0, 0, ctx.myBarClassExp, true);
-                $r3$.ɵɵelementStylingApply(0);
+                $r3$.ɵɵelementStyleMap(ctx.myStyleExp);
+                $r3$.ɵɵelementClassMap(ctx.myClassExp);
+                $r3$.ɵɵelementStyleProp(0, ctx.myHeightExp, null, true);
+                $r3$.ɵɵelementClassProp(0, ctx.myBarClassExp, true);
+                $r3$.ɵɵelementStylingApply();
               }
             },
           `;
