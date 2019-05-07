@@ -9,7 +9,7 @@ import {createLView, createTView} from '@angular/core/src/render3/instructions/s
 
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵnamespaceSVG} from '../../../src/render3/index';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵnamespaceSVG, ɵɵselect} from '../../../src/render3/index';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
@@ -396,9 +396,10 @@ describe('style and class based bindings', () => {
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵelementStyleMap(0, ctx.myStyles);
-               ɵɵelementStyleProp(0, 0, ctx.myWidth);
-               ɵɵelementStylingApply(0);
+               ɵɵselect(0);
+               ɵɵelementStyleMap(ctx.myStyles);
+               ɵɵelementStyleProp(0, ctx.myWidth);
+               ɵɵelementStylingApply();
              }
            }
 
@@ -434,9 +435,10 @@ describe('style and class based bindings', () => {
                 ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                ɵɵelementStyleProp(0, 0, ctx.diameter, 'px');
-                ɵɵelementStyleProp(0, 1, ctx.diameter, 'px');
-                ɵɵelementStylingApply(0);
+                ɵɵselect(0);
+                ɵɵelementStyleProp(0, ctx.diameter, 'px');
+                ɵɵelementStyleProp(1, ctx.diameter, 'px');
+                ɵɵelementStylingApply();
               }
             }
           });
@@ -473,9 +475,10 @@ describe('style and class based bindings', () => {
                 ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                ɵɵelementStyleProp(0, 0, ctx.borderWidth);
-                ɵɵelementStyleProp(0, 1, ctx.borderColor);
-                ɵɵelementStylingApply(0);
+                ɵɵselect(0);
+                ɵɵelementStyleProp(0, ctx.borderWidth);
+                ɵɵelementStyleProp(1, ctx.borderColor);
+                ɵɵelementStylingApply();
               }
             }
           });
@@ -3110,11 +3113,12 @@ describe('style and class based bindings', () => {
                  ɵɵelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 ɵɵelementStyleMap(0, styleMapFactory);
-                 ɵɵelementClassMap(0, classMapFactory);
-                 ɵɵelementStyleProp(0, 0, widthFactory);
-                 ɵɵelementClassProp(0, 0, fooFactory);
-                 ɵɵelementStylingApply(0);
+                 ɵɵselect(0);
+                 ɵɵelementStyleMap(styleMapFactory);
+                 ɵɵelementClassMap(classMapFactory);
+                 ɵɵelementStyleProp(0, widthFactory);
+                 ɵɵelementClassProp(0, fooFactory);
+                 ɵɵelementStylingApply();
                }
              }
            });
@@ -3184,11 +3188,12 @@ describe('style and class based bindings', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementStyleMap(0, styleMapFactory);
-              ɵɵelementClassMap(0, classMapFactory);
-              ɵɵelementStyleProp(0, 0, widthFactory);
-              ɵɵelementClassProp(0, 0, fooFactory);
-              ɵɵelementStylingApply(0);
+              ɵɵselect(0);
+              ɵɵelementStyleMap(styleMapFactory);
+              ɵɵelementClassMap(classMapFactory);
+              ɵɵelementStyleProp(0, widthFactory);
+              ɵɵelementClassProp(0, fooFactory);
+              ɵɵelementStylingApply();
             }
           }
         });
@@ -3281,9 +3286,10 @@ describe('style and class based bindings', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementStyleProp(0, 0, ctx.widthFactory);
-              ɵɵelementClassProp(0, 0, ctx.fooFactory);
-              ɵɵelementStylingApply(0);
+              ɵɵselect(0);
+              ɵɵelementStyleProp(0, ctx.widthFactory);
+              ɵɵelementClassProp(0, ctx.fooFactory);
+              ɵɵelementStylingApply();
             }
           }
         });

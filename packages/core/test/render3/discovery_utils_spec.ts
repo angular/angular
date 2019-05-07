@@ -7,7 +7,7 @@
  */
 import {StaticInjector} from '../../src/di/injector';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, RenderFlags, getHostElement, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵi18n, ɵɵi18nApply, ɵɵi18nExp} from '../../src/render3/index';
+import {AttributeMarker, RenderFlags, getHostElement, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵi18n, ɵɵi18nApply, ɵɵi18nExp, ɵɵselect} from '../../src/render3/index';
 import {markDirty, ɵɵbind, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵlistener, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/util/discovery_utils';
 
@@ -556,7 +556,8 @@ describe('discovery utils deprecated', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementStylingApply(0);
+              ɵɵselect(0);
+              ɵɵelementStylingApply();
             }
           }
         });

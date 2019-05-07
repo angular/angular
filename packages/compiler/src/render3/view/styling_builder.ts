@@ -389,22 +389,13 @@ export class StylingBuilder {
       sourceSpan: stylingInput.sourceSpan,
       reference,
       allocateBindingSlots: totalBindingSlotsRequired,
-      buildParams: (convertFn: (value: any) => o.Expression) => {
-        const params: o.Expression[] = [];
-        if (!isHostBinding) {
-          params.push(this._elementIndexExpr);
-        }
-
-        params.push(convertFn(mapValue));
-        return params;
-      }
+      buildParams: (convertFn: (value: any) => o.Expression) => { return [convertFn(mapValue)]; }
     };
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, isHostBinding: boolean, inputs: BoundStylingEntry[],
-      mapIndex: Map<string, number>, allowUnits: boolean,
-      valueConverter: ValueConverter): Instruction[] {
+      reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
+      allowUnits: boolean, valueConverter: ValueConverter): Instruction[] {
     let totalBindingSlotsRequired = 0;
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name !) !;
@@ -421,11 +412,6 @@ export class StylingBuilder {
           //   min params => elementStylingProp(elmIndex, bindingIndex, value)
           //   max params => elementStylingProp(elmIndex, bindingIndex, value, overrideFlag)
           const params: o.Expression[] = [];
-
-          if (!isHostBinding) {
-            params.push(this._elementIndexExpr);
-          }
-
           params.push(o.literal(bindingIndex));
           params.push(convertFn(value));
 
@@ -452,8 +438,7 @@ export class StylingBuilder {
       const isHostBinding = !!this._directiveExpr;
       const reference = isHostBinding ? R3.elementHostClassProp : R3.elementClassProp;
       return this._buildSingleInputs(
-          reference, isHostBinding, this._singleClassInputs, this._classesIndex, false,
-          valueConverter);
+          reference, this._singleClassInputs, this._classesIndex, false, valueConverter);
     }
     return [];
   }
@@ -463,8 +448,7 @@ export class StylingBuilder {
       const isHostBinding = !!this._directiveExpr;
       const reference = isHostBinding ? R3.elementHostStyleProp : R3.elementStyleProp;
       return this._buildSingleInputs(
-          reference, isHostBinding, this._singleStyleInputs, this._stylesIndex, true,
-          valueConverter);
+          reference, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
     }
     return [];
   }
@@ -476,13 +460,7 @@ export class StylingBuilder {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
       reference,
       allocateBindingSlots: 0,
-      buildParams: () => {
-        // HOST:
-        //   params => elementHostStylingApply()
-        // Template:
-        //   params => elementStylingApply(elmIndex)
-        return isHostBinding ? [] : [this._elementIndexExpr];
-      }
+      buildParams: () => { return []; }
     };
   }
 
