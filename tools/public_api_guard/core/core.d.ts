@@ -809,22 +809,6 @@ export declare function ɵɵelementEnd(): void;
 
 export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 
-export declare function ɵɵelementHostClassMap(classes: {
-    [key: string]: any;
-} | string | NO_CHANGE | null): void;
-
-export declare function ɵɵelementHostClassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
-
-export declare function ɵɵelementHostStyleMap(styles: {
-    [styleName: string]: any;
-} | NO_CHANGE | null): void;
-
-export declare function ɵɵelementHostStyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
-
-export declare function ɵɵelementHostStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
-
-export declare function ɵɵelementHostStylingApply(): void;
-
 export declare function ɵɵelementProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
 
 export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;

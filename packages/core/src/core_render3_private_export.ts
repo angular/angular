@@ -116,14 +116,7 @@ export {
   ɵɵelementStyleProp,
   ɵɵelementStylingApply,
   ɵɵelementClassProp,
-
   ɵɵelementHostAttrs,
-  ɵɵelementHostClassMap,
-  ɵɵelementHostStyleMap,
-  ɵɵelementHostStyling,
-  ɵɵelementHostStyleProp,
-  ɵɵelementHostClassProp,
-  ɵɵelementHostStylingApply,
 
   ɵɵselect,
   ɵɵtextBinding,

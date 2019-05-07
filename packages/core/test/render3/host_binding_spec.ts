@@ -9,7 +9,7 @@
 import {ElementRef, QueryList, ViewContainerRef} from '@angular/core';
 
 import {AttributeMarker, ɵɵInheritDefinitionFeature, ɵɵNgOnChangesFeature, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵtemplate} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵlistener, ɵɵload, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵallocHostVars, ɵɵbind, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵlistener, ɵɵload, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpureFunction1, ɵɵpureFunction2} from '../../src/render3/pure_function';
 import {ɵɵcontentQuery, ɵɵloadContentQuery, ɵɵqueryRefresh} from '../../src/render3/query';
@@ -1109,11 +1109,11 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              ɵɵelementHostStyling(null, ['width']);
+              ɵɵelementStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementHostStyleProp(0, ctx.width, 'px');
-              ɵɵelementHostStylingApply();
+              ɵɵelementStyleProp(0, ctx.width, 'px');
+              ɵɵelementStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: HostBindingToStyles) => {}
@@ -1153,11 +1153,11 @@ describe('host bindings', () => {
           factory: () => hostBindingDir = new HostBindingToStyles(),
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              ɵɵelementHostStyling(null, ['width']);
+              ɵɵelementStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementHostStyleProp(0, ctx.width, 'px');
-              ɵɵelementHostStylingApply();
+              ɵɵelementStyleProp(0, ctx.width, 'px');
+              ɵɵelementStylingApply();
             }
           }
         });
@@ -1205,10 +1205,10 @@ describe('host bindings', () => {
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
               ɵɵelementHostAttrs([AttributeMarker.Classes, 'mat-toolbar']);
-              ɵɵelementHostStyling(['mat-toolbar']);
+              ɵɵelementStyling(['mat-toolbar']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementHostStylingApply();
+              ɵɵelementStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: StaticHostClass) => {}
