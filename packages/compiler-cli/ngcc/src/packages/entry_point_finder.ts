@@ -92,7 +92,7 @@ export class EntryPointFinder {
             entryPoints.push(...this.getEntryPointsForPackage(packagePath));
 
             // Also check for any nested node_modules in this package
-            const nestedNodeModulesPath = AbsoluteFsPath.resolve(packagePath, 'node_modules');
+            const nestedNodeModulesPath = AbsoluteFsPath.join(packagePath, 'node_modules');
             if (this.fs.exists(nestedNodeModulesPath)) {
               entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
             }

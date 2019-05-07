@@ -7,8 +7,9 @@
  */
 
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
-import {existsSync, readFileSync, readdirSync, statSync, writeFileSync} from 'fs';
+import {existsSync, readFileSync, readdirSync, statSync, symlinkSync} from 'fs';
 import * as mockFs from 'mock-fs';
+import * as path from 'path';
 
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
 import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
@@ -333,10 +334,15 @@ describe('ngcc main()', () => {
 
 
 function createMockFileSystem() {
+  const typeScriptPath = path.join(process.env.RUNFILES !, 'typescript');
+  if (!existsSync(typeScriptPath)) {
+    symlinkSync(resolveNpmTreeArtifact('typescript'), typeScriptPath, 'junction');
+  }
+
   mockFs({
     '/node_modules/@angular': loadAngularPackages(),
-    '/node_modules/rxjs': loadDirectory(resolveNpmTreeArtifact('rxjs', 'index.js')),
-    '/node_modules/tslib': loadDirectory(resolveNpmTreeArtifact('tslib', 'tslib.js')),
+    '/node_modules/rxjs': loadDirectory(resolveNpmTreeArtifact('rxjs')),
+    '/node_modules/tslib': loadDirectory(resolveNpmTreeArtifact('tslib')),
     '/node_modules/test-package': {
       'package.json': '{"name": "test-package", "es2015": "./index.js", "typings": "./index.d.ts"}',
       // no metadata.json file so not compiled by Angular.

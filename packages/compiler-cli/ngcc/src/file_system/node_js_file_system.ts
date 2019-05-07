@@ -23,7 +23,7 @@ export class NodeJSFileSystem implements FileSystem {
   readdir(path: AbsoluteFsPath): PathSegment[] { return fs.readdirSync(path) as PathSegment[]; }
   lstat(path: AbsoluteFsPath): fs.Stats { return fs.lstatSync(path); }
   stat(path: AbsoluteFsPath): fs.Stats { return fs.statSync(path); }
-  pwd() { return AbsoluteFsPath.fromUnchecked(process.cwd()); }
+  pwd() { return AbsoluteFsPath.from(process.cwd()); }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { cp(from, to); }
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { mv(from, to); }
   ensureDir(path: AbsoluteFsPath): void { mkdir('-p', path); }
