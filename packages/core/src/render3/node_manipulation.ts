@@ -620,6 +620,7 @@ function getHostNative(currentView: LView): RElement|null {
  */
 export function nativeInsertBefore(
     renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null): void {
+  ngDevMode && ngDevMode.rendererInsertBefore++;
   if (isProceduralRenderer(renderer)) {
     renderer.insertBefore(parent, child, beforeNode);
   } else {
@@ -628,6 +629,7 @@ export function nativeInsertBefore(
 }
 
 function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
+  ngDevMode && ngDevMode.rendererAppendChild++;
   if (isProceduralRenderer(renderer)) {
     renderer.appendChild(parent, child);
   } else {

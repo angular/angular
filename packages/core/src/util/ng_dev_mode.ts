@@ -30,6 +30,8 @@ declare global {
     rendererDestroyNode: number;
     rendererMoveNode: number;
     rendererRemoveNode: number;
+    rendererAppendChild: number;
+    rendererInsertBefore: number;
     rendererCreateComment: number;
     styleMap: number;
     styleMapCacheMiss: number;
@@ -63,6 +65,8 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererDestroyNode: 0,
     rendererMoveNode: 0,
     rendererRemoveNode: 0,
+    rendererAppendChild: 0,
+    rendererInsertBefore: 0,
     rendererCreateComment: 0,
     styleMap: 0,
     styleMapCacheMiss: 0,
