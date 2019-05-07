@@ -118,7 +118,7 @@ export class ModuleResolver {
    */
   private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
     let folder = fromPath;
-    while (!isRoot(folder)) {
+    while (!AbsoluteFsPath.isRoot(folder)) {
       folder = AbsoluteFsPath.dirname(folder);
       if (folder.endsWith('node_modules')) {
         // Skip up if the folder already ends in node_modules
@@ -225,7 +225,7 @@ export class ModuleResolver {
    */
   private findPackagePath(path: AbsoluteFsPath): AbsoluteFsPath|null {
     let folder = path;
-    while (!isRoot(folder)) {
+    while (!AbsoluteFsPath.isRoot(folder)) {
       folder = AbsoluteFsPath.dirname(folder);
       if (this.fs.exists(AbsoluteFsPath.join(folder, 'package.json'))) {
         return folder;
@@ -265,10 +265,6 @@ export class ResolvedDeepImport {
 function splitOnStar(str: string): PathMappingPattern {
   const [prefix, postfix] = str.split('*', 2);
   return {prefix, postfix: postfix || '', hasWildcard: postfix !== undefined};
-}
-
-function isRoot(path: AbsoluteFsPath): boolean {
-  return AbsoluteFsPath.dirname(path) === path;
 }
 
 interface ProcessedPathMapping {

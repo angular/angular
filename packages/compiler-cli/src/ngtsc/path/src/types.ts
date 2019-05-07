@@ -86,6 +86,9 @@ export const AbsoluteFsPath = {
    */
   resolve: function(basePath: string, ...paths: string[]):
       AbsoluteFsPath { return AbsoluteFsPath.from(path.resolve(basePath, ...paths));},
+
+  /** Returns true when the path provided is the root path. */
+  isRoot: function(path: AbsoluteFsPath): boolean { return AbsoluteFsPath.dirname(path) === path;},
 };
 
 /**
