@@ -974,7 +974,8 @@ export class _ParseAST {
         } else {
           // Otherwise the key must be a directive keyword, like "of". Transform
           // the key to actual key. Eg. of -> ngForOf, trackBy -> ngForTrackBy
-          key.source = templateKey.source + key.source[0].toUpperCase() + key.source.substring(1);
+          key.source =
+              templateKey.source + key.source.charAt(0).toUpperCase() + key.source.substring(1);
           bindings.push(...this.parseDirectiveKeywordBindings(key));
         }
       }
