@@ -9,7 +9,7 @@ import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {getHostElement, ɵɵdefineComponent, ɵɵloadViewQuery, ɵɵviewQuery} from '../../../src/render3/index';
-import {markDirty, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply} from '../../../src/render3/instructions/all';
+import {markDirty, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵselect} from '../../../src/render3/instructions/all';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
@@ -262,7 +262,8 @@ class CompWithStyling {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStylingApply();
       }
     }
   });
