@@ -8,7 +8,7 @@
 
 /// <reference types='node'/>
 
-import {fork} from 'child_process';
+import {spawn} from 'child_process';
 import {copyFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'fs';
 import {dirname, join, normalize} from 'path';
 
@@ -24,7 +24,7 @@ export function runBazel(
   projectDir = normalize(projectDir);
   binary = normalize(binary);
   return new Promise((resolve, reject) => {
-    const buildProcess = fork(binary, [command, workspaceTarget, ...flags], {
+    const buildProcess = spawn(binary, [command, workspaceTarget, ...flags], {
       cwd: projectDir,
       stdio: 'inherit',
     });
@@ -51,12 +51,12 @@ export function runBazel(
  */
 export function checkInstallation(name: Executable, projectDir: string): string {
   projectDir = normalize(projectDir);
-  const packageName = `@bazel/${name}/package.json`;
+  const packageName = `@bazel/${name}`;
   try {
     const bazelPath = require.resolve(packageName, {
       paths: [projectDir],
     });
-    return dirname(bazelPath);
+    return require(bazelPath).getNativeBinary();
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw new Error(
