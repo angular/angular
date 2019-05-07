@@ -141,7 +141,7 @@ export class Location {
    * Changes the browsers URL to a normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    *
-   * @param path  URL path to normalizze
+   * @param path  URL path to normalize
    * @param query Query parameters
    * @param state Location history state
    *
@@ -156,7 +156,7 @@ export class Location {
    * Changes the browser's URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
    *
-   * @param path  URL path to normalizze
+   * @param path  URL path to normalize
    * @param query Query parameters
    * @param state Location history state
    */
