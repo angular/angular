@@ -1016,15 +1016,17 @@ describe('instructions', () => {
         return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
       }, () => {}, 1);
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, 'url("http://server")');
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStyleProp(0, 'url("http://server")');
+        ɵɵelementStylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('url("http://server2")'));
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵelementStylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -1038,16 +1040,18 @@ describe('instructions', () => {
           1, sanitizerInterceptor);
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵelementStylingApply();
       });
 
       expect(sanitizerInterceptor.lastValue !).toEqual('apple');
       sanitizerInterceptor.lastValue = null;
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵelementStylingApply();
       });
       expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
@@ -1063,8 +1067,9 @@ describe('instructions', () => {
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementStyleMap(0, {'background-color': 'red'});
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementStyleMap({'background-color': 'red'});
+        ɵɵelementStylingApply();
       });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -1078,7 +1083,8 @@ describe('instructions', () => {
           sanitizerInterceptor);
 
       fixture.update(() => {
-        ɵɵelementStyleMap(0, {
+        ɵɵselect(0);
+        ɵɵelementStyleMap({
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -1087,7 +1093,7 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
-        ɵɵelementStylingApply(0);
+        ɵɵelementStylingApply();
       });
 
       const props = detectedValues.sort();
@@ -1107,8 +1113,9 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementClassMap(0, 'multiple classes');
-        ɵɵelementStylingApply(0);
+        ɵɵselect(0);
+        ɵɵelementClassMap('multiple classes');
+        ɵɵelementStylingApply();
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
