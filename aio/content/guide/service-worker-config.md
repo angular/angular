@@ -23,7 +23,7 @@ service worker should cache and how it should update the cached files and data. 
 [Angular CLI](cli) processes the configuration file during `ng build --prod`. Manually, you can process
 it with the `ngsw-config` tool:
 -->
-Angular 서비스 워커 설정 파일인 `src/ngsw-config.json`에는 서비스 워커가 캐싱해야 할 파일과 데이터 URL, 그리고 이 리소스를 업데이트 하는 방법을 설정합니다. 이 파일은 [Angular CLI](cli)로 `ng build --prod` 명령을 실행하면 빌드 과정에 반영되며, `ngsw-config` 툴을 사용해서 직접 반영할 수도 있습니다:
+Angular 서비스 워커 설정 파일인 `src/ngsw-config.json`에는 서비스 워커가 캐싱해야 할 파일과 데이터 URL, 그리고 이 리소스를 유지하는 정책을 설정합니다. 이 파일은 [Angular CLI](cli)로 `ng build --prod` 명령을 실행할 때 빌드 과정에 반영되며, `ngsw-config` 툴을 사용해서 직접 반영할 수도 있습니다:
 
 ```sh
 ngsw-config dist src/ngsw-config.json /base/href
@@ -32,7 +32,7 @@ ngsw-config dist src/ngsw-config.json /base/href
 <!--
 The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
 -->
-이 설정 파일은 JSON 형식입니다. 그리고 이 파일에서 다른 파일의 위치를 가리킬 때는 반드시 `/`로 시작해야 하는데, 이 위치는 애플리케이션의 빌드 결과물이 위치하는 폴더를 의미하기 때문에 일반적으로 `dist` 폴더입니다.
+이 설정 파일은 JSON 형식입니다. 이 파일에서 다른 파일의 위치를 가리킬 때는 반드시 `/`로 시작해야 하는데, 이 위치는 애플리케이션의 빌드 결과물이 위치하는 폴더를 의미하기 때문에 일반적으로 `dist` 폴더를 의미합니다.
 
 {@a glob-patterns}
 <!--
@@ -53,15 +53,15 @@ Each section of the configuration file is described below.
 -->
 설정 파일에는 다음과 같은 다중 파일 형식(glob)을 일부 사용할 수도 있습니다:
 
-* `**`는 경로를 카리키는 세그먼트가 0개 이상인 것과 매칭됩니다.
+* `**`는 경로를 가리키는 세그먼트가 0개 이상인 것과 매칭됩니다.
 * `*`는 `/`를 제외한 문자가 0개 이상인 것과 매칭됩니다.
 * `?`는 `/`를 제외한 문자 하나와 매칭됩니다.
 * `!` 접두사를 사용하면 패턴을 반대로 적용할 수 있습니다. 결국 패턴에 매칭되지 않는 파일이 선택됩니다.
 
 그래서 다음과 같은 패턴을 사용할 수 있습니다:
 
-* `/**/*.html`은 모든 HTML 파일들과 매칭됩니다.
-* `/*.html`은 루트 폴더에 존재하는 HTML 파일들과 매칭됩니다.
+* `/**/*.html`은 모든 HTML 파일과 매칭됩니다.
+* `/*.html`은 루트 폴더에 존재하는 HTML 파일과 매칭됩니다.
 * `!/**/*.map`은 소스맵 파일을 제외한 모든 파일과 매칭됩니다.
 
 각각에 대해서는 설정 파일의 내용을 설명하면서 하나씩 알아봅시다.
@@ -73,7 +73,7 @@ This section enables you to pass any data you want that describes this particula
 The `SwUpdate` service includes that data in the update notifications. Many apps use this section to provide additional information for the display of UI popups, notifying users of the available update.
 -->
 애플리케이션에 필요한 데이터가 있다면 이 섹션을 사용해서 전달할 수 있습니다.
-`SwUpdate` 서비스에도 업데이트 알림과 관련된 데이터가 필요할 수 있습니다. 그래서 이 섹션은 업데이트 알림을 표시하는 팝업에 필요한 데이터를 지정하는 용도로 보통 사용합니다.
+`SwUpdate` 서비스에도 업데이트 알림과 관련된 데이터가 필요할 수 있습니다. 그래서 보통 이 섹션은 업데이트 알림을 표시하는 팝업에 필요한 데이터를 지정하는 용도로 사용합니다.
 
 {@a index-file}
 ## `index`
@@ -90,7 +90,7 @@ Specifies the file that serves as the index page to satisfy navigation requests.
 
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
 -->
-*애셋(Assets)*은 앱 버전을 구성하는 리소스 파일을 의미하며, 앱이 업데이트될 때 함께 업데이트됩니다. 그리고 애셋은 페이지에 포함된 리소스일 수도 있으며, CDN 등에서 다운받은 서드파티 리소스일 수도 있습니다. 하지만 빌드 시점에 외부 리소스의 모든 URL을 정확히 지정할 수는 없기 때문에 URL 패턴으로 매칭하는 방법을 사용하기도 합니다.
+*애셋(Assets)*은 앱 버전을 구성하는 리소스 파일을 의미하며, 앱이 업데이트될 때 함께 업데이트됩니다. 이 때 애셋은 페이지에 포함된 리소스이거나 CDN 등에서 다운받은 서드파티 리소스일 수 있습니다. 하지만 빌드 시점에 외부 리소스의 모든 URL을 정확히 지정할 수는 없기 때문에 패턴으로 URL을 매칭하는 방법을 사용하기도 합니다.
 
 이 섹션에는 애셋 그룹을 배열 형태로 정의합니다. 이 때 애셋을 구성하는 파일을 모두 지정할 수 있으며, 애셋 그룹에 적용되는 캐싱 정책도 지정할 수 있습니다.
 
@@ -109,7 +109,7 @@ Each asset group specifies both a group of resources and a policy that governs t
 
 Asset groups follow the Typescript interface shown here:
 -->
-각각의 애셋 그룹에는 그룹을 구성하는 리소스 파일들과 이 애셋 그룹에 적용될 정책을 함께 지정합니다. 리소스를 언제 다운받을 것인지, 새로운 버전을 감지하면 어떻게 할 것인지에 대한 정책도 이 때 적용합니다.
+각각의 애셋 그룹에는 그룹을 구성하는 리소스 파일들과 이 애셋 그룹에 적용될 정책을 함께 지정합니다. 리소스를 언제 다운받을 것인지, 새로운 버전을 발견하면 어떻게 할 것인지에 대한 정책도 이 때 적용합니다.
 
 애셋 그룹은 TypeScript 인터페이스로 다음과 같이 정의되어 있습니다:
 
@@ -162,7 +162,7 @@ Defaults to `prefetch`.
 -->
 `installMode` 항목을 지정하면 리소스 파일들의 초기 캐싱 동작을 지정할 수 있으며, 다음 값 중 하나를 사용할 수 있습니다:
 
-* `prefetch` 방식을 지정하면 현재 앱 버전에 존재하는 모든 리소스 파일을 서비스 워커가 다운로드받아 캐싱합니다. 이 방식은 네트워크 대역폭을 많이 사용하지만, 브라우저가 오프라인 상태일 때도 원하는 리소스를 사용할 수 있습니다.
+* `prefetch` 방식을 지정하면 현재 앱 버전에 존재하는 모든 리소스 파일을 서비스 워커가 다운로드받아 캐싱합니다. 이 방식은 네트워크 대역폭을 많이 사용하지만 브라우저가 오프라인 상태일 때도 모든 리소스를 사용할 수 있습니다.
 
 * `lazy` 방식을 지정하면 아무 리소스도 클라이언트에 캐싱하지 않습니다. 대신, Angular 서비스 워커는 요청을 보내고 응답으로 받은 리소스만 캐싱합니다. 그래서 이 방식을 필요한 것만 받아오는(on-demand) 캐싱 모드라고도 합니다. 요청하지 않은 리소스는 절대로 캐싱되지 않습니다. 이 방식은 이미지 파일을 해상도에 따라 여러벌 제공하는 경우에 유용합니다. 왜냐하면 여러벌로 만들어둔 이미지 파일 중에서 해당 스크린과 화면 비율에 맞는 이미지 파일만 캐싱되기 때문입니다.
 
@@ -185,7 +185,7 @@ Defaults to the value `installMode` is set to.
 
 * `lazy` 방식을 지정하면 서비스 워커는 해당 리소스를 캐싱하지 않습니다. 대신, 다음에 다시 한 번 해당 리소스가 요청되었을 때 이 리소스가 캐싱되지 않은 것으로 간주하고 새로운 요청을 보냅니다. `updateMode`에 `lazy` 방식을 사용하려면 `installMode`도 `lazy`를 지정해야 합니다.
 
-기본값은 `installMode`에서 지정한 값입니다.
+기본값은 `installMode`에서 지정한 값이 적용됩니다.
 
 ### `resources`
 
@@ -205,7 +205,7 @@ This section describes the resources to cache, broken up into three groups.
 
 * `versionedFiles`는 사용이 중단되었습니다. v6 버전부터는 `versionedFiles`와 `files` 옵션이 동일한 동작을 합니다. `files`를 사용하는 것을 권장합니다.
 
-* `urls`에는 실행시점에 매칭될 URL이나 URL패턴을 지정합니다. 이 리소스들은 직접 다운로드되지 않을 수 있고 해시값도 존재하지 않을 수 있지만, HTTP 헤더를 사용하는 방식으로 캐싱됩니다. 이 방식은 Google Fonts 서비스와 같이 CDN을 활용하는 부분에 적용하면 좋습니다.<br>
+* `urls`에는 실행시점에 매칭될 URL이나 URL패턴을 지정합니다. 이 리소스들은 즉시 다운로드되지 않을 수 있고 해시값이 존재하지 않을 수 있지만, HTTP 헤더를 사용하는 방식으로 캐싱됩니다. 이 방식은 Google Fonts 서비스와 같이 CDN을 활용하는 부분에 적용하면 좋습니다.<br>
   _(이 방식에서는 glob 패턴을 반전하는 방식(`!`)이 동작하지 않으며, `?` 문자도 와일드카드로 동작하지 않습니다. `?` 문자는 `?` 문자 하나에만 매칭됩니다.)_
 
 ## `dataGroups`
