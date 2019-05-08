@@ -10,8 +10,8 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementHostClassMap, ɵɵelementHostStyleMap, ɵɵelementStyleMap, ɵɵtemplateRefExtractor} from '../../src/render3/index';
-import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementStyleMap, ɵɵtemplateRefExtractor} from '../../src/render3/index';
+import {ɵɵallocHostVars, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassProp, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementHostAttrs, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -1830,13 +1830,13 @@ describe('render3 integration test', () => {
                  if (rf & RenderFlags.Create) {
                    ɵɵelementHostAttrs(
                        [AttributeMarker.Classes, 'def', AttributeMarker.Styles, 'width', '555px']);
-                   ɵɵelementHostStyling(['xyz'], ['width', 'height']);
+                   ɵɵelementStyling(['xyz'], ['width', 'height']);
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStyleProp(0, ctx.width);
-                   ɵɵelementHostStyleProp(1, ctx.height);
-                   ɵɵelementHostClassProp(0, ctx.activateXYZClass);
-                   ɵɵelementHostStylingApply();
+                   ɵɵelementStyleProp(0, ctx.width);
+                   ɵɵelementStyleProp(1, ctx.height);
+                   ɵɵelementClassProp(0, ctx.activateXYZClass);
+                   ɵɵelementStylingApply();
                  }
                }
              });
@@ -1903,11 +1903,11 @@ describe('render3 integration test', () => {
                factory: () => dir1Instance = new Dir1WithStyle(),
                hostBindings: function(rf: RenderFlags, ctx: Dir1WithStyle, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   ɵɵelementHostStyling(null, ['width']);
+                   ɵɵelementStyling(null, ['width']);
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStyleProp(0, ctx.width);
-                   ɵɵelementHostStylingApply();
+                   ɵɵelementStyleProp(0, ctx.width);
+                   ɵɵelementStylingApply();
                  }
                }
              });
@@ -1928,11 +1928,11 @@ describe('render3 integration test', () => {
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyle, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
                    ɵɵelementHostAttrs([AttributeMarker.Styles, 'width', '111px']);
-                   ɵɵelementHostStyling(null, ['width']);
+                   ɵɵelementStyling(null, ['width']);
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStyleProp(0, ctx.width);
-                   ɵɵelementHostStylingApply();
+                   ɵɵelementStyleProp(0, ctx.width);
+                   ɵɵelementStylingApply();
                  }
                }
              });
@@ -2001,12 +2001,12 @@ describe('render3 integration test', () => {
                factory: () => dir1Instance = new Dir1WithStyling(),
                hostBindings: function(rf: RenderFlags, ctx: Dir1WithStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   ɵɵelementHostStyling();
+                   ɵɵelementStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStyleMap(ctx.stylesExp);
-                   ɵɵelementHostClassMap(ctx.classesExp);
-                   ɵɵelementHostStylingApply();
+                   ɵɵelementStyleMap(ctx.stylesExp);
+                   ɵɵelementClassMap(ctx.classesExp);
+                   ɵɵelementStylingApply();
                  }
                }
              });
@@ -2029,11 +2029,11 @@ describe('render3 integration test', () => {
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
                    ɵɵelementHostAttrs([AttributeMarker.Styles, 'width', '111px']);
-                   ɵɵelementHostStyling();
+                   ɵɵelementStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   ɵɵelementHostStyleMap(ctx.stylesExp);
-                   ɵɵelementHostStylingApply();
+                   ɵɵelementStyleMap(ctx.stylesExp);
+                   ɵɵelementStylingApply();
                  }
                }
              });
