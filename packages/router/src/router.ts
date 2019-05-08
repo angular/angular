@@ -773,7 +773,12 @@ export class Router {
     this.routerState.root.component = this.rootComponentType;
   }
 
-  private getTransition(): NavigationTransition { return this.transitions.value; }
+  private getTransition(): NavigationTransition {
+    const transition = this.transitions.value;
+    // This value needs to be set. Other values such as
+    transition.urlAfterRedirects = this.browserUrlTree;
+    return transition;
+  }
 
   private setTransition(t: Partial<NavigationTransition>): void {
     this.transitions.next({...this.getTransition(), ...t});
