@@ -25,7 +25,7 @@ export abstract class UrlCodec {
   abstract normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl?: string):
       string;
 
-  abstract areEqual(a: string, b: string): boolean;
+  abstract areEqual(valA: string, valB: string): boolean;
 
   abstract parse(url: string, base?: string): {
     href: string,
@@ -134,7 +134,7 @@ export class AngularJSUrlCodec implements UrlCodec {
     }
   }
 
-  areEqual(a: string, b: string) { return this.normalize(a) === this.normalize(b); }
+  areEqual(valA: string, valB: string) { return this.normalize(valA) === this.normalize(valB); }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {
