@@ -777,6 +777,7 @@ export declare function ɵɵdefineNgModule<T>(def: {
     imports?: Type<any>[] | (() => Type<any>[]);
     exports?: Type<any>[] | (() => Type<any>[]);
     schemas?: SchemaMetadata[] | null;
+    id?: string | null;
 }): never;
 
 export declare function ɵɵdefinePipe<T>(pipeDef: {

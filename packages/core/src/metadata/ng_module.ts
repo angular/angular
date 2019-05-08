@@ -75,6 +75,9 @@ export interface NgModuleDef<T> {
 
   /** The set of schemas that declare elements to be allowed in the NgModule. */
   schemas: SchemaMetadata[]|null;
+
+  /** Unique ID for the module with which it should be registered.  */
+  id: string|null;
 }
 
 /**

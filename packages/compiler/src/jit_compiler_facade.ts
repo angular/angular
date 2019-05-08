@@ -91,6 +91,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       emitInline: true,
       containsForwardDecls: false,
       schemas: facade.schemas ? facade.schemas.map(wrapReference) : null,
+      id: facade.id ? new WrappedNodeExpr(facade.id) : null,
     };
     const res = compileNgModule(meta);
     return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
