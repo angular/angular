@@ -24,24 +24,25 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
       IncrementalState {
     const unchangedFiles = new Set<ts.SourceFile>();
     const metadata = new Map<ts.SourceFile, FileMetadata>();
+    const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
+    const newFiles = new Set<ts.SourceFile>(newProgram.getSourceFiles());
 
-    // Compute the set of files that's unchanged.
-    const oldFiles = new Set<ts.SourceFile>();
-    for (const oldFile of oldProgram.getSourceFiles()) {
-      if (!oldFile.isDeclarationFile) {
-        oldFiles.add(oldFile);
-      }
-    }
-
-    // Look for files in the new program which haven't changed.
+    // Compute the set of files that are unchanged (both in themselves and their dependencies).
     for (const newFile of newProgram.getSourceFiles()) {
       if (oldFiles.has(newFile)) {
-        unchangedFiles.add(newFile);
-
-        // Copy over metadata for the unchanged file if available.
-        if (previousState.metadata.has(newFile)) {
-          metadata.set(newFile, previousState.metadata.get(newFile) !);
+        const oldDeps = previousState.getFileDependencies(newFile);
+        if (oldDeps.every(oldDep => newFiles.has(oldDep))) {
+          // The file and its dependencies are unchanged.
+          unchangedFiles.add(newFile);
+          // Copy over its metadata too
+          const meta = previousState.metadata.get(newFile);
+          if (meta) {
+            metadata.set(newFile, meta);
+          }
         }
+      } else if (newFile.isDeclarationFile) {
+        // A typings file has changed so trigger a full rebuild of the Angular analyses
+        return IncrementalState.fresh();
       }
     }
 
@@ -52,40 +53,16 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
     return new IncrementalState(new Set<ts.SourceFile>(), new Map<ts.SourceFile, FileMetadata>());
   }
 
-  safeToSkipEmit(sf: ts.SourceFile): boolean {
-    if (!this.unchangedFiles.has(sf)) {
-      // The file has changed since the last run, and must be re-emitted.
-      return false;
-    }
-
-    // The file hasn't changed since the last emit. Whether or not it's safe to emit depends on
-    // what metadata was gathered about the file.
-
-    if (!this.metadata.has(sf)) {
-      // The file has no metadata from the previous or current compilations, so it must be emitted.
-      return false;
-    }
-
-    const meta = this.metadata.get(sf) !;
-
-    // Check if this file was explicitly marked as safe. This would only be done if every
-    // `DecoratorHandler` agreed that the file didn't depend on any other file's contents.
-    if (meta.safeToSkipEmitIfUnchanged) {
-      return true;
-    }
-
-    // The file wasn't explicitly marked as safe to skip emitting, so require an emit.
-    return false;
-  }
-
-  markFileAsSafeToSkipEmitIfUnchanged(sf: ts.SourceFile): void {
-    const metadata = this.ensureMetadata(sf);
-    metadata.safeToSkipEmitIfUnchanged = true;
-  }
+  safeToSkip(sf: ts.SourceFile): boolean { return this.unchangedFiles.has(sf); }
 
   trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile) {
     const metadata = this.ensureMetadata(src);
     metadata.fileDependencies.add(dep);
+  }
+
+  getFileDependencies(file: ts.SourceFile): ts.SourceFile[] {
+    const meta = this.metadata.get(file);
+    return meta ? Array.from(meta.fileDependencies) : [];
   }
 
   getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
@@ -126,8 +103,6 @@ export class IncrementalState implements DependencyTracker, MetadataReader, Meta
  * Information about the whether a source file can have analysis or emission can be skipped.
  */
 class FileMetadata {
-  /** True if this file has no dependency changes that require it to be re-emitted. */
-  safeToSkipEmitIfUnchanged = false;
   /** A set of source files that this file depends upon. */
   fileDependencies = new Set<ts.SourceFile>();
   directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
