@@ -42,12 +42,6 @@ export {
   ɵɵelementEnd,
 
   ɵɵelementHostAttrs,
-  ɵɵelementHostClassMap,
-  ɵɵelementHostClassProp,
-  ɵɵelementHostStyleMap,
-  ɵɵelementHostStyleProp,
-  ɵɵelementHostStyling,
-  ɵɵelementHostStylingApply,
   ɵɵelementProperty,
   ɵɵelementStart,
   ɵɵelementStyleMap,
