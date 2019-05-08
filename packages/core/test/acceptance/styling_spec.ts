@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, Directive, ElementRef, Sanitizer, SecurityContext, ɵɵdefaultStyleSanitizer} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('styling', () => {
   it('should render inline style and class attribute values on the element before a directive is instantiated',
@@ -129,5 +132,62 @@ describe('styling', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
+
+  describe('style map', () => {
+
+    onlyInIvy('style maps via [style]')
+        .it('should sanitize styles that may contain `url` properties', () => {
+          @Component({
+            template: `<div [style]="styles"></div>`,
+          })
+          class App {
+            styles: any = {};
+          }
+
+          TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [App],
+          });
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+          const comp = fixture.componentInstance;
+
+          comp.styles = {
+            'background-image': 'url(javascript:alert("lol"))',
+            'background': 'url(javascript:alert("lol"))',
+            'border-image': 'url(javascript:alert("lol"))',
+            'list-style': 'url(javascript:alert("lol"))',
+            'list-style-image': 'url(javascript:alert("lol"))',
+            'filter': 'url(javascript:alert("lol"))',
+          };
+          fixture.detectChanges();
+          const div = fixture.debugElement.query(By.css('div')).nativeElement;
+
+          expect(div.style.backgroundImage).toBe('');
+          expect(div.style.background).toBe('');
+          expect(div.style.borderImage).toBe('');
+          expect(div.style.listStyle).toBe('');
+          expect(div.style.listStyleImage).toBe('');
+          expect(div.style.filter).toBe('');
+          expect(div.style.width).toBe('');
+
+          comp.styles = {
+            'background-image': 'url(okay.gif)',
+            'background': 'url(okay.gif)',
+            'border-image': 'url(okay.gif)',
+            'list-style': 'url(okay.gif)',
+            'list-style-image': 'url(okay.gif)',
+            'filter': 'url(okay.gif)',
+          };
+          fixture.detectChanges();
+          expect(div.style.backgroundImage).toBe('url(okay.gif)');
+          expect(div.style.background).toBe('url(okay.gif)');
+          expect(div.style.borderImage).toBe('url(okay.gif)');
+          expect(div.style.listStyle).toBe('url(okay.gif)');
+          expect(div.style.listStyleImage).toBe('url(okay.gif)');
+          expect(div.style.filter).toBe('url(okay.gif)');
+
+        });
   });
 });

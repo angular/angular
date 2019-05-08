@@ -55,6 +55,7 @@ const SAFE_STYLE_VALUE = new RegExp(
  * code is permissive and allows URLs that sanitize otherwise.
  */
 const URL_RE = /^url\(([^)]+)\)$/;
+// const URL_RE = /^url\((.*)\)$/;
 
 /**
  * Checks that quotes (" and ') are properly balanced inside a string. Assumes
@@ -83,6 +84,7 @@ function hasBalancedQuotes(value: string) {
  * value) and returns a value that is safe to use in a browser environment.
  */
 export function _sanitizeStyle(value: string): string {
+  debugger;
   value = String(value).trim();  // Make sure it's actually a string.
   if (!value) return '';
 
@@ -99,7 +101,7 @@ export function _sanitizeStyle(value: string): string {
         `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`);
   }
 
-  return 'unsafe';
+  return '';
 }
 
 
