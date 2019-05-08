@@ -111,6 +111,11 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
+
+  // this is preemptively set to avoid having test and debug code accidentally
+  // read data from a previous application state...
+  setActiveHostElement(null);
+
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType) !;
