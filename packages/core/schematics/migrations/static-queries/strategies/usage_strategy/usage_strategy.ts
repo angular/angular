@@ -44,6 +44,10 @@ export class QueryUsageStrategy implements TimingStrategy {
    * on the current usage of the query.
    */
   detectTiming(query: NgQueryDefinition): TimingResult {
+    if (query.property === null) {
+      return {timing: null, message: 'Queries defined on accessors cannot be analyzed.'};
+    }
+
     return {
       timing:
           isQueryUsedStatically(query.container, query, this.classMetadata, this.typeChecker, []) ?
@@ -62,7 +66,7 @@ function isQueryUsedStatically(
     classDecl: ts.ClassDeclaration, query: NgQueryDefinition, classMetadataMap: ClassMetadataMap,
     typeChecker: ts.TypeChecker, knownInputNames: string[],
     functionCtx: FunctionContext = new Map(), visitInheritedClasses = true): boolean {
-  const usageVisitor = new DeclarationUsageVisitor(query.property, typeChecker, functionCtx);
+  const usageVisitor = new DeclarationUsageVisitor(query.property !, typeChecker, functionCtx);
   const classMetadata = classMetadataMap.get(classDecl);
 
   // In case there is metadata for the current class, we collect all resolved Angular input
@@ -90,10 +94,10 @@ function isQueryUsedStatically(
   // In case there is a component template for the current class, we check if the
   // template statically accesses the current query. In case that's true, the query
   // can be marked as static.
-  if (classMetadata.template && hasPropertyNameText(query.property.name)) {
+  if (classMetadata.template && hasPropertyNameText(query.property !.name)) {
     const template = classMetadata.template;
     const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
-    const htmlVisitor = new TemplateUsageVisitor(query.property.name.text);
+    const htmlVisitor = new TemplateUsageVisitor(query.property !.name.text);
 
     if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
       return true;
