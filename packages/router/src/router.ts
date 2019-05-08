@@ -776,7 +776,9 @@ export class Router {
 
   private getTransition(): NavigationTransition {
     const transition = this.transitions.value;
-    // This value needs to be set. Other values such as
+    // This value needs to be set. Other values such as extractedUrl are set on initial navigation
+    // but the urlAfterRedirects may not get set if we aren't processing the new URL *and* not
+    // processing the previous URL.
     transition.urlAfterRedirects = this.browserUrlTree;
     return transition;
   }
