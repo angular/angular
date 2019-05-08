@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {TStylingContext} from '../styling_next/interfaces';
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {StylingContext} from './styling';
@@ -438,6 +438,10 @@ export interface TNode {
    * with functions each time the creation block is called.
    */
   onElementCreationFns: Function[]|null;
+  // TODO (matsko): rename this to `stylesContext` once the old styling impl is gone
+  newStylesContext: TStylingContext|null;
+  // TODO (matsko): rename this to `classesContext` once the old styling impl is gone
+  newClassesContext: TStylingContext|null;
 }
 
 /** Static data for an element  */

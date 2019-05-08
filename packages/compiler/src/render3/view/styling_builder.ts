@@ -15,6 +15,7 @@ import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
 import {parse as parseStyle} from './style_parser';
+import {compilerIsNewStylingInUse} from './styling_state';
 import {ValueConverter} from './template';
 
 const IMPORTANT_FLAG = '!important';
@@ -389,6 +390,11 @@ export class StylingBuilder {
       const bindingIndex: number = mapIndex.get(input.name !) !;
       const value = input.value.visit(valueConverter);
       totalBindingSlotsRequired += (value instanceof Interpolation) ? value.expressions.length : 0;
+      if (compilerIsNewStylingInUse()) {
+        // the old implementation does not reserve slot values for
+        // binding entries. The new one does.
+        totalBindingSlotsRequired++;
+      }
       return {
         sourceSpan: input.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired, reference,

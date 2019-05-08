@@ -777,6 +777,10 @@ export function createTNode(
     stylingTemplate: null,
     projection: null,
     onElementCreationFns: null,
+    // TODO (matsko): rename this to `stylesContext` once the old styling impl is gone
+    newStylesContext: null,
+    // TODO (matsko): rename this to `classesContext` once the old styling impl is gone
+    newClassesContext: null,
   };
 }
 

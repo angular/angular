@@ -15,9 +15,12 @@ import {LQueries} from './interfaces/query';
 import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
-import {getTNode, unwrapRNode} from './util/view_utils';
+import {NodeStylingDebug} from './styling_next/debug';
+import {DebugStyling as DebugNewStyling} from './styling_next/interfaces';
+import {isNewStylingInUse} from './styling_next/state';
+import {getTNode, isStylingContext, unwrapRNode} from './util/view_utils';
 
-function attachDebugObject(obj: any, debug: any) {
+export function attachDebugObject(obj: any, debug: any) {
   Object.defineProperty(obj, 'debug', {value: debug, enumerable: false});
 }
 
@@ -171,6 +174,8 @@ export class LViewDebug {
 export interface DebugNode {
   html: string|null;
   native: Node;
+  styles: DebugNewStyling|null;
+  classes: DebugNewStyling|null;
   nodes: DebugNode[]|null;
   component: LViewDebug|null;
 }
@@ -188,12 +193,23 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     while (tNodeCursor) {
       const rawValue = lView[tNode.index];
       const native = unwrapRNode(rawValue);
-      const componentLViewDebug = toDebug(readLViewValue(rawValue));
+      const componentLViewDebug =
+          isStylingContext(rawValue) ? null : toDebug(readLViewValue(rawValue));
+
+      let styles: DebugNewStyling|null = null;
+      let classes: DebugNewStyling|null = null;
+      if (isNewStylingInUse()) {
+        styles =
+            tNode.newStylesContext ? new NodeStylingDebug(tNode.newStylesContext, lView) : null;
+        classes =
+            tNode.newClassesContext ? new NodeStylingDebug(tNode.newClassesContext, lView) : null;
+      }
+
       debugNodes.push({
         html: toHtml(native),
-        native: native as any,
+        native: native as any, styles, classes,
         nodes: toDebugNodes(tNode.child, lView),
-        component: componentLViewDebug
+        component: componentLViewDebug,
       });
       tNodeCursor = tNodeCursor.next;
     }
