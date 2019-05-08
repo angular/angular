@@ -13,7 +13,6 @@ import {BindingForm, convertPropertyBinding} from '../../compiler_util/expressio
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
-import {LifecycleHooks} from '../../lifecycle_reflector';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan, typeSourceSpan} from '../../parse_util';
@@ -725,6 +724,7 @@ function createHostBindingsFunction(
     // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
     // are evaluated and updated for the element.
     styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
+      totalHostVarsCount += instruction.allocateBindingSlots;
       updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
     });
   }

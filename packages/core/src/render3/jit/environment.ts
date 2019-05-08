@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ΔdefineInjectable, ΔdefineInjector,} from '../../di/interface/defs';
 import {Δinject} from '../../di/injector_compatibility';
-import * as r3 from '../index';
+import {ΔdefineInjectable, ΔdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
+import * as r3 from '../index';
+
 
 
 /**

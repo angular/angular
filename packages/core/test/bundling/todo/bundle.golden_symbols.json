@@ -12,6 +12,9 @@
     "name": "BINDING_INDEX"
   },
   {
+    "name": "BIT_MASK_APPLY_ALL"
+  },
+  {
     "name": "BLOOM_MASK"
   },
   {
@@ -46,6 +49,18 @@
   },
   {
     "name": "DECLARATION_VIEW"
+  },
+  {
+    "name": "DEFAULT_BINDING_INDEX_VALUE"
+  },
+  {
+    "name": "DEFAULT_BINDING_VALUE"
+  },
+  {
+    "name": "DEFAULT_MASK_VALUE"
+  },
+  {
+    "name": "DEFAULT_SIZE_VALUE"
   },
   {
     "name": "DEFAULT_TEMPLATE_DIRECTIVE_INDEX"
@@ -378,6 +393,9 @@
     "name": "_selectedIndex"
   },
   {
+    "name": "_stylingMode"
+  },
+  {
     "name": "_symbolIterator"
   },
   {
@@ -388,6 +406,9 @@
   },
   {
     "name": "activeDirectiveSuperClassHeight"
+  },
+  {
+    "name": "addBindingIntoContext"
   },
   {
     "name": "addComponentLogic"
@@ -414,10 +435,19 @@
     "name": "allocStylingContext"
   },
   {
+    "name": "allocStylingContext"
+  },
+  {
+    "name": "allocateNewContextEntry"
+  },
+  {
     "name": "allocateOrUpdateDirectiveIntoContext"
   },
   {
     "name": "allowFlush"
+  },
+  {
+    "name": "allowStylingFlush"
   },
   {
     "name": "allowValueChange"
@@ -426,7 +456,16 @@
     "name": "appendChild"
   },
   {
+    "name": "applyClasses"
+  },
+  {
     "name": "applyOnCreateInstructions"
+  },
+  {
+    "name": "applyStyles"
+  },
+  {
+    "name": "applyStyling"
   },
   {
     "name": "assertTemplate"
@@ -475,6 +514,12 @@
   },
   {
     "name": "checkView"
+  },
+  {
+    "name": "classProp"
+  },
+  {
+    "name": "classesBitMask"
   },
   {
     "name": "cleanUpView"
@@ -543,6 +588,9 @@
     "name": "createViewBlueprint"
   },
   {
+    "name": "currentClassIndex"
+  },
+  {
     "name": "decreaseElementDepthCount"
   },
   {
@@ -550,6 +598,12 @@
   },
   {
     "name": "defaultScheduler"
+  },
+  {
+    "name": "deferBindingRegistration"
+  },
+  {
+    "name": "deferredBindingQueue"
   },
   {
     "name": "destroyLView"
@@ -639,6 +693,9 @@
     "name": "findViaComponent"
   },
   {
+    "name": "flushDeferredBindings"
+  },
+  {
     "name": "flushQueue"
   },
   {
@@ -660,10 +717,19 @@
     "name": "getActiveDirectiveStylingIndex"
   },
   {
+    "name": "getActiveDirectiveStylingIndex"
+  },
+  {
     "name": "getActiveDirectiveSuperClassDepth"
   },
   {
+    "name": "getActiveDirectiveSuperClassHeight"
+  },
+  {
     "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingNameFromIndex"
   },
   {
     "name": "getBindingsEnabled"
@@ -673,6 +739,9 @@
   },
   {
     "name": "getCheckNoChangesMode"
+  },
+  {
+    "name": "getClassesContext"
   },
   {
     "name": "getCleanup"
@@ -690,7 +759,13 @@
     "name": "getComponentViewByInstance"
   },
   {
+    "name": "getConfig"
+  },
+  {
     "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getContext"
   },
   {
     "name": "getContextLView"
@@ -712,6 +787,9 @@
   },
   {
     "name": "getGlobal"
+  },
+  {
+    "name": "getGuardMask"
   },
   {
     "name": "getHighestElementOrICUContainer"
@@ -777,6 +855,9 @@
     "name": "getNativeByTNode"
   },
   {
+    "name": "getNativeFromLView"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {
@@ -834,10 +915,16 @@
     "name": "getProp"
   },
   {
+    "name": "getProp"
+  },
+  {
     "name": "getRenderFlags"
   },
   {
     "name": "getRenderParent"
+  },
+  {
+    "name": "getRenderer"
   },
   {
     "name": "getRootContext"
@@ -853,6 +940,9 @@
   },
   {
     "name": "getStyleSanitizer"
+  },
+  {
+    "name": "getStylesContext"
   },
   {
     "name": "getStylingContext"
@@ -877,6 +967,12 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "getValue"
+  },
+  {
+    "name": "getValuesCount"
   },
   {
     "name": "handleError"
@@ -921,13 +1017,13 @@
     "name": "initNodeFlags"
   },
   {
+    "name": "initStyling"
+  },
+  {
     "name": "initializeStaticContext"
   },
   {
     "name": "initializeTNodeInputs"
-  },
-  {
-    "name": "initstyling"
   },
   {
     "name": "injectElementRef"
@@ -981,6 +1077,9 @@
     "name": "isContextDirty"
   },
   {
+    "name": "isContextLocked"
+  },
+  {
     "name": "isCreationMode"
   },
   {
@@ -1032,6 +1131,9 @@
     "name": "isStylingContext"
   },
   {
+    "name": "isValueDefined"
+  },
+  {
     "name": "iterateListLike"
   },
   {
@@ -1048,6 +1150,9 @@
   },
   {
     "name": "locateHostElement"
+  },
+  {
+    "name": "lockContext"
   },
   {
     "name": "looseIdentical"
@@ -1146,7 +1251,13 @@
     "name": "refreshDynamicEmbeddedViews"
   },
   {
+    "name": "registerBinding"
+  },
+  {
     "name": "registerHostDirective"
+  },
+  {
+    "name": "registerInitialStylingIntoContext"
   },
   {
     "name": "registerMultiMapEntry"
@@ -1200,6 +1311,12 @@
     "name": "resolveForwardRef"
   },
   {
+    "name": "runtimeAllowOldStyling"
+  },
+  {
+    "name": "runtimeIsNewStylingInUse"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
@@ -1228,6 +1345,12 @@
   },
   {
     "name": "setClass"
+  },
+  {
+    "name": "setClass"
+  },
+  {
+    "name": "setConfig"
   },
   {
     "name": "setContextDirty"
@@ -1290,6 +1413,9 @@
     "name": "setStyle"
   },
   {
+    "name": "setStyle"
+  },
+  {
     "name": "setTNodeAndViewData"
   },
   {
@@ -1314,7 +1440,16 @@
     "name": "stringifyForError"
   },
   {
+    "name": "stylesBitMask"
+  },
+  {
+    "name": "stylingApply"
+  },
+  {
     "name": "stylingContext"
+  },
+  {
+    "name": "stylingInit"
   },
   {
     "name": "syncViewWithBlueprint"
@@ -1332,10 +1467,22 @@
     "name": "unwrapRNode"
   },
   {
+    "name": "updateBindingData"
+  },
+  {
+    "name": "updateClassBinding"
+  },
+  {
     "name": "updateClassProp"
   },
   {
+    "name": "updateContextDirectiveIndex"
+  },
+  {
     "name": "updateContextWithBindings"
+  },
+  {
+    "name": "updateLastDirectiveIndex"
   },
   {
     "name": "updateSingleStylingValue"

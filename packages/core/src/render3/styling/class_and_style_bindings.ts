@@ -1636,7 +1636,7 @@ function diffSummaryValues(result: any[], name: string, prop: string, a: any, b:
   }
 }
 
-function getSinglePropIndexValue(
+export function getSinglePropIndexValue(
     context: StylingContext, directiveIndex: number, offset: number, isClassBased: boolean) {
   const singlePropOffsetRegistryIndex =
       context[StylingIndex.DirectiveRegistryPosition]
