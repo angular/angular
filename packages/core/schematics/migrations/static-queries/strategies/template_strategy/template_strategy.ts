@@ -99,13 +99,13 @@ export class QueryTemplateStrategy implements TimingStrategy {
   detectTiming(query: NgQueryDefinition): TimingResult {
     if (query.type === QueryType.ContentChild) {
       return {timing: null, message: 'Content queries cannot be migrated automatically.'};
-    } else if (!hasPropertyNameText(query.property.name)) {
+    } else if (!query.name) {
       // In case the query property name is not statically analyzable, we mark this
       // query as unresolved. NGC currently skips these view queries as well.
       return {timing: null, message: 'Query is not statically analyzable.'};
     }
 
-    const propertyName = query.property.name.text;
+    const propertyName = query.name;
     const classMetadata = this.classMetadata.get(query.container);
 
     // In case there is no class metadata or there are no derived classes that

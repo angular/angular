@@ -18,6 +18,7 @@ describe('static-queries migration with usage strategy', () => {
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
+  let warnOutput: string[] = [];
 
   // Enables the query usage strategy when running the `static-query` migration. By
   // default the schematic runs the template strategy and there is currently no easy
@@ -38,6 +39,13 @@ describe('static-queries migration with usage strategy', () => {
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
+
+    warnOutput = [];
+    runner.logger.subscribe(logEntry => {
+      if (logEntry.level === 'warn') {
+        warnOutput.push(logEntry.message);
+      }
+    });
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -250,6 +258,47 @@ describe('static-queries migration with usage strategy', () => {
 
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { /* test */ read: null, static: true }) query: any;`);
+    });
+
+    it('should add a todo for queries declared on setter', async() => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test')
+          set query(result: any) {};
+        }
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', /* TODO: add static flag */ {})`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(/index.ts@6:11: Queries defined on accessors cannot be analyzed.$/);
+    });
+
+    it('should add a todo for queries declared on getter', async() => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test')
+          get query() { return null; }
+          set query(result: any) {}
+        }
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', /* TODO: add static flag */ {})`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(/index.ts@6:11: Queries defined on accessors cannot be analyzed.$/);
     });
 
     it('should not overwrite existing explicit query timing', async() => {
