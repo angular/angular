@@ -32,7 +32,7 @@ import {_sanitizeStyle} from '../../src/sanitization/style_sanitizer';
       expectSanitize('rgb(255, 0, 0)').toEqual('rgb(255, 0, 0)');
       expectSanitize('expression(haha)').toEqual('unsafe');
     });
-    t.it('rejects unblanaced quotes', () => { expectSanitize('"value" "').toEqual('unsafe'); });
+    t.it('rejects unbalanced quotes', () => { expectSanitize('"value" "').toEqual('unsafe'); });
     t.it('accepts transform functions', () => {
       expectSanitize('rotate(90deg)').toEqual('rotate(90deg)');
       expectSanitize('rotate(javascript:evil())').toEqual('unsafe');
@@ -58,6 +58,7 @@ import {_sanitizeStyle} from '../../src/sanitization/style_sanitizer';
     t.it('accepts quoted URLs', () => {
       expectSanitize('url("foo/bar.png")').toEqual('url("foo/bar.png")');
       expectSanitize(`url('foo/bar.png')`).toEqual(`url('foo/bar.png')`);
+      expectSanitize(`url('foo/bar (1).png')`).toEqual(`url('foo/bar (1).png')`);
       expectSanitize(`url(  'foo/bar.png'\n )`).toEqual(`url(  'foo/bar.png'\n )`);
       expectSanitize('url("javascript:evil()")').toEqual('unsafe');
       expectSanitize('url( " javascript:evil() " )').toEqual('unsafe');
