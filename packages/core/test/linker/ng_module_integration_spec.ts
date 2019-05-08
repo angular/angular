@@ -327,6 +327,18 @@ function declareTests(config?: {useJit: boolean}) {
           createModule(SomeOtherModule);
         }).toThrowError(/Duplicate module registered/);
       });
+
+      it('should not throw immediately if two modules have the same id', () => {
+        expect(() => {
+          @NgModule({id: 'some-module'})
+          class ModuleA {
+          }
+
+          @NgModule({id: 'some-module'})
+          class ModuleB {
+          }
+        }).not.toThrow();
+      });
     });
 
     describe('entryComponents', () => {

@@ -11,7 +11,6 @@ import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJECTOR_DEF} from '../../di/interface/defs';
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
-import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
 import {Component} from '../../metadata';
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {flatten} from '../../util/array_utils';
@@ -117,14 +116,12 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
                            .map(expandModuleWithProviders),
               emitInline: true,
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
+              id: ngModule.id || null,
             });
       }
       return ngModuleDef;
     }
   });
-  if (ngModule.id) {
-    registerNgModuleType(ngModule.id, moduleType);
-  }
 
   let ngInjectorDef: any = null;
   Object.defineProperty(moduleType, NG_INJECTOR_DEF, {
