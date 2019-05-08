@@ -80,7 +80,7 @@ module.exports =
 
           // API files are typescript
           readTypeScriptModules.basePath = API_SOURCE_PATH;
-          readTypeScriptModules.ignoreExportsMatching = [/^_|^ɵɵ|^Δ|^VERSION$/];
+          readTypeScriptModules.ignoreExportsMatching = [/^_|^Δ|^VERSION$/];
           readTypeScriptModules.hidePrivateMembers = true;
 
           // NOTE: This list should be in sync with tools/public_api_guard/BUILD.bazel
@@ -92,6 +92,7 @@ module.exports =
             'common/http/testing/index.ts',
             'common/index.ts',
             'common/testing/index.ts',
+            'common/upgrade/index.ts',
             'core/index.ts',
             'core/testing/index.ts',
             'elements/index.ts',

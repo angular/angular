@@ -35,7 +35,7 @@ export declare class $locationShimProvider {
 }
 
 export declare class AngularJSUrlCodec implements UrlCodec {
-    areEqual(a: string, b: string): boolean;
+    areEqual(valA: string, valB: string): boolean;
     decodeHash(hash: string): string;
     decodePath(path: string, html5Mode?: boolean): string;
     decodeSearch(search: string): {
@@ -77,7 +77,7 @@ export declare class LocationUpgradeModule {
 }
 
 export declare abstract class UrlCodec {
-    abstract areEqual(a: string, b: string): boolean;
+    abstract areEqual(valA: string, valB: string): boolean;
     abstract decodeHash(hash: string): string;
     abstract decodePath(path: string): string;
     abstract decodeSearch(search: string): {
