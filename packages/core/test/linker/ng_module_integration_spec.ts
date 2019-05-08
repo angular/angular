@@ -17,7 +17,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
-import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
+import {clearModulesForTest} from '../../src/linker/ng_module_factory_registration';
 import {stringify} from '../../src/util/stringify';
 
 class Engine {}
@@ -326,6 +326,18 @@ function declareTests(config?: {useJit: boolean}) {
           }
           createModule(SomeOtherModule);
         }).toThrowError(/Duplicate module registered/);
+      });
+
+      it('should not throw immediately if two modules have the same id', () => {
+        expect(() => {
+          @NgModule({id: 'some-module'})
+          class ModuleA {
+          }
+
+          @NgModule({id: 'some-module'})
+          class ModuleB {
+          }
+        }).not.toThrow();
       });
     });
 

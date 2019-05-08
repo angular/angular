@@ -274,10 +274,9 @@ export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
 
-export {
-  getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__,
-  registerNgModuleType as ɵregisterNgModuleType,
-} from './linker/ng_module_factory_loader';
+export { getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__ } from './linker/ng_module_factory_loader';
+
+export { registerNgModuleType as ɵregisterNgModuleType } from './linker/ng_module_factory_registration';
 
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,
