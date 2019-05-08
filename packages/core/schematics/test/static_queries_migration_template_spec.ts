@@ -19,6 +19,7 @@ describe('static-queries migration with template strategy', () => {
   let tmpDirPath: string;
   let previousWorkingDir: string;
   let warnOutput: string[];
+  let errorOutput: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -36,9 +37,12 @@ describe('static-queries migration with template strategy', () => {
     }));
 
     warnOutput = [];
+    errorOutput = [];
     runner.logger.subscribe(logEntry => {
       if (logEntry.level === 'warn') {
         warnOutput.push(logEntry.message);
+      } else if (logEntry.level === 'error') {
+        errorOutput.push(logEntry.message);
       }
     });
 
@@ -457,17 +461,55 @@ describe('static-queries migration with template strategy', () => {
         // **NOTE**: Analysis will fail as there is no "NgModule" that declares the component.
       `);
 
-      spyOn(console, 'error');
-
       // We don't expect an error to be thrown as this could interrupt other
       // migrations which are scheduled with "ng update" in the CLI.
       await runMigration();
 
-      expect(console.error)
-          .toHaveBeenCalledWith('Could not create Angular AOT compiler to determine query timing.');
-      expect(console.error)
-          .toHaveBeenCalledWith(
-              jasmine.stringMatching(/Cannot determine the module for class MyComp/));
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0])
+          .toMatch(/^Error: Could not create Angular AOT compiler to determine query timing./);
+      expect(errorOutput[0]).toMatch(/Cannot determine the module for class MyComp/);
+    });
+
+    it('should gracefully exit migration if AOT compiler throws exception', async() => {
+      writeFile('/my-component.ts', `
+        import {Component, ViewChild} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @ViewChild('test') query: any;
+        }
+      `);
+      writeFile('/app-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyComp} from './components';
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      writeFile('/components.ts', `export * from './my-component';`);
+      writeFile('/index.ts', `export * from './app-module';`);
+
+      // Enable flat-module bundling in order to simulate a common AOT compiler
+      // failure that can happen in CLI projects that use flat-module bundling
+      // e.g. with ng-packagr. https://github.com/angular/angular/issues/20931
+      writeFile('/tsconfig.json', JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          lib: ['es2015'],
+        },
+        angularCompilerOptions: {
+          flatModuleId: 'flat-module',
+          flatModuleOutFile: 'flat-module-bundle.js',
+        },
+        files: ['index.ts']
+      }));
+
+      await runMigration();
+
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(/^TypeError: Cannot read property 'module' of undefined/);
     });
 
     it('should add a todo for content queries which are not detectable', async() => {
