@@ -8,7 +8,10 @@ ts_library(
         "src/**/*.ts",
     ]),
     deps = [
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "@npm//typescript",
     ],
 )

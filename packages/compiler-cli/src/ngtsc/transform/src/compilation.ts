@@ -14,6 +14,7 @@ import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
+import {LocalModuleScopeRegistry} from '../../scope';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile} from '../../util/src/typescript';
 
@@ -75,10 +76,10 @@ export class IvyCompilation {
    * `null` in most cases.
    */
   constructor(
-      private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost, private importRewriter: ImportRewriter,
-      private incrementalState: IncrementalState, private perf: PerfRecorder,
-      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
+      private handlers: DecoratorHandler<any, any>[], private reflector: ReflectionHost,
+      private importRewriter: ImportRewriter, private incrementalState: IncrementalState,
+      private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
+      private scopeRegistry: LocalModuleScopeRegistry) {}
 
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
@@ -302,6 +303,22 @@ export class IvyCompilation {
       }
     });
     this.perf.stop(resolveSpan);
+    this.recordNgModuleScopeDependencies();
+  }
+
+  private recordNgModuleScopeDependencies() {
+    const recordSpan = this.perf.start('recordDependencies');
+    this.scopeRegistry !.getCompilationScopes().forEach(scope => {
+      const file = scope.declaration.getSourceFile();
+      // Register the file containing the NgModule where the declaration is declared.
+      this.incrementalState.trackFileDependency(scope.ngModule.getSourceFile(), file);
+      scope.directives.forEach(
+          directive =>
+              this.incrementalState.trackFileDependency(directive.ref.node.getSourceFile(), file));
+      scope.pipes.forEach(
+          pipe => this.incrementalState.trackFileDependency(pipe.ref.node.getSourceFile(), file));
+    });
+    this.perf.stop(recordSpan);
   }
 
   typeCheck(context: TypeCheckContext): void {
