@@ -172,11 +172,9 @@ export class IvyCompilation {
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
     const promises: Promise<void>[] = [];
-
-    // This flag begins as true for the file. If even one handler is matched and does not explicitly
-    // state that analysis/emit can be skipped, then the flag will be set to false.
-    let allowSkipAnalysisAndEmit = true;
-
+    if (this.incrementalState.safeToSkip(sf)) {
+      return;
+    }
     const analyzeClass = (node: ClassDeclaration): void => {
       const ivyClass = this.detectHandlersForClass(node);
 
@@ -203,12 +201,6 @@ export class IvyCompilation {
                 this.sourceToFactorySymbols.has(sf.fileName)) {
               this.sourceToFactorySymbols.get(sf.fileName) !.add(match.analyzed.factorySymbolName);
             }
-
-            // Update the allowSkipAnalysisAndEmit flag - it will only remain true if match.analyzed
-            // also explicitly specifies a value of true for the flag.
-            allowSkipAnalysisAndEmit =
-                allowSkipAnalysisAndEmit && (!!match.analyzed.allowSkipAnalysisAndEmit);
-
           } catch (err) {
             if (err instanceof FatalDiagnosticError) {
               this._diagnostics.push(err.toDiagnostic());
@@ -251,19 +243,9 @@ export class IvyCompilation {
 
     visit(sf);
 
-    const updateIncrementalState = () => {
-      if (allowSkipAnalysisAndEmit) {
-        this.incrementalState.markFileAsSafeToSkipEmitIfUnchanged(sf);
-      }
-    };
-
     if (preanalyze && promises.length > 0) {
-      return Promise.all(promises).then(() => {
-        updateIncrementalState();
-        return undefined;
-      });
+      return Promise.all(promises).then(() => undefined);
     } else {
-      updateIncrementalState();
       return undefined;
     }
   }
