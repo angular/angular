@@ -14,10 +14,11 @@ import {R3Injector, createInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {registerNgModuleType} from '../linker/ng_module_factory_loader';
+import {registerNgModuleType} from '../linker/ng_module_factory_registration';
 import {NgModuleDef} from '../metadata/ng_module';
 import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
+
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgModuleDef} from './definition';
 import {maybeUnwrapFn} from './util/misc_utils';
