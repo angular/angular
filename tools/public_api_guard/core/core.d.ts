@@ -678,6 +678,12 @@ export interface ɵɵBaseDef<T> {
 
 export declare function ɵɵbind<T>(value: T): T | NO_CHANGE;
 
+export declare function ɵɵclassMap(classes: {
+    [styleName: string]: any;
+} | NO_CHANGE | string | null): void;
+
+export declare function ɵɵclassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
+
 export declare type ɵɵComponentDefWithMeta<T, Selector extends String, ExportAs extends string[], InputMap extends {
     [key: string]: string;
 }, OutputMap extends {
@@ -795,12 +801,6 @@ export declare function ɵɵelement(index: number, name: string, attrs?: TAttrib
 
 export declare function ɵɵelementAttribute(index: number, name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string): void;
 
-export declare function ɵɵelementClassMap(classes: {
-    [styleName: string]: any;
-} | NO_CHANGE | string | null): void;
-
-export declare function ɵɵelementClassProp(classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void;
-
 export declare function ɵɵelementContainerEnd(): void;
 
 export declare function ɵɵelementContainerStart(index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void;
@@ -812,16 +812,6 @@ export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 export declare function ɵɵelementProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
 
 export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
-
-export declare function ɵɵelementStyleMap(styles: {
-    [styleName: string]: any;
-} | NO_CHANGE | null): void;
-
-export declare function ɵɵelementStyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
-
-export declare function ɵɵelementStyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
-
-export declare function ɵɵelementStylingApply(): void;
 
 export declare function ɵɵembeddedViewEnd(): void;
 
@@ -1027,6 +1017,16 @@ export declare function ɵɵsetNgModuleScope(type: any, scope: {
 export declare function ɵɵstaticContentQuery<T>(directiveIndex: number, predicate: Type<any> | string[], descend: boolean, read: any): void;
 
 export declare function ɵɵstaticViewQuery<T>(predicate: Type<any> | string[], descend: boolean, read: any): void;
+
+export declare function ɵɵstyleMap(styles: {
+    [styleName: string]: any;
+} | NO_CHANGE | null): void;
+
+export declare function ɵɵstyleProp(styleIndex: number, value: string | number | String | PlayerFactory | null, suffix?: string | null, forceOverride?: boolean): void;
+
+export declare function ɵɵstyling(classBindingNames?: string[] | null, styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null): void;
+
+export declare function ɵɵstylingApply(): void;
 
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, consts: number, vars: number, tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null, localRefExtractor?: LocalRefExtractor): void;
 
