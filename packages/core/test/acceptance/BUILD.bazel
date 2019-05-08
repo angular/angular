@@ -13,6 +13,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
