@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -16,14 +16,14 @@ import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
-import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
+import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression} from './util';
 
@@ -51,7 +51,6 @@ export class ComponentDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
-  private boundTemplateCache = new Map<ts.Declaration, BoundTarget<DirectiveMeta>>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
   /**
@@ -132,7 +131,6 @@ export class ComponentDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
     const containingFile = node.getSourceFile().fileName;
-    const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
@@ -152,9 +150,8 @@ export class ComponentDecoratorHandler implements
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
-    const filePath = node.getSourceFile().fileName;
     const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, filePath);
+      const candidate = path.posix.relative(rootDir, containingFile);
       if (previous === undefined || candidate.length < previous.length) {
         return candidate;
       } else {
