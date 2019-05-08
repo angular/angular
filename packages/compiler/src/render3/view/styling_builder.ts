@@ -494,8 +494,12 @@ function registerIntoMap(map: Map<string, number>, key: string) {
 }
 
 function isStyleSanitizable(prop: string): boolean {
-  return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-      prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
+  // Note that browsers support both the dash case and
+  // camel case property names when setting through JS.
+  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
+      prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
+      prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
+      prop === 'listStyleImage';
 }
 
 /**
