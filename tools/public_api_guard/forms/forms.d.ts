@@ -273,7 +273,6 @@ export declare class FormGroup extends AbstractControl {
         [key: string]: AbstractControl;
     }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     addControl(name: string, control: AbstractControl, opts?: {
-        onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     contains(controlName: string): boolean;
@@ -286,7 +285,6 @@ export declare class FormGroup extends AbstractControl {
     }): void;
     registerControl(name: string, control: AbstractControl): AbstractControl;
     removeControl(name: string, opts?: {
-        onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     reset(value?: any, options?: {
@@ -300,7 +298,6 @@ export declare class FormGroup extends AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    unregisterControl(name: string): AbstractControl | null;
 }
 
 export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {

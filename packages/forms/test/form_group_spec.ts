@@ -171,29 +171,6 @@ import {of } from 'rxjs';
         expect(g.valid).toBe(true);
       });
 
-      it('should not update value and validity when control is registered', () => {
-        const g = new FormGroup({'one': new FormControl('1')});
-        expect(g.value).toEqual({'one': '1'});
-        expect(g.valid).toBe(true);
-
-        g.registerControl('two', new FormControl('2', Validators.minLength(10)));
-
-        expect(g.value).toEqual({'one': '1'});
-        expect(g.valid).toBe(true);
-      });
-
-      it('should not update value and validity when control is unregistered', () => {
-        const g = new FormGroup(
-            {'one': new FormControl('1'), 'two': new FormControl('2', Validators.minLength(10))});
-        expect(g.value).toEqual({'one': '1', 'two': '2'});
-        expect(g.valid).toBe(false);
-
-        g.unregisterControl('two');
-
-        expect(g.value).toEqual({'one': '1', 'two': '2'});
-        expect(g.valid).toBe(false);
-      });
-
       it('should not emit events when control is added and emitEvent is false', fakeAsync(() => {
            const g = new FormGroup({'one': new FormControl('1')});
            expect(g.value).toEqual({'one': '1'});
