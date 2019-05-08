@@ -660,15 +660,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       // The style bindings code is placed into two distinct blocks within the template function AOT
-      // code: creation and update. The creation code contains the `elementStyling` instructions
-      // which will apply the collected binding values to the element. `elementStyling` is
+      // code: creation and update. The creation code contains the `styling` instructions
+      // which will apply the collected binding values to the element. `styling` is
       // designed to run inside of `elementStart` and `elementEnd`. The update instructions
-      // (things like `elementStyleProp`, `elementClassProp`, etc..) are applied later on in this
+      // (things like `styleProp`, `classProp`, etc..) are applied later on in this
       // file
       this.processStylingInstruction(
           elementIndex, implicit,
-          stylingBuilder.buildElementStylingInstruction(element.sourceSpan, this.constantPool),
-          true);
+          stylingBuilder.buildStylingInstruction(element.sourceSpan, this.constantPool), true);
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -685,8 +684,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // the code here will collect all update-level styling instructions and add them to the
-    // update block of the template function AOT code. Instructions like `elementStyleProp`,
-    // `elementStyleMap`, `elementClassMap`, `elementClassProp` and `elementStylingApply`
+    // update block of the template function AOT code. Instructions like `styleProp`,
+    // `styleMap`, `classMap`, `classProp` and `stylingApply`
     // are all generated and assigned in the code below.
     const stylingInstructions = stylingBuilder.buildUpdateLevelInstructions(this._valueConverter);
     const limit = stylingInstructions.length - 1;
@@ -772,7 +771,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             let instruction: any;
 
             if (inputType === BindingType.Class) {
-              instruction = R3.elementClassProp;
+              instruction = R3.classProp;
             } else {
               instruction = R3.elementAttribute;
             }
