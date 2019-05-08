@@ -111,6 +111,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "MIN_DIRECTIVE_ID"
+  },
+  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -381,6 +384,15 @@
     "name": "_symbolIterator"
   },
   {
+    "name": "activeDirectiveId"
+  },
+  {
+    "name": "activeDirectiveSuperClassDepthPosition"
+  },
+  {
+    "name": "activeDirectiveSuperClassHeight"
+  },
+  {
     "name": "addComponentLogic"
   },
   {
@@ -570,7 +582,7 @@
     "name": "elementPropertyInternal"
   },
   {
-    "name": "elementStylingApplyInternal"
+    "name": "enqueueHostInstruction"
   },
   {
     "name": "enterView"
@@ -621,6 +633,9 @@
     "name": "findExistingListener"
   },
   {
+    "name": "findNextInsertionIndex"
+  },
+  {
     "name": "findOrPatchDirectiveIntoRegistry"
   },
   {
@@ -640,6 +655,15 @@
   },
   {
     "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getActiveDirectiveId"
+  },
+  {
+    "name": "getActiveDirectiveStylingIndex"
+  },
+  {
+    "name": "getActiveDirectiveSuperClassDepth"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1123,6 +1147,9 @@
   },
   {
     "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "registerHostDirective"
   },
   {
     "name": "registerMultiMapEntry"

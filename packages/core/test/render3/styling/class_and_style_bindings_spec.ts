@@ -9,7 +9,7 @@ import {createLView, createTView} from '@angular/core/src/render3/instructions/s
 
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementHostClassProp, ɵɵelementHostStyleProp, ɵɵelementHostStyling, ɵɵelementHostStylingApply, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵnamespaceSVG, ɵɵselect} from '../../../src/render3/index';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementClassMap, ɵɵelementClassProp, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵnamespaceSVG, ɵɵselect} from '../../../src/render3/index';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
@@ -3257,12 +3257,12 @@ describe('style and class based bindings', () => {
           factory: () => new MyDir(),
           hostBindings: function(rf: RenderFlags, ctx: MyDir, elementIndex: number) {
             if (rf & RenderFlags.Create) {
-              ɵɵelementHostStyling(['foo'], ['width']);
+              ɵɵelementStyling(['foo'], ['width']);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementHostStyleProp(0, ctx.widthFactory);
-              ɵɵelementHostClassProp(0, ctx.fooFactory);
-              ɵɵelementHostStylingApply();
+              ɵɵelementStyleProp(0, ctx.widthFactory);
+              ɵɵelementClassProp(0, ctx.fooFactory);
+              ɵɵelementStylingApply();
             }
           }
         });

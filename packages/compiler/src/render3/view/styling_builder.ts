@@ -264,7 +264,7 @@ export class StylingBuilder {
         reference: R3.elementHostAttrs,
         allocateBindingSlots: 0,
         buildParams: () => {
-          // params => elementHostAttrs(agetDirectiveContext()ttrs)
+          // params => elementHostAttrs(attrs)
           this.populateInitialStylingAttrs(attrs);
           const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
               getConstantLiteralFromArray(constantPool, attrs) :
@@ -284,11 +284,11 @@ export class StylingBuilder {
    */
   buildElementStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
       Instruction|null {
-    const reference = this._directiveExpr ? R3.elementHostStyling : R3.elementStyling;
     if (this.hasBindings) {
       return {
         sourceSpan,
-        allocateBindingSlots: 0, reference,
+        allocateBindingSlots: 0,
+        reference: R3.elementStyling,
         buildParams: () => {
           // a string array of every style-based binding
           const styleBindingProps =
@@ -303,13 +303,8 @@ export class StylingBuilder {
           // (otherwise a shorter amount of params will be filled). The code below helps
           // determine how many params are required in the expression code.
           //
-          // HOST:
-          //   min params => elementHostStyling()
-          //   max params => elementHostStyling(classBindings, styleBindings, sanitizer)
-          //
-          // Template:
-          //   min params => elementStyling()
-          //   max params => elementStyling(classBindings, styleBindings, sanitizer)
+          // min params => elementStyling()
+          // max params => elementStyling(classBindings, styleBindings, sanitizer)
           //
           const params: o.Expression[] = [];
           let expectedNumberOfArgs = 0;
@@ -377,14 +372,7 @@ export class StylingBuilder {
       totalBindingSlotsRequired += mapValue.expressions.length;
     }
 
-    const isHostBinding = this._directiveExpr;
-    let reference: o.ExternalReference;
-    if (isClassBased) {
-      reference = isHostBinding ? R3.elementHostClassMap : R3.elementClassMap;
-    } else {
-      reference = isHostBinding ? R3.elementHostStyleMap : R3.elementStyleMap;
-    }
-
+    const reference = isClassBased ? R3.elementClassMap : R3.elementStyleMap;
     return {
       sourceSpan: stylingInput.sourceSpan,
       reference,
@@ -405,12 +393,8 @@ export class StylingBuilder {
         sourceSpan: input.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired, reference,
         buildParams: (convertFn: (value: any) => o.Expression) => {
-          // HOST:
-          //   min params => elementHostStylingProp(bindingIndex, value)
-          //   max params => elementHostStylingProp(bindingIndex, value, overrideFlag)
-          // Template:
-          //   min params => elementStylingProp(elmIndex, bindingIndex, value)
-          //   max params => elementStylingProp(elmIndex, bindingIndex, value, overrideFlag)
+          // min params => elementStylingProp(elmIndex, bindingIndex, value)
+          // max params => elementStylingProp(elmIndex, bindingIndex, value, overrideFlag)
           const params: o.Expression[] = [];
           params.push(o.literal(bindingIndex));
           params.push(convertFn(value));
@@ -435,30 +419,24 @@ export class StylingBuilder {
 
   private _buildClassInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleClassInputs) {
-      const isHostBinding = !!this._directiveExpr;
-      const reference = isHostBinding ? R3.elementHostClassProp : R3.elementClassProp;
       return this._buildSingleInputs(
-          reference, this._singleClassInputs, this._classesIndex, false, valueConverter);
+          R3.elementClassProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
     }
     return [];
   }
 
   private _buildStyleInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleStyleInputs) {
-      const isHostBinding = !!this._directiveExpr;
-      const reference = isHostBinding ? R3.elementHostStyleProp : R3.elementStyleProp;
       return this._buildSingleInputs(
-          reference, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
+          R3.elementStyleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
     }
     return [];
   }
 
   private _buildApplyFn(): Instruction {
-    const isHostBinding = this._directiveExpr;
-    const reference = isHostBinding ? R3.elementHostStylingApply : R3.elementStylingApply;
     return {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
-      reference,
+      reference: R3.elementStylingApply,
       allocateBindingSlots: 0,
       buildParams: () => { return []; }
     };

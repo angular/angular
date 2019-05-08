@@ -1105,14 +1105,14 @@ describe('compiler compliance: styling', () => {
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵelementHostAttrs($e0_attrs$);
-              $r3$.ɵɵelementHostStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementHostStyleMap(ctx.myStyle);
-              $r3$.ɵɵelementHostClassMap(ctx.myClass);
-              $r3$.ɵɵelementHostStyleProp(0, ctx.myColorProp);
-              $r3$.ɵɵelementHostClassProp(0, ctx.myFooClass);
-              $r3$.ɵɵelementHostStylingApply();
+              $r3$.ɵɵelementStyleMap(ctx.myStyle);
+              $r3$.ɵɵelementClassMap(ctx.myClass);
+              $r3$.ɵɵelementStyleProp(0, ctx.myColorProp);
+              $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
+              $r3$.ɵɵelementStylingApply();
             }
           },
           consts: 0,
@@ -1166,16 +1166,16 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementHostStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵelementStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementHostStyleMap(ctx.myStyle);
-              $r3$.ɵɵelementHostClassMap(ctx.myClasses);
-              $r3$.ɵɵelementHostStyleProp(0, ctx.myHeightProp, "pt");
-              $r3$.ɵɵelementHostStyleProp(1, ctx.myWidthProp);
-              $r3$.ɵɵelementHostClassProp(0, ctx.myBarClass);
-              $r3$.ɵɵelementHostClassProp(1, ctx.myFooClass);
-              $r3$.ɵɵelementHostStylingApply();
+              $r3$.ɵɵelementStyleMap(ctx.myStyle);
+              $r3$.ɵɵelementClassMap(ctx.myClasses);
+              $r3$.ɵɵelementStyleProp(0, ctx.myHeightProp, "pt");
+              $r3$.ɵɵelementStyleProp(1, ctx.myWidthProp);
+              $r3$.ɵɵelementClassProp(0, ctx.myBarClass);
+              $r3$.ɵɵelementClassProp(1, ctx.myFooClass);
+              $r3$.ɵɵelementStylingApply();
             }
           },
           consts: 0,
@@ -1250,14 +1250,14 @@ describe('compiler compliance: styling', () => {
             …
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
               if (rf & 1) {
-                $r3$.ɵɵelementHostStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
+                $r3$.ɵɵelementStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
               }
               if (rf & 2) {
-                $r3$.ɵɵelementHostStyleMap(ctx.myStyleExp);
-                $r3$.ɵɵelementHostClassMap(ctx.myClassExp);
-                $r3$.ɵɵelementHostStyleProp(0, ctx.myWidthExp, null, true);
-                $r3$.ɵɵelementHostClassProp(0, ctx.myFooClassExp, true);
-                $r3$.ɵɵelementHostStylingApply();
+                $r3$.ɵɵelementStyleMap(ctx.myStyleExp);
+                $r3$.ɵɵelementClassMap(ctx.myClassExp);
+                $r3$.ɵɵelementStyleProp(0, ctx.myWidthExp, null, true);
+                $r3$.ɵɵelementClassProp(0, ctx.myFooClassExp, true);
+                $r3$.ɵɵelementStylingApply();
               }
             },
           `;
@@ -1319,33 +1319,33 @@ describe('compiler compliance: styling', () => {
           …
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementHostStyling();
+              $r3$.ɵɵelementStyling();
             }
             if (rf & 2) {
-              $r3$.ɵɵelementHostClassMap(ctx.myClassMap);
-              $r3$.ɵɵelementHostStylingApply();
+              $r3$.ɵɵelementClassMap(ctx.myClassMap);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementHostStyling($widthDir_classes$, $widthDir_styles$);
+              $r3$.ɵɵelementStyling($widthDir_classes$, $widthDir_styles$);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementHostStyleProp(0, ctx.myWidth);
-              $r3$.ɵɵelementHostClassProp(0, ctx.myFooClass);
-              $r3$.ɵɵelementHostStylingApply();
+              $r3$.ɵɵelementStyleProp(0, ctx.myWidth);
+              $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementHostStyling($heightDir_classes$, $heightDir_styles$);
+              $r3$.ɵɵelementStyling($heightDir_classes$, $heightDir_styles$);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementHostStyleProp(0, ctx.myHeight);
-              $r3$.ɵɵelementHostClassProp(0, ctx.myBarClass);
-              $r3$.ɵɵelementHostStylingApply();
+              $r3$.ɵɵelementStyleProp(0, ctx.myHeight);
+              $r3$.ɵɵelementClassProp(0, ctx.myBarClass);
+              $r3$.ɵɵelementStylingApply();
             }
           }
           …
@@ -1401,14 +1401,14 @@ describe('compiler compliance: styling', () => {
         if (rf & 1) {
           $r3$.ɵɵallocHostVars(2);
           $r3$.ɵɵelementHostAttrs($_c0$);
-          $r3$.ɵɵelementHostStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
+          $r3$.ɵɵelementStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
         }
         if (rf & 2) {
           $r3$.ɵɵproperty("id", ctx.id, null, true);
           $r3$.ɵɵproperty("title", ctx.title, null, true);
-          $r3$.ɵɵelementHostStyleMap(ctx.myStyle);
-          $r3$.ɵɵelementHostClassMap(ctx.myClass);
-          $r3$.ɵɵelementHostStylingApply();
+          $r3$.ɵɵelementStyleMap(ctx.myStyle);
+          $r3$.ɵɵelementClassMap(ctx.myClass);
+          $r3$.ɵɵelementStylingApply();
         }
       }
     `;
@@ -1448,14 +1448,14 @@ describe('compiler compliance: styling', () => {
       hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           $r3$.ɵɵallocHostVars(2);
-          $r3$.ɵɵelementHostStyling($_c0$, $_c1$);
+          $r3$.ɵɵelementStyling($_c0$, $_c1$);
         }
         if (rf & 2) {
           $r3$.ɵɵproperty("id", ctx.id, null, true);
           $r3$.ɵɵproperty("title", ctx.title, null, true);
-          $r3$.ɵɵelementHostStyleProp(0, ctx.myWidth);
-          $r3$.ɵɵelementHostClassProp(0, ctx.myFooClass);
-          $r3$.ɵɵelementHostStylingApply();
+          $r3$.ɵɵelementStyleProp(0, ctx.myWidth);
+          $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
+          $r3$.ɵɵelementStylingApply();
         }
       }
     `;
