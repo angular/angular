@@ -37,11 +37,7 @@ const STATIC_QUERY_LIFECYCLE_HOOKS = {
 export class QueryUsageStrategy implements TimingStrategy {
   constructor(private classMetadata: ClassMetadataMap, private typeChecker: ts.TypeChecker) {}
 
-  setup() {
-    // No setup is needed for this strategy and therefore we always return "true" as
-    // the setup is successful.
-    return true;
-  }
+  setup() {}
 
   /**
    * Analyzes the usage of the given query and determines the query timing based

@@ -63,14 +63,12 @@ export class QueryTemplateStrategy implements TimingStrategy {
     ];
 
     if (ngDiagnostics.length) {
-      this._printDiagnosticFailures(ngDiagnostics);
-      return false;
+      throw this._createDiagnosticsError(ngDiagnostics);
     }
 
     analyzedModules.files.forEach(file => {
       file.directives.forEach(directive => this._analyzeDirective(directive, analyzedModules));
     });
-    return true;
   }
 
   /** Analyzes a given directive by determining the timing of all matched view queries. */
@@ -180,12 +178,12 @@ export class QueryTemplateStrategy implements TimingStrategy {
         .template;
   }
 
-  private _printDiagnosticFailures(diagnostics: (ts.Diagnostic|Diagnostic)[]) {
-    console.error('Could not create Angular AOT compiler to determine query timing.');
-    console.error('The following diagnostics were detected:\n');
-    console.error(diagnostics.map(d => d.messageText).join(`\n`));
-    console.error('Please make sure that there is no compilation failure. The migration');
-    console.error('can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"');
+  private _createDiagnosticsError(diagnostics: (ts.Diagnostic|Diagnostic)[]) {
+    return new Error(
+        `Could not create Angular AOT compiler to determine query timing.\n` +
+        `The following diagnostics were detected:\n` +
+        `${diagnostics.map(d => d.messageText).join(`\n `)}\n` +
+        `Please make sure that there is no AOT compilation failure.`);
   }
 
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {

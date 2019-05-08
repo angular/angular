@@ -9,8 +9,8 @@
 import {NgQueryDefinition, QueryTiming} from '../angular/query-definition';
 
 export interface TimingStrategy {
-  /** Sets up the given strategy. Should return false if the strategy could not be set up. */
-  setup(): boolean;
+  /** Sets up the given strategy. Throws if the strategy could not be set up. */
+  setup(): void;
   /** Detects the timing result for a given query. */
   detectTiming(query: NgQueryDefinition): TimingResult;
 }

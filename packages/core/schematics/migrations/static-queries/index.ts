@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {dirname, relative} from 'path';
 import {from} from 'rxjs';
@@ -75,7 +76,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   if (buildProjects.size) {
     const strategy = await promptForMigrationStrategy(logger);
     for (let project of Array.from(buildProjects.values())) {
-      failures.push(...await runStaticQueryMigration(tree, project, strategy));
+      failures.push(...await runStaticQueryMigration(tree, project, strategy, logger));
     }
   }
 
@@ -84,7 +85,8 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   for (const tsconfigPath of testPaths) {
     const project = await analyzeProject(tree, tsconfigPath, basePath);
     if (project) {
-      failures.push(...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS));
+      failures.push(
+          ...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger));
     }
   }
 
@@ -139,7 +141,8 @@ function analyzeProject(tree: Tree, tsconfigPath: string, basePath: string):
  * not need to be static and can be set up with "static: false".
  */
 async function runStaticQueryMigration(
-    tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY) {
+    tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY,
+    logger: logging.LoggerApi) {
   const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
   const failureMessages: string[] = [];
@@ -173,10 +176,25 @@ async function runStaticQueryMigration(
     strategy = new QueryTemplateStrategy(tsconfigPath, classMetadata, host);
   }
 
-  // In case the strategy could not be set up properly, we just exit the
-  // migration. We don't want to throw an exception as this could mean
-  // that other migrations are interrupted.
-  if (!strategy.setup()) {
+  try {
+    strategy.setup();
+  } catch (e) {
+    // In case the strategy could not be set up properly, we just exit the
+    // migration. We don't want to throw an exception as this could mean
+    // that other migrations are interrupted.
+    logger.warn(
+        `Could not setup migration strategy for "${project.tsconfigPath}". The ` +
+        `following error has been reported:`);
+    if (selectedStrategy === SELECTED_STRATEGY.TEMPLATE) {
+      logger.warn(
+          `The template migration strategy uses the Angular compiler ` +
+          `internally and therefore projects that no longer build successfully after ` +
+          `the update cannot use the template migration strategy. Please ensure ` +
+          `there are no AOT compilation errors.`);
+    }
+    logger.error(e);
+    logger.info(
+        'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"');
     return [];
   }
 
