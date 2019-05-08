@@ -58,14 +58,14 @@ interface BoundStylingEntry {
  * order which these must be generated is as follows:
  *
  * if (createMode) {
- *   elementStyling(...)
+ *   styling(...)
  * }
  * if (updateMode) {
- *   elementStyleMap(...)
- *   elementClassMap(...)
- *   elementStyleProp(...)
- *   elementClassProp(...)
- *   elementStylingApp(...)
+ *   styleMap(...)
+ *   classMap(...)
+ *   styleProp(...)
+ *   classProp(...)
+ *   stylingApp(...)
  * }
  *
  * The creation/update methods within the builder class produce these instructions.
@@ -277,18 +277,18 @@ export class StylingBuilder {
   }
 
   /**
-   * Builds an instruction with all the expressions and parameters for `elementStyling`.
+   * Builds an instruction with all the expressions and parameters for `styling`.
    *
    * The instruction generation code below is used for producing the AOT statement code which is
    * responsible for registering style/class bindings to an element.
    */
-  buildElementStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
-      Instruction|null {
+  buildStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool): Instruction
+      |null {
     if (this.hasBindings) {
       return {
         sourceSpan,
         allocateBindingSlots: 0,
-        reference: R3.elementStyling,
+        reference: R3.styling,
         buildParams: () => {
           // a string array of every style-based binding
           const styleBindingProps =
@@ -303,8 +303,8 @@ export class StylingBuilder {
           // (otherwise a shorter amount of params will be filled). The code below helps
           // determine how many params are required in the expression code.
           //
-          // min params => elementStyling()
-          // max params => elementStyling(classBindings, styleBindings, sanitizer)
+          // min params => styling()
+          // max params => styling(classBindings, styleBindings, sanitizer)
           //
           const params: o.Expression[] = [];
           let expectedNumberOfArgs = 0;
@@ -335,12 +335,12 @@ export class StylingBuilder {
   }
 
   /**
-   * Builds an instruction with all the expressions and parameters for `elementClassMap`.
+   * Builds an instruction with all the expressions and parameters for `classMap`.
    *
-   * The instruction data will contain all expressions for `elementClassMap` to function
+   * The instruction data will contain all expressions for `classMap` to function
    * which includes the `[class]` expression params.
    */
-  buildElementClassMapInstruction(valueConverter: ValueConverter): Instruction|null {
+  buildClassMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._classMapInput) {
       return this._buildMapBasedInstruction(valueConverter, true, this._classMapInput);
     }
@@ -348,12 +348,12 @@ export class StylingBuilder {
   }
 
   /**
-   * Builds an instruction with all the expressions and parameters for `elementStyleMap`.
+   * Builds an instruction with all the expressions and parameters for `styleMap`.
    *
-   * The instruction data will contain all expressions for `elementStyleMap` to function
+   * The instruction data will contain all expressions for `styleMap` to function
    * which includes the `[style]` expression params.
    */
-  buildElementStyleMapInstruction(valueConverter: ValueConverter): Instruction|null {
+  buildStyleMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._styleMapInput) {
       return this._buildMapBasedInstruction(valueConverter, false, this._styleMapInput);
     }
@@ -372,7 +372,7 @@ export class StylingBuilder {
       totalBindingSlotsRequired += mapValue.expressions.length;
     }
 
-    const reference = isClassBased ? R3.elementClassMap : R3.elementStyleMap;
+    const reference = isClassBased ? R3.classMap : R3.styleMap;
     return {
       sourceSpan: stylingInput.sourceSpan,
       reference,
@@ -393,8 +393,8 @@ export class StylingBuilder {
         sourceSpan: input.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired, reference,
         buildParams: (convertFn: (value: any) => o.Expression) => {
-          // min params => elementStylingProp(elmIndex, bindingIndex, value)
-          // max params => elementStylingProp(elmIndex, bindingIndex, value, overrideFlag)
+          // min params => stylingProp(elmIndex, bindingIndex, value)
+          // max params => stylingProp(elmIndex, bindingIndex, value, overrideFlag)
           const params: o.Expression[] = [];
           params.push(o.literal(bindingIndex));
           params.push(convertFn(value));
@@ -420,7 +420,7 @@ export class StylingBuilder {
   private _buildClassInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleClassInputs) {
       return this._buildSingleInputs(
-          R3.elementClassProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
+          R3.classProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
     }
     return [];
   }
@@ -428,7 +428,7 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.elementStyleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
+          R3.styleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
     }
     return [];
   }
@@ -436,7 +436,7 @@ export class StylingBuilder {
   private _buildApplyFn(): Instruction {
     return {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
-      reference: R3.elementStylingApply,
+      reference: R3.stylingApply,
       allocateBindingSlots: 0,
       buildParams: () => { return []; }
     };
@@ -449,11 +449,11 @@ export class StylingBuilder {
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: Instruction[] = [];
     if (this.hasBindings) {
-      const styleMapInstruction = this.buildElementStyleMapInstruction(valueConverter);
+      const styleMapInstruction = this.buildStyleMapInstruction(valueConverter);
       if (styleMapInstruction) {
         instructions.push(styleMapInstruction);
       }
-      const classMapInstruction = this.buildElementClassMapInstruction(valueConverter);
+      const classMapInstruction = this.buildClassMapInstruction(valueConverter);
       if (classMapInstruction) {
         instructions.push(classMapInstruction);
       }

@@ -51,7 +51,7 @@ import {LView} from './view';
  * Once the styling context is created then single and multi properties can be stored within it.
  * For this to happen, the following function needs to be called:
  *
- * `elementStyling` (called with style properties, class properties and a sanitizer + a directive
+ * `styling` (called with style properties, class properties and a sanitizer + a directive
  * instance).
  *
  * When this instruction is called it will populate the styling context with the provided style
@@ -122,8 +122,8 @@ import {LView} from './view';
  * values are and how they work.
  *
  * Each time a binding property is updated (whether it be through a single
- * property instruction like `elementStyleProp`, `elementClassProp`,
- * `elementStyleMap` or `elementClassMap`) then the values in the context will be updated as
+ * property instruction like `styleProp`, `classProp`,
+ * `styleMap` or `classMap`) then the values in the context will be updated as
  * well.
  *
  * If for example `[style.width]` updates to `555px` then its value will be reflected
@@ -142,9 +142,9 @@ import {LView} from './view';
  *
  * Despite the context being updated, nothing has been rendered on screen (not styles or
  * classes have been set on the element). To kick off rendering for an element the following
- * function needs to be run `elementStylingApply`.
+ * function needs to be run `stylingApply`.
  *
- * `elementStylingApply` will run through the context and find each dirty value and render them onto
+ * `stylingApply` will run through the context and find each dirty value and render them onto
  * the element. Once complete, all styles/classes will be set to clean. Because of this, the render
  * function will now know not to rerun itself again if called again unless new style/class values
  * have changed.
@@ -158,12 +158,12 @@ import {LView} from './view';
  * Each of the following instructions supports accepting a directive instance as an input parameter:
  *
  * - `elementHostAttrs`
- * - `elementStyling`
- * - `elementStyleProp`
- * - `elementClassProp`
- * - `elementStyleMap`
- * - `elementClassMap`
- * - `elementStylingApply`
+ * - `styling`
+ * - `styleProp`
+ * - `classProp`
+ * - `styleMap`
+ * - `classMap`
+ * - `stylingApply`
  *
  * Each time a directive value is passed in, it will be converted into an index by examining the
  * directive registry (which lives in the context configuration area). The index is then used
@@ -257,7 +257,7 @@ import {LView} from './view';
  *
  * ## Rendering
  * The rendering mechanism (when the styling data is applied on screen) occurs via the
- * `elementStylingApply` function and is designed to run after **all** styling functions have been
+ * `stylingApply` function and is designed to run after **all** styling functions have been
  * evaluated. The rendering algorithm will loop over the context and only apply the styles that are
  * flagged as dirty (either because they are new, updated or have been removed via multi or
  * single bindings).
@@ -293,19 +293,19 @@ export interface StylingContext extends
 
   /**
    * A numeric value representing the class index offset value. Whenever a single class is
-   * applied (using `elementClassProp`) it should have an styling index value that doesn't
+   * applied (using `classProp`) it should have an styling index value that doesn't
    * need to take into account any style values that exist in the context.
    */
   [StylingIndex.SinglePropOffsetPositions]: SinglePropOffsetValues;
 
   /**
-   * The last class value that was interpreted by `elementStyleMap`. This is cached
+   * The last class value that was interpreted by `styleMap`. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
   [StylingIndex.CachedMultiClasses]: any|MapBasedOffsetValues;
 
   /**
-   * The last style value that was interpreted by `elementClassMap`. This is cached
+   * The last style value that was interpreted by `classMap`. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
   [StylingIndex.CachedMultiStyles]: any|MapBasedOffsetValues;
@@ -319,7 +319,7 @@ export interface StylingContext extends
    * standard angular instructions, they are not designed to immediately apply
    * their values to the styling context when executed. What happens instead is
    * a queue is constructed and each instruction is populated into the queue.
-   * Then, once the style/class values are set to flush (via `elementStylingApply` or
+   * Then, once the style/class values are set to flush (via `stylingApply` or
    * `hostStylingApply`), the queue is flushed and the values are rendered onto
    * the host element.
    */
@@ -337,7 +337,7 @@ export interface StylingContext extends
  * the styling is applied).
  *
  * This queue is used when any `hostStyling` instructions are executed from the `hostBindings`
- * function. Template-level styling functions (e.g. `elementStyleMap` and `elementClassProp`)
+ * function. Template-level styling functions (e.g. `styleMap` and `classProp`)
  * do not make use of this queue (they are applied to the styling context immediately).
  *
  * Due to the nature of how components/directives are evaluated, directives (both parent and
@@ -371,7 +371,7 @@ export interface StylingContext extends
  * inside of `renderStyling`).
  *
  * Right now each directive's hostBindings function, as well the template function, both
- * call `elementStylingApply()` and `hostStylingApply()`. The fact that this is called
+ * call `stylingApply()` and `hostStylingApply()`. The fact that this is called
  * multiple times for the same element (b/c of change detection) causes some issues. To avoid
  * having styling code be rendered on an element multiple times, the `HostInstructionsQueue`
  * reserves a slot for a reference pointing to the very last directive that was registered and
