@@ -7,6 +7,7 @@
  */
 import {Component, Directive, ElementRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('styling', () => {
@@ -129,5 +130,22 @@ describe('styling', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
+
+  it('should be able to bind a SafeValue to backgroundImage', () => {
+    @Component({template: '<div [style.backgroundImage]="image"></div>'})
+    class Cmp {
+      image !: SafeStyle;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+
+    fixture.componentInstance.image = sanitizer.bypassSecurityTrustStyle('url("#test")');
+    fixture.detectChanges();
+
+    const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
+    expect(div.style.backgroundImage).toBe('url("#test")');
   });
 });
