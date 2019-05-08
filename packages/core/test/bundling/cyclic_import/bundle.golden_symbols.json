@@ -33,6 +33,15 @@
     "name": "DECLARATION_VIEW"
   },
   {
+    "name": "DEFAULT_BINDING_VALUE"
+  },
+  {
+    "name": "DEFAULT_MASK_VALUE"
+  },
+  {
+    "name": "DEFAULT_SIZE_VALUE"
+  },
+  {
     "name": "DEFAULT_TEMPLATE_DIRECTIVE_INDEX"
   },
   {
@@ -162,6 +171,12 @@
     "name": "_selectedIndex"
   },
   {
+    "name": "_stylingMode"
+  },
+  {
+    "name": "addBindingIntoContext"
+  },
+  {
     "name": "addComponentLogic"
   },
   {
@@ -172,6 +187,12 @@
   },
   {
     "name": "allocStylingContext"
+  },
+  {
+    "name": "allocStylingContext"
+  },
+  {
+    "name": "allocateNewContextEntry"
   },
   {
     "name": "allocateOrUpdateDirectiveIntoContext"
@@ -312,6 +333,9 @@
     "name": "getCheckNoChangesMode"
   },
   {
+    "name": "getClassesContext"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -322,6 +346,9 @@
   },
   {
     "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getContext"
   },
   {
     "name": "getDirectiveDef"
@@ -399,6 +426,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getProp"
+  },
+  {
     "name": "getRenderFlags"
   },
   {
@@ -414,10 +444,16 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getStylesContext"
+  },
+  {
     "name": "getStylingContextFromLView"
   },
   {
     "name": "getTNode"
+  },
+  {
+    "name": "getValuesCount"
   },
   {
     "name": "hasClassInput"
@@ -576,6 +612,12 @@
     "name": "refreshDynamicEmbeddedViews"
   },
   {
+    "name": "registerBinding"
+  },
+  {
+    "name": "registerInitialStylingIntoContext"
+  },
+  {
     "name": "registerPostOrderHooks"
   },
   {
@@ -607,6 +649,9 @@
   },
   {
     "name": "resolveDirectives"
+  },
+  {
+    "name": "runtimeIsNewStylingInUse"
   },
   {
     "name": "saveNameToExportMap"

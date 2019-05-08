@@ -21,6 +21,8 @@ import {applyOnCreateInstructions} from '../node_util';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
+import {registerInitialStylingIntoContext} from '../styling_next/instructions';
+import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
@@ -63,8 +65,9 @@ export function ΔelementStart(
   let initialStylesIndex = 0;
   let initialClassesIndex = 0;
 
+  let lastAttrIndex = -1;
   if (attrs) {
-    const lastAttrIndex = setUpAttributes(native, attrs);
+    lastAttrIndex = setUpAttributes(native, attrs);
 
     // it's important to only prepare styling-related datastructures once for a given
     // tNode and not each time an element is created. Also, the styling code is designed
@@ -114,6 +117,10 @@ export function ΔelementStart(
   if (tNode.stylingTemplate) {
     renderInitialClasses(native, tNode.stylingTemplate, renderer, initialClassesIndex);
     renderInitialStyles(native, tNode.stylingTemplate, renderer, initialStylesIndex);
+  }
+
+  if (runtimeIsNewStylingInUse() && lastAttrIndex >= 0) {
+    registerInitialStylingIntoContext(tNode, attrs as TAttributes, lastAttrIndex);
   }
 
   const currentQueries = lView[QUERIES];

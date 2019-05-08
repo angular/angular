@@ -246,6 +246,27 @@ export function adjustActiveDirectiveSuperClassDepthPosition(delta: number) {
 }
 
 /**
+ * Returns he current depth of the super/sub class inheritance chain.
+ *
+ * This will return how many inherited directive/component classes
+ * exist in the current chain.
+ *
+ * ```typescript
+ * @Directive({ selector: '[super-dir]' })
+ * class SuperDir {}
+ *
+ * @Directive({ selector: '[sub-dir]' })
+ * class SubDir extends SuperDir {}
+ *
+ * // if `<div sub-dir>` is used then the super class height is `1`
+ * // if `<div super-dir>` is used then the super class height is `0`
+ * ```
+ */
+export function getActiveDirectiveSuperClassHeight() {
+  return activeDirectiveSuperClassHeight;
+}
+
+/**
  * Returns the current super class (reverse inheritance) depth for a directive.
  *
  * This is designed to help instruction code distinguish different hostBindings
