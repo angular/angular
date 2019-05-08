@@ -235,8 +235,8 @@ export function updateContextWithBindings(
 
   // because we're inserting more bindings into the context, this means that the
   // binding values need to be referenced the singlePropOffsetValues array so that
-  // the template/directive can easily find them inside of the `elementStyleProp`
-  // and the `elementClassProp` functions without iterating through the entire context.
+  // the template/directive can easily find them inside of the `styleProp`
+  // and the `classProp` functions without iterating through the entire context.
   // The first step to setting up these reference points is to mark how many bindings
   // are being added. Even if these bindings already exist in the context, the directive
   // or template code will still call them unknowingly. Therefore the total values need

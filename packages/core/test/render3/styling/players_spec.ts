@@ -9,7 +9,7 @@ import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {getHostElement, ɵɵdefineComponent, ɵɵloadViewQuery, ɵɵviewQuery} from '../../../src/render3/index';
-import {markDirty, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵselect} from '../../../src/render3/instructions/all';
+import {markDirty, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵselect, ɵɵstyling, ɵɵstylingApply} from '../../../src/render3/instructions/all';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
@@ -258,12 +258,12 @@ class CompWithStyling {
     template: (rf: RenderFlags, ctx: CompWithStyling) => {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
-        ɵɵelementStyling(['fooClass']);
+        ɵɵstyling(['fooClass']);
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
         ɵɵselect(0);
-        ɵɵelementStylingApply();
+        ɵɵstylingApply();
       }
     }
   });

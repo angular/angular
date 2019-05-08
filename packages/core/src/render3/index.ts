@@ -23,6 +23,8 @@ export {
   tick,
   ɵɵallocHostVars,
   ɵɵbind,
+  ɵɵclassMap,
+  ɵɵclassProp,
   ɵɵcomponentHostSyntheticListener,
   ɵɵcomponentHostSyntheticProperty,
 
@@ -34,8 +36,6 @@ export {
 
   ɵɵelement,
   ɵɵelementAttribute,
-  ɵɵelementClassMap,
-  ɵɵelementClassProp,
   ɵɵelementContainerEnd,
 
   ɵɵelementContainerStart,
@@ -44,10 +44,6 @@ export {
   ɵɵelementHostAttrs,
   ɵɵelementProperty,
   ɵɵelementStart,
-  ɵɵelementStyleMap,
-  ɵɵelementStyleProp,
-  ɵɵelementStyling,
-  ɵɵelementStylingApply,
   ɵɵembeddedViewEnd,
 
   ɵɵembeddedViewStart,
@@ -91,6 +87,10 @@ export {
   ɵɵreference,
 
   ɵɵselect,
+  ɵɵstyleMap,
+  ɵɵstyleProp,
+  ɵɵstyling,
+  ɵɵstylingApply,
   ɵɵtemplate,
 
   ɵɵtext,

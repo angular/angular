@@ -1777,13 +1777,13 @@ describe('ngtsc behavioral tests', () => {
           i0.\u0275\u0275listener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
           i0.\u0275\u0275listener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.\u0275\u0275resolveBody);
           i0.\u0275\u0275listener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
-          i0.\u0275\u0275elementStyling(_c0);
+          i0.\u0275\u0275styling(_c0);
         }
         if (rf & 2) {
           i0.\u0275\u0275elementAttribute(elIndex, "hello", i0.\u0275\u0275bind(ctx.foo));
           i0.\u0275\u0275property("prop", ctx.bar, null, true);
-          i0.\u0275\u0275elementClassProp(0, ctx.someClass);
-          i0.\u0275\u0275elementStylingApply();
+          i0.\u0275\u0275classProp(0, ctx.someClass);
+          i0.\u0275\u0275stylingApply();
         }
       }
     `;

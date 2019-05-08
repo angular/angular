@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {ɵɵpropertyInterpolate, ɵɵpropertyInterpolate1, ɵɵpropertyInterpolate2, ɵɵpropertyInterpolate3, ɵɵpropertyInterpolate4, ɵɵpropertyInterpolate5, ɵɵpropertyInterpolate6, ɵɵpropertyInterpolate7, ɵɵpropertyInterpolate8, ɵɵpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵbind, ɵɵelement, ɵɵelementAttribute, ɵɵelementClassMap, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleMap, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {RenderFlags, ɵɵbind, ɵɵclassMap, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -23,7 +23,7 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 describe('instructions', () => {
   function createAnchor() {
     ɵɵelementStart(0, 'a');
-    ɵɵelementStyling();
+    ɵɵstyling();
     ɵɵelementEnd();
   }
 
@@ -39,7 +39,7 @@ describe('instructions', () => {
       attrs.push(AttributeMarker.Styles, ...initialStyles);
     }
     ɵɵelementStart(0, 'div', attrs);
-    ɵɵelementStyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
+    ɵɵstyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
     ɵɵelementEnd();
   }
 
@@ -1010,23 +1010,23 @@ describe('instructions', () => {
     });
   });
 
-  describe('elementStyleProp', () => {
+  describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
       const t = new TemplateFixture(() => {
         return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
       }, () => {}, 1);
       t.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleProp(0, 'url("http://server")');
-        ɵɵelementStylingApply();
+        ɵɵstyleProp(0, 'url("http://server")');
+        ɵɵstylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
-        ɵɵelementStylingApply();
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -1041,8 +1041,8 @@ describe('instructions', () => {
 
       t.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply();
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstylingApply();
       });
 
       expect(sanitizerInterceptor.lastValue !).toEqual('apple');
@@ -1050,17 +1050,17 @@ describe('instructions', () => {
 
       t.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleProp(0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply();
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstylingApply();
       });
       expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
   });
 
-  describe('elementStyleMap', () => {
+  describe('styleMap', () => {
     function createDivWithStyle() {
       ɵɵelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
-      ɵɵelementStyling([], ['height']);
+      ɵɵstyling([], ['height']);
       ɵɵelementEnd();
     }
 
@@ -1068,8 +1068,8 @@ describe('instructions', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleMap({'background-color': 'red'});
-        ɵɵelementStylingApply();
+        ɵɵstyleMap({'background-color': 'red'});
+        ɵɵstylingApply();
       });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -1084,7 +1084,7 @@ describe('instructions', () => {
 
       fixture.update(() => {
         ɵɵselect(0);
-        ɵɵelementStyleMap({
+        ɵɵstyleMap({
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -1093,7 +1093,7 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
-        ɵɵelementStylingApply();
+        ɵɵstylingApply();
       });
 
       const props = detectedValues.sort();
@@ -1106,7 +1106,7 @@ describe('instructions', () => {
   describe('elementClass', () => {
     function createDivWithStyling() {
       ɵɵelementStart(0, 'div');
-      ɵɵelementStyling();
+      ɵɵstyling();
       ɵɵelementEnd();
     }
 
@@ -1114,8 +1114,8 @@ describe('instructions', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
         ɵɵselect(0);
-        ɵɵelementClassMap('multiple classes');
-        ɵɵelementStylingApply();
+        ɵɵclassMap('multiple classes');
+        ɵɵstylingApply();
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
