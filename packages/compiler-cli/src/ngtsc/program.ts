@@ -460,12 +460,14 @@ export class NgtscProgram implements api.Program {
     const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
+    const localMetaReader = new CompoundMetadataReader([localMetaRegistry, this.incrementalState]);
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);
     const scopeRegistry = new LocalModuleScopeRegistry(
-        localMetaRegistry, depScopeReader, this.refEmitter, aliasGenerator);
-    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
+        localMetaReader, depScopeReader, this.refEmitter, aliasGenerator);
+    const metaRegistry =
+        new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry, this.incrementalState]);
 
-    this.metaReader = new CompoundMetadataReader([localMetaRegistry, dtsReader]);
+    this.metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
 
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph`
@@ -504,8 +506,8 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new IvyCompilation(
-        handlers, checker, this.reflector, this.importRewriter, this.incrementalState,
-        this.perfRecorder, this.sourceToFactorySymbols);
+        handlers, this.reflector, this.importRewriter, this.incrementalState, this.perfRecorder,
+        this.sourceToFactorySymbols, scopeRegistry);
   }
 
   private get reflector(): TypeScriptReflectionHost {

@@ -7,12 +7,15 @@
  */
 
 import * as ts from 'typescript';
+import {Reference} from '../../imports';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
 import {DependencyTracker} from '../../partial_evaluator';
+import {ClassDeclaration} from '../../reflection';
 
 /**
  * Accumulates state between compilations.
  */
-export class IncrementalState implements DependencyTracker {
+export class IncrementalState implements DependencyTracker, MetadataReader, MetadataRegistry {
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
       private metadata: Map<ts.SourceFile, FileMetadata>) {}
@@ -85,6 +88,33 @@ export class IncrementalState implements DependencyTracker {
     metadata.fileDependencies.add(dep);
   }
 
+  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
+    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
+    return metadata && metadata.ngModuleMeta.get(ref.node) || null;
+  }
+  registerNgModuleMetadata(meta: NgModuleMeta): void {
+    const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
+    metadata.ngModuleMeta.set(meta.ref.node, meta);
+  }
+
+  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
+    return metadata && metadata.directiveMeta.get(ref.node) || null;
+  }
+  registerDirectiveMetadata(meta: DirectiveMeta): void {
+    const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
+    metadata.directiveMeta.set(meta.ref.node, meta);
+  }
+
+  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
+    const metadata = this.metadata.get(ref.node.getSourceFile()) || null;
+    return metadata && metadata.pipeMeta.get(ref.node) || null;
+  }
+  registerPipeMetadata(meta: PipeMeta): void {
+    const metadata = this.ensureMetadata(meta.ref.node.getSourceFile());
+    metadata.pipeMeta.set(meta.ref.node, meta);
+  }
+
   private ensureMetadata(sf: ts.SourceFile): FileMetadata {
     const metadata = this.metadata.get(sf) || new FileMetadata();
     this.metadata.set(sf, metadata);
@@ -100,4 +130,7 @@ class FileMetadata {
   safeToSkipEmitIfUnchanged = false;
   /** A set of source files that this file depends upon. */
   fileDependencies = new Set<ts.SourceFile>();
+  directiveMeta = new Map<ClassDeclaration, DirectiveMeta>();
+  ngModuleMeta = new Map<ClassDeclaration, NgModuleMeta>();
+  pipeMeta = new Map<ClassDeclaration, PipeMeta>();
 }

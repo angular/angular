@@ -30,6 +30,16 @@ export interface LocalModuleScope extends ExportScope {
 }
 
 /**
+ * Information about the compilation scope of a registered declaration.
+ */
+export interface CompilationScope extends ScopeData {
+  /** The declaration whose compilation scope is described here. */
+  declaration: ClassDeclaration;
+  /** The declaration of the NgModule that declares this `declaration`. */
+  ngModule: ClassDeclaration;
+}
+
+/**
  * A registry which collects information about NgModules, Directives, Components, and Pipes which
  * are local (declared in the ts.Program being compiled), and can produce `LocalModuleScope`s
  * which summarize the compilation scope of a component.
@@ -73,7 +83,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
    * A value of `undefined` indicates the scope was invalid and produced errors (therefore,
    * diagnostics should exist in the `scopeErrors` map).
    */
-  private cache = new Map<ClassDeclaration, LocalModuleScope|undefined>();
+  private cache = new Map<ClassDeclaration, LocalModuleScope|undefined|null>();
 
   /**
    * Tracks whether a given component requires "remote scoping".
@@ -125,11 +135,9 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
    * available or the scope contains errors.
    */
   getScopeOfModule(clazz: ClassDeclaration): LocalModuleScope|null {
-    if (!this.moduleToRef.has(clazz)) {
-      return null;
-    }
-
-    const scope = this.getScopeOfModuleInternal(this.moduleToRef.get(clazz) !);
+    const scope = this.moduleToRef.has(clazz) ?
+        this.getScopeOfModuleReference(this.moduleToRef.get(clazz) !) :
+        null;
     // Translate undefined -> null.
     return scope !== undefined ? scope : null;
   }
@@ -151,11 +159,32 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
   }
 
   /**
-   * Implementation of `getScopeOfModule` which differentiates between no scope being available
-   * (returns `null`) and a scope being produced with errors (returns `undefined`).
+   * Returns a collection of the compilation scope for each registered declaration.
    */
-  private getScopeOfModuleInternal(ref: Reference<ClassDeclaration>): LocalModuleScope|null
+  getCompilationScopes(): CompilationScope[] {
+    const scopes: CompilationScope[] = [];
+    this.declarationToModule.forEach((ngModule, declaration) => {
+      const scope = this.getScopeOfModule(ngModule);
+      if (scope !== null) {
+        scopes.push({declaration, ngModule, ...scope.compilation});
+      }
+    });
+    return scopes;
+  }
+
+  /**
+   * Implementation of `getScopeOfModule` which accepts a reference to a class and differentiates
+   * between:
+   *
+   * * no scope being available (returns `null`)
+   * * a scope being produced with errors (returns `undefined`).
+   */
+  private getScopeOfModuleReference(ref: Reference<ClassDeclaration>): LocalModuleScope|null
       |undefined {
+    if (this.cache.has(ref.node)) {
+      return this.cache.get(ref.node);
+    }
+
     // Seal the registry to protect the integrity of the `LocalModuleScope` cache.
     this.sealed = true;
 
@@ -163,6 +192,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
     // cannot be produced.
     const ngModule = this.localReader.getNgModuleMetadata(ref);
     if (ngModule === null) {
+      this.cache.set(ref.node, null);
       return null;
     }
 
@@ -326,6 +356,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
       this.scopeErrors.set(ref.node, diagnostics);
 
       // Return undefined to indicate the scope is invalid.
+      this.cache.set(ref.node, undefined);
       return undefined;
     }
 
@@ -360,8 +391,10 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
    * The NgModule in question may be declared locally in the current ts.Program, or it may be
    * declared in a .d.ts file.
    *
-   * This function will return `null` if no scope could be found, or `undefined` if an invalid scope
-   * was found. It can also contribute diagnostics of its own by adding to the given `diagnostics`
+   * @returns `null` if no scope could be found, or `undefined` if an invalid scope
+   * was found.
+   *
+   * May also contribute diagnostics of its own by adding to the given `diagnostics`
    * array parameter.
    */
   private getExportedScope(
@@ -382,7 +415,7 @@ export class LocalModuleScopeRegistry implements MetadataRegistry {
       return this.dependencyScopeReader.resolve(ref);
     } else {
       // The NgModule is declared locally in the current program. Resolve it from the registry.
-      return this.getScopeOfModuleInternal(ref);
+      return this.getScopeOfModuleReference(ref);
     }
   }
 
