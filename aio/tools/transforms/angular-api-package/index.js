@@ -86,6 +86,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'common/http/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
+      'common/upgrade/index.ts',
       'core/index.ts',
       'core/testing/index.ts',
       'elements/index.ts',
