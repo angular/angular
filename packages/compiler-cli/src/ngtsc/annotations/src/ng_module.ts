@@ -162,6 +162,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       exports,
       imports,
       containsForwardDecls,
+      id,
       emitInline: false,
       // TODO: to be implemented as a part of FW-1004.
       schemas: [],
@@ -256,11 +257,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
         ngModuleStatements.push(callExpr.toStmt());
       }
-    }
-    if (analysis.id !== null) {
-      const registerNgModuleType = new ExternalExpr(R3Identifiers.registerNgModuleType);
-      const callExpr = registerNgModuleType.callFn([analysis.id, new WrappedNodeExpr(node.name)]);
-      ngModuleStatements.push(callExpr.toStmt());
     }
     return [
       {
