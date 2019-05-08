@@ -401,6 +401,30 @@ describe('static-queries migration with template strategy', () => {
           .toContain(`@ViewChild('myRef', { static: true }) query: any;`);
     });
 
+    it('should detect queries declared on accessor', async() => {
+      writeFile('/index.ts', `
+        import {Component, NgModule, ViewChild} from '@angular/core';
+
+        @Component({templateUrl: 'my-tmpl.html'})
+        export class MyComp {
+          @ViewChild('myRef')
+          set query(result: any) { /* noop */}
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      writeFile(`/my-tmpl.html`, `
+        <span #myRef>My Ref</span>
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toMatch(/@ViewChild\('myRef', { static: true }\)\s+set query/);
+    });
+
     it('should add a todo if a query is not declared in any component', async() => {
       writeFile('/index.ts', `
         import {Component, NgModule, ViewChild, SomeToken} from '@angular/core';
