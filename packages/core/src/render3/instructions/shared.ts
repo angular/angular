@@ -560,6 +560,7 @@ export function createDirectivesAndLocals(
   instantiateAllDirectives(tView, lView, previousOrParentTNode);
   invokeDirectivesHostBindings(tView, lView, previousOrParentTNode);
   saveResolvedLocalsInData(lView, previousOrParentTNode, localRefExtractor);
+  setActiveHostElement(null);
 }
 
 /**
