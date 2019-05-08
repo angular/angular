@@ -13,16 +13,17 @@ The following properties, at the top level of the file, configure the workspace.
 * `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
 * `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new app in a new workspace, that app is the default project for the workspace until you change it here.
 * `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See [Generation schematics](#schematics) below.
-* `projects` : Contains a subsection for each project (library, app, e2e test app) in the workspace, with the per-project configuration options.
+* `projects` : Contains a subsection for each project (library or application) in the workspace, with the per-project configuration options.
 
-The initial app that you create with `ng new app_name` is listed under "projects", along with its corresponding end-to-end test app:
+The initial app that you create with `ng new app_name` is listed under "projects":
 
-<code-example format="." language="none" linenums="false">
-projects
-  app_name
+<code-example format="." language="json" linenums="false">
+"projects": {
+  "app_name": {
     ...
-  app_name-e2e
-    ...
+  }
+  ...
+}
 </code-example>
 
 Each additional app that you create with `ng generate application` has a corresponding end-to-end test project, with its own configuration section.
@@ -31,8 +32,8 @@ When you create a library project with `ng generate library`, the library projec
 <div class="alert is-helpful">
 
   Note that the `projects` section of the configuration file does not correspond exactly to the workspace file structure.
-  * The initial app created by `ng new` is at the top level of the workspace file structure, along with its e2e app.
-  * Additional apps, e2e apps, and libraries go into a `projects` folder in the workspace.
+  * The initial app created by `ng new` is at the top level of the workspace file structure.
+  * Additional applications and libraries go into a `projects` folder in the workspace.
 
   For more information, see [Workspace and project file structure](guide/file-structure).
 
@@ -57,7 +58,7 @@ The following top-level configuration properties are available for each project,
 | :-------------- | :---------------------------- |
 | `root`          | The root folder for this project's files, relative to the workspace folder. Empty for the initial app, which resides at the top level of the workspace. |
 | `sourceRoot`    | The root folder for this project's source files. |
-| `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot. Both an app and its e2e test app are of type "application".|
+| `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot.|
 | `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an app or feature area. |
 | `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See [Generation schematics](#schematics) below.  |
 | `architect`     | Configuration defaults for Architect builder targets for this project. |
