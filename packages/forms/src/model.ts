@@ -1287,9 +1287,7 @@ export class FormGroup extends AbstractControl {
    * `valueChanges` observables emit events with the latest status and value when the control is
    * added. When false, no events are emitted.
    */
-  addControl(
-      name: string, control: AbstractControl,
-      opts: {emitEvent?: boolean} = {}): void {
+  addControl(name: string, control: AbstractControl, opts: {emitEvent?: boolean} = {}): void {
     this.registerControl(name, control);
 
     this.updateValueAndValidity(opts);
