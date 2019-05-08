@@ -716,7 +716,7 @@ function createHostBindingsFunction(
     // templateFn/hostBindingsFn functions. The instruction below will figure out
     // what all the bindings are and then generate the statements required to register
     // those bindings to the element via `styling`.
-    const stylingInstruction = styleBuilder.buildstylingInstruction(null, constantPool);
+    const stylingInstruction = styleBuilder.buildStylingInstruction(null, constantPool);
     if (stylingInstruction) {
       createStatements.push(createStylingStmt(stylingInstruction, bindingContext, bindingFn));
     }

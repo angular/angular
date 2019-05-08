@@ -282,7 +282,7 @@ export class StylingBuilder {
    * The instruction generation code below is used for producing the AOT statement code which is
    * responsible for registering style/class bindings to an element.
    */
-  buildstylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool): Instruction
+  buildStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool): Instruction
       |null {
     if (this.hasBindings) {
       return {
@@ -340,7 +340,7 @@ export class StylingBuilder {
    * The instruction data will contain all expressions for `classMap` to function
    * which includes the `[class]` expression params.
    */
-  buildclassMapInstruction(valueConverter: ValueConverter): Instruction|null {
+  buildClassMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._classMapInput) {
       return this._buildMapBasedInstruction(valueConverter, true, this._classMapInput);
     }
@@ -353,7 +353,7 @@ export class StylingBuilder {
    * The instruction data will contain all expressions for `styleMap` to function
    * which includes the `[style]` expression params.
    */
-  buildstyleMapInstruction(valueConverter: ValueConverter): Instruction|null {
+  buildStyleMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._styleMapInput) {
       return this._buildMapBasedInstruction(valueConverter, false, this._styleMapInput);
     }
@@ -449,11 +449,11 @@ export class StylingBuilder {
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: Instruction[] = [];
     if (this.hasBindings) {
-      const styleMapInstruction = this.buildstyleMapInstruction(valueConverter);
+      const styleMapInstruction = this.buildStyleMapInstruction(valueConverter);
       if (styleMapInstruction) {
         instructions.push(styleMapInstruction);
       }
-      const classMapInstruction = this.buildclassMapInstruction(valueConverter);
+      const classMapInstruction = this.buildClassMapInstruction(valueConverter);
       if (classMapInstruction) {
         instructions.push(classMapInstruction);
       }

@@ -667,7 +667,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // file
       this.processStylingInstruction(
           elementIndex, implicit,
-          stylingBuilder.buildstylingInstruction(element.sourceSpan, this.constantPool), true);
+          stylingBuilder.buildStylingInstruction(element.sourceSpan, this.constantPool), true);
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
