@@ -121,7 +121,7 @@ import {of } from 'rxjs';
         expect(a.controls).toEqual([]);
       }));
 
-      it('should not emit event when inserting if emitEvent is false', () => {
+      it('should not emit event when inserting if emitEvent is false', fakeAsync(() => {
         a.push(c1);
         a.push(c3);
 
@@ -132,9 +132,9 @@ import {of } from 'rxjs';
         tick();
 
         expect(a.controls).toEqual([c1, c2, c3]);
-      });
+      }));
 
-      it('should not emit event when replacing if emitEvent is false', () => {
+      it('should not emit event when replacing if emitEvent is false', fakeAsync(() => {
         a.push(c1);
         a.push(c3);
 
@@ -145,7 +145,7 @@ import {of } from 'rxjs';
         tick();
 
         expect(a.controls).toEqual([c1, c2]);
-      });
+      }));
     });
 
     describe('value', () => {
