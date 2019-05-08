@@ -502,14 +502,14 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵelementStyling($e0_classBindings$, $e0_styleBindings$);
+                $r3$.ɵɵstyling($e0_classBindings$, $e0_styleBindings$);
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementStyleProp(0, ctx.color);
-                $r3$.ɵɵelementClassProp(0, ctx.error);
-                $r3$.ɵɵelementStylingApply();
+                $r3$.ɵɵstyleProp(0, ctx.color);
+                $r3$.ɵɵclassProp(0, ctx.error);
+                $r3$.ɵɵstylingApply();
               }
             },
             encapsulation: 2

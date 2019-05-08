@@ -921,9 +921,6 @@
     "name": "incrementActiveDirectiveId"
   },
   {
-    "name": "initElementStyling"
-  },
-  {
     "name": "initNodeFlags"
   },
   {
@@ -931,6 +928,9 @@
   },
   {
     "name": "initializeTNodeInputs"
+  },
+  {
+    "name": "initstyling"
   },
   {
     "name": "injectElementRef"
@@ -1365,6 +1365,9 @@
     "name": "ɵɵbind"
   },
   {
+    "name": "ɵɵclassProp"
+  },
+  {
     "name": "ɵɵdefineComponent"
   },
   {
@@ -1377,19 +1380,10 @@
     "name": "ɵɵdirectiveInject"
   },
   {
-    "name": "ɵɵelementClassProp"
-  },
-  {
     "name": "ɵɵelementEnd"
   },
   {
     "name": "ɵɵelementStart"
-  },
-  {
-    "name": "ɵɵelementStyling"
-  },
-  {
-    "name": "ɵɵelementStylingApply"
   },
   {
     "name": "ɵɵgetCurrentView"
@@ -1420,6 +1414,12 @@
   },
   {
     "name": "ɵɵselect"
+  },
+  {
+    "name": "ɵɵstyling"
+  },
+  {
+    "name": "ɵɵstylingApply"
   },
   {
     "name": "ɵɵtemplate"

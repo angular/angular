@@ -385,13 +385,13 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -451,13 +451,13 @@ describe('compiler compliance: styling', () => {
           template: function MyComponentWithInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling();
+              $r3$.ɵɵstyling();
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap($r3$.ɵɵinterpolation1("foo foo-", $ctx$.fooId, ""));
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassMap($r3$.ɵɵinterpolation1("foo foo-", $ctx$.fooId, ""));
+              $r3$.ɵɵstylingApply();
             }
           }
         …
@@ -466,13 +466,13 @@ describe('compiler compliance: styling', () => {
           template: function MyComponentWithMuchosInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling();
+              $r3$.ɵɵstyling();
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap($r3$.ɵɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassMap($r3$.ɵɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
+              $r3$.ɵɵstylingApply();
             }
           }
         …
@@ -481,13 +481,13 @@ describe('compiler compliance: styling', () => {
           template: function MyComponentWithoutInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling();
+              $r3$.ɵɵstyling();
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap($ctx$.exp);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassMap($ctx$.exp);
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -538,15 +538,15 @@ describe('compiler compliance: styling', () => {
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelementStart(0, "div", $_c0$);
-                  $r3$.ɵɵelementStyling(null, $_c1$, $r3$.ɵɵdefaultStyleSanitizer);
+                  $r3$.ɵɵstyling(null, $_c1$, $r3$.ɵɵdefaultStyleSanitizer);
                   $r3$.ɵɵelementEnd();
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
-                  $r3$.ɵɵelementStyleProp(0, $ctx$.myWidth);
-                  $r3$.ɵɵelementStyleProp(1, $ctx$.myHeight);
-                  $r3$.ɵɵelementStylingApply();
+                  $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+                  $r3$.ɵɵstyleProp(0, $ctx$.myWidth);
+                  $r3$.ɵɵstyleProp(1, $ctx$.myHeight);
+                  $r3$.ɵɵstylingApply();
                   $r3$.ɵɵelementAttribute(0, "style", $r3$.ɵɵbind("border-width: 10px"), $r3$.ɵɵsanitizeStyle);
                 }
               },
@@ -598,13 +598,13 @@ describe('compiler compliance: styling', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵelementStyling(null, _c0, $r3$.ɵɵdefaultStyleSanitizer);
+                $r3$.ɵɵstyling(null, _c0, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementStyleProp(0, ctx.myImage);
-                $r3$.ɵɵelementStylingApply();
+                $r3$.ɵɵstyleProp(0, ctx.myImage);
+                $r3$.ɵɵstylingApply();
               }
             },
             encapsulation: 2
@@ -640,13 +640,13 @@ describe('compiler compliance: styling', () => {
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling(null, _c0);
+              $r3$.ɵɵstyling(null, _c0);
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleProp(0, 12, "px");
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleProp(0, 12, "px");
+              $r3$.ɵɵstylingApply();
             }
           }
      `;
@@ -676,7 +676,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('elementStyling');
+      expect(result.source).not.toContain('styling');
     });
 
   });
@@ -706,13 +706,13 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling();
+              $r3$.ɵɵstyling();
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementClassMap($ctx$.myClassExp);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassMap($ctx$.myClassExp);
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -763,15 +763,15 @@ describe('compiler compliance: styling', () => {
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵɵelementStyling($e0_bindings$);
+                  $r3$.ɵɵstyling($e0_bindings$);
                   $r3$.ɵɵelementEnd();
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵelementClassMap($ctx$.myClassExp);
-                  $r3$.ɵɵelementClassProp(0, $ctx$.yesToApple);
-                  $r3$.ɵɵelementClassProp(1, $ctx$.yesToOrange);
-                  $r3$.ɵɵelementStylingApply();
+                  $r3$.ɵɵclassMap($ctx$.myClassExp);
+                  $r3$.ɵɵclassProp(0, $ctx$.yesToApple);
+                  $r3$.ɵɵclassProp(1, $ctx$.yesToOrange);
+                  $r3$.ɵɵstylingApply();
                   $r3$.ɵɵelementAttribute(0, "class", $r3$.ɵɵbind("banana"));
                 }
               },
@@ -854,7 +854,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('elementStyling');
+      expect(result.source).not.toContain('styling');
     });
 
   });
@@ -885,14 +885,14 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap($ctx$.myStyleExp);
-              $r3$.ɵɵelementClassMap($ctx$.myClassExp);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap($ctx$.myStyleExp);
+              $r3$.ɵɵclassMap($ctx$.myClassExp);
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -927,16 +927,16 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵpipe(1, "stylePipe");
               $r3$.ɵɵpipe(2, "classPipe");
               $r3$.ɵɵelementEnd();
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap($r3$.ɵɵpipeBind1(1, 0, $ctx$.myStyleExp));
-              $r3$.ɵɵelementClassMap($r3$.ɵɵpipeBind1(2, 2, $ctx$.myClassExp));
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind1(1, 0, $ctx$.myStyleExp));
+              $r3$.ɵɵclassMap($r3$.ɵɵpipeBind1(2, 2, $ctx$.myClassExp));
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -982,7 +982,7 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
-              $r3$.ɵɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
               $r3$.ɵɵpipe(1, "pipe");
               $r3$.ɵɵpipe(2, "pipe");
               $r3$.ɵɵpipe(3, "pipe");
@@ -992,12 +992,12 @@ describe('compiler compliance: styling', () => {
             }
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleMap($r3$.ɵɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
-              $r3$.ɵɵelementClassMap($e2_styling$);
-              $r3$.ɵɵelementStyleProp(0, $r3$.ɵɵpipeBind2(2, 4, $ctx$.barExp, 3000));
-              $r3$.ɵɵelementStyleProp(1, $r3$.ɵɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
-              $r3$.ɵɵelementClassProp(0, $r3$.ɵɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap($r3$.ɵɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
+              $r3$.ɵɵclassMap($e2_styling$);
+              $r3$.ɵɵstyleProp(0, $r3$.ɵɵpipeBind2(2, 4, $ctx$.barExp, 3000));
+              $r3$.ɵɵstyleProp(1, $r3$.ɵɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
+              $r3$.ɵɵclassProp(0, $r3$.ɵɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
+              $r3$.ɵɵstylingApply();
               $r3$.ɵɵselect(5);
               $r3$.ɵɵtextBinding(5, $r3$.ɵɵinterpolation1(" ", $ctx$.item, ""));
             }
@@ -1042,17 +1042,17 @@ describe('compiler compliance: styling', () => {
             …
             if (rf & 2) {
               $r3$.ɵɵselect(0);
-              $r3$.ɵɵelementStyleProp(0, $ctx$.w1);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleProp(0, $ctx$.w1);
+              $r3$.ɵɵstylingApply();
               $r3$.ɵɵselect(1);
-              $r3$.ɵɵelementStyleProp(0, $ctx$.h1);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleProp(0, $ctx$.h1);
+              $r3$.ɵɵstylingApply();
               $r3$.ɵɵselect(2);
-              $r3$.ɵɵelementClassProp(0, $ctx$.a1);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassProp(0, $ctx$.a1);
+              $r3$.ɵɵstylingApply();
               $r3$.ɵɵselect(3);
-              $r3$.ɵɵelementClassProp(0, $ctx$.r1);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassProp(0, $ctx$.r1);
+              $r3$.ɵɵstylingApply();
             }
           }
           `;
@@ -1105,14 +1105,14 @@ describe('compiler compliance: styling', () => {
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵɵelementHostAttrs($e0_attrs$);
-              $r3$.ɵɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵɵdefaultStyleSanitizer);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementStyleMap(ctx.myStyle);
-              $r3$.ɵɵelementClassMap(ctx.myClass);
-              $r3$.ɵɵelementStyleProp(0, ctx.myColorProp);
-              $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap(ctx.myStyle);
+              $r3$.ɵɵclassMap(ctx.myClass);
+              $r3$.ɵɵstyleProp(0, ctx.myColorProp);
+              $r3$.ɵɵclassProp(0, ctx.myFooClass);
+              $r3$.ɵɵstylingApply();
             }
           },
           consts: 0,
@@ -1166,16 +1166,16 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
+              $r3$.ɵɵstyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementStyleMap(ctx.myStyle);
-              $r3$.ɵɵelementClassMap(ctx.myClasses);
-              $r3$.ɵɵelementStyleProp(0, ctx.myHeightProp, "pt");
-              $r3$.ɵɵelementStyleProp(1, ctx.myWidthProp);
-              $r3$.ɵɵelementClassProp(0, ctx.myBarClass);
-              $r3$.ɵɵelementClassProp(1, ctx.myFooClass);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleMap(ctx.myStyle);
+              $r3$.ɵɵclassMap(ctx.myClasses);
+              $r3$.ɵɵstyleProp(0, ctx.myHeightProp, "pt");
+              $r3$.ɵɵstyleProp(1, ctx.myWidthProp);
+              $r3$.ɵɵclassProp(0, ctx.myBarClass);
+              $r3$.ɵɵclassProp(1, ctx.myFooClass);
+              $r3$.ɵɵstylingApply();
             }
           },
           consts: 0,
@@ -1230,16 +1230,16 @@ describe('compiler compliance: styling', () => {
             function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵelementStyling(_c2, _c3, $r3$.ɵɵdefaultStyleSanitizer);
+                $r3$.ɵɵstyling(_c2, _c3, $r3$.ɵɵdefaultStyleSanitizer);
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵɵselect(0);
-                $r3$.ɵɵelementStyleMap(ctx.myStyleExp);
-                $r3$.ɵɵelementClassMap(ctx.myClassExp);
-                $r3$.ɵɵelementStyleProp(0, ctx.myHeightExp, null, true);
-                $r3$.ɵɵelementClassProp(0, ctx.myBarClassExp, true);
-                $r3$.ɵɵelementStylingApply();
+                $r3$.ɵɵstyleMap(ctx.myStyleExp);
+                $r3$.ɵɵclassMap(ctx.myClassExp);
+                $r3$.ɵɵstyleProp(0, ctx.myHeightExp, null, true);
+                $r3$.ɵɵclassProp(0, ctx.myBarClassExp, true);
+                $r3$.ɵɵstylingApply();
               }
             },
           `;
@@ -1250,14 +1250,14 @@ describe('compiler compliance: styling', () => {
             …
             hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
               if (rf & 1) {
-                $r3$.ɵɵelementStyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
+                $r3$.ɵɵstyling(_c0, _c1, $r3$.ɵɵdefaultStyleSanitizer);
               }
               if (rf & 2) {
-                $r3$.ɵɵelementStyleMap(ctx.myStyleExp);
-                $r3$.ɵɵelementClassMap(ctx.myClassExp);
-                $r3$.ɵɵelementStyleProp(0, ctx.myWidthExp, null, true);
-                $r3$.ɵɵelementClassProp(0, ctx.myFooClassExp, true);
-                $r3$.ɵɵelementStylingApply();
+                $r3$.ɵɵstyleMap(ctx.myStyleExp);
+                $r3$.ɵɵclassMap(ctx.myClassExp);
+                $r3$.ɵɵstyleProp(0, ctx.myWidthExp, null, true);
+                $r3$.ɵɵclassProp(0, ctx.myFooClassExp, true);
+                $r3$.ɵɵstylingApply();
               }
             },
           `;
@@ -1319,33 +1319,33 @@ describe('compiler compliance: styling', () => {
           …
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementStyling();
+              $r3$.ɵɵstyling();
             }
             if (rf & 2) {
-              $r3$.ɵɵelementClassMap(ctx.myClassMap);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵclassMap(ctx.myClassMap);
+              $r3$.ɵɵstylingApply();
             }
           }
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementStyling($widthDir_classes$, $widthDir_styles$);
+              $r3$.ɵɵstyling($widthDir_classes$, $widthDir_styles$);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementStyleProp(0, ctx.myWidth);
-              $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleProp(0, ctx.myWidth);
+              $r3$.ɵɵclassProp(0, ctx.myFooClass);
+              $r3$.ɵɵstylingApply();
             }
           }
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵɵelementStyling($heightDir_classes$, $heightDir_styles$);
+              $r3$.ɵɵstyling($heightDir_classes$, $heightDir_styles$);
             }
             if (rf & 2) {
-              $r3$.ɵɵelementStyleProp(0, ctx.myHeight);
-              $r3$.ɵɵelementClassProp(0, ctx.myBarClass);
-              $r3$.ɵɵelementStylingApply();
+              $r3$.ɵɵstyleProp(0, ctx.myHeight);
+              $r3$.ɵɵclassProp(0, ctx.myBarClass);
+              $r3$.ɵɵstylingApply();
             }
           }
           …
@@ -1401,14 +1401,14 @@ describe('compiler compliance: styling', () => {
         if (rf & 1) {
           $r3$.ɵɵallocHostVars(2);
           $r3$.ɵɵelementHostAttrs($_c0$);
-          $r3$.ɵɵelementStyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
+          $r3$.ɵɵstyling(null, null, $r3$.ɵɵdefaultStyleSanitizer);
         }
         if (rf & 2) {
           $r3$.ɵɵproperty("id", ctx.id, null, true);
           $r3$.ɵɵproperty("title", ctx.title, null, true);
-          $r3$.ɵɵelementStyleMap(ctx.myStyle);
-          $r3$.ɵɵelementClassMap(ctx.myClass);
-          $r3$.ɵɵelementStylingApply();
+          $r3$.ɵɵstyleMap(ctx.myStyle);
+          $r3$.ɵɵclassMap(ctx.myClass);
+          $r3$.ɵɵstylingApply();
         }
       }
     `;
@@ -1448,14 +1448,14 @@ describe('compiler compliance: styling', () => {
       hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           $r3$.ɵɵallocHostVars(2);
-          $r3$.ɵɵelementStyling($_c0$, $_c1$);
+          $r3$.ɵɵstyling($_c0$, $_c1$);
         }
         if (rf & 2) {
           $r3$.ɵɵproperty("id", ctx.id, null, true);
           $r3$.ɵɵproperty("title", ctx.title, null, true);
-          $r3$.ɵɵelementStyleProp(0, ctx.myWidth);
-          $r3$.ɵɵelementClassProp(0, ctx.myFooClass);
-          $r3$.ɵɵelementStylingApply();
+          $r3$.ɵɵstyleProp(0, ctx.myWidth);
+          $r3$.ɵɵclassProp(0, ctx.myFooClass);
+          $r3$.ɵɵstylingApply();
         }
       }
     `;

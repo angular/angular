@@ -2715,7 +2715,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵɵi18nStart(1, $I18N_0$);
             $r3$.ɵɵelement(2, "b");
             $r3$.ɵɵelementStart(3, "div");
-            $r3$.ɵɵelementStyling($_c2$);
+            $r3$.ɵɵstyling($_c2$);
             $r3$.ɵɵelement(4, "i");
             $r3$.ɵɵelementEnd();
             $r3$.ɵɵi18nEnd();
