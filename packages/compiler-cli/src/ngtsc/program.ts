@@ -347,7 +347,7 @@ export class NgtscProgram implements api.Program {
         continue;
       }
 
-      if (this.incrementalState.safeToSkipEmit(targetSourceFile)) {
+      if (this.incrementalState.safeToSkip(targetSourceFile)) {
         continue;
       }
 
