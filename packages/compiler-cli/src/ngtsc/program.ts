@@ -457,7 +457,7 @@ export class NgtscProgram implements api.Program {
       aliasGenerator = new AliasGenerator(this.fileToModuleHost);
     }
 
-    const evaluator = new PartialEvaluator(this.reflector, checker);
+    const evaluator = new PartialEvaluator(this.reflector, checker, this.incrementalState);
     const dtsReader = new DtsMetadataReader(checker, this.reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasGenerator);

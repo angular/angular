@@ -8,6 +8,7 @@ ts_library(
         "src/**/*.ts",
     ]),
     deps = [
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "@npm//typescript",
     ],
 )

@@ -14,23 +14,27 @@ import {ReflectionHost} from '../../reflection';
 import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 
+/**
+ * Implement this interface to record dependency relations between
+ * source files.
+ */
+export interface DependencyTracker {
+  trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile): void;
+}
+
 export type ForeignFunctionResolver =
     (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
      args: ReadonlyArray<ts.Expression>) => ts.Expression | null;
 
-export type VisitedFilesCallback = (sf: ts.SourceFile) => void;
-
 export class PartialEvaluator {
-  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
+  constructor(
+      private host: ReflectionHost, private checker: ts.TypeChecker,
+      private dependencyTracker?: DependencyTracker) {}
 
-  evaluate(
-      expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver,
-      visitedFilesCb?: VisitedFilesCallback): ResolvedValue {
-    const interpreter = new StaticInterpreter(this.host, this.checker, visitedFilesCb);
-    if (visitedFilesCb) {
-      visitedFilesCb(expr.getSourceFile());
-    }
+  evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
+    const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);
     return interpreter.visit(expr, {
+      originatingFile: expr.getSourceFile(),
       absoluteModuleName: null,
       resolutionContext: expr.getSourceFile().fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
