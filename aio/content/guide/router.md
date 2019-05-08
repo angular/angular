@@ -199,8 +199,8 @@ The `RouterLinkActive` directive toggles css classes for active `RouterLink` bin
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
-that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive`
-directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component
+that the Router will add when this link concurs with the active route (and remove when the link is different from the active route).
+You set the `RouterLinkActive` directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component
 property that returns such a string.
 
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
