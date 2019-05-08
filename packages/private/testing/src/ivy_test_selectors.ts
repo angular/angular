@@ -90,23 +90,49 @@ export interface JasmineMethods {
   fit: typeof fit;
   describe: typeof describe;
   fdescribe: typeof fdescribe;
+
+  /**
+   * Runs jasmine expectations against the provided keys for `ngDevMode`.
+   *
+   * Will not perform expectations for keys that are not provided.
+   *
+   * ```ts
+   * // Expect that `ngDevMode.styleMap` is `1`, and `ngDevMode.tNode` is `3`, but we don't care
+   * // about the other values.
+   * onlyInIvy('perf counters').expectPerfCounters({
+   *   stylingMap: 1,
+   *   tNode: 3,
+   * })
+   * ```
+   */
+  expectPerfCounters: (expectedCounters: Partial<NgDevModePerfCounters>) => void;
   isEnabled: boolean;
 }
 
 const PASSTHROUGH: JasmineMethods = {
-  it: it,
-  fit: fit,
-  describe: describe,
-  fdescribe: fdescribe,
+  it,
+  fit,
+  describe,
+  fdescribe,
+  expectPerfCounters,
   isEnabled: true,
 };
 
 function noop() {}
+
+function expectPerfCounters(expectedCounters: Partial<NgDevModePerfCounters>) {
+  Object.keys(expectedCounters).forEach(key => {
+    const expected = (expectedCounters as any)[key];
+    const actual = (ngDevMode as any)[key];
+    expect(actual).toBe(expected, `ngDevMode.${key}`);
+  });
+}
 
 const IGNORE: JasmineMethods = {
   it: noop,
   fit: noop,
   describe: noop,
   fdescribe: noop,
+  expectPerfCounters: noop,
   isEnabled: false,
 };
