@@ -171,28 +171,28 @@ export declare class FormArray extends AbstractControl {
     constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
     clear(opts?: {
-        emitEvent?: boolean
+        emitEvent?: boolean;
     }): void;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl, opts?: {
-        emitEvent?: boolean
+        emitEvent?: boolean;
     }): void;
     patchValue(value: any[], options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     push(control: AbstractControl, opts?: {
-        emitEvent?: boolean
+        emitEvent?: boolean;
     }): void;
     removeAt(index: number, opts?: {
-        emitEvent?: boolean
+        emitEvent?: boolean;
     }): void;
     reset(value?: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     setControl(index: number, control: AbstractControl, opts?: {
-        emitEvent?: boolean
+        emitEvent?: boolean;
     }): void;
     setValue(value: any[], options?: {
         onlySelf?: boolean;
