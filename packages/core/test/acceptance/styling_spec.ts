@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component, Directive, ElementRef} from '@angular/core';
+import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('styling', () => {
+  beforeEach(ngDevModeResetPerfCounters);
+
   it('should render inline style and class attribute values on the element before a directive is instantiated',
      () => {
        @Component({
@@ -147,5 +151,13 @@ describe('styling', () => {
 
     const div = fixture.nativeElement.querySelector('div') as HTMLDivElement;
     expect(div.style.backgroundImage).toBe('url("#test")');
+
+    onlyInIvy('perf counters').expectPerfCounters({
+      stylingApply: 2,
+      stylingApplyCacheMiss: 1,
+      stylingProp: 2,
+      stylingPropCacheMiss: 1,
+      tNode: 3,
+    });
   });
 });
