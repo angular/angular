@@ -81,6 +81,71 @@ import {of } from 'rxjs';
 
         expect(a.controls).toEqual([c1, c2, c3]);
       });
+
+      it('should not emit event when pushing if emitEvent is false', fakeAsync(() => {
+        a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+        a.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+        a.push(c1, {emitEvent: false});
+        tick();
+
+        expect(a.length).toEqual(1);
+        expect(a.controls).toEqual([c1]);
+      }));
+
+      it('should not emit event when removing if emitEvent is false', fakeAsync(() => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+
+        a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+        a.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+        a.removeAt(1, {emitEvent: false});
+        tick();
+
+        expect(a.controls).toEqual([c1, c3]);
+      }));
+
+      it('should not emit event when clearing if emitEvent is false', fakeAsync(() => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+
+        a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+        a.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+        a.clear({emitEvent: false});
+        tick();
+
+        expect(a.controls).toEqual([]);
+      }));
+
+      it('should not emit event when inserting if emitEvent is false', () => {
+        a.push(c1);
+        a.push(c3);
+
+        a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+        a.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+        a.insert(1, c2, {emitEvent: false});
+        tick();
+
+        expect(a.controls).toEqual([c1, c2, c3]);
+      });
+
+      it('should not emit event when replacing if emitEvent is false', () => {
+        a.push(c1);
+        a.push(c3);
+
+        a.valueChanges.subscribe((value) => { throw 'Should not happen'; });
+        a.statusChanges.subscribe((value) => { throw 'Should not happen'; });
+
+        a.setControl(1, c2, {emitEvent: false});
+        tick();
+
+        expect(a.controls).toEqual([c1, c2]);
+      });
     });
 
     describe('value', () => {
