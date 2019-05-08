@@ -7,11 +7,12 @@
  */
 
 import * as ts from 'typescript';
+import {DependencyTracker} from '../../partial_evaluator';
 
 /**
  * Accumulates state between compilations.
  */
-export class IncrementalState {
+export class IncrementalState implements DependencyTracker {
   private constructor(
       private unchangedFiles: Set<ts.SourceFile>,
       private metadata: Map<ts.SourceFile, FileMetadata>) {}
@@ -75,12 +76,28 @@ export class IncrementalState {
   }
 
   markFileAsSafeToSkipEmitIfUnchanged(sf: ts.SourceFile): void {
-    this.metadata.set(sf, {
-      safeToSkipEmitIfUnchanged: true,
-    });
+    const metadata = this.ensureMetadata(sf);
+    metadata.safeToSkipEmitIfUnchanged = true;
+  }
+
+  trackFileDependency(dep: ts.SourceFile, src: ts.SourceFile) {
+    const metadata = this.ensureMetadata(src);
+    metadata.fileDependencies.add(dep);
+  }
+
+  private ensureMetadata(sf: ts.SourceFile): FileMetadata {
+    const metadata = this.metadata.get(sf) || new FileMetadata();
+    this.metadata.set(sf, metadata);
+    return metadata;
   }
 }
 
-interface FileMetadata {
-  safeToSkipEmitIfUnchanged: boolean;
+/**
+ * Information about the whether a source file can have analysis or emission can be skipped.
+ */
+class FileMetadata {
+  /** True if this file has no dependency changes that require it to be re-emitted. */
+  safeToSkipEmitIfUnchanged = false;
+  /** A set of source files that this file depends upon. */
+  fileDependencies = new Set<ts.SourceFile>();
 }

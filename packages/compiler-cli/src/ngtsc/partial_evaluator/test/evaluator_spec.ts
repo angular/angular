@@ -9,45 +9,11 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DynamicValue} from '../src/dynamic';
-import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
-import {EnumValue, ResolvedValue} from '../src/result';
+import {EnumValue} from '../src/result';
 
-function makeExpression(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): {
-  expression: ts.Expression,
-  host: ts.CompilerHost,
-  checker: ts.TypeChecker,
-  program: ts.Program,
-  options: ts.CompilerOptions
-} {
-  const {program, options, host} = makeProgram(
-      [{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}, ...supportingFiles]);
-  const checker = program.getTypeChecker();
-  const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-  return {
-    expression: decl.initializer !,
-    host,
-    options,
-    checker,
-    program,
-  };
-}
-
-function makeEvaluator(checker: ts.TypeChecker): PartialEvaluator {
-  const reflectionHost = new TypeScriptReflectionHost(checker);
-  return new PartialEvaluator(reflectionHost, checker);
-}
-
-function evaluate<T extends ResolvedValue>(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = [],
-    foreignFunctionResolver?: ForeignFunctionResolver): T {
-  const {expression, checker} = makeExpression(code, expr, supportingFiles);
-  const evaluator = makeEvaluator(checker);
-  return evaluator.evaluate(expression, foreignFunctionResolver) as T;
-}
+import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
 
 describe('ngtsc metadata', () => {
   it('reads a file correctly', () => {
@@ -157,7 +123,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('imports work', () => {
-    const {program, options, host} = makeProgram([
+    const {program} = makeProgram([
       {name: 'second.ts', contents: 'export function foo(bar) { return bar; }'},
       {
         name: 'entry.ts',
@@ -168,10 +134,9 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const evaluator = makeEvaluator(checker);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
@@ -185,7 +150,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('absolute imports work', () => {
-    const {program, options, host} = makeProgram([
+    const {program} = makeProgram([
       {name: 'node_modules/some_library/index.d.ts', contents: 'export declare function foo(bar);'},
       {
         name: 'entry.ts',
@@ -196,10 +161,9 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const evaluator = makeEvaluator(checker);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to an absolute reference');
@@ -296,11 +260,10 @@ describe('ngtsc metadata', () => {
       {name: 'entry.ts', contents: `const prop = 42; const target$ = {prop};`},
     ]);
     const checker = program.getTypeChecker();
-    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !as ts.ObjectLiteralExpression;
     const prop = expr.properties[0] as ts.ShorthandPropertyAssignment;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const evaluator = makeEvaluator(checker);
     const resolved = evaluator.evaluate(prop.name);
     expect(resolved).toBe(42);
   });
@@ -314,10 +277,9 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !as ts.ObjectLiteralExpression;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const evaluator = makeEvaluator(checker);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Map)) {
       return fail('Should have resolved to a Map');
@@ -369,34 +331,34 @@ describe('ngtsc metadata', () => {
 
   describe('(visited file tracking)', () => {
     it('should track each time a source file is visited', () => {
-      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const trackFileDependency = jasmine.createSpy('DependencyTracker');
       const {expression, checker} =
           makeExpression(`class A { static foo = 42; } function bar() { return A.foo; }`, 'bar()');
-      const evaluator = makeEvaluator(checker);
-      evaluator.evaluate(expression, undefined, visitedFilesSpy);
-      expect(visitedFilesSpy)
-          .toHaveBeenCalledTimes(3);  // The initial expression, followed by two declaration visited
-      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
-        '/entry.ts', '/entry.ts', '/entry.ts'
-      ]);
+      const evaluator = makeEvaluator(checker, {trackFileDependency});
+      evaluator.evaluate(expression);
+      expect(trackFileDependency).toHaveBeenCalledTimes(2);  // two declaration visited
+      expect(trackFileDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+          .toEqual([['/entry.ts', '/entry.ts'], ['/entry.ts', '/entry.ts']]);
     });
 
     it('should track imported source files', () => {
-      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const trackFileDependency = jasmine.createSpy('DependencyTracker');
       const {expression, checker} = makeExpression(`import {Y} from './other'; const A = Y;`, 'A', [
         {name: 'other.ts', contents: `export const Y = 'test';`},
         {name: 'not-visited.ts', contents: `export const Z = 'nope';`}
       ]);
-      const evaluator = makeEvaluator(checker);
-      evaluator.evaluate(expression, undefined, visitedFilesSpy);
-      expect(visitedFilesSpy).toHaveBeenCalledTimes(3);
-      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
-        '/entry.ts', '/entry.ts', '/other.ts'
-      ]);
+      const evaluator = makeEvaluator(checker, {trackFileDependency});
+      evaluator.evaluate(expression);
+      expect(trackFileDependency).toHaveBeenCalledTimes(2);
+      expect(trackFileDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+          .toEqual([
+            ['/entry.ts', '/entry.ts'],
+            ['/other.ts', '/entry.ts'],
+          ]);
     });
 
     it('should track files passed through during re-exports', () => {
-      const visitedFilesSpy = jasmine.createSpy('visitedFilesCb');
+      const trackFileDependency = jasmine.createSpy('DependencyTracker');
       const {expression, checker} =
           makeExpression(`import * as mod from './direct-reexport';`, 'mod.value.property', [
             {name: 'const.ts', contents: 'export const value = {property: "test"};'},
@@ -404,26 +366,16 @@ describe('ngtsc metadata', () => {
             {name: 'indirect-reexport.ts', contents: `import value from './def'; export {value};`},
             {name: 'direct-reexport.ts', contents: `export {value} from './indirect-reexport';`},
           ]);
-      const evaluator = makeEvaluator(checker);
-      evaluator.evaluate(expression, undefined, visitedFilesSpy);
-      expect(visitedFilesSpy).toHaveBeenCalledTimes(3);
-      expect(visitedFilesSpy.calls.allArgs().map(args => args[0].fileName)).toEqual([
-        '/entry.ts',
-        '/direct-reexport.ts',
-        // Not '/indirect-reexport.ts' or '/def.ts'.
-        // TS skips through them when finding the original symbol for `value`
-        '/const.ts',
-      ]);
+      const evaluator = makeEvaluator(checker, {trackFileDependency});
+      evaluator.evaluate(expression);
+      expect(trackFileDependency).toHaveBeenCalledTimes(2);
+      expect(trackFileDependency.calls.allArgs().map(args => [args[0].fileName, args[1].fileName]))
+          .toEqual([
+            ['/direct-reexport.ts', '/entry.ts'],
+            // Not '/indirect-reexport.ts' or '/def.ts'.
+            // TS skips through them when finding the original symbol for `value`
+            ['/const.ts', '/entry.ts'],
+          ]);
     });
   });
 });
-
-function owningModuleOf(ref: Reference): string|null {
-  return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
-}
-
-function firstArgFfr(
-    node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    args: ReadonlyArray<ts.Expression>): ts.Expression {
-  return args[0];
-}
