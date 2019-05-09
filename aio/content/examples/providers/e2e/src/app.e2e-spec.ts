@@ -23,7 +23,7 @@ describe('providers App', () => {
 
   it('should display header that says Users list', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Users list');
+    expect(page.getTitleText()).toEqual('Users list');
   });
 
 
