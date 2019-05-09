@@ -232,6 +232,8 @@ class DebugNode__POST_R3__ implements DebugNode {
 }
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
+  private _previousAttributes: {[key: string]: string | null;}|undefined;
+
   constructor(nativeNode: Element) {
     ngDevMode && assertDomNode(nativeNode);
     super(nativeNode);
@@ -282,7 +284,20 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
         const attr = eAttrs[i];
         attributes[attr.name] = attr.value;
       }
+      if (this._previousAttributes) {
+        // In ViewEngine removing an attribute by setting it to `null` still keeps it on the
+        // `DebugElement.attributes` as `null`, however since Ivy reads the attributes off the
+        // DOM, we have no way of knowing which attributes were removed. We keep track of the
+        // previous value of `attributes` so that we can add in the removed attributes as `null`.
+        const previousAttributeKeys = Object.keys(this._previousAttributes);
+        for (let i = 0; i < previousAttributeKeys.length; i++) {
+          if (!attributes.hasOwnProperty(previousAttributeKeys[i])) {
+            attributes[previousAttributeKeys[i]] = null;
+          }
+        }
+      }
     }
+    this._previousAttributes = attributes;
     return attributes;
   }
 

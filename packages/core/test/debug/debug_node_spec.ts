@@ -678,5 +678,24 @@ class TestCmptWithPropBindings {
       expect(divB.nativeElement.getAttribute('id')).toBe('b');
     });
 
+    it('should preserve removed attributes as `null` in `attributes`', () => {
+      @Component({template: '<input [attr.aria-disabled]="readonly ? true : null">'})
+      class TestComponent {
+        readonly = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+      const divEl = fixture.debugElement.query(By.css('input'));
+      fixture.detectChanges();
+      expect(divEl.attributes['aria-disabled']).toBe('true');
+
+      fixture.componentInstance.readonly = false;
+      fixture.detectChanges();
+
+      // Note that we're looking specifically for `null` here.
+      expect(divEl.attributes['aria-disabled']).toBeNull();
+    });
+
   });
 }
