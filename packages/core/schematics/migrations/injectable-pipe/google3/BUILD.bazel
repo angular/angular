@@ -8,5 +8,6 @@ ts_library(
     deps = [
         "//packages/core/schematics/migrations/injectable-pipe",
         "@npm//tslint",
+        "@npm//typescript",
     ],
 )
