@@ -100,7 +100,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const token = meta.type;
   const providedIn = meta.providedIn;
 
-  const expression = o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([mapToMapExpression(
+  const expression = o.importExpr(Identifiers.ΔdefineInjectable).callFn([mapToMapExpression(
       {token, factory: result.factory, providedIn})]);
   const type = new o.ExpressionType(o.importExpr(
       Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));

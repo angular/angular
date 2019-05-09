@@ -44,7 +44,7 @@ import {getActiveDirectiveStylingIndex} from './styling';
  *
  * @codeGenApi
  */
-export function ɵɵelementStart(
+export function ΔelementStart(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -129,7 +129,7 @@ export function ɵɵelementStart(
  *
  * @codeGenApi
  */
-export function ɵɵelementEnd(): void {
+export function ΔelementEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);
@@ -183,10 +183,10 @@ export function ɵɵelementEnd(): void {
  *
  * @codeGenApi
  */
-export function ɵɵelement(
+export function Δelement(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
-  ɵɵelementStart(index, name, attrs, localRefs);
-  ɵɵelementEnd();
+  ΔelementStart(index, name, attrs, localRefs);
+  ΔelementEnd();
 }
 
 
@@ -202,7 +202,7 @@ export function ɵɵelement(
  *
  * @codeGenApi
  */
-export function ɵɵelementAttribute(
+export function ΔelementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): void {
   if (value !== NO_CHANGE) {
@@ -270,7 +270,7 @@ export function ɵɵelementAttribute(
  *
  * @codeGenApi
  */
-export function ɵɵelementHostAttrs(attrs: TAttributes) {
+export function ΔelementHostAttrs(attrs: TAttributes) {
   const hostElementIndex = getSelectedIndex();
   const lView = getLView();
   const tNode = getTNode(hostElementIndex, lView);

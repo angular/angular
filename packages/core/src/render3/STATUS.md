@@ -10,8 +10,8 @@ We currently expect Ivy to remain behind the flag until it's feature complete an
 
 The work can be divided into three categories:
 - `@angular/compiler-cli`: TypeScript transformer pipeline which includes two command line tools:
-  - `ngtsc`: (Angular TypeScript Compiler) Angular compiler which strips out `@Component` (and friends) and replaces it with `ɵɵdefineComponent` (and friends).
-  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `ɵɵdefineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
+  - `ngtsc`: (Angular TypeScript Compiler) Angular compiler which strips out `@Component` (and friends) and replaces it with `ΔdefineComponent` (and friends).
+  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `ΔdefineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
 - `@angular/compiler`: Ivy Compiler which converts decorator into ivy
 - `@angular/core`: Decorators which can be patched with `@angular/compiler`.
 
@@ -20,7 +20,7 @@ The work can be divided into three categories:
 ### `ngtsc` TSC compiler transformer
 
 TSC transformer which removes and converts `@Pipe`, `@Component`, `@Directive` and `@NgModule`
-to the corresponding `ɵɵdefinePipe`, `ɵɵdefineComponent`, `ɵɵdefineDirective` and `ɵɵdefineInjector`.
+to the corresponding `ΔdefinePipe`, `ΔdefineComponent`, `ΔdefineDirective` and `ΔdefineInjector`.
 
 - ✅ Basic setup of the transformer into `tsc`
 - ✅ Can read STORING_METADATA_IN_D.TS from `.d.ts` (see: [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md))
@@ -40,19 +40,19 @@ A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compl
 
 ## `@angular/compiler` changes
 
-- ✅ Component compilation: Translates `@Component` => `ɵɵdefineComponent`
+- ✅ Component compilation: Translates `@Component` => `ΔdefineComponent`
   - ✅ `TemplateCompiler` (current known as `ViewCompiler`)
   - ✅ `StyleCompiler`
-- ✅ `PipeCompiler`: Translates `@Pipe` => `ɵɵdefinePipe`
-- ✅ `DirectiveCompiler`: Translates `@Directive` => `ɵɵdefineDirective`
-- ✅ `InjectableCompiler`: Translates `@Injectable` => `ɵɵdefineInjectable`
-- ✅ `NgModuleCompiler`: Translates `@NgModule` => `ɵɵdefineInjector` (and `ɵɵdefineNgModule` only in jit)
+- ✅ `PipeCompiler`: Translates `@Pipe` => `ΔdefinePipe`
+- ✅ `DirectiveCompiler`: Translates `@Directive` => `ΔdefineDirective`
+- ✅ `InjectableCompiler`: Translates `@Injectable` => `ΔdefineInjectable`
+- ✅ `NgModuleCompiler`: Translates `@NgModule` => `ΔdefineInjector` (and `ΔdefineNgModule` only in jit)
 - ❌ Documentation
 
 
 ## `@angular/core` changes
 
-The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `ɵɵdefineComponent`.
+The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `ΔdefineComponent`.
 
 - ✅ `@angular/compiler` can patch itself onto:
   - ✅ `@Injectable`
@@ -70,13 +70,13 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 ## Decorators
 | Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler |
 | -------------------- | ------------------------------ | ------- | -------- | -------- |
-| `@Component`         | ✅ `ɵɵdefineComponent()`         |    ✅    |  ✅      |  ✅      |
-| `@Directive`         | ✅ `ɵɵdefineDirective()`         |    ✅    |  ✅      |  ✅      |
-| `@Directive`         | ✅ `ɵɵdefineBase()`              |    ✅    |  ✅      |  ✅      |
-| `@Pipe`              | ✅ `ɵɵdefinePipe()`              |    ✅    |  ✅      |  ✅      |
-| `@Injectable`        | ✅ `ɵɵdefineInjectable()`        |    ✅    |  ✅      |  ✅      |
-| `@NgModule`          | ✅ `ɵɵdefineInjector()`          |    ✅    |  ✅      |  ✅      |
-| `@ConfigureInjector` | ✅ `ɵɵdefineInjector()`          |    ❌    |  ❌      |  ❌      |
+| `@Component`         | ✅ `ΔdefineComponent()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `ΔdefineDirective()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `ΔdefineBase()`              |    ✅    |  ✅      |  ✅      |
+| `@Pipe`              | ✅ `ΔdefinePipe()`              |    ✅    |  ✅      |  ✅      |
+| `@Injectable`        | ✅ `ΔdefineInjectable()`        |    ✅    |  ✅      |  ✅      |
+| `@NgModule`          | ✅ `ΔdefineInjector()`          |    ✅    |  ✅      |  ✅      |
+| `@ConfigureInjector` | ✅ `ΔdefineInjector()`          |    ❌    |  ❌      |  ❌      |
 
 
 

@@ -8,12 +8,12 @@
 import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {getHostElement, ɵɵdefineComponent, ɵɵloadViewQuery, ɵɵviewQuery} from '../../../src/render3/index';
-import {markDirty, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵselect, ɵɵstyling, ɵɵstylingApply} from '../../../src/render3/instructions/all';
+import {getHostElement, ΔdefineComponent, ΔloadViewQuery, ΔviewQuery} from '../../../src/render3/index';
+import {markDirty, Δelement, ΔelementEnd, ΔelementStart, Δselect, Δstyling, ΔstylingApply} from '../../../src/render3/instructions/all';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {ɵɵqueryRefresh} from '../../../src/render3/query';
+import {ΔqueryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
@@ -228,7 +228,7 @@ function buildElementWithStyling() {
 }
 
 class Comp {
-  static ngComponentDef = ɵɵdefineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: Comp,
     exportAs: ['child'],
     selectors: [['child-comp']],
@@ -237,7 +237,7 @@ class Comp {
     vars: 0,
     template: (rf: RenderFlags, ctx: Comp) => {
       if (rf & RenderFlags.Create) {
-        ɵɵelement(0, 'div');
+        Δelement(0, 'div');
       }
       ctx.logger();
     }
@@ -248,7 +248,7 @@ class Comp {
 }
 
 class CompWithStyling {
-  static ngComponentDef = ɵɵdefineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: CompWithStyling,
     exportAs: ['child-styled'],
     selectors: [['child-styled-comp']],
@@ -257,13 +257,13 @@ class CompWithStyling {
     vars: 0,
     template: (rf: RenderFlags, ctx: CompWithStyling) => {
       if (rf & RenderFlags.Create) {
-        ɵɵelementStart(0, 'div');
-        ɵɵstyling(['fooClass']);
-        ɵɵelementEnd();
+        ΔelementStart(0, 'div');
+        Δstyling(['fooClass']);
+        ΔelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵselect(0);
-        ɵɵstylingApply();
+        Δselect(0);
+        ΔstylingApply();
       }
     }
   });
@@ -272,7 +272,7 @@ class CompWithStyling {
 }
 
 class SuperComp {
-  static ngComponentDef = ɵɵdefineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: SuperComp,
     selectors: [['super-comp']],
     factory: () => new SuperComp(),
@@ -280,18 +280,18 @@ class SuperComp {
     vars: 0,
     template: (rf: RenderFlags, ctx: SuperComp) => {
       if (rf & RenderFlags.Create) {
-        ɵɵelementStart(0, 'div');
-        ɵɵelement(1, 'child-comp', ['child', ''], ['child', 'child']);
-        ɵɵelementEnd();
+        ΔelementStart(0, 'div');
+        Δelement(1, 'child-comp', ['child', ''], ['child', 'child']);
+        ΔelementEnd();
       }
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        ɵɵviewQuery(['child'], true, null);
+        ΔviewQuery(['child'], true, null);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;
-        ɵɵqueryRefresh(tmp = ɵɵloadViewQuery<QueryList<any>>()) &&
+        ΔqueryRefresh(tmp = ΔloadViewQuery<QueryList<any>>()) &&
             (ctx.query = tmp as QueryList<any>);
       }
     },
