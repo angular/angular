@@ -264,10 +264,10 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     }
   }
 
-  visitConditionalExpr(ast: ConditionalExpr, context: Context): ts.ParenthesizedExpression {
-    return ts.createParen(ts.createConditional(
+  visitConditionalExpr(ast: ConditionalExpr, context: Context): ts.ConditionalExpression {
+    return ts.createConditional(
         ast.condition.visitExpression(this, context), ast.trueCase.visitExpression(this, context),
-        ast.falseCase !.visitExpression(this, context)));
+        ast.falseCase !.visitExpression(this, context));
   }
 
   visitNotExpr(ast: NotExpr, context: Context): ts.PrefixUnaryExpression {
@@ -296,10 +296,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     if (!BINARY_OPERATORS.has(ast.operator)) {
       throw new Error(`Unknown binary operator: ${BinaryOperator[ast.operator]}`);
     }
-    const binEx = ts.createBinary(
+    return ts.createBinary(
         ast.lhs.visitExpression(this, context), BINARY_OPERATORS.get(ast.operator) !,
         ast.rhs.visitExpression(this, context));
-    return ast.parens ? ts.createParen(binEx) : binEx;
   }
 
   visitReadPropExpr(ast: ReadPropExpr, context: Context): ts.PropertyAccessExpression {
@@ -512,13 +511,4 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     let expr = translateExpression(ast.expr, this.imports, NOOP_DEFAULT_IMPORT_RECORDER);
     return ts.createTypeQueryNode(expr as ts.Identifier);
   }
-}
-
-function entityNameToExpr(entity: ts.EntityName): ts.Expression {
-  if (ts.isIdentifier(entity)) {
-    return entity;
-  }
-  const {left, right} = entity;
-  const leftExpr = ts.isIdentifier(left) ? left : entityNameToExpr(left);
-  return ts.createPropertyAccess(leftExpr, right);
 }
