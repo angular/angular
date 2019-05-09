@@ -17,7 +17,8 @@ export type TransformedQueryResult = null | {
   failureMessage: string|null;
 };
 
-const TODO_COMMENT = 'TODO: add static flag';
+const TODO_SPECIFY_COMMENT = 'TODO: add static flag';
+const TODO_CHECK_COMMENT = 'TODO: check static flag';
 
 /**
  * Transforms the given query decorator by explicitly specifying the timing based on the
@@ -37,7 +38,9 @@ export function getTransformedQueryCallExpr(
   // keep the existing options untouched and just add the new property if possible.
   if (queryArguments.length === 2) {
     const existingOptions = queryArguments[1];
-    const hasTodoComment = existingOptions.getFullText().includes(TODO_COMMENT);
+    const existingOptionsText = existingOptions.getFullText();
+    const hasTodoComment = existingOptionsText.includes(TODO_SPECIFY_COMMENT) ||
+        existingOptionsText.includes(TODO_CHECK_COMMENT);
     let newOptionsNode: ts.Expression;
     let failureMessage: string|null = null;
 
@@ -55,7 +58,7 @@ export function getTransformedQueryCallExpr(
       // In case we want to add a todo and the options do not have the todo
       // yet, we add the query timing todo as synthetic multi-line comment.
       if (createTodo && !hasTodoComment) {
-        addQueryTimingTodoToNode(newOptionsNode);
+        addQueryTimingTodoToNode(newOptionsNode, timing === null);
       }
     } else {
       // In case the options query parameter is not an object literal expression, and
@@ -63,7 +66,7 @@ export function getTransformedQueryCallExpr(
       newOptionsNode = existingOptions;
       // We always want to add a TODO in case the query options cannot be updated.
       if (!hasTodoComment) {
-        addQueryTimingTodoToNode(existingOptions);
+        addQueryTimingTodoToNode(existingOptions, true);
       }
       // If there is a new explicit timing that has been determined for the given query,
       // we create a transformation failure message that shows developers that they need
@@ -85,7 +88,7 @@ export function getTransformedQueryCallExpr(
   const optionsNode = ts.createObjectLiteral(queryPropertyAssignments);
 
   if (createTodo) {
-    addQueryTimingTodoToNode(optionsNode);
+    addQueryTimingTodoToNode(optionsNode, timing === null);
   }
 
   return {
@@ -98,14 +101,15 @@ export function getTransformedQueryCallExpr(
 
 /**
  * Adds a to-do to the given TypeScript node which reminds developers to specify
- * an explicit query timing.
+ * an explicit query timing or to double-check the updated timing.
  */
-function addQueryTimingTodoToNode(node: ts.Node) {
-  ts.setSyntheticLeadingComments(node, [{
-                                   pos: -1,
-                                   end: -1,
-                                   hasTrailingNewLine: false,
-                                   kind: ts.SyntaxKind.MultiLineCommentTrivia,
-                                   text: ` ${TODO_COMMENT} `
-                                 }]);
+function addQueryTimingTodoToNode(node: ts.Node, addSpecifyTimingTodo: boolean) {
+  ts.setSyntheticLeadingComments(
+      node, [{
+        pos: -1,
+        end: -1,
+        hasTrailingNewLine: false,
+        kind: ts.SyntaxKind.MultiLineCommentTrivia,
+        text: ` ${addSpecifyTimingTodo ? TODO_SPECIFY_COMMENT : TODO_CHECK_COMMENT} `
+      }]);
 }
