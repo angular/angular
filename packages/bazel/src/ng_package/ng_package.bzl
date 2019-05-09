@@ -289,12 +289,13 @@ def _ng_package_impl(ctx):
         for d in ctx.attr.deps:
             if NodeModuleInfo in d:
                 node_modules_files += _filter_js_inputs(d.files)
+        esm5_rollup_inputs = depset(node_modules_files, transitive = [esm5_sources])
 
         esm2015_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, _esm2015_root_dir(ctx)]), filename = "_%s.rollup_esm2015.conf.js")
         esm5_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5.conf.js")
 
-        fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files + node_modules_files, fesm2015_output))
-        fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources + node_modules_files, fesm5_output))
+        fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, depset(node_modules_files, transitive = [esm_2015_files]), fesm2015_output))
+        fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_rollup_inputs, fesm5_output))
 
         bundles.append(
             _rollup(
@@ -302,7 +303,7 @@ def _ng_package_impl(ctx):
                 "umd",
                 esm5_config,
                 es5_entry_point,
-                esm5_sources + node_modules_files,
+                esm5_rollup_inputs,
                 umd_output,
                 format = "umd",
                 package_name = package_name,
