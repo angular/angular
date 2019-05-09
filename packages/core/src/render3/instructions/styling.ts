@@ -63,7 +63,7 @@ import {scheduleTick, setInputsForProperty} from './shared';
  *
  * @codeGenApi
  */
-export function ɵɵstyling(
+export function Δstyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -133,7 +133,7 @@ function initstyling(
  *
  * @codeGenApi
  */
-export function ɵɵstyleProp(
+export function ΔstyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const index = getSelectedIndex();
@@ -190,7 +190,7 @@ function resolveStylePropValue(
  *
  * @codeGenApi
  */
-export function ɵɵclassProp(
+export function ΔclassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const index = getSelectedIndex();
   const input = (value instanceof BoundPlayerFactory) ?
@@ -234,7 +234,7 @@ function booleanOrNull(value: any): boolean|null {
  *
  * @codeGenApi
  */
-export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
+export function ΔstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
   const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
@@ -278,7 +278,7 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
  *
  * @codeGenApi
  */
-export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
+export function ΔclassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
   const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
@@ -311,7 +311,7 @@ export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | s
  *
  * @codeGenApi
  */
-export function ɵɵstylingApply(): void {
+export function ΔstylingApply(): void {
   const index = getSelectedIndex();
   const directiveStylingIndex =
       getActiveDirectiveStylingIndex() || DEFAULT_TEMPLATE_DIRECTIVE_INDEX;

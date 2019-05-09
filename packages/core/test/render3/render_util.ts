@@ -27,7 +27,7 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
 import {DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -317,7 +317,7 @@ export function createComponent(
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
   return class Component {
     value: any;
-    static ngComponentDef = ɵɵdefineComponent({
+    static ngComponentDef = ΔdefineComponent({
       type: Component,
       selectors: [[name]],
       consts: consts,
@@ -328,7 +328,7 @@ export function createComponent(
       directives: directives, hostBindings,
       pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
-      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: []
+      [ΔProvidersFeature(providers || [], viewProviders || [])]: []
     });
   };
 }
@@ -336,7 +336,7 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
-    static ngDirectiveDef = ɵɵdefineDirective({
+    static ngDirectiveDef = ΔdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       factory: () => new Directive(),

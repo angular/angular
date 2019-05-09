@@ -40,25 +40,25 @@ if [[ $? != 0 ]]; then exit 1; fi
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it compile @angular/core/ApplicationModule correctly?
-  grep "ApplicationModule.ngModuleDef = ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
+  grep "ApplicationModule.ngModuleDef = ΔdefineNgModule" node_modules/@angular/core/fesm2015/core.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵɵdefineNgModule" node_modules/@angular/core/fesm5/core.js
+  grep "ApplicationModule.ngModuleDef = ΔdefineNgModule" node_modules/@angular/core/fesm5/core.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
+  grep "ApplicationModule.ngModuleDef = ɵngcc0.ΔdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
+  grep "ApplicationModule.ngModuleDef = ɵngcc0.ΔdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it transform @angular/core typing files correctly?
   grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "static ngInjectorDef: ɵngcc0.ɵɵInjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
+  grep "static ngInjectorDef: ɵngcc0.ΔInjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it generate a base factory call for synthesized constructors correctly?
-  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table.js
+  grep "const ɵMatTable_BaseFactory = ɵngcc0.ΔgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
+  grep "const ɵMatTable_BaseFactory = ɵngcc0.ΔgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?

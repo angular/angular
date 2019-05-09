@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
-import {InjectableType, getInjectableDef, ɵɵInjectableDef, ɵɵdefineInjectable} from './interface/defs';
+import {InjectableType, getInjectableDef, ΔInjectableDef, ΔdefineInjectable} from './interface/defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
 import {compileInjectable as render3CompileInjectable} from './jit/injectable';
 import {convertInjectableProviderToFactory} from './util';
@@ -80,7 +80,7 @@ export const Injectable: InjectableDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵɵInjectableDef<T>; }
+export interface InjectableType<T> extends Type<T> { ngInjectableDef: ΔInjectableDef<T>; }
 
 /**
  * Supports @Injectable() in JIT mode for Render2.
@@ -89,7 +89,7 @@ function render2CompileInjectable(
     injectableType: InjectableType<any>,
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
-    injectableType.ngInjectableDef = ɵɵdefineInjectable({
+    injectableType.ngInjectableDef = ΔdefineInjectable({
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
     });

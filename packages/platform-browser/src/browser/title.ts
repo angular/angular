@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, Δinject} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
 
@@ -15,7 +15,7 @@ import {getDOM} from '../dom/dom_adapter';
  * Factory to create Title service.
  */
 export function createTitle() {
-  return new Title(ɵɵinject(DOCUMENT));
+  return new Title(Δinject(DOCUMENT));
 }
 
 /**

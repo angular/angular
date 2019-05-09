@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive as _Directive, Pipe as _Pipe, PipeTransform, WrappedValue, ɵɵdefinePipe} from '@angular/core';
+import {Directive as _Directive, Pipe as _Pipe, PipeTransform, WrappedValue, ΔdefinePipe} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ɵɵinterpolation1, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
-import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe';
+import {Δinterpolation1, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
+import {Δpipe, ΔpipeBind1} from '../../src/render3/pipe';
 
 import {TemplateFixture} from './render_util';
 
@@ -29,7 +29,7 @@ describe('pipe', () => {
     class WrappingPipe implements PipeTransform {
       transform(value: any) { return new WrappedValue('Bar'); }
 
-      static ngPipeDef = ɵɵdefinePipe({
+      static ngPipeDef = ΔdefinePipe({
         name: 'wrappingPipe',
         type: WrappingPipe,
         factory: function WrappingPipe_Factory() { return new WrappingPipe(); },
@@ -38,13 +38,11 @@ describe('pipe', () => {
     }
 
     function createTemplate() {
-      ɵɵtext(0);
-      ɵɵpipe(1, 'wrappingPipe');
+      Δtext(0);
+      Δpipe(1, 'wrappingPipe');
     }
 
-    function updateTemplate() {
-      ɵɵtextBinding(0, ɵɵinterpolation1('', ɵɵpipeBind1(1, 1, null), ''));
-    }
+    function updateTemplate() { ΔtextBinding(0, Δinterpolation1('', ΔpipeBind1(1, 1, null), '')); }
 
     it('should unwrap', () => {
       const fixture =

@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 import {NgtscProgram} from '../../src/ngtsc/program';
 
 
-const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
+const IDENTIFIER = /[A-Za-z_$ɵΔ][A-Za-z0-9_$]*/;
 const OPERATOR =
     /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
 const STRING = /'[^']*'|"[^"]*"|`[\s\S]*?`/;

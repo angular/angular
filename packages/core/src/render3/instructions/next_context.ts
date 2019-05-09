@@ -19,6 +19,6 @@ import {nextContextImpl} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵnextContext<T = any>(level: number = 1): T {
+export function ΔnextContext<T = any>(level: number = 1): T {
   return nextContextImpl(level);
 }

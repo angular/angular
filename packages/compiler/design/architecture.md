@@ -81,18 +81,18 @@ In `ngtsc` this is instead emitted as,
 ```js
 const i0 = require("@angular/core");
 class GreetComponent {}
-GreetComponent.ngComponentDef = i0.ɵɵdefineComponent({
+GreetComponent.ngComponentDef = i0.ΔdefineComponent({
     type: GreetComponent,
     tag: 'greet',
     factory: () => new GreetComponent(),
     template: function (rf, ctx) {
         if (rf & RenderFlags.Create) {
-            i0.ɵɵelementStart(0, 'div');
-            i0.ɵɵtext(1);
-            i0.ɵɵelementEnd();
+            i0.ΔelementStart(0, 'div');
+            i0.Δtext(1);
+            i0.ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1('Hello ', ctx.name, '!'));
+            i0.ΔtextBinding(1, i0.Δinterpolation1('Hello ', ctx.name, '!'));
         }
     }
 });

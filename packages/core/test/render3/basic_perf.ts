@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext} from '../../src/render3/instructions/all';
+import {ΔdefineComponent} from '../../src/render3/index';
+import {Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {document, renderComponent} from './render_util';
@@ -33,31 +33,31 @@ describe('iv perf test', () => {
 
       it(`${iteration}. create ${count} divs in Render3`, () => {
         class Component {
-          static ngComponentDef = ɵɵdefineComponent({
+          static ngComponentDef = ΔdefineComponent({
             type: Component,
             selectors: [['div']],
             consts: 1,
             vars: 0,
             template: function Template(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                ɵɵcontainer(0);
+                Δcontainer(0);
               }
               if (rf & RenderFlags.Update) {
-                ɵɵcontainerRefreshStart(0);
+                ΔcontainerRefreshStart(0);
                 {
                   for (let i = 0; i < count; i++) {
-                    let rf0 = ɵɵembeddedViewStart(0, 2, 0);
+                    let rf0 = ΔembeddedViewStart(0, 2, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        ɵɵelementStart(0, 'div');
-                        ɵɵtext(1, '-');
-                        ɵɵelementEnd();
+                        ΔelementStart(0, 'div');
+                        Δtext(1, '-');
+                        ΔelementEnd();
                       }
                     }
-                    ɵɵembeddedViewEnd();
+                    ΔembeddedViewEnd();
                   }
                 }
-                ɵɵcontainerRefreshEnd();
+                ΔcontainerRefreshEnd();
               }
             },
             factory: () => new Component

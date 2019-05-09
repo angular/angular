@@ -83,17 +83,17 @@ export function getBindingsEnabled(): boolean {
  *   Should match component / directive.
  * </my-comp>
  * <div ngNonBindable>
- *   <!-- ɵɵdisableBindings() -->
+ *   <!-- ΔdisableBindings() -->
  *   <my-comp my-directive>
  *     Should not match component / directive because we are in ngNonBindable.
  *   </my-comp>
- *   <!-- ɵɵenableBindings() -->
+ *   <!-- ΔenableBindings() -->
  * </div>
  * ```
  *
  * @codeGenApi
  */
-export function ɵɵenableBindings(): void {
+export function ΔenableBindings(): void {
   bindingsEnabled = true;
 }
 
@@ -106,17 +106,17 @@ export function ɵɵenableBindings(): void {
  *   Should match component / directive.
  * </my-comp>
  * <div ngNonBindable>
- *   <!-- ɵɵdisableBindings() -->
+ *   <!-- ΔdisableBindings() -->
  *   <my-comp my-directive>
  *     Should not match component / directive because we are in ngNonBindable.
  *   </my-comp>
- *   <!-- ɵɵenableBindings() -->
+ *   <!-- ΔenableBindings() -->
  * </div>
  * ```
  *
  * @codeGenApi
  */
-export function ɵɵdisableBindings(): void {
+export function ΔdisableBindings(): void {
   bindingsEnabled = false;
 }
 
@@ -270,7 +270,7 @@ export function getActiveDirectiveSuperClassDepth() {
  *
  * @codeGenApi
  */
-export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
+export function ΔrestoreView(viewToRestore: OpaqueViewState) {
   contextLView = viewToRestore as any as LView;
 }
 
@@ -495,7 +495,7 @@ let _currentNamespace: string|null = null;
  *
  * @codeGenApi
  */
-export function ɵɵnamespaceSVG() {
+export function ΔnamespaceSVG() {
   _currentNamespace = 'http://www.w3.org/2000/svg';
 }
 
@@ -504,7 +504,7 @@ export function ɵɵnamespaceSVG() {
  *
  * @codeGenApi
  */
-export function ɵɵnamespaceMathML() {
+export function ΔnamespaceMathML() {
   _currentNamespace = 'http://www.w3.org/1998/MathML/';
 }
 
@@ -514,7 +514,7 @@ export function ɵɵnamespaceMathML() {
  *
  * @codeGenApi
  */
-export function ɵɵnamespaceHTML() {
+export function ΔnamespaceHTML() {
   _currentNamespace = null;
 }
 

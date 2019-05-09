@@ -10,7 +10,7 @@ import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {ɵɵdefineComponent} from '../../src/render3/index';
+import {ΔdefineComponent} from '../../src/render3/index';
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';
 
@@ -20,7 +20,7 @@ describe('ComponentFactory', () => {
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: TestComponent,
           selectors: [['test', 'foo'], ['bar']],
           consts: 0,
@@ -41,7 +41,7 @@ describe('ComponentFactory', () => {
 
     it('should correctly populate defined properties', () => {
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test', 'foo'], ['bar']],
@@ -89,7 +89,7 @@ describe('ComponentFactory', () => {
       createRenderer3Spy = spyOn(domRendererFactory3, 'createRenderer').and.callThrough();
 
       class TestComponent {
-        static ngComponentDef = ɵɵdefineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
           selectors: [['test']],

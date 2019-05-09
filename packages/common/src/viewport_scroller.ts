@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
+import {ErrorHandler, ΔdefineInjectable, Δinject} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
 
@@ -21,9 +21,9 @@ export abstract class ViewportScroller {
   // De-sugared tree-shakable injection
   // See #23917
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ngInjectableDef = ΔdefineInjectable({
     providedIn: 'root',
-    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
+    factory: () => new BrowserViewportScroller(Δinject(DOCUMENT), window, Δinject(ErrorHandler))
   });
 
   /**

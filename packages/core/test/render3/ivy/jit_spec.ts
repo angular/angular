@@ -7,10 +7,10 @@
  */
 import 'reflect-metadata';
 
-import {ElementRef, QueryList, ɵɵsetComponentScope as setComponentScope} from '@angular/core';
+import {ElementRef, QueryList, ΔsetComponentScope as setComponentScope} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
-import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
-import {ɵɵInjectorDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
+import {setCurrentInjector, Δinject} from '@angular/core/src/di/injector_compatibility';
+import {ΔInjectorDef, ΔdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
@@ -45,7 +45,7 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect(ServiceAny.ngInjectableDef).toBeDefined();
     expect(ServiceAny.ngInjectableDef.providedIn).toBe('root');
-    expect(ɵɵinject(Service) instanceof Service).toBe(true);
+    expect(Δinject(Service) instanceof Service).toBe(true);
   });
 
   it('compiles an injectable with a useValue provider', () => {
@@ -53,7 +53,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(ɵɵinject(Service)).toBe('test');
+    expect(Δinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useExisting provider', () => {
@@ -65,7 +65,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(ɵɵinject(Service)).toBe('test');
+    expect(Δinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useFactory provider, without deps', () => {
@@ -74,7 +74,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(ɵɵinject(Service)).toBe('test');
+    expect(Δinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useFactory provider, with deps', () => {
@@ -86,7 +86,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Service {
     }
 
-    expect(ɵɵinject(Service)).toBe('test');
+    expect(Δinject(Service)).toBe('test');
   });
 
   it('compiles an injectable with a useClass provider, with deps', () => {
@@ -104,7 +104,7 @@ ivyEnabled && describe('render3 jit', () => {
     }
     const ServiceAny = Service as any;
 
-    expect(ɵɵinject(Service).value).toBe('test');
+    expect(Δinject(Service).value).toBe('test');
   });
 
   it('compiles an injectable with a useClass provider, without deps', () => {
@@ -119,8 +119,8 @@ ivyEnabled && describe('render3 jit', () => {
       get value(): number { return 0; }
     }
 
-    expect(ɵɵinject(Existing).value).toBe(1);
-    const injected = ɵɵinject(Service);
+    expect(Δinject(Existing).value).toBe(1);
+    const injected = Δinject(Service);
     expect(injected instanceof Existing).toBe(true);
     expect(injected.value).toBe(2);
   });
@@ -139,7 +139,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Child extends Base {
     }
 
-    expect(ɵɵinject(Child).dep instanceof Dep).toBe(true);
+    expect(Δinject(Child).dep instanceof Dep).toBe(true);
   });
 
   it('compiles a module to a definition', () => {
@@ -167,7 +167,7 @@ ivyEnabled && describe('render3 jit', () => {
 
   it('compiles a module to an ngInjectorDef with the providers', () => {
     class Token {
-      static ngInjectableDef = ɵɵdefineInjectable({
+      static ngInjectableDef = ΔdefineInjectable({
         providedIn: 'root',
         factory: () => 'default',
       });
@@ -180,7 +180,7 @@ ivyEnabled && describe('render3 jit', () => {
       constructor(public token: Token) {}
     }
 
-    const injectorDef: ɵɵInjectorDef<Module> = (Module as any).ngInjectorDef;
+    const injectorDef: ΔInjectorDef<Module> = (Module as any).ngInjectorDef;
     const instance = injectorDef.factory();
 
     // Since the instance was created outside of an injector using the module, the

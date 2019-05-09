@@ -13,7 +13,7 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {getInjectableDef, ɵɵInjectableDef} from './interface/defs';
+import {getInjectableDef, ΔInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -107,10 +107,9 @@ export function injectInjectorOnly<T>(
  * @see inject
  * @codeGenApi
  */
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
-    null {
+export function Δinject<T>(token: Type<T>| InjectionToken<T>): T;
+export function Δinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
+export function Δinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   return (_injectImplementation || injectInjectorOnly)(token, flags);
 }
 
@@ -138,7 +137,7 @@ export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectF
  *
  * @publicApi
  */
-export const inject = ɵɵinject;
+export const inject = Δinject;
 
 /**
  * Injects `root` tokens in limp mode.
@@ -149,7 +148,7 @@ export const inject = ɵɵinject;
  */
 export function injectRootLimpMode<T>(
     token: Type<T>| InjectionToken<T>, notFoundValue: T | undefined, flags: InjectFlags): T|null {
-  const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
+  const injectableDef: ΔInjectableDef<T>|null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
     return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                injectableDef.value;
@@ -186,9 +185,9 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
         }
       }
 
-      args.push(ɵɵinject(type !, flags));
+      args.push(Δinject(type !, flags));
     } else {
-      args.push(ɵɵinject(arg));
+      args.push(Δinject(arg));
     }
   }
   return args;

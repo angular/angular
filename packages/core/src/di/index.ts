@@ -14,11 +14,11 @@
 
 export * from './metadata';
 export {InjectFlags} from './interface/injector';
-export {ɵɵdefineInjectable, defineInjectable, ɵɵdefineInjector, InjectableType, InjectorType} from './interface/defs';
+export {ΔdefineInjectable, defineInjectable, ΔdefineInjector, InjectableType, InjectorType} from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {Injector} from './injector';
-export {ɵɵinject, inject, INJECTOR} from './injector_compatibility';
+export {Δinject, inject, INJECTOR} from './injector_compatibility';
 export {ReflectiveInjector} from './reflective_injector';
 export {StaticProvider, ValueProvider, ConstructorSansProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ClassProvider} from './interface/provider';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './reflective_provider';

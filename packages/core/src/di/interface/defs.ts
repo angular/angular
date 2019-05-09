@@ -26,7 +26,7 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  *
  * @publicApi
  */
-export interface ɵɵInjectableDef<T> {
+export interface ΔInjectableDef<T> {
   /**
    * Specifies that the given type belongs to a particular injector:
    * - `InjectorType` such as `NgModule`,
@@ -60,7 +60,7 @@ export interface ɵɵInjectableDef<T> {
  *
  * @publicApi
  */
-export interface ɵɵInjectorDef<T> {
+export interface ΔInjectorDef<T> {
   factory: () => T;
 
   // TODO(alxhub): Narrow down the type here once decorators properly change the return type of the
@@ -131,21 +131,21 @@ export interface InjectorTypeWithProviders<T> {
  *
  * @publicApi
  */
-export function ɵɵdefineInjectable<T>(opts: {
+export function ΔdefineInjectable<T>(opts: {
   providedIn?: Type<any>| 'root' | 'any' | null,
   factory: () => T,
 }): never {
   return ({
     providedIn: opts.providedIn as any || null, factory: opts.factory, value: undefined,
-  } as ɵɵInjectableDef<T>) as never;
+  } as ΔInjectableDef<T>) as never;
 }
 
 /**
  * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
- * code should now use ɵɵdefineInjectable instead.
+ * code should now use ΔdefineInjectable instead.
  * @publicApi
  */
-export const defineInjectable = ɵɵdefineInjectable;
+export const defineInjectable = ΔdefineInjectable;
 
 /**
  * Construct an `InjectorDef` which configures an injector.
@@ -167,11 +167,11 @@ export const defineInjectable = ɵɵdefineInjectable;
  *
  * @publicApi
  */
-export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
+export function ΔdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
     factory: options.factory, providers: options.providers || [], imports: options.imports || [],
-  } as ɵɵInjectorDef<any>) as never;
+  } as ΔInjectorDef<any>) as never;
 }
 
 /**
@@ -179,7 +179,7 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  *
  * @param type type which may have `ngInjectableDef`
  */
-export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
+export function getInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
   return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
 }
 
@@ -188,7 +188,7 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
  *
  * @param type type which may have `ngInjectorDef`
  */
-export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
+export function getInjectorDef<T>(type: any): ΔInjectorDef<T>|null {
   return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }
 

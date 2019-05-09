@@ -10,7 +10,7 @@ import {Type} from '../interface/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {getClosureSafeProperty} from '../util/property';
 
-import {injectArgs, ɵɵinject} from './injector_compatibility';
+import {injectArgs, Δinject} from './injector_compatibility';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 
 const USE_VALUE =
@@ -32,7 +32,7 @@ export function convertInjectableProviderToFactory(
     return () => valueProvider.useValue;
   } else if ((provider as ExistingSansProvider).useExisting) {
     const existingProvider = (provider as ExistingSansProvider);
-    return () => ɵɵinject(existingProvider.useExisting);
+    return () => Δinject(existingProvider.useExisting);
   } else if ((provider as FactorySansProvider).useFactory) {
     const factoryProvider = (provider as FactorySansProvider);
     return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));

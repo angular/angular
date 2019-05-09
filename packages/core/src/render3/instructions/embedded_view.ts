@@ -26,8 +26,7 @@ import {assignTViewNodeToLView, createLView, createTView, refreshDescendantViews
  *
  * @codeGenApi
  */
-export function ɵɵembeddedViewStart(
-    viewBlockId: number, consts: number, vars: number): RenderFlags {
+export function ΔembeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags {
   const lView = getLView();
   const previousOrParentTNode = getPreviousOrParentTNode();
   // The previous node can be a view node if we are processing an inline for loop
@@ -128,7 +127,7 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
  *
  * @codeGenApi
  */
-export function ɵɵembeddedViewEnd(): void {
+export function ΔembeddedViewEnd(): void {
   const lView = getLView();
   const viewHost = lView[T_HOST];
 

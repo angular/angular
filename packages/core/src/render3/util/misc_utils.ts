@@ -56,7 +56,7 @@ export const defaultScheduler =
  *
  * @codeGenApi
  */
-export function ɵɵresolveWindow(element: RElement & {ownerDocument: Document}) {
+export function ΔresolveWindow(element: RElement & {ownerDocument: Document}) {
   return {name: 'window', target: element.ownerDocument.defaultView};
 }
 
@@ -64,7 +64,7 @@ export function ɵɵresolveWindow(element: RElement & {ownerDocument: Document})
  *
  * @codeGenApi
  */
-export function ɵɵresolveDocument(element: RElement & {ownerDocument: Document}) {
+export function ΔresolveDocument(element: RElement & {ownerDocument: Document}) {
   return {name: 'document', target: element.ownerDocument};
 }
 
@@ -72,7 +72,7 @@ export function ɵɵresolveDocument(element: RElement & {ownerDocument: Document
  *
  * @codeGenApi
  */
-export function ɵɵresolveBody(element: RElement & {ownerDocument: Document}) {
+export function ΔresolveBody(element: RElement & {ownerDocument: Document}) {
   return {name: 'body', target: element.ownerDocument.body};
 }
 

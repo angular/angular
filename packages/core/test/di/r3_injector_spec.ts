@@ -6,34 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {INJECTOR, InjectFlags, InjectionToken, Injector, Optional, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '@angular/core';
+import {INJECTOR, InjectFlags, InjectionToken, Injector, Optional, ΔdefineInjectable, ΔdefineInjector, Δinject} from '@angular/core';
 import {R3Injector, createInjector} from '@angular/core/src/di/r3_injector';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => ɵɵinject(CircularB),
+      factory: () => Δinject(CircularB),
     });
   }
 
   class CircularB {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => ɵɵinject(CircularA),
+      factory: () => Δinject(CircularA),
     });
   }
 
   class Service {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
       factory: () => new Service(),
     });
   }
 
   class OptionalService {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
       factory: () => new OptionalService(),
     });
@@ -55,41 +55,41 @@ describe('InjectorDef-based createInjector()', () => {
   class ServiceWithDep {
     constructor(readonly service: Service) {}
 
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => new ServiceWithDep(ɵɵinject(Service)),
+      factory: () => new ServiceWithDep(Δinject(Service)),
     });
   }
 
   class ServiceWithOptionalDep {
     constructor(@Optional() readonly service: OptionalService|null) {}
 
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => new ServiceWithOptionalDep(ɵɵinject(OptionalService, InjectFlags.Optional)),
+      factory: () => new ServiceWithOptionalDep(Δinject(OptionalService, InjectFlags.Optional)),
     });
   }
 
   class ServiceWithMissingDep {
     constructor(readonly service: Service) {}
 
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => new ServiceWithMissingDep(ɵɵinject(Service)),
+      factory: () => new ServiceWithMissingDep(Δinject(Service)),
     });
   }
 
   class ServiceWithMultiDep {
     constructor(readonly locale: string[]) {}
 
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
-      factory: () => new ServiceWithMultiDep(ɵɵinject(LOCALE)),
+      factory: () => new ServiceWithMultiDep(Δinject(LOCALE)),
     });
   }
 
   class ServiceTwo {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
       factory: () => new ServiceTwo(),
     });
@@ -97,7 +97,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   let deepServiceDestroyed = false;
   class DeepService {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: null,
       factory: () => new DeepService(),
     });
@@ -107,7 +107,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   let eagerServiceCreated: boolean = false;
   class EagerService {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: undefined,
       factory: () => new EagerService(),
     });
@@ -119,8 +119,8 @@ describe('InjectorDef-based createInjector()', () => {
   class DeepModule {
     constructor(eagerService: EagerService) { deepModuleCreated = true; }
 
-    static ngInjectorDef = ɵɵdefineInjector({
-      factory: () => new DeepModule(ɵɵinject(EagerService)),
+    static ngInjectorDef = ΔdefineInjector({
+      factory: () => new DeepModule(Δinject(EagerService)),
       imports: undefined,
       providers: [
         EagerService,
@@ -137,7 +137,7 @@ describe('InjectorDef-based createInjector()', () => {
   }
 
   class IntermediateModule {
-    static ngInjectorDef = ɵɵdefineInjector({
+    static ngInjectorDef = ΔdefineInjector({
       factory: () => new IntermediateModule(),
       imports: [DeepModule.safe()],
       providers: [],
@@ -147,13 +147,13 @@ describe('InjectorDef-based createInjector()', () => {
   class InjectorWithDep {
     constructor(readonly service: Service) {}
 
-    static ngInjectorDef = ɵɵdefineInjector({
-      factory: () => new InjectorWithDep(ɵɵinject(Service)),
+    static ngInjectorDef = ΔdefineInjector({
+      factory: () => new InjectorWithDep(Δinject(Service)),
     });
   }
 
   class Module {
-    static ngInjectorDef = ɵɵdefineInjector({
+    static ngInjectorDef = ΔdefineInjector({
       factory: () => new Module(),
       imports: [IntermediateModule],
       providers: [
@@ -175,7 +175,7 @@ describe('InjectorDef-based createInjector()', () => {
   }
 
   class OtherModule {
-    static ngInjectorDef = ɵɵdefineInjector({
+    static ngInjectorDef = ΔdefineInjector({
       factory: () => new OtherModule(),
       imports: undefined,
       providers: [],
@@ -183,7 +183,7 @@ describe('InjectorDef-based createInjector()', () => {
   }
 
   class ModuleWithMissingDep {
-    static ngInjectorDef = ɵɵdefineInjector({
+    static ngInjectorDef = ΔdefineInjector({
       factory: () => new ModuleWithMissingDep(),
       imports: undefined,
       providers: [ServiceWithMissingDep],
@@ -193,7 +193,7 @@ describe('InjectorDef-based createInjector()', () => {
   class NotAModule {}
 
   class ImportsNotAModule {
-    static ngInjectorDef = ɵɵdefineInjector({
+    static ngInjectorDef = ΔdefineInjector({
       factory: () => new ImportsNotAModule(),
       imports: [NotAModule],
       providers: [],
@@ -202,7 +202,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   let scopedServiceDestroyed = false;
   class ScopedService {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: Module,
       factory: () => new ScopedService(),
     });
@@ -211,7 +211,7 @@ describe('InjectorDef-based createInjector()', () => {
   }
 
   class WrongScopeService {
-    static ngInjectableDef = ɵɵdefineInjectable({
+    static ngInjectableDef = ΔdefineInjectable({
       providedIn: OtherModule,
       factory: () => new WrongScopeService(),
     });
@@ -367,7 +367,7 @@ describe('InjectorDef-based createInjector()', () => {
       }
       class ErrorModule {
         static ngInjectorDef =
-            ɵɵdefineInjector({factory: () => new ErrorModule(), providers: [MissingArgumentType]});
+            ΔdefineInjector({factory: () => new ErrorModule(), providers: [MissingArgumentType]});
       }
       expect(() => createInjector(ErrorModule).get(MissingArgumentType))
           .toThrowError('Can\'t resolve all parameters for MissingArgumentType: (?).');

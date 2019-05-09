@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, ɵɵinject} from '@angular/core';
+import {Inject, Injectable, Δinject} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
 
@@ -34,7 +34,7 @@ export type MetaDefinition = {
  * Factory to create Meta service.
  */
 export function createMeta() {
-  return new Meta(ɵɵinject(DOCUMENT));
+  return new Meta(Δinject(DOCUMENT));
 }
 
 /**

@@ -52,7 +52,7 @@ describe('compiler compliance: listen()', () => {
     };
 
     const componentDef = `
-      MyComponent.ngComponentDef = IDENT.ɵɵdefineComponent({
+      MyComponent.ngComponentDef = IDENT.ΔdefineComponent({
           …
           inputs:{
             componentInput: "componentInput",
@@ -66,7 +66,7 @@ describe('compiler compliance: listen()', () => {
         });`;
 
     const directiveDef = `
-      MyDirective.ngDirectiveDef = IDENT.ɵɵdefineDirective({
+      MyDirective.ngDirectiveDef = IDENT.ΔdefineDirective({
         …
         inputs:{
           directiveInput: "directiveInput",

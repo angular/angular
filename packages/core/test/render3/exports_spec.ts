@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δreference, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, createComponent} from './render_util';
@@ -23,29 +23,29 @@ describe('exports', () => {
     it('should work inside a view container', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'div');
-          { ɵɵcontainer(1); }
-          ɵɵelementEnd();
+          ΔelementStart(0, 'div');
+          { Δcontainer(1); }
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ɵɵcontainerRefreshStart(1);
+          ΔcontainerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = ɵɵembeddedViewStart(1, 2, 1);
+              let rf1 = ΔembeddedViewStart(1, 2, 1);
               {
                 if (rf1 & RenderFlags.Create) {
-                  ɵɵtext(0);
-                  ɵɵelement(1, 'input', ['value', 'one'], ['myInput', '']);
+                  Δtext(0);
+                  Δelement(1, 'input', ['value', 'one'], ['myInput', '']);
                 }
                 if (rf1 & RenderFlags.Update) {
-                  const tmp = ɵɵreference(2) as any;
-                  ɵɵtextBinding(0, ɵɵbind(tmp.value));
+                  const tmp = Δreference(2) as any;
+                  ΔtextBinding(0, Δbind(tmp.value));
                 }
               }
-              ɵɵembeddedViewEnd();
+              ΔembeddedViewEnd();
             }
           }
-          ɵɵcontainerRefreshEnd();
+          ΔcontainerRefreshEnd();
         }
       }, 2);
 
