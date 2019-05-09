@@ -1522,7 +1522,7 @@ function declareTests(config?: {useJit: boolean}) {
               expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('INPUT');
               expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
               expect((<Injector>c.injector).get).toBeTruthy();
-              expect(c.context).toBe(fixture.componentInstance);
+              expect(c.context).toEqual(fixture.componentInstance);
               expect(c.references['local']).toBeDefined();
             }
           });
@@ -1567,7 +1567,7 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
                 expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
                 expect((<Injector>c.injector).get).toBeTruthy();
-                expect(c.context).toBe(fixture.componentInstance);
+                expect(c.context).toEqual(fixture.componentInstance);
                 expect(c.references['local']).toBeDefined();
               }));
     });
