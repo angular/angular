@@ -1,5 +1,9 @@
+<!--
 # Angular Universal: server-side rendering
+-->
+# Angular Universal: 서버 사이드 렌더링
 
+<!--
 This guide describes **Angular Universal**, a technology that runs your Angular application on the server.
 
 A normal Angular application executes in the _browser_, rendering pages in the DOM in response to user actions. 
@@ -12,28 +16,57 @@ You can easily prepare an app for server-side rendering using the [Angular CLI](
 
 This guide describes a Universal sample application that launches quickly as a server-rendered page.
 Meanwhile, the browser downloads the full client version and switches to it automatically after the code loads.
+-->
+이 문서는 **Angular Universal**에 대해 소개합니다. Angular Universal은 Angular 애플리케이션을 서버에서 실행하는 테크닉을 의미합니다.
+
+일반적으로 Angular 애플리케이션은 _브라우저_ 에서 실행됩니다. DOM에 페이지가 렌더링되고 사용자의 동작에 반응하는 것도 모두 브라우저에서 이루어집니다.
+그런데 Angular Universal은 애플리케이션 페이지를 _서버_ 에 _정적으로_ 만들어두는 방식입니다. 이 방식은 _서버 사이드 렌더링_ (Server-side rendering, SSR)이라고도 합니다.
+Angular 앱에 Universal을 적용해도 이전처럼 브라우저에서 애플리케이션 페이지를 렌더링하는 방식을 그대로 사용할 수 있습니다.
+그런데 이 방식 외에도 서버에서 미리 생성해둔 페이지를 HTML 형식으로 직접 전달할 수도 있습니다.
+
+[Angular CLI](guide/glossary#cli)를 사용하면 서버 사이드 렌더링이 적용된 앱을 간단하게 만들 수 있습니다.  아래에서 설명하겠지만, CLI 스키매틱으로 제공되는 `@nguniversal/express-engine`을 적용하면 됩니다.
+
+이 문서에서는 Universal이 적용된 샘플 애플리케이션을 소개하는데, 이 앱은 서버에서 미리 렌더링되기 때문에 빠르게 실행됩니다. 그리고 나서는 이 앱을 통채로 다운로드받아 브라우저에 직접 로드하는 방법에 대해서도 알아봅시다.
+
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:** [Download the finished sample code](generated/zips/universal/universal.zip),
   which runs in a [Node.js® Express](https://expressjs.com/) server.
+  -->
+  **참고:** [완성된 샘플 코드를 다운받아서](generated/zips/universal/universal.zip) [Node.js® Express](https://expressjs.com/) 서버에 직접 실행해볼 수 있습니다.
 
 </div>
 
 {@a why-do-it}
 
+<!--
 ## Why use server-side rendering?
+-->
+## 서버 사이드 렌더링은 왜 필요한가요?
 
+<!--
 There are three main reasons to create a Universal version of your app.
 
 1. Facilitate web crawlers (SEO)
 1. Improve performance on mobile and low-powered devices
 1. Show the first page quickly
+-->
+Angular 애플리케이션을 Universal 버전으로 제공해야 하는 이유는 크게 다음 3가지를 꼽아볼 수 있습니다.
+
+1. 웹 크롤러에 대응하기 위해 (SEO)
+1. 모바일과 저사양 장비에서 동작하는 성능을 끌어올리기 위해
+1. 첫 페이지를 빠르게 표시하기 위해
 
 {@a seo}
 {@a web-crawlers}
+<!--
 ### Facilitate web crawlers
+-->
+### 웹 크롤러 대응하기
 
+<!--
 Google, Bing, Facebook, Twitter, and other social media sites rely on web crawlers to index your application content and make that content searchable on the web.
 These web crawlers may be unable to navigate and index your highly interactive Angular application as a human user could do.
 
@@ -42,6 +75,14 @@ Universal also makes a site preview available since each URL returns a fully ren
 
 Enabling web crawlers is often referred to as
 [search engine optimization (SEO)](https://static.googleusercontent.com/media/www.google.com/en//webmasters/docs/search-engine-optimization-starter-guide.pdf).
+-->
+Google, Bing, Facebook, Twitter와 같은 소셜 미디어 사이트는 웹 애플리케이션 컨텐츠를 수집하고 검색에 활용하기 위해 웹 크롤러를 사용합니다.
+그런데 이런 웹 크롤러는 진짜 사람이 하는 것처럼 애플리케이션 페이지를 효율적으로 이동하면서 원하는 내용을 수집하지는 못합니다.
+
+Angular Universal은 이런 경우에 사용합니다. Angular Universal을 적용하면 애플리케이션을 정적으로 빌드해둘 수 있기 때문에 컨텐츠를 검색하기 쉽고, 링크를 연결할 수 있으며, JavaScript를 사용하지 않아도 페이지를 전환할 수 있습니다.
+그리고 Universal을 적용하면 완전히 렌더링된 페이지를 서버에 준비하기 때문에 웹사이트의 미리보기 화면을 제공할 수도 있습니다.
+
+웹 크롤러에 대응하는 과정은 [검색 엔진 최적화(search engine optimization, SEO)](https://static.googleusercontent.com/media/www.google.com/en//webmasters/docs/search-engine-optimization-starter-guide.pdf)라고도 합니다.
 
 {@a no-javascript}
 
