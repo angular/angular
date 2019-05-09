@@ -9,10 +9,10 @@
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 
-import {store, ɵɵload} from './instructions/all';
+import {store, Δload} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
-import {ɵɵpureFunction1, ɵɵpureFunction2, ɵɵpureFunction3, ɵɵpureFunction4, ɵɵpureFunctionV} from './pure_function';
+import {ΔpureFunction1, ΔpureFunction2, ΔpureFunction3, ΔpureFunction4, ΔpureFunctionV} from './pure_function';
 import {getLView} from './state';
 import {NO_CHANGE} from './tokens';
 
@@ -27,7 +27,7 @@ import {NO_CHANGE} from './tokens';
  *
  * @codeGenApi
  */
-export function ɵɵpipe(index: number, pipeName: string): any {
+export function Δpipe(index: number, pipeName: string): any {
   const tView = getLView()[TVIEW];
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
@@ -81,10 +81,10 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
  *
  * @codeGenApi
  */
-export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
-  const pipeInstance = ɵɵload<PipeTransform>(index);
+export function ΔpipeBind1(index: number, slotOffset: number, v1: any): any {
+  const pipeInstance = Δload<PipeTransform>(index);
   return unwrapValue(
-      isPure(index) ? ɵɵpureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
+      isPure(index) ? ΔpureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
                       pipeInstance.transform(v1));
 }
 
@@ -101,10 +101,10 @@ export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
  *
  * @codeGenApi
  */
-export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
-  const pipeInstance = ɵɵload<PipeTransform>(index);
+export function ΔpipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
+  const pipeInstance = Δload<PipeTransform>(index);
   return unwrapValue(
-      isPure(index) ? ɵɵpureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
+      isPure(index) ? ΔpureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
                       pipeInstance.transform(v1, v2));
 }
 
@@ -122,12 +122,11 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
  *
  * @codeGenApi
  */
-export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
-  const pipeInstance = ɵɵload<PipeTransform>(index);
+export function ΔpipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
+  const pipeInstance = Δload<PipeTransform>(index);
   return unwrapValue(
-      isPure(index) ?
-          ɵɵpureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
-          pipeInstance.transform(v1, v2, v3));
+      isPure(index) ? ΔpureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
+                      pipeInstance.transform(v1, v2, v3));
 }
 
 /**
@@ -145,12 +144,12 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
  *
  * @codeGenApi
  */
-export function ɵɵpipeBind4(
+export function ΔpipeBind4(
     index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
-  const pipeInstance = ɵɵload<PipeTransform>(index);
+  const pipeInstance = Δload<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ?
-          ɵɵpureFunction4(slotOffset, pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+          ΔpureFunction4(slotOffset, pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
           pipeInstance.transform(v1, v2, v3, v4));
 }
 
@@ -166,10 +165,10 @@ export function ɵɵpipeBind4(
  *
  * @codeGenApi
  */
-export function ɵɵpipeBindV(index: number, slotOffset: number, values: any[]): any {
-  const pipeInstance = ɵɵload<PipeTransform>(index);
+export function ΔpipeBindV(index: number, slotOffset: number, values: any[]): any {
+  const pipeInstance = Δload<PipeTransform>(index);
   return unwrapValue(
-      isPure(index) ? ɵɵpureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :
+      isPure(index) ? ΔpureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :
                       pipeInstance.transform.apply(pipeInstance, values));
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRenderFlags, ɵrenderComponent as renderComponent, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵselect, ɵɵstyleProp, ɵɵstyling, ɵɵtext, ɵɵtextBinding} from '@angular/core';
+import {ɵRenderFlags, ɵrenderComponent as renderComponent, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdefineComponent, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δselect, ΔstyleProp, Δstyling, Δtext, ΔtextBinding} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {createDom, destroyDom, detectChanges} from '../render3/tree';
@@ -18,7 +18,7 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef = ɵɵdefineComponent({
+  static ngComponentDef = ΔdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
     consts: 5,
@@ -35,41 +35,41 @@ export class TreeFunction {
 const c1 = ['background-color'];
 export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
   if (rf & ɵRenderFlags.Create) {
-    ɵɵelementStart(0, 'tree');
+    ΔelementStart(0, 'tree');
     {
-      ɵɵelementStart(1, 'span');
-      ɵɵstyling(null, c1);
-      { ɵɵtext(2); }
-      ɵɵelementEnd();
-      ɵɵcontainer(3);
-      ɵɵcontainer(4);
+      ΔelementStart(1, 'span');
+      Δstyling(null, c1);
+      { Δtext(2); }
+      ΔelementEnd();
+      Δcontainer(3);
+      Δcontainer(4);
     }
-    ɵɵelementEnd();
+    ΔelementEnd();
   }
   if (rf & ɵRenderFlags.Update) {
-    ɵɵselect(1);
-    ɵɵstyleProp(0, ctx.depth % 2 ? '' : 'grey');
-    ɵɵstyling();
-    ɵɵselect(2);
-    ɵɵtextBinding(2, ɵɵinterpolation1(' ', ctx.value, ' '));
-    ɵɵcontainerRefreshStart(3);
+    Δselect(1);
+    ΔstyleProp(0, ctx.depth % 2 ? '' : 'grey');
+    Δstyling();
+    Δselect(2);
+    ΔtextBinding(2, Δinterpolation1(' ', ctx.value, ' '));
+    ΔcontainerRefreshStart(3);
     {
       if (ctx.left != null) {
-        let rf0 = ɵɵembeddedViewStart(0, 5, 1);
+        let rf0 = ΔembeddedViewStart(0, 5, 1);
         { TreeTpl(rf0, ctx.left); }
-        ɵɵembeddedViewEnd();
+        ΔembeddedViewEnd();
       }
     }
-    ɵɵcontainerRefreshEnd();
-    ɵɵcontainerRefreshStart(4);
+    ΔcontainerRefreshEnd();
+    ΔcontainerRefreshStart(4);
     {
       if (ctx.right != null) {
-        let rf0 = ɵɵembeddedViewStart(0, 5, 1);
+        let rf0 = ΔembeddedViewStart(0, 5, 1);
         { TreeTpl(rf0, ctx.right); }
-        ɵɵembeddedViewEnd();
+        ΔembeddedViewEnd();
       }
     }
-    ɵɵcontainerRefreshEnd();
+    ΔcontainerRefreshEnd();
   }
 }
 
