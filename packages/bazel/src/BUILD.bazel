@@ -18,6 +18,7 @@ nodejs_binary(
         "@npm//rollup",
         "@npm//rollup-plugin-amd",
         "@npm//rollup-plugin-commonjs",
+        "@npm//rollup-plugin-json",
         "@npm//rollup-plugin-node-resolve",
         "@npm//rollup-plugin-sourcemaps",
     ],

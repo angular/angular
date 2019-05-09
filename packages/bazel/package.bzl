@@ -40,12 +40,14 @@ def rules_angular_dev_dependencies():
     #############################################
     http_archive(
         name = "io_bazel_rules_sass",
+        sha256 = "76ae498b9a96fa029f026f8358ed44b93c934dde4691a798cb3a4137c307b7dc",
         strip_prefix = "rules_sass-1.15.1",
         url = "https://github.com/bazelbuild/rules_sass/archive/1.15.1.zip",
     )
 
     http_archive(
         name = "io_bazel_skydoc",
+        sha256 = "f88058b43112e9bdc7fdb0abbdc17c5653268708c01194a159641119195e45c6",
         strip_prefix = "skydoc-a9550cb3ca3939cbabe3b589c57b6f531937fa99",
         # TODO: switch to upstream when https://github.com/bazelbuild/skydoc/pull/103 is merged
         url = "https://github.com/alexeagle/skydoc/archive/a9550cb3ca3939cbabe3b589c57b6f531937fa99.zip",

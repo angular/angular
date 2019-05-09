@@ -9,5 +9,8 @@ ts_library(
         "//packages/compiler",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )

@@ -10,5 +10,6 @@ ts_library(
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
+        "@npm//typescript",
     ],
 )

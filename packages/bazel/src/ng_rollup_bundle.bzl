@@ -18,7 +18,6 @@ load(
     "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
-    "ROLLUP_OUTPUTS",
     "run_rollup",
     "run_sourcemapexplorer",
     "run_terser",
@@ -26,6 +25,18 @@ load(
 )
 load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
 load(":esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
+
+ROLLUP_OUTPUTS = {
+    "build_cjs": "%{name}.cjs.js",
+    "build_es2015": "%{name}.es2015.js",
+    "build_es2015_min": "%{name}.min.es2015.js",
+    "build_es2015_min_debug": "%{name}.min_debug.es2015.js",
+    "build_es5": "%{name}.js",
+    "build_es5_min": "%{name}.min.js",
+    "build_es5_min_debug": "%{name}.min_debug.js",
+    "build_umd": "%{name}.umd.js",
+    "explore_html": "%{name}.explore.html",
+}
 
 PACKAGES = [
     # Generated paths when using ng_rollup_bundle outside this monorepo.
