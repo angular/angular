@@ -90,29 +90,29 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@bazel/bazel-darwin_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.24.0.tgz#828ef298d8d542961df388f17b0244f4f4302a74"
-  integrity sha512-xly44vkcD/fauUb7Lm5Lme4qhEZdkuuyBKSVQUHPbYAGDdbj/W8dupI3bZREkJAgG/WrRU+WXUemMj4U8ZcLcw==
+"@bazel/bazel-darwin_x64@0.26.0-rc5":
+  version "0.26.0-rc5"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.26.0-rc5.tgz#237a564ee03abe16ced3622624e40fb5564a9d54"
+  integrity sha512-1zGZUtC2jzK0bwknMaXStMmfKul15sZ089EoaWPI596VyF3uNkcOMQWDDc5daDz3ZdxpvWYbpByInmXzWQIDzw==
 
-"@bazel/bazel-linux_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.24.0.tgz#9ef2e7266833ad2221fe4af4ceb6763d2897e3ff"
-  integrity sha512-p5ylPLWnJZDGbaIFBrtD/tp3Su5rMdzeeNJKU24XyiWQTHVZ3OD3I2Fb0ILCgfBjY8AlA7EtCtOI4hYnAuIOtg==
+"@bazel/bazel-linux_x64@0.26.0-rc5":
+  version "0.26.0-rc5"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.26.0-rc5.tgz#fc10602c13ca6ecb1afe76fb2f6c2773ba1204f2"
+  integrity sha512-HBNn4SL6zHBjA95dY/cpjnZEVB30+L2Uq4PWw48QhuQJGY/CYDwqWk2oFMUK47EEFMFh4OQfoN3q4oHKbvixdw==
 
-"@bazel/bazel-win32_x64@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.24.0.tgz#02d83113a6c6ed99795a3e41bff5631aa141638d"
-  integrity sha512-/bcSEx+GoV/q7H4WM0jazfxTcurSiIIePhRv+d05mxRDcaWwhCO8KzmmZRWH1abW6npvq5tLkbSQi7G7nUBhgg==
+"@bazel/bazel-win32_x64@0.26.0-rc5":
+  version "0.26.0-rc5"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.26.0-rc5.tgz#05fecc69fdf36bc883e66452e01acff89356980e"
+  integrity sha512-DviEGJHXKlhpvnuqfT3hjyJmGhpsKykNxnZ60dDexlh0GkhIn9rN8OF3vj0EL+pRpYhiBQvcoiwQdvV2gBYbRw==
 
-"@bazel/bazel@0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel/-/bazel-0.24.0.tgz#f4e68e3680ac299858c24c26be3d08d1151e78fc"
-  integrity sha512-/5E55tqH9ogAGF9Dd7RSCJmk7/xdlsPTAhsX3yEsEMs7GLdHlgD3jbeePsKUiHKKr8LXAufjTs2pXQfjrkZRMg==
+"@bazel/bazel@0.26.0-rc5":
+  version "0.26.0-rc5"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel/-/bazel-0.26.0-rc5.tgz#42b4ed498f02a426adee30583b98166611eb49e8"
+  integrity sha512-pZGUFXzvFUqm/hd7UmMPcCUc5CZd8dknae2pptQTpBhCFUHdsQeTr1alFKTNZPArVqAtqIUL2DS2MadKb3v31A==
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.24.0"
-    "@bazel/bazel-linux_x64" "0.24.0"
-    "@bazel/bazel-win32_x64" "0.24.0"
+    "@bazel/bazel-darwin_x64" "0.26.0-rc5"
+    "@bazel/bazel-linux_x64" "0.26.0-rc5"
+    "@bazel/bazel-win32_x64" "0.26.0-rc5"
 
 "@bazel/buildifier-darwin_x64@0.19.2":
   version "0.19.2"
