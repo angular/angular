@@ -11,6 +11,7 @@ import {
   Provider8Component,
   Provider9Component,
   Provider10Component,
+  Provider11Component,
   ProvidersComponent,
 } from './providers.component';
 
@@ -26,6 +27,7 @@ import {
     Provider8Component,
     Provider9Component,
     Provider10Component,
+    Provider11Component,
     ProvidersComponent,
   ],
   exports: [ ProvidersComponent ]

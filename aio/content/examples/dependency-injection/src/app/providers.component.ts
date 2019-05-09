@@ -7,7 +7,10 @@ import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import {
   APP_CONFIG,
   AppConfig,
-  HERO_DI_CONFIG } from './app.config';
+  HERO_DI_CONFIG,
+  APP_MULTI_CONFIG,
+  HERO_MULTI_DI_CONFIG
+} from './app.config';
 
 import { HeroService } from './heroes/hero.service';
 import { heroServiceProvider } from './heroes/hero.service.provider';
@@ -39,7 +42,7 @@ export class Provider1Component {
   providers:
     // #docregion providers-3
     [{ provide: Logger, useClass: Logger }]
-    // #enddocregion providers-3
+  // #enddocregion providers-3
 })
 export class Provider3Component {
   log: string;
@@ -50,7 +53,7 @@ export class Provider3Component {
 }
 
 //////////////////////////////////////////
-export class BetterLogger extends Logger {}
+export class BetterLogger extends Logger { }
 
 @Component({
   selector: 'provider-4',
@@ -58,7 +61,7 @@ export class BetterLogger extends Logger {}
   providers:
     // #docregion providers-4
     [{ provide: Logger, useClass: BetterLogger }]
-    // #enddocregion providers-4
+  // #enddocregion providers-4
 })
 export class Provider4Component {
   log: string;
@@ -87,9 +90,9 @@ export class EvenBetterLogger extends Logger {
   template: template,
   providers:
     // #docregion providers-5
-    [ UserService,
+    [UserService,
       { provide: Logger, useClass: EvenBetterLogger }]
-    // #enddocregion providers-5
+  // #enddocregion providers-5
 })
 export class Provider5Component {
   log: string;
@@ -101,7 +104,7 @@ export class Provider5Component {
 
 //////////////////////////////////////////
 
-export class NewLogger extends Logger {}
+export class NewLogger extends Logger { }
 
 export class OldLogger {
   logs: string[] = [];
@@ -115,10 +118,10 @@ export class OldLogger {
   template: template,
   providers:
     // #docregion providers-6a
-    [ NewLogger,
+    [NewLogger,
       // Not aliased! Creates two instances of `NewLogger`
-      { provide: OldLogger, useClass: NewLogger}]
-    // #enddocregion providers-6a
+      { provide: OldLogger, useClass: NewLogger }]
+  // #enddocregion providers-6a
 })
 export class Provider6aComponent {
   log: string;
@@ -138,10 +141,10 @@ export class Provider6aComponent {
   template: template,
   providers:
     // #docregion providers-6b
-    [ NewLogger,
+    [NewLogger,
       // Alias OldLogger w/ reference to NewLogger
-      { provide: OldLogger, useExisting: NewLogger}]
-    // #enddocregion providers-6b
+      { provide: OldLogger, useExisting: NewLogger }]
+  // #enddocregion providers-6b
 })
 export class Provider6bComponent {
   log: string;
@@ -158,7 +161,7 @@ export class Provider6bComponent {
 
 // #docregion silent-logger
 // An object in the shape of the logger service
-export function SilentLoggerFn() {}
+export function SilentLoggerFn() { }
 
 const silentLogger = {
   logs: ['Silent logger says "Shhhhh!". Provided via "useValue"'],
@@ -172,7 +175,7 @@ const silentLogger = {
   providers:
     // #docregion providers-7
     [{ provide: Logger, useValue: silentLogger }]
-    // #enddocregion providers-7
+  // #enddocregion providers-7
 })
 export class Provider7Component {
   log: string;
@@ -226,7 +229,7 @@ export class Provider9Component implements OnInit {
   // #enddocregion provider-9-ctor
 
   ngOnInit() {
-     this.log = 'APP_CONFIG Application title is ' + this.config.title;
+    this.log = 'APP_CONFIG Application title is ' + this.config.title;
   }
 }
 
@@ -262,6 +265,41 @@ export class Provider10Component implements OnInit {
 /////////////////
 
 @Component({
+  selector: 'provider-11',
+  template: template,
+  /*
+   // #docregion providers-9-interface
+   // FAIL! Can't use interface as provider token
+   [{ provide: AppConfig, useValue: HERO_DI_CONFIG })]
+   // #enddocregion providers-9-interface
+   */
+  // #docregion providers-11
+  providers: [{ provide: APP_MULTI_CONFIG, useValue: HERO_MULTI_DI_CONFIG, multi: true }]
+  // #enddocregion providers-11
+})
+export class Provider11Component implements OnInit {
+  log: string;
+  /*
+   // #docregion provider-11-ctor-interface
+   // FAIL! Can't inject using the interface as the parameter type
+   constructor(private config: AppConfig){ }
+   // #enddocregion provider-11-ctor-interface
+   */
+  // #docregion provider-11-ctor
+  constructor(@Inject(APP_CONFIG) private config: AppConfig[]) { }
+  // #enddocregion provider-11-ctor
+
+  ngOnInit() {
+    this.config.forEach((c) => {
+      // added to fix unused expression error
+      this.log = 'APP_CONFIG Application title is ' + c.title;
+    })
+  }
+}
+
+/////////////////
+
+@Component({
   selector: 'app-providers',
   template: `
   <h2>Provider variations</h2>
@@ -275,6 +313,7 @@ export class Provider10Component implements OnInit {
   <div id="p8"><provider-8></provider-8></div>
   <div id="p9"><provider-9></provider-9></div>
   <div id="p10"><provider-10></provider-10></div>
+  <div id="11"><provider-11></provider-11></div>
   `
 })
 export class ProvidersComponent { }
