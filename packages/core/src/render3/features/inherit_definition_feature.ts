@@ -13,7 +13,7 @@ import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature,
 import {adjustActiveDirectiveSuperClassDepthPosition} from '../state';
 import {isComponentDef} from '../util/view_utils';
 
-import {ɵɵNgOnChangesFeature} from './ng_onchanges_feature';
+import {ΔNgOnChangesFeature} from './ng_onchanges_feature';
 
 function getSuperType(type: Type<any>): Type<any>&
     {ngComponentDef?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
@@ -26,7 +26,7 @@ function getSuperType(type: Type<any>): Type<any>&
  *
  * @codeGenApi
  */
-export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
+export function ΔInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
   while (superType) {
@@ -117,7 +117,7 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
         definition.onInit = definition.onInit || superPrototype.ngOnInit;
 
         if (superPrototype.ngOnChanges) {
-          ɵɵNgOnChangesFeature()(definition);
+          ΔNgOnChangesFeature()(definition);
         }
       }
     }

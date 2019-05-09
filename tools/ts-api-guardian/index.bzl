@@ -24,9 +24,7 @@ def ts_api_guardian_test(
         golden,
         actual,
         data = [],
-        # Match one, but not two ɵ characters. Ivy instructions are currently prefixed with ɵɵ and
-        # should appear in ts_api_guardian tests.
-        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        strip_export_pattern = ["^__", "^ɵ"],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):

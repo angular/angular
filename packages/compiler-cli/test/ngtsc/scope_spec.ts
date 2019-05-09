@@ -36,15 +36,15 @@ describe('ngtsc module scopes', () => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
+        expect(jsContents).toContain('i0.ΔdefineNgModule({ type: TestModule });');
         expect(jsContents)
             .toContain(
-                '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] });');
+                '/*@__PURE__*/ i0.ΔsetNgModuleScope(TestModule, { imports: [OtherModule] });');
 
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents)
             .toContain(
-                'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
+                'static ngModuleDef: i0.ΔNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
       });
 
       it('should produce an error when an invalid class is imported', () => {
@@ -98,15 +98,15 @@ describe('ngtsc module scopes', () => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
+        expect(jsContents).toContain('i0.ΔdefineNgModule({ type: TestModule });');
         expect(jsContents)
             .toContain(
-                '/*@__PURE__*/ i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] });');
+                '/*@__PURE__*/ i0.ΔsetNgModuleScope(TestModule, { exports: [OtherModule] });');
 
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents)
             .toContain(
-                'static ngModuleDef: i0.ɵɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
+                'static ngModuleDef: i0.ΔNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
       });
 
       it('should produce an error when a non-NgModule class is exported', () => {

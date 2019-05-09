@@ -31,7 +31,7 @@ import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵselect(index: number): void {
+export function Δselect(index: number): void {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode &&
       assertLessThan(
@@ -44,6 +44,6 @@ export function ɵɵselect(index: number): void {
   // We must set the selected index *after* running the hooks, because hooks may have side-effects
   // that cause other template functions to run, thus updating the selected index, which is global
   // state. If we run `setSelectedIndex` *before* we run the hooks, in some cases the selected index
-  // will be altered by the time we leave the `ɵɵselect` instruction.
+  // will be altered by the time we leave the `Δselect` instruction.
   setSelectedIndex(index);
 }
