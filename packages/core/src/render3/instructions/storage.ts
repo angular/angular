@@ -33,7 +33,7 @@ export function store<T>(index: number, value: T): void {
  *
  * @codeGenApi
  */
-export function ɵɵreference<T>(index: number) {
+export function Δreference<T>(index: number) {
   const contextLView = getContextLView();
   return loadInternal<T>(contextLView, index);
 }
@@ -43,6 +43,6 @@ export function ɵɵreference<T>(index: number) {
  *
  * @codeGenApi
  */
-export function ɵɵload<T>(index: number): T {
+export function Δload<T>(index: number): T {
   return loadInternal<T>(getLView(), index);
 }

@@ -637,7 +637,7 @@ export class NodeInjector implements Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
+export function ΔgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {
   const typeAny = type as any;
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
       getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
@@ -650,9 +650,9 @@ export function ɵɵgetFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => 
 /**
  * @codeGenApi
  */
-export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
+export function ΔgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
-  const factory = ɵɵgetFactoryOf<T>(proto);
+  const factory = ΔgetFactoryOf<T>(proto);
   if (factory !== null) {
     return factory;
   } else {

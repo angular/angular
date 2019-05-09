@@ -33,7 +33,7 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  *
  * @publicApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): string {
+export function ΔsanitizeHtml(unsafeHtml: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
@@ -59,7 +59,7 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
  *
  * @publicApi
  */
-export function ɵɵsanitizeStyle(unsafeStyle: any): string {
+export function ΔsanitizeStyle(unsafeStyle: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
@@ -86,7 +86,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
  *
  * @publicApi
  */
-export function ɵɵsanitizeUrl(unsafeUrl: any): string {
+export function ΔsanitizeUrl(unsafeUrl: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
@@ -108,7 +108,7 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  *
  * @publicApi
  */
-export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
+export function ΔsanitizeResourceUrl(unsafeResourceUrl: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
@@ -131,7 +131,7 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
  *
  * @publicApi
  */
-export function ɵɵsanitizeScript(unsafeScript: any): string {
+export function ΔsanitizeScript(unsafeScript: any): string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
@@ -153,9 +153,9 @@ export function getUrlSanitizer(tag: string, prop: string) {
   if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
                           tag === 'media' || tag === 'script')) ||
       (prop === 'href' && (tag === 'base' || tag === 'link'))) {
-    return ɵɵsanitizeResourceUrl;
+    return ΔsanitizeResourceUrl;
   }
-  return ɵɵsanitizeUrl;
+  return ΔsanitizeUrl;
 }
 
 /**
@@ -173,7 +173,7 @@ export function getUrlSanitizer(tag: string, prop: string) {
  *
  * @publicApi
  */
-export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
+export function ΔsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
   return getUrlSanitizer(tag, prop)(unsafeUrl);
 }
 
@@ -183,13 +183,13 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
  *
  * @publicApi
  */
-export const ɵɵdefaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
+export const ΔdefaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
   if (value === undefined) {
     return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
         prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
   }
 
-  return ɵɵsanitizeStyle(value);
+  return ΔsanitizeStyle(value);
 } as StyleSanitizeFn);
 
 export function validateAgainstEventProperties(name: string) {

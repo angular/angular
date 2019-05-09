@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, Input, ɵRenderFlags, ɵɵdefineDirective, ɵɵstyleMap, ɵɵstyling, ɵɵstylingApply} from '@angular/core';
+import {Directive, DoCheck, Input, ɵRenderFlags, ΔdefineDirective, ΔstyleMap, Δstyling, ΔstylingApply} from '@angular/core';
 
 import {NgStyleImpl, NgStyleImplProvider} from './ng_style_impl';
 
@@ -29,17 +29,17 @@ export const ngStyleDirectiveDef__PRE_R3__ = undefined;
 // used when the VE is not present (note the directive will
 // never be instantiated normally because it is apart of a
 // base class)
-export const ngStyleDirectiveDef__POST_R3__ = ɵɵdefineDirective({
+export const ngStyleDirectiveDef__POST_R3__ = ΔdefineDirective({
   type: function() {} as any,
   selectors: null as any,
   factory: () => {},
   hostBindings: function(rf: ɵRenderFlags, ctx: any, elIndex: number) {
     if (rf & ɵRenderFlags.Create) {
-      ɵɵstyling();
+      Δstyling();
     }
     if (rf & ɵRenderFlags.Update) {
-      ɵɵstyleMap(ctx.getValue());
-      ɵɵstylingApply();
+      ΔstyleMap(ctx.getValue());
+      ΔstylingApply();
     }
   }
 });
