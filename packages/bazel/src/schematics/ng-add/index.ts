@@ -80,6 +80,10 @@ function addDevDependenciesToPackageJson(options: Schema) {
  */
 function addFilesRequiredByBazel(options: Schema) {
   return (host: Tree) => {
+    if (!host.exists('yarn.lock')) {
+      // yarn.lock is required by the yarn_install rule in the WORKSPACE.
+      host.create('yarn.lock', '');
+    }
     return mergeWith(apply(url('./files'), [
       applyTemplates({}),
     ]));
