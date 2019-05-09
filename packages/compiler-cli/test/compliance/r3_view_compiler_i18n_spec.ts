@@ -476,7 +476,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δselect(3);
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA + ctx.valueB));
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
             $r3$.Δi18nApply(4);
           }
@@ -705,7 +705,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δselect(3);
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueA));
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueB));
-            $r3$.Δi18nExp($r3$.Δbind((ctx.valueA + ctx.valueB)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA + ctx.valueB));
             $r3$.Δi18nExp($r3$.Δbind(ctx.valueC));
             $r3$.Δi18nApply(4);
           }
@@ -1065,7 +1065,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             $r3$.Δselect(1);
             $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(2, 2, ctx.valueA)));
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b));
             $r3$.Δi18nApply(1);
           }
         }
@@ -1141,7 +1141,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(4, 3, ctx.two)));
             $r3$.Δi18nApply(3);
             $r3$.Δselect(6);
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.three + ctx.four) + ctx.five)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.three + ctx.four + ctx.five));
             $r3$.Δi18nApply(6);
           }
         }
@@ -1609,7 +1609,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ΔnextContext();
             $r3$.Δselect(0);
-            $r3$.Δi18nExp($r3$.Δbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
+            $r3$.Δi18nExp($r3$.Δbind($ctx_r1$.valueE + $ctx_r1$.valueF));
             $r3$.Δi18nExp($r3$.Δbind($r3$.ΔpipeBind1(3, 2, $ctx_r1$.valueG)));
             $r3$.Δi18nApply(0);
           }
@@ -2765,7 +2765,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             $r3$.Δselect(1);
             $r3$.Δi18nExp($r3$.Δbind(ctx.gender));
-            $r3$.Δi18nExp($r3$.Δbind(((ctx.ageA + ctx.ageB) + ctx.ageC)));
+            $r3$.Δi18nExp($r3$.Δbind(ctx.ageA + ctx.ageB + ctx.ageC));
             $r3$.Δi18nApply(1);
           }
         }

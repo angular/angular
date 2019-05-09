@@ -58,7 +58,7 @@ describe('template source-mapping', () => {
         expect(mappings).toContain({
           source: '{{ greeting + " " + name }}',
           generated:
-              'i0.ΔtextBinding(1, i0.Δinterpolation1("", ((ctx.greeting + " ") + ctx.name), ""))',
+              'i0.ΔtextBinding(1, i0.Δinterpolation1("", ctx.greeting + " " + ctx.name, ""))',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
@@ -119,7 +119,7 @@ describe('template source-mapping', () => {
         });
         expect(mappings).toContain({
           source: '[attr]="greeting + name"',
-          generated: 'i0.Δproperty("attr", (ctx.greeting + ctx.name))',
+          generated: 'i0.Δproperty("attr", ctx.greeting + ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
@@ -164,12 +164,12 @@ describe('template source-mapping', () => {
         expect(mappings).toContain(
             {source: 'Add Item', generated: 'i0.Δtext(1, "Add Item")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: 'items.push(', generated: 'ctx.items.push((', sourceUrl: '../test.ts'});
+            {source: 'items.push(', generated: 'ctx.items.push(', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
             {source: `'item' `, generated: `"item"`, sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: '+ items.length)',
-          generated: ' + ctx.items.length))',
+          generated: ' + ctx.items.length)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
@@ -370,7 +370,7 @@ describe('template source-mapping', () => {
 
       // Update mode
       expect(mappings).toContain({
-        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", (1 + 2), ""))',
+        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
         source: '{{ 1 + 2 }}',
         sourceUrl: '../test.ts'
       });
@@ -398,7 +398,7 @@ describe('template source-mapping', () => {
 
       // Update mode
       expect(mappings).toContain({
-        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", (1 + 2), ""))',
+        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
         source: '{{ 1 + 2 }}',
         sourceUrl: '../test.ts'
       });
@@ -452,7 +452,7 @@ describe('template source-mapping', () => {
 
         // Update mode
         expect(mappings).toContain({
-          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", (1 + 2), ""))',
+          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../dir/test.html'
         });
@@ -496,7 +496,7 @@ describe('template source-mapping', () => {
 
         // Update mode
         expect(mappings).toContain({
-          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", (1 + 2), ""))',
+          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../extraRootDir/test.html'
         });
