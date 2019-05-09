@@ -9,5 +9,6 @@ ts_library(
         "//packages/core/schematics/migrations/static-queries",
         "//packages/core/schematics/utils",
         "@npm//tslint",
+        "@npm//typescript",
     ],
 )
