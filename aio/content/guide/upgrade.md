@@ -840,9 +840,9 @@ After this, the service is injectable anywhere in AngularJS code:
 
 ## Using the Unified Angular Location Service
 
-AngularJS and Angular both have separate routers for configuration, handling navigation, encoding and decoding URLs, redirects, and interacting with browser APIs. When migrating from AngularJS to Angular, you have the option of running both routers to handle navigating in different parts of your application. As your migrating from AngularJS, you want to take advantage of new APIs, and move as much of this functionality to Angular.
+AngularJS and Angular both have separate routers for configuration, handling navigation, encoding and decoding URLs, redirects, and interacting with browser APIs. When migrating from AngularJS to Angular, you have the option of running both routers to handle navigating in different parts of your application. As you are migrating from AngularJS, you want to take advantage of new APIs, and move as much of this functionality to Angular.
 
-To aid in your migration from AngularJS to Angular, a unified location service is provided to shift the routing responsibility previously handled by the [$location servce](https://docs.angularjs.org/api/ng/service/$location) in AngularJS to Angular.
+To aid in your migration from AngularJS to Angular, a unified location service is provided to shift the routing responsibility previously handled by the [$location service](https://docs.angularjs.org/api/ng/service/$location) in AngularJS to Angular.
 
 To use the `LocationUpgradeModule`, import the symbol from `@angular/common/upgrade` and add it to your `AppModule` imports using the static `LocationUpgradeModule.config()` method.
 
@@ -859,7 +859,7 @@ import { LocationUpgradeModule } from '@angular/common/upgrade';
 export class AppModule {}
 ```
 
-The `LocationUpgradeModule.config()` method accepts a configuration object that allows you configure options including the `LocationStrategy` with the `useHash` property, and the URL prefix with `hashPrefix` property.
+The `LocationUpgradeModule.config()` method accepts a configuration object that allows you to configure options including the `LocationStrategy` with the `useHash` property, and the URL prefix with the `hashPrefix` property.
 
 The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an empty `string`. Pass the configuration object to override the defaults.
 
