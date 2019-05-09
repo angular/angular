@@ -137,24 +137,25 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.9.0.tgz#fd60023acd36313d304cc2f8c2e181b88b5445cd"
   integrity sha512-E31cefDcdJsx/oii6p/gqKZXSVw0kEg1O73DD2McFcSvnf/p1GYWcQtVgdRQmlviBEytJkJgdX8rtThitRvcow==
 
-"@bazel/jasmine@0.27.12":
-  version "0.27.12"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.27.12.tgz#9319d1fb52723da8ec23d4ce507dc9eb202d4e31"
-  integrity sha512-olsKMLsfqA6F025EPn0glJal4DB0v4E2ISL+0Hu2piewAtjv8DARU0dxzyizgH1X20BooIlgq+ZL2cKdlXfMHg==
+"@bazel/jasmine@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.29.0.tgz#347d9c512daf8576dcdaa9bb168733fa444c2263"
+  integrity sha512-QH/mLAH4e7gcJrfOT0BmJ4wk+5Ly3RU+RPLaCyacnCjmJCICukZJa/rrjbVtwd8u7ZM+Hf6tRaLLydSeKXGBug==
   dependencies:
     jasmine "~3.3.1"
-    v8-coverage "1.0.8"
+    jasmine-core "~3.3.0"
+    v8-coverage "1.0.9"
 
-"@bazel/karma@0.27.12":
-  version "0.27.12"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.27.12.tgz#a7c1648af93b4d376e4e3b6fc1c7006b4d79c092"
-  integrity sha512-LJAbNe8bR1vRLb8GqIbKzCpf8VMaTnM9jizxmsjkgdGjy9OgsseYbk6+70z1yx7s3QHPjj7JBqcx+d2yeXPo7g==
+"@bazel/karma@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.29.0.tgz#bcb79750ecec3884136e584b36e3cd3b610455a5"
+  integrity sha512-dSN7iBAz0srGkJxAP7NAyWVdCWoUHBxlGL7YxHObV3kDTwWUDKWKcEwuOC7MTMSQtYM4WcVVvfCO3HhXKUxhPg==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
     karma-chrome-launcher "2.2.0"
     karma-firefox-launcher "1.1.0"
-    karma-jasmine "1.1.1"
+    karma-jasmine "2.0.1"
     karma-requirejs "1.1.0"
     karma-sauce-launcher "2.0.2"
     karma-sourcemap-loader "0.3.7"
@@ -162,10 +163,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.27.12":
-  version "0.27.12"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.12.tgz#79a6468cd8da096c4da151fac658f7f801a59948"
-  integrity sha512-5cH+x7rvO8P9MCrd8YwJrTyzkET6MLajzngoV5yLDWwcokzs+b3yD9yoa5Vw3Dth2MdKRp+lyGMO7PwyAM3ebw==
+"@bazel/typescript@0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.29.0.tgz#d276afe034f37b5f35ee1369c99dc33c637fc9f6"
+  integrity sha512-Dp5ucrE1vXTORGiwEi6Ur4dlICpLsmZ1dscsEQT4ywF7xTT0/NmIG0ecBghiCFPFQTxt1D05TR3SH06rPtTAew==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
@@ -6098,6 +6099,11 @@ jasmine-core@^3.1.0:
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.1.0.tgz#a4785e135d5df65024dfc9224953df585bd2766c"
   integrity sha1-pHheE11d9lAk38kiSVPfWFvSdmw=
 
+jasmine-core@^3.3:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.4.0.tgz#2a74618e966026530c3518f03e9f845d26473ce3"
+  integrity sha512-HU/YxV4i6GcmiH4duATwAbJQMlE0MsDIR5XmSVxURxKHn3aGAdbY1/ZJFmVRbKtnLwIxxMJD7gYaPsypcbYimg==
+
 jasmine-core@~3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.3.0.tgz#dea1cdc634bc93c7e0d4ad27185df30fa971b10e"
@@ -6447,10 +6453,12 @@ karma-firefox-launcher@1.1.0:
   resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-1.1.0.tgz#2c47030452f04531eb7d13d4fc7669630bb93339"
   integrity sha512-LbZ5/XlIXLeQ3cqnCbYLn+rOVhuMIK9aZwlP6eOLGzWdo1UVp7t6CN3DP4SafiRLjexKwHeKHDm0c38Mtd3VxA==
 
-karma-jasmine@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-1.1.1.tgz#6fe840e75a11600c9d91e84b33c458e1c46a3529"
-  integrity sha1-b+hA51oRYAydkehLM8RY4cRqNSk=
+karma-jasmine@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-2.0.1.tgz#26e3e31f2faf272dd80ebb0e1898914cc3a19763"
+  integrity sha512-iuC0hmr9b+SNn1DaUD2QEYtUxkS1J+bSJSn7ejdEexs7P8EYvA1CWkEdrDQ+8jVH3AgWlCNwjYsT1chjcNW9lA==
+  dependencies:
+    jasmine-core "^3.3"
 
 karma-jasmine@^1.1.2:
   version "1.1.2"
@@ -7810,7 +7818,7 @@ node-source-walk@~1.4.0:
   dependencies:
     acorn "^1.0.3"
 
-node-uuid@1.4.8, node-uuid@^1.4.8, node-uuid@~1.4.7:
+node-uuid@1.4.8, node-uuid@~1.4.7:
   version "1.4.8"
   resolved "https://registry.yarnpkg.com/node-uuid/-/node-uuid-1.4.8.tgz#b040eb0923968afabf8d32fb1f17f1167fdab907"
   integrity sha1-sEDrCSOWivq/jTL7HxfxFn/auQc=
@@ -8972,6 +8980,14 @@ read-pkg-up@^3.0.0:
     find-up "^2.0.0"
     read-pkg "^3.0.0"
 
+read-pkg-up@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-4.0.0.tgz#1b221c6088ba7799601c808f91161c66e58f8978"
+  integrity sha512-6etQSH7nJGsK0RbG/2TeDzZFa8shjQ1um+SwQQ5cwKy0dhSXdOncEhb1CPpvQG4h7FyOV6EB6YlV0yJvZQNAkA==
+  dependencies:
+    find-up "^3.0.0"
+    read-pkg "^3.0.0"
+
 read-pkg@^1.0.0, read-pkg@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-1.1.0.tgz#f5ffaa5ecd29cb31c0474bca7d756b6bb29e3f28"
@@ -9473,6 +9489,13 @@ rollup-plugin-commonjs@^9.2.1:
     resolve "^1.10.0"
     rollup-pluginutils "^2.3.3"
 
+rollup-plugin-json@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-json/-/rollup-plugin-json-4.0.0.tgz#a18da0a4b30bf5ca1ee76ddb1422afbb84ae2b9e"
+  integrity sha512-hgb8N7Cgfw5SZAkb3jf0QXii6QX/FOkiIq2M7BAQIEydjHvTyxXHQiIzZaTFgx1GK0cRCHOCBHIyEkkLdWKxow==
+  dependencies:
+    rollup-pluginutils "^2.5.0"
+
 rollup-plugin-node-resolve@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-4.0.1.tgz#f95765d174e5daeef9ea6268566141f53aa9d422"
@@ -9522,6 +9545,14 @@ rollup-pluginutils@^2.3.3:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.4.1.tgz#de43ab54965bbf47843599a7f3adceb723de38db"
   integrity sha512-wesMQ9/172IJDIW/lYWm0vW0LiKe5Ekjws481R7z9WTRtmO59cqyM/2uUlxvf6yzm/fElFmHUobeQOYz46dZJw==
+  dependencies:
+    estree-walker "^0.6.0"
+    micromatch "^3.1.10"
+
+rollup-pluginutils@^2.5.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.6.0.tgz#203706edd43dfafeaebc355d7351119402fc83ad"
+  integrity sha512-aGQwspEF8oPKvg37u3p7h0cYNwmJR1sCBMZGZ5b9qy8HGtETknqjzcxrDRrcAnJNXN18lBH4Q9vZYth/p4n8jQ==
   dependencies:
     estree-walker "^0.6.0"
     micromatch "^3.1.10"
@@ -10670,16 +10701,15 @@ terser@^3.14.1:
     source-map "~0.6.1"
     source-map-support "~0.5.10"
 
-test-exclude@^4.2.1:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-4.2.3.tgz#a9a5e64474e4398339245a0a769ad7c2f4a97c20"
-  integrity sha512-SYbXgY64PT+4GAL2ocI3HwPa4Q4TBKm0cwAVeKOt/Aoc0gSpNRjJX8w0pA1LMKZ3LBmd8pYBqApFNQLII9kavA==
+test-exclude@^5.2.2:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/test-exclude/-/test-exclude-5.2.3.tgz#c3d3e1e311eb7ee405e092dac10aefd09091eac0"
+  integrity sha512-M+oxtseCFO3EDtAaGH7iiej3CBkzXqFMbzqYAACdzKui4eZA+pq3tZEwChvOdNfa7xxy8BfbmgJSIr43cC/+2g==
   dependencies:
-    arrify "^1.0.1"
-    micromatch "^2.3.11"
-    object-assign "^4.1.0"
-    read-pkg-up "^1.0.1"
-    require-main-filename "^1.0.1"
+    glob "^7.1.3"
+    minimatch "^3.0.4"
+    read-pkg-up "^4.0.0"
+    require-main-filename "^2.0.0"
 
 text-extensions@^1.0.0:
   version "1.7.0"
@@ -11385,10 +11415,10 @@ uuid@^3.0.0, uuid@^3.1.0, uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
-v8-coverage@1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/v8-coverage/-/v8-coverage-1.0.8.tgz#3393cb904cd064e2e56e747781641c75a6e7f52c"
-  integrity sha512-DWNS16h1LKyRMZsJ7+2KFUhA4hGbWUWTcUbDwnT6WMQKbolixY1KCSUaw2NVqtpwODGtqCWvHUjQjwfh562U0A==
+v8-coverage@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/v8-coverage/-/v8-coverage-1.0.9.tgz#780889680c0fea0f587adf22e2b5f443b9434745"
+  integrity sha512-JolsCH1JDI2QULrxkAGZaovJPvg/Q0p20Uj0F5N8fPtYDtz38gNBRPQ/WVXlLLd3d8WHvKN96AfE4XFk4u0g2g==
   dependencies:
     debug "^3.1.0"
     foreground-child "^1.5.6"
@@ -11396,11 +11426,11 @@ v8-coverage@1.0.8:
     istanbul-lib-report "^1.1.3"
     istanbul-reports "^1.3.0"
     mkdirp "^0.5.1"
-    node-uuid "^1.4.8"
     rimraf "^2.6.2"
     signal-exit "^3.0.2"
     spawn-wrap "^1.4.2"
-    test-exclude "^4.2.1"
+    test-exclude "^5.2.2"
+    uuid "^3.3.2"
     v8-to-istanbul "1.2.0"
     yargs "^11.0.0"
 

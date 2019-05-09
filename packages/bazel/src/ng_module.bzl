@@ -427,7 +427,7 @@ def ngc_compile_action(
 
     if is_legacy_ngc and messages_out != None:
         ctx.actions.run(
-            inputs = list(inputs),
+            inputs = inputs,
             outputs = messages_out,
             executable = ctx.executable.ng_xi18n,
             arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
@@ -442,7 +442,7 @@ def ngc_compile_action(
 
     if dts_bundles_out != None:
         # combine the inputs and outputs and filter .d.ts and json files
-        filter_inputs = [f for f in inputs + outputs if f.path.endswith(".d.ts") or f.path.endswith(".json")]
+        filter_inputs = [f for f in list(inputs) + outputs if f.path.endswith(".d.ts") or f.path.endswith(".json")]
 
         if _should_produce_flat_module_outs(ctx):
             dts_entry_points = ["%s.d.ts" % _flat_module_out_file(ctx)]

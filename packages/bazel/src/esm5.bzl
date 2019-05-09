@@ -108,7 +108,7 @@ def _esm5_outputs_aspect(target, ctx):
 
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
-        inputs = target.typescript.replay_params.inputs + [tsconfig],
+        inputs = target.typescript.replay_params.inputs.to_list() + [tsconfig],
         outputs = outputs,
         arguments = [tsconfig.path],
         executable = compiler,

@@ -9,7 +9,7 @@
   "license": "MIT",
   "engines": {
     "node": ">=10.9.0 <11.0.0",
-    "yarn": ">=1.12.1 <=1.16.0"
+    "yarn": ">=1.12.1 <=1.14.0"
   },
   "repository": {
     "type": "git",
@@ -36,9 +36,9 @@
     "@angular-devkit/core": "^8.0.0-beta.15",
     "@angular-devkit/schematics": "^8.0.0-beta.15",
     "@angular/bazel": "file:./tools/npm/@angular_bazel",
-    "@bazel/jasmine": "0.27.12",
-    "@bazel/karma": "0.27.12",
-    "@bazel/typescript": "0.27.12",
+    "@bazel/jasmine": "0.29.0",
+    "@bazel/karma": "0.29.0",
+    "@bazel/typescript": "0.29.0",
     "@microsoft/api-extractor": "^7.0.21",
     "@schematics/angular": "^8.0.0-beta.15",
     "@types/angular": "^1.6.47",
@@ -94,6 +94,7 @@
     "rollup": "^1.1.0",
     "rollup-plugin-amd": "^3.0.0",
     "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rxjs": "^6.4.0",
