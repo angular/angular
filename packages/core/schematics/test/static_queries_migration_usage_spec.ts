@@ -260,7 +260,7 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@${queryType}('test', { /* test */ read: null, static: true }) query: any;`);
     });
 
-    it('should add a todo for queries declared on accessor', async() => {
+    it('should add a todo for queries declared on setter', async() => {
       writeFile('/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
 
@@ -268,6 +268,27 @@ describe('static-queries migration with usage strategy', () => {
         export class MyComp {
           @${queryType}('test')
           set query(result: any) {};
+        }
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', /* TODO: add static flag */ {})`);
+      expect(warnOutput.length).toBe(1);
+      expect(warnOutput[0])
+          .toMatch(/index.ts@6:11: Queries defined on accessors cannot be analyzed.$/);
+    });
+
+    it('should add a todo for queries declared on getter', async() => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test')
+          get query() { return null; }
+          set query(result: any) {}
         }
       `);
 
