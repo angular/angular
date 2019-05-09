@@ -866,10 +866,9 @@ export function elementPropertyInternal<T>(
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
       validateAgainstUnknownProperties(lView, element, propName, tNode);
+      savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
       ngDevMode.rendererSetProperty++;
     }
-
-    savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
 
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
