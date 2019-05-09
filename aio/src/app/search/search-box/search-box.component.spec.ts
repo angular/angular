@@ -44,6 +44,16 @@ describe('SearchBoxComponent', () => {
       expect(host.searchHandler).toHaveBeenCalledWith('initial search');
       expect(component.searchBox.nativeElement.value).toEqual('initial search');
     })));
+
+    it('should decode the search query from the location service (chrome search provider format)',
+          fakeAsync(inject([LocationService], (location: MockLocationService) => {
+      location.search.and.returnValue({ search: 'initial+search' });
+      component.ngAfterViewInit();
+      expect(location.search).toHaveBeenCalled();
+      tick(300);
+      expect(host.searchHandler).toHaveBeenCalledWith('initial search');
+      expect(component.searchBox.nativeElement.value).toEqual('initial search');
+    })));
   });
 
   describe('onSearch', () => {

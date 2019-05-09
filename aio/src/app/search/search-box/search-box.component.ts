@@ -43,7 +43,7 @@ export class SearchBoxComponent implements AfterViewInit {
   ngAfterViewInit() {
     const query = this.locationService.search()['search'];
     if (query) {
-      this.query = query;
+      this.query = this.decodeQuery(query);
       this.doSearch();
     }
   }
@@ -58,6 +58,11 @@ export class SearchBoxComponent implements AfterViewInit {
 
   focus() {
     this.searchBox.nativeElement.focus();
+  }
+
+  private decodeQuery(query: string): string {
+    // `decodeURIComponent` does not handle `+` for spaces, replace via RexEx.
+    return query.replace(/\+/g, ' ');
   }
 
   private get query() { return this.searchBox.nativeElement.value; }
