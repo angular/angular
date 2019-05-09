@@ -373,10 +373,10 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             $r3$.Δselect(0);
-            $r3$.Δproperty("ternary", (ctx.cond ? $r3$.ΔpureFunction1(8, $c0$, ctx.a): $c1$));
+            $r3$.Δproperty("ternary", ctx.cond ? $r3$.ΔpureFunction1(8, $c0$, ctx.a): $c1$);
             $r3$.Δproperty("pipe", $r3$.ΔpipeBind3(1, 4, ctx.value, 1, 2));
-            $r3$.Δproperty("and", (ctx.cond && $r3$.ΔpureFunction1(10, $c0$, ctx.b)));
-            $r3$.Δproperty("or", (ctx.cond || $r3$.ΔpureFunction1(12, $c0$, ctx.c)));
+            $r3$.Δproperty("and", ctx.cond && $r3$.ΔpureFunction1(10, $c0$, ctx.b));
+            $r3$.Δproperty("or", ctx.cond || $r3$.ΔpureFunction1(12, $c0$, ctx.c));
           }
         }
       `;
@@ -1508,8 +1508,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             consts: 1,
@@ -1566,8 +1566,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$);
               }
             },
             …
@@ -1619,8 +1619,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.foo = $tmp$.first));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.foo = $tmp$.first);
               }
             },
             consts: 1,
@@ -1684,10 +1684,10 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             …
@@ -1748,8 +1748,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirList = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirList = $tmp$);
               }
             },
             ngContentSelectors: _c0,
@@ -1808,8 +1808,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$);
               }
             },
             …
@@ -1870,8 +1870,8 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.foo = $tmp$.first));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.foo = $tmp$.first);
               }
             },
             ngContentSelectors: $_c1$,
@@ -1937,10 +1937,10 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$));
-                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirs = $tmp$));
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$);
+                $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirs = $tmp$);
               }
             },
             …
@@ -2076,7 +2076,7 @@ describe('compiler compliance', () => {
                   $r3$.Δselect(0);
                   $r3$.ΔtextBinding(0, $r3$.Δinterpolation1("", $r3$.ΔpipeBind2(1, 3, $r3$.ΔpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
                   $r3$.Δselect(4);
-                  $r3$.ΔtextBinding(4, $r3$.Δinterpolation2("", $r3$.ΔpipeBindV(5, 9, $r3$.ΔpureFunction1(18, $c0$, ctx.name)), " ", (ctx.name ? 1 : $r3$.ΔpipeBind1(6, 16, 2)), ""));
+                  $r3$.ΔtextBinding(4, $r3$.Δinterpolation2("", $r3$.ΔpipeBindV(5, 9, $r3$.ΔpureFunction1(18, $c0$, ctx.name)), " ", ctx.name ? 1 : $r3$.ΔpipeBind1(6, 16, 2), ""));
                 }
               },
               pipes: [MyPurePipe, MyPipe],
@@ -3078,7 +3078,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$.first));
+            $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$.first);
           }
         }
       });
@@ -3123,7 +3123,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$));
+            $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$);
           }
         }
       });
@@ -3166,7 +3166,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$.first));
+            $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$.first);
           }
         }
       });
@@ -3211,7 +3211,7 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$));
+            $r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$);
           }
         }
       });

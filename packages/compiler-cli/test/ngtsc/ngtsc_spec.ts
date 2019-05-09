@@ -2299,7 +2299,7 @@ describe('ngtsc behavioral tests', () => {
         .toContain('function Base_Factory(t) { return new (t || Base)(i0.Δinject(Dep)); }');
     expect(jsContents).toContain('var \u0275Child_BaseFactory = i0.ΔgetInheritedFactory(Child)');
     expect(jsContents)
-        .toContain('function Child_Factory(t) { return \u0275Child_BaseFactory((t || Child)); }');
+        .toContain('function Child_Factory(t) { return \u0275Child_BaseFactory(t || Child); }');
     expect(jsContents)
         .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
   });
