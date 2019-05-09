@@ -11,7 +11,7 @@ describe('sw-example App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to Service Workers!');
+    expect(page.getTitleText()).toEqual('Welcome to Service Workers!');
   });
 
   it('should display the Angular logo', () => {

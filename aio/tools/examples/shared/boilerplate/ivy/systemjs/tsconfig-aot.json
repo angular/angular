@@ -7,13 +7,17 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "es2015",
+      "es2018",
       "dom"
     ],
     "removeComments": false,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "importHelpers": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "files": [
     "app/app.module.ts",
@@ -21,6 +25,6 @@
   ],
   "angularCompilerOptions": {
     "skipMetadataEmit": true,
-    "enableIvy": "ngtsc"
+    "enableIvy": true
   }
 }
