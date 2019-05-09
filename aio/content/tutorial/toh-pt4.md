@@ -11,8 +11,8 @@ Components shouldn't fetch or save data directly and they certainly shouldn't kn
 They should focus on presenting data and delegate data access to a service.
 
 In this tutorial, you'll create a `HeroService` that all application classes can use to get heroes.
-Instead of creating that service with `new`, 
-you'll rely on Angular [*dependency injection*](guide/dependency-injection) 
+Instead of creating that service with `new`,
+you'll rely on Angular [*dependency injection*](guide/dependency-injection)
 to inject it into the `HeroesComponent` constructor.
 
 Services are a great way to share information among classes that _don't know each other_.
@@ -43,11 +43,11 @@ Notice that the new service imports the Angular `Injectable` symbol and annotate
 the class with the `@Injectable()` decorator. This marks the class as one that participates in the _dependency injection system_. The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies.
 It doesn't have any dependencies yet, but [it will soon](#inject-message-service).
 
-The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes. 
+The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes.
 
 ### Get hero data
 
-The `HeroService` could get hero data from anywhere&mdash;a web service, local storage, or a mock data source. 
+The `HeroService` could get hero data from anywhere&mdash;a web service, local storage, or a mock data source.
 
 Removing data access from components means you can change your mind about the implementation anytime, without touching any components.
 They don't know how the service works.
@@ -67,16 +67,16 @@ Add a `getHeroes` method to return the _mock heroes_.
 {@a provide}
 ## Provide the `HeroService`
 
-You must make the `HeroService` available to the dependency injection system 
-before Angular can _inject_ it into the `HeroesComponent`, 
+You must make the `HeroService` available to the dependency injection system
+before Angular can _inject_ it into the `HeroesComponent`,
 as you will do [below](#inject). You do this by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
 
-Now, you need to make sure that the `HeroService` is registered as the provider of this service. 
-You are registering it with an _injector_, which is the object that is responsible for choosing and injecting the provider where it is required. 
+Now, you need to make sure that the `HeroService` is registered as the provider of this service.
+You are registering it with an _injector_, which is the object that is responsible for choosing and injecting the provider where it is required.
 
-By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata in the `@Injectable` decorator. 
+By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata in the `@Injectable` decorator.
 
-If you look at the `@Injectable()` statement right before the `HeroService` class definition, you can see that the `providedIn` metadata value is 'root':    
+If you look at the `@Injectable()` statement right before the `HeroService` class definition, you can see that the `providedIn` metadata value is 'root':
 
 ```
 @Injectable({
@@ -84,8 +84,8 @@ If you look at the `@Injectable()` statement right before the `HeroService` clas
 })
 ```
 
-When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it. 
-Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
+Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all.
 
 <div class="alert is-helpful">
 
@@ -130,7 +130,7 @@ Add a private `heroService` parameter of type `HeroService` to the constructor.
 The parameter simultaneously defines a private `heroService` property and identifies it as a `HeroService` injection site.
 
 When Angular creates a `HeroesComponent`, the [Dependency Injection](guide/dependency-injection) system
-sets the `heroService` parameter to the singleton instance of `HeroService`. 
+sets the `heroService` parameter to the singleton instance of `HeroService`.
 
 ### Add _getHeroes()_
 
@@ -157,14 +157,14 @@ let Angular call `ngOnInit` at an appropriate time _after_ constructing a `Heroe
 
 ### See it run
 
-After the browser refreshes, the app should run as before, 
+After the browser refreshes, the app should run as before,
 showing a list of heroes and a hero detail view when you click on a hero name.
 
 ## Observable data
 
 The `HeroService.getHeroes()` method has a _synchronous signature_,
 which implies that the `HeroService` can fetch heroes synchronously.
-The `HeroesComponent` consumes the `getHeroes()` result 
+The `HeroesComponent` consumes the `getHeroes()` result
 as if heroes could be fetched synchronously.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="get-heroes">
@@ -172,7 +172,7 @@ as if heroes could be fetched synchronously.
 
 This will not work in a real app.
 You're getting away with it now because the service currently returns _mock heroes_.
-But soon the app will fetch heroes from a remote server, 
+But soon the app will fetch heroes from a remote server,
 which is an inherently _asynchronous_ operation.
 
 The `HeroService` must wait for the server to respond,
@@ -196,7 +196,7 @@ In this tutorial, you'll simulate getting data from the server with the RxJS `of
 
 Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
 
-<code-example path="toh-pt4/src/app/hero.service.ts" 
+<code-example path="toh-pt4/src/app/hero.service.ts"
 header="src/app/hero.service.ts (Observable imports)" region="import-observable">
 </code-example>
 
@@ -224,11 +224,11 @@ Find the `getHeroes` method and replace it with the following code
 
 <code-tabs>
 
-  <code-pane header="heroes.component.ts (Observable)" 
+  <code-pane header="heroes.component.ts (Observable)"
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-  <code-pane header="heroes.component.ts (Original)" 
+  <code-pane header="heroes.component.ts (Original)"
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
 
@@ -242,7 +242,7 @@ or the browser could freeze the UI while it waited for the server's response.
 
 That _won't work_ when the `HeroService` is actually making requests of a remote server.
 
-The new version waits for the `Observable` to emit the array of heroes&mdash; 
+The new version waits for the `Observable` to emit the array of heroes&mdash;
 which could happen now or several minutes from now.
 Then `subscribe` passes the emitted array to the callback,
 which sets the component's `heroes` property.
@@ -250,9 +250,31 @@ which sets the component's `heroes` property.
 This asynchronous approach _will work_ when
 the `HeroService` requests heroes from the server.
 
+
+### Unsubscribe in _HeroesComponent_
+
+To avoid memory leakage a subscription must be unsubscribed. In the above section, we have subscribed to `getHeroes()` method, and you can notice `heroSubscription` variable which holds the instance of subscription.
+
+To unsubscribe a subscription there are multiple ways, `async` pipe takes care of unsubscribing the subscription, so we don't need to call it explicitly.
+
+Make sure to add the below code to hold the Subscription instance.
+
+  <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" region="subscription">
+  </code-example>
+  <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" region="subscriptionInstance">
+  </code-example>
+
+
+  <code-example header="heroes.component.ts (Observable)"
+    path="toh-pt4/src/app/heroes/heroes.component.ts" region="unsubscribe">
+  </code-example>
+
+Generally we call `unsubscribe` in `ngOnDestroy` hook, to release the memory.
+
+
 ## Show messages
 
-In this section you will 
+In this section you will
 
 * add a `MessagesComponent` that displays app messages at the bottom of the screen.
 * create an injectable, app-wide `MessageService` for sending messages to be displayed
@@ -280,7 +302,7 @@ You should see the default paragraph from `MessagesComponent` at the bottom of t
 
 ### Create the _MessageService_
 
-Use the CLI to create the `MessageService` in `src/app`. 
+Use the CLI to create the `MessageService` in `src/app`.
 
 <code-example language="sh" class="code-shell">
   ng generate service message
@@ -306,7 +328,7 @@ Re-open the `HeroService` and import the `MessageService`.
 </code-example>
 
 Modify the constructor with a parameter that declares a private `messageService` property.
-Angular will inject the singleton `MessageService` into that property 
+Angular will inject the singleton `MessageService` into that property
 when it creates the `HeroService`.
 
 <code-example
@@ -329,7 +351,7 @@ Modify the `getHeroes` method to send a message when the heroes are fetched.
 
 ### Display the message from `HeroService`
 
-The `MessagesComponent` should display all messages, 
+The `MessagesComponent` should display all messages,
 including the message sent by the `HeroService` when it fetches heroes.
 
 Open `MessagesComponent` and import the `MessageService`.
@@ -340,7 +362,7 @@ Open `MessagesComponent` and import the `MessageService`.
 </code-example>
 
 Modify the constructor with a parameter that declares a **public** `messageService` property.
-Angular will inject the singleton `MessageService` into that property 
+Angular will inject the singleton `MessageService` into that property
 when it creates the `MessagesComponent`.
 
 <code-example
@@ -390,11 +412,11 @@ Here are the code files discussed on this page and your app should look like thi
 
 <code-tabs>
 
-  <code-pane header="src/app/hero.service.ts" 
+  <code-pane header="src/app/hero.service.ts"
   path="toh-pt4/src/app/hero.service.ts">
   </code-pane>
 
-  <code-pane header="src/app/message.service.ts" 
+  <code-pane header="src/app/message.service.ts"
   path="toh-pt4/src/app/message.service.ts">
   </code-pane>
 
@@ -436,3 +458,4 @@ Here are the code files discussed on this page and your app should look like thi
 * You created a `MessageService` for loosely-coupled communication between classes.
 * The `HeroService` injected into a component is created with another injected service,
  `MessageService`.
+* You discovered how to `unsubscribe` to an  observable on `ngOnDestroy` lifecycle hook to release the memory.
