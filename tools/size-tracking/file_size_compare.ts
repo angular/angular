@@ -71,7 +71,7 @@ function compareActualSizeToExpected(
   if (byteDiff > threshold.maxByteDiff) {
     diffs.push({
       filePath: filePath,
-      message: `Differs by ${byteDiff}b from the expected size ` +
+      message: `Differs by ${byteDiff}B from the expected size ` +
           `(actual = ${actualSize}, expected = ${expectedSize})`
     });
   }

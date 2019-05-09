@@ -55,9 +55,9 @@ describe('file size compare', () => {
 
     expect(diffs.length).toBe(2);
     expect(diffs[0].filePath).toBe('/');
-    expect(diffs[0].message).toMatch(/55b from the expected size/);
+    expect(diffs[0].message).toMatch(/55B from the expected size/);
     expect(diffs[1].filePath).toBe('/a.ts');
-    expect(diffs[1].message).toMatch(/55b from the expected size/);
+    expect(diffs[1].message).toMatch(/55B from the expected size/);
   });
 
   it('should report if unmapped bytes differ by more than specified threshold', () => {
@@ -67,7 +67,7 @@ describe('file size compare', () => {
 
     expect(diffs.length).toBe(1);
     expect(diffs[0].filePath).toBe('<unmapped>');
-    expect(diffs[0].message).toMatch(/55b from the expected size/);
+    expect(diffs[0].message).toMatch(/55B from the expected size/);
   });
 
   it('should not report if size percentage difference does not exceed threshold', () => {
