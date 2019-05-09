@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
+import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵtemplate} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵtemplate} from '../../src/render3/index';
 import {tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
-import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
@@ -213,7 +212,6 @@ it('should not invoke renderer destroy method for embedded views', () => {
 });
 
 describe('component with a container', () => {
-
   function showItems(rf: RenderFlags, ctx: {items: string[]}) {
     if (rf & RenderFlags.Create) {
       ɵɵcontainer(0);
@@ -284,127 +282,6 @@ describe('component with a container', () => {
     ctx.items = [...ctx.items, 'b'];
     expect(renderToHtml(template, ctx, 1, 1, defs)).toEqual('<wrapper>ab</wrapper>');
   });
-
-});
-
-// TODO: add tests with Native once tests are run in real browser (domino doesn't support shadow
-// root)
-describe('encapsulation', () => {
-  class WrapperComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: WrapperComponent,
-      encapsulation: ViewEncapsulation.None,
-      selectors: [['wrapper']],
-      consts: 1,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: WrapperComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelement(0, 'encapsulated');
-        }
-      },
-      factory: () => new WrapperComponent,
-      directives: () => [EncapsulatedComponent]
-    });
-  }
-
-  class EncapsulatedComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: EncapsulatedComponent,
-      selectors: [['encapsulated']],
-      consts: 2,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0, 'foo');
-          ɵɵelement(1, 'leaf');
-        }
-      },
-      factory: () => new EncapsulatedComponent,
-      encapsulation: ViewEncapsulation.Emulated,
-      styles: [],
-      data: {},
-      directives: () => [LeafComponent]
-    });
-  }
-
-  class LeafComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: LeafComponent,
-      encapsulation: ViewEncapsulation.None,
-      selectors: [['leaf']],
-      consts: 2,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: LeafComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'span');
-          { ɵɵtext(1, 'bar'); }
-          ɵɵelementEnd();
-        }
-      },
-      factory: () => new LeafComponent,
-    });
-  }
-
-  it('should encapsulate children, but not host nor grand children', () => {
-    renderComponent(WrapperComponent, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host=""><encapsulated _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
-  });
-
-  it('should encapsulate host', () => {
-    renderComponent(EncapsulatedComponent, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host="" _nghost-[a-z]+-c(\d+)="">foo<leaf _ngcontent-[a-z]+-c\1=""><span>bar<\/span><\/leaf><\/div>/);
-  });
-
-  it('should encapsulate host and children with different attributes', () => {
-    class WrapperComponentWith {
-      static ngComponentDef = ɵɵdefineComponent({
-        type: WrapperComponentWith,
-        selectors: [['wrapper']],
-        consts: 1,
-        vars: 0,
-        template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
-          if (rf & RenderFlags.Create) {
-            ɵɵelement(0, 'leaf');
-          }
-        },
-        factory: () => new WrapperComponentWith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
-        directives: () => [LeafComponentwith]
-      });
-    }
-
-    class LeafComponentwith {
-      static ngComponentDef = ɵɵdefineComponent({
-        type: LeafComponentwith,
-        selectors: [['leaf']],
-        consts: 2,
-        vars: 0,
-        template: function(rf: RenderFlags, ctx: LeafComponentwith) {
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'span');
-            { ɵɵtext(1, 'bar'); }
-            ɵɵelementEnd();
-          }
-        },
-        factory: () => new LeafComponentwith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
-      });
-    }
-
-    renderComponent(WrapperComponentWith, {rendererFactory: getRendererFactory2(document)});
-    expect(containerEl.outerHTML)
-        .toMatch(
-            /<div host="" _nghost-[a-z]+-c(\d+)=""><leaf _ngcontent-[a-z]+-c\1="" _nghost-[a-z]+-c(\d+)=""><span _ngcontent-[a-z]+-c\2="">bar<\/span><\/leaf><\/div>/);
-  });
-
 });
 
 describe('recursive components', () => {
@@ -668,45 +545,6 @@ describe('recursive components', () => {
       {propName: 'minifiedName', templateName: 'unminifiedName'}
     ]).toEqual(testInputsComponentFactory.inputs);
 
-  });
-
-});
-
-describe('view destruction', () => {
-  it('should invoke onDestroy when directly destroying a root view', () => {
-    let wasOnDestroyCalled = false;
-
-    class ComponentWithOnDestroy {
-      static ngComponentDef = ɵɵdefineComponent({
-        selectors: [['comp-with-destroy']],
-        type: ComponentWithOnDestroy,
-        consts: 0,
-        vars: 0,
-        factory: () => new ComponentWithOnDestroy(),
-        template: (rf: any, ctx: any) => {},
-      });
-
-      ngOnDestroy() { wasOnDestroyCalled = true; }
-    }
-
-    // This test asserts that the view tree is set up correctly based on the knowledge that this
-    // tree is used during view destruction. If the child view is not correctly attached as a
-    // child of the root view, then the onDestroy hook on the child view will never be called
-    // when the view tree is torn down following the destruction of that root view.
-    const ComponentWithChildOnDestroy = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        ɵɵelement(0, 'comp-with-destroy');
-      }
-    }, 1, 0, [ComponentWithOnDestroy], [], null, [], []);
-
-    const fixture = new ComponentFixture(ComponentWithChildOnDestroy);
-    fixture.update();
-
-    fixture.destroy();
-    expect(wasOnDestroyCalled)
-        .toBe(
-            true,
-            'Expected component onDestroy method to be called when its parent view is destroyed');
   });
 
 });
