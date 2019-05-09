@@ -133,4 +133,5 @@ rbe_autoconfig(
     env = clang_env(),
     registry = "marketplace.gcr.io",
     repository = "google/rbe-ubuntu16-04-webtest",
+    use_checked_in_confs = "False",
 )
