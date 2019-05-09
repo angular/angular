@@ -13,9 +13,9 @@ const EXAMPLES_BASE_PATH = path.resolve(__dirname, '../../content/examples');
 const BOILERPLATE_PATHS = {
   cli: [
     'src/environments/environment.prod.ts', 'src/environments/environment.ts',
-    'src/assets/.gitkeep', 'src/browserslist', 'src/favicon.ico', 'src/karma.conf.js',
-    'src/polyfills.ts', 'src/test.ts', 'src/tsconfig.app.json', 'src/tsconfig.spec.json',
-    'src/tslint.json', 'e2e/src/app.po.ts', 'e2e/protractor.conf.js', 'e2e/tsconfig.e2e.json',
+    'src/assets/.gitkeep', 'browserslist', 'src/favicon.ico', 'karma.conf.js',
+    'src/polyfills.ts', 'src/test.ts', 'tsconfig.app.json', 'tsconfig.spec.json',
+    'tslint.json', 'e2e/src/app.po.ts', 'e2e/protractor.conf.js', 'e2e/tsconfig.json',
     '.editorconfig', 'angular.json', 'package.json', 'tsconfig.json', 'tslint.json'
   ],
   systemjs: [
@@ -51,7 +51,7 @@ BOILERPLATE_PATHS['getting-started'] = [
 
 BOILERPLATE_PATHS.ivy = {
   systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
-  cli: ['src/tsconfig.app.json']
+  cli: ['tsconfig.app.json']
 };
 
 BOILERPLATE_PATHS.schematics = [

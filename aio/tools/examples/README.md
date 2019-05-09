@@ -90,3 +90,11 @@ It also has an optional `--setup` flag to run the `example-boilerplate.js` scrip
 the latest `webdriver`.
 
 It will create a `/aio/protractor-results-txt` file when it finishes running tests.
+
+### Updating example dependencies
+
+With every major release, we update the examples to be on the latest version. The following steps to update are:
+
+* In the `shared/package.json` file, bump all the `@angular/*`, `@angular-devkit/*`, `rxjs`, `typescript`, and `zone.js` package versions to the next version that corresponds with the most recent framework version.
+* In the `shared` folder, run `yarn` to update the dependencies for the shared `node_modules` and the `yarn.lock` file.
+* In the `boilerplate` folder, go through each sub-folder and update the `package.json` dependencies if one is present.
