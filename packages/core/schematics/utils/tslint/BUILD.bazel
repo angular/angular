@@ -7,4 +7,5 @@ ts_library(
     visibility = [
         "//packages/core/schematics/migrations/template-var-assignment/google3:__pkg__",
     ],
+    deps = ["@npm//typescript"],
 )

@@ -13,6 +13,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/node",
         "@npm//rxjs",

@@ -43,6 +43,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@bazel/typescript",
         "@npm//@types",
+        "@npm//reflect-metadata",
         "@npm//tsickle",
         "@npm//typescript",
     ],

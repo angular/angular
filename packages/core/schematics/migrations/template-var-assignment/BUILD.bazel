@@ -12,6 +12,7 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/node",
         "@npm//typescript",

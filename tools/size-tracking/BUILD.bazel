@@ -12,6 +12,8 @@ ts_library(
     deps = [
         "@npm//@types/node",
         "@npm//@types/source-map",
+        "@npm//chalk",
+        "@npm//source-map",
     ],
 )
 
@@ -21,7 +23,7 @@ ts_library(
     srcs = glob(["**/*_spec.ts"]),
     deps = [
         ":size-tracking",
-        "@npm//@types/source-map",
+        "@npm//source-map",
     ],
 )
 

@@ -11,6 +11,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/shims",
+        "@npm//typescript",
     ],
 )
 
