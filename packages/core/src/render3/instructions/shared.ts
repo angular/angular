@@ -1747,10 +1747,10 @@ export function storeBindingMetadata(lView: LView, prefix = '', suffix = ''): st
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
 export function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
-  // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
+  // If tNode.inputs is undefined or null, a listener has created outputs, but inputs haven't
   // yet been checked.
   if (tNode) {
-    if (tNode.inputs === undefined) {
+    if (!tNode.inputs) {
       // mark inputs as checked
       tNode.inputs = generatePropertyAliases(tNode, BindingDirection.Input);
     }
