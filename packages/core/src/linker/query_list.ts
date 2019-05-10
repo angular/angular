@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
 import {flatten} from '../util/array_utils';
@@ -42,7 +42,7 @@ import {getSymbolIterator} from '../util/symbol';
 export class QueryList<T>/* implements Iterable<T> */ {
   public readonly dirty = true;
   private _results: Array<T> = [];
-  public readonly changes: Observable<this> = new EventEmitter();
+  public readonly changes: Observable<this> = new Subject<this>();
 
   readonly length: number = 0;
   // TODO(issue/24571): remove '!'.
@@ -119,16 +119,16 @@ export class QueryList<T>/* implements Iterable<T> */ {
   }
 
   /**
-   * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
+   * Triggers a change event by emitting on the `changes` observable.
    */
-  notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
+  notifyOnChanges(): void { (this.changes as Subject<this>).next(this); }
 
   /** internal */
   setDirty() { (this as{dirty: boolean}).dirty = true; }
 
   /** internal */
   destroy(): void {
-    (this.changes as EventEmitter<any>).complete();
-    (this.changes as EventEmitter<any>).unsubscribe();
+    (this.changes as Subject<this>).complete();
+    (this.changes as Subject<this>).unsubscribe();
   }
 }
