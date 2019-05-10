@@ -23,7 +23,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [TestComponent],
+        declarations: [TestComponent, EmbeddedComponent],
         imports: [CommonModule],
       });
     });
@@ -270,6 +270,71 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
                .toThrowError(/ngIfElse must be a TemplateRef, but received/);
          }));
     });
+
+    describe('View reuse strategy', () => {
+      it('should recreate embedded view for every activation', async(() => {
+           const template = '<span *ngIf="booleanCondition"><embedded-cmp></embedded-cmp></span>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           const firstCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(firstCheck).toBeDefined();
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.debugElement.query(By.directive(EmbeddedComponent))).toBeNull();
+
+           getComponent().booleanCondition = true;
+           fixture.detectChanges();
+           const secondCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(secondCheck).toBeDefined();
+           expect(firstCheck.componentInstance).not.toBe(secondCheck.componentInstance);
+         }));
+
+      it('should reuse embedded view for every activation', async(() => {
+           const template =
+               '<span *ngIf="booleanCondition; reuse \'reuse\'"><embedded-cmp></embedded-cmp></span>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           const firstCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(firstCheck).toBeDefined();
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.debugElement.query(By.directive(EmbeddedComponent))).toBeNull();
+
+           getComponent().booleanCondition = true;
+           fixture.detectChanges();
+           const secondCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(secondCheck).toBeDefined();
+           expect(firstCheck.componentInstance).toBe(secondCheck.componentInstance);
+         }));
+
+      it('should recreate embedded view for every activation when unexpected value provided',
+         async(() => {
+           const template =
+               '<span *ngIf="booleanCondition; reuse \'something unexpected\'"><embedded-cmp></embedded-cmp></span>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           const firstCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(firstCheck).toBeDefined();
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.debugElement.query(By.directive(EmbeddedComponent))).toBeNull();
+
+           getComponent().booleanCondition = true;
+           fixture.detectChanges();
+           const secondCheck = fixture.debugElement.query(By.directive(EmbeddedComponent));
+           expect(secondCheck).toBeDefined();
+           expect(firstCheck.componentInstance).not.toBe(secondCheck.componentInstance);
+         }));
+    });
   });
 }
 
@@ -280,6 +345,10 @@ class TestComponent {
   numberCondition: number = 1;
   stringCondition: string = 'foo';
   functionCondition: Function = (s: any, n: any): boolean => s == 'foo' && n == 1;
+}
+
+@Component({selector: 'embedded-cmp', template: ''})
+class EmbeddedComponent {
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

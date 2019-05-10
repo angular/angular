@@ -58,6 +58,15 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * <ng-template #elseBlock>Content to render when value is null.</ng-template>
  * ```
  *
+ * Form with reuse view strategy:
+ *
+ * ```
+ * <div *ngIf="condition; else elseBlock; reuse 'reuse'">Content to render when condition is true
+ * without destroying when re-activated.</div>
+ * <ng-template #elseBlock>Content to render when condition is false without destroying when
+ * re-activated.</ng-template>
+ * ```
+ *
  * @usageNotes
  *
  * The `*ngIf` directive is most commonly used to conditionally show an inline template,
@@ -155,6 +164,7 @@ export class NgIf {
   private _elseTemplateRef: TemplateRef<NgIfContext>|null = null;
   private _thenViewRef: EmbeddedViewRef<NgIfContext>|null = null;
   private _elseViewRef: EmbeddedViewRef<NgIfContext>|null = null;
+  private _viewReuseStrategy: ViewReuseStrategy = this.computeViewReuseStrategy('recreate');
 
   constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>) {
     this._thenTemplateRef = templateRef;
@@ -191,26 +201,49 @@ export class NgIf {
     this._updateView();
   }
 
+  /**
+   * Provides a way to customize when activated views get reused.
+   */
+  @Input()
+  set ngIfReuse(viewReuseStrategy: 'reuse'|'recreate') {
+    this._viewReuseStrategy = this.computeViewReuseStrategy(viewReuseStrategy);
+    this._updateView();
+  }
+
   private _updateView() {
     if (this._context.$implicit) {
-      if (!this._thenViewRef) {
-        this._viewContainer.clear();
-        this._elseViewRef = null;
+      if (!this.viewActivated(this._thenViewRef)) {
+        this._viewReuseStrategy.detach(this._viewContainer);
         if (this._thenTemplateRef) {
-          this._thenViewRef =
-              this._viewContainer.createEmbeddedView(this._thenTemplateRef, this._context);
+          this._thenViewRef = this._viewReuseStrategy.attach(
+              this._viewContainer, this._thenViewRef, this._thenTemplateRef, this._context);
         }
       }
     } else {
-      if (!this._elseViewRef) {
-        this._viewContainer.clear();
-        this._thenViewRef = null;
+      if (!this.viewActivated(this._elseViewRef)) {
+        this._viewReuseStrategy.detach(this._viewContainer);
         if (this._elseTemplateRef) {
-          this._elseViewRef =
-              this._viewContainer.createEmbeddedView(this._elseTemplateRef, this._context);
+          this._elseViewRef = this._viewReuseStrategy.attach(
+              this._viewContainer, this._elseViewRef, this._elseTemplateRef, this._context);
         }
       }
     }
+  }
+
+  private viewActivated(embeddedViewRef: EmbeddedViewRef<NgIfContext>|null): boolean {
+    if (!embeddedViewRef) {
+      return false;
+    }
+
+    return !!(<any>embeddedViewRef)._view.viewContainerParent;
+  }
+
+  private computeViewReuseStrategy(viewReuseStrategy: 'reuse'|'recreate'): ViewReuseStrategy {
+    if (viewReuseStrategy === 'reuse') {
+      return _restateViewStrategy;
+    }
+
+    return _recreateViewStrategy;
   }
 
   /** @internal */
@@ -234,6 +267,42 @@ export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;
 }
+
+interface ViewReuseStrategy {
+  attach(
+      viewContainer: ViewContainerRef, viewRef: EmbeddedViewRef<NgIfContext>|null,
+      templateRef: TemplateRef<NgIfContext>, context: NgIfContext): EmbeddedViewRef<NgIfContext>;
+  detach(viewContainer: ViewContainerRef): void;
+}
+
+class RecreateViewStrategy implements ViewReuseStrategy {
+  attach(
+      viewContainer: ViewContainerRef, viewRef: EmbeddedViewRef<NgIfContext>|null,
+      templateRef: TemplateRef<NgIfContext>, context: NgIfContext): EmbeddedViewRef<NgIfContext> {
+    return viewContainer.createEmbeddedView(templateRef, context);
+  }
+
+  detach(viewContainer: ViewContainerRef): void { viewContainer.clear(); }
+}
+
+class RestateViewStrategy implements ViewReuseStrategy {
+  attach(
+      viewContainer: ViewContainerRef, viewRef: EmbeddedViewRef<NgIfContext>|null,
+      templateRef: TemplateRef<NgIfContext>, context: NgIfContext): EmbeddedViewRef<NgIfContext> {
+    if (!viewRef) {
+      viewRef = templateRef.createEmbeddedView(context);
+    }
+
+    viewContainer.insert(viewRef);
+
+    return viewRef;
+  }
+
+  detach(viewContainer: ViewContainerRef): void { viewContainer.detach(); }
+}
+
+const _recreateViewStrategy = new RecreateViewStrategy();
+const _restateViewStrategy = new RestateViewStrategy();
 
 function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
   const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
