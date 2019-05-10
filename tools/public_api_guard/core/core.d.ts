@@ -1090,7 +1090,7 @@ export declare abstract class Query {
 }
 
 export declare class QueryList<T> {
-    readonly changes: Observable<any>;
+    readonly changes: Observable<this>;
     readonly dirty = true;
     readonly first: T;
     readonly last: T;
