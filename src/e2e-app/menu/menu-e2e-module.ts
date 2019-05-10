@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatMenuModule} from '@angular/material';
+import {MatMenuModule} from '@angular/material/menu';
 import {MenuE2E} from './menu-e2e';
 
 @NgModule({

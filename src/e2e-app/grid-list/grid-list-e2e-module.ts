@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatGridListModule} from '@angular/material';
+import {MatGridListModule} from '@angular/material/grid-list';
 import {GridListE2E} from './grid-list-e2e';
 
 @NgModule({

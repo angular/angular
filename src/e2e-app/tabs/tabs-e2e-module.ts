@@ -7,7 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatFormFieldModule, MatInputModule, MatTabsModule} from '@angular/material';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatTabsModule} from '@angular/material/tabs';
 import {BasicTabs} from './tabs-e2e';
 
 @NgModule({

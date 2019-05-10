@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatIconModule} from '@angular/material';
+import {MatIconModule} from '@angular/material/icon';
 import {IconE2E} from './icon-e2e';
 
 @NgModule({

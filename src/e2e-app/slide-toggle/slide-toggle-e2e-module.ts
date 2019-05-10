@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatSlideToggleModule} from '@angular/material';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {SlideToggleE2E} from './slide-toggle-e2e';
 
 @NgModule({

@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatSidenavModule} from '@angular/material';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import {SidenavE2E} from './sidenav-e2e';
 
 @NgModule({
