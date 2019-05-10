@@ -198,7 +198,13 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RecreateViewStrategy"
+  },
+  {
     "name": "RendererStyleFlags3"
+  },
+  {
+    "name": "RestateViewStrategy"
   },
   {
     "name": "SANITIZER"
@@ -372,7 +378,13 @@
     "name": "_global"
   },
   {
+    "name": "_recreateViewStrategy"
+  },
+  {
     "name": "_renderCompCount"
+  },
+  {
+    "name": "_restateViewStrategy"
   },
   {
     "name": "_selectedIndex"
