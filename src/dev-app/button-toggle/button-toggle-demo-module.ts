@@ -9,7 +9,9 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonToggleModule, MatCheckboxModule, MatIconModule} from '@angular/material';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatIconModule} from '@angular/material/icon';
 import {RouterModule} from '@angular/router';
 import {ButtonToggleDemo} from './button-toggle-demo';
 

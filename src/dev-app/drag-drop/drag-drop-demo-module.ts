@@ -10,7 +10,9 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatFormFieldModule, MatIconModule, MatSelectModule} from '@angular/material';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
 import {RouterModule} from '@angular/router';
 import {DragAndDropDemo} from './drag-drop-demo';
 

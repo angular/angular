@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive} from '@angular/core';
-import {MAT_CHECKBOX_CLICK_ACTION} from '@angular/material';
+import {MAT_CHECKBOX_CLICK_ACTION} from '@angular/material/checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 

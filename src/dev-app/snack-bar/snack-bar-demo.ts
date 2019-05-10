@@ -13,7 +13,7 @@ import {
   MatSnackBarConfig,
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
-} from '@angular/material';
+} from '@angular/material/snack-bar';
 
 
 @Component({

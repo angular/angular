@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {MatAccordion} from '@angular/material';
+import {MatAccordion} from '@angular/material/expansion';
 
 
 @Component({

@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {MatRipple} from '@angular/material';
+import {MatRipple} from '@angular/material/core';
 
 
 @Component({

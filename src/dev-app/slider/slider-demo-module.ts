@@ -8,7 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatSliderModule, MatTabsModule} from '@angular/material';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatTabsModule} from '@angular/material/tabs';
 import {RouterModule} from '@angular/router';
 import {SliderDemo} from './slider-demo';
 

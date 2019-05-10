@@ -8,7 +8,7 @@
 
 import {A11yModule} from '@angular/cdk/a11y';
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material';
+import {MatButtonModule} from '@angular/material/button';
 import {RouterModule} from '@angular/router';
 import {LiveAnnouncerDemo} from './live-announcer-demo';
 

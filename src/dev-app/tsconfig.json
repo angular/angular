@@ -9,7 +9,6 @@
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
       "@angular/material/*": ["../material/*"],
-      "@angular/material": ["../material/public-api.ts"],
       "@angular/material-experimental/*": ["../material-experimental/*"],
       "@angular/material-experimental": ["../material-experimental"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],

@@ -7,12 +7,10 @@
  */
 
 import {NgModule} from '@angular/core';
-import {
-  MatButtonModule,
-  MatCardModule,
-  MatDividerModule,
-  MatProgressBarModule
-} from '@angular/material';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {RouterModule} from '@angular/router';
 import {CardDemo} from './card-demo';
 

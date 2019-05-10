@@ -8,7 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule, MatSlideToggleModule} from '@angular/material';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {RouterModule} from '@angular/router';
 import {SlideToggleDemo} from './slide-toggle-demo';
 

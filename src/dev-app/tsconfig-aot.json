@@ -21,7 +21,6 @@
     ],
     "paths": {
       "@angular/material/*": ["../../dist/releases/material/*"],
-      "@angular/material": ["../../dist/releases/material"],
       "@angular/cdk/*": ["../../dist/releases/cdk/*"],
       "@angular/cdk": ["../../dist/releases/cdk"],
       "@angular/material-experimental/*": ["../../dist/releases/material-experimental/*"],
