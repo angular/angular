@@ -13,8 +13,7 @@ import {
   MatPopoverEdit,
   MatPopoverEditTabOut,
   MatRowHoverContent,
-  MatEditOpen,
-  MatEditOpenButton
+  MatEditOpen
 } from './table-directives';
 import {
   MatEditLens,
@@ -29,8 +28,7 @@ const EXPORTED_DECLARATIONS = [
   MatEditLens,
   MatEditRevert,
   MatEditClose,
-  MatEditOpen,
-  MatEditOpenButton,
+  MatEditOpen
 ];
 
 @NgModule({

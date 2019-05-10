@@ -392,33 +392,24 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
  * element or an ancestor element.
  */
 @Directive({
-  // Specify :not(button) as we only need to add type: button on actual buttons.
-  selector: '[cdkEditOpen]:not(button)',
-  host: {
-    '(click)': 'openEdit($event)',
-  }
+  selector: '[cdkEditOpen]',
+  host: {'(click)': 'openEdit($event)'}
 })
 export class CdkEditOpen {
   constructor(
-      protected readonly elementRef: ElementRef,
-      protected readonly editEventDispatcher: EditEventDispatcher) {}
+      protected readonly elementRef: ElementRef<HTMLElement>,
+      protected readonly editEventDispatcher: EditEventDispatcher) {
+
+    const nativeElement = elementRef.nativeElement;
+
+    // Prevent accidental form submits.
+    if (nativeElement.nodeName === 'BUTTON' && !nativeElement.getAttribute('type')) {
+      nativeElement.setAttribute('type', 'button');
+    }
+  }
 
   openEdit(evt: Event): void {
     this.editEventDispatcher.editing.next(closest(this.elementRef.nativeElement!, CELL_SELECTOR));
     evt.stopPropagation();
   }
 }
-
-/**
- * Opens the closest edit popover to this element, whether it's associated with this exact
- * element or an ancestor element.
- */
-@Directive({
-  // Specify button as we only need to add type: button on actual buttons.
-  selector: 'button[cdkEditOpen]',
-  host: {
-    '(click)': 'openEdit($event)',
-    'type': 'button', // Prevents accidental form submits.
-  }
-})
-export class CdkEditOpenButton extends CdkEditOpen {}

@@ -13,8 +13,7 @@ import {
   CdkPopoverEditTabOut,
   CdkRowHoverContent,
   CdkEditable,
-  CdkEditOpen,
-  CdkEditOpenButton
+  CdkEditOpen
 } from './table-directives';
 import {CdkEditControl,
   CdkEditRevert,
@@ -34,7 +33,6 @@ const EXPORTED_DECLARATIONS = [
   CdkEditClose,
   CdkEditable,
   CdkEditOpen,
-  CdkEditOpenButton,
 ];
 
 @NgModule({

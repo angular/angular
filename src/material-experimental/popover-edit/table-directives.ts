@@ -10,8 +10,7 @@ import {
   CdkPopoverEdit,
   CdkPopoverEditTabOut,
   CdkRowHoverContent,
-  CdkEditOpen,
-  CdkEditOpenButton,
+  CdkEditOpen
 } from '@angular/cdk-experimental/popover-edit';
 
 const POPOVER_EDIT_HOST_BINDINGS = {
@@ -107,25 +106,8 @@ export class MatRowHoverContent extends CdkRowHoverContent {
  * element or an ancestor element.
  */
 @Directive({
-  // Specify :not(button) as we only need to add type: button on actual buttons.
-  selector: '[matEditOpen]:not(button)',
-  host: {
-    '(click)': 'openEdit($event)',
-  }
+  selector: '[matEditOpen]',
+  host: {'(click)': 'openEdit($event)'}
 })
 export class MatEditOpen extends CdkEditOpen {
 }
-
-/**
- * Opens the closest edit popover to this element, whether it's associated with this exact
- * element or an ancestor element.
- */
-@Directive({
-  // Specify button as we only need to add type: button on actual buttons.
-  selector: 'button[matEditOpen]',
-  host: {
-    '(click)': 'openEdit($event)',
-    'type': 'button', // Prevents accidental form submits.
-  }
-})
-export class MatEditOpenButton extends CdkEditOpenButton {}
