@@ -54,7 +54,7 @@ interface PeriodicElement {
 }
 
 abstract class BaseTestComponent {
-  @ViewChild('table') table: ElementRef;
+  @ViewChild('table', {static: false}) table: ElementRef;
 
   preservedValues = new Map<number, PeriodicElement>();
 
