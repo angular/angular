@@ -437,7 +437,6 @@ The `browserslist` looks like this:
 > 0.5%
 last 2 versions
 Firefox ESR
-Chrome 41 # Support for Googlebot
 not dead
 not IE 9-11 # For IE 9-11 support, remove 'not'.
 ```
@@ -470,7 +469,7 @@ The `tsconfig.json` looks like this:
 }
 ```
 
-By default, legacy browsers such as IE 9-11 are ignored, Chrome 41 is included for search engine optimization (SEO) support, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below. 
+By default, legacy browsers such as IE 9-11 are ignored, and the compilation target is ES2015. As a result, this produces two builds, and differential loading is enabled. If you ignore browsers without ES2015 support, a single build is produced. To see the build result for differential loading based on different configurations, refer to the table below. 
 
 <div class="alert is-important">
 
