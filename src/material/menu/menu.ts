@@ -445,4 +445,9 @@ export class MatMenu extends _MatMenuBase {}
 })
 // tslint:disable-next-line:class-name
 export class _MatMenu extends MatMenu {
+
+  constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone,
+      @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
+    super(elementRef, ngZone, defaultOptions);
+  }
 }
