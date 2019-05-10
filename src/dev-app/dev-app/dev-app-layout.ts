@@ -72,6 +72,7 @@ export class DevAppLayout {
     {name: 'MDC Button', route: '/mdc-button'},
     {name: 'MDC Card', route: '/mdc-card'},
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},
+    {name: 'MDC Chips', route: '/mdc-chips'},
     {name: 'MDC Menu', route: '/mdc-menu'},
     {name: 'MDC Radio', route: '/mdc-radio'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},

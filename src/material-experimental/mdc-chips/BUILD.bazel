@@ -1,0 +1,39 @@
+package(default_visibility=["//visibility:public"])
+
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
+
+ng_module(
+  name = "mdc-chips",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material-experimental/mdc-chips",
+  assets = [":chips_scss"] + glob(["**/*.html"]),
+  deps = [
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//material-components-web",
+  ] + CDK_TARGETS + MATERIAL_TARGETS,
+)
+
+sass_library(
+  name = "chips_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = [
+    "//src/material/core:core_scss_lib",
+    "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+  ],
+)
+
+sass_binary(
+  name = "chips_scss",
+  src = "chips.scss",
+  include_paths = [
+    "external/npm/node_modules",
+  ],
+  deps = [
+    "//src/material/core:all_themes",
+    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+  ]
+)

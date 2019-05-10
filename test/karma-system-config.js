@@ -136,6 +136,8 @@ System.config({
         'dist/packages/material-experimental/mdc-card/index.js',
     '@angular/material-experimental/mdc-checkbox':
         'dist/packages/material-experimental/mdc-checkbox/index.js',
+    '@angular/material-experimental/mdc-chips':
+        'dist/packages/material-experimental/mdc-chips/index.js',
     '@angular/material-experimental/mdc-helpers':
         'dist/packages/material-experimental/mdc-helpers/index.js',
     '@angular/material-experimental/mdc-menu':

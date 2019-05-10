@@ -2,6 +2,7 @@ import {Component, NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
@@ -18,6 +19,7 @@ export class KitchenSinkMdc {
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatMenuModule,
     MatRadioModule,
     MatSlideToggleModule,
