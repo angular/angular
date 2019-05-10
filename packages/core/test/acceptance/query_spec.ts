@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -601,6 +603,44 @@ describe('query logic', () => {
       expect(fixture.componentInstance.subComp.foo.length).toBe(2);
     });
 
+    it('should match shallow content queries in views inserted / removed by ngIf', () => {
+      @Component({
+        selector: 'test-comp',
+        template: `
+          <shallow-comp>
+            <div *ngIf="showing" #foo></div>
+          </shallow-comp>
+        `
+      })
+      class TestComponent {
+        showing = false;
+      }
+
+      @Component({
+        selector: 'shallow-comp',
+        template: '',
+      })
+      class ShallowComp {
+        @ContentChildren('foo', {descendants: false}) foos !: QueryList<ElementRef>;
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [TestComponent, ShallowComp], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const shallowComp = fixture.debugElement.query(By.directive(ShallowComp)).componentInstance;
+      const queryList = shallowComp !.foos;
+      expect(queryList.length).toBe(0);
+
+      fixture.componentInstance.showing = true;
+      fixture.detectChanges();
+      expect(queryList.length).toBe(1);
+
+      fixture.componentInstance.showing = false;
+      fixture.detectChanges();
+      expect(queryList.length).toBe(0);
+    });
   });
 
   // Some root components may have ContentChildren queries if they are also
@@ -663,6 +703,253 @@ describe('query logic', () => {
       expect(changes).toBe(1);
     });
 
+  });
+
+  describe('view boundaries', () => {
+
+    describe('ViewContainerRef', () => {
+
+      @Directive({selector: '[vc]', exportAs: 'vc'})
+      class ViewContainerManipulatorDirective {
+        constructor(private _vcRef: ViewContainerRef) {}
+
+        insertTpl(tpl: TemplateRef<{}>, ctx: {}, idx?: number) {
+          this._vcRef.createEmbeddedView(tpl, ctx, idx);
+        }
+
+        remove(index?: number) { this._vcRef.remove(index); }
+      }
+
+      it('should report results in views inserted / removed by ngIf', () => {
+        @Component({
+          selector: 'test-comp',
+          template: `
+            <ng-template [ngIf]="value">
+              <div #foo></div>
+            </ng-template>
+          `
+        })
+        class TestComponent {
+          value: boolean = false;
+          @ViewChildren('foo') query !: QueryList<any>;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComponent]});
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const queryList = fixture.componentInstance.query;
+        expect(queryList.length).toBe(0);
+
+        fixture.componentInstance.value = true;
+        fixture.detectChanges();
+        expect(queryList.length).toBe(1);
+
+        fixture.componentInstance.value = false;
+        fixture.detectChanges();
+        expect(queryList.length).toBe(0);
+      });
+
+      it('should report results in views inserted / removed by ngFor', () => {
+        @Component({
+          selector: 'test-comp',
+          template: `
+            <ng-template ngFor let-item [ngForOf]="value">
+              <div #foo [id]="item"></div>
+            </ng-template>
+          `,
+        })
+        class TestComponent {
+          value: string[]|undefined;
+          @ViewChildren('foo') query !: QueryList<any>;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComponent]});
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const queryList = fixture.componentInstance.query;
+        expect(queryList.length).toBe(0);
+
+        fixture.componentInstance.value = ['a', 'b', 'c'];
+        fixture.detectChanges();
+        expect(queryList.length).toBe(3);
+
+        // Remove the "b" element from the value.
+        fixture.componentInstance.value.splice(1, 1);
+        fixture.detectChanges();
+        expect(queryList.length).toBe(2);
+
+        // make sure that the "b" element has been removed from query results
+        expect(queryList.first.nativeElement.id).toBe('a');
+        expect(queryList.last.nativeElement.id).toBe('c');
+      });
+
+      // https://stackblitz.com/edit/angular-rrmmuf?file=src/app/app.component.ts
+      it('should report results when different instances of TemplateRef are inserted into one ViewContainerRefs',
+         () => {
+           @Component({
+             selector: 'test-comp',
+             template: `
+               <ng-template #tpl1 let-idx="idx">
+                 <div #foo [id]="'foo1_' + idx"></div>
+               </ng-template>
+               
+               <div #foo id="middle"></div>
+               
+               <ng-template #tpl2 let-idx="idx">
+                 <div #foo [id]="'foo2_' + idx"></div>
+               </ng-template>
+               
+               <ng-template vc></ng-template>
+             `,
+           })
+           class TestComponent {
+             @ViewChild(ViewContainerManipulatorDirective) vc !: ViewContainerManipulatorDirective;
+             @ViewChild('tpl1') tpl1 !: TemplateRef<any>;
+             @ViewChild('tpl2') tpl2 !: TemplateRef<any>;
+             @ViewChildren('foo') query !: QueryList<any>;
+           }
+
+           TestBed.configureTestingModule(
+               {declarations: [ViewContainerManipulatorDirective, TestComponent]});
+           const fixture = TestBed.createComponent(TestComponent);
+           fixture.detectChanges();
+
+           const queryList = fixture.componentInstance.query;
+           const {tpl1, tpl2, vc} = fixture.componentInstance;
+
+           expect(queryList.length).toBe(1);
+           expect(queryList.first.nativeElement.getAttribute('id')).toBe('middle');
+
+           vc.insertTpl(tpl1 !, {idx: 0}, 0);
+           vc.insertTpl(tpl2 !, {idx: 1}, 1);
+           fixture.detectChanges();
+
+           expect(queryList.length).toBe(3);
+           let qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo1_0');
+           expect(qListArr[1].nativeElement.getAttribute('id')).toBe('middle');
+           expect(qListArr[2].nativeElement.getAttribute('id')).toBe('foo2_1');
+
+           vc.insertTpl(tpl1 !, {idx: 1}, 1);
+           fixture.detectChanges();
+
+           expect(queryList.length).toBe(4);
+           qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo1_0');
+           expect(qListArr[1].nativeElement.getAttribute('id')).toBe('foo1_1');
+           expect(qListArr[2].nativeElement.getAttribute('id')).toBe('middle');
+           expect(qListArr[3].nativeElement.getAttribute('id')).toBe('foo2_1');
+
+           vc.remove(1);
+           fixture.detectChanges();
+
+           expect(queryList.length).toBe(3);
+           qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo1_0');
+           expect(qListArr[1].nativeElement.getAttribute('id')).toBe('middle');
+           expect(qListArr[2].nativeElement.getAttribute('id')).toBe('foo2_1');
+
+           vc.remove(1);
+           fixture.detectChanges();
+
+           expect(queryList.length).toBe(2);
+           qListArr = queryList.toArray();
+           expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo1_0');
+           expect(qListArr[1].nativeElement.getAttribute('id')).toBe('middle');
+         });
+
+      // https://stackblitz.com/edit/angular-7vvo9j?file=src%2Fapp%2Fapp.component.ts
+      // https://stackblitz.com/edit/angular-xzwp6n
+      onlyInIvy('FW-1318: QueryList entries are ordered differently in Ivy.')
+          .it('should report results when the same TemplateRef is inserted into different ViewContainerRefs',
+              () => {
+                @Component({
+                  selector: 'test-comp',
+                  template: `
+               <ng-template #tpl let-idx="idx" let-container_idx="container_idx">
+                 <div #foo [id]="'foo_' + container_idx + '_' + idx"></div>
+               </ng-template>
+
+               <ng-template vc #vi0="vc"></ng-template>
+               <ng-template vc #vi1="vc"></ng-template> 
+             `,
+                })
+                class TestComponent {
+                  @ViewChild('tpl') tpl !: TemplateRef<any>;
+                  @ViewChild('vi0') vi0 !: ViewContainerManipulatorDirective;
+                  @ViewChild('vi1') vi1 !: ViewContainerManipulatorDirective;
+                  @ViewChildren('foo') query !: QueryList<any>;
+                }
+
+                TestBed.configureTestingModule(
+                    {declarations: [ViewContainerManipulatorDirective, TestComponent]});
+                const fixture = TestBed.createComponent(TestComponent);
+                fixture.detectChanges();
+
+                const queryList = fixture.componentInstance.query;
+                const {tpl, vi0, vi1} = fixture.componentInstance;
+
+                expect(queryList.length).toBe(0);
+
+                vi0.insertTpl(tpl !, {idx: 0, container_idx: 0}, 0);
+                vi1.insertTpl(tpl !, {idx: 0, container_idx: 1}, 0);
+                fixture.detectChanges();
+
+                expect(queryList.length).toBe(2);
+                let qListArr = queryList.toArray();
+                expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_1_0');
+                expect(qListArr[1].nativeElement.getAttribute('id')).toBe('foo_0_0');
+
+                vi0.remove();
+                fixture.detectChanges();
+
+                expect(queryList.length).toBe(1);
+                qListArr = queryList.toArray();
+                expect(qListArr[0].nativeElement.getAttribute('id')).toBe('foo_1_0');
+
+                vi1.remove();
+                fixture.detectChanges();
+                expect(queryList.length).toBe(0);
+              });
+
+      // https://stackblitz.com/edit/angular-wpd6gv?file=src%2Fapp%2Fapp.component.ts
+      it('should report results from views inserted in a lifecycle hook', () => {
+        @Component({
+          selector: 'my-app',
+          template: `
+            <ng-template #tpl>
+              <span #foo id="from_tpl"></span>
+            </ng-template>
+            
+            <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
+          `,
+        })
+        class MyApp {
+          show = false;
+          @ViewChildren('foo') query !: QueryList<any>;
+        }
+
+        TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
+        const fixture = TestBed.createComponent(MyApp);
+        fixture.detectChanges();
+
+        const queryList = fixture.componentInstance.query;
+        expect(queryList.length).toBe(0);
+
+        fixture.componentInstance.show = true;
+        fixture.detectChanges();
+        expect(queryList.length).toBe(1);
+        expect(queryList.first.nativeElement.id).toBe('from_tpl');
+
+        fixture.componentInstance.show = false;
+        fixture.detectChanges();
+        expect(queryList.length).toBe(0);
+      });
+
+    });
   });
 
 });
