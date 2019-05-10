@@ -81,3 +81,5 @@ Here's the app in action:
 <figure>
   <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">
 </figure>
+
+next: [The Application Shell](./tutorial/toh-pt0")
