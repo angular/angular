@@ -90,6 +90,14 @@ injection token.
 
 <!-- example(autocomplete-auto-active-first-option) -->
 
+### Autocomplete on a custom input element
+
+While `mat-autocomplete` supports attaching itself to a `mat-form-field`, you can also set it on
+any other `input` element using the `matAutocomplete` attribute. This allows you to customize what
+the input looks like without having to bring in the extra functionality from `mat-form-field`.
+
+<!-- example(autocomplete-plain-input) -->
+
 ### Attaching the autocomplete panel to a different element
 
 By default the autocomplete panel will be attached to your input element, however in some cases you
