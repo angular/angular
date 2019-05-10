@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatSnackBar} from '@angular/material';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 /**
  * @title Basic snack-bar

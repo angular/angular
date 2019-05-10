@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
-import {MatTableDataSource} from '@angular/material';
+import {MatTableDataSource} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;

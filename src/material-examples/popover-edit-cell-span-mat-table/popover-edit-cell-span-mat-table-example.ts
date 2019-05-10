@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {DomSanitizer} from '@angular/platform-browser';
 import {NgForm} from '@angular/forms';
-import {MatIconRegistry} from '@angular/material';
+import {MatIconRegistry} from '@angular/material/icon';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 export interface Person {

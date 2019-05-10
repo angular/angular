@@ -8,14 +8,14 @@ import {
   QueryList,
   ViewChild
 } from '@angular/core';
+import {MatSort} from '@angular/material/sort';
 import {
   MatColumnDef,
   MatHeaderRowDef,
   MatRowDef,
-  MatSort,
   MatTable,
   MatTableDataSource
-} from '@angular/material';
+} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;

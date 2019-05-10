@@ -2,7 +2,7 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Input, OnDestroy, Optional, Self} from '@angular/core';
 import {FormBuilder, FormGroup, ControlValueAccessor, NgControl} from '@angular/forms';
-import {MatFormFieldControl} from '@angular/material';
+import {MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
 
 /** @title Form field with custom telephone number input control. */
