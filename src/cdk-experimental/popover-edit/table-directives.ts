@@ -16,7 +16,7 @@ import {
   NgZone,
   OnDestroy,
   TemplateRef,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 import {fromEvent, merge, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, mapTo, startWith, takeUntil} from 'rxjs/operators';
@@ -221,6 +221,7 @@ export class CdkPopoverEdit<C> implements AfterViewInit, OnDestroy {
       panelClass: this.panelClass(),
       positionStrategy: this._getPositionStrategy(),
       scrollStrategy: this.services.overlay.scrollStrategies.reposition(),
+      direction: this.services.directionality,
     });
 
     this.initFocusTrap();

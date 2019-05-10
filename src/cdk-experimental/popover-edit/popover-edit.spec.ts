@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
 import {Component, ElementRef, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
+import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {BehaviorSubject} from 'rxjs';
 
 import {CdkPopoverEditColspan, CdkPopoverEditModule, PopoverEditClickOutBehavior} from './index';
@@ -61,6 +62,7 @@ abstract class BaseTestComponent {
   ignoreSubmitUnlessValid = true;
   clickOutBehavior: PopoverEditClickOutBehavior = 'close';
   colspan: CdkPopoverEditColspan = {};
+  direction: Direction = 'ltr';
 
   onSubmit(element: PeriodicElement, form: NgForm) {
     if (!form.valid) { return; }
@@ -147,7 +149,7 @@ abstract class BaseTestComponent {
 
 @Component({
   template: `
-  <table #table editable>
+  <table #table editable [dir]="direction">
     <ng-template #nameEdit let-element>
       ${NAME_EDIT_TEMPLATE}
     </ng-template>
@@ -177,7 +179,7 @@ class VanillaTableOutOfCell extends BaseTestComponent {
 
 @Component({
   template: `
-  <table #table editable>
+  <table #table editable [dir]="direction">
     <tr *ngFor="let element of elements">
       <td> just a cell </td>
 
@@ -218,7 +220,7 @@ class ElementDataSource extends DataSource<PeriodicElement> {
 
 @Component({
   template: `
-  <div #table>
+  <div #table [dir]="direction">
     <cdk-table cdk-table editable [dataSource]="dataSource">
       <ng-container cdkColumnDef="before">
         <cdk-cell *cdkCellDef="let element">
@@ -264,7 +266,7 @@ class CdkFlexTableInCell extends BaseTestComponent {
 
 @Component({
   template: `
-  <div #table>
+  <div #table [dir]="direction">
     <table cdk-table editable [dataSource]="dataSource">
       <ng-container cdkColumnDef="before">
         <td cdk-cell *cdkCellDef="let element">
@@ -323,7 +325,7 @@ describe('CDK Popover Edit', () => {
 
       beforeEach(() => {
         TestBed.configureTestingModule({
-          imports: [CdkTableModule, CdkPopoverEditModule, CommonModule, FormsModule],
+          imports: [CdkTableModule, CdkPopoverEditModule, CommonModule, FormsModule, BidiModule],
           declarations: [componentClass],
         }).compileComponents();
         fixture = TestBed.createComponent(componentClass);
@@ -720,6 +722,16 @@ cdkPopoverEditTabOut`, fakeAsync(() => {
 
           expect(document.activeElement).toBe(component.getEditCell(1));
         }));
+
+        it('should pass the directionality to the overlay', fakeAsync(() => {
+          component.direction = 'rtl';
+          fixture.detectChanges();
+
+          component.openLens();
+
+          expect(component.getEditBoundingBox()!.getAttribute('dir')).toBe('rtl');
+        }));
+
       });
      });
   }
