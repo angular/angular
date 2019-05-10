@@ -1092,8 +1092,8 @@ export declare abstract class Query {
 export declare class QueryList<T> {
     readonly changes: Observable<any>;
     readonly dirty = true;
-    readonly first: T;
-    readonly last: T;
+    readonly first: T | undefined;
+    readonly last: T | undefined;
     readonly length: number;
     destroy(): void;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];

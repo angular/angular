@@ -45,10 +45,8 @@ export class QueryList<T>/* implements Iterable<T> */ {
   public readonly changes: Observable<any> = new EventEmitter();
 
   readonly length: number = 0;
-  // TODO(issue/24571): remove '!'.
-  readonly first !: T;
-  // TODO(issue/24571): remove '!'.
-  readonly last !: T;
+  readonly first: T | undefined;
+  readonly last: T | undefined;
 
   /**
    * See
