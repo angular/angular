@@ -1,61 +1,61 @@
 # Angular Material components
-/src/material/*                                         @jelbourn
-/src/material/autocomplete/**                           @crisbeto
-/src/material/badge/**                                  @jelbourn
-/src/material/bottom-sheet/**                           @jelbourn @crisbeto
-/src/material/button-toggle/**                          @jelbourn
-/src/material/button/**                                 @jelbourn @josephperrott
-/src/material/card/**                                   @jelbourn
-/src/material/checkbox/**                               @jelbourn @devversion @josephperrott
-/src/material/chips/**                                  @jelbourn
-/src/material/datepicker/**                             @mmalerba
-/src/material/dialog/**                                 @jelbourn @crisbeto
-/src/material/divider/**                                @jelbourn @crisbeto
-/src/material/expansion/**                              @josephperrott @jelbourn
-/src/material/form-field/**                             @mmalerba
-/src/material/grid-list/**                              @jelbourn
-/src/material/icon/**                                   @jelbourn
-/src/material/input/**                                  @mmalerba
-/src/material/list/**                                   @jelbourn @crisbeto @devversion
-/src/material/menu/**                                   @crisbeto
-/src/material/paginator/**                              @andrewseguin
-/src/material/prebuilt-themes/**                        @jelbourn
-/src/material/progress-bar/**                           @jelbourn @crisbeto @josephperrott
-/src/material/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
-/src/material/radio/**                                  @jelbourn @devversion
-/src/material/schematics/**                             @devversion @jelbourn
-/src/material/select/**                                 @crisbeto
-/src/material/sidenav/**                                @mmalerba
-/src/material/slide-toggle/**                           @devversion
-/src/material/slider/**                                 @mmalerba
-/src/material/snack-bar/**                              @jelbourn @crisbeto @josephperrott
-/src/material/sort/**                                   @andrewseguin
-/src/material/stepper/**                                @mmalerba
-/src/material/table/**                                  @andrewseguin
-/src/material/tabs/**                                   @andrewseguin
-/src/material/testing/**                                @jelbourn
-/src/material/toolbar/**                                @devversion
-/src/material/tooltip/**                                @andrewseguin
-/src/material/tree/**                                   @jelbourn @andrewseguin
+/src/material/*                                    @jelbourn
+/src/material/autocomplete/**                      @crisbeto
+/src/material/badge/**                             @jelbourn
+/src/material/bottom-sheet/**                      @jelbourn @crisbeto
+/src/material/button-toggle/**                     @jelbourn
+/src/material/button/**                            @jelbourn @josephperrott
+/src/material/card/**                              @jelbourn
+/src/material/checkbox/**                          @jelbourn @devversion @josephperrott
+/src/material/chips/**                             @jelbourn
+/src/material/datepicker/**                        @mmalerba
+/src/material/dialog/**                            @jelbourn @crisbeto
+/src/material/divider/**                           @jelbourn @crisbeto
+/src/material/expansion/**                         @josephperrott @jelbourn
+/src/material/form-field/**                        @mmalerba
+/src/material/grid-list/**                         @jelbourn
+/src/material/icon/**                              @jelbourn
+/src/material/input/**                             @mmalerba
+/src/material/list/**                              @jelbourn @crisbeto @devversion
+/src/material/menu/**                              @crisbeto
+/src/material/paginator/**                         @andrewseguin
+/src/material/prebuilt-themes/**                   @jelbourn
+/src/material/progress-bar/**                      @jelbourn @crisbeto @josephperrott
+/src/material/progress-spinner/**                  @jelbourn @crisbeto @josephperrott
+/src/material/radio/**                             @jelbourn @devversion
+/src/material/schematics/**                        @devversion @jelbourn
+/src/material/select/**                            @crisbeto
+/src/material/sidenav/**                           @mmalerba
+/src/material/slide-toggle/**                      @devversion
+/src/material/slider/**                            @mmalerba
+/src/material/snack-bar/**                         @jelbourn @crisbeto @josephperrott
+/src/material/sort/**                              @andrewseguin
+/src/material/stepper/**                           @mmalerba
+/src/material/table/**                             @andrewseguin
+/src/material/tabs/**                              @andrewseguin
+/src/material/testing/**                           @jelbourn
+/src/material/toolbar/**                           @devversion
+/src/material/tooltip/**                           @andrewseguin
+/src/material/tree/**                              @jelbourn @andrewseguin
 
 # Angular Material core
-/src/material/core/*                                    @jelbourn
-/src/material/core/animation/**                         @jelbourn
-/src/material/core/common-behaviors/**                  @jelbourn @devversion
-/src/material/core/datetime/**                          @mmalerba
-/src/material/core/error/**                             @crisbeto @mmalerba
-/src/material/core/gestures/**                          @jelbourn
-/src/material/core/label/**                             @mmalerba
-/src/material/core/line/**                              @jelbourn
-/src/material/core/option/**                            @crisbeto
-/src/material/core/placeholder/**                       @mmalerba
-/src/material/core/ripple/**                            @devversion
-/src/material/core/selection/**                         @jelbourn
-/src/material/core/selection/pseudo*/**                 @crisbeto @jelbourn
-/src/material/core/style/**                             @jelbourn
-/src/material/core/theming/**                           @jelbourn
-/src/material/core/typography/**                        @crisbeto
-/src/material/core/util/**                              @jelbourn
+/src/material/core/*                               @jelbourn
+/src/material/core/animation/**                    @jelbourn
+/src/material/core/common-behaviors/**             @jelbourn @devversion
+/src/material/core/datetime/**                     @mmalerba
+/src/material/core/error/**                        @crisbeto @mmalerba
+/src/material/core/gestures/**                     @jelbourn
+/src/material/core/label/**                        @mmalerba
+/src/material/core/line/**                         @jelbourn
+/src/material/core/option/**                       @crisbeto
+/src/material/core/placeholder/**                  @mmalerba
+/src/material/core/ripple/**                       @devversion
+/src/material/core/selection/**                    @jelbourn
+/src/material/core/selection/pseudo*/**            @crisbeto @jelbourn
+/src/material/core/style/**                        @jelbourn
+/src/material/core/theming/**                      @jelbourn
+/src/material/core/typography/**                   @crisbeto
+/src/material/core/util/**                         @jelbourn
 
 # CDK
 /src/cdk/*                                         @jelbourn
@@ -84,13 +84,14 @@
 
 # Material experimental package
 /src/material-experimental/*                       @jelbourn
-/src/material-experimental/mdc-button/**           @mmalerba # Note to implementer: please repossess
-/src/material-experimental/mdc-card/**             @mmalerba # Note to implementer: please repossess
+/src/material-experimental/mdc-button/**           @andrewseguin
+/src/material-experimental/mdc-card/**             @mmalerba
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-helpers/**          @mmalerba
-/src/material-experimental/mdc-menu/**             @mmalerba # Note to implementer: please repossess
-/src/material-experimental/mdc-radio/**            @mmalerba # Note to implementer: please repossess
-/src/material-experimental/mdc-slide-toggle/**     @mmalerba # Note to implementer: please repossess
+/src/material-experimental/mdc-menu/**             @crisbeto
+# Note to implementer: please repossess
+/src/material-experimental/mdc-radio/**            @mmalerba
+/src/material-experimental/mdc-slide-toggle/**     @crisbeto
 /src/material-experimental/popover-edit/**         @kseamon @andrewseguin
 
 # CDK experimental package
@@ -134,12 +135,14 @@
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/list/**                               @jelbourn @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn
-/src/dev-app/mdc-button/**                         @mmalerba # Note to implementer: please repossess
-/src/dev-app/mdc-card/**                           @mmalerba # Note to implementer: please repossess
+/src/dev-app/mdc-button/**                         @andrewseguin
+# Note to implementer: please repossess
+/src/dev-app/mdc-card/**                           @mmalerba
 /src/dev-app/mdc-checkbox/**                       @mmalerba
-/src/dev-app/mdc-menu/**                           @mmalerba # Note to implementer: please repossess
-/src/dev-app/mdc-radio/**                          @mmalerba # Note to implementer: please repossess
-/src/dev-app/mdc-slide-toggle/**                   @mmalerba # Note to implementer: please repossess
+/src/dev-app/mdc-menu/**                           @crisbeto
+# Note to implementer: please repossess
+/src/dev-app/mdc-radio/**                          @mmalerba
+/src/dev-app/mdc-slide-toggle/**                   @crisbeto
 /src/dev-app/menu/**                               @crisbeto
 /src/dev-app/overlay/**                            @jelbourn @crisbeto
 /src/dev-app/paginator/**                          @andrewseguin
@@ -178,12 +181,14 @@
 /e2e/components/icon-e2e.spec.ts                   @jelbourn
 /e2e/components/input-e2e.spec.ts                  @mmalerba
 /e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto @devversion
-/e2e/components/mdc-button-e2e.spec.ts             @mmalerba # Note to implementer: please repossess
-/e2e/components/mdc-card-e2e.spec.ts               @mmalerba # Note to implementer: please repossess
+/e2e/components/mdc-button-e2e.spec.ts             @andrewseguin
+# Note to implementer: please repossess
+/e2e/components/mdc-card-e2e.spec.ts               @mmalerba
 /e2e/components/mdc-checkbox-e2e.spec.ts           @mmalerba
-/e2e/components/mdc-menu-e2e.spec.ts               @mmalerba # Note to implementer: please repossess
-/e2e/components/mdc-radio-e2e.spec.ts              @mmalerba # Note to implementer: please repossess
-/e2e/components/mdc-slide-toggle-e2e.spec.ts       @mmalerba # Note to implementer: please repossess
+/e2e/components/mdc-menu-e2e.spec.ts               @crisbeto
+# Note to implementer: please repossess
+/e2e/components/mdc-radio-e2e.spec.ts              @mmalerba
+/e2e/components/mdc-slide-toggle-e2e.spec.ts       @crisbeto
 /e2e/components/menu-e2e.spec.ts                   @crisbeto
 /e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
 /e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
@@ -209,12 +214,14 @@
 /src/e2e-app/icon/**                               @jelbourn
 /src/e2e-app/input/**                              @mmalerba
 /src/e2e-app/list/**                               @jelbourn
-/src/e2e-app/mdc-button/**                         @mmalerba # Note to implementer: please repossess
-/src/e2e-app/mdc-card/**                           @mmalerba # Note to implementer: please repossess
+/src/e2e-app/mdc-button/**                         @andrewseguin
+# Note to implementer: please repossess
+/src/e2e-app/mdc-card/**                           @mmalerba
 /src/e2e-app/mdc-checkbox/**                       @mmalerba
-/src/e2e-app/mdc-menu/**                           @mmalerba # Note to implementer: please repossess
-/src/e2e-app/mdc-radio/**                          @mmalerba # Note to implementer: please repossess
-/src/e2e-app/mdc-slide-toggle/**                   @mmalerba # Note to implementer: please repossess
+/src/e2e-app/mdc-menu/**                           @crisbeto
+# Note to implementer: please repossess
+/src/e2e-app/mdc-radio/**                          @mmalerba
+/src/e2e-app/mdc-slide-toggle/**                   @crisbeto
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott
