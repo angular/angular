@@ -235,7 +235,7 @@ export class NgIf {
       return false;
     }
 
-    return !!(<any>embeddedViewRef)._view.viewContainerParent;
+    return this._viewContainer.indexOf(embeddedViewRef) !== -1;
   }
 
   private computeViewReuseStrategy(viewReuseStrategy: 'reuse'|'recreate'): ViewReuseStrategy {

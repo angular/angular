@@ -261,6 +261,7 @@ export declare class NgForOfContext<T> {
 export declare class NgIf {
     ngIf: any;
     ngIfElse: TemplateRef<NgIfContext> | null;
+    ngIfReuse: 'reuse' | 'recreate';
     ngIfThen: TemplateRef<NgIfContext> | null;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
     static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>;
