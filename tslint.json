@@ -98,6 +98,7 @@
     "no-exposed-todo": true,
     "no-import-spacing": true,
     "no-private-getters": true,
+    "no-undecorated-base-class-di": true,
     "setters-after-getters": true,
     "ng-on-changes-property-access": true,
     "rxjs-imports": true,
