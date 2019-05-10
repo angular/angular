@@ -23,7 +23,8 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
 export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
   const k1 = Object.keys(a);
   const k2 = Object.keys(b);
-  if (k1.length != k2.length) {
+  // IE 11 sometimes returns an `undefined` value here. This guard is for IE 11 only.
+  if (!(k1 || k2) || k1.length != k2.length) {
     return false;
   }
   let key: string;
