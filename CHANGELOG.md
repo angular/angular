@@ -309,8 +309,8 @@ This release contains various API docs improvements.
 - `<tr>` would be wrapped in `<tbody>` if not inside `<tbody>`, `<tfoot>` or `<thead>`;
 - `<col>` would be wrapped in `<colgroup>` if not inside `<colgroup>`.
 
-This meachanism of automatic wrapping / auto-correcting was problematic for several reasons:
-- it is non-obvious and arbitrary (ex. there are more HTML elements that has rules for parent type);
+This mechanism of automatic wrapping / auto-correcting was problematic for several reasons:
+- it is non-obvious and arbitrary (ex. there are more HTML elements that have rules for parent type);
 - it is incorrect for cases where `<tr>` / `<col>` are at the root of a component's content, ex.:
 
 ```html
