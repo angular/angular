@@ -11,6 +11,7 @@ tools/gulp-tasks/cldr/cldr-data/
 pubspec.lock
 .c9
 .idea/
+.devcontainer
 .settings/
 .vscode/launch.json
 .vscode/settings.json
