@@ -94,6 +94,41 @@ describe('Router', () => {
        }));
   });
 
+  describe('urlToRouteStateSnapshot', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should return snapshot or exception', inject([Router], async(r: Router) => {
+         r.resetConfig([
+           {
+             path: 'a',
+             component: ComponentA,
+             data: {state: 'i am A'},
+             children: [{path: 'b', component: ComponentB, data: {state: 'i am B'}}]
+           },
+           {path: 'c', component: ComponentC, data: {state: 'i am C'}}
+         ]);
+         const a = await r.urlToRouteStateSnapshot('/a').toPromise().then(
+             s => s && s.root !.firstChild !.data);
+         expect(a).toEqual({state: 'i am A'});
+
+         const b = await r.urlToRouteStateSnapshot('/a/b').toPromise().then(
+             s => s && s.root.firstChild !.firstChild !.data);
+         expect(b).toEqual({state: 'i am B'});
+
+         const c = await r.urlToRouteStateSnapshot('/a').toPromise().then(
+             s => s && s.root !.firstChild !.data);
+         expect(c).toEqual({state: 'i am A'});
+
+         let errorMessage = 'No error thrown.';
+         try {
+           await r.urlToRouteStateSnapshot('/x').toPromise();
+         } catch (error) {
+           errorMessage = error.message;
+         }
+         expect(errorMessage).toEqual('Cannot match any routes. URL Segment: \'x\'');
+       }));
+  });
+
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};
@@ -704,3 +739,7 @@ function checkGuards(
         error(e) { throw e; }
       });
 }
+
+class ComponentA {}
+class ComponentB {}
+class ComponentC {}

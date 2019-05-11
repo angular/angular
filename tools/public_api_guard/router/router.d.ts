@@ -349,6 +349,7 @@ export declare class Router {
     resetConfig(config: Routes): void;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
+    urlToRouteStateSnapshot(url: string | UrlTree): Observable<RouterStateSnapshot | null>;
 }
 
 export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;

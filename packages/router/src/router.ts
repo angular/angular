@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, isDevMode, ɵConsole as Console} from '@angular/core';
-import {BehaviorSubject, EMPTY, Observable, Subject, Subscription, defer, of } from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, Subject, Subscription, of } from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
 import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
@@ -1013,6 +1013,40 @@ export class Router {
     }
     return urlTree;
   }
+
+  /** Converts given Url to RouterStateSnapshot */
+  urlToRouteStateSnapshot(url: string|UrlTree): Observable<RouterStateSnapshot|null> {
+    const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
+    const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
+    let resolve: any = null;
+    let reject: any = null;
+
+    const promise = new Promise<boolean>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    const transition: NavigationTransition = {
+      ...this.getTransition(),
+      id: 1,
+      source: 'imperative',
+      restoredState: null,
+      currentUrlTree: this.currentUrlTree,
+      currentRawUrl: this.rawUrlTree,
+      rawUrl: mergedTree, resolve, reject, promise,
+      currentSnapshot: this.routerState.snapshot,
+      currentRouterState: this.routerState,
+      extractedUrl: this.urlHandlingStrategy.extract(mergedTree)
+    };
+    const moduleInjector = this.ngModule.injector;
+    return of (transition)
+        .pipe(
+            applyRedirects(moduleInjector, this.configLoader, this.urlSerializer, this.config),
+            recognize(
+                this.rootComponentType, this.config, (url) => this.serializeUrl(url),
+                this.paramsInheritanceStrategy, this.relativeLinkResolution),
+            map(t => t.targetSnapshot));
+  }
+
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
