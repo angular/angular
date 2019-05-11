@@ -5,9 +5,6 @@ import { first, map, share } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 
-declare const System: {
-  import(name: string): Promise<any>;
-};
 
 type PrettyPrintOne = (code: string, language?: string, linenums?: number | boolean) => string;
 
@@ -27,7 +24,7 @@ export class PrettyPrinter {
     const ppo = (window as any)['prettyPrintOne'];
     return ppo ? Promise.resolve(ppo) :
       // prettify.js is not in window global; load it with webpack loader
-      System.import('assets/js/prettify.js')
+      import('assets/js/prettify.js')
         .then(
           () => (window as any)['prettyPrintOne'],
           err => {
