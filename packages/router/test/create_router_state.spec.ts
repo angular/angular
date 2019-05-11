@@ -121,9 +121,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 function createState(config: Routes, url: string): RouterStateSnapshot {
-  let res: RouterStateSnapshot = undefined !;
-  recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
-  return res;
+  return recognize(RootComponent, config, tree(url), url);
 }
 
 function checkActivatedRoute(

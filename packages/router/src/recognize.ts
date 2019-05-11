@@ -7,7 +7,6 @@
  */
 
 import {Type} from '@angular/core';
-import {Observable, Observer, of } from 'rxjs';
 
 import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
@@ -21,7 +20,7 @@ class NoMatch {}
 export function recognize(
     rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
-    relativeLinkResolution: 'legacy' | 'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+    relativeLinkResolution: 'legacy' | 'corrected' = 'legacy'): RouterStateSnapshot {
   return new Recognizer(
              rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
              relativeLinkResolution)
@@ -34,27 +33,21 @@ class Recognizer {
       private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy,
       private relativeLinkResolution: 'legacy'|'corrected') {}
 
-  recognize(): Observable<RouterStateSnapshot> {
-    try {
-      const rootSegmentGroup =
-          split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
+  recognize(): RouterStateSnapshot {
+    const rootSegmentGroup =
+        split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
 
-      const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
+    const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
 
-      const root = new ActivatedRouteSnapshot(
-          [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment !, {}, PRIMARY_OUTLET, this.rootComponentType, null,
-          this.urlTree.root, -1, {});
+    const root = new ActivatedRouteSnapshot(
+        [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
+        this.urlTree.fragment !, {}, PRIMARY_OUTLET, this.rootComponentType, null,
+        this.urlTree.root, -1, {});
 
-      const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
-      const routeState = new RouterStateSnapshot(this.url, rootNode);
-      this.inheritParamsAndData(routeState._root);
-      return of (routeState);
-
-    } catch (e) {
-      return new Observable<RouterStateSnapshot>(
-          (obs: Observer<RouterStateSnapshot>) => obs.error(e));
-    }
+    const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
+    const routeState = new RouterStateSnapshot(this.url, rootNode);
+    this.inheritParamsAndData(routeState._root);
+    return routeState;
   }
 
   inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
