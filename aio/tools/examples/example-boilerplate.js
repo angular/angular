@@ -35,7 +35,12 @@ BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
 
 BOILERPLATE_PATHS['service-worker'] = [...cliRelativePath, 'angular.json', 'package.json'];
 
-BOILERPLATE_PATHS.testing = [...cliRelativePath, 'angular.json'];
+BOILERPLATE_PATHS.testing = [
+  ...cliRelativePath,
+  'angular.json',
+  'src/tsconfig.app.json',
+  'src/tsconfig.spec.json'
+];
 
 BOILERPLATE_PATHS.universal = [...cliRelativePath, 'angular.json', 'package.json'];
 
@@ -93,7 +98,7 @@ class ExampleBoilerPlate {
 
       // Copy the boilerplate common files
       const useCommonBoilerplate = exampleConfig.useCommonBoilerplate !== false;
-      
+
       if (useCommonBoilerplate) {
         BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
       }
