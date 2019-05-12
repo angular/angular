@@ -1,1 +1,1 @@
-export * from './fake-hero.service';
+export * from './test-hero.service';
