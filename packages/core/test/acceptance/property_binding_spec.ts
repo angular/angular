@@ -5,11 +5,29 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Input} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 describe('property bindings', () => {
+  it('should support bindings to properties', () => {
+    @Component({template: `<span [id]="id"></span>`})
+    class Comp {
+      id: string|undefined;
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    const spanEl = fixture.nativeElement.querySelector('span');
+
+    expect(spanEl.id).toBeFalsy();
+
+    fixture.componentInstance.id = 'testId';
+    fixture.detectChanges();
+
+    expect(spanEl.id).toBe('testId');
+  });
+
   it('should update bindings when value changes', () => {
     @Component({
       template: `<a [title]="title"></a>`,
@@ -135,4 +153,333 @@ describe('property bindings', () => {
 
     expect(fixture.debugElement.query(By.css('input')).nativeElement.required).toBe(false);
   });
+
+  it('should support interpolation for properties', () => {
+    @Component({template: `<span id="{{'_' + id + '_'}}"></span>`})
+    class Comp {
+      id: string|undefined;
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    const spanEl = fixture.nativeElement.querySelector('span');
+
+    fixture.componentInstance.id = 'testId';
+    fixture.detectChanges();
+    expect(spanEl.id).toBe('_testId_');
+
+    fixture.componentInstance.id = 'otherId';
+    fixture.detectChanges();
+    expect(spanEl.id).toBe('_otherId_');
+  });
+
+  describe('input properties', () => {
+    @Directive({
+      selector: '[myButton]',
+    })
+    class MyButton {
+      @Input() disabled: boolean|undefined;
+    }
+
+    @Directive({
+      selector: '[otherDir]',
+    })
+    class OtherDir {
+      @Input() id: number|undefined;
+      @Output('click') clickStream = new EventEmitter();
+    }
+
+    @Directive({
+      selector: '[otherDisabledDir]',
+    })
+    class OtherDisabledDir {
+      @Input() disabled: boolean|undefined;
+    }
+
+    @Directive({
+      selector: '[idDir]',
+    })
+    class IdDir {
+      @Input('id') idNumber: string|undefined;
+    }
+
+    it('should check input properties before setting (directives)', () => {
+      @Component({
+        template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`
+      })
+      class App {
+        id = 0;
+        isDisabled = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDir]});
+      const fixture = TestBed.createComponent(App);
+      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      const buttonEl = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(buttonEl.getAttribute('mybutton')).toBe('');
+      expect(buttonEl.getAttribute('otherdir')).toBe('');
+      expect(buttonEl.hasAttribute('id')).toBe(false);
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(true);
+      expect(otherDir.id).toEqual(0);
+
+      fixture.componentInstance.isDisabled = false;
+      fixture.componentInstance.id = 1;
+      fixture.detectChanges();
+
+      expect(buttonEl.getAttribute('mybutton')).toBe('');
+      expect(buttonEl.getAttribute('otherdir')).toBe('');
+      expect(buttonEl.hasAttribute('id')).toBe(false);
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(false);
+      expect(otherDir.id).toEqual(1);
+    });
+
+    it('should support mixed element properties and input properties', () => {
+      @Component({template: `<button myButton [id]="id" [disabled]="isDisabled">Click me</button>`})
+      class App {
+        isDisabled = true;
+        id = 0;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyButton]});
+      const fixture = TestBed.createComponent(App);
+      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
+      const buttonEl = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(buttonEl.getAttribute('id')).toBe('0');
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(true);
+
+      fixture.componentInstance.isDisabled = false;
+      fixture.componentInstance.id = 1;
+      fixture.detectChanges();
+
+      expect(buttonEl.getAttribute('id')).toBe('1');
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(false);
+    });
+
+    it('should check that property is not an input property before setting (component)', () => {
+      @Component({
+        selector: 'comp',
+        template: '',
+      })
+      class Comp {
+        @Input() id: number|undefined;
+      }
+
+      @Component({template: `<comp [id]="id"></comp>`})
+      class App {
+        id = 1;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Comp]});
+      const fixture = TestBed.createComponent(App);
+      const compDebugEl = fixture.debugElement.query(By.directive(Comp));
+      fixture.detectChanges();
+
+      expect(compDebugEl.nativeElement.hasAttribute('id')).toBe(false);
+      expect(compDebugEl.componentInstance.id).toEqual(1);
+
+      fixture.componentInstance.id = 2;
+      fixture.detectChanges();
+
+      expect(compDebugEl.nativeElement.hasAttribute('id')).toBe(false);
+      expect(compDebugEl.componentInstance.id).toEqual(2);
+    });
+
+    it('should support two input properties with the same name', () => {
+      @Component(
+          {template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`})
+      class App {
+        isDisabled = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDisabledDir]});
+      const fixture = TestBed.createComponent(App);
+      const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
+      const otherDisabledDir =
+          fixture.debugElement.query(By.directive(OtherDisabledDir)).injector.get(OtherDisabledDir);
+      const buttonEl = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(true);
+      expect(otherDisabledDir.disabled).toEqual(true);
+
+      fixture.componentInstance.isDisabled = false;
+      fixture.detectChanges();
+
+      expect(buttonEl.hasAttribute('disabled')).toBe(false);
+      expect(button.disabled).toEqual(false);
+      expect(otherDisabledDir.disabled).toEqual(false);
+    });
+
+    it('should set input property if there is an output first', () => {
+      @Component({
+        template: `<button otherDir [id]="id" (click)="onClick()">Click me</button>`,
+      })
+      class App {
+        id = 1;
+        counter = 0;
+        onClick = () => this.counter++;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, OtherDir]});
+      const fixture = TestBed.createComponent(App);
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      const buttonEl = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(buttonEl.hasAttribute('id')).toBe(false);
+      expect(otherDir.id).toEqual(1);
+
+      otherDir.clickStream.next();
+      expect(fixture.componentInstance.counter).toEqual(1);
+
+      fixture.componentInstance.id = 2;
+      fixture.detectChanges();
+      expect(otherDir.id).toEqual(2);
+    });
+  });
+
+  describe('attributes and input properties', () => {
+
+    @Directive({selector: '[myDir]', exportAs: 'myDir'})
+    class MyDir {
+      @Input() role: string|undefined;
+      @Input('dir') direction: string|undefined;
+      @Output('change') changeStream = new EventEmitter();
+    }
+
+    @Directive({selector: '[myDirB]'})
+    class MyDirB {
+      @Input('role') roleB: string|undefined;
+    }
+
+    it('should set input property based on attribute if existing', () => {
+      @Component({template: `<div role="button" myDir></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const divElement = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(divElement.getAttribute('role')).toBe('button');
+      expect(divElement.getAttribute('mydir')).toBe('');
+      expect(myDir.role).toEqual('button');
+    });
+
+    it('should set input property and attribute if both defined', () => {
+      @Component({template: `<div role="button" [role]="role" myDir></div>`})
+      class App {
+        role = 'listbox';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const divElement = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(divElement.getAttribute('role')).toBe('button');
+      expect(myDir.role).toEqual('listbox');
+
+      fixture.componentInstance.role = 'button';
+      fixture.detectChanges();
+      expect(myDir.role).toEqual('button');
+    });
+
+    it('should set two directive input properties based on same attribute', () => {
+      @Component({template: `<div role="button" myDir myDirB></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      const divElement = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(divElement.getAttribute('role')).toBe('button');
+      expect(myDir.role).toEqual('button');
+      expect(myDirB.roleB).toEqual('button');
+    });
+
+    it('should process two attributes on same directive', () => {
+      @Component({
+        template: `<div role="button" dir="rtl" myDir></div>`,
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const divElement = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(divElement.getAttribute('role')).toBe('button');
+      expect(divElement.getAttribute('dir')).toBe('rtl');
+      expect(myDir.role).toEqual('button');
+      expect(myDir.direction).toEqual('rtl');
+    });
+
+    it('should process attributes and outputs properly together', () => {
+      @Component({template: `<div role="button" (change)="onChange()" myDir></div>`})
+      class App {
+        counter = 0;
+        onChange = () => this.counter++;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const divElement = fixture.nativeElement.children[0];
+      fixture.detectChanges();
+
+      expect(divElement.getAttribute('role')).toBe('button');
+      expect(myDir.role).toEqual('button');
+
+      myDir.changeStream.next();
+      expect(fixture.componentInstance.counter).toEqual(1);
+    });
+
+    it('should process attributes properly for directives with later indices', () => {
+      @Component({
+        template: `
+          <div role="button" dir="rtl" myDir></div>
+          <div role="listbox" myDirB></div>
+        `,
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
+      const fixture = TestBed.createComponent(App);
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      const [buttonEl, listboxEl] = fixture.nativeElement.children;
+      fixture.detectChanges();
+
+      expect(buttonEl.getAttribute('role')).toBe('button');
+      expect(buttonEl.getAttribute('dir')).toBe('rtl');
+      expect(listboxEl.getAttribute('role')).toBe('listbox');
+
+      expect(myDir.role).toEqual('button');
+      expect(myDir.direction).toEqual('rtl');
+      expect(myDirB.roleB).toEqual('listbox');
+    });
+
+  });
+
 });
