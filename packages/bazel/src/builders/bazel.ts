@@ -9,7 +9,7 @@
 /// <reference types='node'/>
 
 import {spawn} from 'child_process';
-import {copyFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'fs';
+import {copyFileSync, existsSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync} from 'fs';
 import {dirname, join, normalize} from 'path';
 
 export type Executable = 'bazel' | 'ibazel';
@@ -107,6 +107,33 @@ function listR(dir: string): string[] {
 }
 
 /**
+ * Return the name of the lock file that is present in the specified 'root'
+ * directory. If none exists, default to creating an empty yarn.lock file.
+ */
+function getOrCreateLockFile(root: string): 'yarn.lock'|'package-lock.json' {
+  const yarnLock = join(root, 'yarn.lock');
+  if (existsSync(yarnLock)) {
+    return 'yarn.lock';
+  }
+  const npmLock = join(root, 'package-lock.json');
+  if (existsSync(npmLock)) {
+    return 'package-lock.json';
+  }
+  // Prefer yarn if no lock file exists
+  writeFileSync(yarnLock, '');
+  return 'yarn.lock';
+}
+
+// Replace yarn_install rule with npm_install and copy from 'source' to 'dest'.
+function replaceYarnWithNpm(source: string, dest: string) {
+  const srcContent = readFileSync(source, 'utf-8');
+  const destContent = srcContent.replace(/yarn_install/g, 'npm_install')
+                          .replace('yarn_lock', 'package_lock_json')
+                          .replace('yarn.lock', 'package-lock.json');
+  writeFileSync(dest, destContent);
+}
+
+/**
  * Copy Bazel files (WORKSPACE, BUILD.bazel, etc) from the template directory to
  * the project `root` directory, and return the absolute paths of the files
  * copied, so that they can be deleted later.
@@ -117,6 +144,7 @@ export function copyBazelFiles(root: string, templateDir: string) {
   templateDir = normalize(templateDir);
   const bazelFiles: string[] = [];
   const templates = listR(templateDir);
+  const useYarn = getOrCreateLockFile(root) === 'yarn.lock';
 
   for (const template of templates) {
     const name = template.replace('__dot__', '.').replace('.template', '');
@@ -124,7 +152,11 @@ export function copyBazelFiles(root: string, templateDir: string) {
     const dest = join(root, name);
     try {
       if (!existsSync(dest)) {
-        copyFileSync(source, dest);
+        if (!useYarn && name === 'WORKSPACE') {
+          replaceYarnWithNpm(source, dest);
+        } else {
+          copyFileSync(source, dest);
+        }
         bazelFiles.push(dest);
       }
     } catch {
