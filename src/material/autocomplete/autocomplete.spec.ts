@@ -421,6 +421,25 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.openedSpy).not.toHaveBeenCalled();
     });
 
+    it('should emit the `opened` event if the options come in after the panel is shown',
+       fakeAsync(() => {
+         fixture.componentInstance.filteredStates = fixture.componentInstance.states = [];
+         fixture.detectChanges();
+
+         fixture.componentInstance.trigger.openPanel();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.openedSpy).not.toHaveBeenCalled();
+
+         fixture.componentInstance.filteredStates = fixture.componentInstance.states =
+             [{name: 'California', code: 'CA'}];
+         fixture.detectChanges();
+         tick();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.openedSpy).toHaveBeenCalled();
+       }));
+
     it('should not emit the opened event multiple times while typing', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();

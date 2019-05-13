@@ -506,24 +506,32 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
 
     // When the zone is stable initially, and when the option list changes...
     return merge(firstStable, optionChanges)
-      .pipe(
-        // create a new stream of panelClosingActions, replacing any previous streams
-        // that were created, and flatten it so our stream only emits closing events...
-        switchMap(() => {
-          this._resetActiveItem();
-          this.autocomplete._setVisibility();
+        .pipe(
+            // create a new stream of panelClosingActions, replacing any previous streams
+            // that were created, and flatten it so our stream only emits closing events...
+            switchMap(() => {
+              const wasOpen = this.panelOpen;
+              this._resetActiveItem();
+              this.autocomplete._setVisibility();
 
-          if (this.panelOpen) {
-            this._overlayRef!.updatePosition();
-          }
+              if (this.panelOpen) {
+                this._overlayRef!.updatePosition();
 
-          return this.panelClosingActions;
-        }),
-        // when the first closing event occurs...
-        take(1)
-      )
-      // set the value, close the panel, and complete.
-      .subscribe(event => this._setValueAndClose(event));
+                // If the `panelOpen` state changed, we need to make sure to emit the `opened`
+                // event, because we may not have emitted it when the panel was attached. This
+                // can happen if the users opens the panel and there are no options, but the
+                // options come in slightly later or as a result of the value changing.
+                if (wasOpen !== this.panelOpen) {
+                  this.autocomplete.opened.emit();
+                }
+              }
+
+              return this.panelClosingActions;
+            }),
+            // when the first closing event occurs...
+            take(1))
+        // set the value, close the panel, and complete.
+        .subscribe(event => this._setValueAndClose(event));
   }
 
   /** Destroys the autocomplete suggestion panel. */
