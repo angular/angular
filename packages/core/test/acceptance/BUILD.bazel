@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:private"])
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "acceptance_lib",
@@ -9,6 +9,9 @@ ts_library(
         ["**/*.ts"],
     ),
     deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/testing",
@@ -17,7 +20,9 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/platform-server",
         "//packages/private/testing",
         "@npm//zone.js",
     ],
@@ -32,5 +37,12 @@ jasmine_node_test(
         "@npm//base64-js",
         "@npm//source-map",
         "@npm//zone.js",
+    ],
+)
+
+ts_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_lib",
     ],
 )

@@ -6,16 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEvent} from '@angular/animations';
-import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {ɵɵdefineComponent} from '../../src/render3/index';
-import {tick, ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
-import {TemplateFixture, containerEl, document, renderComponent, renderToHtml, toHtml} from './render_util';
+import {getRendererFactory2} from './imported_renderer2';
+import {TemplateFixture, document, renderToHtml} from './render_util';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -87,21 +84,6 @@ describe('renderer factory lifecycle', () => {
 
   beforeEach(() => { logs = []; });
 
-  it('should work with a component', () => {
-    const component = renderComponent(SomeComponent, {rendererFactory});
-    expect(logs).toEqual(
-        ['create', 'create', 'begin', 'component create', 'component update', 'end']);
-
-    logs = [];
-    tick(component);
-    expect(logs).toEqual(['begin', 'component update', 'end']);
-  });
-
-  it('should work with a component which throws', () => {
-    expect(() => renderComponent(SomeComponentWhichThrows, {rendererFactory})).toThrow();
-    expect(logs).toEqual(['create', 'create', 'begin', 'end']);
-  });
-
   it('should work with a template', () => {
     renderToHtml(Template, {}, 1, 0, null, null, rendererFactory);
     expect(logs).toEqual(['create', 'function create', 'function update']);
@@ -123,108 +105,6 @@ describe('renderer factory lifecycle', () => {
     expect(logs).toEqual(['begin', 'function_with_component update', 'component update', 'end']);
   });
 
-});
-
-describe('animation renderer factory', () => {
-  let eventLogs: string[] = [];
-  function getLog(): MockAnimationPlayer[] {
-    return MockAnimationDriver.log as MockAnimationPlayer[];
-  }
-
-  function resetLog() { MockAnimationDriver.log = []; }
-
-  beforeEach(() => {
-    eventLogs = [];
-    resetLog();
-  });
-
-  class SomeComponent {
-    static ngComponentDef = ɵɵdefineComponent({
-      type: SomeComponent,
-      encapsulation: ViewEncapsulation.None,
-      selectors: [['some-component']],
-      consts: 1,
-      vars: 0,
-      template: function(rf: RenderFlags, ctx: SomeComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0, 'foo');
-        }
-      },
-      factory: () => new SomeComponent
-    });
-  }
-
-  class SomeComponentWithAnimation {
-    // TODO(issue/24571): remove '!'.
-    exp !: string;
-    callback(event: AnimationEvent) {
-      eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
-    }
-    static ngComponentDef = ɵɵdefineComponent({
-      type: SomeComponentWithAnimation,
-      selectors: [['some-component']],
-      consts: 2,
-      vars: 1,
-      template: function(rf: RenderFlags, ctx: SomeComponentWithAnimation) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'div');
-          {
-            ɵɵlistener('@myAnimation.start', ctx.callback.bind(ctx));
-            ɵɵlistener('@myAnimation.done', ctx.callback.bind(ctx));
-            ɵɵtext(1, 'foo');
-          }
-          ɵɵelementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵelementProperty(0, '@myAnimation', ɵɵbind(ctx.exp));
-        }
-      },
-      factory: () => new SomeComponentWithAnimation,
-      encapsulation: ViewEncapsulation.None,
-      styles: [],
-      data: {
-        animation: [{
-          type: 7,
-          name: 'myAnimation',
-          definitions: [{
-            type: 1,
-            expr: '* => on',
-            animation:
-                [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
-            options: null
-          }],
-          options: {}
-        }]
-      },
-    });
-  }
-
-  it('should work with components without animations', () => {
-    renderComponent(SomeComponent, {rendererFactory: getAnimationRendererFactory2(document)});
-    expect(toHtml(containerEl)).toEqual('foo');
-  });
-
-  isBrowser && it('should work with animated components', (done) => {
-    const rendererFactory = getAnimationRendererFactory2(document);
-    const component = renderComponent(SomeComponentWithAnimation, {rendererFactory});
-    expect(toHtml(containerEl))
-        .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">foo<\/div>/);
-
-    component.exp = 'on';
-    tick(component);
-
-    const [player] = getLog();
-    expect(player.keyframes).toEqual([
-      {opacity: '*', offset: 0},
-      {opacity: 1, offset: 1},
-    ]);
-    player.finish();
-
-    rendererFactory.whenRenderingDone !().then(() => {
-      expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
-      done();
-    });
-  });
 });
 
 describe('Renderer2 destruction hooks', () => {
