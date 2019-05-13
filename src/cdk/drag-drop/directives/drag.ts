@@ -28,8 +28,9 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
+  isDevMode,
 } from '@angular/core';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty, coerceElement} from '@angular/cdk/coercion';
 import {Observable, Observer, Subject, merge} from 'rxjs';
 import {startWith, take, map, takeUntil, switchMap, tap} from 'rxjs/operators';
 import {
@@ -101,11 +102,26 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   @Input('cdkDragRootElement') rootElementSelector: string;
 
   /**
+   * Node or selector that will be used to determine the element to which the draggable's
+   * position will be constrained. If a string is passed in, it'll be used as a selector that
+   * will be matched starting from the element's parent and going up the DOM until a match
+   * has been found.
+   */
+  @Input('cdkDragBoundary') boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
+
+  /**
    * Selector that will be used to determine the element to which the draggable's position will
    * be constrained. Matching starts from the element's parent and goes up the DOM until a matching
-   * element has been found.
+   * element has been found
+   * @deprecated Use `boundaryElement` instead.
+   * @breaking-change 9.0.0
    */
-  @Input('cdkDragBoundary') boundaryElementSelector: string;
+  get boundaryElementSelector(): string {
+    return typeof this.boundaryElement === 'string' ? this.boundaryElement : undefined!;
+  }
+  set boundaryElementSelector(selector: string) {
+    this.boundaryElement = selector;
+  }
 
   /**
    * Amount of milliseconds to wait after the user has put their
@@ -292,10 +308,25 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     this._dragRef.withRootElement(rootElement || element);
   }
 
-  /** Gets the boundary element, based on the `boundaryElementSelector`. */
+  /** Gets the boundary element, based on the `boundaryElement` value. */
   private _getBoundaryElement() {
-    const selector = this.boundaryElementSelector;
-    return selector ? getClosestMatchingAncestor(this.element.nativeElement, selector) : null;
+    const boundary = this.boundaryElement;
+
+    if (!boundary) {
+      return null;
+    }
+
+    if (typeof boundary === 'string') {
+      return getClosestMatchingAncestor(this.element.nativeElement, boundary);
+    }
+
+    const element = coerceElement(boundary);
+
+    if (isDevMode() && !element.contains(this.element.nativeElement)) {
+      throw Error('Draggable element is not inside of the node passed into cdkDragBoundary.');
+    }
+
+    return element;
   }
 
   /** Syncs the inputs of the CdkDrag with the options of the underlying DragRef. */

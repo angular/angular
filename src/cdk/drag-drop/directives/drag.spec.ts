@@ -694,7 +694,18 @@ describe('CdkDrag', () => {
 
     it('should allow for dragging to be constrained to an element', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
-      fixture.componentInstance.boundarySelector = '.wrapper';
+      fixture.componentInstance.boundary = '.wrapper';
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 300, 300);
+      expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+    }));
+
+    it('should be able to pass in a DOM node as the boundary', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.boundary = fixture.nativeElement.querySelector('.wrapper');
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
@@ -3287,7 +3298,7 @@ describe('CdkDrag', () => {
     <div class="wrapper" style="width: 200px; height: 200px; background: green;">
       <div
         cdkDrag
-        [cdkDragBoundary]="boundarySelector"
+        [cdkDragBoundary]="boundary"
         [cdkDragStartDelay]="dragStartDelay"
         [cdkDragConstrainPosition]="constrainPosition"
         [cdkDragFreeDragPosition]="freeDragPosition"
@@ -3305,7 +3316,7 @@ class StandaloneDraggable {
   startedSpy = jasmine.createSpy('started spy');
   endedSpy = jasmine.createSpy('ended spy');
   releasedSpy = jasmine.createSpy('released spy');
-  boundarySelector: string;
+  boundary: string | HTMLElement;
   dragStartDelay: number | string;
   constrainPosition: (point: Point) => Point;
   freeDragPosition?: {x: number, y: number};

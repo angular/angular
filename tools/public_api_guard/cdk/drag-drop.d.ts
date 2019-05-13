@@ -11,6 +11,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     _handles: QueryList<CdkDragHandle>;
     _placeholderTemplate: CdkDragPlaceholder;
     _previewTemplate: CdkDragPreview;
+    boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
     boundaryElementSelector: string;
     constrainPosition?: (point: Point) => Point;
     data: T;
