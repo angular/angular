@@ -1552,6 +1552,36 @@ describe('MatSelect', () => {
           subscription!.unsubscribe();
         }));
 
+      it('should emit to `optionSelectionChanges` after the list of options has changed',
+        fakeAsync(() => {
+          let spy = jasmine.createSpy('option selection spy');
+          let subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
+          let selectFirstOption = () => {
+            trigger.click();
+            fixture.detectChanges();
+            flush();
+
+            const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
+            option.click();
+            fixture.detectChanges();
+            flush();
+          };
+
+          fixture.componentInstance.foods = [{value: 'salad-8', viewValue: 'Salad'}];
+          fixture.detectChanges();
+          selectFirstOption();
+
+          expect(spy).toHaveBeenCalledTimes(1);
+
+          fixture.componentInstance.foods = [{value: 'fruit-9', viewValue: 'Fruit'}];
+          fixture.detectChanges();
+          selectFirstOption();
+
+          expect(spy).toHaveBeenCalledTimes(2);
+
+          subscription!.unsubscribe();
+        }));
+
     });
 
     describe('forms integration', () => {

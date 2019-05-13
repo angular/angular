@@ -443,8 +443,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Combined stream of all of the child options' change events. */
   readonly optionSelectionChanges: Observable<MatOptionSelectionChange> = defer(() => {
-    if (this.options) {
-      return merge(...this.options.map(option => option.onSelectionChange));
+    const options = this.options;
+
+    if (options) {
+      return options.changes.pipe(
+        startWith(options),
+        switchMap(() => merge(...options.map(option => option.onSelectionChange)))
+      );
     }
 
     return this._ngZone.onStable
