@@ -14,6 +14,7 @@
 export const FAKE_SVGS = {
   cat: '<svg><path id="meow" name="meow"></path></svg>',
   dog: '<svg><path id="woof" name="woof"></path></svg>',
+  dogWithSpaces: '<svg><path id="woof says the dog" name="woof"></path></svg>',
   farmSet1: `
     <svg>
       <defs>
@@ -35,6 +36,13 @@ export const FAKE_SVGS = {
       <symbol id="duck" name="duck">
         <path id="quack" name="quack"></path>
       </symbol>
+    </svg>
+  `,
+  farmSet4: `
+    <svg>
+      <defs>
+        <g id="pig with spaces" name="pig"><path name="oink"></path></g>
+      </defs>
     </svg>
   `,
   arrows: `

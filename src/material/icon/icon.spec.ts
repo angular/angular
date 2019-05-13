@@ -268,6 +268,29 @@ describe('MatIcon', () => {
       verifyPathChildElement(svgChild, 'moo');
     });
 
+    it('should handle unescape characters in icon names', () => {
+      iconRegistry.addSvgIconSetInNamespace('farm', trustUrl('farm-set-4.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      let svgElement: any;
+      let svgChild: any;
+
+      testComponent.iconName = 'farm:pig with spaces';
+      fixture.detectChanges();
+      http.expectOne('farm-set-4.svg').flush(FAKE_SVGS.farmSet4);
+
+      expect(matIconElement.childNodes.length).toBe(1);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
+      expect(svgElement.childNodes.length).toBe(1);
+      svgChild = svgElement.childNodes[0];
+      // The first <svg> child should be the <g id="pig"> element.
+      expect(svgChild.tagName.toLowerCase()).toBe('g');
+      expect(svgChild.getAttribute('name')).toBe('pig');
+      verifyPathChildElement(svgChild, 'oink');
+    });
+
     it('should never parse the same icon set multiple times', () => {
       // Normally we avoid spying on private methods like this, but the parsing is a private
       // implementation detail that should not be exposed to the public API. This test, though,

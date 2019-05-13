@@ -449,7 +449,9 @@ export class MatIconRegistry implements OnDestroy {
    * returns it. Returns null if no matching element is found.
    */
   private _extractSvgIconFromSet(iconSet: SVGElement, iconName: string): SVGElement | null {
-    const iconSource = iconSet.querySelector('#' + iconName);
+    // Use the `id="iconName"` syntax in order to escape special
+    // characters in the ID (versus using the #iconName syntax).
+    const iconSource = iconSet.querySelector(`[id="${iconName}"]`);
 
     if (!iconSource) {
       return null;
