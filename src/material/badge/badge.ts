@@ -115,7 +115,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
   /** Unique id for the badge */
   _id: number = nextId++;
 
-  private _badgeElement: HTMLElement;
+  private _badgeElement: HTMLElement | undefined;
 
   constructor(
       private _ngZone: NgZone,
@@ -160,6 +160,14 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, OnChanges
         this._renderer.destroyNode(badgeElement);
       }
     }
+  }
+
+  /**
+   * Gets the element into which the badge's content is being rendered.
+   * Undefined if the element hasn't been created (e.g. if the badge doesn't have content).
+   */
+  getBadgeElement(): HTMLElement | undefined {
+    return this._badgeElement;
   }
 
   /** Injects a span element into the DOM with the content. */
