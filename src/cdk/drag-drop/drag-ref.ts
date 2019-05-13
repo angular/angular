@@ -11,7 +11,7 @@ import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
-import {Subscription, Subject, Observable, Observer} from 'rxjs';
+import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
@@ -129,12 +129,6 @@ export class DragRef<T = any> {
     event: MouseEvent | TouchEvent;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
   }>();
-
-  /**
-   * Amount of subscriptions to the move event. Used to avoid
-   * hitting the zone if the consumer didn't subscribe to it.
-   */
-  private _moveEventSubscriptions = 0;
 
   /** Keeps track of the direction in which the user is dragging along each axis. */
   private _pointerDirectionDelta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
@@ -260,15 +254,7 @@ export class DragRef<T = any> {
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
-  }> = new Observable((observer: Observer<any>) => {
-    const subscription = this._moveEvents.subscribe(observer);
-    this._moveEventSubscriptions++;
-
-    return () => {
-      subscription.unsubscribe();
-      this._moveEventSubscriptions--;
-    };
-  });
+  }> = this._moveEvents.asObservable();
 
   /** Arbitrary data that can be attached to the drag item. */
   data: T;
@@ -563,7 +549,7 @@ export class DragRef<T = any> {
     // Since this event gets fired for every pixel while dragging, we only
     // want to fire it if the consumer opted into it. Also we have to
     // re-enter the zone because we run all of the events on the outside.
-    if (this._moveEventSubscriptions > 0) {
+    if (this._moveEvents.observers.length) {
       this._ngZone.run(() => {
         this._moveEvents.next({
           source: this,
