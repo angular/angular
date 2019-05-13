@@ -115,6 +115,11 @@ describe('MatYearView', () => {
     });
 
     describe('a11y', () => {
+      it('should set the correct role on the internal table node', () => {
+        const table = yearViewNativeElement.querySelector('table')!;
+        expect(table.getAttribute('role')).toBe('presentation');
+      });
+
       describe('calendar body', () => {
         let calendarBodyEl: HTMLElement;
         let calendarInstance: StandardYearView;
