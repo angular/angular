@@ -13,6 +13,10 @@ $mat-menu-submenu-indicator-size: 10px !default;
   border-radius: $mat-menu-border-radius;
   outline: 0;
 
+  // Give the menu a minimum height so that the user can't
+  // collapse it to zero when they scroll away.
+  min-height: $mat-menu-item-height + $mat-menu-vertical-padding * 2;
+
   // Prevent users from interacting with the panel while it's animating. Note that
   // people won't be able to click through it, because the overlay pane will catch the click.
   // This fixes the following issues:
