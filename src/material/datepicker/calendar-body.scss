@@ -76,6 +76,13 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   .mat-calendar-body-today {
     outline: dotted 1px;
   }
+
+  .cdk-keyboard-focused .mat-calendar-body-active,
+  .cdk-program-focused .mat-calendar-body-active {
+    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+      outline: dotted 2px;
+    }
+  }
 }
 
 [dir='rtl'] {
