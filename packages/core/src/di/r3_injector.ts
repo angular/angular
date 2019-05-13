@@ -15,7 +15,7 @@ import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
 import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, injectArgs, setCurrentInjector, Δinject} from './injector_compatibility';
-import {InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef, ΔInjectableDef} from './interface/defs';
+import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getInjectableDef, getInjectorDef, ΔInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {APP_ROOT} from './scope';
@@ -378,25 +378,52 @@ export class R3Injector {
 }
 
 function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
-  const injectableDef = getInjectableDef(token as InjectableType<any>);
-  if (injectableDef === null) {
-    const injectorDef = getInjectorDef(token as InjectorType<any>);
-    if (injectorDef !== null) {
-      return injectorDef.factory;
-    } else if (token instanceof InjectionToken) {
-      throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
-    } else if (token instanceof Function) {
-      const paramLength = token.length;
-      if (paramLength > 0) {
-        const args: string[] = new Array(paramLength).fill('?');
-        throw new Error(
-            `Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
-      }
-      return () => new (token as Type<any>)();
-    }
-    throw new Error('unreachable');
+  // Most tokens will have an ngInjectableDef directly on them, which specifies a factory directly.
+  const injectableDef = getInjectableDef(token);
+  if (injectableDef !== null) {
+    return injectableDef.factory;
   }
-  return injectableDef.factory;
+
+  // If the token is an NgModule, it's also injectable but the factory is on its ngInjectorDef.
+  const injectorDef = getInjectorDef(token);
+  if (injectorDef !== null) {
+    return injectorDef.factory;
+  }
+
+  // InjectionTokens should have an ngInjectableDef and thus should be handled above.
+  // If it's missing that, it's an error.
+  if (token instanceof InjectionToken) {
+    throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
+  }
+
+  // Undecorated types can sometimes be created if they have no constructor arguments.
+  if (token instanceof Function) {
+    return getUndecoratedInjectableFactory(token);
+  }
+
+  // There was no way to resolve a factory for this token.
+  throw new Error('unreachable');
+}
+
+function getUndecoratedInjectableFactory(token: Function) {
+  // If the token has parameters then it has dependencies that we cannot resolve implicitly.
+  const paramLength = token.length;
+  if (paramLength > 0) {
+    const args: string[] = new Array(paramLength).fill('?');
+    throw new Error(`Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
+  }
+
+  // The constructor function appears to have no parameters.
+  // This might be because it inherits from a super-class. In which case, use an ngInjectableDef
+  // from an ancestor if there is one.
+  // Otherwise this really is a simple class with no dependencies, so return a factory that
+  // just instantiates the zero-arg constructor.
+  const inheritedInjectableDef = getInheritedInjectableDef(token);
+  if (inheritedInjectableDef !== null) {
+    return inheritedInjectableDef.factory;
+  } else {
+    return () => new (token as Type<any>)();
+  }
 }
 
 function providerToRecord(
