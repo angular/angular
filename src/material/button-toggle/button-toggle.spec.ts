@@ -206,6 +206,31 @@ describe('MatButtonToggle with forms', () => {
 
       expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
+
+    it('should maintain the selected value when swapping out the list of toggles with one ' +
+      'that still contains the value', fakeAsync(() => {
+        expect(buttonToggleInstances[0].checked).toBe(false);
+        expect(fixture.componentInstance.modelValue).toBeFalsy();
+        expect(groupInstance.value).toBeFalsy();
+
+        groupInstance.value = 'red';
+        fixture.detectChanges();
+
+        expect(buttonToggleInstances[0].checked).toBe(true);
+        expect(groupInstance.value).toBe('red');
+
+        fixture.componentInstance.options = [...fixture.componentInstance.options];
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+
+        buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MatButtonToggle));
+        buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
+
+        expect(buttonToggleInstances[0].checked).toBe(true);
+        expect(groupInstance.value).toBe('red');
+      }));
+
   });
 });
 

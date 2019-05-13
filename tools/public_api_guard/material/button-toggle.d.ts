@@ -56,7 +56,7 @@ export declare class MatButtonToggleGroup implements ControlValueAccessor, OnIni
     _emitChangeEvent(): void;
     _isPrechecked(toggle: MatButtonToggle): boolean;
     _isSelected(toggle: MatButtonToggle): boolean;
-    _syncButtonToggle(toggle: MatButtonToggle, select: boolean, isUserInput?: boolean): void;
+    _syncButtonToggle(toggle: MatButtonToggle, select: boolean, isUserInput?: boolean, deferEvents?: boolean): void;
     ngAfterContentInit(): void;
     ngOnInit(): void;
     registerOnChange(fn: (value: any) => void): void;
