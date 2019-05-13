@@ -20,7 +20,7 @@ export class Rule extends Lint.Rules.TypedRule {
 
 class Walker extends Lint.RuleWalker {
   constructor(
-      sourceFile: ts.SourceFile, options: Lint.IOptions, private typeChecker: ts.TypeChecker) {
+      sourceFile: ts.SourceFile, options: Lint.IOptions, private _typeChecker: ts.TypeChecker) {
     super(sourceFile, options);
   }
 
@@ -69,7 +69,7 @@ class Walker extends Lint.RuleWalker {
       if (!baseTypes || baseTypes.length !== 1) {
         return null;
       }
-      const symbol = this.typeChecker.getTypeAtLocation(baseTypes[0]).getSymbol();
+      const symbol = this._typeChecker.getTypeAtLocation(baseTypes[0]).getSymbol();
       if (!symbol || !ts.isClassDeclaration(symbol.valueDeclaration)) {
         return null;
       }
