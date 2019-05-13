@@ -160,7 +160,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
     // refocused when they come back. In this case we want to skip the first focus event, if the
     // pane was closed, in order to avoid reopening it unintentionally.
     this._canOpenOnNextFocus =
-        document.activeElement !== this._element.nativeElement || this.panelOpen;
+        this._document.activeElement !== this._element.nativeElement || this.panelOpen;
   }
 
   /** `View -> model callback called when value changes` */
@@ -340,10 +340,6 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
 
   /** Stream of clicks outside of the autocomplete panel. */
   private _getOutsideClickStream(): Observable<any> {
-    if (!this._document) {
-      return observableOf(null);
-    }
-
     return merge(
       fromEvent(this._document, 'click') as Observable<MouseEvent>,
       fromEvent(this._document, 'touchend') as Observable<TouchEvent>
@@ -429,7 +425,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, 
       this._previousValue = value;
       this._onChange(value);
 
-      if (this._canOpen() && document.activeElement === event.target) {
+      if (this._canOpen() && this._document.activeElement === event.target) {
         this.openPanel();
       }
     }
