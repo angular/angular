@@ -1513,6 +1513,26 @@ describe('CdkDrag', () => {
       expect(preview.getAttribute('id')).toBeFalsy();
     }));
 
+    it('should clone the content of descendant canvas elements', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithCanvasInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const sourceCanvas = item.querySelector('canvas') as HTMLCanvasElement;
+
+      // via https://stackoverflow.com/a/17386803/2204158
+      expect(sourceCanvas.getContext('2d')!
+        .getImageData(0, 0, sourceCanvas.width, sourceCanvas.height)
+        .data.some(channel => channel !== 0)).toBe(true, 'Expected source canvas to have data.');
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      const previewCanvas = preview.querySelector('canvas')!;
+
+      expect(previewCanvas.toDataURL()).toBe(sourceCanvas.toDataURL(),
+          'Expected cloned canvas to have the same content as the source.');
+    }));
+
     it('should clear the ids from descendants of the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -3819,6 +3839,47 @@ class DraggableInDropZoneWithoutEvents {
 class ConnectedWrappedDropZones {
   todo = ['Zero', 'One', 'Two', 'Three'];
   done = ['Four', 'Five', 'Six'];
+}
+
+@Component({
+  template: `
+    <div
+      cdkDropList
+      style="width: 100px; background: pink;"
+      [id]="dropZoneId"
+      [cdkDropListData]="items"
+      (cdkDropListSorted)="sortedSpy($event)"
+      (cdkDropListDropped)="droppedSpy($event)">
+      <div
+        *ngFor="let item of items"
+        cdkDrag
+        [cdkDragData]="item"
+        [style.height.px]="item.height"
+        [style.margin-bottom.px]="item.margin"
+        style="width: 100%; background: red;">
+          {{item.value}}
+          <canvas width="100px" height="100px"></canvas>
+        </div>
+    </div>
+  `
+})
+class DraggableWithCanvasInDropZone extends DraggableInDropZone implements AfterViewInit {
+  constructor(private _elementRef: ElementRef<HTMLElement>) {
+    super();
+  }
+
+  ngAfterViewInit() {
+    const canvases = this._elementRef.nativeElement.querySelectorAll('canvas');
+
+    // Add a circle to all the canvases.
+    for (let i = 0; i < canvases.length; i++) {
+      const canvas = canvases[i];
+      const context = canvas.getContext('2d')!;
+      context.beginPath();
+      context.arc(50, 50, 40, 0, 2 * Math.PI);
+      context.stroke();
+    }
+  }
 }
 
 /**
