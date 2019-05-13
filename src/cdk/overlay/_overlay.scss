@@ -1,12 +1,12 @@
 // We want overlays to always appear over user content, so set a baseline
 // very high z-index for the overlay container, which is where we create the new
 // stacking context for all overlays.
-$cdk-z-index-overlay-container: 1000;
-$cdk-z-index-overlay: 1000;
-$cdk-z-index-overlay-backdrop: 1000;
+$cdk-z-index-overlay-container: 1000 !default;
+$cdk-z-index-overlay: 1000 !default;
+$cdk-z-index-overlay-backdrop: 1000 !default;
 
 // Background color for all of the backdrops
-$cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.32);
+$cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.32) !default;
 
 // Default backdrop animation is based on the Material Design swift-ease-out.
 $backdrop-animation-duration: 400ms !default;
