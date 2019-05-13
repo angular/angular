@@ -16,7 +16,7 @@ import {
   validateHorizontalPosition,
   validateVerticalPosition,
 } from './connected-position';
-import {Observable, Subscription, Subject, Observer} from 'rxjs';
+import {Observable, Subscription, Subject} from 'rxjs';
 import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
@@ -115,9 +115,6 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /** Selector to be used when finding the elements on which to set the transform origin. */
   private _transformOriginSelector: string;
 
-  /** Amount of subscribers to the `positionChanges` stream. */
-  private _positionChangeSubscriptions = 0;
-
   /** Keeps track of the CSS classes that the position strategy has applied on the overlay panel. */
   private _appliedPanelClasses: string[] = [];
 
@@ -126,18 +123,10 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /** Observable sequence of position changes. */
   positionChanges: Observable<ConnectedOverlayPositionChange> =
-      new Observable((observer: Observer<ConnectedOverlayPositionChange>) => {
-        const subscription = this._positionChanges.subscribe(observer);
-        this._positionChangeSubscriptions++;
-
-        return () => {
-          subscription.unsubscribe();
-          this._positionChangeSubscriptions--;
-        };
-      });
+      this._positionChanges.asObservable();
 
   /** Ordered list of preferred positions, from most to least desirable. */
-  get positions() {
+  get positions(): ConnectionPositionPair[] {
     return this._preferredPositions;
   }
 
@@ -667,7 +656,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // Notify that the position has been changed along with its change properties.
     // We only emit if we've got any subscriptions, because the scroll visibility
     // calculcations can be somewhat expensive.
-    if (this._positionChangeSubscriptions > 0) {
+    if (this._positionChanges.observers.length) {
       const scrollableViewProperties = this._getScrollVisibility();
       const changeEvent = new ConnectedOverlayPositionChange(position, scrollableViewProperties);
       this._positionChanges.next(changeEvent);
