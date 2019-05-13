@@ -200,7 +200,9 @@ export class MatListOption extends _MatListOptionMixinBase
     if (this.selected) {
       // We have to delay this until the next tick in order
       // to avoid changed after checked errors.
-      Promise.resolve().then(() => this.selected = false);
+      Promise.resolve().then(() => {
+        this.selected = false;
+      });
     }
 
     const hadFocus = this._hasFocus;
@@ -366,6 +368,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};
 
+  /** Whether the list has been destroyed. */
+  private _destroyed: boolean;
+
   constructor(private _element: ElementRef<HTMLElement>, @Attribute('tabindex') tabIndex: string) {
     super();
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -412,6 +417,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   }
 
   ngOnDestroy() {
+    this._destroyed = true;
     this._modelChanges.unsubscribe();
   }
 
@@ -495,7 +501,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Reports a value change to the ControlValueAccessor */
   _reportValueChange() {
-    if (this.options) {
+    // Stop reporting value changes after the list has been destroyed. This avoids
+    // cases where the list might wrongly reset its value once it is removed, but
+    // the form control is still live.
+    if (this.options && !this._destroyed) {
       this._onChange(this._getSelectedOptionValues());
     }
   }
