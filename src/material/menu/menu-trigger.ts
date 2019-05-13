@@ -201,8 +201,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this._element.nativeElement.removeEventListener('touchstart', this._handleTouchStart,
         passiveEventListenerOptions);
 
-    this._cleanUpSubscriptions();
+    this._menuCloseSubscription.unsubscribe();
     this._closingActionsSubscription.unsubscribe();
+    this._hoverSubscription.unsubscribe();
   }
 
   /** Whether the menu is open. */
@@ -475,12 +476,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
         offsetY: -offsetY
       }
     ]);
-  }
-
-  /** Cleans up the active subscriptions. */
-  private _cleanUpSubscriptions(): void {
-    this._closingActionsSubscription.unsubscribe();
-    this._hoverSubscription.unsubscribe();
   }
 
   /** Returns a stream that emits whenever an action that should close the menu occurs. */
