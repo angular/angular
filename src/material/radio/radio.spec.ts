@@ -365,6 +365,25 @@ describe('MatRadio', () => {
       expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-accent')))
         .toBe(true, 'Expected every radio element to fallback to accent color if value is falsy.');
     });
+
+    it('should be able to inherit the color from the radio group', () => {
+      groupInstance.color = 'warn';
+      fixture.detectChanges();
+
+      expect(radioNativeElements.every(radioEl => radioEl.classList.contains('mat-warn')))
+        .toBe(true, 'Expected every radio element to have the warn color.');
+    });
+
+    it('should have the individual button color take precedence over the group color', () => {
+      radioInstances[1].color = 'primary';
+      groupInstance.color = 'warn';
+      fixture.detectChanges();
+
+      expect(radioNativeElements[0].classList).toContain('mat-warn');
+      expect(radioNativeElements[1].classList).toContain('mat-primary');
+      expect(radioNativeElements[2].classList).toContain('mat-warn');
+    });
+
   });
 
   describe('group with ngModel', () => {
@@ -700,6 +719,10 @@ describe('MatRadio', () => {
     it('should not add the "name" attribute if it is not passed in', () => {
       const radio = fixture.debugElement.nativeElement.querySelector('#nameless input');
       expect(radio.hasAttribute('name')).toBe(false);
+    });
+
+    it('should default the radio color to `accent`', () => {
+      expect(seasonRadioInstances.every(radio => radio.color === 'accent')).toBe(true);
     });
 
   });

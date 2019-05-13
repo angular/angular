@@ -32,15 +32,13 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanColor,
-  CanColorCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
   HasTabIndex,
   HasTabIndexCtor,
-  mixinColor,
   mixinDisableRipple,
   mixinTabIndex,
+  ThemePalette,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -121,6 +119,9 @@ export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
   _radios: QueryList<MatRadioButton>;
+
+  /** Theme color for all of the radio buttons in the group. */
+  @Input() color: ThemePalette;
 
   /** Name of the radio button group. All radio buttons inside this group will use this name. */
   @Input()
@@ -302,9 +303,9 @@ class MatRadioButtonBase {
 }
 // As per Material design specifications the selection control radio should use the accent color
 // palette by default. https://material.io/guidelines/components/selection-controls.html
-const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor &
-    typeof MatRadioButtonBase =
-        mixinColor(mixinDisableRipple(mixinTabIndex(MatRadioButtonBase)), 'accent');
+const _MatRadioButtonMixinBase:
+    CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase =
+        mixinDisableRipple(mixinTabIndex(MatRadioButtonBase));
 
 /**
  * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
@@ -314,7 +315,7 @@ const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabInde
   selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
-  inputs: ['color', 'disableRipple', 'tabIndex'],
+  inputs: ['disableRipple', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matRadioButton',
   host: {
@@ -322,6 +323,9 @@ const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabInde
     '[class.mat-radio-checked]': 'checked',
     '[class.mat-radio-disabled]': 'disabled',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '[class.mat-primary]': 'color === "primary"',
+    '[class.mat-accent]': 'color === "accent"',
+    '[class.mat-warn]': 'color === "warn"',
     // Needs to be -1 so the `focus` event still fires.
     '[attr.tabindex]': '-1',
     '[attr.id]': 'id',
@@ -333,7 +337,7 @@ const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabInde
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatRadioButton extends _MatRadioButtonMixinBase
-    implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple, HasTabIndex {
+    implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
 
   private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
 
@@ -425,6 +429,14 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
   }
+
+  /** Theme color of the radio button. */
+  @Input()
+  get color(): ThemePalette {
+    return this._color || (this.radioGroup && this.radioGroup.color) || 'accent';
+  }
+  set color(newValue: ThemePalette) { this._color = newValue; }
+  private _color: ThemePalette;
 
   /**
    * Event emitted when the checked state of this radio button changes.
