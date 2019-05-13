@@ -356,14 +356,8 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
         .subscribe(dir => this._keyManager.withHorizontalOrientation(dir));
     }
 
-    // Prevents the chip list from capturing focus and redirecting
-    // it back to the first chip when the user tabs out.
     this._keyManager.tabOut.pipe(takeUntil(this._destroyed)).subscribe(() => {
-      this._tabIndex = -1;
-      setTimeout(() => {
-        this._tabIndex = this._userTabIndex || 0;
-        this._changeDetectorRef.markForCheck();
-      });
+      this._allowFocusEscape();
     });
 
     // When the list changes, re-subscribe
@@ -683,6 +677,22 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     this._onTouched();
     this._changeDetectorRef.markForCheck();
     this.stateChanges.next();
+  }
+
+  /**
+   * Removes the `tabindex` from the chip list and resets it back afterwards, allowing the
+   * user to tab out of it. This prevents the list from capturing focus and redirecting
+   * it back to the first chip, creating a focus trap, if it user tries to tab away.
+   */
+  _allowFocusEscape() {
+    if (this._tabIndex !== -1) {
+      this._tabIndex = -1;
+
+      setTimeout(() => {
+        this._tabIndex = this._userTabIndex || 0;
+        this._changeDetectorRef.markForCheck();
+      });
+    }
   }
 
   private _resetChips() {

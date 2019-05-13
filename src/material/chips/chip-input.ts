@@ -8,7 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Directive, ElementRef, EventEmitter, Inject, Input, OnChanges, Output} from '@angular/core';
-import {hasModifierKey} from '@angular/cdk/keycodes';
+import {hasModifierKey, TAB} from '@angular/cdk/keycodes';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 import {MatChipList} from './chip-list';
 import {MatChipTextControl} from './chip-text-control';
@@ -109,6 +109,12 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
 
   /** Utility method to make host definition/tests more clear. */
   _keydown(event?: KeyboardEvent) {
+    // Allow the user's focus to escape when they're tabbing forward. Note that we don't
+    // want to do this when going backwards, because focus should go back to the first chip.
+    if (event && event.keyCode === TAB && !hasModifierKey(event, 'shiftKey')) {
+      this._chipList._allowFocusEscape();
+    }
+
     this._emitChipEnd(event);
   }
 

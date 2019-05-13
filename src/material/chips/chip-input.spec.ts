@@ -1,9 +1,9 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {ENTER, COMMA} from '@angular/cdk/keycodes';
+import {ENTER, COMMA, TAB} from '@angular/cdk/keycodes';
 import {PlatformModule} from '@angular/cdk/platform';
-import {createKeyboardEvent} from '@angular/cdk/testing';
+import {createKeyboardEvent, dispatchKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {Component, DebugElement, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -97,6 +97,42 @@ describe('MatChipInput', () => {
       expect(inputNativeElement.getAttribute('disabled')).toBe('true');
       expect(chipInputDirective.disabled).toBe(true);
     });
+
+    it('should allow focus to escape when tabbing forwards', fakeAsync(() => {
+      const listElement: HTMLElement = fixture.nativeElement.querySelector('.mat-chip-list');
+
+      expect(listElement.getAttribute('tabindex')).toBe('0');
+
+      dispatchKeyboardEvent(inputNativeElement, 'keydown', TAB);
+      fixture.detectChanges();
+
+      expect(listElement.getAttribute('tabindex'))
+        .toBe('-1', 'Expected tabIndex to be set to -1 temporarily.');
+
+      tick();
+      fixture.detectChanges();
+
+      expect(listElement.getAttribute('tabindex'))
+        .toBe('0', 'Expected tabIndex to be reset back to 0');
+    }));
+
+    it('should not allow focus to escape when tabbing backwards', fakeAsync(() => {
+      const listElement: HTMLElement = fixture.nativeElement.querySelector('.mat-chip-list');
+      const event = createKeyboardEvent('keydown', TAB);
+      Object.defineProperty(event, 'shiftKey', {get: () => true});
+
+      expect(listElement.getAttribute('tabindex')).toBe('0');
+
+      dispatchEvent(inputNativeElement, event);
+      fixture.detectChanges();
+
+      expect(listElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
+
+      tick();
+      fixture.detectChanges();
+
+      expect(listElement.getAttribute('tabindex')).toBe('0', 'Expected tabindex to remain 0');
+    }));
 
   });
 
@@ -205,11 +241,12 @@ describe('MatChipInput', () => {
   template: `
     <mat-form-field>
       <mat-chip-list #chipList>
+        <mat-chip>Hello</mat-chip>
+        <input matInput [matChipInputFor]="chipList"
+                  [matChipInputAddOnBlur]="addOnBlur"
+                  (matChipInputTokenEnd)="add($event)"
+                  [placeholder]="placeholder" />
       </mat-chip-list>
-      <input matInput [matChipInputFor]="chipList"
-                [matChipInputAddOnBlur]="addOnBlur"
-                (matChipInputTokenEnd)="add($event)"
-                [placeholder]="placeholder" />
     </mat-form-field>
   `
 })

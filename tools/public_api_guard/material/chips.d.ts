@@ -117,6 +117,7 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     readonly valueChange: EventEmitter<any>;
     constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher,
     ngControl: NgControl);
+    _allowFocusEscape(): void;
     _blur(): void;
     _focusInput(): void;
     _keydown(event: KeyboardEvent): void;
