@@ -292,7 +292,7 @@ export declare class DropListRef<T = any> {
         previousContainer: DropListRef<any>;
         isPointerOverContainer: boolean;
     }>;
-    readonly element: HTMLElement;
+    element: HTMLElement | ElementRef<HTMLElement>;
     enterPredicate: (drag: DragRef, drop: DropListRef) => boolean;
     entered: Subject<{
         item: DragRef;

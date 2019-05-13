@@ -706,7 +706,7 @@ export class DragRef<T = any> {
     if (this._nextSibling) {
       this._nextSibling.parentNode!.insertBefore(this._rootElement, this._nextSibling);
     } else {
-      this._initialContainer.element.appendChild(this._rootElement);
+      coerceElement(this._initialContainer.element).appendChild(this._rootElement);
     }
 
     this._destroyPreview();
