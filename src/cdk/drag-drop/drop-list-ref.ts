@@ -176,9 +176,7 @@ export class DropListRef<T = any> {
   start(): void {
     this.beforeStarted.next();
     this._isDragging = true;
-    this._activeDraggables = this._draggables.slice();
-    this._cacheOwnPosition();
-    this._cacheItemPositions();
+    this._cacheItems();
     this._siblings.forEach(sibling => sibling._startReceiving(this));
   }
 
@@ -276,6 +274,11 @@ export class DropListRef<T = any> {
   withItems(items: DragRef[]): this {
     this._draggables = items;
     items.forEach(item => item._withDropContainer(this));
+
+    if (this.isDragging()) {
+      this._cacheItems();
+    }
+
     return this;
   }
 
@@ -564,6 +567,13 @@ export class DropListRef<T = any> {
           pointerX >= Math.floor(clientRect.left) && pointerX <= Math.floor(clientRect.right) :
           pointerY >= Math.floor(clientRect.top) && pointerY <= Math.floor(clientRect.bottom);
     });
+  }
+
+  /** Caches the current items in the list and their positions. */
+  private _cacheItems(): void {
+    this._activeDraggables = this._draggables.slice();
+    this._cacheItemPositions();
+    this._cacheOwnPosition();
   }
 
   /**

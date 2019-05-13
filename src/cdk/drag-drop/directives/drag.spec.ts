@@ -2515,6 +2515,27 @@ describe('CdkDrag', () => {
           .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
+    it('should not throw if an item is removed after dragging has started', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstElement = dragItems.first.element.nativeElement;
+      const lastItemRect = dragItems.last.element.nativeElement.getBoundingClientRect();
+
+      // Start dragging.
+      startDraggingViaMouse(fixture, firstElement);
+
+      // Remove the last item.
+      fixture.componentInstance.items.pop();
+      fixture.detectChanges();
+
+      expect(() => {
+        // Move the dragged item over where the remove item would've been.
+        dispatchMouseEvent(document, 'mousemove', lastItemRect.left + 1, lastItemRect.top + 1);
+        fixture.detectChanges();
+        flush();
+      }).not.toThrow();
+    }));
 
   });
 
