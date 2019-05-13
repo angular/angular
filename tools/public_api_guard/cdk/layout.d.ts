@@ -1,5 +1,5 @@
 export declare class BreakpointObserver implements OnDestroy {
-    constructor(mediaMatcher: MediaMatcher, zone: NgZone);
+    constructor(_mediaMatcher: MediaMatcher, _zone: NgZone);
     isMatched(value: string | string[]): boolean;
     ngOnDestroy(): void;
     observe(value: string | string[]): Observable<BreakpointState>;
@@ -33,6 +33,6 @@ export declare class LayoutModule {
 }
 
 export declare class MediaMatcher {
-    constructor(platform: Platform);
+    constructor(_platform: Platform);
     matchMedia(query: string): MediaQueryList;
 }

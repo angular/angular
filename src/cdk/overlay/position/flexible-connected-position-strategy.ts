@@ -77,7 +77,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _viewportMargin = 0;
 
   /** The Scrollable containers used to check scrollable view properties on position change. */
-  private scrollables: CdkScrollable[] = [];
+  private _scrollables: CdkScrollable[] = [];
 
   /** Ordered list of preferred positions, from most to least desirable. */
   _preferredPositions: ConnectionPositionPair[] = [];
@@ -366,7 +366,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * Scrollable must be an ancestor element of the strategy's origin element.
    */
   withScrollableContainers(scrollables: CdkScrollable[]): this {
-    this.scrollables = scrollables;
+    this._scrollables = scrollables;
     return this;
   }
 
@@ -994,7 +994,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // TODO(jelbourn): instead of needing all of the client rects for these scrolling containers
     // every time, we should be able to use the scrollTop of the containers if the size of those
     // containers hasn't changed.
-    const scrollContainerBounds = this.scrollables.map(scrollable => {
+    const scrollContainerBounds = this._scrollables.map(scrollable => {
       return scrollable.getElementRef().nativeElement.getBoundingClientRect();
     });
 

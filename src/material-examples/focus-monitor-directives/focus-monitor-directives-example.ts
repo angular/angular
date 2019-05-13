@@ -11,7 +11,7 @@ export class FocusMonitorDirectivesExample {
   elementOrigin = this.formatOrigin(null);
   subtreeOrigin = this.formatOrigin(null);
 
-  constructor(private ngZone: NgZone, private cdr: ChangeDetectorRef) {}
+  constructor(private _ngZone: NgZone, private _cdr: ChangeDetectorRef) {}
 
 
   formatOrigin(origin: FocusOrigin): string {
@@ -20,6 +20,6 @@ export class FocusMonitorDirectivesExample {
 
   // Workaround for the fact that (cdkFocusChange) emits outside NgZone.
   markForCheck() {
-    this.ngZone.run(() => this.cdr.markForCheck());
+    this._ngZone.run(() => this._cdr.markForCheck());
   }
 }

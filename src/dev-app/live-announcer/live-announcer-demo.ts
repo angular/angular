@@ -16,9 +16,9 @@ import {LiveAnnouncer} from '@angular/cdk/a11y';
   templateUrl: 'live-announcer-demo.html',
 })
 export class LiveAnnouncerDemo {
-  constructor(private live: LiveAnnouncer) {}
+  constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
   announceText(message: string) {
-    this.live.announce(message);
+    this._liveAnnouncer.announce(message);
   }
 }

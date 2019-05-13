@@ -24,7 +24,7 @@ export const _filter = (opt: string[], value: string): string[] => {
 })
 
 export class AutocompleteOptgroupExample implements OnInit {
-  stateForm: FormGroup = this.fb.group({
+  stateForm: FormGroup = this._formBuilder.group({
     stateGroup: '',
   });
 
@@ -91,7 +91,7 @@ export class AutocompleteOptgroupExample implements OnInit {
 
   stateGroupOptions: Observable<StateGroup[]>;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.stateGroupOptions = this.stateForm.get('stateGroup')!.valueChanges

@@ -19,9 +19,9 @@ import {MatSnackBar} from '@angular/material';
 export class CardAccessibilityDemo {
   showProgress: boolean = false;
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatSnackBar) {}
 
   openSnackbar(message: string) {
-    this.snackBar.open(message, '', {duration: 2000});
+    this._snackBar.open(message, '', {duration: 2000});
   }
 }

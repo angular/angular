@@ -24,13 +24,13 @@ export class ScreenTypeDemo {
   isPortrait: Observable<BreakpointState>;
   isLandscape: Observable<BreakpointState>;
 
-  constructor(private breakpointObserver: BreakpointObserver) {
-    this.isHandset = this.breakpointObserver.observe([Breakpoints.HandsetLandscape,
+  constructor(breakpointObserver: BreakpointObserver) {
+    this.isHandset = breakpointObserver.observe([Breakpoints.HandsetLandscape,
                                        Breakpoints.HandsetPortrait]);
-    this.isTablet = this.breakpointObserver.observe(Breakpoints.Tablet);
-    this.isWeb = this.breakpointObserver.observe([Breakpoints.WebLandscape,
+    this.isTablet = breakpointObserver.observe(Breakpoints.Tablet);
+    this.isWeb = breakpointObserver.observe([Breakpoints.WebLandscape,
                                   Breakpoints.WebPortrait]);
-    this.isPortrait = this.breakpointObserver.observe('(orientation: portrait)');
-    this.isLandscape = this.breakpointObserver.observe('(orientation: landscape)');
+    this.isPortrait = breakpointObserver.observe('(orientation: portrait)');
+    this.isLandscape = breakpointObserver.observe('(orientation: landscape)');
   }
 }

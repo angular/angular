@@ -13,20 +13,20 @@ export class MergeInheritedProperties implements Processor {
   $process(docs: DocCollection) {
     return docs
       .filter(doc => doc.docType === 'class')
-      .forEach(doc => this.addInheritedProperties(doc));
+      .forEach(doc => this._addInheritedProperties(doc));
   }
 
-  private addInheritedProperties(doc: ClassExportDoc) {
+  private _addInheritedProperties(doc: ClassExportDoc) {
     doc.implementsClauses.filter(clause => clause.doc).forEach(clause => {
-      clause.doc!.members.forEach(member => this.addMemberDocIfNotPresent(doc, member));
+      clause.doc!.members.forEach(member => this._addMemberDocIfNotPresent(doc, member));
     });
 
     doc.extendsClauses.filter(clause => clause.doc).forEach(clause => {
-      clause.doc!.members.forEach(member => this.addMemberDocIfNotPresent(doc, member));
+      clause.doc!.members.forEach(member => this._addMemberDocIfNotPresent(doc, member));
     });
   }
 
-  private addMemberDocIfNotPresent(destination: ClassExportDoc, memberDoc: MemberDoc) {
+  private _addMemberDocIfNotPresent(destination: ClassExportDoc, memberDoc: MemberDoc) {
     if (!destination.members.find(member => member.name === memberDoc.name)) {
       // To be able to differentiate between member docs from the heritage clause and the
       // member doc for the destination class, we clone the member doc. It's important to keep

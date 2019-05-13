@@ -130,13 +130,13 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   private _fallbackAnimation = false;
 
   /** Tracks diameters of existing instances to de-dupe generated styles (default d = 100) */
-  private static diameters = new Set<number>([BASE_SIZE]);
+  private static _diameters = new Set<number>([BASE_SIZE]);
 
   /**
    * Used for storing all of the generated keyframe animations.
    * @dynamic
    */
-  private static styleTag: HTMLStyleElement|null = null;
+  private static _styleTag: HTMLStyleElement|null = null;
 
   /** Whether the _mat-animation-noopable class should be applied, disabling animations.  */
   _noopAnimations: boolean;
@@ -147,7 +147,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   set diameter(size: number) {
     this._diameter = coerceNumberProperty(size);
 
-    if (!this._fallbackAnimation && !MatProgressSpinner.diameters.has(this._diameter)) {
+    if (!this._fallbackAnimation && !MatProgressSpinner._diameters.has(this._diameter)) {
       this._attachStyleNode();
     }
   }
@@ -241,19 +241,19 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   /** Dynamically generates a style tag containing the correct animation for this diameter. */
   private _attachStyleNode(): void {
-    let styleTag = MatProgressSpinner.styleTag;
+    let styleTag = MatProgressSpinner._styleTag;
 
     if (!styleTag) {
       styleTag = this._document.createElement('style');
       this._document.head.appendChild(styleTag);
-      MatProgressSpinner.styleTag = styleTag;
+      MatProgressSpinner._styleTag = styleTag;
     }
 
     if (styleTag && styleTag.sheet) {
       (styleTag.sheet as CSSStyleSheet).insertRule(this._getAnimationText(), 0);
     }
 
-    MatProgressSpinner.diameters.add(this.diameter);
+    MatProgressSpinner._diameters.add(this.diameter);
   }
 
   /** Generates animation styles adjusted for the spinner's diameter. */

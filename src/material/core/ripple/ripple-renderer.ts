@@ -106,13 +106,13 @@ export class RippleRenderer {
 
       // Specify events which need to be registered on the trigger.
       this._triggerEvents
-        .set('mousedown', this.onMousedown)
-        .set('mouseup', this.onPointerUp)
-        .set('mouseleave', this.onPointerUp)
+        .set('mousedown', this._onMousedown)
+        .set('mouseup', this._onPointerUp)
+        .set('mouseleave', this._onPointerUp)
 
-        .set('touchstart', this.onTouchStart)
-        .set('touchend', this.onPointerUp)
-        .set('touchcancel', this.onPointerUp);
+        .set('touchstart', this._onTouchStart)
+        .set('touchend', this._onPointerUp)
+        .set('touchcancel', this._onPointerUp);
     }
   }
 
@@ -171,7 +171,7 @@ export class RippleRenderer {
 
     // Wait for the ripple element to be completely faded in.
     // Once it's faded in, the ripple can be hidden immediately if the mouse is released.
-    this.runTimeoutOutsideZone(() => {
+    this._runTimeoutOutsideZone(() => {
       const isMostRecentTransientRipple = rippleRef === this._mostRecentTransientRipple;
 
       rippleRef.state = RippleState.VISIBLE;
@@ -214,7 +214,7 @@ export class RippleRenderer {
     rippleRef.state = RippleState.FADING_OUT;
 
     // Once the ripple faded out, the ripple can be safely removed from the DOM.
-    this.runTimeoutOutsideZone(() => {
+    this._runTimeoutOutsideZone(() => {
       rippleRef.state = RippleState.HIDDEN;
       rippleEl.parentNode!.removeChild(rippleEl);
     }, animationConfig.exitDuration);
@@ -244,7 +244,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being pressed using mouse. */
-  private onMousedown = (event: MouseEvent) => {
+  private _onMousedown = (event: MouseEvent) => {
     // Screen readers will fire fake mouse events for space/enter. Skip launching a
     // ripple in this case for consistency with the non-screen-reader experience.
     const isFakeMousedown = isFakeMousedownFromScreenReader(event);
@@ -258,7 +258,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being pressed using touch. */
-  private onTouchStart = (event: TouchEvent) => {
+  private _onTouchStart = (event: TouchEvent) => {
     if (!this._target.rippleDisabled) {
       // Some browsers fire mouse events after a `touchstart` event. Those synthetic mouse
       // events will launch a second ripple if we don't ignore mouse events for a specific
@@ -277,7 +277,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being released. */
-  private onPointerUp = () => {
+  private _onPointerUp = () => {
     if (!this._isPointerDown) {
       return;
     }
@@ -298,7 +298,7 @@ export class RippleRenderer {
   }
 
   /** Runs a timeout outside of the Angular zone to avoid triggering the change detection. */
-  private runTimeoutOutsideZone(fn: Function, delay = 0) {
+  private _runTimeoutOutsideZone(fn: Function, delay = 0) {
     this._ngZone.runOutsideAngular(() => setTimeout(fn, delay));
   }
 

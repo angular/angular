@@ -75,7 +75,7 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
 
   constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
     @Optional() @Inject(MAT_MOMENT_DATE_ADAPTER_OPTIONS)
-    private options?: MatMomentDateAdapterOptions) {
+    private _options?: MatMomentDateAdapterOptions) {
 
     super();
     this.setLocale(dateLocale || moment.locale());
@@ -242,6 +242,6 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
 
   /** Creates a Moment instance while respecting the current UTC settings. */
   private _createMoment(...args: any[]): Moment {
-    return (this.options && this.options.useUtc) ? moment.utc(...args) : moment(...args);
+    return (this._options && this._options.useUtc) ? moment.utc(...args) : moment(...args);
   }
 }

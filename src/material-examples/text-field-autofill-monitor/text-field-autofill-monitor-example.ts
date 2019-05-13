@@ -13,17 +13,17 @@ export class TextFieldAutofillMonitorExample implements AfterViewInit, OnDestroy
   firstNameAutofilled: boolean;
   lastNameAutofilled: boolean;
 
-  constructor(private autofill: AutofillMonitor) {}
+  constructor(private _autofill: AutofillMonitor) {}
 
   ngAfterViewInit() {
-    this.autofill.monitor(this.firstName)
+    this._autofill.monitor(this.firstName)
         .subscribe(e => this.firstNameAutofilled = e.isAutofilled);
-    this.autofill.monitor(this.lastName)
+    this._autofill.monitor(this.lastName)
         .subscribe(e => this.lastNameAutofilled = e.isAutofilled);
   }
 
   ngOnDestroy() {
-    this.autofill.stopMonitoring(this.firstName);
-    this.autofill.stopMonitoring(this.lastName);
+    this._autofill.stopMonitoring(this.firstName);
+    this._autofill.stopMonitoring(this.lastName);
   }
 }

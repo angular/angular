@@ -20,9 +20,9 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/
   ],
 })
 export class DatepickerLocaleExample {
-  constructor(private adapter: DateAdapter<any>) {}
+  constructor(private _adapter: DateAdapter<any>) {}
 
   french() {
-    this.adapter.setLocale('fr');
+    this._adapter.setLocale('fr');
   }
 }

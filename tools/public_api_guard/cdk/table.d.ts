@@ -173,7 +173,7 @@ export declare class CdkTextColumn<T> implements OnDestroy, OnInit {
     headerText: string;
     justify: 'start' | 'end';
     name: string;
-    constructor(table: CdkTable<T>, options: TextColumnOptions<T>);
+    constructor(_table: CdkTable<T>, _options: TextColumnOptions<T>);
     _createDefaultHeaderText(): string;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -224,7 +224,7 @@ export declare type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
 
 export declare class StickyStyler {
     direction: Direction;
-    constructor(isNativeHtmlTable: boolean, stickCellCss: string, direction: Direction, _isBrowser?: boolean);
+    constructor(_isNativeHtmlTable: boolean, _stickCellCss: string, direction: Direction, _isBrowser?: boolean);
     _addStickyStyle(element: HTMLElement, dir: StickyDirection, dirValue: number): void;
     _getCalculatedZIndex(element: HTMLElement): string;
     _getCellWidths(row: HTMLElement): number[];

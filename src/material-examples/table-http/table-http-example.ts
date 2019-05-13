@@ -25,10 +25,10 @@ export class TableHttpExample implements AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
-  constructor(private http: HttpClient) {}
+  constructor(private _httpClient: HttpClient) {}
 
   ngAfterViewInit() {
-    this.exampleDatabase = new ExampleHttpDatabase(this.http);
+    this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
 
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
@@ -73,13 +73,13 @@ export interface GithubIssue {
 
 /** An example database that the data source uses to retrieve data for the table. */
 export class ExampleHttpDatabase {
-  constructor(private http: HttpClient) {}
+  constructor(private _httpClient: HttpClient) {}
 
   getRepoIssues(sort: string, order: string, page: number): Observable<GithubApi> {
     const href = 'https://api.github.com/search/issues';
     const requestUrl =
         `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${page + 1}`;
 
-    return this.http.get<GithubApi>(requestUrl);
+    return this._httpClient.get<GithubApi>(requestUrl);
   }
 }

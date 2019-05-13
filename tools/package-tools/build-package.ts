@@ -39,18 +39,18 @@ export class BuildPackage {
   readonly entryFilePath: string;
 
   /** Package bundler instance. */
-  private bundler = new PackageBundler(this);
+  private _bundler = new PackageBundler(this);
 
   /** Secondary entry-points partitioned by their build depth. */
   get secondaryEntryPointsByDepth(): string[][] {
-    this.cacheSecondaryEntryPoints();
+    this._cacheSecondaryEntryPoints();
     return this._secondaryEntryPointsByDepth;
   }
   private _secondaryEntryPointsByDepth: string[][];
 
   /** Secondary entry points for the package. */
   get secondaryEntryPoints(): string[] {
-    this.cacheSecondaryEntryPoints();
+    this._cacheSecondaryEntryPoints();
     return this._secondaryEntryPoints;
   }
   private _secondaryEntryPoints: string[];
@@ -85,7 +85,7 @@ export class BuildPackage {
 
   /** Creates all bundles for the package and all associated entry points. */
   async createBundles() {
-    await this.bundler.createBundles();
+    await this._bundler.createBundles();
   }
 
   /** Compiles TS into both ES2015 and ES5, then updates exports. */
@@ -96,7 +96,7 @@ export class BuildPackage {
   }
 
   /** Stores the secondary entry-points for this package if they haven't been computed already. */
-  private cacheSecondaryEntryPoints() {
+  private _cacheSecondaryEntryPoints() {
     if (!this._secondaryEntryPoints) {
       this._secondaryEntryPointsByDepth = getSecondaryEntryPointsForPackage(this);
       this._secondaryEntryPoints =

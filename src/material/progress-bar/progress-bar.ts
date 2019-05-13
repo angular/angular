@@ -135,7 +135,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
 
     // When noop animation is set to true, trigger animationEnd directly.
     if (this._isNoopAnimation) {
-      this.emitAnimationEnd();
+      this._emitAnimationEnd();
     }
   }
   private _value: number = 0;
@@ -200,7 +200,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
         this._animationEndSubscription =
             (fromEvent(element, 'transitionend') as Observable<TransitionEvent>)
               .pipe(filter(((e: TransitionEvent) => e.target === element)))
-              .subscribe(() => this._ngZone.run(() => this.emitAnimationEnd()));
+              .subscribe(() => this._ngZone.run(() => this._emitAnimationEnd()));
       }));
     }
   }
@@ -210,7 +210,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
   }
 
   /** Emit an animationEnd event if in determinate or buffer mode. */
-  private emitAnimationEnd(): void {
+  private _emitAnimationEnd(): void {
     if (this.mode === 'determinate' || this.mode === 'buffer') {
       this.animationEnd.next({value: this.value});
     }

@@ -20,9 +20,9 @@ export class SlideToggleAccessibilityDemo {
   termsToggle = false;
   musicToggle = false;
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatSnackBar) {}
 
   onFormSubmit() {
-    this.snackBar.open('Terms and condistions accepted!', '', {duration: 2000});
+    this._snackBar.open('Terms and condistions accepted!', '', {duration: 2000});
   }
 }

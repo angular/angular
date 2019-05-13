@@ -37,7 +37,7 @@ export class LoadmoreTreeDemo {
   // Flat tree data source
   dataSource: MatTreeFlatDataSource<LoadmoreNode, LoadmoreFlatNode>;
 
-  constructor(private database: LoadmoreDatabase) {
+  constructor(private _database: LoadmoreDatabase) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
       this.isExpandable, this.getChildren);
 
@@ -45,11 +45,11 @@ export class LoadmoreTreeDemo {
 
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-    database.dataChange.subscribe(data => {
+    _database.dataChange.subscribe(data => {
       this.dataSource.data = data;
     });
 
-    database.initialize();
+    _database.initialize();
   }
 
   getChildren = (node: LoadmoreNode): Observable<LoadmoreNode[]> => { return node.childrenChange; };
@@ -74,10 +74,10 @@ export class LoadmoreTreeDemo {
 
   /** Load more nodes from data source */
   loadMore(item: string) {
-    this.database.loadMore(item);
+    this._database.loadMore(item);
   }
 
   loadChildren(node: LoadmoreFlatNode) {
-    this.database.loadMore(node.item, true);
+    this._database.loadMore(node.item, true);
   }
 }

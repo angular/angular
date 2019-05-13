@@ -707,7 +707,7 @@ const TREE_DATA: FoodNode[] = [
   `
 })
 class MatTreeWithNullOrUndefinedChild {
-  private transformer = (node: FoodNode, level: number) => {
+  private _transformer = (node: FoodNode, level: number) => {
     return {
       expandable: !!node.children,
       name: node.name,
@@ -719,7 +719,7 @@ class MatTreeWithNullOrUndefinedChild {
     node => node.level, node => node.expandable);
 
   treeFlattener = new MatTreeFlattener(
-     this.transformer, node => node.level, node => node.expandable, node => node.children);
+     this._transformer, node => node.level, node => node.expandable, node => node.children);
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, TREE_DATA);
 
@@ -745,12 +745,12 @@ class MatNestedTreeWithNullOrUndefinedChild {
   dataSource: MatTreeNestedDataSource<FoodNode>;
 
   constructor() {
-    this.treeControl = new NestedTreeControl<FoodNode>(this.getChildren);
+    this.treeControl = new NestedTreeControl<FoodNode>(this._getChildren);
     this.dataSource = new MatTreeNestedDataSource();
     this.dataSource.data = TREE_DATA;
   }
 
-  private getChildren = (node: FoodNode) => node.children;
+  private _getChildren = (node: FoodNode) => node.children;
 }
 
 @Component({

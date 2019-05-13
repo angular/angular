@@ -18,10 +18,10 @@ export class SnackBarPositionExample {
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatSnackBar) {}
 
   openSnackBar() {
-    this.snackBar.open('Canonball!!', 'End now', {
+    this._snackBar.open('Canonball!!', 'End now', {
       duration: 500,
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,

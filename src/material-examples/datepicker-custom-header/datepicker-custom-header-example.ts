@@ -63,36 +63,36 @@ export class DatepickerCustomHeaderExample {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleHeader<D> implements OnDestroy {
-  private destroyed = new Subject<void>();
+  private _destroyed = new Subject<void>();
 
   constructor(
-      private calendar: MatCalendar<D>, private dateAdapter: DateAdapter<D>,
-      @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats, cdr: ChangeDetectorRef) {
-    calendar.stateChanges
-        .pipe(takeUntil(this.destroyed))
+      private _calendar: MatCalendar<D>, private _dateAdapter: DateAdapter<D>,
+      @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats, cdr: ChangeDetectorRef) {
+    _calendar.stateChanges
+        .pipe(takeUntil(this._destroyed))
         .subscribe(() => cdr.markForCheck());
   }
 
   ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   get periodLabel() {
-    return this.dateAdapter
-        .format(this.calendar.activeDate, this.dateFormats.display.monthYearLabel)
+    return this._dateAdapter
+        .format(this._calendar.activeDate, this._dateFormats.display.monthYearLabel)
         .toLocaleUpperCase();
   }
 
   previousClicked(mode: 'month' | 'year') {
-    this.calendar.activeDate = mode === 'month' ?
-        this.dateAdapter.addCalendarMonths(this.calendar.activeDate, -1) :
-        this.dateAdapter.addCalendarYears(this.calendar.activeDate, -1);
+    this._calendar.activeDate = mode === 'month' ?
+        this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
+        this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
   }
 
   nextClicked(mode: 'month' | 'year') {
-    this.calendar.activeDate = mode === 'month' ?
-        this.dateAdapter.addCalendarMonths(this.calendar.activeDate, 1) :
-        this.dateAdapter.addCalendarYears(this.calendar.activeDate, 1);
+    this._calendar.activeDate = mode === 'month' ?
+        this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
+        this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
   }
 }

@@ -35,28 +35,28 @@ export class DocsPrivateFilter implements Processor {
   $runBefore = ['categorizer'];
 
   $process(docs: DocCollection) {
-    return docs.filter(doc => this.isPublicDoc(doc));
+    return docs.filter(doc => this._isPublicDoc(doc));
   }
 
   /** Marks the given API doc with a property that describes its public state. */
-  private isPublicDoc(doc: ApiDoc) {
-    if (this.hasDocsPrivateTag(doc) || doc.name.startsWith('_')) {
+  private _isPublicDoc(doc: ApiDoc) {
+    if (this._hasDocsPrivateTag(doc) || doc.name.startsWith('_')) {
       return false;
     } else if (doc instanceof MemberDoc) {
-      return !this.isInternalMember(doc);
+      return !this._isInternalMember(doc);
     } else if (doc instanceof ClassExportDoc) {
-      doc.members = doc.members.filter(memberDoc => this.isPublicDoc(memberDoc));
+      doc.members = doc.members.filter(memberDoc => this._isPublicDoc(memberDoc));
     }
     return true;
   }
 
   /** Whether the given method member is listed as an internal member. */
-  private isInternalMember(memberDoc: MemberDoc) {
+  private _isInternalMember(memberDoc: MemberDoc) {
     return INTERNAL_METHODS.includes(memberDoc.name);
   }
 
   /** Whether the given doc has a @docs-private tag set. */
-  private hasDocsPrivateTag(doc: any) {
+  private _hasDocsPrivateTag(doc: any) {
     const tags = doc.tags && doc.tags.tags;
     return tags ? tags.find((d: any) => d.tagName == 'docs-private') : false;
   }

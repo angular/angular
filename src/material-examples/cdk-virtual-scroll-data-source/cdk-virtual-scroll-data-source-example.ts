@@ -14,44 +14,44 @@ export class CdkVirtualScrollDataSourceExample {
 }
 
 export class MyDataSource extends DataSource<string | undefined> {
-  private length = 100000;
-  private pageSize = 100;
-  private cachedData = Array.from<string>({length: this.length});
-  private fetchedPages = new Set<number>();
-  private dataStream = new BehaviorSubject<(string | undefined)[]>(this.cachedData);
-  private subscription = new Subscription();
+  private _length = 100000;
+  private _pageSize = 100;
+  private _cachedData = Array.from<string>({length: this._length});
+  private _fetchedPages = new Set<number>();
+  private _dataStream = new BehaviorSubject<(string | undefined)[]>(this._cachedData);
+  private _subscription = new Subscription();
 
   connect(collectionViewer: CollectionViewer): Observable<(string | undefined)[]> {
-    this.subscription.add(collectionViewer.viewChange.subscribe(range => {
-      const startPage = this.getPageForIndex(range.start);
-      const endPage = this.getPageForIndex(range.end - 1);
+    this._subscription.add(collectionViewer.viewChange.subscribe(range => {
+      const startPage = this._getPageForIndex(range.start);
+      const endPage = this._getPageForIndex(range.end - 1);
       for (let i = startPage; i <= endPage; i++) {
-        this.fetchPage(i);
+        this._fetchPage(i);
       }
     }));
-    return this.dataStream;
+    return this._dataStream;
   }
 
   disconnect(): void {
-    this.subscription.unsubscribe();
+    this._subscription.unsubscribe();
   }
 
-  private getPageForIndex(index: number): number {
-    return Math.floor(index / this.pageSize);
+  private _getPageForIndex(index: number): number {
+    return Math.floor(index / this._pageSize);
   }
 
-  private fetchPage(page: number) {
-    if (this.fetchedPages.has(page)) {
+  private _fetchPage(page: number) {
+    if (this._fetchedPages.has(page)) {
       return;
     }
-    this.fetchedPages.add(page);
+    this._fetchedPages.add(page);
 
     // Use `setTimeout` to simulate fetching data from server.
     setTimeout(() => {
-      this.cachedData.splice(page * this.pageSize, this.pageSize,
-          ...Array.from({length: this.pageSize})
-              .map((_, i) => `Item #${page * this.pageSize + i}`));
-      this.dataStream.next(this.cachedData);
+      this._cachedData.splice(page * this._pageSize, this._pageSize,
+          ...Array.from({length: this._pageSize})
+              .map((_, i) => `Item #${page * this._pageSize + i}`));
+      this._dataStream.next(this._cachedData);
     }, Math.random() * 1000 + 200);
   }
 }

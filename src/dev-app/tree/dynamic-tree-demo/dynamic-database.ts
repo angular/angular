@@ -60,15 +60,15 @@ export class DynamicDataSource {
 
   get data(): DynamicFlatNode[] { return this.dataChange.value; }
   set data(value: DynamicFlatNode[]) {
-    this.treeControl.dataNodes = value;
+    this._treeControl.dataNodes = value;
     this.dataChange.next(value);
   }
 
-  constructor(private treeControl: FlatTreeControl<DynamicFlatNode>,
-              private database: DynamicDatabase) {}
+  constructor(private _treeControl: FlatTreeControl<DynamicFlatNode>,
+              private _database: DynamicDatabase) {}
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
-    this.treeControl.expansionModel.onChange.subscribe(change => {
+    this._treeControl.expansionModel.onChange.subscribe(change => {
       if (change.added || change.removed) {
         this.handleTreeControl(change);
       }
@@ -92,7 +92,7 @@ export class DynamicDataSource {
    * Toggle the node, remove from display list
    */
   toggleNode(node: DynamicFlatNode, expand: boolean) {
-    const children = this.database.getChildren(node.item);
+    const children = this._database.getChildren(node.item);
     const index = this.data.indexOf(node);
     if (!children || index < 0) { // If no children, or cannot find the node, no op
       return;
@@ -102,7 +102,7 @@ export class DynamicDataSource {
     setTimeout(() => {
       if (expand) {
         const nodes = children.map(name =>
-          new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
+          new DynamicFlatNode(name, node.level + 1, this._database.isExpandable(name)));
         this.data.splice(index + 1, 0, ...nodes);
       } else {
         let count = 0;

@@ -91,18 +91,18 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
   }
 
   constructor(
-    fb: FormBuilder,
-    private fm: FocusMonitor,
-    private elRef: ElementRef<HTMLElement>,
+    formBuilder: FormBuilder,
+    private _focusMonitor: FocusMonitor,
+    private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Self() public ngControl: NgControl) {
 
-    this.parts = fb.group({
+    this.parts = formBuilder.group({
       area: '',
       exchange: '',
       subscriber: '',
     });
 
-    fm.monitor(elRef, true).subscribe(origin => {
+    _focusMonitor.monitor(_elementRef, true).subscribe(origin => {
       if (this.focused && !origin) {
         this.onTouched();
       }
@@ -117,7 +117,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
 
   ngOnDestroy() {
     this.stateChanges.complete();
-    this.fm.stopMonitoring(this.elRef);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   setDescribedByIds(ids: string[]) {
@@ -126,7 +126,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
 
   onContainerClick(event: MouseEvent) {
     if ((event.target as Element).tagName.toLowerCase() != 'input') {
-      this.elRef.nativeElement.querySelector('input')!.focus();
+      this._elementRef.nativeElement.querySelector('input')!.focus();
     }
   }
 

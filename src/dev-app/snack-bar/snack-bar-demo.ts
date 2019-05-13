@@ -33,7 +33,7 @@ export class SnackBarDemo {
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatSnackBar, private dir: Directionality) {}
+  constructor(public snackBar: MatSnackBar, private _dir: Directionality) {}
 
   open() {
     const config = this._createConfig();
@@ -51,7 +51,7 @@ export class SnackBarDemo {
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;
     config.panelClass = this.addExtraClass ? ['demo-party'] : undefined;
-    config.direction = this.dir.value;
+    config.direction = this._dir.value;
     return config;
   }
 }

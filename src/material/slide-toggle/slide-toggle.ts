@@ -105,8 +105,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
                                                                         CanDisable, CanColor,
                                                                         HasTabIndex,
                                                                         CanDisableRipple {
-  private onChange = (_: any) => {};
-  private onTouched = () => {};
+  private _onChange = (_: any) => {};
+  private _onTouched = () => {};
 
   private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
   private _required: boolean = false;
@@ -206,7 +206,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
           // change (such as a form control's 'ng-touched') will cause a changed-after-checked
           // error. See https://github.com/angular/angular/issues/17793. To work around this,
           // we defer telling the form control it has been touched until the next tick.
-          Promise.resolve().then(() => this.onTouched());
+          Promise.resolve().then(() => this._onTouched());
         }
       });
   }
@@ -262,12 +262,12 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
 
   /** Implemented as part of ControlValueAccessor. */
   registerOnChange(fn: any): void {
-    this.onChange = fn;
+    this._onChange = fn;
   }
 
   /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   /** Implemented as a part of ControlValueAccessor. */
@@ -284,14 +284,14 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   /** Toggles the checked state of the slide-toggle. */
   toggle(): void {
     this.checked = !this.checked;
-    this.onChange(this.checked);
+    this._onChange(this.checked);
   }
 
   /**
    * Emits a change event on the `change` output. Also notifies the FormControl about the change.
    */
   private _emitChangeEvent() {
-    this.onChange(this.checked);
+    this._onChange(this.checked);
     this.change.emit(new MatSlideToggleChange(this, this.checked));
   }
 

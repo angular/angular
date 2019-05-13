@@ -39,26 +39,26 @@ export class Categorizer implements Processor {
   $process(docs: DocCollection) {
     docs
       .filter(doc => doc.docType === 'class' || doc.docType === 'interface')
-      .forEach(doc => this.decorateClassLikeDoc(doc));
+      .forEach(doc => this._decorateClassLikeDoc(doc));
 
     docs
       .filter(doc => doc.docType === 'function')
-      .forEach(doc => this.decorateFunctionExportDoc(doc));
+      .forEach(doc => this._decorateFunctionExportDoc(doc));
 
     docs
       .filter(doc => doc.docType === 'const')
-      .forEach(doc => this.decorateConstExportDoc(doc));
+      .forEach(doc => this._decorateConstExportDoc(doc));
 
     docs
       .filter(doc => doc.docType === 'type-alias')
-      .forEach(doc => this.decorateTypeAliasExportDoc(doc));
+      .forEach(doc => this._decorateTypeAliasExportDoc(doc));
   }
 
   /**
    * Decorates all class and interface docs inside of the dgeni pipeline.
    * - Members of a class and interface document will be extracted into separate variables.
    */
-  private decorateClassLikeDoc(classLikeDoc: CategorizedClassLikeDoc) {
+  private _decorateClassLikeDoc(classLikeDoc: CategorizedClassLikeDoc) {
     // Resolve all methods and properties from the classDoc.
     classLikeDoc.methods = classLikeDoc.members
       .filter(isMethod)
@@ -70,13 +70,13 @@ export class Categorizer implements Processor {
 
     // Special decorations for real class documents that don't apply for interfaces.
     if (classLikeDoc.docType === 'class') {
-      this.decorateClassDoc(classLikeDoc as CategorizedClassDoc);
-      this.replaceMethodsWithOverload(classLikeDoc as CategorizedClassDoc);
+      this._decorateClassDoc(classLikeDoc as CategorizedClassDoc);
+      this._replaceMethodsWithOverload(classLikeDoc as CategorizedClassDoc);
     }
 
     // Call decorate hooks that can modify the method and property docs.
-    classLikeDoc.methods.forEach(doc => this.decorateMethodDoc(doc));
-    classLikeDoc.properties.forEach(doc => this.decoratePropertyDoc(doc));
+    classLikeDoc.methods.forEach(doc => this._decorateMethodDoc(doc));
+    classLikeDoc.properties.forEach(doc => this._decoratePropertyDoc(doc));
 
     decorateDeprecatedDoc(classLikeDoc);
 
@@ -90,7 +90,7 @@ export class Categorizer implements Processor {
    * - Identifies directives, services or NgModules and marks them them inside of the doc.
    * - Links the Dgeni document to the Dgeni document that the current class extends from.
    */
-  private decorateClassDoc(classDoc: CategorizedClassDoc) {
+  private _decorateClassDoc(classDoc: CategorizedClassDoc) {
     // Classes can only extend a single class. This means that there can't be multiple extend
     // clauses for the Dgeni document. To make the template syntax simpler and more readable,
     // store the extended class in a variable.
@@ -113,7 +113,7 @@ export class Categorizer implements Processor {
    * Method that will be called for each method doc. The parameters for the method-docs
    * will be normalized, so that they can be easily used inside of dgeni templates.
    */
-  private decorateMethodDoc(methodDoc: CategorizedMethodMemberDoc) {
+  private _decorateMethodDoc(methodDoc: CategorizedMethodMemberDoc) {
     normalizeFunctionParameters(methodDoc);
     decorateDeprecatedDoc(methodDoc);
   }
@@ -122,7 +122,7 @@ export class Categorizer implements Processor {
    * Method that will be called for each function export doc. The parameters for the functions
    * will be normalized, so that they can be easily used inside of Dgeni templates.
    */
-  private decorateFunctionExportDoc(functionDoc: CategorizedFunctionExportDoc) {
+  private _decorateFunctionExportDoc(functionDoc: CategorizedFunctionExportDoc) {
     normalizeFunctionParameters(functionDoc);
     decorateDeprecatedDoc(functionDoc);
   }
@@ -131,7 +131,7 @@ export class Categorizer implements Processor {
    * Method that will be called for each const export document. We decorate the const
    * documents with a property that states whether the constant is deprecated or not.
    */
-  private decorateConstExportDoc(doc: CategorizedConstExportDoc) {
+  private _decorateConstExportDoc(doc: CategorizedConstExportDoc) {
     decorateDeprecatedDoc(doc);
   }
 
@@ -139,7 +139,7 @@ export class Categorizer implements Processor {
    * Method that will be called for each type-alias export document. We decorate the type-alias
    * documents with a property that states whether the type-alias is deprecated or not.
    */
-  private decorateTypeAliasExportDoc(doc: CategorizedTypeAliasExportDoc) {
+  private _decorateTypeAliasExportDoc(doc: CategorizedTypeAliasExportDoc) {
     decorateDeprecatedDoc(doc);
   }
 
@@ -147,7 +147,7 @@ export class Categorizer implements Processor {
    * Method that will be called for each property doc. Properties that are Angular inputs or
    * outputs will be marked. Aliases for the inputs or outputs will be stored as well.
    */
-  private decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
+  private _decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
     decorateDeprecatedDoc(propertyDoc);
 
     const metadata = propertyDoc.containerDoc.docType === 'class' ?
@@ -167,7 +167,7 @@ export class Categorizer implements Processor {
    * Walks through every method of the specified class doc and replaces the method
    * with its referenced overload method definitions, if the method is having overload definitions.
    */
-  private replaceMethodsWithOverload(classDoc: CategorizedClassDoc) {
+  private _replaceMethodsWithOverload(classDoc: CategorizedClassDoc) {
     const methodsToAdd: CategorizedMethodMemberDoc[] = [];
 
     classDoc.methods.forEach((methodDoc, index) => {

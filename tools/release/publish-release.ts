@@ -79,19 +79,19 @@ class PublishReleaseTask extends BaseReleaseTask {
     // Branch that will be used to build the output for the release of the current version.
     const publishBranch = this.switchToPublishBranch(newVersion);
 
-    this.verifyLastCommitVersionBump();
+    this._verifyLastCommitVersionBump();
     this.verifyLocalCommitsMatchUpstream(publishBranch);
 
-    const upstreamRemote = await this.getProjectUpstreamRemote();
+    const upstreamRemote = await this._getProjectUpstreamRemote();
     const npmDistTag = await promptForNpmDistTag(newVersion);
 
     // In case the user wants to publish a stable version to the "next" npm tag, we want
     // to double-check because usually only pre-release's are pushed to that tag.
     if (npmDistTag === 'next' && !newVersion.prereleaseLabel) {
-      await this.promptStableVersionForNextTag();
+      await this._promptStableVersionForNextTag();
     }
 
-    this.buildReleasePackages();
+    this._buildReleasePackages();
     console.info(green(`  ✓   Built the release output.`));
 
     // Checks all release packages against release output validations before releasing.
@@ -107,18 +107,18 @@ class PublishReleaseTask extends BaseReleaseTask {
     }
 
     // Create and push the release tag before publishing to NPM.
-    this.createReleaseTag(newVersionName, releaseNotes);
-    this.pushReleaseTag(newVersionName, upstreamRemote);
+    this._createReleaseTag(newVersionName, releaseNotes);
+    this._pushReleaseTag(newVersionName, upstreamRemote);
 
     // Ensure that we are authenticated before running "npm publish" for each package.
-    this.checkNpmAuthentication();
+    this._checkNpmAuthentication();
 
     // Just in order to double-check that the user is sure to publish to NPM, we want
     // the user to interactively confirm that the script should continue.
-    await this.promptConfirmReleasePublish();
+    await this._promptConfirmReleasePublish();
 
     for (let packageName of releasePackages) {
-      this.publishPackageToNpm(packageName, npmDistTag);
+      this._publishPackageToNpm(packageName, npmDistTag);
     }
 
     const newReleaseUrl = getGithubNewReleaseUrl({
@@ -150,7 +150,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * Verifies that the latest commit on the current branch is a version bump from the
    * staging script.
    */
-  private verifyLastCommitVersionBump() {
+  private _verifyLastCommitVersionBump() {
     if (!/chore: bump version/.test(this.git.getCommitTitle('HEAD'))) {
       console.error(red(`  ✘   The latest commit of the current branch does not seem to be a ` +
         `version bump.`));
@@ -160,7 +160,7 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Builds all release packages that should be published. */
-  private buildReleasePackages() {
+  private _buildReleasePackages() {
     const binDir = join(this.projectDir, 'node_modules/.bin');
     const spawnOptions = {cwd: binDir, stdio: 'inherit'};
 
@@ -175,7 +175,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * Prompts the user whether they are sure that the current stable version should be
    * released to the "next" NPM dist-tag.
    */
-  private async promptStableVersionForNextTag() {
+  private async _promptStableVersionForNextTag() {
     if (!await this.promptConfirm(
         'Are you sure that you want to release a stable version to the "next" tag?')) {
       console.log();
@@ -188,7 +188,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * Prompts the user whether he is sure that the script should continue publishing
    * the release to NPM.
    */
-  private async promptConfirmReleasePublish() {
+  private async _promptConfirmReleasePublish() {
     if (!await this.promptConfirm('Are you sure that you want to release now?')) {
       console.log();
       console.log(yellow('Aborting publish...'));
@@ -201,7 +201,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * the NPM credentials that are necessary to publish the release. We achieve this by basically
    * running "npm login" as a child process and piping stdin/stdout/stderr to the current tty.
    */
-  private checkNpmAuthentication() {
+  private _checkNpmAuthentication() {
     if (isNpmAuthenticated()) {
       console.info(green(`  ✓   NPM is authenticated.`));
       return;
@@ -231,7 +231,7 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Publishes the specified package within the given NPM dist tag. */
-  private publishPackageToNpm(packageName: string, npmDistTag: string) {
+  private _publishPackageToNpm(packageName: string, npmDistTag: string) {
     console.info(green(`  ⭮   Publishing "${packageName}"..`));
 
     const errorOutput = npmPublish(join(this.releaseOutputPath, packageName), npmDistTag);
@@ -247,7 +247,7 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Creates the specified release tag locally. */
-  private createReleaseTag(tagName: string, releaseNotes: string) {
+  private _createReleaseTag(tagName: string, releaseNotes: string) {
     if (this.git.hasLocalTag(tagName)) {
       const expectedSha = this.git.getLocalCommitSha('HEAD');
 
@@ -269,7 +269,7 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Pushes the release tag to the remote repository. */
-  private pushReleaseTag(tagName: string, upstreamRemote: string) {
+  private _pushReleaseTag(tagName: string, upstreamRemote: string) {
     const remoteTagSha = this.git.getShaOfRemoteTag(tagName);
     const expectedSha = this.git.getLocalCommitSha('HEAD');
 
@@ -300,7 +300,7 @@ class PublishReleaseTask extends BaseReleaseTask {
    * Determines the name of the Git remote that is used for pushing changes
    * upstream to github.
    */
-  private async getProjectUpstreamRemote() {
+  private async _getProjectUpstreamRemote() {
     const remoteName = this.git.hasRemote('upstream') ?
         'upstream' : await promptForUpstreamRemote(this.git.getAvailableRemotes());
 

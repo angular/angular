@@ -26,18 +26,18 @@ export class ProgressBarDemo {
   bufferBufferValue: number = 40;
 
   stepDeterminateProgressVal(val: number) {
-    this.determinateProgressValue = this.clampValue(val + this.determinateProgressValue);
+    this.determinateProgressValue = this._clampValue(val + this.determinateProgressValue);
   }
 
   stepBufferProgressVal(val: number) {
-    this.bufferProgressValue = this.clampValue(val + this.bufferProgressValue);
+    this.bufferProgressValue = this._clampValue(val + this.bufferProgressValue);
   }
 
   stepBufferBufferVal(val: number) {
-    this.bufferBufferValue = this.clampValue(val + this.bufferBufferValue);
+    this.bufferBufferValue = this._clampValue(val + this.bufferBufferValue);
   }
 
-  private clampValue(value: number) {
+  private _clampValue(value: number) {
     return Math.max(0, Math.min(100, value));
   }
 }

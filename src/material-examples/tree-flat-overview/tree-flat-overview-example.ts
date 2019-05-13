@@ -55,7 +55,7 @@ interface ExampleFlatNode {
   styleUrls: ['tree-flat-overview-example.css'],
 })
 export class TreeFlatOverviewExample {
-  private transformer = (node: FoodNode, level: number) => {
+  private _transformer = (node: FoodNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
@@ -67,7 +67,7 @@ export class TreeFlatOverviewExample {
       node => node.level, node => node.expandable);
 
   treeFlattener = new MatTreeFlattener(
-      this.transformer, node => node.level, node => node.expandable, node => node.children);
+      this._transformer, node => node.level, node => node.expandable, node => node.children);
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 

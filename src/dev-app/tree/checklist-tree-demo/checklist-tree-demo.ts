@@ -35,14 +35,14 @@ export class ChecklistTreeDemo {
   /** The selection for checklist */
   checklistSelection = new SelectionModel<TodoItemNode>(true /* multiple */);
 
-  constructor(private database: ChecklistDatabase, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private _database: ChecklistDatabase, private _changeDetectorRef: ChangeDetectorRef) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
         this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TodoItemNode>(
         this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    database.dataChange.subscribe(data => this.dataSource.data = data);
+    _database.dataChange.subscribe(data => this.dataSource.data = data);
   }
 
   getLevel = (node: TodoItemNode): number => {
@@ -74,7 +74,7 @@ export class ChecklistTreeDemo {
     const allSelected = descendants.every(child => this.checklistSelection.isSelected(child));
     if (!selected && allSelected) {
       this.checklistSelection.select(node);
-      this.changeDetectorRef.markForCheck();
+      this._changeDetectorRef.markForCheck();
     }
     return allSelected;
   }
@@ -96,17 +96,17 @@ export class ChecklistTreeDemo {
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants, node)
       : this.checklistSelection.deselect(...descendants, node);
-    this.changeDetectorRef.markForCheck();
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Select the category so we can insert the new item. */
   addNewItem(node: TodoItemNode) {
-    this.database.insertItem(node, '');
+    this._database.insertItem(node, '');
     this.treeControl.expand(node);
   }
 
   /** Save the node to database */
   saveNode(node: TodoItemNode, itemValue: string) {
-    this.database.updateItem(node, itemValue);
+    this._database.updateItem(node, itemValue);
   }
 }

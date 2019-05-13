@@ -1090,7 +1090,7 @@ describe('MatMenu', () => {
       }
 
       get overlayRect() {
-        return this.getOverlayPane().getBoundingClientRect();
+        return this._getOverlayPane().getBoundingClientRect();
       }
 
       get triggerRect() {
@@ -1101,7 +1101,7 @@ describe('MatMenu', () => {
         return overlayContainerElement.querySelector('.mat-menu-panel');
       }
 
-      private getOverlayPane() {
+      private _getOverlayPane() {
         return overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
       }
     }

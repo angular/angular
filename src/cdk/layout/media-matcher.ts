@@ -20,8 +20,8 @@ export class MediaMatcher {
   /** The internal matchMedia method to return back a MediaQueryList like object. */
   private _matchMedia: (query: string) => MediaQueryList;
 
-  constructor(private platform: Platform) {
-    this._matchMedia = this.platform.isBrowser && window.matchMedia ?
+  constructor(private _platform: Platform) {
+    this._matchMedia = this._platform.isBrowser && window.matchMedia ?
       // matchMedia is bound to the window scope intentionally as it is an illegal invocation to
       // call it from a different scope.
       window.matchMedia.bind(window) :
@@ -35,7 +35,7 @@ export class MediaMatcher {
    * MediaQueryList for the query provided.
    */
   matchMedia(query: string): MediaQueryList {
-    if (this.platform.WEBKIT) {
+    if (this._platform.WEBKIT) {
       createEmptyStyleRule(query);
     }
     return this._matchMedia(query);

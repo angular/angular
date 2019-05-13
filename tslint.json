@@ -109,6 +109,9 @@
       "HostBinding",
       "HostListener"
     ],
+    "member-naming": [true, {
+      "private": "^_"
+    }],
     "validate-decorators": [true, {
       "Component": {
         "!host": "\\[class\\]",

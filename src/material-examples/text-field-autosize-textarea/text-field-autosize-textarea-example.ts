@@ -9,13 +9,13 @@ import {take} from 'rxjs/operators';
   styleUrls: ['./text-field-autosize-textarea-example.css'],
 })
 export class TextFieldAutosizeTextareaExample {
-  constructor(private ngZone: NgZone) {}
+  constructor(private _ngZone: NgZone) {}
 
   @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 
   triggerResize() {
     // Wait for changes to be applied, then trigger textarea resize.
-    this.ngZone.onStable.pipe(take(1))
+    this._ngZone.onStable.pipe(take(1))
         .subscribe(() => this.autosize.resizeToFitContent(true));
   }
 }

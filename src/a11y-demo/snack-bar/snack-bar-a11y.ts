@@ -16,13 +16,13 @@ import {MatSnackBar} from '@angular/material';
   templateUrl: 'snack-bar-a11y.html',
 })
 export class SnackBarAccessibilityDemo {
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatSnackBar) {}
 
   openDiscoPartySnackBar() {
-    this.snackBar.open('Disco party!', 'Dismiss', {duration: 5000});
+    this._snackBar.open('Disco party!', 'Dismiss', {duration: 5000});
   }
 
   openNotificationSnackBar() {
-    this.snackBar.open('Thank you for your support!', '', {duration: 2000});
+    this._snackBar.open('Thank you for your support!', '', {duration: 2000});
   }
 }

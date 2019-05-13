@@ -135,12 +135,12 @@ export class MatTreeFlatDataSource<T, F> extends DataSource<F> {
   get data() { return this._data.value; }
   set data(value: T[]) {
     this._data.next(value);
-    this._flattenedData.next(this.treeFlattener.flattenNodes(this.data));
-    this.treeControl.dataNodes = this._flattenedData.value;
+    this._flattenedData.next(this._treeFlattener.flattenNodes(this.data));
+    this._treeControl.dataNodes = this._flattenedData.value;
   }
 
-  constructor(private treeControl: FlatTreeControl<F>,
-              private treeFlattener: MatTreeFlattener<T, F>,
+  constructor(private _treeControl: FlatTreeControl<F>,
+              private _treeFlattener: MatTreeFlattener<T, F>,
               initialData: T[] = []) {
     super();
     this._data = new BehaviorSubject<T[]>(initialData);
@@ -149,12 +149,12 @@ export class MatTreeFlatDataSource<T, F> extends DataSource<F> {
   connect(collectionViewer: CollectionViewer): Observable<F[]> {
     const changes = [
       collectionViewer.viewChange,
-      this.treeControl.expansionModel.onChange,
+      this._treeControl.expansionModel.onChange,
       this._flattenedData
     ];
     return merge(...changes).pipe(map(() => {
       this._expandedData.next(
-        this.treeFlattener.expandFlattenedNodes(this._flattenedData.value, this.treeControl));
+        this._treeFlattener.expandFlattenedNodes(this._flattenedData.value, this._treeControl));
       return this._expandedData.value;
     }));
   }
