@@ -1,3 +1,31 @@
+# 8.0.0-rc.1 "rust-rhubarb" (2019-05-13)
+
+
+### Bug Fixes
+
+* **checkbox:** don't show hover ripples on touch devices ([#13700](https://github.com/angular/components/issues/13700)) ([43b4fec](https://github.com/angular/components/commit/43b4fec)), closes [#13675](https://github.com/angular/components/issues/13675)
+* **drag-drop:** allow for element in DropListRef to be changed ([#15091](https://github.com/angular/components/issues/15091)) ([e630bd6](https://github.com/angular/components/commit/e630bd6)), closes [#15086](https://github.com/angular/components/issues/15086)
+* **drag-drop:** don't allow user to move item into container that isn't connected to current one by passing it over an intermediate one that is ([#15660](https://github.com/angular/components/issues/15660)) ([1ac9386](https://github.com/angular/components/commit/1ac9386)), closes [#15191](https://github.com/angular/components/issues/15191)
+* **drag-drop:** error if item is removed while dragging ([#15950](https://github.com/angular/components/issues/15950)) ([a632067](https://github.com/angular/components/commit/a632067)), closes [#15827](https://github.com/angular/components/issues/15827)
+* **drag-drop:** preview element not maintaining canvas data ([#15808](https://github.com/angular/components/issues/15808)) ([31e72a7](https://github.com/angular/components/commit/31e72a7)), closes [#15685](https://github.com/angular/components/issues/15685)
+* **list:** form control cleared when list is destroyed ([#16005](https://github.com/angular/components/issues/16005)) ([40b335c](https://github.com/angular/components/commit/40b335c)), closes [#15994](https://github.com/angular/components/issues/15994)
+* **menu:** prevent menu from collapsing to less than one item ([#15454](https://github.com/angular/components/issues/15454)) ([941a0d9](https://github.com/angular/components/commit/941a0d9))
+* **overlay:** add panelClass from position to the overlay ([#15853](https://github.com/angular/components/issues/15853)) ([00226f0](https://github.com/angular/components/commit/00226f0))
+* **overlay:** allow overlay sass variables to be overwritten ([#15507](https://github.com/angular/components/issues/15507)) ([b1c10d1](https://github.com/angular/components/commit/b1c10d1)), closes [#15467](https://github.com/angular/components/issues/15467)
+* **popover-edit:** direction not being passed to overlay ([#15951](https://github.com/angular/components/issues/15951)) ([7774ae1](https://github.com/angular/components/commit/7774ae1))
+* **portal:** correct return type of TemplatePortal.attach ([#14602](https://github.com/angular/components/issues/14602)) ([70bc4d5](https://github.com/angular/components/commit/70bc4d5)), closes [#14584](https://github.com/angular/components/issues/14584)
+* **scrolling:** virtual scroll not disconnecting from data source on destroy ([#15856](https://github.com/angular/components/issues/15856)) ([8494f03](https://github.com/angular/components/commit/8494f03)), closes [#15855](https://github.com/angular/components/issues/15855)
+* **select:** optionSelectionChanges not emitting when the list of options changes ([#14814](https://github.com/angular/components/issues/14814)) ([f6cd86e](https://github.com/angular/components/commit/f6cd86e))
+
+
+### Features
+
+* **autocomplete:** add input to control position ([#15834](https://github.com/angular/components/issues/15834)) ([5aaca54](https://github.com/angular/components/commit/5aaca54)), closes [#15640](https://github.com/angular/components/issues/15640)
+* **drag-drop:** allow element to be passed in as the boundary ([#15810](https://github.com/angular/components/issues/15810)) ([399f25e](https://github.com/angular/components/commit/399f25e)), closes [#15766](https://github.com/angular/components/issues/15766)
+* **radio:** support theme color on mat-radio-group ([#15741](https://github.com/angular/components/issues/15741)) ([6c03e2f](https://github.com/angular/components/commit/6c03e2f)), closes [#15701](https://github.com/angular/components/issues/15701)
+
+
+
 # 8.0.0-rc.0 "plastic-portal" (2019-04-29)
 
 
