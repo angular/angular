@@ -296,6 +296,16 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   &, .mat-checkbox.mat-disabled .mat-checkbox-inner-container:hover & {
     opacity: 0;
   }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-checkbox-inner-container:hover & {
+      display: none;
+    }
+  }
 }
 
 .mat-checkbox-checkmark {
