@@ -236,7 +236,7 @@ export class DragRef<T = any> {
   ended = new Subject<{source: DragRef}>();
 
   /** Emits when the user has moved the item into a new container. */
-  entered = new Subject<{container: DropListRef, item: DragRef}>();
+  entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
 
   /** Emits when the user removes the item its container by dragging it into another container. */
   exited = new Subject<{container: DropListRef, item: DragRef}>();
@@ -772,9 +772,13 @@ export class DragRef<T = any> {
         this.exited.next({item: this, container: this._dropContainer!});
         this._dropContainer!.exit(this);
         // Notify the new container that the item has entered.
-        this.entered.next({item: this, container: newContainer!});
         this._dropContainer = newContainer!;
         this._dropContainer.enter(this, x, y);
+        this.entered.next({
+          item: this,
+          container: newContainer!,
+          currentIndex: newContainer!.getItemIndex(this)
+        });
       });
     }
 

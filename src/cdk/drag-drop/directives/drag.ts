@@ -355,7 +355,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     ref.entered.subscribe(event => {
       this.entered.emit({
         container: event.container.data,
-        item: this
+        item: this,
+        currentIndex: event.currentIndex
       });
     });
 

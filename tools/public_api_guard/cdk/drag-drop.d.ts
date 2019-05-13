@@ -64,6 +64,7 @@ export interface CdkDragEnd<T = any> {
 
 export interface CdkDragEnter<T = any, I = T> {
     container: CdkDropList<T>;
+    currentIndex: number;
     item: CdkDrag<I>;
 }
 
@@ -229,6 +230,7 @@ export declare class DragRef<T = any> {
     entered: Subject<{
         container: DropListRef;
         item: DragRef<any>;
+        currentIndex: number;
     }>;
     exited: Subject<{
         container: DropListRef;
@@ -294,6 +296,7 @@ export declare class DropListRef<T = any> {
     entered: Subject<{
         item: DragRef;
         container: DropListRef<any>;
+        currentIndex: number;
     }>;
     exited: Subject<{
         item: DragRef;

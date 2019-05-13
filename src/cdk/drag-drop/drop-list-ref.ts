@@ -81,7 +81,7 @@ export class DropListRef<T = any> {
   /**
    * Emits when the user has moved a new drag item into this container.
    */
-  entered = new Subject<{item: DragRef, container: DropListRef}>();
+  entered = new Subject<{item: DragRef, container: DropListRef, currentIndex: number}>();
 
   /**
    * Emits when the user removes an item from the container
@@ -187,7 +187,6 @@ export class DropListRef<T = any> {
    * @param pointerY Position of the item along the Y axis.
    */
   enter(item: DragRef, pointerX: number, pointerY: number): void {
-    this.entered.next({item, container: this});
     this.start();
 
     // If sorting is disabled, we want the item to return to its starting
@@ -235,6 +234,7 @@ export class DropListRef<T = any> {
     // Note that the positions were already cached when we called `start` above,
     // but we need to refresh them since the amount of items has changed.
     this._cacheItemPositions();
+    this.entered.next({item, container: this, currentIndex: this.getItemIndex(item)});
   }
 
   /**

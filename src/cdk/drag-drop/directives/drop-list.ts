@@ -313,7 +313,8 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
     ref.entered.subscribe(event => {
       this.entered.emit({
         container: this,
-        item: event.item.data
+        item: event.item.data,
+        currentIndex: event.currentIndex
       });
     });
 
