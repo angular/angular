@@ -35,7 +35,6 @@ describe('components using pure function instructions internally', () => {
 
       TestBed.configureTestingModule({
         declarations: [App, MyComp],
-        imports: [CommonModule],
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -117,10 +116,6 @@ describe('components using pure function instructions internally', () => {
       fixture.detectChanges();
       const manyPropComp = fixture.debugElement.query(By.directive(ManyPropComp)).componentInstance;
 
-
-      fixture.componentInstance.customName = 'Carson';
-      fixture.componentInstance.customName2 = 'George';
-      fixture.detectChanges();
       expect(manyPropComp !.names1).toEqual(['Nancy', 'Carson']);
       expect(manyPropComp !.names2).toEqual(['George']);
 
@@ -448,6 +443,40 @@ describe('components using pure function instructions internally', () => {
       objectComp.config = ['should not be overwritten'];
       fixture.detectChanges();
       expect(objectComp.config).toEqual(['should not be overwritten']);
+    });
+
+    it('should support multiple view instances with multiple bindings', () => {
+      @Component({
+        template: `
+        <object-comp *ngFor="let config of configs" [config]="config">
+        </object-comp>
+      `,
+      })
+      class App {
+        configs = [
+          {opacity: 0, duration: 500},
+          {opacity: 1, duration: 600},
+        ];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, ObjectComp],
+        imports: [CommonModule],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const app = fixture.componentInstance;
+      const objectComps =
+          fixture.debugElement.queryAll(By.directive(ObjectComp)).map(f => f.componentInstance);
+
+      expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
+      expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
+
+      app.configs[0].duration = 1000;
+      fixture.detectChanges();
+      expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
+      expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
     });
   });
 });
