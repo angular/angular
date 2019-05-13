@@ -326,7 +326,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       overlayX: currentPosition.overlayX,
       overlayY: currentPosition.overlayY,
       offsetX: currentPosition.offsetX || this.offsetX,
-      offsetY: currentPosition.offsetY || this.offsetY
+      offsetY: currentPosition.offsetY || this.offsetY,
+      panelClass: currentPosition.panelClass || undefined,
     }));
 
     return positionStrategy

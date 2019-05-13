@@ -391,6 +391,23 @@ describe('Overlay directives', () => {
       expect(Math.floor(overlayRect.left)).toBe(Math.floor(triggerRect.left) + 20);
     });
 
+    it('should take the offset from the position', () => {
+      fixture.componentInstance.positionOverrides = [{
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+        panelClass: 'custom-class'
+      }];
+
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const panel = getPaneElement();
+      expect(panel.classList).toContain('custom-class');
+      expect(panel.classList).toContain('cdk-test-panel-class');
+    });
+
     it('should be able to set the viewport margin', () => {
       expect(fixture.componentInstance.connectedOverlayDirective.viewportMargin).not.toBe(10);
 
