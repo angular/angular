@@ -10,7 +10,7 @@ though they organize it differently, Angular apps rely on both.
 
 ## JavaScript modules
 
-In JavaScript, modules are individual files with JavaScript code in them. To make what’s in them available, you write an export statement, usually after the relevant code, like this:
+In JavaScript, modules are individual files with JavaScript code in them. To make what’s in them available, you write an export statement, usually before the relevant code, like this:
 
 ```typescript
 export class AppComponent { ... }
@@ -55,7 +55,7 @@ export class AppModule { }
 
 The NgModule classes differ from JavaScript module in the following key ways:
 
-* An NgModule bounds [declarable classes](guide/ngmodule-faq#q-declarable) only.
+* An NgModule binds [declarable classes](guide/ngmodule-faq#q-declarable) only.
 Declarables are the only classes that matter to the [Angular compiler](guide/ngmodule-faq#q-angular-compiler).
 * Instead of defining all member classes in one giant file as in a JavaScript module,
 you list the module's classes in the `@NgModule.declarations` list.
