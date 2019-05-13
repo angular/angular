@@ -123,6 +123,9 @@
     "name": "getGlobal"
   },
   {
+    "name": "getInheritedInjectableDef"
+  },
+  {
     "name": "getInjectableDef"
   },
   {
@@ -130,6 +133,9 @@
   },
   {
     "name": "getNullInjector"
+  },
+  {
+    "name": "getUndecoratedInjectableFactory"
   },
   {
     "name": "hasDeps"

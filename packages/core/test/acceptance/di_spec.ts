@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, Injector, Input, LOCALE_ID, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -370,7 +370,7 @@ describe('di', () => {
                <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
            </ng-template>
          </div>
-         
+
          <div dirB value="insertion">
            <div structuralDir [tmp]="foo"></div>
            <!-- insertion point -->
@@ -857,6 +857,40 @@ describe('di', () => {
 
       const divElement = fixture.nativeElement.querySelector('div');
       expect(divElement.textContent).toEqual('MyService');
+    });
+
+    it('should support sub-classes with no @Injectable decorator', () => {
+      @Injectable()
+      class Dependency {
+      }
+
+      @Injectable()
+      class SuperClass {
+        constructor(public dep: Dependency) {}
+      }
+
+      // Note, no @Injectable decorators for these two classes
+      class SubClass extends SuperClass {}
+      class SubSubClass extends SubClass {}
+
+      @Component({template: ''})
+      class MyComp {
+        constructor(public myService: SuperClass) {}
+      }
+      TestBed.configureTestingModule({
+        declarations: [MyComp],
+        providers: [{provide: SuperClass, useClass: SubSubClass}, Dependency]
+      });
+
+      const warnSpy = spyOn(console, 'warn');
+      const fixture = TestBed.createComponent(MyComp);
+      expect(fixture.componentInstance.myService.dep instanceof Dependency).toBe(true);
+
+      if (ivyEnabled) {
+        expect(warnSpy).toHaveBeenCalledWith(
+            `DEPRECATED: DI is instantiating a token "SubSubClass" that inherits its @Injectable decorator but does not provide one itself.\n` +
+            `This will become an error in v10. Please add @Injectable() to the "SubSubClass" class.`);
+      }
     });
   });
 
