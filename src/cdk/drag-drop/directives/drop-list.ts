@@ -342,7 +342,8 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
         previousContainer: event.previousContainer.data,
         container: event.container.data,
         item: event.item.data,
-        isPointerOverContainer: event.isPointerOverContainer
+        isPointerOverContainer: event.isPointerOverContainer,
+        distance: event.distance
       });
 
       // Mark for check since all of these events run outside of change

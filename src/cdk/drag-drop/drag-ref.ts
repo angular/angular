@@ -127,6 +127,7 @@ export class DragRef<T = any> {
     source: DragRef;
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;
+    distance: Point;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
   }>();
 
@@ -227,7 +228,7 @@ export class DragRef<T = any> {
   released = new Subject<{source: DragRef}>();
 
   /** Emits when the user stops dragging an item in the container. */
-  ended = new Subject<{source: DragRef}>();
+  ended = new Subject<{source: DragRef, distance: Point}>();
 
   /** Emits when the user has moved the item into a new container. */
   entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
@@ -242,6 +243,7 @@ export class DragRef<T = any> {
     item: DragRef;
     container: DropListRef;
     previousContainer: DropListRef;
+    distance: Point;
     isPointerOverContainer: boolean;
   }>();
 
@@ -253,6 +255,7 @@ export class DragRef<T = any> {
     source: DragRef;
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;
+    distance: Point;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
   }> = this._moveEvents.asObservable();
 
@@ -555,6 +558,7 @@ export class DragRef<T = any> {
           source: this,
           pointerPosition: constrainedPointerPosition,
           event,
+          distance: this._getDragDistance(constrainedPointerPosition),
           delta: this._pointerDirectionDelta
         });
       });
@@ -590,7 +594,12 @@ export class DragRef<T = any> {
       // to the new passive transform.
       this._passiveTransform.x = this._activeTransform.x;
       this._passiveTransform.y = this._activeTransform.y;
-      this._ngZone.run(() => this.ended.next({source: this}));
+      this._ngZone.run(() => {
+        this.ended.next({
+          source: this,
+          distance: this._getDragDistance(this._getPointerPositionOnPage(event))
+        });
+      });
       this._dragDropRegistry.stopDragging(this);
       return;
     }
@@ -717,19 +726,22 @@ export class DragRef<T = any> {
     this._ngZone.run(() => {
       const container = this._dropContainer!;
       const currentIndex = container.getItemIndex(this);
-      const {x, y} = this._getPointerPositionOnPage(event);
-      const isPointerOverContainer = container._isOverContainer(x, y);
+      const pointerPosition = this._getPointerPositionOnPage(event);
+      const distance = this._getDragDistance(this._getPointerPositionOnPage(event));
+      const isPointerOverContainer = container._isOverContainer(
+        pointerPosition.x, pointerPosition.y);
 
-      this.ended.next({source: this});
+      this.ended.next({source: this, distance});
       this.dropped.next({
         item: this,
         currentIndex,
         previousIndex: this._initialContainer.getItemIndex(this),
         container: container,
         previousContainer: this._initialContainer,
-        isPointerOverContainer
+        isPointerOverContainer,
+        distance
       });
-      container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer);
+      container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer, distance);
       this._dropContainer = this._initialContainer;
     });
   }
@@ -1010,6 +1022,20 @@ export class DragRef<T = any> {
     // the element will be translated towards.
     this._rootElement.style.transform = this._initialTransform ?
       transform + ' ' + this._initialTransform  : transform;
+  }
+
+  /**
+   * Gets the distance that the user has dragged during the current drag sequence.
+   * @param currentPosition Current position of the user's pointer.
+   */
+  private _getDragDistance(currentPosition: Point): Point {
+    const pickupPosition = this._pickupPositionOnPage;
+
+    if (pickupPosition) {
+      return {x: currentPosition.x - pickupPosition.x, y: currentPosition.y - pickupPosition.y};
+    }
+
+    return {x: 0, y: 0};
   }
 }
 

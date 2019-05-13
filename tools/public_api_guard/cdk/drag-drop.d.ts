@@ -53,6 +53,10 @@ export interface CdkDragConfig extends DragRefConfig {
 export interface CdkDragDrop<T, O = T> {
     container: CdkDropList<T>;
     currentIndex: number;
+    distance: {
+        x: number;
+        y: number;
+    };
     isPointerOverContainer: boolean;
     item: CdkDrag;
     previousContainer: CdkDropList<O>;
@@ -60,6 +64,10 @@ export interface CdkDragDrop<T, O = T> {
 }
 
 export interface CdkDragEnd<T = any> {
+    distance: {
+        x: number;
+        y: number;
+    };
     source: CdkDrag<T>;
 }
 
@@ -87,6 +95,10 @@ export interface CdkDragMove<T = any> {
     delta: {
         x: -1 | 0 | 1;
         y: -1 | 0 | 1;
+    };
+    distance: {
+        x: number;
+        y: number;
     };
     event: MouseEvent | TouchEvent;
     pointerPosition: {
@@ -223,10 +235,12 @@ export declare class DragRef<T = any> {
         item: DragRef<any>;
         container: DropListRef;
         previousContainer: DropListRef;
+        distance: Point;
         isPointerOverContainer: boolean;
     }>;
     ended: Subject<{
         source: DragRef<any>;
+        distance: Point;
     }>;
     entered: Subject<{
         container: DropListRef;
@@ -245,6 +259,7 @@ export declare class DragRef<T = any> {
             y: number;
         };
         event: MouseEvent | TouchEvent;
+        distance: Point;
         delta: {
             x: -1 | 0 | 1;
             y: -1 | 0 | 1;
@@ -291,6 +306,7 @@ export declare class DropListRef<T = any> {
         container: DropListRef<any>;
         previousContainer: DropListRef<any>;
         isPointerOverContainer: boolean;
+        distance: Point;
     }>;
     element: HTMLElement | ElementRef<HTMLElement>;
     enterPredicate: (drag: DragRef, drop: DropListRef) => boolean;
@@ -324,7 +340,7 @@ export declare class DropListRef<T = any> {
     _stopReceiving(sibling: DropListRef): void;
     connectedTo(connectedTo: DropListRef[]): this;
     dispose(): void;
-    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean): void;
+    drop(item: DragRef, currentIndex: number, previousContainer: DropListRef, isPointerOverContainer: boolean, distance?: Point): void;
     enter(item: DragRef, pointerX: number, pointerY: number): void;
     exit(item: DragRef): void;
     getItemIndex(item: DragRef): number;

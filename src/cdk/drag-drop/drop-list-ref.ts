@@ -12,7 +12,7 @@ import {Direction} from '@angular/cdk/bidi';
 import {coerceElement} from '@angular/cdk/coercion';
 import {Subject} from 'rxjs';
 import {moveItemInArray} from './drag-utils';
-import {DragRefInternal as DragRef} from './drag-ref';
+import {DragRefInternal as DragRef, Point} from './drag-ref';
 
 
 /** Counter used to generate unique ids for drop refs. */
@@ -97,7 +97,8 @@ export class DropListRef<T = any> {
     previousIndex: number,
     container: DropListRef,
     previousContainer: DropListRef,
-    isPointerOverContainer: boolean
+    isPointerOverContainer: boolean,
+    distance: Point;
   }>();
 
   /** Emits as the user is swapping items while actively dragging. */
@@ -254,9 +255,11 @@ export class DropListRef<T = any> {
    * @param previousContainer Container from which the item got dragged in.
    * @param isPointerOverContainer Whether the user's pointer was over the
    *    container when the item was dropped.
+   * @param distance Distance the user has dragged since the start of the dragging sequence.
+   * @breaking-change 9.0.0 `distance` parameter to become required.
    */
   drop(item: DragRef, currentIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean): void {
+    isPointerOverContainer: boolean, distance: Point = {x: 0, y: 0}): void {
     this._reset();
     this.dropped.next({
       item,
@@ -264,7 +267,8 @@ export class DropListRef<T = any> {
       previousIndex: previousContainer.getItemIndex(item),
       container: this,
       previousContainer,
-      isPointerOverContainer
+      isPointerOverContainer,
+      distance
     });
   }
 
