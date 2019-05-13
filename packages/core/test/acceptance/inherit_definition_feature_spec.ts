@@ -570,7 +570,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -597,7 +597,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('P');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -1061,7 +1061,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -1088,7 +1088,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('P');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -1579,7 +1579,7 @@ describe('inheritance', () => {
       }
 
       class SuperDirective extends SuperSuperDirective {
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -1606,7 +1606,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('P');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -2092,7 +2092,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -2120,7 +2120,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -2585,7 +2585,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -2613,7 +2613,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -3136,7 +3136,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -3166,7 +3166,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -3706,7 +3706,7 @@ describe('inheritance', () => {
         @HostBinding('style.color')
         color = 'red';
 
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -3734,7 +3734,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
@@ -4283,7 +4283,7 @@ describe('inheritance', () => {
       }
 
       class SuperComponent extends SuperSuperComponent {
-        @HostBinding('style.background')
+        @HostBinding('style.backgroundColor')
         bg = 'black';
       }
 
@@ -4311,7 +4311,7 @@ describe('inheritance', () => {
 
       expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
       expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.background).toBe('black');
+      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
     it('should compose host bindings (non-style related)', () => {
