@@ -378,7 +378,7 @@ describe('MatSelect', () => {
 
           dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
 
-          expect(liveAnnouncer.announce).toHaveBeenCalledWith('Steak');
+          expect(liveAnnouncer.announce).toHaveBeenCalledWith('Steak', jasmine.any(Number));
 
           flush();
         })));
