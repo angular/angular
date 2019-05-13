@@ -224,6 +224,7 @@ describe('MatButtonToggle without forms', () => {
         ButtonToggleWithAriaLabelledby,
         RepeatedButtonTogglesWithPreselectedValue,
         ButtonToggleWithTabindex,
+        ButtonToggleWithStaticName,
       ],
     });
 
@@ -736,7 +737,7 @@ describe('MatButtonToggle without forms', () => {
     });
   });
 
-  describe('with tabindex ', () => {
+  describe('with tabindex', () => {
     it('should forward the tabindex to the underlying button', () => {
       const fixture = TestBed.createComponent(ButtonToggleWithTabindex);
       fixture.detectChanges();
@@ -776,6 +777,16 @@ describe('MatButtonToggle without forms', () => {
     expect(() => fixture.detectChanges()).not.toThrow();
     expect(fixture.componentInstance.toggleGroup.value).toBe('Two');
     expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(true);
+  });
+
+  it('should not throw on init when toggles are repeated and there is an initial value', () => {
+    const fixture = TestBed.createComponent(ButtonToggleWithStaticName);
+    fixture.detectChanges();
+
+    const hostNode: HTMLElement = fixture.nativeElement.querySelector('.mat-button-toggle');
+
+    expect(hostNode.hasAttribute('name')).toBe(false);
+    expect(hostNode.querySelector('button')!.getAttribute('name')).toBe('custom-name');
   });
 
   it('should maintain the selected state when the value and toggles are swapped out at ' +
@@ -951,3 +962,7 @@ class RepeatedButtonTogglesWithPreselectedValue {
 })
 class ButtonToggleWithTabindex {}
 
+@Component({
+  template: `<mat-button-toggle name="custom-name"></mat-button-toggle>`
+})
+class ButtonToggleWithStaticName {}
