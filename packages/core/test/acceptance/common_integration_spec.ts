@@ -191,11 +191,10 @@ describe('@angular/common integration', () => {
       let listItems =
           Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(2);
-      let spanItems =
-          Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('span'));
-      expect(spanItems.map(span => span.textContent)).toEqual([
-        '1 - first - 2', '2 - first - 2', '3 - second - 2', '4 - second - 2'
-      ]);
+      let spanItems = Array.from(listItems[0].querySelectorAll('span'));
+      expect(spanItems.map(span => span.textContent)).toEqual(['1 - first - 2', '2 - first - 2']);
+      spanItems = Array.from(listItems[1].querySelectorAll('span'));
+      expect(spanItems.map(span => span.textContent)).toEqual(['3 - second - 2', '4 - second - 2']);
 
       // remove the last item
       const items = fixture.componentInstance.items;
@@ -204,7 +203,7 @@ describe('@angular/common integration', () => {
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(1);
-      spanItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('span'));
+      spanItems = Array.from(listItems[0].querySelectorAll('span'));
       expect(spanItems.map(span => span.textContent)).toEqual(['1 - first - 1', '2 - first - 1']);
 
       // change an item
@@ -213,7 +212,7 @@ describe('@angular/common integration', () => {
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(1);
-      spanItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('span'));
+      spanItems = Array.from(listItems[0].querySelectorAll('span'));
       expect(spanItems.map(span => span.textContent)).toEqual(['one - first - 1', '2 - first - 1']);
 
       // add an item
@@ -222,9 +221,11 @@ describe('@angular/common integration', () => {
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(2);
-      spanItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('span'));
+      spanItems = Array.from(listItems[0].querySelectorAll('span'));
+      expect(spanItems.map(span => span.textContent)).toEqual(['one - first - 2', '2 - first - 2']);
+      spanItems = Array.from(listItems[1].querySelectorAll('span'));
       expect(spanItems.map(span => span.textContent)).toEqual([
-        'one - first - 2', '2 - first - 2', 'three - third - 2', '4 - third - 2'
+        'three - third - 2', '4 - third - 2'
       ]);
     });
 
@@ -308,7 +309,7 @@ describe('@angular/common integration', () => {
     it('should support context for 9+ levels of embedded templates', () => {
       @Component({
         selector: 'app-multi',
-        template: `<span *ngFor="let item0 of items">
+        template: `<div *ngFor="let item0 of items">
             <span *ngFor="let item1 of item0.data">
                <span *ngFor="let item2 of item1.data">
                    <span *ngFor="let item3 of item2.data">
@@ -324,7 +325,7 @@ describe('@angular/common integration', () => {
                    </span>
                </span>
             </span>
-         </span>`
+         </div>`
       })
       class NineLevelsComponent {
         value = 'App';
@@ -406,12 +407,18 @@ describe('@angular/common integration', () => {
       const fixture = TestBed.createComponent(NineLevelsComponent);
       fixture.detectChanges();
 
-      const elements = fixture.nativeElement.querySelectorAll('span');
-      expect(elements.length).toBe(20);  // 2 outer loops * (8 wrapping spans containing 2 spans)
-      expect(elements[8].textContent).toBe('1.h.g.f.e.d.c.b.a.App');
-      expect(elements[9].textContent).toBe('2.h.g.f.e.d.c.b.a.App');
-      expect(elements[18].textContent).toBe('3.H.G.F.E.D.C.B.A.App');
-      expect(elements[19].textContent).toBe('4.H.G.F.E.D.C.B.A.App');
+      const divItems = (fixture.nativeElement as HTMLElement).querySelectorAll('div');
+      expect(divItems.length).toBe(2);  // 2 outer loops
+      let spanItems =
+          divItems[0].querySelectorAll('span > span > span > span > span > span > span > span');
+      expect(spanItems.length).toBe(2);  // 2 inner elements
+      expect(spanItems[0].textContent).toBe('1.h.g.f.e.d.c.b.a.App');
+      expect(spanItems[1].textContent).toBe('2.h.g.f.e.d.c.b.a.App');
+      spanItems =
+          divItems[1].querySelectorAll('span > span > span > span > span > span > span > span');
+      expect(spanItems.length).toBe(2);  // 2 inner elements
+      expect(spanItems[0].textContent).toBe('3.H.G.F.E.D.C.B.A.App');
+      expect(spanItems[1].textContent).toBe('4.H.G.F.E.D.C.B.A.App');
     });
   });
 
