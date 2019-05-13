@@ -8,7 +8,7 @@ import {
   MatExpansionPanel,
   MatExpansionPanelHeader,
 } from './index';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {DOWN_ARROW, UP_ARROW, HOME, END} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
 
@@ -201,10 +201,31 @@ describe('MatAccordion', () => {
     const headers = fixture.componentInstance.headers.toArray();
 
     headers.forEach(header => spyOn(header, 'focus'));
-    dispatchKeyboardEvent(headerElements[headerElements.length - 1].nativeElement, 'keydown', HOME);
+    const event = dispatchKeyboardEvent(
+        headerElements[headerElements.length - 1].nativeElement, 'keydown', HOME);
     fixture.detectChanges();
 
     expect(headers[0].focus).toHaveBeenCalledTimes(1);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('should not handle the home key when it is pressed with a modifier', () => {
+    const fixture = TestBed.createComponent(SetOfItems);
+    fixture.detectChanges();
+
+    const headerElements = fixture.debugElement.queryAll(By.css('mat-expansion-panel-header'));
+    const headers = fixture.componentInstance.headers.toArray();
+
+    headers.forEach(header => spyOn(header, 'focus'));
+    const eventTarget = headerElements[headerElements.length - 1].nativeElement;
+    const event = createKeyboardEvent('keydown', HOME, eventTarget);
+    Object.defineProperty(event, 'altKey', {get: () => true});
+
+    dispatchEvent(eventTarget, event);
+    fixture.detectChanges();
+
+    expect(headers[0].focus).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
   });
 
   it('should focus the last header when pressing the end key', () => {
@@ -215,10 +236,31 @@ describe('MatAccordion', () => {
     const headers = fixture.componentInstance.headers.toArray();
 
     headers.forEach(header => spyOn(header, 'focus'));
-    dispatchKeyboardEvent(headerElements[0].nativeElement, 'keydown', END);
+    const event = dispatchKeyboardEvent(headerElements[0].nativeElement, 'keydown', END);
     fixture.detectChanges();
 
     expect(headers[headers.length - 1].focus).toHaveBeenCalledTimes(1);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('should not handle the end key when it is pressed with a modifier', () => {
+    const fixture = TestBed.createComponent(SetOfItems);
+    fixture.detectChanges();
+
+    const headerElements = fixture.debugElement.queryAll(By.css('mat-expansion-panel-header'));
+    const headers = fixture.componentInstance.headers.toArray();
+
+    headers.forEach(header => spyOn(header, 'focus'));
+
+    const eventTarget = headerElements[0].nativeElement;
+    const event = createKeyboardEvent('keydown', END, eventTarget);
+    Object.defineProperty(event, 'altKey', {get: () => true});
+
+    dispatchEvent(eventTarget, event);
+    fixture.detectChanges();
+
+    expect(headers[headers.length - 1].focus).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
   });
 
 });
