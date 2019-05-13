@@ -69,7 +69,7 @@ export declare class MatAutocompleteSelectedEvent {
     option: MatOption);
 }
 
-export declare class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
+export declare class MatAutocompleteTrigger implements ControlValueAccessor, OnChanges, OnDestroy {
     _onChange: (value: any) => void;
     _onTouched: () => void;
     readonly activeOption: MatOption | null;
@@ -80,11 +80,13 @@ export declare class MatAutocompleteTrigger implements ControlValueAccessor, OnD
     readonly optionSelections: Observable<MatOptionSelectionChange>;
     readonly panelClosingActions: Observable<MatOptionSelectionChange | null>;
     readonly panelOpen: boolean;
+    position: 'auto' | 'above' | 'below';
     constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler?: ViewportRuler | undefined);
     _handleFocus(): void;
     _handleInput(event: KeyboardEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
     closePanel(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     openPanel(): void;
     registerOnChange(fn: (value: any) => {}): void;

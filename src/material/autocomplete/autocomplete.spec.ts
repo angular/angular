@@ -1581,6 +1581,97 @@ describe('MatAutocomplete', () => {
 
         expect(() => fixture.componentInstance.trigger.updatePosition()).not.toThrow();
     });
+
+    it('should be able to force below position even if there is not enough space', fakeAsync(() => {
+      let fixture = createComponent(SimpleAutocomplete);
+      fixture.componentInstance.position = 'below';
+      fixture.detectChanges();
+      let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
+
+      // Push the autocomplete trigger down so it won't have room to open below.
+      inputReference.style.bottom = '0';
+      inputReference.style.position = 'fixed';
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+      fixture.detectChanges();
+
+      const inputBottom = inputReference.getBoundingClientRect().bottom;
+      const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      const panelTop = panel.getBoundingClientRect().top;
+
+      expect(Math.floor(inputBottom))
+          .toEqual(Math.floor(panelTop), 'Expected panel to be below the input.');
+
+      expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
+    }));
+
+    it('should be able to force above position even if there is not enough space', fakeAsync(() => {
+      let fixture = createComponent(SimpleAutocomplete);
+      fixture.componentInstance.position = 'above';
+      fixture.detectChanges();
+      let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
+
+      // Push the autocomplete trigger up so it won't have room to open above.
+      inputReference.style.top = '0';
+      inputReference.style.position = 'fixed';
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+      fixture.detectChanges();
+
+      const inputTop = inputReference.getBoundingClientRect().top;
+      const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      const panelBottom = panel.getBoundingClientRect().bottom;
+
+      expect(Math.floor(inputTop))
+          .toEqual(Math.floor(panelBottom), 'Expected panel to be above the input.');
+
+      expect(panel.classList).toContain('mat-autocomplete-panel-above');
+    }));
+
+    it('should handle the position being changed after the first open', fakeAsync(() => {
+      let fixture = createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+      let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
+      let openPanel = () => {
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+        fixture.detectChanges();
+      };
+
+      // Push the autocomplete trigger down so it won't have room to open below.
+      inputReference.style.bottom = '0';
+      inputReference.style.position = 'fixed';
+      openPanel();
+
+      let inputRect = inputReference.getBoundingClientRect();
+      let panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      let panelRect = panel.getBoundingClientRect();
+
+      expect(Math.floor(inputRect.top))
+          .toEqual(Math.floor(panelRect.bottom), 'Expected panel to be above the input.');
+      expect(panel.classList).toContain('mat-autocomplete-panel-above');
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.position = 'below';
+      fixture.detectChanges();
+      openPanel();
+
+      inputRect = inputReference.getBoundingClientRect();
+      panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      panelRect = panel.getBoundingClientRect();
+
+      expect(Math.floor(inputRect.bottom))
+          .toEqual(Math.floor(panelRect.top), 'Expected panel to be below the input.');
+      expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
+    }));
+
   });
 
   describe('Option selection', () => {
@@ -2328,6 +2419,7 @@ describe('MatAutocomplete', () => {
         matInput
         placeholder="State"
         [matAutocomplete]="auto"
+        [matAutocompletePosition]="position"
         [matAutocompleteDisabled]="autocompleteDisabled"
         [formControl]="stateCtrl">
     </mat-form-field>
@@ -2345,6 +2437,7 @@ class SimpleAutocomplete implements OnDestroy {
   filteredStates: any[];
   valueSub: Subscription;
   floatLabel = 'auto';
+  position = 'auto';
   width: number;
   disableRipple = false;
   autocompleteDisabled = false;
