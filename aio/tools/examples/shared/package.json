@@ -59,7 +59,7 @@
     "@types/node": "~8.9.4",
     "canonical-path": "1.0.0",
     "concurrently": "^3.0.0",
-    "http-server": "^0.9.0",
+    "http-server": "^0.11.1",
     "jasmine-core": "~2.99.1",
     "jasmine-marbles": "^0.4.0",
     "jasmine-spec-reporter": "~4.2.1",

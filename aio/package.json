@@ -123,7 +123,7 @@
     "hast-util-is-element": "^1.0.0",
     "hast-util-to-string": "^1.0.0",
     "html": "^1.0.0",
-    "http-server": "^0.9.0",
+    "http-server": "^0.11.1",
     "ignore": "^3.3.3",
     "image-size": "^0.5.1",
     "jasmine": "^2.6.0",
