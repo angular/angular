@@ -485,6 +485,23 @@ describe('CdkVirtualScrollViewport', () => {
           .toEqual({start: 0, end: 3}, 'newly emitted items should be rendered');
     }));
 
+    it('should disconnect from data source on destroy', fakeAsync(() => {
+      const data = new Subject<number[]>();
+      const dataSource = new ArrayDataSource(data);
+
+      spyOn(dataSource, 'connect').and.callThrough();
+      spyOn(dataSource, 'disconnect').and.callThrough();
+
+      testComponent.items = dataSource as any;
+      finishInit(fixture);
+
+      expect(dataSource.connect).toHaveBeenCalled();
+
+      fixture.destroy();
+
+      expect(dataSource.disconnect).toHaveBeenCalled();
+    }));
+
     it('should trackBy value by default', fakeAsync(() => {
       testComponent.items = [];
       spyOn(testComponent.virtualForOf, '_detachView').and.callThrough();

@@ -30,7 +30,7 @@ import {
   TrackByFunction,
   ViewContainerRef,
 } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, of as observableOf} from 'rxjs';
 import {pairwise, shareReplay, startWith, switchMap, takeUntil} from 'rxjs/operators';
 import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 
@@ -238,6 +238,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   ngOnDestroy() {
     this._viewport.detach();
 
+    this._dataSourceChanges.next();
     this._dataSourceChanges.complete();
     this.viewChange.complete();
 
@@ -262,7 +263,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   }
 
   /** Swap out one `DataSource` for another. */
-  private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T>):
+  private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T> | null):
     Observable<T[] | ReadonlyArray<T>> {
 
     if (oldDs) {
@@ -270,7 +271,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
     }
 
     this._needsUpdate = true;
-    return newDs.connect(this);
+    return newDs ? newDs.connect(this) : observableOf();
   }
 
   /** Update the `CdkVirtualForOfContext` for all views. */
