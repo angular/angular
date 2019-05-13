@@ -754,8 +754,7 @@ export class DragRef<T = any> {
    */
   private _updateActiveDropContainer({x, y}: Point) {
     // Drop container that draggable has been moved into.
-    let newContainer = this._dropContainer!._getSiblingContainerFromPosition(this, x, y) ||
-        this._initialContainer._getSiblingContainerFromPosition(this, x, y);
+    let newContainer = this._initialContainer._getSiblingContainerFromPosition(this, x, y);
 
     // If we couldn't find a new container to move the item into, and the item has left it's
     // initial container, check whether the it's over the initial container. This handles the

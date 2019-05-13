@@ -3193,6 +3193,63 @@ describe('CdkDrag', () => {
 
       }));
 
+    it('should not be able to move an item into a drop container that the initial container is ' +
+      'not connected to by passing it over an intermediate one that is', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        dropInstances[0].connectedTo = [dropInstances[1]];
+        dropInstances[1].connectedTo = [dropInstances[0], dropInstances[2]];
+        dropInstances[2].connectedTo = [dropInstances[1]];
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const intermediateRect = dropZones[1].getBoundingClientRect();
+        const finalRect = dropZones[2].getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+        expect(placeholder).toBeTruthy();
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside the first container.');
+
+        dispatchMouseEvent(document, 'mousemove',
+            intermediateRect.left + 1, intermediateRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside second container.');
+
+        dispatchMouseEvent(document, 'mousemove', finalRect.left + 1, finalRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to remain in the second container.');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toBeTruthy();
+        expect(event).toEqual(jasmine.objectContaining({
+          previousIndex: 1,
+          currentIndex: 1,
+          item: groups[0][1],
+          container: dropInstances[1],
+          previousContainer: dropInstances[0],
+          isPointerOverContainer: false
+        }));
+
+      }));
+
     it('should return the item to its initial position, if sorting in the source container ' +
       'was disabled', fakeAsync(() => {
         const fixture = createComponent(ConnectedDropZones);
