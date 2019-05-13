@@ -182,12 +182,34 @@ export function ΔdefineInjector(options: {factory: () => any, providers?: any[]
 }
 
 /**
- * Read the `ngInjectableDef` type in a way which is immune to accidentally reading inherited value.
+ * Read the `ngInjectableDef` for `type` in a way which is immune to accidentally reading inherited
+ * value.
  *
- * @param type type which may have `ngInjectableDef`
+ * @param type A type which may have its own (non-inherited) `ngInjectableDef`.
  */
 export function getInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
-  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
+  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
+}
+
+/**
+ * Read the `ngInjectableDef` for `type` or read the `ngInjectableDef` from one of its ancestors.
+ *
+ * @param type A type which may have `ngInjectableDef`, via inheritance.
+ *
+ * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
+ * `ngInjectableDef` on an ancestor only.
+ */
+export function getInheritedInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
+  if (type && type[NG_INJECTABLE_DEF]) {
+    // TODO(FW-1307): Re-add ngDevMode when closure can handle it
+    // ngDevMode &&
+    console.warn(
+        `DEPRECATED: DI is instantiating a token "${type.name}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+        `This will become an error in v10. Please add @Injectable() to the "${type.name}" class.`);
+    return type[NG_INJECTABLE_DEF];
+  } else {
+    return null;
+  }
 }
 
 /**
