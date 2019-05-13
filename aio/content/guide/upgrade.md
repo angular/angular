@@ -1177,7 +1177,7 @@ Finally, you should add some npm scripts in `package.json` to compile the TypeSc
 JavaScript (based on the `tsconfig.json` configuration file):
 
 <code-example format="">
-  "script": {
+  "scripts": {
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     ...
