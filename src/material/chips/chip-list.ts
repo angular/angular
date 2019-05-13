@@ -526,9 +526,14 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * key manager state and focus the next closest chip.
    */
   protected _updateFocusForDestroyedChips() {
-    if (this._lastDestroyedChipIndex != null && this.chips.length) {
-      const newChipIndex = Math.min(this._lastDestroyedChipIndex, this.chips.length - 1);
-      this._keyManager.setActiveItem(newChipIndex);
+    // Move focus to the closest chip. If no other chips remain, focus the chip-list itself.
+    if (this._lastDestroyedChipIndex != null) {
+      if (this.chips.length) {
+        const newChipIndex = Math.min(this._lastDestroyedChipIndex, this.chips.length - 1);
+        this._keyManager.setActiveItem(newChipIndex);
+      } else {
+        this.focus();
+      }
     }
 
     this._lastDestroyedChipIndex = null;

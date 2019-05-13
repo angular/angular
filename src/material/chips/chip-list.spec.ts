@@ -150,16 +150,6 @@ describe('MatChipList', () => {
         let array = chips.toArray();
         let lastIndex = array.length - 1;
         let lastItem = array[lastIndex];
-        lastItem.focus();
-        fixture.detectChanges();
-
-        expect(manager.activeItemIndex).toBe(lastIndex);
-      });
-
-      it('should watch for chip focus', () => {
-        let array = chips.toArray();
-        let lastIndex = array.length - 1;
-        let lastItem = array[lastIndex];
 
         lastItem.focus();
         fixture.detectChanges();
@@ -236,6 +226,18 @@ describe('MatChipList', () => {
 
           // Should not have focus
           expect(chipListInstance._keyManager.activeItemIndex).toEqual(-1);
+        });
+
+        it('should focus the list if the last focused item is removed', () => {
+          testComponent.chips = [0];
+
+          spyOn(chipListInstance, 'focus');
+          chips.last.focus();
+
+          testComponent.chips.pop();
+          fixture.detectChanges();
+
+          expect(chipListInstance.focus).toHaveBeenCalled();
         });
 
         it('should move focus to the last chip when the focused chip was deleted inside a' +
