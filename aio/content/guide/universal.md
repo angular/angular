@@ -56,7 +56,7 @@ There are three main reasons to create a Universal version of your app.
 Angular 애플리케이션을 Universal 버전으로 제공해야 하는 이유는 크게 다음 3가지를 꼽아볼 수 있습니다.
 
 1. 웹 크롤러에 대응하기 위해 (SEO)
-1. 모바일과 저사양 장비에서 동작하는 성능을 끌어올리기 위해
+1. 모바일 장비와 저사양 장비에서 동작하는 성능을 끌어올리기 위해
 1. 첫 페이지를 빠르게 표시하기 위해
 
 {@a seo}
@@ -86,17 +86,29 @@ Angular Universal은 이런 경우에 사용합니다. Angular Universal을 적�
 
 {@a no-javascript}
 
+<!--
 ### Improve performance on mobile and low-powered devices
+-->
+### 모바일 장비와 저사양 장비에서 동작하는 성능 끌어올리기
 
+<!--
 Some devices don't support JavaScript or execute JavaScript so poorly that the user experience is unacceptable.
 For these cases, you may require a server-rendered, no-JavaScript version of the app.
 This version, however limited, may be the only practical alternative for
 people who otherwise couldn't use the app at all.
+-->
+JavaScript를 지원하지 않는 디바이스가 존재하기도 하고 JavaScript를 실행하는 것이 사용자의 UX를 오히려 해치는 디바이스도 존재합니다.
+이런 경우에는 클라이언트에서 JavaScript를 실행하지 말고 서버에서 미리 렌더링된 앱을 보내서 간단하게 실행하는 것이 더 좋습니다.
+앱을 이렇게 제공하면 원래 사용자에게 제공하려던 기능을 모두 제공할 수는 없겠지만, 앱을 전혀 사용할 수 없는 상황은 피할 수 있습니다.
 
 {@a startup-performance}
 
+<!--
 ### Show the first page quickly
+-->
+### 첫 페이지를 빠르게 표시하기
 
+<!--
 Displaying the first page quickly can be critical for user engagement.
 [53 percent of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.
 Your app may have to launch faster to engage these users before they decide to do something else.
@@ -109,24 +121,52 @@ In practice, you'll serve a static version of the landing page to hold the user'
 At the same time, you'll load the full Angular app behind it. 
 The user perceives near-instant performance from the landing page
 and gets the full interactive experience after the full app loads.
+-->
+사용자가 다시 찾는 웹사이트를 만들려면 첫 페이지를 빠르게 표시하는 것이 무엇보다 중요합니다.
+그래서 첫 페이지가 3초 안에 표시되지 않는다면 [53%의 모바일 사용자가 재방문하지 않는다는 통계](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/)도 있습니다.
+사이트를 방문한 사용자가 다른 곳으로 발길을 돌리는 것을 원하지 않는다면 앱을 최대한 빠르게 실행하는 것이 좋습니다.
+
+이 때 Angular Universal을 사용하면 온전한 앱과 거의 비슷하게 동작하는 랜딩 페이지를 생성할 수 있습니다.
+페이지는 HTML만으로 구성되기 때문에 JavaScript가 비활성화되어도 화면을 제대로 표시할 수 있습니다.
+하지만 JavaScript가 실행되지 않으면 브라우저 이벤트를 처리할 수 없기 때문에 네비게이션은 [`routerLink`](guide/router#router-link)를 사용하는 방식으로 구현되어야 합니다.
+
+운영환경에서도 첫 페이지를 빠르게 표시하기 위해 페이지를 정적으로 렌더링해서 제공하는 경우가 많습니다.
+이와 동시에 온전한 버전의 Angular 앱을 로드하는 방법을 사용하기도 합니다.
+그러면 애플리케이션 첫 페이지를 빠르게 표시하면서도 앱에 구현한 기능을 온전히 사용자에게 제공할 수 있습니다.
+
 
 {@a how-does-it-work}
 
+<!--
 ## Universal web servers
+-->
+## Universal 웹 서버
 
+<!--
 A Universal web server responds to application page requests with static HTML rendered by the [Universal template engine](#universal-engine). 
 The server receives and responds to HTTP requests from clients (usually browsers), and serves static assets such as scripts, CSS, and images.
 It may respond to data requests, either directly or as a proxy to a separate data server.
 
 The sample web server for this guide is based on the popular [Express](https://expressjs.com/) framework.
+-->
+Universal 웹 서버는 애플리케이션 페이지 요청을 받았을 때 [Universal 템플릿 엔진](#universal-engine)으로 렌더링한 정적 HTML을 제공하는 역할을 담당합니다.
+이 서버는 일반적으로 브라우저에서 HTTP 요청을 받고 HTTP 응답을 내려주는데, 스크립트 파일이나 CSS, 이미지 파일과 같은 정적 애셋들도 함께 제공합니다.
+이 외에도 API로 통하는 데이터 요청은 Universal 웹 서버가 직접 처리하거나 프록시 역할을 하면서 다른 데이터 서버를 중개할 수도 있을 것입니다.
+
+이 문서에서는 이미 유명한 [Express](https://expressjs.com/) 프레임워크를 사용해서 샘플 웹 서버를 구현해 봅니다.
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModuleFactory()` function.
   The principles and decision points discussed here apply to any web server technology.
+  -->
+  **참고:** Angular Universal이 제공하는 `renderModuleFactory()` 함수를 실행할수만 있다면 _아무_ 웹 서버를 사용해도 Universal 앱을 제공할 수 있습니다.
+  이 섹션에서는 웹 서버를 결정하는 기준에 대해서 조금 더 자세하게 알아봅시다.
 
 </div>
 
+<!--
 To make a Universal app, install the `platform-server` package, which provides server implementations 
 of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 Compile the client application with the `platform-server` module (instead of the `platform-browser` module)
@@ -145,6 +185,19 @@ The `renderModuleFactory()` function renders the view within the `<app>` tag of 
 creating a finished HTML page for the client. 
 
 Finally, the server returns the rendered page to the client.
+-->
+Universal 앱을 만들려면 `platform-server` 패키지를 설치해야 하는데, 서버에서 DOM을 렌더링하고 `XMLHttpRequest`를 처리하는 등 브라우저의 기능이 필요한 로직에 이 패키지가 사용됩니다.
+그래서 웹 서버에서 Universal 앱을 실행하려면 (`platform-browser` 모듈 대신) `platform-server` 모듈을 사용해서 클라이언트 애플리케이션을 컴파일하면 됩니다.
+
+이 문서에서 다루는 것처럼 [Node Express](https://expressjs.com/)를 사용하는 서버라면 애플리케이션 페이지 요청을 Universal이 제공하는 `renderModuleFactory()` 함수로 전달합니다.
+
+그러면 `renderModuleFactory()` 함수가 HTML *템플릿* 페이지(일반적으로 `index.html`)를 바탕으로 Angular 컴포넌트로 구성된 *모듈*을 생성하며, *라우팅 규칙*에 맞게 컴포넌트를 화면에 표시합니다.
+이 때 라우팅 규칙은 클라이언트가 서버로 보낸 것입니다.
+
+클라이언트가 보낸 요청의 결과는 해당 라우팅 규칙과 연결된 애플리케이션 페이지가 됩니다.
+그래서 `renderModuleFactory()` 함수는 템플릿의 `<app>` 태그에 뷰를 렌더링하며, 결과적으로 온전하게 HTML로 구성된 페이지가 생성됩니다.
+
+이제 렌더링된 페이지를 클라이언트가 받으면 브라우저에 이 페이지가 표시됩니다.
 
 {@a summary}
 ## Preparing for server-side rendering
