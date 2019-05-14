@@ -61,11 +61,12 @@ async function runMigration(tree: Tree, context: SchematicContext) {
         'to explicit timing.');
   }
 
+  const analyzedFiles = new Set<string>();
   const buildProjects = new Set<AnalyzedProject>();
   const failures = [];
 
   for (const tsconfigPath of buildPaths) {
-    const project = analyzeProject(tree, tsconfigPath, basePath);
+    const project = analyzeProject(tree, tsconfigPath, basePath, analyzedFiles);
     if (project) {
       buildProjects.add(project);
     }
@@ -83,7 +84,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   // For the "test" tsconfig projects we always want to use the test strategy as
   // we can't detect the proper timing within spec files.
   for (const tsconfigPath of testPaths) {
-    const project = await analyzeProject(tree, tsconfigPath, basePath);
+    const project = await analyzeProject(tree, tsconfigPath, basePath, analyzedFiles);
     if (project) {
       failures.push(
           ...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger));
@@ -103,7 +104,8 @@ async function runMigration(tree: Tree, context: SchematicContext) {
  * Analyzes the given TypeScript project by looking for queries that need to be
  * migrated. In case there are no queries that can be migrated, null is returned.
  */
-function analyzeProject(tree: Tree, tsconfigPath: string, basePath: string):
+function analyzeProject(
+    tree: Tree, tsconfigPath: string, basePath: string, analyzedFiles: Set<string>):
     AnalyzedProject|null {
       const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
       const host = ts.createCompilerHost(parsed.options, true);
@@ -125,7 +127,16 @@ function analyzeProject(tree: Tree, tsconfigPath: string, basePath: string):
 
       // Analyze all project source-files and collect all queries that
       // need to be migrated.
-      sourceFiles.forEach(sourceFile => queryVisitor.visitNode(sourceFile));
+      sourceFiles.forEach(sourceFile => {
+        const relativePath = relative(basePath, sourceFile.fileName);
+
+        // Only look for queries within the current source files if the
+        // file has not been analyzed before.
+        if (!analyzedFiles.has(relativePath)) {
+          analyzedFiles.add(relativePath);
+          queryVisitor.visitNode(sourceFile);
+        }
+      });
 
       if (queryVisitor.resolvedQueries.size === 0) {
         return null;
