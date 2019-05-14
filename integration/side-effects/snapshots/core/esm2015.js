@@ -30,20 +30,16 @@ function getSymbolIterator() {
 
 if ("undefined" === typeof ngI18nClosureMode) _global["ngI18nClosureMode"] = "undefined" !== typeof goog && "function" === typeof goog.getMsg;
 
-function flatten(list, mapFn) {
-    const result = [];
-    let i = 0;
-    while (i < list.length) {
-        const item = list[i];
-        if (Array.isArray(item)) if (item.length > 0) {
-            list = item.concat(list.slice(i + 1));
-            i = 0;
-        } else i++; else {
-            result.push(mapFn ? mapFn(item) : item);
-            i++;
-        }
+function flatten(list, dst) {
+    if (void 0 === dst) dst = list;
+    for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (Array.isArray(item)) {
+            if (dst === list) dst = list.slice(0, i);
+            flatten(item, dst);
+        } else if (dst !== list) dst.push(item);
     }
-    return result;
+    return dst;
 }
 
 class EventEmitter extends Subject {
