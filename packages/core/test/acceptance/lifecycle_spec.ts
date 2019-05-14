@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, ComponentFactoryResolver, Directive, Input, NgModule, OnChanges, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
 describe('ngOnChanges', () => {
   it('should correctly support updating one Input among many', () => {
@@ -168,4 +170,495 @@ it('should call hooks after setting directives inputs', () => {
   fixture.componentInstance.id = 1;
   fixture.detectChanges();
   expect(log).toEqual(['doCheckB1', 'doCheckC1', 'doCheckB1', 'doCheckC1']);
+});
+
+describe('onInit', () => {
+  it('should call onInit after inputs are the first time', () => {
+    const input1Values: string[] = [];
+    const input2Values: string[] = [];
+
+    @Component({
+      selector: 'my-comp',
+      template: `<p>test</p>`,
+    })
+    class MyComponent {
+      @Input()
+      input1 = '';
+
+      @Input()
+      input2 = '';
+
+      ngOnInit() {
+        input1Values.push(this.input1);
+        input2Values.push(this.input2);
+      }
+    }
+
+    @Component({
+      template: `
+        <my-comp [input1]="value1" [input2]="value2"></my-comp>
+      `,
+    })
+    class App {
+      value1 = 'a';
+      value2 = 'b';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, MyComponent],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(input1Values).toEqual(['a']);
+    expect(input2Values).toEqual(['b']);
+
+    fixture.componentInstance.value1 = 'c';
+    fixture.componentInstance.value2 = 'd';
+    fixture.detectChanges();
+
+    // Shouldn't be called again just because change detection ran.
+    expect(input1Values).toEqual(['a']);
+    expect(input2Values).toEqual(['b']);
+  });
+
+  it('should be called on root component', () => {
+    let onInitCalled = 0;
+
+    @Component({template: ``})
+    class App {
+      ngOnInit() { onInitCalled++; }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(onInitCalled).toBe(1);
+  });
+
+  it('should call parent onInit before it calls child onInit', () => {
+    const initCalls: string[] = [];
+
+    @Component({
+      selector: `child-comp`,
+      template: `<p>child</p>`,
+    })
+    class ChildComp {
+      ngOnInit() { initCalls.push('child'); }
+    }
+
+    @Component({
+      template: `<child-comp></child-comp>`,
+    })
+    class ParentComp {
+      ngOnInit() { initCalls.push('parent'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [ParentComp, ChildComp],
+    });
+    const fixture = TestBed.createComponent(ParentComp);
+    fixture.detectChanges();
+
+    expect(initCalls).toEqual(['parent', 'child']);
+  });
+
+  it('should call all parent onInits across view before calling children onInits', () => {
+    const initCalls: string[] = [];
+
+    @Component({
+      selector: `child-comp`,
+      template: `<p>child</p>`,
+    })
+    class ChildComp {
+      @Input()
+      name = '';
+
+      ngOnInit() { initCalls.push(`child of parent ${this.name}`); }
+    }
+
+    @Component({
+      selector: 'parent-comp',
+      template: `<child-comp [name]="name"></child-comp>`,
+    })
+    class ParentComp {
+      @Input()
+      name = '';
+
+      ngOnInit() { initCalls.push(`parent ${this.name}`); }
+    }
+
+    @Component({
+      template: `
+        <parent-comp name="1"></parent-comp>
+        <parent-comp name="2"></parent-comp>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, ParentComp, ChildComp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initCalls).toEqual(['parent 1', 'parent 2', 'child of parent 1', 'child of parent 2']);
+  });
+
+  it('should call onInit every time a new view is created (if block)', () => {
+    let onInitCalls = 0;
+
+    @Component({selector: 'my-comp', template: '<p>test</p>'})
+    class MyComp {
+      ngOnInit() { onInitCalls++; }
+    }
+
+    @Component({
+      template: `
+        <div *ngIf="show"><my-comp></my-comp></div>
+      `
+    })
+    class App {
+      show = true;
+    }
+    TestBed.configureTestingModule({
+      declarations: [App, MyComp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(onInitCalls).toBe(1);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(onInitCalls).toBe(1);
+
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+    expect(onInitCalls).toBe(2);
+  });
+
+  it('should call onInit for children of dynamically created components', () => {
+    @Component({selector: 'my-comp', template: '<p>test</p>'})
+    class MyComp {
+      onInitCalled = false;
+
+      ngOnInit() { this.onInitCalled = true; }
+    }
+
+    @Component({
+      selector: 'dynamic-comp',
+      template: `
+        <my-comp></my-comp>
+      `,
+    })
+    class DynamicComp {
+    }
+
+    @Component({
+      template: `
+        <div #container></div>
+      `,
+    })
+    class App {
+      @ViewChild('container', {read: ViewContainerRef})
+      viewContainerRef !: ViewContainerRef;
+
+      constructor(public compFactoryResolver: ComponentFactoryResolver) {}
+
+      createDynamicView() {
+        const dynamicCompFactory = this.compFactoryResolver.resolveComponentFactory(DynamicComp);
+        this.viewContainerRef.createComponent(dynamicCompFactory);
+      }
+    }
+
+    // View Engine requires that DynamicComp be in entryComponents.
+    @NgModule({
+      declarations: [App, MyComp, DynamicComp],
+      entryComponents: [DynamicComp, App],
+    })
+    class AppModule {
+    }
+
+    TestBed.configureTestingModule({imports: [AppModule]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    fixture.componentInstance.createDynamicView();
+    fixture.detectChanges();
+
+    const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
+    expect(myComp.onInitCalled).toBe(true);
+  });
+
+  it('should call onInit in hosts before their content children', () => {
+    const initialized: string[] = [];
+
+    @Component({
+      selector: 'projected',
+      template: '',
+    })
+    class Projected {
+      ngOnInit() { initialized.push('projected'); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<ng-content></ng-content>`,
+    })
+    class Comp {
+      ngOnInit() { initialized.push('comp'); }
+    }
+
+    @Component({
+      template: `
+        <comp>
+          <projected></projected>
+        </comp>
+      `
+    })
+    class App {
+      ngOnInit() { initialized.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual(['app', 'comp', 'projected']);
+  });
+
+
+  it('should call onInit in host and its content children before next host', () => {
+    const initialized: string[] = [];
+
+    @Component({
+      selector: 'projected',
+      template: '',
+    })
+    class Projected {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('projected ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<ng-content></ng-content>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="1">
+          <projected name="1"></projected>
+        </comp>
+        <comp name="2">
+          <projected name="2"></projected>
+        </comp>
+      `
+    })
+    class App {
+      ngOnInit() { initialized.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual(['app', 'comp 1', 'projected 1', 'comp 2', 'projected 2']);
+  });
+
+  it('should be called on directives after component', () => {
+    const initialized: string[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir-name')
+      name = '';
+
+      ngOnInit() { initialized.push('dir ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<p></p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="1" dir dir-name="1"></comp>
+        <comp name="2" dir dir-name="2"></comp>
+      `
+    })
+    class App {
+      ngOnInit() { initialized.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual(['app', 'comp 1', 'dir 1', 'comp 2', 'dir 2']);
+  });
+
+  it('should be called on directives on an element', () => {
+    const initialized: string[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir-name')
+      name = '';
+
+      ngOnInit() { initialized.push('dir ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <p name="1" dir dir-name="1"></p>
+        <p name="2" dir dir-name="2"></p>
+      `
+    })
+    class App {
+      ngOnInit() { initialized.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual(['app', 'dir 1', 'dir 2']);
+  });
+
+
+  it('should call onInit properly in for loop', () => {
+    const initialized: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p></p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="0"></comp>
+        <comp *ngFor="let number of numbers" [name]="number"></comp>
+        <comp name="1"></comp>
+      `
+    })
+    class App {
+      numbers = [2, 3, 4, 5, 6];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual([
+      'comp 0', 'comp 1', 'comp 2', 'comp 3', 'comp 4', 'comp 5', 'comp 6'
+    ]);
+  });
+
+  it('should call onInit properly in for loop with children', () => {
+    const initialized: string[] = [];
+
+    @Component({
+      selector: 'child',
+      template: `<p></p>`,
+    })
+    class Child {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('child of parent ' + this.name); }
+    }
+
+    @Component({selector: 'parent', template: '<child [name]="name"></child>'})
+    class Parent {
+      @Input()
+      name = '';
+
+      ngOnInit() { initialized.push('parent ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <parent name="0"></parent>
+        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        <parent name="1"></parent>
+      `
+    })
+    class App {
+      numbers = [2, 3, 4, 5, 6];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Child, Parent],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(initialized).toEqual([
+      // First the two root level components
+      'parent 0',
+      'parent 1',
+
+      // Then our 5 embedded views
+      'parent 2',
+      'child of parent 2',
+      'parent 3',
+      'child of parent 3',
+      'parent 4',
+      'child of parent 4',
+      'parent 5',
+      'child of parent 5',
+      'parent 6',
+      'child of parent 6',
+
+      // Then the children of the root level components
+      'child of parent 0',
+      'child of parent 1',
+    ]);
+  });
 });
