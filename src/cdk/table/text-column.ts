@@ -78,7 +78,10 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
   }
   set name(name: string) {
     this._name = name;
-    this.columnDef.name = name;
+
+    // With Ivy, inputs can be initialized before static query results are
+    // available. In that case, we defer the synchronization until "ngOnInit" fires.
+    this._syncColumnDefName();
   }
   _name: string;
 
@@ -127,6 +130,8 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this._syncColumnDefName();
+
     if (this.headerText === undefined) {
       this.headerText = this._createDefaultHeaderText();
     }
@@ -164,5 +169,12 @@ export class CdkTextColumn<T> implements OnDestroy, OnInit {
     }
 
     return this.name[0].toUpperCase() + this.name.slice(1);
+  }
+
+  /** Synchronizes the column definition name with the text column name. */
+  private _syncColumnDefName() {
+    if (this.columnDef) {
+      this.columnDef.name = this.name;
+    }
   }
 }
