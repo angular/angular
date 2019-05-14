@@ -164,8 +164,6 @@ export function mainNgcc(
           logger.warn(
               `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
         }
-      } else if (!compileAllFormats) {
-        logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
       }
 
       // Either this format was just compiled or its underlying format was compiled because of a
