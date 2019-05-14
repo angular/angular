@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {ActivatedRoute} from '../router_state';
 
 /**
  * This component is used internally within the router to be a placeholder when an empty
@@ -17,8 +18,9 @@ import {Component} from '@angular/core';
  * In order to render, there needs to be a component on this config, which will default
  * to this `EmptyOutletComponent`.
  */
-@Component({template: `<router-outlet></router-outlet>`})
+@Component({template: `<router-outlet [name]="route.outlet"></router-outlet>`})
 export class ɵEmptyOutletComponent {
+  constructor(public route: ActivatedRoute) {}
 }
 
 export {ɵEmptyOutletComponent as EmptyOutletComponent};

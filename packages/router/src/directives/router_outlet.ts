@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, Input, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
 
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -63,28 +63,29 @@ import {PRIMARY_OUTLET} from '../shared';
 export class RouterOutlet implements OnDestroy, OnInit {
   private activated: ComponentRef<any>|null = null;
   private _activatedRoute: ActivatedRoute|null = null;
-  private name: string;
+  private _name!: string;
+
+  @Input() name!: string;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') name: string,
-      private changeDetector: ChangeDetectorRef) {
-    this.name = name || PRIMARY_OUTLET;
-    parentContexts.onChildOutletCreated(this.name, this);
-  }
+      private resolver: ComponentFactoryResolver, private changeDetector: ChangeDetectorRef) {}
 
   ngOnDestroy(): void {
-    this.parentContexts.onChildOutletDestroyed(this.name);
+    this.parentContexts.onChildOutletDestroyed(this._name);
   }
 
   ngOnInit(): void {
+    this._name = this.name || PRIMARY_OUTLET;
+    this.parentContexts.onChildOutletCreated(this._name, this);
+
     if (!this.activated) {
       // If the outlet was not instantiated at the time the route got activated we need to populate
       // the outlet when it is initialized (ie inside a NgIf)
-      const context = this.parentContexts.getContext(this.name);
+      const context = this.parentContexts.getContext(this._name);
       if (context && context.route) {
         if (context.attachRef) {
           // `attachRef` is populated when there is an existing component to mount
@@ -158,7 +159,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     const component = <any>snapshot.routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
-    const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
+    const childContexts = this.parentContexts.getOrCreateContext(this._name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
     this.activated = this.location.createComponent(factory, this.location.length, injector);
     // Calling `markForCheck` to make sure we will run the change detection when the
