@@ -22,7 +22,7 @@ import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_mod
 
     <section>
       <button id="reset" (click)="reset()">Reset</button>
-      <button (click)="handleInitClick()">Init</button>
+      <button id="init" (click)="init()">Init</button>
       <button id="run" (click)="runAll()">Run All</button>
     </section>
 
@@ -37,6 +37,8 @@ export class InitializationRoot implements AfterViewInit {
   ngAfterViewInit() {}
 
   reset() { this.expandingRow.reset(); }
+
+  init() { this.expandingRow.init(); }
 
   async runAll() {
     await execTimed('initialization_benchmark', async() => { await this.doInit(); });
