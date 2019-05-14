@@ -737,6 +737,12 @@
             "rev": true,
             "title": "Loiane Training (Português)",
             "url": "https://loiane.training/course/angular/"
+          },
+          "mdb-angular-boilerplate": {
+            "desc": "Angular CRUD application starter with NgRx state management, Firebase backend and installation guide.",
+            "rev": true,
+            "title": "MDB Angular Boilerplate",
+            "url": "https://github.com/mdbootstrap/Angular-Bootstrap-Boilerplate"
           }
         }
       },
