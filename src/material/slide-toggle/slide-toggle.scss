@@ -210,7 +210,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
     opacity: 0.04;
   }
 
-  .mat-slide-toggle:not(.mat-disabled).cdk-focused & {
+  // As per specifications, the focus ripple should only show up if the slide-toggle has
+  // been focused through keyboard. We cannot account for `cdk-program-focused` because clicking
+  // on the label causes the focus origin to be `program` due to the focus redirection.
+  .mat-slide-toggle:not(.mat-disabled).cdk-keyboard-focused & {
     opacity: 0.12;
   }
 
