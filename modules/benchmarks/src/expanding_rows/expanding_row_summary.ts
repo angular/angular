@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Host,
 import {Subscription} from 'rxjs';
 
 import {ExpandingRow} from './expanding_row';
-import { expanding_row_css } from './expanding_row_css';
+import {expanding_row_css} from './expanding_row_css';
 
 const KEY_CODE_TAB = 9;
 
@@ -49,7 +49,7 @@ export class ExpandingRowSummary implements OnDestroy {
    * reference for focus and blur methods below.
    */
   @ViewChild('expandingRowSummaryMainElement', {static: false})
-  mainElementRef!: ElementRef;
+  mainElementRef !: ElementRef;
 
   /** Subscription for changes in parent isExpanded property. */
   private isExpandedSubscription: Subscription;
@@ -63,18 +63,13 @@ export class ExpandingRowSummary implements OnDestroy {
    * will act as a header for expanded rows. We also need to relay tab-in and
    * click events to the parent.
    */
-  constructor(
-      @Host() public expandingRow: ExpandingRow,
-      changeDetectorRef: ChangeDetectorRef) {
+  constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
     this.expandingRow.summaryViewChild = this;
     this.isExpandedSubscription =
-        this.expandingRow.isExpandedChange.subscribe(() => {
-          changeDetectorRef.markForCheck();
-        });
+        this.expandingRow.isExpandedChange.subscribe(() => { changeDetectorRef.markForCheck(); });
 
-    this.indexSubscription = this.expandingRow.indexChange.subscribe(() => {
-      changeDetectorRef.markForCheck();
-    });
+    this.indexSubscription =
+        this.expandingRow.indexChange.subscribe(() => { changeDetectorRef.markForCheck(); });
   }
 
 
@@ -99,8 +94,8 @@ export class ExpandingRowSummary implements OnDestroy {
     //
     // TODO(b/62385992) Use the KeyboardFocusService to detect focus cause
     // instead of creating multiple monitors on a page.
-    if (this.expandingRow.expandingRowMainElement.nativeElement.classList
-            .contains('cdk-mouse-focused')) {
+    if (this.expandingRow.expandingRowMainElement.nativeElement.classList.contains(
+            'cdk-mouse-focused')) {
       return;
     }
 
@@ -144,13 +139,11 @@ export class ExpandingRowSummary implements OnDestroy {
     // before expanding row list. Otherwise, if shift+tab is pressed on first
     // focusable child inside expanding row summary, it should focus on main
     // expanding row summary element.
-    if (event.shiftKey &&
-        document.activeElement === this.mainElementRef.nativeElement) {
+    if (event.shiftKey && document.activeElement === this.mainElementRef.nativeElement) {
       event.preventDefault();
       this.expandingRow.expandingRowHost.focusOnPreviousFocusableElement();
       return;
-    } else if (
-        event.shiftKey && document.activeElement === focusableChildren[0]) {
+    } else if (event.shiftKey && document.activeElement === focusableChildren[0]) {
       event.preventDefault();
       this.expandingRow.focus();
     }
@@ -159,8 +152,7 @@ export class ExpandingRowSummary implements OnDestroy {
     // summary, focus should be set to the next focusable element after the list
     // of expanding rows.
     if (!event.shiftKey &&
-        document.activeElement ===
-            focusableChildren[focusableChildren.length - 1]) {
+        document.activeElement === focusableChildren[focusableChildren.length - 1]) {
       event.preventDefault();
       this.expandingRow.expandingRowHost.focusOnNextFocusableElement();
     }
@@ -188,8 +180,7 @@ export class ExpandingRowSummary implements OnDestroy {
     // If the current expanding row summary was the last focused one before
     // focus exited the list, then return true to trigger the screen reader
     if (this.mainElementRef.nativeElement ===
-        expandingRowHost.lastFocusedRow.summaryViewChild.mainElementRef
-            .nativeElement) {
+        expandingRowHost.lastFocusedRow.summaryViewChild.mainElementRef.nativeElement) {
       return true;
     }
     return false;
@@ -197,8 +188,7 @@ export class ExpandingRowSummary implements OnDestroy {
 
   /** Puts the DOM focus on the main element. */
   focus(): void {
-    if (this.mainElementRef &&
-        document.activeElement !== this.mainElementRef.nativeElement) {
+    if (this.mainElementRef && document.activeElement !== this.mainElementRef.nativeElement) {
       this.mainElementRef.nativeElement.focus();
     }
   }
@@ -213,7 +203,5 @@ export class ExpandingRowSummary implements OnDestroy {
   }
 
   /** Returns array of focusable elements within this component. */
-  private getFocusableChildren(): HTMLElement[] {
-    return [];
-  }
+  private getFocusableChildren(): HTMLElement[] { return []; }
 }

@@ -12,7 +12,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {ExpandingRow} from './expanding_row';
-import { expanding_row_css } from './expanding_row_css';
+import {expanding_row_css} from './expanding_row_css';
 
 /**
  * This component should be within cfc-expanding-row component. The caption
@@ -42,17 +42,12 @@ export class ExpandingRowDetailsCaption implements OnDestroy {
    * this component when the row is collapsed. We also need to relay clicks
    * to the parent component.
    */
-  constructor(
-      @Host() public expandingRow: ExpandingRow,
-      changeDetectorRef: ChangeDetectorRef) {
-    this.expandingRow.isExpandedChange.pipe(takeUntil(this.onDestroy))
-        .subscribe(() => {
-          changeDetectorRef.markForCheck();
-        });
+  constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
+    this.expandingRow.isExpandedChange.pipe(takeUntil(this.onDestroy)).subscribe(() => {
+      changeDetectorRef.markForCheck();
+    });
   }
 
   /** When component is destroyed, unlisten to isExpanded. */
-  ngOnDestroy(): void {
-    this.onDestroy.next();
-  }
+  ngOnDestroy(): void { this.onDestroy.next(); }
 }

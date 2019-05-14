@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, OnDestroy} 
 import {Subscription} from 'rxjs';
 
 import {ExpandingRow} from './expanding_row';
-import { expanding_row_css } from './expanding_row_css';
+import {expanding_row_css} from './expanding_row_css';
 
 /**
  * This component should be within cfc-expanding-row component. Note that the
@@ -34,17 +34,11 @@ export class ExpandingRowDetailsContent implements OnDestroy {
    * We need a reference to parent cfc-expanding-row component to make sure we
    * hide this component if the row is collapsed.
    */
-  constructor(
-      @Host() public expandingRow: ExpandingRow,
-      changeDetectorRef: ChangeDetectorRef) {
+  constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
     this.isExpandedChangeSubscription =
-        this.expandingRow.isExpandedChange.subscribe(() => {
-          changeDetectorRef.markForCheck();
-        });
+        this.expandingRow.isExpandedChange.subscribe(() => { changeDetectorRef.markForCheck(); });
   }
 
   /** Unsubscribe from changes in parent isExpanded property. */
-  ngOnDestroy(): void {
-    this.isExpandedChangeSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void { this.isExpandedChangeSubscription.unsubscribe(); }
 }
