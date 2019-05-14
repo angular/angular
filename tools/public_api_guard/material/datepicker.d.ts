@@ -251,6 +251,29 @@ export declare class MatMonthView<D> implements AfterContentInit {
     ngAfterContentInit(): void;
 }
 
+export declare class MatMultiYearView<D> implements AfterContentInit {
+    _dateAdapter: DateAdapter<D>;
+    _matCalendarBody: MatCalendarBody;
+    _selectedYear: number | null;
+    _todayYear: number;
+    _years: MatCalendarCell[][];
+    activeDate: D;
+    readonly activeDateChange: EventEmitter<D>;
+    dateFilter: (date: D) => boolean;
+    maxDate: D | null;
+    minDate: D | null;
+    selected: D | null;
+    readonly selectedChange: EventEmitter<D>;
+    readonly yearSelected: EventEmitter<D>;
+    constructor(_changeDetectorRef: ChangeDetectorRef, _dateAdapter: DateAdapter<D>, _dir?: Directionality | undefined);
+    _focusActiveCell(): void;
+    _getActiveCell(): number;
+    _handleCalendarBodyKeydown(event: KeyboardEvent): void;
+    _init(): void;
+    _yearSelected(year: number): void;
+    ngAfterContentInit(): void;
+}
+
 export declare class MatYearView<D> implements AfterContentInit {
     _dateAdapter: DateAdapter<D>;
     _matCalendarBody: MatCalendarBody;
@@ -273,3 +296,7 @@ export declare class MatYearView<D> implements AfterContentInit {
     _monthSelected(month: number): void;
     ngAfterContentInit(): void;
 }
+
+export declare const yearsPerPage = 24;
+
+export declare const yearsPerRow = 4;
