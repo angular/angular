@@ -482,9 +482,10 @@ describe('inheritance', () => {
       });
     });
 
-    // TODO(FW-1324): Input inheritance broken in Ivy
-    // https://stackblitz.com/edit/angular-template-benlesh-z8nadr?file=src%2Fapp%2Fapp.ts
-    xit('should inherit inputs', () => {
+    it('should inherit inputs', () => {
+
+      let results: any;
+
       class SuperDirective {
         @Input()
         foo = '';
@@ -505,6 +506,11 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
+
+        ngOnInit() {
+          const {foo, bar, baz, qux} = this;
+          results = {foo, bar, baz, qux};
+        }
       }
 
       @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
@@ -521,13 +527,12 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      const subDir: SubDirective =
-          fixture.debugElement.query(By.directive(SubDirective)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
+      expect(results).toEqual({
+        foo: 'a',
+        bar: 'b',
+        baz: 'c',
+        qux: 'd',
+      });
     });
 
 
@@ -966,9 +971,9 @@ describe('inheritance', () => {
       });
     });
 
-    // TODO(FW-1324): Input inheritance broken in Ivy
-    // https://stackblitz.com/edit/angular-template-benlesh-5xn8wb?file=src/app/app.ts
-    xit('should inherit inputs', () => {
+    it('should inherit inputs', () => {
+      let results: any;
+
       @Directive({selector: '[super-dir]'})
       class SuperDirective {
         @Input()
@@ -990,6 +995,11 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
+
+        ngOnInit() {
+          const {foo, bar, baz, qux} = this;
+          results = {foo, bar, baz, qux};
+        }
       }
 
       @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
@@ -1006,13 +1016,12 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      const subDir: SubDirective =
-          fixture.debugElement.query(By.directive(SubDirective)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
+      expect(results).toEqual({
+        foo: 'a',
+        bar: 'b',
+        baz: 'c',
+        qux: 'd',
+      });
     });
 
 
@@ -1465,9 +1474,9 @@ describe('inheritance', () => {
       });
     });
 
-    // TODO(FW-1324): Input inheritance broken in Ivy
-    // https://stackblitz.com/edit/angular-template-benlesh-gfuakz?file=src/app/app.ts
-    xit('should inherit inputs', () => {
+    it('should inherit inputs', () => {
+      let results: any;
+
       @Directive({selector: '[super-dir]'})
       class SuperSuperDirective {
         @Input()
@@ -1491,6 +1500,11 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
+
+        ngOnInit() {
+          const {foo, bar, baz, qux} = this;
+          results = {foo, bar, baz, qux};
+        }
       }
 
       @Component({
@@ -1510,13 +1524,12 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      const subDir: SubDirective =
-          fixture.debugElement.query(By.directive(SubDirective)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
+      expect(results).toEqual({
+        foo: 'a',
+        bar: 'b',
+        baz: 'c',
+        qux: 'd',
+      });
     });
 
     it('should inherit outputs', () => {
