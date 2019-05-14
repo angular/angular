@@ -602,7 +602,7 @@ describe('static-queries migration with template strategy', () => {
           .toContain(`@ViewChild('myRef', /* TODO: add static flag */ myOptionsVar) query: any;`);
       expect(warnOutput.length).toBe(1);
       expect(warnOutput[0])
-          .toMatch(/^⮑ {3}index.ts@8:11: Cannot update query declaration to explicit timing./);
+          .toMatch(/^⮑ {3}index.ts@8:11: Cannot update query to set explicit timing./);
       expect(warnOutput[0]).toMatch(/Please manually set the query timing to.*static: true/);
     });
 
