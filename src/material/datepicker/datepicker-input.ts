@@ -79,7 +79,7 @@ export class MatDatepickerInputEvent<D> {
     {provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: MatDatepickerInput},
   ],
   host: {
-    '[attr.aria-haspopup]': 'true',
+    'aria-haspopup': 'dialog',
     '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
     '[attr.min]': 'min ? _dateAdapter.toIso8601(min) : null',
     '[attr.max]': 'max ? _dateAdapter.toIso8601(max) : null',

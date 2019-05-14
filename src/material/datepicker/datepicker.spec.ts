@@ -898,7 +898,7 @@ describe('MatDatepicker', () => {
         const button = fixture.debugElement.query(By.css('button'));
 
         expect(button).toBeTruthy();
-        expect(button.nativeElement.getAttribute('aria-haspopup')).toBe('true');
+        expect(button.nativeElement.getAttribute('aria-haspopup')).toBe('dialog');
       });
 
       it('should open calendar when toggle clicked', () => {
