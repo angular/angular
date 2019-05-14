@@ -1,9 +1,10 @@
+// Reference: https://code.visualstudio.com/docs/remote/containers#_devcontainerjson-reference
 {
-  // See http://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
-  // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
-
-  // List of extensions which should be recommended for users of this workspace.
-  "recommendations": [
+  "name": "Angular dev container",
+  "dockerFile": "Dockerfile",
+  "appPort": [4000, 4200, 4433, 5000, 8080, 9876],
+  "postCreateCommand": "yarn install",
+  "extensions": [
     "devondcarew.bazel-code",
     "gkalpak.aio-docs-utils",
     "ms-vscode.vscode-typescript-tslint-plugin",

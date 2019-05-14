@@ -855,6 +855,7 @@ testing/**                                                      @angular/fw-test
 /.buildkite/**                                                  @angular/fw-dev-infra
 /.circleci/**                                                   @angular/fw-dev-infra
 /.codefresh/**                                                  @angular/fw-dev-infra
+/.devcontainer/**                                               @angular/fw-dev-infra
 /.github/**                                                     @angular/fw-dev-infra
 /.vscode/**                                                     @angular/fw-dev-infra
 /docs/BAZEL.md                                                  @angular/fw-dev-infra
