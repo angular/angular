@@ -192,7 +192,7 @@ async function runStaticQueryMigration(
           `the update cannot use the template migration strategy. Please ensure ` +
           `there are no AOT compilation errors.`);
     }
-    logger.error(e);
+    logger.error(e.toString());
     logger.info(
         'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"');
     return [];
