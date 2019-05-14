@@ -14,22 +14,25 @@
   <benchmark-root>loading...</benchmark-root>
 
   <script>
+    window.ngDevMode = location.hash == '#ngDevMode';
     addEventListener('DOMContentLoaded', () => {
-      window.ngDevMode = location.hash == '#ngDevMode';
       // DevServer has automatic bootstrap code, so if we already have <scripts> than we don't need to bootstrap
       var alreadyBootstraped = document.querySelectorAll('script').length > 1; // 1 for ourselves
-
       if (!alreadyBootstraped) {
-        function loadScript(url) {
+        function loadScript(url, async) {
           var script = document.createElement('script');
           script.src = url;
+          script.setAttribute("async", async);
           document.body.append(script);
         }
-        loadScript('/npm/node_modules/zone.js/dist/zone.js');
-        loadScript(document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js');
+        loadScript('/npm/node_modules/zone.js/dist/zone.js', false);
+        loadScript(document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js', false);
       }
     });
   </script>
+  <!-- TODO(pk): this will break devserver but I can't make scripts loading working reliably under benchpress -->
+  <script src="/npm/node_modules/zone.js/dist/zone.js"></script>
+  <script src="bundle.min.js"></script>
 </body>
 
 </html>
