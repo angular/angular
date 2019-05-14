@@ -541,7 +541,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     if (_dir) {
       _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => {
         this._validateDrawers();
-        this._updateContentMargins();
+        this.updateContentMargins();
       });
     }
 
@@ -549,7 +549,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     // we need to recompute the margins if the viewport changes.
     viewportRuler.change()
       .pipe(takeUntil(this._destroyed))
-      .subscribe(() => this._updateContentMargins());
+      .subscribe(() => this.updateContentMargins());
 
     this._autosize = defaultAutosize;
   }
@@ -567,7 +567,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
       if (!this._drawers.length ||
           this._isDrawerOpen(this._start) ||
           this._isDrawerOpen(this._end)) {
-        this._updateContentMargins();
+        this.updateContentMargins();
       }
 
       this._changeDetectorRef.markForCheck();
@@ -576,7 +576,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     this._doCheckSubject.pipe(
       debounceTime(10), // Arbitrary debounce time, less than a frame at 60fps
       takeUntil(this._destroyed)
-    ).subscribe(() => this._updateContentMargins());
+    ).subscribe(() => this.updateContentMargins());
   }
 
   ngOnDestroy() {
@@ -594,6 +594,56 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   /** Calls `close` of both start and end drawers */
   close(): void {
     this._drawers.forEach(drawer => drawer.close());
+  }
+
+  /**
+   * Recalculates and updates the inline styles for the content. Note that this should be used
+   * sparingly, because it causes a reflow.
+   */
+  updateContentMargins() {
+    // 1. For drawers in `over` mode, they don't affect the content.
+    // 2. For drawers in `side` mode they should shrink the content. We do this by adding to the
+    //    left margin (for left drawer) or right margin (for right the drawer).
+    // 3. For drawers in `push` mode the should shift the content without resizing it. We do this by
+    //    adding to the left or right margin and simultaneously subtracting the same amount of
+    //    margin from the other side.
+    let left = 0;
+    let right = 0;
+
+    if (this._left && this._left.opened) {
+      if (this._left.mode == 'side') {
+        left += this._left._width;
+      } else if (this._left.mode == 'push') {
+        const width = this._left._width;
+        left += width;
+        right -= width;
+      }
+    }
+
+    if (this._right && this._right.opened) {
+      if (this._right.mode == 'side') {
+        right += this._right._width;
+      } else if (this._right.mode == 'push') {
+        const width = this._right._width;
+        right += width;
+        left -= width;
+      }
+    }
+
+    // If either `right` or `left` is zero, don't set a style to the element. This
+    // allows users to specify a custom size via CSS class in SSR scenarios where the
+    // measured widths will always be zero. Note that we reset to `null` here, rather
+    // than below, in order to ensure that the types in the `if` below are consistent.
+    left = left || null!;
+    right = right || null!;
+
+    if (left !== this._contentMargins.left || right !== this._contentMargins.right) {
+      this._contentMargins = {left, right};
+
+      // Pull back into the NgZone since in some cases we could be outside. We need to be careful
+      // to do it only when something changed, otherwise we can end up hitting the zone too often.
+      this._ngZone.run(() => this._contentMarginChanges.next(this._contentMargins));
+    }
   }
 
   ngDoCheck() {
@@ -621,7 +671,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
         this._element.nativeElement.classList.add('mat-drawer-transition');
       }
 
-      this._updateContentMargins();
+      this.updateContentMargins();
       this._changeDetectorRef.markForCheck();
     });
 
@@ -653,7 +703,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     if (drawer) {
       drawer._modeChanged.pipe(takeUntil(merge(this._drawers.changes, this._destroyed)))
         .subscribe(() => {
-          this._updateContentMargins();
+          this.updateContentMargins();
           this._changeDetectorRef.markForCheck();
         });
     }
@@ -730,55 +780,4 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     return drawer != null && drawer.opened;
   }
 
-  /**
-   * Recalculates and updates the inline styles for the content. Note that this should be used
-   * sparingly, because it causes a reflow.
-   */
-  private _updateContentMargins() {
-    // 1. For drawers in `over` mode, they don't affect the content.
-    // 2. For drawers in `side` mode they should shrink the content. We do this by adding to the
-    //    left margin (for left drawer) or right margin (for right the drawer).
-    // 3. For drawers in `push` mode the should shift the content without resizing it. We do this by
-    //    adding to the left or right margin and simultaneously subtracting the same amount of
-    //    margin from the other side.
-
-    let left = 0;
-    let right = 0;
-
-    if (this._left && this._left.opened) {
-      if (this._left.mode == 'side') {
-        left += this._left._width;
-      } else if (this._left.mode == 'push') {
-        let width = this._left._width;
-        left += width;
-        right -= width;
-      }
-    }
-
-    if (this._right && this._right.opened) {
-      if (this._right.mode == 'side') {
-        right += this._right._width;
-      } else if (this._right.mode == 'push') {
-        let width = this._right._width;
-        right += width;
-        left -= width;
-      }
-    }
-
-    // If either `right` or `left` is zero, don't set a style to the element. This
-    // allows users to specify a custom size via CSS class in SSR scenarios where the
-    // measured widths will always be zero. Note that we reset to `null` here, rather
-    // than below, in order to ensure that the types in the `if` below are consistent.
-    left = left || null!;
-    right = right || null!;
-
-    if (left !== this._contentMargins.left || right !== this._contentMargins.right) {
-      this._contentMargins = {left, right};
-
-      // Pull back into the NgZone since in some cases we could be outside. We need to be careful
-      // to do it only when something changed, otherwise we can end up hitting the zone too often.
-      this._ngZone.run(() => this._contentMarginChanges.next(this._contentMargins));
-    }
-
-  }
 }

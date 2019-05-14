@@ -63,6 +63,7 @@ export declare class MatDrawerContainer implements AfterContentInit, DoCheck, On
     ngDoCheck(): void;
     ngOnDestroy(): void;
     open(): void;
+    updateContentMargins(): void;
 }
 
 export declare class MatDrawerContent extends CdkScrollable implements AfterContentInit {
