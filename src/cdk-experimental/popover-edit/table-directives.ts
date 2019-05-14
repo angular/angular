@@ -374,11 +374,11 @@ export class CdkRowHoverContent implements AfterViewInit, OnDestroy {
                 // Not doing any positioning in CDK version. Material version
                 // will absolutely position on right edge of cell.
                 this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef, {});
-                this.initElement(this.elementRef.nativeElement!.nextSibling as HTMLElement);
+                this.initElement(this.viewRef.rootNodes[0] as HTMLElement);
               } else {
                 this.viewContainerRef.insert(this.viewRef);
               }
-              this.prepareElement(this.elementRef.nativeElement!.nextSibling as HTMLElement);
+              this.prepareElement(this.viewRef.rootNodes[0] as HTMLElement);
             } else if (this.viewRef) {
               this.viewContainerRef.detach(this.viewContainerRef.indexOf(this.viewRef));
             }
