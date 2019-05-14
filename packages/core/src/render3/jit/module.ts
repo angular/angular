@@ -108,11 +108,13 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
         ngModuleDef = getCompilerFacade().compileNgModule(
             angularCoreEnv, `ng:///${moduleType.name}/ngModuleDef.js`, {
               type: moduleType,
-              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY, resolveForwardRef),
+              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(resolveForwardRef),
               declarations: declarations.map(resolveForwardRef),
-              imports: flatten(ngModule.imports || EMPTY_ARRAY, resolveForwardRef)
+              imports: flatten(ngModule.imports || EMPTY_ARRAY)
+                           .map(resolveForwardRef)
                            .map(expandModuleWithProviders),
-              exports: flatten(ngModule.exports || EMPTY_ARRAY, resolveForwardRef)
+              exports: flatten(ngModule.exports || EMPTY_ARRAY)
+                           .map(resolveForwardRef)
                            .map(expandModuleWithProviders),
               emitInline: true,
               schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
@@ -156,12 +158,12 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
   const errors: string[] = [];
   const declarations = maybeUnwrapFn(ngModuleDef.declarations);
   const imports = maybeUnwrapFn(ngModuleDef.imports);
-  flatten(imports, unwrapModuleWithProvidersImports).forEach(verifySemanticsOfNgModuleDef);
+  flatten(imports).map(unwrapModuleWithProvidersImports).forEach(verifySemanticsOfNgModuleDef);
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
   const combinedDeclarations: Type<any>[] = [
     ...declarations.map(resolveForwardRef),  //
-    ...flatten(imports.map(computeCombinedExports), resolveForwardRef),
+    ...flatten(imports.map(computeCombinedExports)).map(resolveForwardRef),
   ];
   exports.forEach(verifyExportsAreDeclaredOrReExported);
   declarations.forEach(verifyDeclarationIsUnique);
@@ -170,7 +172,8 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
   const ngModule = getAnnotation<NgModule>(moduleType, 'NgModule');
   if (ngModule) {
     ngModule.imports &&
-        flatten(ngModule.imports, unwrapModuleWithProvidersImports)
+        flatten(ngModule.imports)
+            .map(unwrapModuleWithProvidersImports)
             .forEach(verifySemanticsOfNgModuleDef);
     ngModule.bootstrap && ngModule.bootstrap.forEach(verifyCorrectBootstrapType);
     ngModule.bootstrap && ngModule.bootstrap.forEach(verifyComponentIsPartOfNgModule);
