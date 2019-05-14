@@ -339,8 +339,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
-        const typeExpression = paramInfo && paramInfo.get('type') || null;
-        const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
+        const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type') ! : null;
+        const decoratorInfo =
+            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators') ! : null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
         return {typeExpression, decorators};
       });
