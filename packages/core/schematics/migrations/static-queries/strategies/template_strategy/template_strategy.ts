@@ -179,11 +179,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
   }
 
   private _createDiagnosticsError(diagnostics: (ts.Diagnostic|Diagnostic)[]) {
-    return new Error(
-        `Could not create Angular AOT compiler to determine query timing.\n` +
-        `The following diagnostics were detected:\n` +
-        `${diagnostics.map(d => d.messageText).join(`\n `)}\n` +
-        `Please make sure that there is no AOT compilation failure.`);
+    return new Error(`${diagnostics.map(d => d.messageText).join(`\n `)}`);
   }
 
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {
