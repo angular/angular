@@ -167,7 +167,7 @@ describe('TemplateRef', () => {
 
       expect(embeddedView.rootNodes.length).toBe(2);
       expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);  // a text node
+      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
     });
   });
 });
