@@ -662,3 +662,151 @@ describe('onInit', () => {
     ]);
   });
 });
+
+describe('doCheck', () => {
+  it('should call doCheck on every refresh', () => {
+    let doCheckCalled = 0;
+
+    @Component({template: ``})
+    class App {
+      ngDoCheck() { doCheckCalled++; }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(doCheckCalled).toBe(1);
+
+    fixture.detectChanges();
+
+    expect(doCheckCalled).toBe(2);
+  });
+
+  it('should call parent doCheck before child doCheck', () => {
+    const doChecks: string[] = [];
+
+    @Component({
+      selector: 'parent',
+      template: `<child></child>`,
+    })
+    class Parent {
+      ngDoCheck() { doChecks.push('parent'); }
+    }
+
+    @Component({
+      selector: 'child',
+      template: ``,
+    })
+    class Child {
+      ngDoCheck() { doChecks.push('child'); }
+    }
+
+    @Component({template: `<parent></parent>`})
+    class App {
+      ngDoCheck() { doChecks.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Child],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(doChecks).toEqual(['app', 'parent', 'child']);
+  });
+
+  it('should call ngOnInit before ngDoCheck if creation mode', () => {
+    const events: string[] = [];
+    @Component({template: ``})
+    class App {
+      ngOnInit() { events.push('onInit'); }
+
+      ngDoCheck() { events.push('doCheck'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(['onInit', 'doCheck']);
+  });
+
+  it('should be called on directives after component', () => {
+    const doChecks: string[] = [];
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir')
+      name = '';
+
+      ngDoCheck() { doChecks.push('dir ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngDoCheck() { doChecks.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+      <comp name="1" dir="1"></comp>
+      <comp name="2" dir="2"></comp>
+    `
+    })
+    class App {
+      ngDoCheck() { doChecks.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(doChecks).toEqual(['app', 'comp 1', 'dir 1', 'comp 2', 'dir 2']);
+  });
+
+  it('should be called on directives on an element', () => {
+    const doChecks: string[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir')
+      name = '';
+
+      ngDoCheck() { doChecks.push('dir ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <p dir="1"></p>
+        <p dir="2"></p>
+      `
+    })
+    class App {
+      ngDoCheck() { doChecks.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(doChecks).toEqual(['app', 'dir 1', 'dir 2']);
+  });
+});
