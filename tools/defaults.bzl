@@ -11,6 +11,11 @@ _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
 _DEFAULT_TS_TYPINGS = "@npm//typescript:typescript__typings"
 
+# Whether Angular type checking should be enabled or not. Enabled by
+# default but will be overwritten when running snapshots tests with Ivy
+# since type-checking is not complete yet. See FW-1004.
+_ENABLE_NG_TYPE_CHECKING = True
+
 # Re-exports to simplify build file load statements
 markdown_to_html = _markdown_to_html
 
@@ -55,6 +60,7 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
       local_deps = local_deps + [d]
 
   _ng_module(
+    type_check = _ENABLE_NG_TYPE_CHECKING,
     deps = local_deps,
     tsconfig = tsconfig,
     testonly = testonly,

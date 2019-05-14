@@ -19,6 +19,7 @@ const {writeFileSync} = require('fs');
 const {join} = require('path');
 const {execSync} = require('child_process');
 
+const {tag} = require('minimist')(process.argv.slice(2), {string: ['tag']});
 const projectDir = join(__dirname, '../../');
 const packageJsonPath = join(projectDir, 'package.json');
 const packageJson = require(packageJsonPath);
@@ -30,13 +31,15 @@ packageJson['resolutions'] = packageJson['resolutions'] || {};
 // List that contains the names of all installed Angular packages (e.g. "@angular/core")
 const angularPackages = Object.keys({...packageJson.dependencies, ...packageJson.devDependencies})
   .filter(packageName => packageName.startsWith('@angular/'));
+const packageSuffix = tag ? ` (${tag})` : '';
 
 console.log(green('Setting up snapshot builds for:\n'));
-console.log(yellow(`  ${angularPackages.join('\n  ')}\n`));
+console.log(yellow(`  ${angularPackages.map(n => `${n}${packageSuffix}`).join('\n  ')}\n`));
 
 // Setup the snapshot version for each Angular package specified in the "package.json" file.
 angularPackages.forEach(packageName => {
-  const buildsUrl = `github:angular/${packageName.split('/')[1]}-builds`;
+  let buildsUrl = `github:angular/${packageName.split('/')[1]}-builds${tag ? `#${tag}` : ''}`;
+
   // Add resolutions for each package in the format "**/{PACKAGE}" so that all
   // nested versions of that specific Angular package will have the same version.
   packageJson.resolutions[`**/${packageName}`] = buildsUrl;

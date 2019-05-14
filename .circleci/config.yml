@@ -346,6 +346,63 @@ jobs:
     - run: node ./scripts/circleci/setup-angular-snapshots.js
     - run: ./scripts/circleci/run-local-browser-tests.sh
 
+
+  # ----------------------------------------------------------------------------
+  # Job that runs all Bazel tests against Ivy with the current Angular version
+  # specified in the project dev dependencies.
+  # ----------------------------------------------------------------------------
+  ivy_test:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *copy_bazel_config
+      - *setup_bazel_remote_execution
+      - *yarn_install
+
+      # Setup Angular ivy snapshots built with ngtsc but locked to a specific tag. We
+      # cannot determine the tag automatically based on the Angular version specified in
+      # the "package.json" because the SHA is not known for the given release. Nor can
+      # we use ngcc to apply the ivy switches because ngcc currently does not handle the
+      # UMD format which is used by Bazel when running tests. UMD processing is in
+      # progress and tracked with FW-85.
+      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag 8.0.0-rc.0-ivy-aot+bd37622
+      # Disable type checking when building with Ivy. This is necessary because
+      # type checking is not complete yet and can incorrectly break compilation.
+      # Issue is tracked with FW-1004.
+      - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
+      # Run project tests with ngtsc and the Ivy Angular packages.
+      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot
+
+  # ----------------------------------------------------------------------------
+  # Job that runs all Bazel tests against Ivy from angular/angular#master.
+  # ----------------------------------------------------------------------------
+  ivy_snapshot_test_cronjob:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *copy_bazel_config
+      - *setup_bazel_remote_execution
+      - *yarn_install
+
+      # Setup Angular ivy snapshots built with ngtsc.
+      - run: node ./scripts/circleci/setup-angular-snapshots.js --tag master-ivy-aot
+      # Disable type checking when building with Ivy. This is necessary because
+      # type checking is not complete yet and can incorrectly break compilation.
+      # Issue is tracked with FW-1004.
+      - run: sed -i "s/\(_ENABLE_NG_TYPE_CHECKING = \)True/\1False/g" tools/defaults.bzl
+      # Run project tests with ngtsc and the Ivy Angular packages.
+      - run: bazel build src/... --build_tag_filters=-docs-package --define=compile=aot
+      - run: bazel test src/... --build_tag_filters=-docs-package --define=compile=aot
+
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
 # one job depends on another.
@@ -359,6 +416,8 @@ workflows:
   bazel_targets:
     jobs:
       - bazel_build_test:
+          filters: *ignore_presubmit_branch_filter
+      - ivy_test:
           filters: *ignore_presubmit_branch_filter
       - api_golden_checks:
           filters: *ignore_presubmit_branch_filter
@@ -398,17 +457,18 @@ workflows:
       - lint:
           filters: *ignore_presubmit_branch_filter
 
-  # Snapshot tests workflow that is scheduled to run all specified jobs at midnight everyday.
+  # Snapshot tests workflow that is scheduled to run all specified jobs every hour.
   # This workflow runs various jobs against the Angular snapshot builds from Github.
   snapshot_tests:
     jobs:
-      # Note that we need additional jobs for the nightly snapshot tests because there is no
-      # easy way to detect whether a job runs inside of a cronjob or specific workflow.
-      # See: https://circleci.com/ideas/?idea=CCI-I-295
+      # Note that we need additional jobs for the cronjob snapshot tests because there
+      # is no easy way to detect whether a job runs inside of a cronjob or specific
+      # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
       - snapshot_tests_local_browsers
+      - ivy_snapshot_test_cronjob
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 * * * *"
           filters:
             branches:
               only:
