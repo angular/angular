@@ -54,7 +54,7 @@ const SAFE_STYLE_VALUE = new RegExp(
  * Given the common use case, low likelihood of attack vector, and low impact of an attack, this
  * code is permissive and allows URLs that sanitize otherwise.
  */
-const URL_RE = /^url\(([\w\W]*)\)$/;
+const URL_RE = /^url\(([^)]+)\)$/;
 
 /**
  * Checks that quotes (" and ') are properly balanced inside a string. Assumes
