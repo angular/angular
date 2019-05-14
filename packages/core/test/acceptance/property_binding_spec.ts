@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CommonModule} from '@angular/common';
 import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
@@ -346,6 +347,48 @@ describe('property bindings', () => {
       fixture.detectChanges();
       expect(otherDir.id).toEqual(2);
     });
+
+    it('should support unrelated element properties at same index in if-else block', () => {
+      @Component({
+        template: `
+          <button idDir [id]="id1">Click me</button>
+          <button *ngIf="condition" [id]="id2">Click me too (2)</button>
+          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button> 
+        `
+      })
+      class App {
+        condition = true;
+        id1 = 'one';
+        id2 = 'two';
+        id3 = 3;
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [App, IdDir, OtherDir], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      let buttonElements = fixture.nativeElement.querySelectorAll('button');
+      const idDir = fixture.debugElement.query(By.directive(IdDir)).injector.get(IdDir);
+
+      expect(buttonElements.length).toBe(2);
+      expect(buttonElements[0].hasAttribute('id')).toBe(false);
+      expect(buttonElements[1].getAttribute('id')).toBe('two');
+      expect(buttonElements[1].textContent).toBe('Click me too (2)');
+      expect(idDir.idNumber).toBe('one');
+
+      fixture.componentInstance.condition = false;
+      fixture.componentInstance.id1 = 'four';
+      fixture.detectChanges();
+
+      const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
+      buttonElements = fixture.nativeElement.querySelectorAll('button');
+      expect(buttonElements.length).toBe(2);
+      expect(buttonElements[0].hasAttribute('id')).toBe(false);
+      expect(buttonElements[1].hasAttribute('id')).toBe(false);
+      expect(buttonElements[1].textContent).toBe('Click me too (3)');
+      expect(idDir.idNumber).toBe('four');
+      expect(otherDir.id).toBe(3);
+    });
   });
 
   describe('attributes and input properties', () => {
@@ -478,6 +521,79 @@ describe('property bindings', () => {
       expect(myDir.role).toEqual('button');
       expect(myDir.direction).toEqual('rtl');
       expect(myDirB.roleB).toEqual('listbox');
+    });
+
+    it('should support attributes at same index inside an if-else block', () => {
+      @Component({
+        template: `
+          <div role="listbox" myDir></div>
+          <div role="button" myDirB *ngIf="condition"></div>
+          <div role="menu" *ngIf="!condition"></div>
+        `,
+      })
+      class App {
+        condition = true;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
+      let divElements = fixture.nativeElement.querySelectorAll('div');
+
+      expect(divElements.length).toBe(2);
+      expect(divElements[0].getAttribute('role')).toBe('listbox');
+      expect(divElements[1].getAttribute('role')).toBe('button');
+      expect(myDir.role).toEqual('listbox');
+      expect(myDirB.roleB).toEqual('button');
+      expect((myDirB as any).role).toBeUndefined();
+
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+
+      divElements = fixture.nativeElement.querySelectorAll('div');
+      expect(divElements.length).toBe(2);
+      expect(divElements[0].getAttribute('role')).toBe('listbox');
+      expect(divElements[1].getAttribute('role')).toBe('menu');
+      expect(myDir.role).toEqual('listbox');
+      expect(myDirB.roleB).toEqual('button');
+    });
+
+    it('should process attributes properly inside a for loop', () => {
+      @Component({
+        selector: 'comp',
+        template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`
+      })
+      class Comp {
+      }
+
+      @Component({
+        template: `
+          <comp *ngFor="let i of [0, 1]"></comp>
+        `
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyDir, Comp], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.children.length).toBe(2);
+
+      const [comp1, comp2] = fixture.nativeElement.children;
+
+      expect(comp1.tagName).toBe('COMP');
+      expect(comp2.tagName).toBe('COMP');
+
+      expect(comp1.children[0].tagName).toBe('DIV');
+      expect(comp1.children[0].getAttribute('role')).toBe('button');
+      expect(comp1.textContent).toBe('role: button');
+
+      expect(comp2.children[0].tagName).toBe('DIV');
+      expect(comp2.children[0].getAttribute('role')).toBe('button');
+      expect(comp2.textContent).toBe('role: button');
     });
 
   });
