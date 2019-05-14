@@ -7,7 +7,6 @@
  */
 
 import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {EmbeddedViewRef} from '@angular/core/src/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -115,7 +114,7 @@ describe('TemplateRef', () => {
      * getting root nodes of an embedded view:
      * https://stackblitz.com/edit/angular-z8zev7?file=src/app/app.component.ts
      */
-    onlyInIvy('Ivy will get root nodes from containers in embedded views')
+    onlyInIvy('Ivy returns fewer root nodes than View Engine')
         .it('should not descend into containers when retrieving root nodes', () => {
           @Component({
             template: `
@@ -137,7 +136,7 @@ describe('TemplateRef', () => {
 
           const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
           expect(embeddedView.rootNodes.length).toBe(1);
-          expect(embeddedView.rootNodes[0].nodeType).toBe(8);
+          expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
         });
 
     /**
@@ -167,9 +166,8 @@ describe('TemplateRef', () => {
       const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
 
       expect(embeddedView.rootNodes.length).toBe(2);
-      expect(embeddedView.rootNodes[0].nodeType)
-          .toBe(8);  // a comment node (only!) corresponding to <ng-container>
-      expect(embeddedView.rootNodes[1].nodeType).toBe(3);  // a text node
+      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);  // a text node
     });
   });
 });
