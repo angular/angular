@@ -5,9 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {MockFileSystem} from '../helpers/mock_file_system';
+
+const _ = AbsoluteFsPath.from;
 
 function createMockFileSystem() {
   return new MockFileSystem({
@@ -102,7 +104,7 @@ describe('entry point bundle', () => {
           // Modules resolved from "other" should be declaration files
           '/node_modules/other/public_api.d.ts',
           '/node_modules/other/index.d.ts',
-        ]));
+        ].map(p => _(p).toString())));
 
     expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
         .toEqual(jasmine.arrayWithExactContents([
@@ -115,6 +117,6 @@ describe('entry point bundle', () => {
           '/node_modules/test/secondary/index.d.ts',
           '/node_modules/other/public_api.d.ts',
           '/node_modules/other/index.d.ts',
-        ]));
+        ].map(p => _(p).toString())));
   });
 });
