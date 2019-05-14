@@ -16,4 +16,5 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: '[cfcExpandingRowBlacklist]',
 })
-export class ExpandingRowBlacklist {}
+export class ExpandingRowBlacklist {
+}

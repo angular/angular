@@ -8,9 +8,9 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {ExpandingRowModule} from './expanding_row_module';
 
 import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row';
+import {ExpandingRowModule} from './expanding_row_module';
 
 @NgModule({
   declarations: [BenchmarkableExpandingRow],
@@ -22,4 +22,3 @@ import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row';
 })
 export class BenchmarkableExpandingRowModule {
 }
- 
