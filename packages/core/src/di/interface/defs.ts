@@ -148,6 +148,13 @@ export function ΔdefineInjectable<T>(opts: {
 export const defineInjectable = ΔdefineInjectable;
 
 /**
+ * @deprecated delete before v8. Use `defineInjectable`, which is also deprecated, but will be
+ * around until v10.
+ * @publicApi
+ */
+export const ɵɵdefineInjectable = ΔdefineInjectable;
+
+/**
  * Construct an `InjectorDef` which configures an injector.
  *
  * This should be assigned to a static `ngInjectorDef` field on a type, which will then be an
