@@ -39,8 +39,15 @@ export class $locationShim {
   private $$search: any = '';
   private $$hash: string = '';
   private $$state: unknown;
+  private $$changeListeners: [
+    ((url: string, state: unknown, oldUrl: string, oldState: unknown, err?: (e: Error) => void) =>
+         void),
+    (e: Error) => void
+  ][] = [];
 
   private cachedState: unknown = null;
+
+
 
   constructor(
       $injector: any, private location: Location, private platformLocation: PlatformLocation,
@@ -313,6 +320,32 @@ export class $locationShim {
     }
   }
 
+  /**
+   * Register URL change listeners. This API can be used to catch updates performed by the
+   * AngularJS framework. These changes are a subset of the `$locationChangeStart/Success` events
+   * as those events fire when AngularJS updates it's internally referenced version of the browser
+   * URL. It's possible for `$locationChange` events to happen, but for the browser URL
+   * (window.location) to remain unchanged. This `onChange` callback will fire only when AngularJS
+   * actually updates the browser URL (window.location).
+   */
+  onChange(
+      fn: (url: string, state: unknown, oldUrl: string, oldState: unknown) => void,
+      err: (e: Error) => void = (e: Error) => {}) {
+    this.$$changeListeners.push([fn, err]);
+  }
+
+  /** @internal */
+  $$notifyChangeListeners(
+      url: string = '', state: unknown, oldUrl: string = '', oldState: unknown) {
+    this.$$changeListeners.forEach(([fn, err]) => {
+      try {
+        fn(url, state, oldUrl, oldState);
+      } catch (e) {
+        err(e);
+      }
+    });
+  }
+
   $$parse(url: string) {
     let pathUrl: string|undefined;
     if (url.startsWith('/')) {
@@ -363,6 +396,7 @@ export class $locationShim {
       // state object; this makes possible quick checking if the state changed in the digest
       // loop. Checking deep equality would be too expensive.
       this.$$state = this.browserState();
+      this.$$notifyChangeListeners(url, state, oldUrl, oldState);
     } catch (e) {
       // Restore old values if pushState fails
       this.url(oldUrl);

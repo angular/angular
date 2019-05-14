@@ -6,6 +6,7 @@ export declare class $locationShim {
     hash(hash: string | number | null): this;
     hash(): string;
     host(): string;
+    onChange(fn: (url: string, state: unknown, oldUrl: string, oldState: unknown) => void, err?: (e: Error) => void): void;
     path(): string;
     path(path: string | number | null): this;
     port(): number | null;
