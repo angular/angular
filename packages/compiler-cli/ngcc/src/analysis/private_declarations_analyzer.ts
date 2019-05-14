@@ -49,8 +49,8 @@ export class PrivateDeclarationsAnalyzer {
       if (exports) {
         exports.forEach((declaration, exportedName) => {
           if (hasNameIdentifier(declaration.node)) {
-            const privateDeclaration = privateDeclarations.get(declaration.node.name);
-            if (privateDeclaration) {
+            if (privateDeclarations.has(declaration.node.name)) {
+              const privateDeclaration = privateDeclarations.get(declaration.node.name) !;
               if (privateDeclaration.node !== declaration.node) {
                 throw new Error(`${declaration.node.name.text} is declared multiple times.`);
               }
@@ -96,7 +96,7 @@ export class PrivateDeclarationsAnalyzer {
     return Array.from(privateDeclarations.keys()).map(id => {
       const from = AbsoluteFsPath.fromSourceFile(id.getSourceFile());
       const declaration = privateDeclarations.get(id) !;
-      const alias = exportAliasDeclarations.get(id) || null;
+      const alias = exportAliasDeclarations.has(id) ? exportAliasDeclarations.get(id) ! : null;
       const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);
       const dtsFrom =
           dtsDeclaration && AbsoluteFsPath.fromSourceFile(dtsDeclaration.getSourceFile());
