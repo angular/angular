@@ -129,7 +129,7 @@ export interface InjectorTypeWithProviders<T> {
  * * `factory` gives the zero argument function which will create an instance of the injectable.
  *   The factory can call `inject` to access the `Injector` and request injection of dependencies.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ΔdefineInjectable<T>(opts: {
   providedIn?: Type<any>| 'root' | 'any' | null,
