@@ -72,7 +72,7 @@ export function getTransformedQueryCallExpr(
       // we create a transformation failure message that shows developers that they need
       // to set the query timing manually to the determined query timing.
       if (timing !== null) {
-        failureMessage = 'Cannot update query declaration to explicit timing. Please manually ' +
+        failureMessage = 'Cannot update query to set explicit timing. Please manually ' +
             `set the query timing to: "{static: ${(timing === QueryTiming.STATIC).toString()}}"`;
       }
     }
