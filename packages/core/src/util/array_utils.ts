@@ -19,24 +19,23 @@ export function addAllToArray(items: any[], arr: any[]) {
 }
 
 /**
- * Flattens an array in non-recursive way. Input arrays are not modified.
+ * Flattens an array.
  */
-export function flatten(list: any[], mapFn?: (value: any) => any): any[] {
-  const result: any[] = [];
-  let i = 0;
-  while (i < list.length) {
-    const item = list[i];
+export function flatten(list: any[], dst?: any[]): any[] {
+  if (dst === undefined) dst = list;
+  for (let i = 0; i < list.length; i++) {
+    let item = list[i];
     if (Array.isArray(item)) {
-      if (item.length > 0) {
-        list = item.concat(list.slice(i + 1));
-        i = 0;
-      } else {
-        i++;
+      // we need to inline it.
+      if (dst === list) {
+        // Our assumption that the list was already flat was wrong and
+        // we need to clone flat since we need to write to it.
+        dst = list.slice(0, i);
       }
-    } else {
-      result.push(mapFn ? mapFn(item) : item);
-      i++;
+      flatten(item, dst);
+    } else if (dst !== list) {
+      dst.push(item);
     }
   }
-  return result;
+  return dst;
 }
