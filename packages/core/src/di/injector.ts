@@ -11,8 +11,8 @@ import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {ɵɵinject} from './injector_compatibility';
-import {ɵɵdefineInjectable} from './interface/defs';
+import {Δinject} from './injector_compatibility';
+import {ΔdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -107,9 +107,9 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ngInjectableDef = ɵɵdefineInjectable({
+  static ngInjectableDef = ΔdefineInjectable({
     providedIn: 'any' as any,
-    factory: () => ɵɵinject(INJECTOR),
+    factory: () => Δinject(INJECTOR),
   });
 
   /**

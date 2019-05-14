@@ -7,13 +7,13 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {ɵɵpropertyInterpolate, ɵɵpropertyInterpolate1, ɵɵpropertyInterpolate2, ɵɵpropertyInterpolate3, ɵɵpropertyInterpolate4, ɵɵpropertyInterpolate5, ɵɵpropertyInterpolate6, ɵɵpropertyInterpolate7, ɵɵpropertyInterpolate8, ɵɵpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
+import {ΔpropertyInterpolate, ΔpropertyInterpolate1, ΔpropertyInterpolate2, ΔpropertyInterpolate3, ΔpropertyInterpolate4, ΔpropertyInterpolate5, ΔpropertyInterpolate6, ΔpropertyInterpolate7, ΔpropertyInterpolate8, ΔpropertyInterpolateV} from '@angular/core/src/render3/instructions/all';
 
-import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵbind, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵelementStyleProp, ɵɵelementStyling, ɵɵelementStylingApply, ɵɵelementStylingMap, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {ΔdefineComponent} from '../../src/render3/definition';
+import {RenderFlags, Δbind, Δelement, ΔelementAttribute, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔelementStyleProp, ΔelementStyling, ΔelementStylingApply, ΔelementStylingMap, Δinterpolation1, Δproperty, Δselect, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
-import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
+import {ΔdefaultStyleSanitizer, ΔsanitizeHtml, ΔsanitizeResourceUrl, ΔsanitizeScript, ΔsanitizeStyle, ΔsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
@@ -22,9 +22,9 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('instructions', () => {
   function createAnchor() {
-    ɵɵelementStart(0, 'a');
-    ɵɵelementStyling();
-    ɵɵelementEnd();
+    ΔelementStart(0, 'a');
+    ΔelementStyling();
+    ΔelementEnd();
   }
 
   function createDiv(
@@ -38,21 +38,21 @@ describe('instructions', () => {
     if (initialStyles) {
       attrs.push(AttributeMarker.Styles, ...initialStyles);
     }
-    ɵɵelementStart(0, 'div', attrs);
-    ɵɵelementStyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
-    ɵɵelementEnd();
+    ΔelementStart(0, 'div', attrs);
+    ΔelementStyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
+    ΔelementEnd();
   }
 
-  function createScript() { ɵɵelement(0, 'script'); }
+  function createScript() { Δelement(0, 'script'); }
 
   describe('bind', () => {
     it('should update bindings when value changes', () => {
       const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
 
-      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('Hello')));
+      t.update(() => ΔelementProperty(0, 'title', Δbind('Hello')));
       expect(t.html).toEqual('<a title="Hello"></a>');
 
-      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('World')));
+      t.update(() => ΔelementProperty(0, 'title', Δbind('World')));
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -64,7 +64,7 @@ describe('instructions', () => {
     });
 
     it('should not update bindings when value does not change', () => {
-      const idempotentUpdate = () => ɵɵelementProperty(0, 'title', ɵɵbind('Hello'));
+      const idempotentUpdate = () => ΔelementProperty(0, 'title', Δbind('Hello'));
       const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
 
       t.update();
@@ -85,7 +85,7 @@ describe('instructions', () => {
   describe('element', () => {
     it('should create an element', () => {
       const t = new TemplateFixture(() => {
-        ɵɵelement(0, 'div', ['id', 'test', 'title', 'Hello']);
+        Δelement(0, 'div', ['id', 'test', 'title', 'Hello']);
       }, () => {}, 1);
 
       const div = (t.hostElement as HTMLElement).querySelector('div') !;
@@ -101,7 +101,7 @@ describe('instructions', () => {
 
     it('should allow setting namespaced attributes', () => {
       const t = new TemplateFixture(() => {
-        ɵɵelement(0, 'div', [
+        Δelement(0, 'div', [
           // id="test"
           'id',
           'test',
@@ -145,12 +145,12 @@ describe('instructions', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1);
 
-      t.update(() => ɵɵelementAttribute(0, 'title', 'javascript:true', ɵɵsanitizeUrl));
+      t.update(() => ΔelementAttribute(0, 'title', 'javascript:true', ΔsanitizeUrl));
       expect(t.html).toEqual('<div title="unsafe:javascript:true"></div>');
 
       t.update(
-          () => ɵɵelementAttribute(
-              0, 'title', bypassSanitizationTrustUrl('javascript:true'), ɵɵsanitizeUrl));
+          () => ΔelementAttribute(
+              0, 'title', bypassSanitizationTrustUrl('javascript:true'), ΔsanitizeUrl));
       expect(t.html).toEqual('<div title="javascript:true"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -162,29 +162,29 @@ describe('instructions', () => {
     });
   });
 
-  describe('ɵɵselect', () => {
+  describe('Δselect', () => {
     it('should error in DevMode if index is out of range', () => {
       // Only one constant added, meaning only index `0` is valid.
       const t = new TemplateFixture(createDiv, () => {}, 1, 0);
-      expect(() => { t.update(() => { ɵɵselect(-1); }); }).toThrow();
-      expect(() => { t.update(() => { ɵɵselect(1); }); }).toThrow();
-      expect(() => { t.update(() => { ɵɵselect(0); }); }).not.toThrow();
+      expect(() => { t.update(() => { Δselect(-1); }); }).toThrow();
+      expect(() => { t.update(() => { Δselect(1); }); }).toThrow();
+      expect(() => { t.update(() => { Δselect(0); }); }).not.toThrow();
     });
   });
 
   describe('property', () => {
     // TODO(benlesh): Replace with TestBed tests once the instruction is being generated.
-    it('should set properties of the ɵɵselected element', () => {
+    it('should set properties of the Δselected element', () => {
       // <div [title]="title"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'one');
+        Δselect(0);
+        Δproperty('title', 'one');
       });
       expect(t.html).toEqual('<div title="one"></div>');
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'two');
+        Δselect(0);
+        Δproperty('title', 'two');
       });
       expect(t.html).toEqual('<div title="two"></div>');
       expect(ngDevMode).toHaveProperties({
@@ -201,13 +201,13 @@ describe('instructions', () => {
       // <div [title]="title" [accesskey]="key"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 2);
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'one')('accessKey', 'A');
+        Δselect(0);
+        Δproperty('title', 'one')('accessKey', 'A');
       });
       expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'two')('accessKey', 'B');
+        Δselect(0);
+        Δproperty('title', 'two')('accessKey', 'B');
       });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
@@ -224,13 +224,13 @@ describe('instructions', () => {
       // <div [title]="title" [accesskey]="key"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 2);
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'one')('accessKey', 'A');
+        Δselect(0);
+        Δproperty('title', 'one')('accessKey', 'A');
       });
       expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
       t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'two')('accessKey', 'A');  // Notice: only changing the title.
+        Δselect(0);
+        Δproperty('title', 'two')('accessKey', 'A');  // Notice: only changing the title.
       });
       expect(t.html).toEqual('<div accesskey="A" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
@@ -242,13 +242,13 @@ describe('instructions', () => {
       });
     });
 
-    it('should error in dev mode if ɵɵselect was not called prior', () => {
+    it('should error in dev mode if Δselect was not called prior', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
-      expect(() => { t.update(() => { ɵɵproperty('title', 'test'); }); }).toThrow();
+      expect(() => { t.update(() => { Δproperty('title', 'test'); }); }).toThrow();
       expect(() => {
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵproperty('title', 'test');
+          Δselect(0);
+          Δproperty('title', 'test');
         });
       }).not.toThrow();
     });
@@ -259,19 +259,19 @@ describe('instructions', () => {
    * TODO: REMOVE ALL OF THESE TemplateFixture TESTS FOR TestBed TESTS AFTER COMPILER IS UPDATED
    * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    */
-  describe('ɵɵpropertyInterpolate instructions', () => {
-    describe('ɵɵpropertyInterpolate', () => {
+  describe('ΔpropertyInterpolate instructions', () => {
+    describe('ΔpropertyInterpolate', () => {
       it('should interpolate one value', () => {
         // <div title="{{123}}"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 1);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate('title', 123);
+          Δselect(0);
+          ΔpropertyInterpolate('title', 123);
         });
         expect(t.html).toEqual('<div title="123"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate('title', 'abc');
+          Δselect(0);
+          ΔpropertyInterpolate('title', 'abc');
         });
         expect(t.html).toEqual('<div title="abc"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -287,13 +287,13 @@ describe('instructions', () => {
         // <div title="{{123}}" accesskey="{{'A'}}"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 2);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate('title', 123)('accessKey', 'A');
+          Δselect(0);
+          ΔpropertyInterpolate('title', 123)('accessKey', 'A');
         });
         expect(t.html).toEqual('<div accesskey="A" title="123"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate('title', 'abc')('accessKey', 'B');
+          Δselect(0);
+          ΔpropertyInterpolate('title', 'abc')('accessKey', 'B');
         });
         expect(t.html).toEqual('<div accesskey="B" title="abc"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -305,28 +305,28 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 1);
-        expect(() => { t.update(() => { ɵɵpropertyInterpolate('title', 123); }); }).toThrow();
+        expect(() => { t.update(() => { ΔpropertyInterpolate('title', 123); }); }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate('title', 123); });
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate('title', 123); });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate1', () => {
+    describe('ΔpropertyInterpolate1', () => {
       it('should interpolate one value', () => {
         // <div title="start{{123}}end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 1);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate1('title', 'start', 123, 'end');
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 123, 'end');
         });
         expect(t.html).toEqual('<div title="start123end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate1('title', 'start', 'abc', 'end');
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 'abc', 'end');
         });
         expect(t.html).toEqual('<div title="startabcend"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -342,13 +342,13 @@ describe('instructions', () => {
         // <div title="start{{123}}end" data-teststartstart{{'A'}}end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 2);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate1('title', 'start', 123, 'end')('accessKey', 'start', 'A', 'end');
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 123, 'end')('accessKey', 'start', 'A', 'end');
         });
         expect(t.html).toEqual('<div accesskey="startAend" title="start123end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate1('title', 'start', 'abc', 'end')('accessKey', 'start', 'B', 'end');
+          Δselect(0);
+          ΔpropertyInterpolate1('title', 'start', 'abc', 'end')('accessKey', 'start', 'B', 'end');
         });
         expect(t.html).toEqual('<div accesskey="startBend" title="startabcend"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -360,30 +360,30 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 1);
         expect(() => {
-          t.update(() => { ɵɵpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
+          t.update(() => { ΔpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate1('title', 'start', 'whatever', 'end'); });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate2', () => {
+    describe('ΔpropertyInterpolate2', () => {
       it('should interpolate two values', () => {
         // <div title="start: {{v0}}, 1: {{v1}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 2);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end');
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end');
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end');
         });
         expect(t.html).toEqual('<div title="start: A, 1: B, end"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -400,15 +400,15 @@ describe('instructions', () => {
         // end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 4);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end')(
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 0, ', 1: ', 1, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', end');
         });
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, end" title="start: 0, 1: 1, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end')(
+          Δselect(0);
+          ΔpropertyInterpolate2('title', 'start: ', 'A', ', 1: ', 'B', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', end');
         });
         expect(t.html).toEqual(
@@ -422,30 +422,30 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 2);
         expect(() => {
-          t.update(() => { ɵɵpropertyInterpolate2('title', '', '', '', '', ''); });
+          t.update(() => { ΔpropertyInterpolate2('title', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate2('title', '', '', '', '', ''); });
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate2('title', '', '', '', '', ''); });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate3', () => {
+    describe('ΔpropertyInterpolate3', () => {
       it('should interpolate three values', () => {
         // <div title="start: {{v0}}, 1: {{v1}}, 2: {{v2}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 3);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end');
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end');
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end');
         });
         expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, end"></div>');
         expect(ngDevMode).toHaveProperties({
@@ -462,15 +462,15 @@ describe('instructions', () => {
         // 2: {{v2}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 6);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end')(
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', end');
         });
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, end" title="start: 0, 1: 1, 2: 2, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end')(
+          Δselect(0);
+          ΔpropertyInterpolate3('title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', end');
         });
         expect(t.html).toEqual(
@@ -484,32 +484,31 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 3);
         expect(() => {
-          t.update(() => { ɵɵpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
+          t.update(() => { ΔpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate3('title', '', '', '', '', '', '', ''); });
         }).not.toThrow();
       });
     });
 
 
-    describe('ɵɵpropertyInterpolate4', () => {
+    describe('ΔpropertyInterpolate4', () => {
       it('should interpolate four values', () => {
         // <div title="start: {{v0}}, 1: {{v1}}, 2: {{v2}}, 3: {{v3}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 4);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate4(
-              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
+          Δselect(0);
+          ΔpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate4(
+          Δselect(0);
+          ΔpropertyInterpolate4(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end');
         });
         expect(t.html).toEqual('<div title="start: A, 1: B, 2: C, 3: D, end"></div>');
@@ -527,16 +526,15 @@ describe('instructions', () => {
         // {{v1}} 2: {{v2}} 3: {{v3}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 8);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate4(
-              'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end')(
+          Δselect(0);
+          ΔpropertyInterpolate4('title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', end');
         });
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, end" title="start: 0, 1: 1, 2: 2, 3: 3, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate4(
+          Δselect(0);
+          ΔpropertyInterpolate4(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', end');
         });
@@ -551,31 +549,31 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 4);
         expect(() => {
-          t.update(() => { ɵɵpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
+          t.update(() => { ΔpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
-          t.update(() => { ɵɵpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
+          Δselect(0);
+          t.update(() => { ΔpropertyInterpolate4('title', '', '', '', '', '', '', '', '', ''); });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate5', () => {
+    describe('ΔpropertyInterpolate5', () => {
       it('should interpolate five values', () => {
         // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 5);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate5(
+          Δselect(0);
+          ΔpropertyInterpolate5(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate5(
+          Δselect(0);
+          ΔpropertyInterpolate5(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', end');
         });
@@ -594,16 +592,16 @@ describe('instructions', () => {
         // {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 10);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate5(
+          Δselect(0);
+          ΔpropertyInterpolate5(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', end');
         });
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate5(
+          Δselect(0);
+          ΔpropertyInterpolate5(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
@@ -620,36 +618,36 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 5);
         expect(() => {
           t.update(() => {
-            ɵɵpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
+            ΔpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
+          Δselect(0);
           t.update(() => {
-            ɵɵpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
+            ΔpropertyInterpolate5('title', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate6', () => {
+    describe('ΔpropertyInterpolate6', () => {
       it('should interpolate six values', () => {
         // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, 5: {{v5}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 6);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate6(
+          Δselect(0);
+          ΔpropertyInterpolate6(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', end');
         });
         expect(t.html).toEqual('<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate6(
+          Δselect(0);
+          ΔpropertyInterpolate6(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', end');
         });
@@ -668,8 +666,8 @@ describe('instructions', () => {
         // accesskey="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}}, 5: {{v5}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 12);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate6(
+          Δselect(0);
+          ΔpropertyInterpolate6(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
@@ -678,8 +676,8 @@ describe('instructions', () => {
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate6(
+          Δselect(0);
+          ΔpropertyInterpolate6(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
@@ -696,38 +694,38 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 6);
         expect(() => {
           t.update(() => {
-            ɵɵpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
+            ΔpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
+          Δselect(0);
           t.update(() => {
-            ɵɵpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
+            ΔpropertyInterpolate6('title', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate7', () => {
+    describe('ΔpropertyInterpolate7', () => {
       it('should interpolate seven values', () => {
         // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
         // end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 7);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate7(
+          Δselect(0);
+          ΔpropertyInterpolate7(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', 6: ', 6, ', end');
         });
         expect(t.html).toEqual(
             '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate7(
+          Δselect(0);
+          ΔpropertyInterpolate7(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', 6: ', 'G', ', end');
         });
@@ -748,8 +746,8 @@ describe('instructions', () => {
         // {{v5}}, 6: {{v6}}, end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 14);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate7(
+          Δselect(0);
+          ΔpropertyInterpolate7(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', 6: ', 6, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
@@ -758,8 +756,8 @@ describe('instructions', () => {
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate7(
+          Δselect(0);
+          ΔpropertyInterpolate7(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', 6: ', 'G', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
@@ -776,40 +774,40 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 7);
         expect(() => {
           t.update(() => {
-            ɵɵpropertyInterpolate7(
+            ΔpropertyInterpolate7(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
+          Δselect(0);
           t.update(() => {
-            ɵɵpropertyInterpolate7(
+            ΔpropertyInterpolate7(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
       });
     });
 
-    describe('ɵɵpropertyInterpolate8', () => {
+    describe('ΔpropertyInterpolate8', () => {
       it('should interpolate eight values', () => {
         // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
         // 7: {{v7}} end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 8);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate8(
+          Δselect(0);
+          ΔpropertyInterpolate8(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', 6: ', 6, ', 7: ', 7, ', end');
         });
         expect(t.html).toEqual(
             '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate8(
+          Δselect(0);
+          ΔpropertyInterpolate8(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', 6: ', 'G', ', 7: ', 'H', ', end');
         });
@@ -830,8 +828,8 @@ describe('instructions', () => {
         // {{v5}}, 6: {{v6}}, 7: {{v7}} end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 16);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate8(
+          Δselect(0);
+          ΔpropertyInterpolate8(
               'title', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
               ', 6: ', 6, ', 7: ', 7, ', end')(
               'accessKey', 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5,
@@ -840,8 +838,8 @@ describe('instructions', () => {
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolate8(
+          Δselect(0);
+          ΔpropertyInterpolate8(
               'title', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
               ', 5: ', 'F', ', 6: ', 'G', ', 7: ', 'H', ', end')(
               'accessKey', 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E',
@@ -858,18 +856,18 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 8);
         expect(() => {
           t.update(() => {
-            ɵɵpropertyInterpolate8(
+            ΔpropertyInterpolate8(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
+          Δselect(0);
           t.update(() => {
-            ɵɵpropertyInterpolate8(
+            ΔpropertyInterpolate8(
                 'title', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
           });
         }).not.toThrow();
@@ -877,14 +875,14 @@ describe('instructions', () => {
     });
 
 
-    describe('ɵɵpropertyInterpolateV', () => {
+    describe('ΔpropertyInterpolateV', () => {
       it('should interpolate eight or more values', () => {
         // <div title="start: {{v0}} 1: {{v1}} 2: {{v2}} 3: {{v3}} 4: {{v4}} 5: {{v5}}, 6: {{v6}},
         // 7: {{v7}}, 8: {{v8}} end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 9);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolateV('title', [
+          Δselect(0);
+          ΔpropertyInterpolateV('title', [
             'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5, ', 6: ', 6,
             ', 7: ', 7, ', 8: ', 8, ', end'
           ]);
@@ -892,8 +890,8 @@ describe('instructions', () => {
         expect(t.html).toEqual(
             '<div title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolateV('title', [
+          Δselect(0);
+          ΔpropertyInterpolateV('title', [
             'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E', ', 5: ', 'F',
             ', 6: ', 'G', ', 7: ', 'H', ', 8: ', 'I', ', end'
           ]);
@@ -915,8 +913,8 @@ describe('instructions', () => {
         // {{v5}}, 6: {{v6}}, 7: {{v7}}, 8: {{v8}} end"></div>
         const t = new TemplateFixture(createDiv, () => {}, 1, 18);
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolateV(
+          Δselect(0);
+          ΔpropertyInterpolateV(
               'title',
               [
                 'start: ', 0, ', 1: ', 1, ', 2: ', 2, ', 3: ', 3, ', 4: ', 4, ', 5: ', 5, ', 6: ',
@@ -930,8 +928,8 @@ describe('instructions', () => {
         expect(t.html).toEqual(
             '<div accesskey="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end" title="start: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, end"></div>');
         t.update(() => {
-          ɵɵselect(0);
-          ɵɵpropertyInterpolateV(
+          Δselect(0);
+          ΔpropertyInterpolateV(
               'title',
               [
                 'start: ', 'A', ', 1: ', 'B', ', 2: ', 'C', ', 3: ', 'D', ', 4: ', 'E', ', 5: ',
@@ -953,19 +951,19 @@ describe('instructions', () => {
         });
       });
 
-      it('should error if called without ɵɵselect called first', () => {
+      it('should error if called without Δselect called first', () => {
         const t = new TemplateFixture(createDiv, () => {}, 1, 9);
         expect(() => {
           t.update(() => {
-            ɵɵpropertyInterpolateV(
+            ΔpropertyInterpolateV(
                 'title',
                 ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
           });
         }).toThrow();
         expect(() => {
-          ɵɵselect(0);
+          Δselect(0);
           t.update(() => {
-            ɵɵpropertyInterpolateV(
+            ΔpropertyInterpolateV(
                 'title',
                 ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
           });
@@ -978,12 +976,12 @@ describe('instructions', () => {
     it('should use sanitizer function when available', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1);
 
-      t.update(() => ɵɵelementProperty(0, 'title', 'javascript:true', ɵɵsanitizeUrl));
+      t.update(() => ΔelementProperty(0, 'title', 'javascript:true', ΔsanitizeUrl));
       expect(t.html).toEqual('<div title="unsafe:javascript:true"></div>');
 
       t.update(
-          () => ɵɵelementProperty(
-              0, 'title', bypassSanitizationTrustUrl('javascript:false'), ɵɵsanitizeUrl));
+          () => ΔelementProperty(
+              0, 'title', bypassSanitizationTrustUrl('javascript:false'), ΔsanitizeUrl));
       expect(t.html).toEqual('<div title="javascript:false"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -994,10 +992,10 @@ describe('instructions', () => {
     });
 
     it('should not stringify non string values', () => {
-      const t = new TemplateFixture(() => { ɵɵelement(0, 'input'); }, () => {}, 1);
+      const t = new TemplateFixture(() => { Δelement(0, 'input'); }, () => {}, 1);
 
       // Note: don't use 'hidden' here because IE10 does not support the hidden property
-      t.update(() => ɵɵelementProperty(0, 'required', false));
+      t.update(() => ΔelementProperty(0, 'required', false));
       // The required property would be true if `false` was stringified into `"false"`.
       expect((t.hostElement as HTMLElement).querySelector('input') !.required).toEqual(false);
       expect(ngDevMode).toHaveProperties({
@@ -1013,18 +1011,18 @@ describe('instructions', () => {
   describe('elementStyleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
       const t = new TemplateFixture(() => {
-        return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
+        return createDiv(null, null, null, ['background-image'], ΔdefaultStyleSanitizer);
       }, () => {}, 1);
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, 'url("http://server")');
-        ɵɵelementStylingApply(0);
+        ΔelementStyleProp(0, 0, 'url("http://server")');
+        ΔelementStylingApply(0);
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('url("http://server2")'));
-        ɵɵelementStylingApply(0);
+        ΔelementStyleProp(0, 0, bypassSanitizationTrustStyle('url("http://server2")'));
+        ΔelementStylingApply(0);
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -1038,16 +1036,16 @@ describe('instructions', () => {
           1, sanitizerInterceptor);
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply(0);
+        ΔelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
+        ΔelementStylingApply(0);
       });
 
       expect(sanitizerInterceptor.lastValue !).toEqual('apple');
       sanitizerInterceptor.lastValue = null;
 
       t.update(() => {
-        ɵɵelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
-        ɵɵelementStylingApply(0);
+        ΔelementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
+        ΔelementStylingApply(0);
       });
       expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
@@ -1055,16 +1053,16 @@ describe('instructions', () => {
 
   describe('elementStyleMap', () => {
     function createDivWithStyle() {
-      ɵɵelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
-      ɵɵelementStyling([], ['height']);
-      ɵɵelementEnd();
+      ΔelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
+      ΔelementStyling([], ['height']);
+      ΔelementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementStylingMap(0, null, {'background-color': 'red'});
-        ɵɵelementStylingApply(0);
+        ΔelementStylingMap(0, null, {'background-color': 'red'});
+        ΔelementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -1078,7 +1076,7 @@ describe('instructions', () => {
           sanitizerInterceptor);
 
       fixture.update(() => {
-        ɵɵelementStylingMap(0, null, {
+        ΔelementStylingMap(0, null, {
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -1087,7 +1085,7 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
-        ɵɵelementStylingApply(0);
+        ΔelementStylingApply(0);
       });
 
       const props = detectedValues.sort();
@@ -1099,16 +1097,16 @@ describe('instructions', () => {
 
   describe('elementClass', () => {
     function createDivWithStyling() {
-      ɵɵelementStart(0, 'div');
-      ɵɵelementStyling();
-      ɵɵelementEnd();
+      ΔelementStart(0, 'div');
+      ΔelementStyling();
+      ΔelementEnd();
     }
 
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
-        ɵɵelementStylingMap(0, 'multiple classes');
-        ɵɵelementStylingApply(0);
+        ΔelementStylingMap(0, 'multiple classes');
+        ΔelementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
@@ -1121,26 +1119,26 @@ describe('instructions', () => {
 
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'ul');
-          ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
-          ɵɵelementEnd();
+          ΔelementStart(0, 'ul');
+          Δtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
           const row_r2 = ctx0.$implicit;
-          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row_r2));
+          ΔelementProperty(1, 'ngForOf', Δbind(row_r2));
         }
       }
 
       function ToDoAppComponent_NgForOf_NgForOf_Template_1(
           rf: RenderFlags, ctx1: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'li');
-          ɵɵtext(1);
-          ɵɵelementEnd();
+          ΔelementStart(0, 'li');
+          Δtext(1);
+          ΔelementEnd();
         }
         if (rf & RenderFlags.Update) {
           const col_r3 = ctx1.$implicit;
-          ɵɵtextBinding(1, ɵɵinterpolation1('', col_r3, ''));
+          ΔtextBinding(1, Δinterpolation1('', col_r3, ''));
         }
       }
 
@@ -1152,7 +1150,7 @@ describe('instructions', () => {
       class NestedLoops {
         rows = [['a', 'b'], ['A', 'B'], ['a', 'b'], ['A', 'B']];
 
-        static ngComponentDef = ɵɵdefineComponent({
+        static ngComponentDef = ΔdefineComponent({
           type: NestedLoops,
           selectors: [['nested-loops']],
           factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
@@ -1160,10 +1158,10 @@ describe('instructions', () => {
           vars: 1,
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
+              Δtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.rows));
+              ΔelementProperty(0, 'ngForOf', Δbind(ctx.rows));
             }
           },
           directives: [NgForOf]
@@ -1185,7 +1183,7 @@ describe('instructions', () => {
       const inputValue = 'http://foo';
       const outputValue = 'http://foo-sanitized';
 
-      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
+      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -1196,7 +1194,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustUrl('http://foo');
       const outputValue = 'http://foo';
 
-      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
+      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1207,7 +1205,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustUrl('http://foo');
       const outputValue = 'http://foo-ivy';
 
-      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
+      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1218,7 +1216,7 @@ describe('instructions', () => {
       const inputValue = 'color:red';
       const outputValue = 'color:blue';
 
-      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
+      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -1229,7 +1227,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustStyle('color:maroon');
       const outputValue = 'color:maroon';
 
-      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
+      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1240,7 +1238,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustStyle('font-family:foo');
       const outputValue = 'font-family:foo-ivy';
 
-      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
+      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1251,7 +1249,7 @@ describe('instructions', () => {
       const inputValue = 'http://resource';
       const outputValue = 'http://resource-sanitized';
 
-      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
+      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -1262,7 +1260,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf';
 
-      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
+      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1273,7 +1271,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf-ivy';
 
-      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
+      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1284,7 +1282,7 @@ describe('instructions', () => {
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -1295,7 +1293,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1306,7 +1304,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1317,7 +1315,7 @@ describe('instructions', () => {
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -1328,7 +1326,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1339,7 +1337,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 
-      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
+      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -1384,7 +1382,7 @@ class LocalMockSanitizer implements Sanitizer {
 class MockSanitizerInterceptor {
   public lastValue: string|null = null;
   constructor(private _interceptorFn?: ((value: any) => any)|null) {}
-  getStyleSanitizer() { return ɵɵdefaultStyleSanitizer; }
+  getStyleSanitizer() { return ΔdefaultStyleSanitizer; }
   sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
     if (this._interceptorFn) {
       this._interceptorFn(value);
