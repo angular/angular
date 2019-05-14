@@ -92,17 +92,24 @@
     }
   }
 
-  .mat-checkbox:not(.mat-checkbox-disabled) {
-    &.mat-primary .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($primary);
+  // Switch this to a solid color since we're using `opacity`
+  // to control how opaque the ripple should be.
+  .mat-checkbox .mat-ripple-element {
+    background-color: map_get(map-get($theme, foreground), base);
+  }
+
+  .mat-checkbox-checked:not(.mat-checkbox-disabled),
+  .mat-checkbox:active:not(.mat-checkbox-disabled) {
+    &.mat-primary .mat-ripple-element {
+      background: mat-color($primary);
     }
 
-    &.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($accent);
+    &.mat-accent .mat-ripple-element {
+      background: mat-color($accent);
     }
 
-    &.mat-warn .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($warn);
+    &.mat-warn .mat-ripple-element {
+      background: mat-color($warn);
     }
   }
 }
