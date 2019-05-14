@@ -8,11 +8,12 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ComponentFactoryResolver, Directive, Input, NgModule, OnChanges, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
+import {SimpleChange} from '@angular/core/src/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
 
-describe('ngOnChanges', () => {
+describe('onChanges', () => {
   it('should correctly support updating one Input among many', () => {
     let log: string[] = [];
 
@@ -58,6 +59,930 @@ describe('ngOnChanges', () => {
     appComp.c = 3;
     fixture.detectChanges();
     expect(log).toEqual(['c: 0 -> 3']);
+  });
+
+  it('should call onChanges method after inputs are set in creation and update mode', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      val1 = 'a';
+
+      @Input('publicVal2')
+      val2 = 'b';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+    }
+
+    @Component({template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`})
+    class App {
+      val1 = 'a2';
+
+      val2 = 'b2';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([{
+      name: 'comp',
+      changes: {
+        val1: new SimpleChange(undefined, 'a2', true),
+        val2: new SimpleChange(undefined, 'b2', true),
+      }
+    }]);
+
+    events.length = 0;
+    fixture.componentInstance.val1 = 'a3';
+    fixture.componentInstance.val2 = 'b3';
+    fixture.detectChanges();
+
+
+    expect(events).toEqual([{
+      name: 'comp',
+      changes: {
+        val1: new SimpleChange('a2', 'a3', false),
+        val2: new SimpleChange('b2', 'b3', false),
+      }
+    }]);
+  });
+
+  it('should call parent onChanges before child onChanges', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'parent',
+      template: `<child [val]="val"></child>`,
+    })
+    class Parent {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent', changes}); }
+    }
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'child', changes}); }
+    }
+
+    @Component({template: `<parent [val]="val"></parent>`})
+    class App {
+      val = 'foo';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Child, Parent],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent',
+        changes: {
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      },
+      {
+        name: 'child',
+        changes: {
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      }
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'bar';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      },
+      {
+        name: 'child',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      }
+    ]);
+  });
+
+  it('should call all parent onChanges across view before calling children onChanges', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]="name" [val]="val"></child>`,
+    })
+    class Parent {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent ' + this.name, changes}); }
+    }
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'child ' + this.name, changes}); }
+    }
+
+    @Component({
+      template: `
+        <parent name="1" [val]="val"></parent>
+        <parent name="2" [val]="val"></parent>
+      `
+    })
+    class App {
+      val = 'foo';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Child, Parent],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      },
+      {
+        name: 'parent 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      },
+      {
+        name: 'child 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      },
+      {
+        name: 'child 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'foo', true),
+        }
+      },
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'bar';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent 1',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      },
+      {
+        name: 'parent 2',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      },
+      {
+        name: 'child 1',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      },
+      {
+        name: 'child 2',
+        changes: {
+          val: new SimpleChange('foo', 'bar', false),
+        }
+      },
+    ]);
+  });
+
+  it('should call onChanges every time a new view is created with ngIf', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>{{val}}</p>`,
+    })
+    class Comp {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+    }
+
+    @Component({template: `<comp *ngIf="show" [val]="val"></comp>`})
+    class App {
+      show = true;
+
+      val = 'a';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([{
+      name: 'comp',
+      changes: {
+        val: new SimpleChange(undefined, 'a', true),
+      }
+    }]);
+
+    events.length = 0;
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.val = 'b';
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+    expect(events).toEqual([{
+      name: 'comp',
+      changes: {
+        val: new SimpleChange(undefined, 'b', true),
+      }
+    }]);
+  });
+
+  it('should call onChanges in hosts before their content children', () => {
+    const events: any[] = [];
+    @Component({
+      selector: 'projected',
+      template: `<p>{{val}}</p>`,
+    })
+    class Projected {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'projected', changes}); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Comp {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+    }
+
+    @Component({
+      template: `<comp [val]="val"><projected [val]="val"></projected></comp>`,
+    })
+    class App {
+      val = 'a';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'projected',
+        changes: {
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'projected',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+    ]);
+  });
+
+  it('should call onChanges in host and its content children before next host', () => {
+    const events: any[] = [];
+    @Component({
+      selector: 'projected',
+      template: `<p>{{val}}</p>`,
+    })
+    class Projected {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'projected ' + this.name, changes});
+      }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Comp {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp ' + this.name, changes}); }
+    }
+
+    @Component({
+      template: `
+        <comp name="1" [val]="val">
+          <projected name="1" [val]="val"></projected>
+        </comp>
+        <comp name="2" [val]="val">
+          <projected name="2" [val]="val"></projected>
+        </comp>
+      `,
+    })
+    class App {
+      val = 'a';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'projected 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'comp 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'projected 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp 1',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'projected 1',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'comp 2',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'projected 2',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+    ]);
+  });
+
+  it('should be called on directives after component', () => {
+    const events: any[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input()
+      dir = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<p>{{val}}</p>`,
+    })
+    class Comp {
+      @Input()
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+    }
+
+    @Component({
+      template: `<comp [dir]="val" [val]="val"></comp>`,
+    })
+    class App {
+      val = 'a';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'dir',
+        changes: {
+          dir: new SimpleChange(undefined, 'a', true),
+        }
+      }
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'dir',
+        changes: {
+          dir: new SimpleChange('a', 'b', false),
+        }
+      }
+    ]);
+  });
+
+  it('should be called on directives on an element', () => {
+    const events: any[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input()
+      dir = '';
+
+      @Input('dir-val')
+      val = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+    }
+
+    @Component({template: `<div [dir]="val1" [dir-val]="val2"></div>`})
+    class App {
+      val1 = 'a';
+      val2 = 'b';
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([{
+      name: 'dir',
+      changes: {
+        dir: new SimpleChange(undefined, 'a', true),
+        val: new SimpleChange(undefined, 'b', true),
+      }
+    }]);
+
+    events.length = 0;
+    fixture.componentInstance.val1 = 'a1';
+    fixture.componentInstance.val2 = 'b1';
+    fixture.detectChanges();
+    expect(events).toEqual([{
+      name: 'dir',
+      changes: {
+        dir: new SimpleChange('a', 'a1', false),
+        val: new SimpleChange('b', 'b1', false),
+      }
+    }]);
+  });
+
+  it('should call onChanges properly in for loop', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>{{val}}</p>`,
+    })
+    class Comp {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp ' + this.name, changes}); }
+    }
+
+    @Component({
+      template: `
+      <comp name="0" [val]="val"></comp>
+      <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
+      <comp name="1" [val]="val"></comp>
+      `
+    })
+    class App {
+      val = 'a';
+
+      numbers = ['2', '3', '4'];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp 0',
+        changes: {
+          name: new SimpleChange(undefined, '0', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'comp 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'comp 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'comp 3',
+        changes: {
+          name: new SimpleChange(undefined, '3', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'comp 4',
+        changes: {
+          name: new SimpleChange(undefined, '4', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      }
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'comp 0',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'comp 1',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'comp 2',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'comp 3',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'comp 4',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      }
+    ]);
+  });
+
+  it('should call onChanges properly in for loop with children', () => {
+    const events: any[] = [];
+
+    @Component({
+      selector: 'child',
+      template: `<p>{{val}}</p>`,
+    })
+    class Child {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'child of parent ' + this.name, changes});
+      }
+    }
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]="name" [val]="val"></child>`,
+    })
+    class Parent {
+      @Input()
+      val = '';
+
+      @Input()
+      name = '';
+
+      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent ' + this.name, changes}); }
+    }
+
+    @Component({
+      template: `
+        <parent name="0" [val]="val"></parent>
+        <parent *ngFor="let number of numbers" [name]="number" [val]="val"></parent>
+        <parent name="1" [val]="val"></parent>
+      `
+    })
+    class App {
+      val = 'a';
+      numbers = ['2', '3', '4'];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Child, Parent],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent 0',
+        changes: {
+          name: new SimpleChange(undefined, '0', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'parent 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'parent 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'child of parent 2',
+        changes: {
+          name: new SimpleChange(undefined, '2', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'parent 3',
+        changes: {
+          name: new SimpleChange(undefined, '3', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'child of parent 3',
+        changes: {
+          name: new SimpleChange(undefined, '3', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'parent 4',
+        changes: {
+          name: new SimpleChange(undefined, '4', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'child of parent 4',
+        changes: {
+          name: new SimpleChange(undefined, '4', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'child of parent 0',
+        changes: {
+          name: new SimpleChange(undefined, '0', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+      {
+        name: 'child of parent 1',
+        changes: {
+          name: new SimpleChange(undefined, '1', true),
+          val: new SimpleChange(undefined, 'a', true),
+        }
+      },
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.val = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      {
+        name: 'parent 0',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'parent 1',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'parent 2',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'child of parent 2',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'parent 3',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'child of parent 3',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'parent 4',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'child of parent 4',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'child of parent 0',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+      {
+        name: 'child of parent 1',
+        changes: {
+          val: new SimpleChange('a', 'b', false),
+        }
+      },
+    ]);
+  });
+
+  it('should not call onChanges if props are set directly', () => {
+    const events: any[] = [];
+
+    @Component({template: `<p>{{value}}</p>`})
+    class App {
+      value = 'a';
+      ngOnChanges(changes: SimpleChanges) { events.push(changes); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.value = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
   });
 });
 
