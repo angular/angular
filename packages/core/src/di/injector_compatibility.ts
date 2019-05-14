@@ -140,6 +140,12 @@ export function Δinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFla
 export const inject = Δinject;
 
 /**
+ * @deprecated delete by v8, use `inject`.
+ * @codeGenApi
+ */
+export const ɵɵinject = Δinject;
+
+/**
  * Injects `root` tokens in limp mode.
  *
  * If no injector exists, we can still inject tree-shakable providers which have `providedIn` set to
