@@ -53,16 +53,16 @@ describe('compiler compliance', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
-            $r3$.ɵɵnamespaceSVG();
-            $r3$.ɵɵelementStart(1, "svg");
-            $r3$.ɵɵelement(2, "circle", $c2$);
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵnamespaceHTML();
-            $r3$.ɵɵelementStart(3, "p");
-            $r3$.ɵɵtext(4, "test");
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $c1$);
+            $r3$.ΔnamespaceSVG();
+            $r3$.ΔelementStart(1, "svg");
+            $r3$.Δelement(2, "circle", $c2$);
+            $r3$.ΔelementEnd();
+            $r3$.ΔnamespaceHTML();
+            $r3$.ΔelementStart(3, "p");
+            $r3$.Δtext(4, "test");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -102,16 +102,16 @@ describe('compiler compliance', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
-            $r3$.ɵɵnamespaceMathML();
-            $r3$.ɵɵelementStart(1, "math");
-            $r3$.ɵɵelement(2, "infinity");
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵnamespaceHTML();
-            $r3$.ɵɵelementStart(3, "p");
-            $r3$.ɵɵtext(4, "test");
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $c1$);
+            $r3$.ΔnamespaceMathML();
+            $r3$.ΔelementStart(1, "math");
+            $r3$.Δelement(2, "infinity");
+            $r3$.ΔelementEnd();
+            $r3$.ΔnamespaceHTML();
+            $r3$.ΔelementStart(3, "p");
+            $r3$.Δtext(4, "test");
+            $r3$.ΔelementEnd();
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -150,13 +150,13 @@ describe('compiler compliance', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $c1$);
-            $r3$.ɵɵtext(1, "Hello ");
-            $r3$.ɵɵelementStart(2, "b");
-            $r3$.ɵɵtext(3, "World");
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵtext(4, "!");
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $c1$);
+            $r3$.Δtext(1, "Hello ");
+            $r3$.ΔelementStart(2, "b");
+            $r3$.Δtext(3, "World");
+            $r3$.ΔelementEnd();
+            $r3$.Δtext(4, "!");
+            $r3$.ΔelementEnd();
           }
         }
       `;
@@ -198,13 +198,13 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "div", $e0_attrs$);
-              $r3$.ɵɵtext(1, "Hello ");
-              $r3$.ɵɵelementStart(2, "b");
-              $r3$.ɵɵtext(3, "World");
-              $r3$.ɵɵelementEnd();
-              $r3$.ɵɵtext(4, "!");
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "div", $e0_attrs$);
+              $r3$.Δtext(1, "Hello ");
+              $r3$.ΔelementStart(2, "b");
+              $r3$.Δtext(3, "World");
+              $r3$.ΔelementEnd();
+              $r3$.Δtext(4, "!");
+              $r3$.ΔelementEnd();
             }
           }
         `;
@@ -239,12 +239,12 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵɵelementContainerStart(0);
-              i0.ɵɵelementStart(1, "span");
-              i0.ɵɵtext(2, "in a ");
-              i0.ɵɵelementEnd();
-              i0.ɵɵtext(3, "container");
-              i0.ɵɵelementContainerEnd();
+              i0.ΔelementContainerStart(0);
+              i0.ΔelementStart(1, "span");
+              i0.Δtext(2, "in a ");
+              i0.ΔelementEnd();
+              i0.Δtext(3, "container");
+              i0.ΔelementContainerEnd();
             }
           }
         `;
@@ -276,8 +276,8 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵɵelementContainerStart(0);
-              i0.ɵɵelementContainerEnd();
+              i0.ΔelementContainerStart(0);
+              i0.ΔelementContainerEnd();
             }
           }
         `;
@@ -313,11 +313,11 @@ describe('compiler compliance', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $e0_attrs$);
+            $r3$.Δelement(0, "div", $e0_attrs$);
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
-            $r3$.ɵɵproperty("id", ctx.id);
+            $r3$.Δselect(0);
+            $r3$.Δproperty("id", ctx.id);
           }
         }
       `;
@@ -359,7 +359,7 @@ describe('compiler compliance', () => {
       // generating those.
       //
       // For example:
-      // `$r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));`
+      // `$r3$.Δproperty("ternary", (ctx.cond ? $r3$.ΔpureFunction1(8, $c0$, ctx.a): $c1$));`
       ///////////////
 
       const $e0_attrs$ = [];
@@ -368,15 +368,15 @@ describe('compiler compliance', () => {
       const template = `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelement(0, "div", $e0_attrs$);
-            $r3$.ɵɵpipe(1,"pipe");
+            $r3$.Δelement(0, "div", $e0_attrs$);
+            $r3$.Δpipe(1,"pipe");
           }
           if (rf & 2) {
-            $r3$.ɵɵselect(0);
-            $r3$.ɵɵproperty("ternary", (ctx.cond ? $r3$.ɵɵpureFunction1(8, $c0$, ctx.a): $c1$));
-            $r3$.ɵɵproperty("pipe", $r3$.ɵɵpipeBind3(1, 4, ctx.value, 1, 2));
-            $r3$.ɵɵproperty("and", (ctx.cond && $r3$.ɵɵpureFunction1(10, $c0$, ctx.b)));
-            $r3$.ɵɵproperty("or", (ctx.cond || $r3$.ɵɵpureFunction1(12, $c0$, ctx.c)));
+            $r3$.Δselect(0);
+            $r3$.Δproperty("ternary", (ctx.cond ? $r3$.ΔpureFunction1(8, $c0$, ctx.a): $c1$));
+            $r3$.Δproperty("pipe", $r3$.ΔpipeBind3(1, 4, ctx.value, 1, 2));
+            $r3$.Δproperty("and", (ctx.cond && $r3$.ΔpureFunction1(10, $c0$, ctx.b)));
+            $r3$.Δproperty("or", (ctx.cond || $r3$.ΔpureFunction1(12, $c0$, ctx.c)));
           }
         }
       `;
@@ -441,20 +441,20 @@ describe('compiler compliance', () => {
         …
         hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
           if (rf & 1) {
-            $r3$.ɵɵallocHostVars(14);
+            $r3$.ΔallocHostVars(14);
           }
           if (rf & 2) {
-            $r3$.ɵɵcomponentHostSyntheticProperty(elIndex, "@expansionHeight",
-              $r3$.ɵɵbind(
-                $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
-                  $r3$.ɵɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
+            $r3$.ΔcomponentHostSyntheticProperty(elIndex, "@expansionHeight",
+              $r3$.Δbind(
+                $r3$.ΔpureFunction2(5, $_c1$, ctx.getExpandedState(),
+                  $r3$.ΔpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )
               ), null, true
             );
-            $r3$.ɵɵcomponentHostSyntheticProperty(elIndex, "@expansionWidth",
-              $r3$.ɵɵbind(
-                $r3$.ɵɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
-                  $r3$.ɵɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
+            $r3$.ΔcomponentHostSyntheticProperty(elIndex, "@expansionWidth",
+              $r3$.Δbind(
+                $r3$.ΔpureFunction2(11, $_c1$, ctx.getExpandedState(),
+                  $r3$.ΔpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
                 )
               ), null, true
             );
@@ -493,7 +493,7 @@ describe('compiler compliance', () => {
         const $e0_classBindings$ = ["error"];
         const $e0_styleBindings$ = ["background-color"];
         …
-        MyComponent.ngComponentDef = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
+        MyComponent.ngComponentDef = i0.ΔdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory: function MyComponent_Factory(t){
               return new (t || MyComponent)();
             },
@@ -501,14 +501,14 @@ describe('compiler compliance', () => {
             vars: 0,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
-                $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵelementStyling($e0_classBindings$, $e0_styleBindings$);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔelementStart(0, "div");
+                $r3$.ΔelementStyling($e0_classBindings$, $e0_styleBindings$);
+                $r3$.ΔelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵɵelementStyleProp(0, 0, ctx.color);
-                $r3$.ɵɵelementClassProp(0, 0, ctx.error);
-                $r3$.ɵɵelementStylingApply(0);
+                $r3$.ΔelementStyleProp(0, 0, ctx.color);
+                $r3$.ΔelementClassProp(0, 0, ctx.error);
+                $r3$.ΔelementStylingApply(0);
               }
             },
             encapsulation: 2
@@ -548,7 +548,7 @@ describe('compiler compliance', () => {
 
       // ChildComponent definition should be:
       const ChildComponentDefinition = `
-        ChildComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        ChildComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: ChildComponent,
           selectors: [["child"]],
           factory: function ChildComponent_Factory(t) { return new (t || ChildComponent)(); },
@@ -556,7 +556,7 @@ describe('compiler compliance', () => {
           vars: 0,
           template:  function ChildComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵtext(0, "child-view");
+              $r3$.Δtext(0, "child-view");
             }
           },
           encapsulation: 2
@@ -564,7 +564,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]],
           factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
@@ -575,7 +575,7 @@ describe('compiler compliance', () => {
       const MyComponentDefinition = `
         const $c1$ = ["some-directive", ""];
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -583,8 +583,8 @@ describe('compiler compliance', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "child", $c1$);
-              $r3$.ɵɵtext(1, "!");
+              $r3$.Δelement(0, "child", $c1$);
+              $r3$.Δtext(1, "!");
             }
           },
           directives: [ChildComponent, SomeDirective],
@@ -621,7 +621,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
           type: SomeDirective,
           selectors: [["div", "some-directive", "", 8, "foo", 3, "title", "", 9, "baz"]],
           factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
@@ -630,7 +630,7 @@ describe('compiler compliance', () => {
 
       // OtherDirective definition should be:
       const OtherDirectiveDefinition = `
-        OtherDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        OtherDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
           type: OtherDirective,
           selectors: [["", 5, "span", "title", "", 9, "baz"]],
           factory: function OtherDirective_Factory(t) {return new (t || OtherDirective)(); }
@@ -662,7 +662,7 @@ describe('compiler compliance', () => {
       // EmptyOutletComponent definition should be:
       const EmptyOutletComponentDefinition = `
         …
-        EmptyOutletComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        EmptyOutletComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: EmptyOutletComponent,
           selectors: [["ng-component"]],
           factory: function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); },
@@ -670,7 +670,7 @@ describe('compiler compliance', () => {
           vars: 0,
           template: function EmptyOutletComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "router-outlet");
+              $r3$.Δelement(0, "router-outlet");
             }
           },
           encapsulation: 2
@@ -745,13 +745,13 @@ describe('compiler compliance', () => {
 
          const MyComponentDefinition = `
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) {
              return new (t || MyComponent)(
-                $r3$.ɵɵdirectiveInject($i$.ElementRef), $r3$.ɵɵdirectiveInject($i$.ViewContainerRef),
-                $r3$.ɵɵdirectiveInject($i$.ChangeDetectorRef));
+                $r3$.ΔdirectiveInject($i$.ElementRef), $r3$.ΔdirectiveInject($i$.ViewContainerRef),
+                $r3$.ΔdirectiveInject($i$.ChangeDetectorRef));
           },
           consts: 0,
           vars: 0,
@@ -791,29 +791,29 @@ describe('compiler compliance', () => {
       };
 
       const IfDirectiveDefinition = `
-        IfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        IfDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]],
-          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); }
+          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ΔdirectiveInject($i$.TemplateRef)); }
         });`;
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
         const $c2$ = [${AttributeMarker.Template}, "if"];
         function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "li");
-            $r3$.ɵɵtext(1);
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "li");
+            $r3$.Δtext(1);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $myComp$ = $r3$.ɵɵnextContext();
-            const $foo$ = $r3$.ɵɵreference(1);
-            $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2("", $myComp$.salutation, " ", $foo$, ""));
+            const $myComp$ = $r3$.ΔnextContext();
+            const $foo$ = $r3$.Δreference(1);
+            $r3$.Δselect(1);
+            $r3$.ΔtextBinding(1, $r3$.Δinterpolation2("", $myComp$.salutation, " ", $foo$, ""));
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -821,9 +821,9 @@ describe('compiler compliance', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", $c2$);
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "ul", null, $c1$);
+              $r3$.Δtemplate(2, MyComponent_li_2_Template, 2, 2, "li", $c2$);
+              $r3$.ΔelementEnd();
             }
           },
           directives:[IfDirective],
@@ -876,7 +876,7 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = [${AttributeMarker.Bindings}, "names"];
           const $e0_ff$ = function ($v$) { return ["Nancy", $v$]; };
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -884,11 +884,11 @@ describe('compiler compliance', () => {
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "my-comp", $e0_attrs$);
+                $r3$.Δelement(0, "my-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
-                $r3$.ɵɵproperty("names", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName));
+                $r3$.Δselect(0);
+                $r3$.Δproperty("names", $r3$.ΔpureFunction1(1, $e0_ff$, ctx.customName));
               }
             },
            directives: [MyComp],
@@ -959,7 +959,7 @@ describe('compiler compliance', () => {
             return ["start-", $v0$, $v1$, $v2$, $v3$, $v4$, "-middle-", $v5$, $v6$, $v7$, $v8$, "-end"];
           }
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -967,12 +967,12 @@ describe('compiler compliance', () => {
             vars: 11,
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "my-comp", $e0_attr$);
+                $r3$.Δelement(0, "my-comp", $e0_attr$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
-                $r3$.ɵɵproperty("names",
-                    $r3$.ɵɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8]));
+                $r3$.Δselect(0);
+                $r3$.Δproperty("names",
+                    $r3$.ΔpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8]));
               }
             },
             directives: [MyComp],
@@ -1023,7 +1023,7 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = [${AttributeMarker.Bindings}, "config"];
           const $e0_ff$ = function ($v$) { return {"duration": 500, animation: $v$}; };
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -1031,11 +1031,11 @@ describe('compiler compliance', () => {
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "object-comp", $e0_attrs$);
+                $r3$.Δelement(0, "object-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
-                $r3$.ɵɵproperty("config", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.name));
+                $r3$.Δselect(0);
+                $r3$.Δproperty("config", $r3$.ΔpureFunction1(1, $e0_ff$, ctx.name));
               }
             },
             directives: [ObjectComp],
@@ -1092,7 +1092,7 @@ describe('compiler compliance', () => {
           const $e0_ff_1$ = function ($v$) { return [$c0$, $v$]; };
           const $e0_ff_2$ = function ($v1$, $v2$) { return {animation: $v1$, actions: $v2$}; };
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -1100,13 +1100,13 @@ describe('compiler compliance', () => {
             vars: 8,
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "nested-comp", $e0_attrs$);
+                $r3$.Δelement(0, "nested-comp", $e0_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
-                $r3$.ɵɵproperty(
+                $r3$.Δselect(0);
+                $r3$.Δproperty(
                     "config",
-                    $r3$.ɵɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵɵpureFunction1(3, $e0_ff_1$, $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.duration))));
+                    $r3$.ΔpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ΔpureFunction1(3, $e0_ff_1$, $r3$.ΔpureFunction1(1, $e0_ff$, ctx.duration))));
               }
             },
             directives: [NestedComp],
@@ -1154,7 +1154,7 @@ describe('compiler compliance', () => {
         };
 
         const SimpleComponentDefinition = `
-          SimpleComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          SimpleComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: SimpleComponent,
             selectors: [["simple"]],
             factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
@@ -1163,10 +1163,10 @@ describe('compiler compliance', () => {
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojectionDef();
-                $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵprojection(1);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔprojectionDef();
+                $r3$.ΔelementStart(0, "div");
+                $r3$.Δprojection(1);
+                $r3$.ΔelementEnd();
               }
             },
             encapsulation: 2
@@ -1177,7 +1177,7 @@ describe('compiler compliance', () => {
           const $c4$ = ["id","second"];
           const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
           …
-          ComplexComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ComplexComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ComplexComponent,
             selectors: [["complex"]],
             factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
@@ -1186,13 +1186,13 @@ describe('compiler compliance', () => {
             vars: 0,
             template:  function ComplexComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojectionDef($c1$);
-                $r3$.ɵɵelementStart(0, "div", $c3$);
-                $r3$.ɵɵprojection(1, 1);
-                $r3$.ɵɵelementEnd();
-                $r3$.ɵɵelementStart(2, "div", $c4$);
-                $r3$.ɵɵprojection(3, 2);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔprojectionDef($c1$);
+                $r3$.ΔelementStart(0, "div", $c3$);
+                $r3$.Δprojection(1, 1);
+                $r3$.ΔelementEnd();
+                $r3$.ΔelementStart(2, "div", $c4$);
+                $r3$.Δprojection(3, 2);
+                $r3$.ΔelementEnd();
               }
             },
             encapsulation: 2
@@ -1239,38 +1239,38 @@ describe('compiler compliance', () => {
           const $_c1$ = ["id", "third", ${AttributeMarker.Template}, "ngIf"];
           const $_c2$ = ["id", "second"];
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div", $_c2$);
-            $r3$.ɵɵprojection(1, 1);
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "div", $_c2$);
+            $r3$.Δprojection(1, 1);
+            $r3$.ΔelementEnd();
           } }
           const $_c3$ = ["id", "third"];
           function Cmp_div_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "div", $_c3$);
-              $r3$.ɵɵtext(1, " No ng-content, no instructions generated. ");
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "div", $_c3$);
+              $r3$.Δtext(1, " No ng-content, no instructions generated. ");
+              $r3$.ΔelementEnd();
             }
           }
           function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵtext(0, " '*' selector: ");
-              $r3$.ɵɵprojection(1);
+              $r3$.Δtext(0, " '*' selector: ");
+              $r3$.Δprojection(1);
             }
           }
           const $_c4$ = [[["span", "title", "tofirst"]]];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵprojectionDef($_c4$);
-              $r3$.ɵɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
-              $r3$.ɵɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
-              $r3$.ɵɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
+              $r3$.ΔprojectionDef($_c4$);
+              $r3$.Δtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
+              $r3$.Δtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
+              $r3$.Δtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
-              $r3$.ɵɵselect(0);
-              $r3$.ɵɵproperty("ngIf", ctx.visible);
-              $r3$.ɵɵselect(1);
-              $r3$.ɵɵproperty("ngIf", ctx.visible);
+              $r3$.Δselect(0);
+              $r3$.Δproperty("ngIf", ctx.visible);
+              $r3$.Δselect(1);
+              $r3$.Δproperty("ngIf", ctx.visible);
             }
           }
         `;
@@ -1311,19 +1311,19 @@ describe('compiler compliance', () => {
         const output = `
           function Cmp_ng_template_1_ng_template_1_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojection(0, 4);
+                $r3$.Δprojection(0, 4);
             }
           }
           function Cmp_ng_template_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵprojection(0, 3);
-              $r3$.ɵɵtemplate(1, Cmp_ng_template_1_ng_template_1_Template, 1, 0, "ng-template");
+              $r3$.Δprojection(0, 3);
+              $r3$.Δtemplate(1, Cmp_ng_template_1_ng_template_1_Template, 1, 0, "ng-template");
             }
           }
           function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵtext(0, " '*' selector in a template: ");
-              $r3$.ɵɵprojection(1);
+              $r3$.Δtext(0, " '*' selector in a template: ");
+              $r3$.Δprojection(1);
             }
           }
           const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]]];
@@ -1331,11 +1331,11 @@ describe('compiler compliance', () => {
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵprojectionDef($_c2$);
-              $r3$.ɵɵprojection(0, 1);
-              $r3$.ɵɵtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
-              $r3$.ɵɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
-              $r3$.ɵɵprojection(3, 2);
+              $r3$.ΔprojectionDef($_c2$);
+              $r3$.Δprojection(0, 1);
+              $r3$.Δtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
+              $r3$.Δtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
+              $r3$.Δprojection(3, 2);
             }
           }
         `;
@@ -1375,7 +1375,7 @@ describe('compiler compliance', () => {
           const $_c1$ = ["[title]"];
           const $_c2$ = [5, ["", "title", ""]];
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) {
@@ -1385,9 +1385,9 @@ describe('compiler compliance', () => {
             vars: 0,
             template: function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
-                    $r3$.ɵɵelementStart(0, "simple");
-                    $r3$.ɵɵelement(1, "h1", $_c2$);
-                    $r3$.ɵɵelementEnd();
+                    $r3$.ΔelementStart(0, "simple");
+                    $r3$.Δelement(1, "h1", $_c2$);
+                    $r3$.ΔelementEnd();
                 }
             },
             encapsulation: 2
@@ -1430,7 +1430,7 @@ describe('compiler compliance', () => {
           const $_c1$ = ["[title]"];
           const $_c2$ = [5, ["", "title", ""]];
           …
-          MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyApp.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) {
@@ -1440,9 +1440,9 @@ describe('compiler compliance', () => {
             vars: 0,
             template: function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
-                    $r3$.ɵɵelementStart(0, "simple");
-                    $r3$.ɵɵelement(1, "h1", $_c2$);
-                    $r3$.ɵɵelementEnd();
+                    $r3$.ΔelementStart(0, "simple");
+                    $r3$.Δelement(1, "h1", $_c2$);
+                    $r3$.ΔelementEnd();
                 }
             },
             encapsulation: 2
@@ -1496,26 +1496,26 @@ describe('compiler compliance', () => {
         const ViewQueryComponentDefinition = `
           const $e0_attrs$ = ["someDir",""];
           …
-          ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ViewQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ViewQueryComponent,
             selectors: [["view-query-component"]],
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery(SomeDirective, true, null);
-                $r3$.ɵɵviewQuery(SomeDirective, true, null);
+                $r3$.ΔviewQuery(SomeDirective, true, null);
+                $r3$.ΔviewQuery(SomeDirective, true, null);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$));
               }
             },
             consts: 1,
             vars: 0,
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                $r3$.Δelement(0, "div", $e0_attrs$);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -1556,17 +1556,17 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = ["myRef"];
           const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
-          ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ViewQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery($e0_attrs$, true, null);
-                $r3$.ɵɵviewQuery($e1_attrs$, true, null);
+                $r3$.ΔviewQuery($e0_attrs$, true, null);
+                $r3$.ΔviewQuery($e1_attrs$, true, null);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$));
               }
             },
             …
@@ -1607,26 +1607,26 @@ describe('compiler compliance', () => {
           const $refs$ = ["foo"];
           const $e0_attrs$ = ["someDir",""];
           …
-          ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ViewQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ViewQueryComponent,
             selectors: [["view-query-component"]],
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵstaticViewQuery(SomeDirective, true, null);
-                $r3$.ɵɵviewQuery($refs$, true, null);
+                $r3$.ΔstaticViewQuery(SomeDirective, true, null);
+                $r3$.ΔviewQuery($refs$, true, null);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.foo = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.foo = $tmp$.first));
               }
             },
             consts: 1,
             vars: 0,
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "div", $e0_attrs$);
+                $r3$.Δelement(0, "div", $e0_attrs$);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -1672,21 +1672,21 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = ["myRef"];
           const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
-          ViewQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ViewQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵviewQuery($e0_attrs$, true, TemplateRef);
-                $r3$.ɵɵviewQuery(SomeDirective, true, ElementRef);
-                $r3$.ɵɵviewQuery($e1_attrs$, true, ElementRef);
-                $r3$.ɵɵviewQuery(SomeDirective, true, TemplateRef);
+                $r3$.ΔviewQuery($e0_attrs$, true, TemplateRef);
+                $r3$.ΔviewQuery(SomeDirective, true, ElementRef);
+                $r3$.ΔviewQuery($e1_attrs$, true, ElementRef);
+                $r3$.ΔviewQuery(SomeDirective, true, TemplateRef);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.myRefs = $tmp$));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.someDirs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.myRefs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.someDirs = $tmp$));
               }
             },
             …
@@ -1734,7 +1734,7 @@ describe('compiler compliance', () => {
         };
 
         const ContentQueryComponentDefinition = `
-          ContentQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ContentQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ContentQueryComponent,
             selectors: [["content-query-component"]],
             factory: function ContentQueryComponent_Factory(t) {
@@ -1742,13 +1742,13 @@ describe('compiler compliance', () => {
             },
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, null);
+              $r3$.ΔcontentQuery(dirIndex, SomeDirective, true, null);
+              $r3$.ΔcontentQuery(dirIndex, SomeDirective, false, null);
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirList = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirList = $tmp$));
               }
             },
             ngContentSelectors: _c0,
@@ -1756,10 +1756,10 @@ describe('compiler compliance', () => {
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojectionDef();
-                $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵprojection(1);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔprojectionDef();
+                $r3$.ΔelementStart(0, "div");
+                $r3$.Δprojection(1);
+                $r3$.ΔelementEnd();
               }
             },
             encapsulation: 2
@@ -1798,17 +1798,17 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = ["myRef"];
           const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
-          ContentQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ContentQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false, null);
+              $r3$.ΔcontentQuery(dirIndex, $e0_attrs$, true, null);
+              $r3$.ΔcontentQuery(dirIndex, $e1_attrs$, false, null);
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$));
               }
             },
             …
@@ -1856,7 +1856,7 @@ describe('compiler compliance', () => {
         };
 
         const ContentQueryComponentDefinition = `
-          ContentQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ContentQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: ContentQueryComponent,
             selectors: [["content-query-component"]],
             factory: function ContentQueryComponent_Factory(t) {
@@ -1864,13 +1864,13 @@ describe('compiler compliance', () => {
             },
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, true, null);
-              $r3$.ɵɵcontentQuery(dirIndex, $ref0$, true, null);
+              $r3$.ΔstaticContentQuery(dirIndex, SomeDirective, true, null);
+              $r3$.ΔcontentQuery(dirIndex, $ref0$, true, null);
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.foo = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.foo = $tmp$.first));
               }
             },
             ngContentSelectors: $_c1$,
@@ -1878,10 +1878,10 @@ describe('compiler compliance', () => {
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojectionDef();
-                $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵprojection(1);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔprojectionDef();
+                $r3$.ΔelementStart(0, "div");
+                $r3$.Δprojection(1);
+                $r3$.ΔelementEnd();
               }
             },
             encapsulation: 2
@@ -1925,21 +1925,21 @@ describe('compiler compliance', () => {
           const $e0_attrs$ = ["myRef"];
           const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
-          ContentQueryComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          ContentQueryComponent.ngComponentDef = $r3$.ΔdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-                $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, TemplateRef);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, true, ElementRef);
-              $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, false, ElementRef);
-              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
+                $r3$.ΔcontentQuery(dirIndex, $e0_attrs$, true, TemplateRef);
+              $r3$.ΔcontentQuery(dirIndex, SomeDirective, true, ElementRef);
+              $r3$.ΔcontentQuery(dirIndex, $e1_attrs$, false, ElementRef);
+              $r3$.ΔcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
               }
               if (rf & 2) {
               var $tmp$;
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.myRefs = $tmp$));
-                ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.someDirs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.myRefs = $tmp$));
+                ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.someDirs = $tmp$));
               }
             },
             …
@@ -2033,7 +2033,7 @@ describe('compiler compliance', () => {
         };
 
         const MyPipeDefinition = `
-            MyPipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+            MyPipe.ngPipeDef = $r3$.ΔdefinePipe({
               name: "myPipe",
               type: MyPipe,
               factory: function MyPipe_Factory(t) { return new (t || MyPipe)(); },
@@ -2042,7 +2042,7 @@ describe('compiler compliance', () => {
         `;
 
         const MyPurePipeDefinition = `
-            MyPurePipe.ngPipeDef = $r3$.ɵɵdefinePipe({
+            MyPurePipe.ngPipeDef = $r3$.ΔdefinePipe({
               name: "myPurePipe",
               type: MyPurePipe,
               factory: function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); },
@@ -2054,7 +2054,7 @@ describe('compiler compliance', () => {
               return [$a0$, 1, 2, 3, 4, 5];
             };
             // ...
-            MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+            MyApp.ngComponentDef = $r3$.ΔdefineComponent({
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -2062,20 +2062,20 @@ describe('compiler compliance', () => {
               vars: 20,
               template:  function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
-                  $r3$.ɵɵtext(0);
-                  $r3$.ɵɵpipe(1, "myPurePipe");
-                  $r3$.ɵɵpipe(2, "myPipe");
-                  $r3$.ɵɵelementStart(3, "p");
-                  $r3$.ɵɵtext(4);
-                  $r3$.ɵɵpipe(5, "myPipe");
-                  $r3$.ɵɵpipe(6, "myPipe");
-                  $r3$.ɵɵelementEnd();
+                  $r3$.Δtext(0);
+                  $r3$.Δpipe(1, "myPurePipe");
+                  $r3$.Δpipe(2, "myPipe");
+                  $r3$.ΔelementStart(3, "p");
+                  $r3$.Δtext(4);
+                  $r3$.Δpipe(5, "myPipe");
+                  $r3$.Δpipe(6, "myPipe");
+                  $r3$.ΔelementEnd();
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵselect(0);
-                  $r3$.ɵɵtextBinding(0, $r3$.ɵɵinterpolation1("", $r3$.ɵɵpipeBind2(1, 3, $r3$.ɵɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
-                  $r3$.ɵɵselect(4);
-                  $r3$.ɵɵtextBinding(4, $r3$.ɵɵinterpolation2("", $r3$.ɵɵpipeBindV(5, 9, $r3$.ɵɵpureFunction1(18, $c0$, ctx.name)), " ", (ctx.name ? 1 : $r3$.ɵɵpipeBind1(6, 16, 2)), ""));
+                  $r3$.Δselect(0);
+                  $r3$.ΔtextBinding(0, $r3$.Δinterpolation1("", $r3$.ΔpipeBind2(1, 3, $r3$.ΔpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
+                  $r3$.Δselect(4);
+                  $r3$.ΔtextBinding(4, $r3$.Δinterpolation2("", $r3$.ΔpipeBindV(5, 9, $r3$.ΔpureFunction1(18, $c0$, ctx.name)), " ", (ctx.name ? 1 : $r3$.ΔpipeBind1(6, 16, 2)), ""));
                 }
               },
               pipes: [MyPurePipe, MyPipe],
@@ -2121,7 +2121,7 @@ describe('compiler compliance', () => {
 
         const MyAppDefinition = `
             // ...
-            MyApp.ngComponentDef = $r3$.ɵɵdefineComponent({
+            MyApp.ngComponentDef = $r3$.ΔdefineComponent({
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
@@ -2129,21 +2129,21 @@ describe('compiler compliance', () => {
               vars: 27,
               template:  function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
-                  $r3$.ɵɵtext(0);
-                  $r3$.ɵɵpipe(1, "myPipe");
-                  $r3$.ɵɵpipe(2, "myPipe");
-                  $r3$.ɵɵpipe(3, "myPipe");
-                  $r3$.ɵɵpipe(4, "myPipe");
-                  $r3$.ɵɵpipe(5, "myPipe");
+                  $r3$.Δtext(0);
+                  $r3$.Δpipe(1, "myPipe");
+                  $r3$.Δpipe(2, "myPipe");
+                  $r3$.Δpipe(3, "myPipe");
+                  $r3$.Δpipe(4, "myPipe");
+                  $r3$.Δpipe(5, "myPipe");
                 }
                 if (rf & 2) {
-                  $r3$.ɵɵselect(0);
-                  $r3$.ɵɵtextBinding(0, $r3$.ɵɵinterpolation5(
-                    "0:", i0.ɵɵpipeBind1(1, 5, ctx.name),
-                    "1:", i0.ɵɵpipeBind2(2, 7, ctx.name, 1),
-                    "2:", i0.ɵɵpipeBind3(3, 10, ctx.name, 1, 2),
-                    "3:", i0.ɵɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
-                    "4:", i0.ɵɵpipeBindV(5, 19, $r3$.ɵɵpureFunction1(25, $c0$, ctx.name)),
+                  $r3$.Δselect(0);
+                  $r3$.ΔtextBinding(0, $r3$.Δinterpolation5(
+                    "0:", i0.ΔpipeBind1(1, 5, ctx.name),
+                    "1:", i0.ΔpipeBind2(2, 7, ctx.name, 1),
+                    "2:", i0.ΔpipeBind3(3, 10, ctx.name, 1, 2),
+                    "3:", i0.ΔpipeBind4(4, 14, ctx.name, 1, 2, 3),
+                    "4:", i0.ΔpipeBindV(5, 19, $r3$.ΔpureFunction1(25, $c0$, ctx.name)),
                     ""
                   ));
                 }
@@ -2177,7 +2177,7 @@ describe('compiler compliance', () => {
       const MyComponentDefinition = `
         const $c1$ = ["user", ""];
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -2185,13 +2185,13 @@ describe('compiler compliance', () => {
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "input", null, $c1$);
-              $r3$.ɵɵtext(2);
+              $r3$.Δelement(0, "input", null, $c1$);
+              $r3$.Δtext(2);
             }
             if (rf & 2) {
-              const $user$ = $r3$.ɵɵreference(1);
-              $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1("Hello ", $user$.value, "!"));
+              const $user$ = $r3$.Δreference(1);
+              $r3$.Δselect(2);
+              $r3$.ΔtextBinding(2, $r3$.Δinterpolation1("Hello ", $user$.value, "!"));
             }
           },
           encapsulation: 2
@@ -2243,38 +2243,38 @@ describe('compiler compliance', () => {
         const $c4$ = ["bar", ""];
         function MyComponent_div_3_span_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "span");
-            $r3$.ɵɵtext(1);
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "span");
+            $r3$.Δtext(1);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵɵnextContext();
-            const $bar$ = $r3$.ɵɵreference(4);
-            $r3$.ɵɵnextContext();
-            const $foo$ = $r3$.ɵɵreference(1);
-            const $baz$ = $r3$.ɵɵreference(5);
-            $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
+            $r3$.ΔnextContext();
+            const $bar$ = $r3$.Δreference(4);
+            $r3$.ΔnextContext();
+            const $foo$ = $r3$.Δreference(1);
+            const $baz$ = $r3$.Δreference(5);
+            $r3$.Δselect(1);
+            $r3$.ΔtextBinding(1, $r3$.Δinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
           }
         }
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵtext(1);
-            $r3$.ɵɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", $c2$);
-            $r3$.ɵɵelement(3, "span", null, $c4$);
-            $r3$.ɵɵelementEnd();
+            $r3$.ΔelementStart(0, "div");
+            $r3$.Δtext(1);
+            $r3$.Δtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", $c2$);
+            $r3$.Δelement(3, "span", null, $c4$);
+            $r3$.ΔelementEnd();
           }
           if (rf & 2) {
-            const $bar$ = $r3$.ɵɵreference(4);
-            $r3$.ɵɵnextContext();
-            const $foo$ = $r3$.ɵɵreference(1);
-            $r3$.ɵɵselect(1);
-            $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2(" ", $foo$, "-", $bar$, " "));
+            const $bar$ = $r3$.Δreference(4);
+            $r3$.ΔnextContext();
+            const $foo$ = $r3$.Δreference(1);
+            $r3$.Δselect(1);
+            $r3$.ΔtextBinding(1, $r3$.Δinterpolation2(" ", $foo$, "-", $bar$, " "));
           }
         }
         …
-        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -2282,15 +2282,15 @@ describe('compiler compliance', () => {
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelement(0, "div", null, $c1$);
-              $r3$.ɵɵtext(2);
-              $r3$.ɵɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", $c2$);
-              $r3$.ɵɵelement(4, "div", null, $c3$);
+              $r3$.Δelement(0, "div", null, $c1$);
+              $r3$.Δtext(2);
+              $r3$.Δtemplate(3, MyComponent_div_3_Template, 5, 2, "div", $c2$);
+              $r3$.Δelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
-              const $foo$ = $r3$.ɵɵreference(1);
-              $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1(" ", $foo$, " "));
+              const $foo$ = $r3$.Δreference(1);
+              $r3$.Δselect(2);
+              $r3$.ΔtextBinding(2, $r3$.Δinterpolation1(" ", $foo$, " "));
             }
           },
           directives:[IfDirective],
@@ -2335,40 +2335,40 @@ describe('compiler compliance', () => {
 
       function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵɵelementStart(0, "span");
-          $i0$.ɵɵtext(1);
-          $i0$.ɵɵelementEnd();
+          $i0$.ΔelementStart(0, "span");
+          $i0$.Δtext(1);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $item$ = $i0$.ɵɵnextContext().$implicit;
-          const $foo$ = $i0$.ɵɵreference(2);
-          $r3$.ɵɵselect(1);
-          $i0$.ɵɵtextBinding(1, $i0$.ɵɵinterpolation2(" ", $foo$, " - ", $item$, " "));
+          const $item$ = $i0$.ΔnextContext().$implicit;
+          const $foo$ = $i0$.Δreference(2);
+          $r3$.Δselect(1);
+          $i0$.ΔtextBinding(1, $i0$.Δinterpolation2(" ", $foo$, " - ", $item$, " "));
         }
       }
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵɵelementStart(0, "div");
-          $i0$.ɵɵelement(1, "div", null, $c1$);
-          $i0$.ɵɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", $c2$);
-          $i0$.ɵɵelementEnd();
+          $i0$.ΔelementStart(0, "div");
+          $i0$.Δelement(1, "div", null, $c1$);
+          $i0$.Δtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", $c2$);
+          $i0$.ΔelementEnd();
         }
         if (rf & 2) {
-          const $app$ = $i0$.ɵɵnextContext();
-          $r3$.ɵɵselect(3);
-          $i0$.ɵɵproperty("ngIf", $app$.showing);
+          const $app$ = $i0$.ΔnextContext();
+          $r3$.Δselect(3);
+          $i0$.Δproperty("ngIf", $app$.showing);
         }
       }
 
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
+          $i0$.Δtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
-          $i0$.ɵɵproperty("ngForOf", ctx.items);
+          $i0$.Δselect(0);
+          $i0$.Δproperty("ngForOf", ctx.items);
         }
       }`;
 
@@ -2423,12 +2423,12 @@ describe('compiler compliance', () => {
 
       it('should gen hooks with a few simple components', () => {
         const LifecycleCompDefinition = `
-          LifecycleComp.ngComponentDef = $r3$.ɵɵdefineComponent({
+          LifecycleComp.ngComponentDef = $r3$.ΔdefineComponent({
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ΔNgOnChangesFeature()],
             consts: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2436,7 +2436,7 @@ describe('compiler compliance', () => {
           });`;
 
         const SimpleLayoutDefinition = `
-          SimpleLayout.ngComponentDef = $r3$.ɵɵdefineComponent({
+          SimpleLayout.ngComponentDef = $r3$.ΔdefineComponent({
             type: SimpleLayout,
             selectors: [["simple-layout"]],
             factory: function SimpleLayout_Factory(t) { return new (t || SimpleLayout)(); },
@@ -2444,14 +2444,14 @@ describe('compiler compliance', () => {
             vars: 2,
             template:  function SimpleLayout_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelement(0, "lifecycle-comp", $e0_attrs$);
-                $r3$.ɵɵelement(1, "lifecycle-comp", $e1_attrs$);
+                $r3$.Δelement(0, "lifecycle-comp", $e0_attrs$);
+                $r3$.Δelement(1, "lifecycle-comp", $e1_attrs$);
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(0);
-                $r3$.ɵɵproperty("name", ctx.name1);
-                $r3$.ɵɵselect(1);
-                $r3$.ɵɵproperty("name", ctx.name2);
+                $r3$.Δselect(0);
+                $r3$.Δproperty("name", ctx.name1);
+                $r3$.Δselect(1);
+                $r3$.Δproperty("name", ctx.name2);
               }
             },
             directives: [LifecycleComp],
@@ -2546,13 +2546,13 @@ describe('compiler compliance', () => {
 
         // TODO(benlesh): Enforce this when the directives are specified
         const ForDirectiveDefinition = `
-              ForOfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+              ForOfDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
                 factory: function ForOfDirective_Factory(t) {
-                  return new (t || ForOfDirective)($r3$.ɵɵdirectiveInject(ViewContainerRef), $r3$.ɵɵdirectiveInject(TemplateRef));
+                  return new (t || ForOfDirective)($r3$.ΔdirectiveInject(ViewContainerRef), $r3$.ΔdirectiveInject(TemplateRef));
                 },
-                features: [$r3$.ɵɵNgOnChangesFeature()],
+                features: [$r3$.ΔNgOnChangesFeature()],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2561,14 +2561,14 @@ describe('compiler compliance', () => {
               const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
               function MyComponent__svg_g_1_Template(rf, ctx) {
                 if (rf & 1) {
-                  $r3$.ɵɵnamespaceSVG();
-                  $r3$.ɵɵelementStart(0,"g");
-                  $r3$.ɵɵelement(1,"circle");
-                  $r3$.ɵɵelementEnd();
+                  $r3$.ΔnamespaceSVG();
+                  $r3$.ΔelementStart(0,"g");
+                  $r3$.Δelement(1,"circle");
+                  $r3$.ΔelementEnd();
                 }
               }
               …
-              MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+              MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -2576,14 +2576,14 @@ describe('compiler compliance', () => {
                 vars: 1,
                 template:  function MyComponent_Template(rf, ctx){
                   if (rf & 1) {
-                    $r3$.ɵɵnamespaceSVG();
-                    $r3$.ɵɵelementStart(0,"svg");
-                    $r3$.ɵɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", $t1_attrs$);
-                    $r3$.ɵɵelementEnd();
+                    $r3$.ΔnamespaceSVG();
+                    $r3$.ΔelementStart(0,"svg");
+                    $r3$.Δtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", $t1_attrs$);
+                    $r3$.ΔelementEnd();
                   }
                   if (rf & 2) {
-                    $r3$.ɵɵselect(1);
-                    $r3$.ɵɵproperty("forOf", ctx.items);
+                    $r3$.Δselect(1);
+                    $r3$.Δproperty("forOf", ctx.items);
                   }
                 },
                 directives: function() { return [ForOfDirective]; },
@@ -2625,13 +2625,13 @@ describe('compiler compliance', () => {
 
         // TODO(chuckj): Enforce this when the directives are specified
         const ForDirectiveDefinition = `
-          ForOfDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+          ForOfDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
             factory: function ForOfDirective_Factory(t) {
-              return new (t || ForOfDirective)($r3$.ɵɵdirectiveInject(ViewContainerRef), $r3$.ɵɵdirectiveInject(TemplateRef));
+              return new (t || ForOfDirective)($r3$.ΔdirectiveInject(ViewContainerRef), $r3$.ΔdirectiveInject(TemplateRef));
             },
-            features: [$r3$.ɵɵNgOnChangesFeature()],
+            features: [$r3$.ΔNgOnChangesFeature()],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -2640,18 +2640,18 @@ describe('compiler compliance', () => {
           const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "li");
-              $r3$.ɵɵtext(1);
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "li");
+              $r3$.Δtext(1);
+              $r3$.ΔelementEnd();
             }
             if (rf & 2) {
               const $item$ = ctx.$implicit;
-              $r3$.ɵɵselect(1);
-              $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation1("", $item$.name, ""));
+              $r3$.Δselect(1);
+              $r3$.ΔtextBinding(1, $r3$.Δinterpolation1("", $item$.name, ""));
             }
           }
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -2659,13 +2659,13 @@ describe('compiler compliance', () => {
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelementStart(0, "ul");
-                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 2, 1, "li", $t1_attrs$);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔelementStart(0, "ul");
+                $r3$.Δtemplate(1, MyComponent_li_1_Template, 2, 1, "li", $t1_attrs$);
+                $r3$.ΔelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(1);
-                $r3$.ɵɵproperty("forOf", ctx.items);
+                $r3$.Δselect(1);
+                $r3$.Δproperty("forOf", ctx.items);
               }
             },
             directives: function() { return [ForOfDirective]; },
@@ -2722,40 +2722,40 @@ describe('compiler compliance', () => {
           const $t4_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_li_4_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "li");
-              $r3$.ɵɵtext(1);
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "li");
+              $r3$.Δtext(1);
+              $r3$.ΔelementEnd();
             }
             if (rf & 2) {
               const $info$ = ctx.$implicit;
-              const $item$ = $r3$.ɵɵnextContext().$implicit;
-              $r3$.ɵɵselect(1);
-              $r3$.ɵɵtextBinding(1, $r3$.ɵɵinterpolation2(" ", $item$.name, ": ", $info$.description, " "));
+              const $item$ = $r3$.ΔnextContext().$implicit;
+              $r3$.Δselect(1);
+              $r3$.ΔtextBinding(1, $r3$.Δinterpolation2(" ", $item$.name, ": ", $info$.description, " "));
             }
           }
 
           function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵelementStart(0, "li");
-              $r3$.ɵɵelementStart(1, "div");
-              $r3$.ɵɵtext(2);
-              $r3$.ɵɵelementEnd();
-              $r3$.ɵɵelementStart(3, "ul");
-              $r3$.ɵɵtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", $t4_attrs$);
-              $r3$.ɵɵelementEnd();
-              $r3$.ɵɵelementEnd();
+              $r3$.ΔelementStart(0, "li");
+              $r3$.ΔelementStart(1, "div");
+              $r3$.Δtext(2);
+              $r3$.ΔelementEnd();
+              $r3$.ΔelementStart(3, "ul");
+              $r3$.Δtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", $t4_attrs$);
+              $r3$.ΔelementEnd();
+              $r3$.ΔelementEnd();
             }
             if (rf & 2) {
               const $item$ = ctx.$implicit;
-              $r3$.ɵɵselect(2);
-              $r3$.ɵɵtextBinding(2, $r3$.ɵɵinterpolation1("", IDENT.name, ""));
-              $r3$.ɵɵselect(4);
-              $r3$.ɵɵproperty("forOf", IDENT.infos);
+              $r3$.Δselect(2);
+              $r3$.ΔtextBinding(2, $r3$.Δinterpolation1("", IDENT.name, ""));
+              $r3$.Δselect(4);
+              $r3$.Δproperty("forOf", IDENT.infos);
             }
           }
 
           …
-          MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -2763,13 +2763,13 @@ describe('compiler compliance', () => {
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵelementStart(0, "ul");
-                $r3$.ɵɵtemplate(1, MyComponent_li_1_Template, 5, 2, "li", $c1$);
-                $r3$.ɵɵelementEnd();
+                $r3$.ΔelementStart(0, "ul");
+                $r3$.Δtemplate(1, MyComponent_li_1_Template, 5, 2, "li", $c1$);
+                $r3$.ΔelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵɵselect(1);
-                $r3$.ɵɵproperty("forOf", ctx.items);
+                $r3$.Δselect(1);
+                $r3$.Δproperty("forOf", ctx.items);
               }
             },
             directives: function () { return [ForOfDirective]; },
@@ -2873,7 +2873,7 @@ describe('compiler compliance', () => {
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
-        SomeDirective.ngDirectiveDef = $r3$.ɵɵdefineDirective({
+        SomeDirective.ngDirectiveDef = $r3$.ΔdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]],
           factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
@@ -2930,7 +2930,7 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         inputs: {
           input1: "input1",
           input2: ["alias2", "input2"]
@@ -2976,7 +2976,7 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         outputs: {
           output1: "output1",
           output2: "output2"
@@ -3028,7 +3028,7 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         inputs: {
           input1: "input1",
           input2: ["whatever", "input2"]
@@ -3070,14 +3070,14 @@ describe('compiler compliance', () => {
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         viewQuery: function (rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵviewQuery($e0_attrs$, true, null);
+            $r3$.ΔviewQuery($e0_attrs$, true, null);
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$.first));
+            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$.first));
           }
         }
       });
@@ -3115,14 +3115,14 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         viewQuery: function (rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵɵviewQuery(SomeDirective, true, null);
+            $r3$.ΔviewQuery(SomeDirective, true, null);
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadViewQuery())) && (ctx.something = $tmp$));
+            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadViewQuery())) && (ctx.something = $tmp$));
           }
         }
       });
@@ -3158,14 +3158,14 @@ describe('compiler compliance', () => {
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         contentQueries: function (rf, ctx, dirIndex) {
           if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, true, null);
+            $r3$.ΔcontentQuery(dirIndex, $e0_attrs$, true, null);
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$.first));
+            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$.first));
           }
         }
       });
@@ -3203,14 +3203,14 @@ describe('compiler compliance', () => {
       };
       const expectedOutput = `
       // ...
-      BaseClass.ngBaseDef = i0.ɵɵdefineBase({
+      BaseClass.ngBaseDef = i0.ΔdefineBase({
         contentQueries: function (rf, ctx, dirIndex) {
           if (rf & 1) {
-            $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, false, null);
+            $r3$.ΔcontentQuery(dirIndex, SomeDirective, false, null);
           }
           if (rf & 2) {
             var $tmp$;
-            ($r3$.ɵɵqueryRefresh(($tmp$ = $r3$.ɵɵloadContentQuery())) && (ctx.something = $tmp$));
+            ($r3$.ΔqueryRefresh(($tmp$ = $r3$.ΔloadContentQuery())) && (ctx.something = $tmp$));
           }
         }
       });
