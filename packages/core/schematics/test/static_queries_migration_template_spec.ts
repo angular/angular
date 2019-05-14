@@ -515,8 +515,6 @@ describe('static-queries migration with template strategy', () => {
       await runMigration();
 
       expect(errorOutput.length).toBe(1);
-      expect(errorOutput[0])
-          .toMatch(/^Error: Could not create Angular AOT compiler to determine query timing./);
       expect(errorOutput[0]).toMatch(/Cannot determine the module for class MyComp/);
     });
 
@@ -673,15 +671,49 @@ describe('static-queries migration with template strategy', () => {
         export class MyModule {}
       `);
 
-      spyOn(console, 'error').and.callThrough();
-
       await runMigration();
 
-      expect(console.error).toHaveBeenCalledTimes(0);
+      expect(errorOutput.length).toBe(0);
       expect(tree.readContent('/src/test.ts'))
           .toContain(`@ViewChild('test', /* TODO: add static flag */ {}) query: any;`);
       expect(tree.readContent('/src/app.component.ts'))
           .toContain(`@ViewChild('test', { static: true }) query: any;`);
+    });
+
+    it('should not fall back to test strategy if selected strategy fails', async() => {
+      writeFile('/src/tsconfig.spec.json', JSON.stringify({
+        compilerOptions: {
+          experimentalDecorators: true,
+          lib: ['es2015'],
+        },
+        files: [
+          'test.ts',
+        ],
+      }));
+
+      writeFile('/src/test.ts', `import * as mod from './app.module';`);
+      writeFile('/src/app.component.ts', `
+        import {Component, ViewChild} from '@angular/core';
+
+        @Component({template: '<span #test>Test</span>'})
+        export class AppComponent {
+          @ViewChild('test') query: any;
+        }
+      `);
+
+      writeFile('/src/app.module.ts', `
+        import {NgModule} from '@angular/core';
+        import {AppComponent} from './app.component';
+
+        @NgModule({declarations: [AppComponent, ThisCausesAnError]})
+        export class MyModule {}
+      `);
+
+      await runMigration();
+
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(/Unexpected value 'undefined'/);
+      expect(tree.readContent('/src/app.component.ts')).toContain(`@ViewChild('test') query: any;`);
     });
   });
 });
