@@ -84,15 +84,14 @@ describe('TemplateRef', () => {
      * in this case:
      * https://stackblitz.com/edit/angular-uiqry6?file=src/app/app.component.ts
      *
-     * Returning a comment node for a template ref with no nodes is wrong and should be fixed in
-     * ivy.
+     * Returning a comment node for a template ref with no nodes is wrong is fixed in Ivy.
      */
     onlyInIvy('Fixed: Ivy no longer adds a comment node in this case.')
         .it('should return an empty array for embedded view with no nodes', () => {
           @Component({
             template: `
-          <ng-template #templateRef></ng-template>
-        `
+              <ng-template #templateRef></ng-template>
+            `
           })
           class App {
             @ViewChild('templateRef')
@@ -109,40 +108,37 @@ describe('TemplateRef', () => {
           expect(embeddedView.rootNodes.length).toBe(0);
         });
 
-    /**
-     * This is somehow surprising but the current view engine doesn't descend into containers when
-     * getting root nodes of an embedded view:
-     * https://stackblitz.com/edit/angular-z8zev7?file=src/app/app.component.ts
-     */
-    onlyInIvy('Ivy returns fewer root nodes than View Engine')
-        .it('should not descend into containers when retrieving root nodes', () => {
-          @Component({
-            template: `
-          <ng-template #templateRef>
-            <ng-template [ngIf]="true">text</ng-template>
-          </ng-template>
+    it('should not descend into containers when retrieving root nodes', () => {
+      /**
+       * NOTE: In VE, if `SUFFIX` text node below is _not_ present, VE will add an
+       * additional `<!---->` comment, thus being slightly different than Ivy.
+       * (resulting in 1 root node in Ivy and 2 in VE).
+       */
+      @Component({
+        template: `
+          <ng-template #templateRef><ng-template [ngIf]="true">text</ng-template>SUFFIX</ng-template>
         `
-          })
-          class App {
-            @ViewChild('templateRef')
-            templateRef !: TemplateRef<any>;
-          }
+      })
+      class App {
+        @ViewChild('templateRef')
+        templateRef !: TemplateRef<any>;
+      }
 
-          TestBed.configureTestingModule({
-            declarations: [App],
-          });
-          const fixture = TestBed.createComponent(App);
-          fixture.detectChanges();
+      TestBed.configureTestingModule({
+        declarations: [App],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
 
-          const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
-          expect(embeddedView.rootNodes.length).toBe(1);
-          expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-        });
+      const embeddedView = fixture.componentInstance.templateRef.createEmbeddedView({});
+      expect(embeddedView.rootNodes.length).toBe(2);
+      expect(embeddedView.rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+      expect(embeddedView.rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+    });
 
     /**
      * Contrary to containers (<ng-template>) we _do_ descend into element containers
-     * (<ng-container):
-     * https://stackblitz.com/edit/angular-yovmmp?file=src/app/app.component.ts
+     * (<ng-container>)
      */
     it('should descend into element containers when retrieving root nodes', () => {
       @Component({
