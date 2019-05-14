@@ -31,33 +31,54 @@ describe('Chip Remove', () => {
 
   describe('basic behavior', () => {
     it('should applies the `mat-chip-remove` CSS class', () => {
-      let hrefElement = chipNativeElement.querySelector('a')!;
+      let buttonElement = chipNativeElement.querySelector('button')!;
 
-      expect(hrefElement.classList).toContain('mat-chip-remove');
+      expect(buttonElement.classList).toContain('mat-chip-remove');
     });
 
     it('should emits (removed) on click', () => {
-      let hrefElement = chipNativeElement.querySelector('a')!;
+      let buttonElement = chipNativeElement.querySelector('button')!;
 
       testChip.removable = true;
       fixture.detectChanges();
 
       spyOn(testChip, 'didRemove');
 
-      hrefElement.click();
+      buttonElement.click();
+      fixture.detectChanges();
 
       expect(testChip.didRemove).toHaveBeenCalled();
     });
+
+    it('should not remove if parent chip is disabled', () => {
+      let buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.disabled = true;
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      spyOn(testChip, 'didRemove');
+
+      buttonElement.click();
+      fixture.detectChanges();
+
+      expect(testChip.didRemove).not.toHaveBeenCalled();
+    });
+
   });
 });
 
 @Component({
   template: `
-    <mat-chip [removable]="removable" (removed)="didRemove()"><a matChipRemove></a></mat-chip>
+    <mat-chip
+      [removable]="removable"
+      [disabled]="disabled"
+      (removed)="didRemove()"><button matChipRemove></button></mat-chip>
   `
 })
 class TestChip {
   removable: boolean;
+  disabled = false;
 
   didRemove() {}
 }
