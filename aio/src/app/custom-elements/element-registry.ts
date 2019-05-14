@@ -1,44 +1,45 @@
 import { InjectionToken, Type } from '@angular/core';
+import { LoadChildrenCallback } from '@angular/router';
 
 // Modules containing custom elements must be set up as lazy-loaded routes (loadChildren)
 // TODO(andrewjs): This is a hack, Angular should have first-class support for preparing a module
 // that contains custom elements.
-export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
+export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   {
     selector: 'aio-announcement-bar',
-    loadChildren: './announcement-bar/announcement-bar.module#AnnouncementBarModule'
+    loadChildren: () => import('./announcement-bar/announcement-bar.module').then(mod => mod.AnnouncementBarModule)
   },
   {
     selector: 'aio-api-list',
-    loadChildren: './api/api-list.module#ApiListModule'
+    loadChildren: () => import('./api/api-list.module').then(mod => mod.ApiListModule)
   },
   {
     selector: 'aio-contributor-list',
-    loadChildren: './contributor/contributor-list.module#ContributorListModule'
+    loadChildren: () => import('./contributor/contributor-list.module').then(mod => mod.ContributorListModule)
   },
   {
     selector: 'aio-file-not-found-search',
-    loadChildren: './search/file-not-found-search.module#FileNotFoundSearchModule'
+    loadChildren: () => import('./search/file-not-found-search.module').then(mod => mod.FileNotFoundSearchModule)
   },
   {
     selector: 'aio-resource-list',
-    loadChildren: './resource/resource-list.module#ResourceListModule'
+    loadChildren: () => import('./resource/resource-list.module').then(mod => mod.ResourceListModule)
   },
   {
     selector: 'aio-toc',
-    loadChildren: './toc/toc.module#TocModule'
+    loadChildren: () => import('./toc/toc.module').then(mod => mod.TocModule)
   },
   {
     selector: 'code-example',
-    loadChildren: './code/code-example.module#CodeExampleModule'
+    loadChildren: () => import('./code/code-example.module').then(mod => mod.CodeExampleModule)
   },
   {
     selector: 'code-tabs',
-    loadChildren: './code/code-tabs.module#CodeTabsModule'
+    loadChildren: () => import('./code/code-tabs.module').then(mod => mod.CodeTabsModule)
   },
   {
     selector: 'live-example',
-    loadChildren: './live-example/live-example.module#LiveExampleModule'
+    loadChildren: () => import('./live-example/live-example.module').then(mod => mod.LiveExampleModule)
   }
 ];
 
@@ -51,10 +52,10 @@ export interface WithCustomElementComponent {
 }
 
 /** Injection token to provide the element path modules. */
-export const ELEMENT_MODULE_PATHS_TOKEN = new InjectionToken('aio/elements-map');
+export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<Map<string, LoadChildrenCallback>>('aio/elements-map');
 
 /** Map of possible custom element selectors to their lazy-loadable module paths. */
-export const ELEMENT_MODULE_PATHS = new Map<string, string>();
-ELEMENT_MODULE_PATHS_AS_ROUTES.forEach(route => {
-  ELEMENT_MODULE_PATHS.set(route.selector, route.loadChildren);
+export const ELEMENT_MODULE_LOAD_CALLBACKS = new Map<string, LoadChildrenCallback>();
+ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES.forEach(route => {
+  ELEMENT_MODULE_LOAD_CALLBACKS.set(route.selector, route.loadChildren);
 });
