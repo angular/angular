@@ -1,13 +1,13 @@
 import {
   ComponentFactory,
-  ComponentFactoryResolver, ComponentRef, Injector, NgModuleFactory, NgModuleFactoryLoader,
+  ComponentFactoryResolver, ComponentRef, Injector, NgModuleFactory,
   NgModuleRef,
   Type
 } from '@angular/core';
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { ElementsLoader } from './elements-loader';
-import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElementComponent } from './element-registry';
+import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
 
 
 interface Deferred {
@@ -22,10 +22,9 @@ describe('ElementsLoader', () => {
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
-        { provide: NgModuleFactoryLoader, useClass: FakeModuleFactoryLoader },
-        { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: new Map([
-          ['element-a-selector', 'element-a-module-path'],
-          ['element-b-selector', 'element-b-module-path']
+        { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<string, () => Promise<NgModuleFactory<WithCustomElementComponent>>>([
+          ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
+          ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))]
         ])},
       ]
     });
@@ -148,7 +147,7 @@ describe('ElementsLoader', () => {
 
       // Verify the right component was loaded/registered.
       const Ctor = definedSpy.calls.argsFor(0)[1];
-      expect(Ctor.observedAttributes).toEqual(['element-a-module-path']);
+      expect(Ctor.observedAttributes).toEqual(['element-a-module']);
     }));
 
     it('should wait until the element is defined', fakeAsync(() => {
@@ -279,13 +278,6 @@ class FakeModuleFactory extends NgModuleFactory<any> {
 
   create(parentInjector: Injector | null): NgModuleRef<any> {
     return this.moduleRefToCreate;
-  }
-}
-
-class FakeModuleFactoryLoader extends NgModuleFactoryLoader {
-  load(modulePath: string): Promise<NgModuleFactory<any>> {
-    const fakeModuleFactory = new FakeModuleFactory(modulePath);
-    return Promise.resolve(fakeModuleFactory);
   }
 }
 
