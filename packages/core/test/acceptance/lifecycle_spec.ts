@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Component, ComponentFactoryResolver, Directive, Input, NgModule, OnChanges, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('ngOnChanges', () => {
   it('should correctly support updating one Input among many', () => {
@@ -1656,7 +1657,7 @@ describe('afterViewInit', () => {
   });
 });
 
-describe('ngAfterViewChecked', () => {
+describe('afterViewChecked', () => {
   it('should call ngAfterViewChecked every update', () => {
     let afterViewCheckedCalls = 0;
 
@@ -1886,4 +1887,567 @@ describe('ngAfterViewChecked', () => {
     ]);
   });
 
+});
+
+describe('onDestroy', () => {
+
+
+  it('should call destroy when view is removed', () => {
+    let destroyCalled = 0;
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      ngOnDestroy() { destroyCalled++; }
+    }
+
+    @Component({
+      template: `<comp *ngIf="show"></comp>`,
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(destroyCalled).toBe(0);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(destroyCalled).toBe(1);
+
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+    expect(destroyCalled).toBe(1);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(destroyCalled).toBe(2);
+  });
+
+  it('should call destroy when multiple views are removed', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <comp name="1"></comp>
+          <comp name="2"></comp>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual(['comp 1', 'comp 2']);
+  });
+
+  it('should be called in child components before parent components', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('child of parent ' + this.name); }
+    }
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]="name"></child>`,
+    })
+    class Parent {
+      @Input()
+      name = '';
+      ngOnDestroy() { events.push('parent ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <parent name="1"></parent>
+          <parent name="2"></parent>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Child],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'child of parent 1',
+      'child of parent 2',
+      'parent 1',
+      'parent 2',
+    ]);
+  });
+
+  it('should be called bottom up with children nested 2 levels deep', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('child ' + this.name); }
+    }
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]="name"></child>`,
+    })
+    class Parent {
+      @Input()
+      name = '';
+      ngOnDestroy() { events.push('parent ' + this.name); }
+    }
+
+    @Component({
+      selector: 'grandparent',
+      template: `<parent [name]="name"></parent>`,
+    })
+    class Grandparent {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('grandparent ' + this.name); }
+    }
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <grandparent name="1"></grandparent>
+          <grandparent name="2"></grandparent>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Grandparent, Parent, Child],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'child 1',
+      'parent 1',
+      'child 2',
+      'parent 2',
+      'grandparent 1',
+      'grandparent 2',
+    ]);
+  });
+
+  it('should be called in projected components before their hosts', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'projected',
+      template: `<p>test</p>`,
+    })
+    class Projected {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('projected ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <comp name="1">
+            <projected name="1"></projected>
+          </comp>
+          <comp name="2">
+            <projected name="2"></projected>
+          </comp>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'projected 1',
+      'comp 1',
+      'projected 2',
+      'comp 2',
+    ]);
+  });
+
+
+  it('should be called in consistent order if views are removed and re-added', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+      <div *ngIf="showAll">
+        <comp name="1"></comp>
+        <comp *ngIf="showMiddle" name="2"></comp>
+        <comp name="3"></comp>
+      </div>
+      `
+    })
+    class App {
+      showAll = true;
+      showMiddle = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.showMiddle = false;
+    fixture.detectChanges();
+    expect(events).toEqual(['comp 2']);
+
+    fixture.componentInstance.showAll = false;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp 2',
+      'comp 1',
+      'comp 3',
+    ]);
+
+    fixture.componentInstance.showAll = true;
+    fixture.componentInstance.showMiddle = true;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp 2',
+      'comp 1',
+      'comp 3',
+    ]);
+
+    fixture.componentInstance.showAll = false;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp 2',
+      'comp 1',
+      'comp 3',
+      'comp 2',
+      'comp 1',
+      'comp 3',
+    ]);
+  });
+
+  it('should be called on every iteration of a destroyed for loop', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngOnDestroy() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <comp *ngFor="let number of numbers" [name]="number"></comp>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+      numbers = [0, 1, 2, 3];
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'comp 0',
+      'comp 1',
+      'comp 2',
+      'comp 3',
+    ]);
+
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'comp 0',
+      'comp 1',
+      'comp 2',
+      'comp 3',
+    ]);
+
+    fixture.componentInstance.numbers.splice(1, 1);
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp 0',
+      'comp 1',
+      'comp 2',
+      'comp 3',
+      'comp 1',
+    ]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp 0',
+      'comp 1',
+      'comp 2',
+      'comp 3',
+      'comp 1',
+      'comp 0',
+      'comp 2',
+      'comp 3',
+    ]);
+  });
+
+  it('should call destroy properly if view also has listeners', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      ngOnDestroy() { events.push('comp'); }
+    }
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <button (click)="handleClick1()">test 1</button>
+          <comp></comp>
+          <button (click)="handleClick2()">test 2</button>
+        </div>
+      `
+    })
+    class App {
+      show = true;
+
+      clicksToButton1 = 0;
+
+      clicksToButton2 = 0;
+
+      handleClick1() { this.clicksToButton1++; }
+
+      handleClick2() { this.clicksToButton2++; }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const buttons = fixture.debugElement.queryAll(By.css('button'));
+    buttons.forEach(button => button.nativeElement.click());
+
+    expect(fixture.componentInstance.clicksToButton1).toBe(1);
+    expect(fixture.componentInstance.clicksToButton2).toBe(1);
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    buttons.forEach(button => button.nativeElement.click());
+    expect(fixture.componentInstance.clicksToButton1).toBe(1);
+    expect(fixture.componentInstance.clicksToButton2).toBe(1);
+
+    expect(events).toEqual(['comp']);
+  });
+
+  onlyInIvy(
+      'View Engine has the opposite behavior, where it calls destroy on the directives first, then the components')
+      .it('should be called on directives after component', () => {
+        const events: string[] = [];
+
+        @Directive({
+          selector: '[dir]',
+        })
+        class Dir {
+          @Input('dir')
+          name = '';
+
+          ngOnDestroy() { events.push('dir ' + this.name); }
+        }
+
+        @Component({
+          selector: 'comp',
+          template: `<p>test</p>`,
+        })
+        class Comp {
+          @Input()
+          name = '';
+
+          ngOnDestroy() { events.push('comp ' + this.name); }
+        }
+
+        @Component({
+          template: `
+        <div *ngIf="show">
+          <comp name="1" dir="1"></comp>
+          <comp name="2" dir="2"></comp>
+        </div>
+      `
+        })
+        class App {
+          show = true;
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, Dir, Comp],
+          imports: [CommonModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        expect(events).toEqual([]);
+
+        fixture.componentInstance.show = false;
+        fixture.detectChanges();
+
+        expect(events).toEqual([
+          'comp 1',
+          'dir 1',
+          'comp 2',
+          'dir 2',
+        ]);
+      });
+
+  it('should be called on directives on an element', () => {
+    const events: string[] = [];
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      ngOnDestroy() { events.push('dir'); }
+    }
+
+    @Component({template: `<p *ngIf="show" dir></p>`})
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Dir],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([]);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual(['dir']);
+  });
 });
