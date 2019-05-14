@@ -67,7 +67,7 @@ export class LogicalFileSystem {
    * `logicalPathOfFile(AbsoluteFsPath.fromSourceFile(sf))`.
    */
   logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath|null {
-    return this.logicalPathOfFile(sf.fileName as AbsoluteFsPath);
+    return this.logicalPathOfFile(AbsoluteFsPath.from(sf.fileName));
   }
 
   /**
