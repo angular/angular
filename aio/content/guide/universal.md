@@ -200,8 +200,12 @@ Universal 앱을 만들려면 `platform-server` 패키지를 설치해야 하는
 이제 렌더링된 페이지를 클라이언트가 받으면 브라우저에 이 페이지가 표시됩니다.
 
 {@a summary}
+<!--
 ## Preparing for server-side rendering
+-->
+## 서버사이드 렌더링 준비하기
 
+<!--
 Before your app can be rendered on a server, you must make changes in the app itself, and also set up the server.
 
 1. Install dependencies.
@@ -211,19 +215,38 @@ Before your app can be rendered on a server, you must make changes in the app it
 1. Pack and run the app on the server.
 
 The following sections go into each of these main steps in more detail.
+-->
+애플리케이션을 서버에서 렌더링하려면 먼저 앱과 서버를 조금 수정해야 합니다.
+
+1. 의존성 패키지를 설치합니다.
+1. Universal을 지원하도록 앱 코드와 앱 설정파일을 수정합니다.
+1. 빌드 타겟을 추가하고 Angular CLI로 `@nguniversal/express-engine` 스키매틱을 활용하도록 Universal 버전으로 빌드합니다.
+1. 서버가 Universal 번들 파일을 제공하도록 수정합니다.
+1. 애플리케이션을 빌드해서 서버에서 실행합니다.
+
+각 단계에 대해서 하나씩 자세하게 알아봅시다.
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:** The [Universal tutorial](#the-example) below walks you through the steps using the Tour of Heroes sample app, and goes into more detail about what you can do and why you might want to do it. 
  
   To see a working version of an app with server-side rendering, clone the [Angular Universal starter](https://github.com/angular/universal-starter). 
+  -->
+  **참고:** 아래에서 다루는 [Universal 튜토리얼](#the-example)은 "히어로들의 여행" 튜토리얼을 확장하는 방식으로 살펴봅니다.
+
+  서버사이드 렌더링이 동작하는 앱을 직접 실행해보려면 [Angular Universal starter](https://github.com/angular/universal-starter) 레파지토리를 복제해서 실행해도 됩니다.
 
 </div>
 
 <div class="callout is-critical">
 
+<!--
 <header>Security for server requests</header>
+-->
+<header>서버가 보내는 HTTP 요청에 대해 보안성 검토</header>
 
+<!--
 HTTP requests issued from a browser app aren't the same as those issued by the Universal app on the server.
 Universal HTTP requests have different security requirements
 
@@ -231,6 +254,14 @@ When a browser makes an HTTP request, the server can make assumptions about cook
 For example, the browser automatically sends authentication cookies for the current user.
 Angular Universal can't forward these credentials to a separate data server.
 If your server handles HTTP requests, you'll have to add your own security plumbing.
+-->
+서버에서 실행되는 Universal 앱이 보내는 HTTP 요청과 브라우저에서 실행되는 앱이 보내는 HTTP 요청은 약간 다릅니다.
+Universal 앱에서 HTTP 요청을 보내려면 보안에 대해 신경써야 할 것이 좀 더 있습니다.
+
+브라우저에서 HTTP 요청을 보낸다면 쿠키나 XSRF 헤더와 같은 정보를 추가로 보낼 수 있습니다.
+그래서 브라우저는 현재 사용자에 해당하는 인증 쿠키를 HTTP 요청에 자동으로 포함시킬 수도 있습니다.
+하지만 Angular Universal에서는 이런 방식으로 인증을 처리할 수 없습니다.
+Universal 앱이 또 다른 인증 서버로 HTTP 요청을 보낼 때 이 부분을 보완할 방법을 찾아야 합니다.
 
 </div>
 
