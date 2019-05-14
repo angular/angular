@@ -125,7 +125,7 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 
 * Run for 200ms, with no delay. Use a standard curve to start slow, accelerate in the middle, and then decelerate slowly at the end: `'0.2s ease-in-out'`
 
-* Start immediately, run for 200ms. Use a acceleration curve to start slow and end at full velocity: `'0.2s ease-in'`
+* Start immediately, run for 200ms. Use an acceleration curve to start slow and end at full velocity: `'0.2s ease-in'`
 
 <div class="alert is-helpful">
 
