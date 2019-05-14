@@ -18,25 +18,46 @@ export function addAllToArray(items: any[], arr: any[]) {
   }
 }
 
+const flattenQueue: (any[] | number)[] = [];
+
 /**
  * Flattens an array in non-recursive way. Input arrays are not modified.
+ *
+ * This implementation is memory efficient and only allocates objects when needed.
  */
-export function flatten(list: any[], mapFn?: (value: any) => any): any[] {
-  const result: any[] = [];
-  let i = 0;
-  while (i < list.length) {
-    const item = list[i];
-    if (Array.isArray(item)) {
-      if (item.length > 0) {
-        list = item.concat(list.slice(i + 1));
-        i = 0;
-      } else {
-        i++;
+export function flatten(list: any[]): any[] {
+  // This is an optimization so that we don't allocate memory until we have to.
+  let flat: any[] = list;
+  let queueIndex = 0;
+  let index = 0;
+  let length = list.length;
+  while (true) {
+    while (index < length) {
+      let item = list[index++];
+      if (Array.isArray(item)) {
+        // we need to inline it.
+        if (flat === list) {
+          // we need to clone flat since we need to write to it.
+          flat = list.slice(0, index - 1);
+        }
+        flattenQueue[queueIndex++] = index;
+        flattenQueue[queueIndex++] = list;
+        list = item;
+        index = 0;
+        length = list.length;
+      } else if (flat !== list) {
+        flat.push(item);
       }
+    }
+    if (queueIndex > 0) {
+      // There are items in the flattenQueue which need to be processed.
+      list = flattenQueue[--queueIndex] as any[];
+      length = list.length;
+      index = flattenQueue[--queueIndex] as number;
     } else {
-      result.push(mapFn ? mapFn(item) : item);
-      i++;
+      break;
     }
   }
-  return result;
+
+  return flat;
 }
