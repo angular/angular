@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler} from '@angular/core';
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, ErrorHandler, Injectable, NgModule} from '@angular/core';
 
 @Component({
   selector: 'benchmark-area',
@@ -27,9 +26,7 @@ import {Component, Injectable, NgModule} from '@angular/core';
 export class BenchmarkArea {
 }
 
-declare interface ExtendedWindow extends Window {
-  benchmarkErrors?: string[];
-}
+declare interface ExtendedWindow extends Window { benchmarkErrors?: string[]; }
 const extendedWindow = window as ExtendedWindow;
 
 @Injectable({providedIn: 'root'})
