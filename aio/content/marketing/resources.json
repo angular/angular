@@ -661,6 +661,12 @@
             "rev": true,
             "title": "web.dev/angular",
             "url": "https://web.dev/angular"
+          },
+          "mdb-angular-boilerplate": {
+            "desc": "Angular CRUD application starter with NgRx state management, Firebase backend and installation guide.",
+            "rev": true,
+            "title": "MDB Angular Boilerplate",
+            "url": "https://github.com/mdbootstrap/Angular-Bootstrap-Boilerplate"
           }
         }
       },
