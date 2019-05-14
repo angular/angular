@@ -328,7 +328,11 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   @Output() readonly valueChange: EventEmitter<any> = new EventEmitter<any>();
 
   /** The chip components contained within this chip list. */
-  @ContentChildren(MatChip) chips: QueryList<MatChip>;
+  @ContentChildren(MatChip, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  }) chips: QueryList<MatChip>;
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
