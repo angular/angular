@@ -106,6 +106,12 @@
   border-radius: inherit;
 }
 
+// Fixes the ripples not clipping to the border radius on Safari. Uses `:not(:empty)`
+// in order to avoid creating extra layers when there aren't any ripples.
+.mat-button-ripple.mat-ripple:not(:empty) {
+  transform: translateZ(0);
+}
+
 // Element that overlays the button to show focus and hover effects.
 .mat-button-focus-overlay {
   opacity: 0;
