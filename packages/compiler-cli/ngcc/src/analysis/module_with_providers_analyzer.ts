@@ -63,7 +63,7 @@ export class ModuleWithProvidersAnalyzer {
             ngModule = {node: dtsNgModule, viaModule: null};
           }
           const dtsFile = dtsFn.getSourceFile();
-          const analysis = analyses.get(dtsFile) || [];
+          const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
           analysis.push({declaration: dtsFn, ngModule});
           analyses.set(dtsFile, analysis);
         }

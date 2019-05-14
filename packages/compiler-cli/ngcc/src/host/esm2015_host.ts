@@ -366,7 +366,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       throw new Error(
           `Cannot get the dts file for a declaration that has no name: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
     }
-    return this.dtsDeclarationMap.get(declaration.name.text) || null;
+    return this.dtsDeclarationMap.has(declaration.name.text) ?
+        this.dtsDeclarationMap.get(declaration.name.text) ! :
+        null;
   }
 
   /**
@@ -419,7 +421,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|null {
     this.ensurePreprocessed(declaration.getSourceFile());
-    return this.aliasedClassDeclarations.get(declaration) || null;
+    return this.aliasedClassDeclarations.has(declaration) ?
+        this.aliasedClassDeclarations.get(declaration) ! :
+        null;
   }
 
   /**
@@ -738,7 +742,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           helperCall, makeMemberTargetFilter(classSymbol.name));
       memberDecorators.forEach((decorators, memberName) => {
         if (memberName) {
-          const memberDecorators = memberDecoratorMap.get(memberName) || [];
+          const memberDecorators =
+              memberDecoratorMap.has(memberName) ? memberDecoratorMap.get(memberName) ! : [];
           const coreDecorators = decorators.filter(decorator => this.isFromCore(decorator));
           memberDecoratorMap.set(memberName, memberDecorators.concat(coreDecorators));
         }
@@ -775,7 +780,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
               if (keyName === undefined) {
                 classDecorators.push(decorator);
               } else {
-                const decorators = memberDecorators.get(keyName) || [];
+                const decorators =
+                    memberDecorators.has(keyName) ? memberDecorators.get(keyName) ! : [];
                 decorators.push(decorator);
                 memberDecorators.set(keyName, decorators);
               }
@@ -874,8 +880,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           const decorator = reflectObjectLiteral(node);
 
           // Is the value of the `type` property an identifier?
-          let typeIdentifier = decorator.get('type');
-          if (typeIdentifier) {
+          if (decorator.has('type')) {
+            let typeIdentifier = decorator.get('type') !;
             if (ts.isPropertyAccessExpression(typeIdentifier)) {
               // the type is in a namespace, e.g. `core.Directive`
               typeIdentifier = typeIdentifier.name;
@@ -1036,8 +1042,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
       ts.ParameterDeclaration[]|null {
-    const constructorSymbol = classSymbol.members && classSymbol.members.get(CONSTRUCTOR);
-    if (constructorSymbol) {
+    if (classSymbol.members && classSymbol.members.has(CONSTRUCTOR)) {
+      const constructorSymbol = classSymbol.members.get(CONSTRUCTOR) !;
       // For some reason the constructor does not have a `valueDeclaration` ?!?
       const constructor = constructorSymbol.declarations &&
           constructorSymbol.declarations[0] as ts.ConstructorDeclaration | undefined;
@@ -1113,8 +1119,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 element =>
                     ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null)
             .map(paramInfo => {
-              const typeExpression = paramInfo && paramInfo.get('type') || null;
-              const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
+              const typeExpression =
+                  paramInfo && paramInfo.has('type') ? paramInfo.get('type') ! : null;
+              const decoratorInfo =
+                  paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators') ! : null;
               const decorators = decoratorInfo &&
                   this.reflectDecorators(decoratorInfo)
                       .filter(decorator => this.isFromCore(decorator));
