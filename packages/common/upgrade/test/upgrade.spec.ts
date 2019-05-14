@@ -624,6 +624,87 @@ describe('New URL Parsing', () => {
   });
 });
 
+describe('$location.onChange()', () => {
+
+  let $location: $locationShim;
+  let upgradeModule: UpgradeModule;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        LocationUpgradeTestModule.config({useHash: false, startUrl: 'http://host.com/'}),
+      ],
+      providers: [UpgradeModule],
+    });
+
+    upgradeModule = TestBed.get(UpgradeModule);
+    upgradeModule.$injector = {get: injectorFactory()};
+  });
+
+  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+
+  it('should have onChange method', () => { expect(typeof $location.onChange).toBe('function'); });
+
+  it('should add registered functions to changeListeners', () => {
+
+    function changeListener(url: string, state: unknown) { return undefined; }
+    function errorHandler(e: Error) {}
+
+    expect(($location as any).$$changeListeners.length).toBe(0);
+
+    $location.onChange(changeListener, errorHandler);
+
+    expect(($location as any).$$changeListeners.length).toBe(1);
+    expect(($location as any).$$changeListeners[0][0]).toEqual(changeListener);
+    expect(($location as any).$$changeListeners[0][1]).toEqual(errorHandler);
+  });
+
+  it('should call changeListeners when URL is updated', () => {
+
+    const onChangeVals =
+        {url: 'url', state: 'state' as unknown, oldUrl: 'oldUrl', oldState: 'oldState' as unknown};
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      onChangeVals.url = url;
+      onChangeVals.state = state;
+      onChangeVals.oldUrl = oldUrl;
+      onChangeVals.oldState = oldState;
+    }
+
+    $location.onChange(changeListener);
+
+    // Mock out setting browserUrl
+    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
+
+    const newState = {foo: 'bar'};
+    ($location as any).setBrowserUrlWithFallback('/newUrl', false, newState);
+    expect(onChangeVals.url).toBe('/newUrl');
+    expect(onChangeVals.state).toBe(newState);
+    expect(onChangeVals.oldUrl).toBe('/');
+    expect(onChangeVals.oldState).toBe(null);
+  });
+
+  it('should call forward errors to error handler', () => {
+
+    let error !: Error;
+
+    function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
+      throw new Error('Handle error');
+    }
+    function errorHandler(e: Error) { error = e; }
+
+    $location.onChange(changeListener, errorHandler);
+
+    // Mock out setting browserUrl
+    ($location as any).browserUrl = (url: string, replace: boolean, state: unknown) => {};
+
+    ($location as any).setBrowserUrlWithFallback('/newUrl');
+    expect(error.message).toBe('Handle error');
+  });
+
+});
+
 function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {
   const resetUrl = location.$$parseLinkUrl(toUrl, relHref);
   return resetUrl && location.absUrl() || undefined;
