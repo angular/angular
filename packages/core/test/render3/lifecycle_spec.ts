@@ -116,6 +116,7 @@ describe('lifecycles', () => {
     });
   });
 
+<<<<<<< HEAD
   describe('doCheck', () => {
     let events: string[];
     let allEvents: string[];
@@ -246,6 +247,8 @@ describe('lifecycles', () => {
 
   });
 
+=======
+>>>>>>> test(ivy): doCheck lifecycle acceptance tests
   describe('afterContentInit', () => {
     let events: string[];
     let allEvents: string[];
