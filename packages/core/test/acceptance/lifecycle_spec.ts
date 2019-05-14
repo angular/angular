@@ -810,3 +810,402 @@ describe('doCheck', () => {
     expect(doChecks).toEqual(['app', 'dir 1', 'dir 2']);
   });
 });
+
+describe('afterContentinit', () => {
+  it('should be called only in creation mode', () => {
+    let afterContentInitCalls = 0;
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      ngAfterContentInit() { afterContentInitCalls++; }
+    }
+    @Component({template: `<comp></comp>`})
+    class App {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // two updates
+    fixture.detectChanges();
+    fixture.detectChanges();
+
+    expect(afterContentInitCalls).toBe(1);
+  });
+
+  it('should be called on root component in creation mode', () => {
+    let afterContentInitCalls = 0;
+
+    @Component({template: `<p>test</p>`})
+    class App {
+      ngAfterContentInit() { afterContentInitCalls++; }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // two updates
+    fixture.detectChanges();
+    fixture.detectChanges();
+
+    expect(afterContentInitCalls).toBe(1);
+  });
+
+  it('should be called on every create ngIf', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      ngAfterContentInit() { events.push('comp afterContentInit'); }
+    }
+
+    @Component({template: `<comp *ngIf="show"></comp>`})
+    class App {
+      show = true;
+
+      ngAfterContentInit() { events.push('app afterContentInit'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(['app afterContentInit', 'comp afterContentInit']);
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual(['app afterContentInit', 'comp afterContentInit']);
+
+    fixture.componentInstance.show = true;
+    fixture.detectChanges();
+
+
+    expect(events).toEqual(
+        ['app afterContentInit', 'comp afterContentInit', 'comp afterContentInit']);
+  });
+
+  it('should be called in parents before children', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]="name"></child>`,
+    })
+    class Parent {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('parent ' + this.name); }
+    }
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('child of parent ' + this.name); }
+    }
+
+    @Component({
+      template: `
+      <parent name="1"></parent>
+      <parent name="2"></parent>
+      `
+    })
+    class App {
+      ngAfterContentInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Child],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(
+        ['app', 'parent 1', 'parent 2', 'child of parent 1', 'child of parent 2']);
+  });
+
+  it('should be called in projected components before their hosts', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'projected-child',
+      template: `<p>test</p>`,
+    })
+    class ProjectedChild {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('projected child ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      selector: 'projected',
+      template: `<projected-child [name]=name></projected-child>`,
+    })
+    class Projected {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('projected ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="1">
+          <projected name="1"></projected>
+          <projected name="2"></projected>
+        </comp>
+        <comp name="2">
+          <projected name="3"></projected>
+          <projected name="4"></projected>
+        </comp>
+      `
+    })
+    class App {
+      ngAfterContentInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Projected, ProjectedChild],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      // root
+      'app',
+      // projections of comp 1
+      'projected 1',
+      'projected 2',
+      // comp 1
+      'comp 1',
+      // projections of comp 2
+      'projected 3',
+      'projected 4',
+      // comp 2
+      'comp 2',
+      // children of projections
+      'projected child 1',
+      'projected child 2',
+      'projected child 3',
+      'projected child 4',
+    ]);
+  });
+
+  it('should be called in correct order in a for loop', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="4"></comp>
+        <comp *ngFor="let number of numbers" [name]="number"></comp>
+        <comp name="5"></comp>
+      `
+    })
+    class App {
+      numbers = [0, 1, 2, 3];
+
+      ngAfterContentInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual(['app', 'comp 0', 'comp 1', 'comp 2', 'comp 3', 'comp 4', 'comp 5']);
+  });
+
+  it('should be called in correct order in a for loop with children', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'parent',
+      template: `<child [name]=name></child>`,
+    })
+    class Parent {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('parent ' + this.name); }
+    }
+
+    @Component({
+      selector: 'child',
+      template: `<p>test</p>`,
+    })
+    class Child {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('child of parent ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <parent name="4"></parent>
+        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        <parent name="5"></parent>
+      `
+    })
+    class App {
+      numbers = [0, 1, 2, 3];
+      ngAfterContentInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Child],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      // root
+      'app',
+      // 4 embedded views
+      'parent 0',
+      'child of parent 0',
+      'parent 1',
+      'child of parent 1',
+      'parent 2',
+      'child of parent 2',
+      'parent 3',
+      'child of parent 3',
+      // root children
+      'parent 4',
+      'parent 5',
+      // children of root children
+      'child of parent 4',
+      'child of parent 5',
+    ]);
+  });
+
+  it('should be called on directives after component', () => {
+    const events: string[] = [];
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir')
+      name = '';
+
+      ngAfterContentInit() { events.push('dir ' + this.name); }
+    }
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
+
+      ngAfterContentInit() { events.push('comp ' + this.name); }
+    }
+
+    @Component({
+      template: `
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `
+    })
+    class App {
+      ngAfterContentInit() { events.push('app'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp, Dir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'app',
+      'comp 1',
+      'dir 1',
+      'comp 2',
+      'dir 2',
+    ]);
+  });
+});
+
+describe('afterContentChecked', () => {
+  it('should be called every change detection run after afterContentInit', () => {
+    const events: string[] = [];
+
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      ngAfterContentInit() { events.push('comp afterContentInit'); }
+
+      ngAfterContentChecked() { events.push('comp afterContentChecked'); }
+    }
+
+    @Component({template: `<comp></comp>`})
+    class App {
+      ngAfterContentInit() { events.push('app afterContentInit'); }
+
+      ngAfterContentChecked() { events.push('app afterContentChecked'); }
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'app afterContentInit',
+      'app afterContentChecked',
+      'comp afterContentInit',
+      'comp afterContentChecked',
+    ]);
+  });
+});
