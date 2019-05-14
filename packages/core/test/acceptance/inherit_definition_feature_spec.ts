@@ -483,9 +483,6 @@ describe('inheritance', () => {
     });
 
     it('should inherit inputs', () => {
-
-      let results: any;
-
       class SuperDirective {
         @Input()
         foo = '';
@@ -506,11 +503,6 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
-
-        ngOnInit() {
-          const {foo, bar, baz, qux} = this;
-          results = {foo, bar, baz, qux};
-        }
       }
 
       @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
@@ -527,12 +519,13 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(results).toEqual({
-        foo: 'a',
-        bar: 'b',
-        baz: 'c',
-        qux: 'd',
-      });
+      const subDir =
+          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+      expect(subDir.foo).toBe('a');
+      expect(subDir.bar).toBe('b');
+      expect(subDir.baz).toBe('c');
+      expect(subDir.qux).toBe('d');
     });
 
 
@@ -972,8 +965,6 @@ describe('inheritance', () => {
     });
 
     it('should inherit inputs', () => {
-      let results: any;
-
       @Directive({selector: '[super-dir]'})
       class SuperDirective {
         @Input()
@@ -995,11 +986,6 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
-
-        ngOnInit() {
-          const {foo, bar, baz, qux} = this;
-          results = {foo, bar, baz, qux};
-        }
       }
 
       @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
@@ -1016,12 +1002,13 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(results).toEqual({
-        foo: 'a',
-        bar: 'b',
-        baz: 'c',
-        qux: 'd',
-      });
+      const subDir =
+          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+      expect(subDir.foo).toBe('a');
+      expect(subDir.bar).toBe('b');
+      expect(subDir.baz).toBe('c');
+      expect(subDir.qux).toBe('d');
     });
 
 
@@ -1475,8 +1462,6 @@ describe('inheritance', () => {
     });
 
     it('should inherit inputs', () => {
-      let results: any;
-
       @Directive({selector: '[super-dir]'})
       class SuperSuperDirective {
         @Input()
@@ -1500,11 +1485,6 @@ describe('inheritance', () => {
 
         @Input()
         qux = '';
-
-        ngOnInit() {
-          const {foo, bar, baz, qux} = this;
-          results = {foo, bar, baz, qux};
-        }
       }
 
       @Component({
@@ -1524,12 +1504,13 @@ describe('inheritance', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(results).toEqual({
-        foo: 'a',
-        bar: 'b',
-        baz: 'c',
-        qux: 'd',
-      });
+      const subDir =
+          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+      expect(subDir.foo).toBe('a');
+      expect(subDir.bar).toBe('b');
+      expect(subDir.baz).toBe('c');
+      expect(subDir.qux).toBe('d');
     });
 
     it('should inherit outputs', () => {
