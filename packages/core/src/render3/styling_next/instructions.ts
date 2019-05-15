@@ -14,9 +14,10 @@ import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirect
 import {getTNode, isStylingContext as isOldStylingContext} from '../util/view_utils';
 
 import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateStyleBinding} from './bindings';
-import {attachStylingDebugObject} from './debug';
 import {TStylingContext} from './interfaces';
+import {attachStylingDebugObject} from './styling_debug';
 import {allocStylingContext, updateContextDirectiveIndex} from './util';
+
 
 /**
  * This file contains the core logic for how styling instructions are processed in Angular.
@@ -108,16 +109,16 @@ function getClassesContext(tNode: TNode): TStylingContext {
  * Returns/instantiates a styling context from/to a `tNode` instance.
  */
 function getContext(tNode: TNode, isClassBased: boolean) {
-  let context = isClassBased ? tNode.newClassesContext : tNode.newStylesContext;
+  let context = isClassBased ? tNode.newClasses : tNode.newStyles;
   if (!context) {
     context = allocStylingContext();
     if (ngDevMode) {
       attachStylingDebugObject(context);
     }
     if (isClassBased) {
-      tNode.newClassesContext = context;
+      tNode.newClasses = context;
     } else {
-      tNode.newStylesContext = context;
+      tNode.newStyles = context;
     }
   }
   return context;
@@ -162,17 +163,18 @@ function getRenderer(tNode: TNode, lView: LView) {
  */
 export function registerInitialStylingIntoContext(
     tNode: TNode, attrs: TAttributes, startIndex: number) {
-  const classesContext = getClassesContext(tNode);
-  const stylesContext = getStylesContext(tNode);
-
+  let classesContext !: TStylingContext;
+  let stylesContext !: TStylingContext;
   let mode = -1;
   for (let i = startIndex; i < attrs.length; i++) {
     const attr = attrs[i];
     if (typeof attr == 'number') {
       mode = attr;
     } else if (mode == AttributeMarker.Classes) {
+      classesContext = classesContext || getClassesContext(tNode);
       registerBinding(classesContext, -1, attr as string, true);
     } else if (mode == AttributeMarker.Styles) {
+      stylesContext = stylesContext || getStylesContext(tNode);
       registerBinding(stylesContext, -1, attr as string, attrs[++i] as string);
     }
   }

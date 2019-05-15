@@ -18,18 +18,19 @@ import {LView} from '../interfaces/view';
  * a single manifest. It is used each time there are one or more
  * styling bindings present for an element.
  *
- * The styling context is stored on a `TNode` on and there is are
+ * The styling context is stored on a `TNode` on and there are
  * two instances of it: one for classes and another for styles.
  *
  * ```typescript
- * tNode.stylesContext = [ ... a context only for styles ... ];
- * tNode.classesContext = [ ... a context only for classes ... ];
+ * tNode.styles = [ ... a context only for styles ... ];
+ * tNode.classes = [ ... a context only for classes ... ];
  * ```
  *
  * Due to the fact the the `TStylingContext` is stored on a `TNode`
  * this means that all data within the context is static. Instead of
  * storing actual styling binding values, the lView binding index values
- * are stored within the context.
+ * are stored within the context. (static nature means it is more compact.)
+
  *
  * ```typescript
  * // <div [class.active]="c"  // lView binding index = 20
@@ -94,6 +95,15 @@ import {LView} from '../interfaces/view';
  *   then the first bit in the local bit mask value would be flipped
  *   (and the second bit for when `height`).
  *
+ *   If and when there are more than 32 binding sources in the context
+ *   (more than 32 `[style/class]` bindings) then the bit masking will
+ *   overflow and we are left with a situation where a `-1` value will
+ *   represent the bit mask. Due to the way that JavaScript handles
+ *   negative values, when the bit mask is `-1` then all bits within
+ *   that value will be automatically flipped (this is a quick and
+ *   efficient way to flip all bits on the mask when a special kind
+ *   of caching scenario occurs or when there are more than 32 bindings).
+ *
  * - **totalEntries**:
  *   Each property present in the contains various binding sources of
  *   where the styling data could come from. This includes template
@@ -101,6 +111,11 @@ import {LView} from '../interfaces/view';
  *   default value (or static value) all writing to the same property.
  *   This value depicts how many binding source entries exist for the
  *   property.
+ *
+ *   The reason why the totalEntries value is needed is because the
+ *   styling context is dynamic in size and it's not possible
+ *   for the flushing or update algorithms to know when and where
+ *   a property starts and ends without it.
  *
  * - **propName**:
  *   The CSS property name or class name (e.g `width` or `active`).
@@ -203,73 +218,6 @@ export const enum TStylingContextIndex {
   ValuesCountOffset = 1,
   PropOffset = 2,
   BindingsStartOffset = 3,
-}
-
-/**
- * A debug/testing-oriented summary of a styling entry.
- *
- * A value such as this is generated as an artifact of the `DebugStyling`
- * summary.
- */
-export interface StylingSummary {
-  /** The style/class property that the summary is attached to */
-  prop: string;
-
-  /** The last applied value for the style/class property */
-  value: string|null;
-
-  /** The binding index of the last applied style/class property */
-  bindingIndex: number|null;
-
-  /** Every binding source that is writing the style/class property represented in this tuple */
-  sourceValues: {value: string | number | null, bindingIndex: number|null}[];
-}
-
-/**
- * A debug/testing-oriented summary of all styling entries for a `DebugNode` instance.
- */
-export interface DebugStyling {
-  /** The associated TStylingContext instance */
-  context: TStylingContext;
-
-  /**
-   * A summarization of each style/class property
-   * present in the context.
-   */
-  summary: {[key: string]: StylingSummary}|null;
-
-  /**
-   * A key/value map of all styling properties and their
-   * runtime values.
-   */
-  values: {[key: string]: string | number | null | boolean};
-}
-
-/**
- * A debug/testing-oriented summary of all styling entries within a `TStylingContext`.
- */
-export interface TStylingTupleSummary {
-  /** The property (style or class property) that this tuple represents */
-  prop: string;
-
-  /** The total amount of styling entries apart of this tuple */
-  valuesCount: number;
-
-  /**
-   * The bit guard mask that is used to compare and protect against
-   * styling changes when and styling bindings update
-   */
-  guardMask: number;
-
-  /**
-   * The default value that will be applied if any bindings are falsy.
-   */
-  defaultValue: string|boolean|null;
-
-  /**
-   * All bindingIndex sources that have been registered for this style.
-   */
-  sources: (number|null|string)[];
 }
 
 /**

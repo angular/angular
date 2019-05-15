@@ -78,7 +78,7 @@ export function Δstyling(
   if (directiveStylingIndex) {
     // this is temporary hack to get the existing styling instructions to
     // play ball with the new refactored implementation.
-    // TODO (matsko): remove this once the old implemention is not needed.
+    // TODO (matsko): remove this once the old implementation is not needed.
     if (isNewStylingInUse()) {
       newStylingInit();
     }

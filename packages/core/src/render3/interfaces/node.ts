@@ -438,10 +438,10 @@ export interface TNode {
    * with functions each time the creation block is called.
    */
   onElementCreationFns: Function[]|null;
-  // TODO (matsko): rename this to `stylesContext` once the old styling impl is gone
-  newStylesContext: TStylingContext|null;
-  // TODO (matsko): rename this to `classesContext` once the old styling impl is gone
-  newClassesContext: TStylingContext|null;
+  // TODO (matsko): rename this to `styles` once the old styling impl is gone
+  newStyles: TStylingContext|null;
+  // TODO (matsko): rename this to `classes` once the old styling impl is gone
+  newClasses: TStylingContext|null;
 }
 
 /** Static data for an element  */

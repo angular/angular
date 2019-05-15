@@ -9,8 +9,75 @@ import {attachDebugObject, toDebug} from '../debug';
 import {RElement} from '../interfaces/renderer';
 
 import {BIT_MASK_APPLY_ALL, DEFAULT_BINDING_INDEX_VALUE, applyStyling} from './bindings';
-import {DebugStyling, StylingBindingData, StylingSummary, TStylingContext, TStylingContextIndex, TStylingTupleSummary} from './interfaces';
+import {StylingBindingData, TStylingContext, TStylingContextIndex} from './interfaces';
 import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked} from './util';
+
+/**
+ * A debug/testing-oriented summary of a styling entry.
+ *
+ * A value such as this is generated as an artifact of the `DebugStyling`
+ * summary.
+ */
+export interface StylingSummary {
+  /** The style/class property that the summary is attached to */
+  prop: string;
+
+  /** The last applied value for the style/class property */
+  value: string|null;
+
+  /** The binding index of the last applied style/class property */
+  bindingIndex: number|null;
+
+  /** Every binding source that is writing the style/class property represented in this tuple */
+  sourceValues: {value: string | number | null, bindingIndex: number|null}[];
+}
+
+/**
+ * A debug/testing-oriented summary of all styling entries for a `DebugNode` instance.
+ */
+export interface DebugStyling {
+  /** The associated TStylingContext instance */
+  context: TStylingContext;
+
+  /**
+   * A summarization of each style/class property
+   * present in the context.
+   */
+  summary: {[key: string]: StylingSummary}|null;
+
+  /**
+   * A key/value map of all styling properties and their
+   * runtime values.
+   */
+  values: {[key: string]: string | number | null | boolean};
+}
+
+/**
+ * A debug/testing-oriented summary of all styling entries within a `TStylingContext`.
+ */
+export interface TStylingTupleSummary {
+  /** The property (style or class property) that this tuple represents */
+  prop: string;
+
+  /** The total amount of styling entries apart of this tuple */
+  valuesCount: number;
+
+  /**
+   * The bit guard mask that is used to compare and protect against
+   * styling changes when and styling bindings update
+   */
+  guardMask: number;
+
+  /**
+   * The default value that will be applied if any bindings are falsy.
+   */
+  defaultValue: string|boolean|null;
+
+  /**
+   * All bindingIndex sources that have been registered for this style.
+   */
+  sources: (number|null|string)[];
+}
 
 
 

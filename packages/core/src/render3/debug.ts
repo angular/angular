@@ -15,9 +15,8 @@ import {LQueries} from './interfaces/query';
 import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
-import {NodeStylingDebug} from './styling_next/debug';
-import {DebugStyling as DebugNewStyling} from './styling_next/interfaces';
 import {isNewStylingInUse} from './styling_next/state';
+import {DebugStyling as DebugNewStyling, NodeStylingDebug} from './styling_next/styling_debug';
 import {getTNode, isStylingContext, unwrapRNode} from './util/view_utils';
 
 export function attachDebugObject(obj: any, debug: any) {
@@ -199,10 +198,8 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
       let styles: DebugNewStyling|null = null;
       let classes: DebugNewStyling|null = null;
       if (isNewStylingInUse()) {
-        styles =
-            tNode.newStylesContext ? new NodeStylingDebug(tNode.newStylesContext, lView) : null;
-        classes =
-            tNode.newClassesContext ? new NodeStylingDebug(tNode.newClassesContext, lView) : null;
+        styles = tNode.newStyles ? new NodeStylingDebug(tNode.newStyles, lView) : null;
+        classes = tNode.newClasses ? new NodeStylingDebug(tNode.newClasses, lView) : null;
       }
 
       debugNodes.push({

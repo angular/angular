@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {registerBinding} from '@angular/core/src/render3/styling_next/bindings';
-import {attachStylingDebugObject} from '@angular/core/src/render3/styling_next/debug';
+import {attachStylingDebugObject} from '@angular/core/src/render3/styling_next/styling_debug';
 
 import {allocStylingContext} from '../../../src/render3/styling_next/util';
 
