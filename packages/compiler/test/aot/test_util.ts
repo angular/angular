@@ -32,11 +32,7 @@ export function isDirectory(data: MockFileOrDirectory | undefined): data is Mock
   return typeof data !== 'string';
 }
 
-const NODE_MODULES = '/node_modules/';
-const IS_GENERATED = /\.(ngfactory|ngstyle)$/;
-const angularts = /@angular\/(\w|\/|-)+\.tsx?$/;
 const rxjs = /\/rxjs\//;
-const tsxfile = /\.tsx$/;
 export const settings: ts.CompilerOptions = {
   target: ts.ScriptTarget.ES5,
   declaration: true,
@@ -231,7 +227,7 @@ export class MockCompilerHost implements ts.CompilerHost {
   private traces: string[] = [];
 
   constructor(scriptNames: string[], private data: MockDirectory) {
-    this.scriptNames = scriptNames.slice(0);
+    this.scriptNames = [...scriptNames];
   }
 
   // Test API
@@ -778,7 +774,7 @@ export function compile(
     aotHost.tsFilesOnly();
   }
   const tsSettings = {...settings, ...tsOptions};
-  const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  const program = ts.createProgram([...host.scriptNames], tsSettings, host);
   preCompile(program);
   const {compiler, reflector} = createAotCompiler(aotHost, options, (err) => { throw err; });
   const analyzedModules =
@@ -792,7 +788,7 @@ export function compile(
       host.override(file.genFileUrl, source);
     }
   });
-  const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
+  const newProgram = ts.createProgram([...host.scriptNames], tsSettings, host);
   postCompile(newProgram);
   if (emit) {
     newProgram.emit();
