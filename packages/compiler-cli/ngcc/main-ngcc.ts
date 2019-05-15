@@ -8,7 +8,7 @@
  */
 import * as yargs from 'yargs';
 
-import {resolve, setFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
+import {resolve, setFileSystem, CachedFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
 import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
 
@@ -57,7 +57,7 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  setFileSystem(new NodeJSFileSystem());
+  setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
 
   const baseSourcePath = resolve(options['s'] || './node_modules');
   const propertiesToConsider: string[] = options['p'];
