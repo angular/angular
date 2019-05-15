@@ -186,7 +186,8 @@ export function ΔsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: st
 export const ΔdefaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
   if (value === undefined) {
     return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-        prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
+        prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
+        prop === 'clip-path';
   }
 
   return ΔsanitizeStyle(value);
