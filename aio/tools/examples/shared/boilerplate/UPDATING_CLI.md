@@ -77,8 +77,6 @@ Add or update the `exclude` section to filter our example progression files
 
 Along with the boilerplate files for the `cli` folder, the other cli-based projects need to be updated also. Each cli-based project has slightly modified files specific to the project type. Make sure any necessary changes to these projects are made also to be in alignment with the `cli` project files.
 
-* elements
-  - tsconfig.json
 * i18n
   - angular.json
   - package.json
