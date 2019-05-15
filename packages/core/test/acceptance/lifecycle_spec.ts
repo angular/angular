@@ -3376,3 +3376,335 @@ describe('onDestroy', () => {
     expect(events).toEqual(['dir']);
   });
 });
+
+describe('hook order', () => {
+  let events: string[] = [];
+
+  beforeEach(() => events = []);
+
+  @Component({
+    selector: 'comp',
+    template: `{{value}}<div><ng-content></ng-content></div>`,
+  })
+  class Comp {
+    @Input()
+    value = '';
+
+    @Input()
+    name = '';
+
+    ngOnInit() { events.push(`${this.name} onInit`); }
+
+    ngDoCheck() { events.push(`${this.name} doCheck`); }
+
+    ngOnChanges() { events.push(`${this.name} onChanges`); }
+
+    ngAfterContentInit() { events.push(`${this.name} afterContentInit`); }
+
+    ngAfterContentChecked() { events.push(`${this.name} afterContentChecked`); }
+
+    ngAfterViewInit() { events.push(`${this.name} afterViewInit`); }
+
+    ngAfterViewChecked() { events.push(`${this.name} afterViewChecked`); }
+
+    ngOnDestroy() { events.push(`${this.name} onDestroy`); }
+  }
+
+  @Component({
+    selector: 'parent',
+    template:
+        `<comp [name]="'child of ' + this.name" [value]="value"><ng-content></ng-content></comp>`,
+  })
+  class Parent extends Comp {
+  }
+
+  it('should call all hooks in correct order', () => {
+    @Component({template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`})
+    class App {
+      value = 'a';
+
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'comp onChanges',
+      'comp onInit',
+      'comp doCheck',
+      'comp afterContentInit',
+      'comp afterContentChecked',
+      'comp afterViewInit',
+      'comp afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp doCheck',
+      'comp afterContentChecked',
+      'comp afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.value = 'b';
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp onChanges',
+      'comp doCheck',
+      'comp afterContentChecked',
+      'comp afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+    expect(events).toEqual([
+      'comp onDestroy',
+    ]);
+  });
+
+  it('should call all hooks in correct order with children', () => {
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <parent name="parent1" [value]="value"></parent>
+          <parent name="parent2" [value]="value"></parent>
+        </div>
+      `
+    })
+    class App {
+      value = 'a';
+
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'parent1 onChanges',
+      'parent1 onInit',
+      'parent1 doCheck',
+      'parent2 onChanges',
+      'parent2 onInit',
+      'parent2 doCheck',
+      'parent1 afterContentInit',
+      'parent1 afterContentChecked',
+      'parent2 afterContentInit',
+      'parent2 afterContentChecked',
+      'child of parent1 onChanges',
+      'child of parent1 onInit',
+      'child of parent1 doCheck',
+      'child of parent1 afterContentInit',
+      'child of parent1 afterContentChecked',
+      'child of parent1 afterViewInit',
+      'child of parent1 afterViewChecked',
+      'child of parent2 onChanges',
+      'child of parent2 onInit',
+      'child of parent2 doCheck',
+      'child of parent2 afterContentInit',
+      'child of parent2 afterContentChecked',
+      'child of parent2 afterViewInit',
+      'child of parent2 afterViewChecked',
+      'parent1 afterViewInit',
+      'parent1 afterViewChecked',
+      'parent2 afterViewInit',
+      'parent2 afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.value = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'parent1 onChanges',
+      'parent1 doCheck',
+      'parent2 onChanges',
+      'parent2 doCheck',
+      'parent1 afterContentChecked',
+      'parent2 afterContentChecked',
+      'child of parent1 onChanges',
+      'child of parent1 doCheck',
+      'child of parent1 afterContentChecked',
+      'child of parent1 afterViewChecked',
+      'child of parent2 onChanges',
+      'child of parent2 doCheck',
+      'child of parent2 afterContentChecked',
+      'child of parent2 afterViewChecked',
+      'parent1 afterViewChecked',
+      'parent2 afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'child of parent1 onDestroy',
+      'child of parent2 onDestroy',
+      'parent1 onDestroy',
+      'parent2 onDestroy',
+    ]);
+  });
+
+  // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-ng
+  it('should call all hooks in correct order with view and content', () => {
+    @Component({
+      template: `
+        <div *ngIf="show">
+          <parent name="parent1" [value]="value">
+            <comp name="projected1" [value]="value"></comp>
+          </parent>
+          <parent name="parent2" [value]="value">
+            <comp name="projected2" [value]="value"></comp>
+          </parent>
+        </div>
+      `
+    })
+    class App {
+      value = 'a';
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, Parent, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'parent1 onChanges',
+      'parent1 onInit',
+      'parent1 doCheck',
+      'projected1 onChanges',
+      'projected1 onInit',
+      'projected1 doCheck',
+      'parent2 onChanges',
+      'parent2 onInit',
+      'parent2 doCheck',
+      'projected2 onChanges',
+      'projected2 onInit',
+      'projected2 doCheck',
+      'projected1 afterContentInit',
+      'projected1 afterContentChecked',
+      'parent1 afterContentInit',
+      'parent1 afterContentChecked',
+      'projected2 afterContentInit',
+      'projected2 afterContentChecked',
+      'parent2 afterContentInit',
+      'parent2 afterContentChecked',
+      'child of parent1 onChanges',
+      'child of parent1 onInit',
+      'child of parent1 doCheck',
+      'child of parent1 afterContentInit',
+      'child of parent1 afterContentChecked',
+      'child of parent1 afterViewInit',
+      'child of parent1 afterViewChecked',
+      'child of parent2 onChanges',
+      'child of parent2 onInit',
+      'child of parent2 doCheck',
+      'child of parent2 afterContentInit',
+      'child of parent2 afterContentChecked',
+      'child of parent2 afterViewInit',
+      'child of parent2 afterViewChecked',
+      'projected1 afterViewInit',
+      'projected1 afterViewChecked',
+      'parent1 afterViewInit',
+      'parent1 afterViewChecked',
+      'projected2 afterViewInit',
+      'projected2 afterViewChecked',
+      'parent2 afterViewInit',
+      'parent2 afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.value = 'b';
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'parent1 onChanges',
+      'parent1 doCheck',
+      'projected1 onChanges',
+      'projected1 doCheck',
+      'parent2 onChanges',
+      'parent2 doCheck',
+      'projected2 onChanges',
+      'projected2 doCheck',
+      'projected1 afterContentChecked',
+      'parent1 afterContentChecked',
+      'projected2 afterContentChecked',
+      'parent2 afterContentChecked',
+      'child of parent1 onChanges',
+      'child of parent1 doCheck',
+      'child of parent1 afterContentChecked',
+      'child of parent1 afterViewChecked',
+      'child of parent2 onChanges',
+      'child of parent2 doCheck',
+      'child of parent2 afterContentChecked',
+      'child of parent2 afterViewChecked',
+      'projected1 afterViewChecked',
+      'parent1 afterViewChecked',
+      'projected2 afterViewChecked',
+      'parent2 afterViewChecked',
+    ]);
+
+    events.length = 0;
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(events).toEqual([
+      'child of parent1 onDestroy',
+      'child of parent2 onDestroy',
+      'projected1 onDestroy',
+      'parent1 onDestroy',
+      'projected2 onDestroy',
+      'parent2 onDestroy',
+    ]);
+  });
+});
+
+describe('non-regression', () => {
+  it('should call lifecycle hooks for directives active on <ng-template>', () => {
+    let destroyed = false;
+
+    @Directive({
+      selector: '[onDestroyDir]',
+    })
+    class OnDestroyDir {
+      ngOnDestroy() { destroyed = true; }
+    }
+
+    @Component({
+      template: `<ng-template [ngIf]="show">
+        <ng-template onDestroyDir>content</ng-template>
+      </ng-template>`
+    })
+    class App {
+      show = true;
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [App, OnDestroyDir],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(destroyed).toBeFalsy();
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(destroyed).toBeTruthy();
+  });
+});
