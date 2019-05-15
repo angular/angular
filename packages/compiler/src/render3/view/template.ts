@@ -518,7 +518,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
-    const allOtherInputs: (t.TextAttribute | t.BoundAttribute)[] = [];
 
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
@@ -539,11 +538,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(attr);
-          // We treat this attribute as if it was a binding so that we don't risk calling inputs
-          // with the untranslated value.
-          // Also this generates smaller templates until FW-1248 is fixed.
-          // TODO(FW-1332): Create an AttributeMarker for i18n attributes
-          allOtherInputs.push(attr);
         } else {
           outputAttrs.push(attr);
         }
@@ -561,6 +555,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Add the attributes
     const attributes: o.Expression[] = [];
+    const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
@@ -571,8 +566,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(input);
+        } else {
+          allOtherInputs.push(input);
         }
-        allOtherInputs.push(input);
       }
     });
 
@@ -585,7 +581,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // add attributes for directive and projection matching purposes
-    attributes.push(...this.prepareNonRenderAttrs(allOtherInputs, element.outputs, stylingBuilder));
+    attributes.push(...this.prepareNonRenderAttrs(
+        allOtherInputs, element.outputs, stylingBuilder, [], i18nAttrs));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -1147,16 +1144,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *   CLASSES, class1, class2,
    *   STYLES, style1, value1, style2, value2,
    *   BINDINGS, name1, name2, name3,
-   *   TEMPLATE, name4, name5, ...]
+   *   TEMPLATE, name4, name5, name6,
+   *   I18N, name7, name8, ...]
    * ```
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
    */
   private prepareNonRenderAttrs(
-      inputs: (t.TextAttribute|t.BoundAttribute)[], outputs: t.BoundEvent[],
-      styles?: StylingBuilder,
-      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
+      inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
+      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = [],
+      i18nAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
 
@@ -1183,7 +1181,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const attrsStartIndex = attrExprs.length;
 
       for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i] as t.BoundAttribute;
+        const input = inputs[i];
         if (input.type !== BindingType.Animation) {
           addAttrExpr(input.name);
         }
@@ -1208,6 +1206,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (templateAttrs.length) {
       attrExprs.push(o.literal(core.AttributeMarker.Template));
       templateAttrs.forEach(attr => addAttrExpr(attr.name));
+    }
+
+    if (i18nAttrs.length) {
+      attrExprs.push(o.literal(core.AttributeMarker.I18n));
+      i18nAttrs.forEach(attr => addAttrExpr(attr.name));
     }
 
     return attrExprs;

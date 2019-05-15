@@ -171,17 +171,18 @@ function readClassValueFromTNode(tNode: TNode): string {
  * Attribute matching depends upon `isInlineTemplate` and `isProjectionMode`.
  * The following table summarizes which types of attributes we attempt to match:
  *
- * =========================================================================================
- * Modes                   | Normal Attributes | Bindings Attributes | Template Attributes
- * =========================================================================================
- * Inline + Projection     | YES               | YES                 | NO
- * -----------------------------------------------------------------------------------------
- * Inline + Directive      | NO                | NO                  | YES
- * -----------------------------------------------------------------------------------------
- * Non-inline + Projection | YES               | YES                 | NO
- * -----------------------------------------------------------------------------------------
- * Non-inline + Directive  | YES               | YES                 | NO
- * =========================================================================================
+ * ===========================================================================================================
+ * Modes                   | Normal Attributes | Bindings Attributes | Template Attributes | I18n
+ * Attributes
+ * ===========================================================================================================
+ * Inline + Projection     | YES               | YES                 | NO                  | YES
+ * -----------------------------------------------------------------------------------------------------------
+ * Inline + Directive      | NO                | NO                  | YES                 | NO
+ * -----------------------------------------------------------------------------------------------------------
+ * Non-inline + Projection | YES               | YES                 | NO                  | YES
+ * -----------------------------------------------------------------------------------------------------------
+ * Non-inline + Directive  | YES               | YES                 | NO                  | YES
+ * ===========================================================================================================
  *
  * @param name the name of the attribute to find
  * @param attrs the attribute array to examine
@@ -203,7 +204,8 @@ function findAttrIndexInNode(
       const maybeAttrName = attrs[i];
       if (maybeAttrName === name) {
         return i;
-      } else if (maybeAttrName === AttributeMarker.Bindings) {
+      } else if (
+          maybeAttrName === AttributeMarker.Bindings || maybeAttrName === AttributeMarker.I18n) {
         bindingsMode = true;
       } else if (maybeAttrName === AttributeMarker.Classes) {
         let value = attrs[++i];
