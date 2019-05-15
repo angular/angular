@@ -9,6 +9,7 @@
 
 import {assertDataInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
+import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TVIEW} from '../interfaces/view';
@@ -115,7 +116,7 @@ function listenerInternal(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    const resolved = eventTargetResolver ? eventTargetResolver(native) : {} as any;
+    const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
     const target = resolved.target || native;
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     const lCleanup = getCleanup(lView);

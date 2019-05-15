@@ -330,10 +330,9 @@ function add(
 
 function addMatch(query: LQuery<any>, matchingValue: any, insertBeforeViewMatches: boolean): void {
   // Views created in constructors may have their container values created too early. In this case,
-  // ensure template node results are spliced before container results. Otherwise, results inside
+  // ensure template node results are unshifted before container results. Otherwise, results inside
   // embedded views will appear before results on parent template nodes when flattened.
-  insertBeforeViewMatches ? query.values.splice(-1, 0, matchingValue) :
-                            query.values.push(matchingValue);
+  insertBeforeViewMatches ? query.values.unshift(matchingValue) : query.values.push(matchingValue);
   query.list.setDirty();
 }
 
