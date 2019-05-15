@@ -5,12 +5,1380 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, ContentChild, Directive, EventEmitter, HostBinding, HostListener, Input, Output, QueryList, TemplateRef, ViewChildren} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
+  function stripHtmlComments(str: string) { return str.replace(/<!--[\s\S]*?-->/g, ''); }
+
+  describe('render', () => {
+
+    it('should render basic template', () => {
+      @Component({template: '<span title="Hello">Greetings</span>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<span title="Hello">Greetings</span>');
+    });
+
+    it('should render and update basic "Hello, World" template', () => {
+      @Component({template: '<h1>Hello, {{name}}!</h1>'})
+      class App {
+        name = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.name = 'World';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, World!</h1>');
+
+      fixture.componentInstance.name = 'New World';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, New World!</h1>');
+    });
+  });
+
+  describe('ng-container', () => {
+
+    it('should insert as a child of a regular element', () => {
+      @Component(
+          {template: '<div>before|<ng-container>Greetings<span></span></ng-container>|after</div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      // Strip comments since VE and Ivy put them in different places.
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
+          .toBe('<div>before|Greetings<span></span>|after</div>');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
+      @Component({
+        template:
+            '<ng-template [ngIf]="render"><div><ng-container>content</ng-container></div></ng-template>'
+      })
+      class App {
+        render = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+
+      fixture.componentInstance.render = true;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div>content</div>');
+
+      fixture.componentInstance.render = false;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view', () => {
+
+      @Component({template: '<ng-container *ngIf="render">content</ng-container>'})
+      class App {
+        render = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+
+      fixture.componentInstance.render = true;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('content');
+
+      fixture.componentInstance.render = false;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+    });
+
+    // https://stackblitz.com/edit/angular-tfhcz1?file=src%2Fapp%2Fapp.component.ts
+    it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view',
+       () => {
+
+         @Directive({selector: '[testDirective]'})
+         class TestDirective {
+           constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+
+           createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+
+           clear() { this._vcRef.clear(); }
+         }
+
+         @Component({
+           template: '<ng-template testDirective><ng-container>content</ng-container></ng-template>'
+         })
+         class App {
+           @ViewChild(TestDirective) testDirective !: TestDirective;
+         }
+
+         TestBed.configureTestingModule({declarations: [App, TestDirective]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+
+         fixture.componentInstance.testDirective.createAndInsert();
+         fixture.detectChanges();
+         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('content');
+
+         fixture.componentInstance.testDirective.clear();
+         fixture.detectChanges();
+         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+       });
+
+    it('should render at the component view root', () => {
+      @Component(
+          {selector: 'test-cmpt', template: '<ng-container>component template</ng-container>'})
+      class TestCmpt {
+      }
+
+      @Component({template: '<test-cmpt></test-cmpt>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestCmpt]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
+          .toBe('<test-cmpt>component template</test-cmpt>');
+    });
+
+    it('should render inside another ng-container', () => {
+      @Component({
+        selector: 'test-cmpt',
+        template:
+            '<ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container>'
+      })
+      class TestCmpt {
+      }
+
+      @Component({template: '<test-cmpt></test-cmpt>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestCmpt]});
+      const fixture = TestBed.createComponent(App);
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
+          .toBe('<test-cmpt>content</test-cmpt>');
+    });
+
+    it('should render inside another ng-container at the root of a delayed view', () => {
+      @Directive({selector: '[testDirective]'})
+      class TestDirective {
+        constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+
+        createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+
+        clear() { this._vcRef.clear(); }
+      }
+
+      @Component({
+        template:
+            '<ng-template testDirective><ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container></ng-template>'
+      })
+      class App {
+        @ViewChild(TestDirective) testDirective !: TestDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+
+      fixture.componentInstance.testDirective.createAndInsert();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('content');
+
+      fixture.componentInstance.testDirective.createAndInsert();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('contentcontent');
+
+      fixture.componentInstance.testDirective.clear();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+    });
+
+    it('should support directives and inject ElementRef', () => {
+      @Directive({selector: '[dir]'})
+      class TestDirective {
+        constructor(public elRef: ElementRef) {}
+      }
+
+      @Component({template: '<div><ng-container dir></ng-container></div>'})
+      class App {
+        @ViewChild(TestDirective) testDirective !: TestDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div></div>');
+      expect(fixture.componentInstance.testDirective.elRef.nativeElement.nodeType)
+          .toBe(Node.COMMENT_NODE);
+    });
+
+    it('should support ViewContainerRef when ng-container is at the root of a view', () => {
+      @Directive({selector: '[dir]'})
+      class TestDirective {
+        @Input()
+        contentTpl: TemplateRef<{}>|null = null;
+
+        constructor(private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this.contentTpl as TemplateRef<{}>); }
+
+        clear() { this._vcRef.clear(); }
+      }
+
+      @Component({
+        template:
+            '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
+      })
+      class App {
+        @ViewChild(TestDirective) testDirective !: TestDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+
+      fixture.componentInstance.testDirective.insertView();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('Content');
+
+      fixture.componentInstance.testDirective.clear();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+    });
+
+    it('should support ViewContainerRef on <ng-template> inside <ng-container>', () => {
+      @Directive({selector: '[dir]'})
+      class TestDirective {
+        constructor(private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this._tplRef); }
+
+        clear() { this._vcRef.clear(); }
+      }
+
+      @Component({template: '<ng-container><ng-template dir>Content</ng-template></ng-container>'})
+      class App {
+        @ViewChild(TestDirective) testDirective !: TestDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+
+      fixture.componentInstance.testDirective.insertView();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('Content');
+
+      fixture.componentInstance.testDirective.clear();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+    });
+
+    it('should not set any attributes', () => {
+      @Component({template: '<div><ng-container id="foo"></ng-container></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div></div>');
+    });
+
+  });
+
+  describe('text bindings', () => {
+    it('should render "undefined" as ""', () => {
+      @Component({template: '{{name}}'})
+      class App {
+        name: string|undefined = 'benoit';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('benoit');
+
+      fixture.componentInstance.name = undefined;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('');
+    });
+
+    it('should render "null" as ""', () => {
+      @Component({template: '{{name}}'})
+      class App {
+        name: string|null = 'benoit';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('benoit');
+
+      fixture.componentInstance.name = null;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('');
+    });
+
+  });
+
+  describe('ngNonBindable handling', () => {
+    function stripNgNonBindable(str: string) { return str.replace(/ ngnonbindable=""/i, ''); }
+
+    it('should keep local ref for host element', () => {
+      @Component({
+        template: `
+          <b ngNonBindable #myRef id="my-id">
+            <i>Hello {{ name }}!</i>
+          </b>
+          {{ myRef.id }}
+        `
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
+          .toEqual('<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ');
+    });
+
+    it('should invoke directives for host element', () => {
+      let directiveInvoked: boolean = false;
+
+      @Directive({selector: '[directive]'})
+      class TestDirective implements OnInit {
+        ngOnInit() { directiveInvoked = true; }
+      }
+
+      @Component({
+        template: `
+          <b ngNonBindable directive>
+            <i>Hello {{ name }}!</i>
+          </b>
+        `
+      })
+      class App {
+        name = 'World';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
+          .toEqual('<b directive=""><i>Hello {{ name }}!</i></b>');
+      expect(directiveInvoked).toEqual(true);
+    });
+
+    it('should not invoke directives for nested elements', () => {
+      let directiveInvoked: boolean = false;
+
+      @Directive({selector: '[directive]'})
+      class TestDirective implements OnInit {
+        ngOnInit() { directiveInvoked = true; }
+      }
+
+      @Component({
+        template: `
+          <b ngNonBindable>
+            <i directive>Hello {{ name }}!</i>
+          </b>
+        `
+      })
+      class App {
+        name = 'World';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
+          .toEqual('<b><i directive="">Hello {{ name }}!</i></b>');
+      expect(directiveInvoked).toEqual(false);
+    });
+  });
+
+  describe('Siblings update', () => {
+    it('should handle a flat list of static/bound text nodes', () => {
+      @Component({template: 'Hello {{name}}!'})
+      class App {
+        name = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.name = 'world';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('Hello world!');
+
+      fixture.componentInstance.name = 'monde';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('Hello monde!');
+    });
+
+    it('should handle a list of static/bound text nodes as element children', () => {
+      @Component({template: '<b>Hello {{name}}!</b>'})
+      class App {
+        name = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.name = 'world';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<b>Hello world!</b>');
+
+      fixture.componentInstance.name = 'mundo';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<b>Hello mundo!</b>');
+    });
+
+    it('should render/update text node as a child of a deep list of elements', () => {
+      @Component({template: '<b><b><b><b>Hello {{name}}!</b></b></b></b>'})
+      class App {
+        name = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.name = 'world';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<b><b><b><b>Hello world!</b></b></b></b>');
+
+      fixture.componentInstance.name = 'mundo';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<b><b><b><b>Hello mundo!</b></b></b></b>');
+    });
+
+    it('should update 2 sibling elements', () => {
+      @Component({template: '<b><span></span><span class="foo" [id]="id"></span></b>'})
+      class App {
+        id = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.id = 'foo';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<b><span></span><span class="foo" id="foo"></span></b>');
+
+      fixture.componentInstance.id = 'bar';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<b><span></span><span class="foo" id="bar"></span></b>');
+    });
+
+    it('should handle sibling text node after element with child text node', () => {
+      @Component({template: '<p>hello</p>{{name}}'})
+      class App {
+        name = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+
+      fixture.componentInstance.name = 'world';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<p>hello</p>world');
+
+      fixture.componentInstance.name = 'mundo';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<p>hello</p>mundo');
+    });
+  });
+
+  describe('basic components', () => {
+    @Component({selector: 'todo', template: '<p>Todo{{value}}</p>'})
+    class TodoComponent {
+      value = ' one';
+    }
+
+    it('should support a basic component template', () => {
+      @Component({template: '<todo></todo>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TodoComponent]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<todo><p>Todo one</p></todo>');
+    });
+
+    it('should support a component template with sibling', () => {
+      @Component({template: '<todo></todo>two'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TodoComponent]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<todo><p>Todo one</p></todo>two');
+    });
+
+    it('should support a component template with component sibling', () => {
+      @Component({template: '<todo></todo><todo></todo>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TodoComponent]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
+    });
+
+    it('should support a component with binding on host element', () => {
+      @Component({selector: 'todo', template: '{{title}}'})
+      class TodoComponentHostBinding {
+        @HostBinding()
+        title = 'one';
+      }
+
+      @Component({template: '<todo></todo>'})
+      class App {
+        @ViewChild(TodoComponentHostBinding) todoComponentHostBinding !: TodoComponentHostBinding;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, TodoComponentHostBinding]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<todo title="one">one</todo>');
+
+      fixture.componentInstance.todoComponentHostBinding.title = 'two';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<todo title="two">two</todo>');
+    });
+
+    it('should support root component with host attribute', () => {
+      @Component({selector: 'host-attr-comp', template: '', host: {'role': 'button'}})
+      class HostAttributeComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [HostAttributeComp]});
+      const fixture = TestBed.createComponent(HostAttributeComp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.getAttribute('role')).toEqual('button');
+    });
+
+    it('should support component with bindings in template', () => {
+      @Component({selector: 'comp', template: '<p>{{ name }}</p>'})
+      class MyComp {
+        name = 'Bess';
+      }
+
+      @Component({template: '<comp></comp>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyComp]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toEqual('<comp><p>Bess</p></comp>');
+    });
+
+    it('should support a component with sub-views', () => {
+      @Component({selector: 'comp', template: '<div *ngIf="condition">text</div>'})
+      class MyComp {
+        @Input()
+        condition !: boolean;
+      }
+
+      @Component({template: '<comp [condition]="condition"></comp>'})
+      class App {
+        condition = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyComp], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const compElement = fixture.nativeElement.querySelector('comp');
+
+      fixture.componentInstance.condition = true;
+      fixture.detectChanges();
+      expect(stripHtmlComments(compElement.innerHTML)).toEqual('<div>text</div>');
+
+      fixture.componentInstance.condition = false;
+      fixture.detectChanges();
+      expect(stripHtmlComments(compElement.innerHTML)).toEqual('');
+    });
+
+  });
+
+  describe('element bindings', () => {
+    describe('elementAttribute', () => {
+      it('should support attribute bindings', () => {
+        @Component({template: '<button [attr.title]="title"></button>'})
+        class App {
+          title: string|null = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.title = 'Hello';
+        fixture.detectChanges();
+        // initial binding
+        expect(fixture.nativeElement.innerHTML).toEqual('<button title="Hello"></button>');
+
+        // update binding
+        fixture.componentInstance.title = 'Hi!';
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<button title="Hi!"></button>');
+
+        // remove attribute
+        fixture.componentInstance.title = null;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<button></button>');
+      });
+
+      it('should stringify values used attribute bindings', () => {
+        @Component({template: '<button [attr.title]="title"></button>'})
+        class App {
+          title: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.title = NaN;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<button title="NaN"></button>');
+
+        fixture.componentInstance.title = {toString: () => 'Custom toString'};
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML)
+            .toEqual('<button title="Custom toString"></button>');
+      });
+
+      it('should update bindings', () => {
+        @Component({
+          template: [
+            'a:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[12]}}{{c[13]}}{{c[14]}}{{c[15]}}{{c[16]}}',
+            'a0:{{c[1]}}',
+            'a1:{{c[0]}}{{c[1]}}{{c[16]}}',
+            'a2:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[16]}}',
+            'a3:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[16]}}',
+            'a4:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[16]}}',
+            'a5:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[16]}}',
+            'a6:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[16]}}',
+            'a7:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[12]}}{{c[13]}}{{c[16]}}',
+            'a8:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[12]}}{{c[13]}}{{c[14]}}{{c[15]}}{{c[16]}}',
+          ].join('\n')
+        })
+        class App {
+          c = ['(', 0, 'a', 1, 'b', 2, 'c', 3, 'd', 4, 'e', 5, 'f', 6, 'g', 7, ')'];
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent.trim()).toEqual([
+          'a:(0a1b2c3d4e5f6g7)',
+          'a0:0',
+          'a1:(0)',
+          'a2:(0a1)',
+          'a3:(0a1b2)',
+          'a4:(0a1b2c3)',
+          'a5:(0a1b2c3d4)',
+          'a6:(0a1b2c3d4e5)',
+          'a7:(0a1b2c3d4e5f6)',
+          'a8:(0a1b2c3d4e5f6g7)',
+        ].join('\n'));
+
+        fixture.componentInstance.c.reverse();
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent.trim()).toEqual([
+          'a:)7g6f5e4d3c2b1a0(',
+          'a0:7',
+          'a1:)7(',
+          'a2:)7g6(',
+          'a3:)7g6f5(',
+          'a4:)7g6f5e4(',
+          'a5:)7g6f5e4d3(',
+          'a6:)7g6f5e4d3c2(',
+          'a7:)7g6f5e4d3c2b1(',
+          'a8:)7g6f5e4d3c2b1a0(',
+        ].join('\n'));
+
+        fixture.componentInstance.c.reverse();
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent.trim()).toEqual([
+          'a:(0a1b2c3d4e5f6g7)',
+          'a0:0',
+          'a1:(0)',
+          'a2:(0a1)',
+          'a3:(0a1b2)',
+          'a4:(0a1b2c3)',
+          'a5:(0a1b2c3d4)',
+          'a6:(0a1b2c3d4e5)',
+          'a7:(0a1b2c3d4e5f6)',
+          'a8:(0a1b2c3d4e5f6g7)',
+        ].join('\n'));
+      });
+
+      it('should not update DOM if context has not changed', () => {
+        @Component({
+          template: `
+            <span [attr.title]="title">
+              <b [attr.title]="title" *ngIf="shouldRender"></b>
+            </span>
+          `
+        })
+        class App {
+          title: string|null = '';
+          shouldRender = true;
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const span: HTMLSpanElement = fixture.nativeElement.querySelector('span');
+        const bold: HTMLElement = span.querySelector('b') !;
+
+        fixture.componentInstance.title = 'Hello';
+        fixture.detectChanges();
+
+        // initial binding
+        expect(span.getAttribute('title')).toBe('Hello');
+        expect(bold.getAttribute('title')).toBe('Hello');
+
+        // update DOM manually
+        bold.setAttribute('title', 'Goodbye');
+
+        // refresh with same binding
+        fixture.detectChanges();
+        expect(span.getAttribute('title')).toBe('Hello');
+        expect(bold.getAttribute('title')).toBe('Goodbye');
+
+        // refresh again with same binding
+        fixture.detectChanges();
+        expect(span.getAttribute('title')).toBe('Hello');
+        expect(bold.getAttribute('title')).toBe('Goodbye');
+      });
+
+      it('should support host attribute bindings', () => {
+        @Directive({selector: '[hostBindingDir]'})
+        class HostBindingDir {
+          @HostBinding('attr.aria-label')
+          label = 'some label';
+        }
+
+        @Component({template: '<div hostBindingDir></div>'})
+        class App {
+          @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+        }
+
+        TestBed.configureTestingModule({declarations: [App, HostBindingDir]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const hostBindingEl = fixture.nativeElement.querySelector('div');
+
+        // Needs `toLowerCase`, because different browsers produce
+        // attributes either in camel case or lower case.
+        expect(hostBindingEl.getAttribute('aria-label')).toBe('some label');
+
+        fixture.componentInstance.hostBindingDir.label = 'other label';
+        fixture.detectChanges();
+
+        expect(hostBindingEl.getAttribute('aria-label')).toBe('other label');
+      });
+    });
+
+    describe('elementStyle', () => {
+      it('should support binding to styles', () => {
+        @Component({template: '<span [style.font-size]="size"></span>'})
+        class App {
+          size: string|null = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.size = '10px';
+        fixture.detectChanges();
+        const span: HTMLElement = fixture.nativeElement.querySelector('span');
+
+        expect(span.style.fontSize).toBe('10px');
+
+        fixture.componentInstance.size = '16px';
+        fixture.detectChanges();
+        expect(span.style.fontSize).toBe('16px');
+
+        fixture.componentInstance.size = null;
+        fixture.detectChanges();
+        expect(span.style.fontSize).toBeFalsy();
+      });
+
+      it('should support binding to styles with suffix', () => {
+        @Component({template: '<span [style.font-size.px]="size"></span>'})
+        class App {
+          size: string|number|null = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.size = '100';
+        fixture.detectChanges();
+        const span: HTMLElement = fixture.nativeElement.querySelector('span');
+
+        expect(span.style.fontSize).toEqual('100px');
+
+        fixture.componentInstance.size = 200;
+        fixture.detectChanges();
+        expect(span.style.fontSize).toEqual('200px');
+
+        fixture.componentInstance.size = 0;
+        fixture.detectChanges();
+        expect(span.style.fontSize).toEqual('0px');
+
+        fixture.componentInstance.size = null;
+        fixture.detectChanges();
+        expect(span.style.fontSize).toBeFalsy();
+      });
+    });
+
+    describe('class-based styling', () => {
+      it('should support CSS class toggle', () => {
+        @Component({template: '<span [class.active]="value"></span>'})
+        class App {
+          value: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = true;
+        fixture.detectChanges();
+        const span = fixture.nativeElement.querySelector('span');
+
+        expect(span.getAttribute('class')).toEqual('active');
+
+        fixture.componentInstance.value = false;
+        fixture.detectChanges();
+        expect(span.getAttribute('class')).toBeFalsy();
+
+        // truthy values
+        fixture.componentInstance.value = 'a_string';
+        fixture.detectChanges();
+        expect(span.getAttribute('class')).toEqual('active');
+
+        fixture.componentInstance.value = 10;
+        fixture.detectChanges();
+        expect(span.getAttribute('class')).toEqual('active');
+
+        // falsy values
+        fixture.componentInstance.value = '';
+        fixture.detectChanges();
+        expect(span.getAttribute('class')).toBeFalsy();
+
+        fixture.componentInstance.value = 0;
+        fixture.detectChanges();
+        expect(span.getAttribute('class')).toBeFalsy();
+      });
+
+      it('should work correctly with existing static classes', () => {
+        @Component({template: '<span class="existing" [class.active]="value"></span>'})
+        class App {
+          value: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [App]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = true;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<span class="existing active"></span>');
+
+        fixture.componentInstance.value = false;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<span class="existing"></span>');
+      });
+
+      it('should apply classes properly when nodes are components', () => {
+        @Component({selector: 'my-comp', template: 'Comp Content'})
+        class MyComp {
+        }
+
+        @Component({template: '<my-comp [class.active]="value"></my-comp>'})
+        class App {
+          value: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [App, MyComp]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = true;
+        fixture.detectChanges();
+        const compElement = fixture.nativeElement.querySelector('my-comp');
+
+        expect(fixture.nativeElement.textContent).toContain('Comp Content');
+        expect(compElement.getAttribute('class')).toBe('active');
+
+        fixture.componentInstance.value = false;
+        fixture.detectChanges();
+        expect(compElement.getAttribute('class')).toBeFalsy();
+      });
+
+      it('should apply classes properly when nodes have containers', () => {
+        @Component({selector: 'structural-comp', template: 'Comp Content'})
+        class StructuralComp {
+          @Input()
+          tmp !: TemplateRef<any>;
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { this.vcr.createEmbeddedView(this.tmp); }
+        }
+
+        @Component({
+          template: `
+            <ng-template #foo>Temp Content</ng-template>
+            <structural-comp [class.active]="value" [tmp]="foo"></structural-comp>
+          `
+        })
+        class App {
+          @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+          value: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [App, StructuralComp]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = true;
+        fixture.detectChanges();
+        const structuralCompEl = fixture.nativeElement.querySelector('structural-comp');
+
+        expect(structuralCompEl.getAttribute('class')).toEqual('active');
+
+        fixture.componentInstance.structuralComp.create();
+        fixture.detectChanges();
+        expect(structuralCompEl.getAttribute('class')).toEqual('active');
+
+        fixture.componentInstance.value = false;
+        fixture.detectChanges();
+        expect(structuralCompEl.getAttribute('class')).toEqual('');
+      });
+
+      @Directive({selector: '[DirWithClass]'})
+      class DirWithClassDirective {
+        public classesVal: string = '';
+
+        @Input('class')
+        set klass(value: string) { this.classesVal = value; }
+      }
+
+      @Directive({selector: '[DirWithStyle]'})
+      class DirWithStyleDirective {
+        public stylesVal: string = '';
+
+        @Input()
+        set style(value: string) { this.stylesVal = value; }
+      }
+
+      it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
+         () => {
+           @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
+           class App {
+             @ViewChild(DirWithClassDirective) mockClassDirective !: DirWithClassDirective;
+           }
+
+           TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
+
+           expect(fixture.componentInstance.mockClassDirective.classesVal)
+               .toEqual('apple orange banana');
+         });
+
+      it('should delegate initial styles to a [style] input binding if present on a directive on the same element',
+         () => {
+           @Component({template: '<div style="width:100px;height:200px" DirWithStyle></div>'})
+           class App {
+             @ViewChild(DirWithStyleDirective) mockStyleDirective !: DirWithStyleDirective;
+           }
+
+           TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
+
+           const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
+
+           // Use `toContain` since Ivy and ViewEngine have some slight differences in formatting.
+           expect(styles).toContain('width:100px');
+           expect(styles).toContain('height:200px');
+         });
+
+      it('should update `[class]` and bindings in the provided directive if the input is matched',
+         () => {
+           @Component({template: '<div DirWithClass [class]="value"></div>'})
+           class App {
+             @ViewChild(DirWithClassDirective) mockClassDirective !: DirWithClassDirective;
+             value = '';
+           }
+
+           TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
+           const fixture = TestBed.createComponent(App);
+           fixture.componentInstance.value = 'cucumber grape';
+           fixture.detectChanges();
+
+           expect(fixture.componentInstance.mockClassDirective.classesVal)
+               .toEqual('cucumber grape');
+         });
+
+      onlyInIvy('Passing an object into [style] works differently')
+          .it('should update `[style]` and bindings in the provided directive if the input is matched',
+              () => {
+                @Component({template: '<div DirWithStyle [style]="value"></div>'})
+                class App {
+                  @ViewChild(DirWithStyleDirective) mockStyleDirective !: DirWithStyleDirective;
+                  value !: {[key: string]: string};
+                }
+
+                TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
+                const fixture = TestBed.createComponent(App);
+                fixture.componentInstance.value = {width: '200px', height: '500px'};
+                fixture.detectChanges();
+
+                expect(fixture.componentInstance.mockStyleDirective.stylesVal)
+                    .toEqual('width:200px;height:500px');
+              });
+
+      onlyInIvy('Style binding merging works differently in Ivy')
+          .it('should apply initial styling to the element that contains the directive with host styling',
+              () => {
+                @Directive({
+                  selector: '[DirWithInitialStyling]',
+                  host: {
+                    'title': 'foo',
+                    'class': 'heavy golden',
+                    'style': 'color: purple',
+                    '[style.font-weight]': '"bold"'
+                  }
+                })
+                class DirWithInitialStyling {
+                }
+
+                @Component({
+                  template: `
+                <div DirWithInitialStyling
+                  class="big"
+                  style="color:black; font-size:200px"></div>
+             `
+                })
+                class App {
+                }
+
+                TestBed.configureTestingModule({declarations: [App, DirWithInitialStyling]});
+                const fixture = TestBed.createComponent(App);
+                fixture.detectChanges();
+
+                const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+                const classes = target.getAttribute('class') !.split(/\s+/).sort();
+                expect(classes).toEqual(['big', 'golden', 'heavy']);
+
+                expect(target.getAttribute('title')).toEqual('foo');
+                expect(target.style.getPropertyValue('color')).toEqual('black');
+                expect(target.style.getPropertyValue('font-size')).toEqual('200px');
+                expect(target.style.getPropertyValue('font-weight')).toEqual('bold');
+              });
+
+      onlyInIvy('Style binding merging works differently in Ivy')
+          .it('should apply single styling bindings present within a directive onto the same element and defer the element\'s initial styling values when missing',
+              () => {
+                @Directive({
+                  selector: '[DirWithSingleStylingBindings]',
+                  host: {
+                    'class': 'def',
+                    '[class.xyz]': 'activateXYZClass',
+                    '[style.width]': 'width',
+                    '[style.height]': 'height'
+                  }
+                })
+                class DirWithSingleStylingBindings {
+                  width: null|string = null;
+                  height: null|string = null;
+                  activateXYZClass: boolean = false;
+                }
+
+                @Component({
+                  template: `
+              <div DirWithSingleStylingBindings class="abc" style="width:100px; height:200px"></div>
+            `
+                })
+                class App {
+                  @ViewChild(DirWithSingleStylingBindings)
+                  dirInstance !: DirWithSingleStylingBindings;
+                }
+
+                TestBed.configureTestingModule({declarations: [App, DirWithSingleStylingBindings]});
+                const fixture = TestBed.createComponent(App);
+                fixture.detectChanges();
+                const dirInstance = fixture.componentInstance.dirInstance;
+                const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+                expect(target.style.getPropertyValue('width')).toEqual('100px');
+                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.classList.contains('abc')).toBeTruthy();
+                expect(target.classList.contains('def')).toBeTruthy();
+                expect(target.classList.contains('xyz')).toBeFalsy();
+
+                dirInstance.width = '444px';
+                dirInstance.height = '999px';
+                dirInstance.activateXYZClass = true;
+                fixture.detectChanges();
+
+                expect(target.style.getPropertyValue('width')).toEqual('444px');
+                expect(target.style.getPropertyValue('height')).toEqual('999px');
+                expect(target.classList.contains('abc')).toBeTruthy();
+                expect(target.classList.contains('def')).toBeTruthy();
+                expect(target.classList.contains('xyz')).toBeTruthy();
+
+                dirInstance.width = null;
+                dirInstance.height = null;
+                fixture.detectChanges();
+
+                expect(target.style.getPropertyValue('width')).toEqual('100px');
+                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.classList.contains('abc')).toBeTruthy();
+                expect(target.classList.contains('def')).toBeTruthy();
+                expect(target.classList.contains('xyz')).toBeTruthy();
+              });
+
+      onlyInIvy('Style binding merging works differently in Ivy')
+          .it('should properly prioritize single style binding collisions when they exist on multiple directives',
+              () => {
+                @Directive({selector: '[Dir1WithStyle]', host: {'[style.width]': 'width'}})
+                class Dir1WithStyle {
+                  width: null|string = null;
+                }
+
+                @Directive({
+                  selector: '[Dir2WithStyle]',
+                  host: {'style': 'width: 111px', '[style.width]': 'width'}
+                })
+                class Dir2WithStyle {
+                  width: null|string = null;
+                }
+
+                @Component(
+                    {template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
+                class App {
+                  @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
+                  @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
+                  width: string|null = null;
+                }
+
+                TestBed.configureTestingModule({declarations: [App, Dir1WithStyle, Dir2WithStyle]});
+                const fixture = TestBed.createComponent(App);
+                fixture.detectChanges();
+                const {dir1Instance, dir2Instance} = fixture.componentInstance;
+
+                const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+                expect(target.style.getPropertyValue('width')).toEqual('111px');
+
+                fixture.componentInstance.width = '999px';
+                dir1Instance.width = '222px';
+                dir2Instance.width = '333px';
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('999px');
+
+                fixture.componentInstance.width = null;
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('222px');
+
+                dir1Instance.width = null;
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('333px');
+
+                dir2Instance.width = null;
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('111px');
+
+                dir1Instance.width = '666px';
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('666px');
+
+                fixture.componentInstance.width = '777px';
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('777px');
+              });
+
+      onlyInIvy('Style binding merging works differently in Ivy')
+          .it('should properly prioritize multi style binding collisions when they exist on multiple directives',
+              () => {
+                @Directive({
+                  selector: '[Dir1WithStyling]',
+                  host: {'[style]': 'stylesExp', '[class]': 'classesExp'}
+                })
+                class Dir1WithStyling {
+                  classesExp: any = {};
+                  stylesExp: any = {};
+                }
+
+                @Directive({
+                  selector: '[Dir2WithStyling]',
+                  host: {'style': 'width: 111px', '[style]': 'stylesExp'}
+                })
+                class Dir2WithStyling {
+                  stylesExp: any = {};
+                }
+
+                @Component({
+                  template:
+                      '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
+                })
+                class App {
+                  @ViewChild(Dir1WithStyling) dir1Instance !: Dir1WithStyling;
+                  @ViewChild(Dir2WithStyling) dir2Instance !: Dir2WithStyling;
+                  stylesExp: any = {};
+                  classesExp: any = {};
+                }
+
+                TestBed.configureTestingModule(
+                    {declarations: [App, Dir1WithStyling, Dir2WithStyling]});
+                const fixture = TestBed.createComponent(App);
+                fixture.detectChanges();
+                const {dir1Instance, dir2Instance} = fixture.componentInstance;
+
+                const target = fixture.nativeElement.querySelector('div') !;
+                expect(target.style.getPropertyValue('width')).toEqual('111px');
+
+                const compInstance = fixture.componentInstance;
+                compInstance.stylesExp = {width: '999px', height: null};
+                compInstance.classesExp = {one: true, two: false};
+                dir1Instance.stylesExp = {width: '222px'};
+                dir1Instance.classesExp = {two: true, three: false};
+                dir2Instance.stylesExp = {width: '333px', height: '100px'};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('999px');
+                expect(target.style.getPropertyValue('height')).toEqual('100px');
+                expect(target.classList.contains('one')).toBeTruthy();
+                expect(target.classList.contains('two')).toBeFalsy();
+                expect(target.classList.contains('three')).toBeFalsy();
+
+                compInstance.stylesExp = {};
+                compInstance.classesExp = {};
+                dir1Instance.stylesExp = {width: '222px', height: '200px'};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('222px');
+                expect(target.style.getPropertyValue('height')).toEqual('200px');
+                expect(target.classList.contains('one')).toBeFalsy();
+                expect(target.classList.contains('two')).toBeTruthy();
+                expect(target.classList.contains('three')).toBeFalsy();
+
+                dir1Instance.stylesExp = {};
+                dir1Instance.classesExp = {};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('333px');
+                expect(target.style.getPropertyValue('height')).toEqual('100px');
+                expect(target.classList.contains('one')).toBeFalsy();
+                expect(target.classList.contains('two')).toBeFalsy();
+                expect(target.classList.contains('three')).toBeFalsy();
+
+                dir2Instance.stylesExp = {};
+                compInstance.stylesExp = {height: '900px'};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('111px');
+                expect(target.style.getPropertyValue('height')).toEqual('900px');
+
+                dir1Instance.stylesExp = {width: '666px', height: '600px'};
+                dir1Instance.classesExp = {four: true, one: true};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('666px');
+                expect(target.style.getPropertyValue('height')).toEqual('900px');
+                expect(target.classList.contains('one')).toBeTruthy();
+                expect(target.classList.contains('two')).toBeFalsy();
+                expect(target.classList.contains('three')).toBeFalsy();
+                expect(target.classList.contains('four')).toBeTruthy();
+
+                compInstance.stylesExp = {width: '777px'};
+                compInstance.classesExp = {four: false};
+                fixture.detectChanges();
+                expect(target.style.getPropertyValue('width')).toEqual('777px');
+                expect(target.style.getPropertyValue('height')).toEqual('600px');
+                expect(target.classList.contains('one')).toBeTruthy();
+                expect(target.classList.contains('two')).toBeFalsy();
+                expect(target.classList.contains('three')).toBeFalsy();
+                expect(target.classList.contains('four')).toBeFalsy();
+              });
+    });
+
+    it('should properly handle and render interpolation for class attribute bindings', () => {
+      @Component({template: '<div class="-{{name}}-{{age}}-"></div>'})
+      class App {
+        name = '';
+        age = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      const target = fixture.nativeElement.querySelector('div') !;
+
+      expect(target.classList.contains('-fred-36-')).toBeFalsy();
+
+      fixture.componentInstance.name = 'fred';
+      fixture.componentInstance.age = '36';
+      fixture.detectChanges();
+
+      expect(target.classList.contains('-fred-36-')).toBeTruthy();
+    });
+  });
+
   it('should only call inherited host listeners once', () => {
     let clicks = 0;
 
