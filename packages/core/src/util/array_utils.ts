@@ -41,7 +41,7 @@ export function flatten(list: any[]): any[] {
       if (Array.isArray(item)) {
         // we need to inline it.
         if (flat === list) {
-          // Our assumption tha the list was already flat was wrong and
+          // Our assumption that the list was already flat was wrong and
           // we need to clone flat since we need to write to it.
           flat = list.slice(0, index - 1);
         }
