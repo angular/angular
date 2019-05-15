@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TsHelperFn, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
@@ -1323,13 +1323,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected parseForModuleWithProviders(
       name: string, node: ts.Node|null, implementation: ts.Node|null = node,
       container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
-    if (implementation === null ||
-        (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
-         !ts.isFunctionExpression(implementation))) {
+    if (implementation === null) {
       return null;
     }
-    const declaration = implementation;
-    const body = this.getDefinitionOfFunction(declaration).body;
+    const definition = this.getDefinitionOfFunction(implementation);
+    if (definition === null || definition === TsHelperFn.Spread) {
+      return null;
+    }
+    const declaration = definition.node;
+    const body = definition.body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
         lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;

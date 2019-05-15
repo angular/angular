@@ -10,13 +10,14 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
-import {Declaration, ReflectionHost} from '../../reflection';
+import {Declaration, ReflectionHost, TsHelperFn} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
+import {evaluateTsSpreadHelper} from './ts_helpers';
 
 
 /**
@@ -386,11 +387,21 @@ export class StaticInterpreter {
 
     if (!(lhs instanceof Reference)) {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
-    } else if (!isFunctionOrMethodReference(lhs)) {
-      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
 
     const fn = this.host.getDefinitionOfFunction(lhs.node);
+    if (fn === null) {
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
+    }
+
+    if (fn === TsHelperFn.Spread) {
+      const args = this.evaluateFunctionArguments(node, context);
+      return evaluateTsSpreadHelper(node, args);
+    }
+
+    if (!isFunctionOrMethodReference(lhs)) {
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
+    }
 
     // If the function is foreign (declared through a d.ts file), attempt to resolve it with the
     // foreignFunctionResolver, if one is specified.

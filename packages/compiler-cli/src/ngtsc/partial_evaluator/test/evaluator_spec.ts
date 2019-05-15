@@ -9,8 +9,10 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {TsHelperFn, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DynamicValue} from '../src/dynamic';
+import {PartialEvaluator} from '../src/interface';
 import {EnumValue} from '../src/result';
 
 import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
@@ -341,6 +343,36 @@ describe('ngtsc metadata', () => {
 
     expect(value.isFromUnknown()).toBe(true);
     expect((value.node as ts.CallExpression).expression.getText()).toBe('foo');
+  });
+
+  it('should evaluate TypeScript __spread helper', () => {
+    const {checker, expression} = makeExpression(
+        `
+          import * as tslib from 'tslib';
+          const a = [1];
+          const b = [2, 3];
+      `,
+        'tslib.__spread(a, b)', [
+          {
+            name: 'node_modules/tslib/index.d.ts',
+            contents: `
+          export declare function __spread(...args: any[]): any[];
+        `
+          },
+        ]);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
+    // Customize the resolution of functions to recognize the __spread function. The TypeScript
+    // host itself never identifies the __spread function, as this identification process is only
+    // done in ngcc's ES5 host.
+    reflectionHost.getDefinitionOfFunction = (node) => {
+      if (ts.isFunctionDeclaration(node) && node.name !.text === '__spread') {
+        return TsHelperFn.Spread;
+      }
+      return null;
+    };
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const value = evaluator.evaluate(expression);
+    expect(value).toEqual([1, 2, 3]);
   });
 
   describe('(visited file tracking)', () => {
