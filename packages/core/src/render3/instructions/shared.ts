@@ -259,9 +259,9 @@ export function createNodeAtIndex(
   lView[adjustedIndex] = native;
 
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const isParent = getIsParent();
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode == null) {
+    const isParent = getIsParent();
     const parent =
         isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
 
@@ -282,10 +282,9 @@ export function createNodeAtIndex(
         previousOrParentTNode.next = tNode;
       }
     }
-  }
-
-  if (tView.firstChild == null) {
-    tView.firstChild = tNode;
+    if (index === 0) {
+      tView.firstChild = tNode;
+    }
   }
 
   setPreviousOrParentTNode(tNode);
