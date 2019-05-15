@@ -50,6 +50,15 @@ export type CssSelector = (string | SelectorFlags)[];
  */
 export type CssSelectorList = CssSelector[];
 
+/**
+ * List of slots for a projection. A slot can be either based on a parsed CSS selector
+ * which will be used to determine nodes which are projected into that slot.
+ *
+ * When set to "0", the slot is just reserved and can be used for multi-slot projection
+ * using {@link ViewContainerRef#createComponent}.
+ */
+export type ProjectionSlots = (CssSelectorList | 0)[];
+
 /** Flags used to build up CssSelectors */
 export const enum SelectorFlags {
   /** Indicates this is the beginning of a new negative selector */

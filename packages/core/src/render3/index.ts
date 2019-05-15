@@ -96,7 +96,7 @@ export {
   Δtext,
   ΔtextBinding} from './instructions/all';
 export {RenderFlags} from './interfaces/definition';
-export {CssSelectorList} from './interfaces/projection';
+export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 
 export {
   ΔrestoreView,

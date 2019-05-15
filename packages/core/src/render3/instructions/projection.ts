@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {CssSelectorList} from '../interfaces/projection';
+import {ProjectionSlots} from '../interfaces/projection';
 import {T_HOST} from '../interfaces/view';
 import {appendProjectedNodes} from '../node_manipulation';
 import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
@@ -34,16 +34,16 @@ import {createNodeAtIndex} from './shared';
  * - we can't have only a parsed as we can't re-construct textual form from it (as entered by a
  * template author).
  *
- * @param selectors A collection of parsed CSS selectors
- * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
+ * @param projectionSlots A collection of projection slots. A projection slot can be based
+ *        on a parsed CSS selectors or set to "0" in order to just reserve a slot.
  *
  * @codeGenApi
  */
-export function ΔprojectionDef(selectors?: CssSelectorList[]): void {
+export function ΔprojectionDef(projectionSlots?: ProjectionSlots): void {
   const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
-    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+    const noOfNodeBuckets = projectionSlots ? projectionSlots.length + 1 : 1;
     const projectionHeads: (TNode | null)[] = componentNode.projection =
         new Array(noOfNodeBuckets).fill(null);
     const tails: (TNode | null)[] = projectionHeads.slice();
@@ -52,7 +52,7 @@ export function ΔprojectionDef(selectors?: CssSelectorList[]): void {
 
     while (componentChild !== null) {
       const bucketIndex =
-          selectors ? matchingProjectionSelectorIndex(componentChild, selectors) : 0;
+          projectionSlots ? matchingProjectionSelectorIndex(componentChild, projectionSlots) : 0;
 
       if (tails[bucketIndex]) {
         tails[bucketIndex] !.projectionNext = componentChild;

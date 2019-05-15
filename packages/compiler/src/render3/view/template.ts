@@ -149,8 +149,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Whether the template includes <ng-content> tags.
   private _hasNgContent: boolean = false;
 
-  // Selectors found in the <ng-content> tags in the template.
-  private _ngContentSelectors: string[] = [];
+  // Whether the template includes a <ng-content> tag with the default selector.
+  private _hasNgContentDefaultBucket: boolean = false;
+
+  // Projection slots found in the template. Projection slots can distribute projected
+  // nodes based on a selector, or can just exist to reserve a projection slot.
+  private _ngContentReservedSlots: (string|0)[] = [];
 
   // Number of non-default selectors found in all parent templates of this template. We need to
   // track it to properly adjust projection bucket index in the `projection` instruction.
@@ -206,8 +210,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], ngContentSelectorsOffset: number = 0,
-      i18n?: i18n.AST): o.FunctionExpr {
+      hasNgContentDefaultBucket: boolean = false, i18n?: i18n.AST): o.FunctionExpr {
     this._ngContentSelectorsOffset = ngContentSelectorsOffset;
+    this._hasNgContentDefaultBucket = hasNgContentDefaultBucket;
 
     if (this._namespace !== R3.namespaceHTML) {
       this.creationInstruction(null, this._namespace);
@@ -254,9 +259,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const parameters: o.Expression[] = [];
 
       // Only selectors with a non-default value are generated
-      if (this._ngContentSelectors.length) {
-        const r3Selectors = this._ngContentSelectors.map(s => core.parseSelectorToR3Selector(s));
-        parameters.push(this.constantPool.getConstLiteral(asLiteral(r3Selectors), true));
+      if (this._ngContentReservedSlots.length) {
+        const r3ReservedSlots = this._ngContentReservedSlots.map(
+            s => {return s !== 0 ? core.parseSelectorToR3Selector(s) : s});
+        parameters.push(this.constantPool.getConstLiteral(asLiteral(r3ReservedSlots), true));
       }
 
       // Since we accumulate ngContent selectors while processing template elements,
@@ -463,9 +469,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitContent(ngContent: t.Content) {
     this._hasNgContent = true;
     const slot = this.allocateDataSlot();
-    let selectorIndex = ngContent.selector === DEFAULT_NG_CONTENT_SELECTOR ?
-        0 :
-        this._ngContentSelectors.push(ngContent.selector) + this._ngContentSelectorsOffset;
+    const hasBucketSelector = ngContent.selector !== DEFAULT_NG_CONTENT_SELECTOR;
+    let projectionSlotIdx = 0;
+    // We want to reserve a projection slot with a new index in two cases:
+    // 1. There is a non-default ng-content CSS selector
+    // 2. There is already a default ng-content bucket. In that case we
+    //    need to support multi-slot projection with its own slot.
+    if (hasBucketSelector) {
+      projectionSlotIdx =
+          this._ngContentSelectorsOffset + this._ngContentReservedSlots.push(ngContent.selector);
+    } else if (this._hasNgContentDefaultBucket) {
+      projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.push(0);
+    } else {
+      this._hasNgContentDefaultBucket = true;
+    }
+
     const parameters: o.Expression[] = [o.literal(slot)];
     const attributes: o.Expression[] = [];
 
@@ -479,9 +497,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (attributes.length > 0) {
-      parameters.push(o.literal(selectorIndex), o.literalArr(attributes));
-    } else if (selectorIndex !== 0) {
-      parameters.push(o.literal(selectorIndex));
+      parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
+    } else if (projectionSlotIdx !== 0) {
+      parameters.push(o.literal(projectionSlotIdx));
     }
 
     this.creationInstruction(ngContent.sourceSpan, R3.projection, parameters);
@@ -858,11 +876,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
           template.children, template.variables,
-          this._ngContentSelectors.length + this._ngContentSelectorsOffset, template.i18n);
+          this._ngContentReservedSlots.length + this._ngContentSelectorsOffset,
+          this._hasNgContentDefaultBucket, template.i18n);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
       if (templateVisitor._hasNgContent) {
         this._hasNgContent = true;
-        this._ngContentSelectors.push(...templateVisitor._ngContentSelectors);
+        this._ngContentReservedSlots.push(...templateVisitor._ngContentReservedSlots);
       }
     });
 
@@ -975,7 +994,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   getNgContentSelectors(): o.Expression|null {
     return this._hasNgContent ?
-        this.constantPool.getConstLiteral(asLiteral(this._ngContentSelectors), true) :
+        this.constantPool.getConstLiteral(
+            asLiteral(this._ngContentReservedSlots.map(s => {
+              // In order to output a "ngContentSelectors" property that is similar
+              // to what View Engine would have generated, we need to replace reserved
+              // projection slots with the wildcard selector ("*").
+              return s === 0 ? '*' : s;
+            })),
+            true) :
         null;
   }
 

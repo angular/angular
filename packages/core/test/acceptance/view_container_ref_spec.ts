@@ -878,18 +878,10 @@ describe('ViewContainerRef', () => {
           [[myNode]]);
       fixture.detectChanges();
 
-      // With Ivy the projected content is inserted into the last ng-content container,
-      // while with View Engine the content is projected into the first ng-content slot.
-      // View Engine correctly respects the passed index of "projectedNodes". See: FW-1331.
-      if (ivyEnabled) {
-        expect(getElementHtml(fixture.nativeElement))
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent><hr><div>barbaz</div></embedded-cmp-with-ngcontent>');
-      } else {
-        expect(getElementHtml(fixture.nativeElement))
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent>');
-      }
+
+      expect(getElementHtml(fixture.nativeElement))
+          .toEqual(
+              '<p vcref=""></p><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent>');
     });
 
     it('should support reprojection of projectable nodes', () => {
@@ -930,9 +922,22 @@ describe('ViewContainerRef', () => {
           vcRefDir.cfr.resolveComponentFactory(Reprojector), 0, undefined, [[myNode]]);
       fixture.detectChanges();
 
-      expect(getElementHtml(fixture.nativeElement))
-          .toEqual(
-              '<p vcref=""></p><reprojector><embedded-cmp-with-ngcontent><hr><div>barbaz</div></embedded-cmp-with-ngcontent></reprojector>');
+      // View Engine incorrectly projects the content into the last ng-content container. This
+      // is different in Ivy where only the default first projection slot matches everything from
+      // the reprojector component. This is reasonable because the reprojector component does
+      // project nodes with an explicit index, but rather everything is at the implicit start.
+      // This previously was the other way around because Ivy always used the first projection
+      // slot index for multiple ng-content containers with the default selector
+      // (causing multi-slot projection to break). See: FW-1331.
+      if (ivyEnabled) {
+        expect(getElementHtml(fixture.nativeElement))
+            .toEqual(
+                '<p vcref=""></p><reprojector><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent></reprojector>');
+      } else {
+        expect(getElementHtml(fixture.nativeElement))
+            .toEqual(
+                '<p vcref=""></p><reprojector><embedded-cmp-with-ngcontent><hr><div>barbaz</div></embedded-cmp-with-ngcontent></reprojector>');
+      }
     });
 
     it('should support many projectable nodes with many slots', () => {
@@ -954,17 +959,9 @@ describe('ViewContainerRef', () => {
           ]);
       fixture.detectChanges();
 
-      // With Ivy multi-slot projection is currently not working. This is a bug that
-      // is tracked with FW-1333.
-      if (ivyEnabled) {
-        expect(getElementHtml(fixture.nativeElement))
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent><hr>12</embedded-cmp-with-ngcontent>');
-      } else {
-        expect(getElementHtml(fixture.nativeElement))
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
-      }
+      expect(getElementHtml(fixture.nativeElement))
+          .toEqual(
+              '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
     });
   });
 

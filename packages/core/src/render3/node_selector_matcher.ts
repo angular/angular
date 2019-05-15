@@ -11,7 +11,7 @@ import '../util/ng_dev_mode';
 import {assertDefined, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {CssSelector, CssSelectorList, ProjectionSlots, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {getInitialClassNameValue} from './styling/class_and_style_bindings';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
@@ -264,14 +264,19 @@ export function getProjectAsAttrValue(tNode: TNode): CssSelector|null {
  * selectors.
  */
 export function matchingProjectionSelectorIndex(
-    tNode: TNode, selectors: CssSelectorList[]): number {
+    tNode: TNode, projectionSlots: ProjectionSlots): number {
   const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
-  for (let i = 0; i < selectors.length; i++) {
+  for (let i = 0; i < projectionSlots.length; i++) {
+    const slotValue = projectionSlots[i];
+    // Projection slots set to "0" are reserved slots and never match any nodes.
+    if (slotValue === 0) {
+      continue;
+    }
     // If we ran into an `ngProjectAs` attribute, we should match its parsed selector
     // to the list of selectors, otherwise we fall back to matching against the node.
     if (ngProjectAsAttrVal === null ?
-            isNodeMatchingSelectorList(tNode, selectors[i], /* isProjectionMode */ true) :
-            isSelectorInSelectorList(ngProjectAsAttrVal, selectors[i])) {
+            isNodeMatchingSelectorList(tNode, slotValue, /* isProjectionMode */ true) :
+            isSelectorInSelectorList(ngProjectAsAttrVal, slotValue)) {
       return i + 1;  // first matching selector "captures" a given node
     }
   }
