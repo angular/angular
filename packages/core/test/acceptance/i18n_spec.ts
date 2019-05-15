@@ -8,7 +8,7 @@
 
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -625,14 +625,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
           {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
       const fixture = initWithTemplate(
           AppComp,
-          `<div i18n i18n-title title="hello {{name}}" i18n-aria-label aria-label="hello {{name}}"></div>`);
+          `<input i18n i18n-title title="hello {{name}}" i18n-placeholder placeholder="hello {{name}}">`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div title="bonjour Angular" aria-label="bonjour Angular"></div>`);
+          .toEqual(`<input title="bonjour Angular" placeholder="bonjour Angular">`);
 
       fixture.componentRef.instance.name = 'John';
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<div title="bonjour John" aria-label="bonjour John"></div>`);
+          .toEqual(`<input title="bonjour John" placeholder="bonjour John">`);
     });
 
     it('on removed elements', () => {
@@ -730,6 +730,44 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
             `<div test="" title="début 3 milieu 2 fin" class="bar"> traduction: 2 emails<!--ICU 19--></div><div test="" class="bar"></div>`);
+  });
+
+  it('should handle i18n attribute with directive inputs', () => {
+    let calledTitle = false;
+    let calledValue = false;
+    @Component({selector: 'my-comp', template: ''})
+    class MyComp {
+      t !: string;
+      @Input()
+      get title() { return this.t; }
+      set title(title) {
+        calledTitle = true;
+        this.t = title;
+      }
+
+      @Input()
+      get value() { return this.val; }
+      set value(value: string) {
+        calledValue = true;
+        this.val = value;
+      }
+      val !: string;
+    }
+
+    TestBed.configureTestingModule({declarations: [AppComp, MyComp]});
+    ɵi18nConfigureLocalize({
+      translations: {'Hello {$interpolation}': 'Bonjour {$interpolation}', 'works': 'fonctionne'}
+    });
+    const fixture = initWithTemplate(
+        AppComp,
+        `<my-comp i18n i18n-title title="works" i18n-value="hi" value="Hello {{name}}"></my-comp>`);
+    fixture.detectChanges();
+
+    const directive = fixture.debugElement.children[0].injector.get(MyComp);
+    expect(calledValue).toEqual(true);
+    expect(calledTitle).toEqual(true);
+    expect(directive.value).toEqual(`Bonjour Angular`);
+    expect(directive.title).toEqual(`fonctionne`);
   });
 
   it('should support adding/moving/removing nodes', () => {
