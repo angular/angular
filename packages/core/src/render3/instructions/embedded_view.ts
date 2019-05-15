@@ -40,7 +40,7 @@ export function ɵɵembeddedViewStart(
   let viewToRender = scanForView(lContainer, lContainer[ACTIVE_INDEX] !, viewBlockId);
 
   if (viewToRender) {
-    setIsParent(true);
+    setIsParent();
     enterView(viewToRender, viewToRender[TVIEW].node);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
@@ -141,6 +141,5 @@ export function ɵɵembeddedViewEnd(): void {
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
   leaveView(lContainer[PARENT] !);
-  setPreviousOrParentTNode(viewHost !);
-  setIsParent(false);
+  setPreviousOrParentTNode(viewHost !, false);
 }

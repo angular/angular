@@ -287,8 +287,7 @@ export function createNodeAtIndex(
     }
   }
 
-  setPreviousOrParentTNode(tNode);
-  setIsParent(true);
+  setPreviousOrParentTNode(tNode, true);
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
       TProjectionNode & TIcuContainerNode;
 }
@@ -351,8 +350,7 @@ export function createEmbeddedViewAndNode<T>(
     injectorIndex: number): LView {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
-  setIsParent(true);
-  setPreviousOrParentTNode(null !);
+  setPreviousOrParentTNode(null !, true);
 
   const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways, null, null);
   lView[DECLARATION_VIEW] = declarationView;
@@ -366,8 +364,7 @@ export function createEmbeddedViewAndNode<T>(
     tView.node !.injectorIndex = injectorIndex;
   }
 
-  setIsParent(_isParent);
-  setPreviousOrParentTNode(_previousOrParentTNode);
+  setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
   return lView;
 }
 
@@ -390,8 +387,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
     tickRootContext(getRootContext(viewToRender));
   } else {
     try {
-      setIsParent(true);
-      setPreviousOrParentTNode(null !);
+      setPreviousOrParentTNode(null !, true);
 
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
       resetPreOrderHookFlags(viewToRender);
@@ -406,8 +402,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       refreshDescendantViews(viewToRender);
     } finally {
       leaveView(oldView !);
-      setIsParent(_isParent);
-      setPreviousOrParentTNode(_previousOrParentTNode);
+      setPreviousOrParentTNode(_previousOrParentTNode, _isParent);
     }
   }
 }
@@ -1254,7 +1249,7 @@ function addComponentLogic<T>(
       lView, createLView(
                  lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
                  lView[previousOrParentTNode.index], previousOrParentTNode as TElementNode,
-                 rendererFactory, lView[RENDERER_FACTORY].createRenderer(native as RElement, def)));
+                 rendererFactory, rendererFactory.createRenderer(native as RElement, def)));
 
   componentView[T_HOST] = previousOrParentTNode as TElementNode;
 
@@ -1695,17 +1690,14 @@ export function storeBindingMetadata(lView: LView, prefix = '', suffix = ''): st
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-export function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
+export function initializeTNodeInputs(tNode: TNode): PropertyAliases|null {
   // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked.
-  if (tNode) {
-    if (tNode.inputs === undefined) {
-      // mark inputs as checked
-      tNode.inputs = generatePropertyAliases(tNode, BindingDirection.Input);
-    }
-    return tNode.inputs;
+  if (tNode.inputs === undefined) {
+    // mark inputs as checked
+    tNode.inputs = generatePropertyAliases(tNode, BindingDirection.Input);
   }
-  return null;
+  return tNode.inputs;
 }
 
 

@@ -26,7 +26,7 @@ import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
+import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
@@ -701,7 +701,7 @@ function readCreateOpCodes(
       previousTNode = currentTNode;
       currentTNode = createDynamicNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
-      setIsParent(false);
+      setIsNotParent();
     } else if (typeof opCode == 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
         case I18nMutateOpCode.AppendChild:
@@ -726,17 +726,13 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode = getTNode(nodeIndex, viewData);
           if (currentTNode) {
-            setPreviousOrParentTNode(currentTNode);
-            if (currentTNode.type === TNodeType.Element) {
-              setIsParent(true);
-            }
+            setPreviousOrParentTNode(currentTNode, currentTNode.type === TNodeType.Element);
           }
           break;
         case I18nMutateOpCode.ElementEnd:
           const elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
           previousTNode = currentTNode = getTNode(elementIndex, viewData);
-          setPreviousOrParentTNode(currentTNode);
-          setIsParent(false);
+          setPreviousOrParentTNode(currentTNode, false);
           break;
         case I18nMutateOpCode.Attr:
           const elementNodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
@@ -764,7 +760,7 @@ function readCreateOpCodes(
           attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
-          setIsParent(false);
+          setIsNotParent();
           break;
         case ELEMENT_MARKER:
           const tagNameValue = createOpCodes[++i] as string;
@@ -785,7 +781,7 @@ function readCreateOpCodes(
     }
   }
 
-  setIsParent(false);
+  setIsNotParent();
 
   return visitedNodes;
 }

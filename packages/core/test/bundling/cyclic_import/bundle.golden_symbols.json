@@ -693,7 +693,7 @@
     "name": "setInputsFromAttrs"
   },
   {
-    "name": "setIsParent"
+    "name": "setIsNotParent"
   },
   {
     "name": "setNodeStylingTemplate"
