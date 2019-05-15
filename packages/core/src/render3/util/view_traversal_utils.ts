@@ -49,7 +49,7 @@ export function getRootView(componentOrLView: LView | {}): LView {
  */
 export function findComponentView(lView: LView): LView {
   let rootTNode = lView[T_HOST];
-  while (rootTNode && rootTNode.type === TNodeType.View) {
+  while (rootTNode !== null && rootTNode.type === TNodeType.View) {
     ngDevMode && assertDefined(lView[DECLARATION_VIEW], 'lView[DECLARATION_VIEW]');
     lView = lView[DECLARATION_VIEW] !;
     rootTNode = lView[T_HOST];
