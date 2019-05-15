@@ -1240,7 +1240,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const fooNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
-      const fooDef = host.getDefinitionOfFunction(fooNode);
+      const fooDef = host.getDefinitionOfFunction(fooNode) !;
       expect(fooDef.node).toBe(fooNode);
       expect(fooDef.body !.length).toEqual(1);
       expect(fooDef.body ![0].getText()).toEqual(`return x;`);
@@ -1250,7 +1250,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const barNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
-      const barDef = host.getDefinitionOfFunction(barNode);
+      const barDef = host.getDefinitionOfFunction(barNode) !;
       expect(barDef.node).toBe(barNode);
       expect(barDef.body !.length).toEqual(1);
       expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
@@ -1263,7 +1263,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const bazNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
-      const bazDef = host.getDefinitionOfFunction(bazNode);
+      const bazDef = host.getDefinitionOfFunction(bazNode) !;
       expect(bazDef.node).toBe(bazNode);
       expect(bazDef.body !.length).toEqual(3);
       expect(bazDef.parameters.length).toEqual(1);
@@ -1272,7 +1272,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const quxNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
-      const quxDef = host.getDefinitionOfFunction(quxNode);
+      const quxDef = host.getDefinitionOfFunction(quxNode) !;
       expect(quxDef.node).toBe(quxNode);
       expect(quxDef.body !.length).toEqual(2);
       expect(quxDef.parameters.length).toEqual(1);
@@ -1281,14 +1281,14 @@ describe('Esm2015ReflectionHost', () => {
 
       const mooNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'moo', isNamedFunctionDeclaration) !;
-      const mooDef = host.getDefinitionOfFunction(mooNode);
+      const mooDef = host.getDefinitionOfFunction(mooNode) !;
       expect(mooDef.node).toBe(mooNode);
       expect(mooDef.body !.length).toEqual(3);
       expect(mooDef.parameters).toEqual([]);
 
       const juuNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'juu', isNamedFunctionDeclaration) !;
-      const juuDef = host.getDefinitionOfFunction(juuNode);
+      const juuDef = host.getDefinitionOfFunction(juuNode) !;
       expect(juuDef.node).toBe(juuNode);
       expect(juuDef.body !.length).toEqual(2);
       expect(juuDef.parameters).toEqual([]);

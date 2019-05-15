@@ -1329,7 +1329,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return null;
     }
     const declaration = implementation;
-    const body = this.getDefinitionOfFunction(declaration).body;
+    const definition = this.getDefinitionOfFunction(declaration);
+    if (definition === null) {
+      return null;
+    }
+    const body = definition.body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
         lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;

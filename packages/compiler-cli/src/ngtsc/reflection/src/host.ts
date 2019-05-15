@@ -254,15 +254,16 @@ export interface CtorParameter {
  * itself. In ES5 code this can be more complicated, as the default values for parameters may
  * be extracted from certain body statements.
  */
-export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
-                                    ts.FunctionExpression> {
+export interface FunctionDefinition {
   /**
    * A reference to the node which declares the function.
    */
-  node: T;
+  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration;
 
   /**
-   * Statements of the function body, if a body is present, or null if no body is present.
+   * Statements of the function body, if a body is present, or null if no body is present or the
+   * function is identified to represent a tslib helper function, in which case `helper` will
+   * indicate which helper this function represents.
    *
    * This list may have been filtered to exclude statements which perform parameter default value
    * initialization.
@@ -270,9 +271,25 @@ export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDe
   body: ts.Statement[]|null;
 
   /**
+   * The type of tslib helper function, if the function is determined to represent a tslib helper
+   * function. Otherwise, this will be null.
+   */
+  helper: TsHelperFn|null;
+
+  /**
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
+}
+
+/**
+ * Possible functions from TypeScript's helper library.
+ */
+export enum TsHelperFn {
+  /**
+   * Indicates the `__spread` function.
+   */
+  Spread,
 }
 
 /**
@@ -404,8 +421,7 @@ export interface ReflectionHost {
    *
    * @returns a `FunctionDefinition` giving metadata about the function definition.
    */
-  getDefinitionOfFunction<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
-                          ts.FunctionExpression>(fn: T): FunctionDefinition<T>;
+  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition|null;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata

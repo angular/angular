@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 import {getNameText, hasNameIdentifier} from '../utils';
 
@@ -148,8 +148,28 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param node the function declaration to parse.
    * @returns an object containing the node, statements and parameters of the function.
    */
-  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
-                          ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
+    if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
+        !ts.isFunctionExpression(node) && !ts.isVariableDeclaration(node)) {
+      return null;
+    }
+
+    const tsHelperFn = getTsHelperFn(node);
+    if (tsHelperFn !== null) {
+      return {
+        node,
+        body: null,
+        helper: tsHelperFn,
+        parameters: [],
+      };
+    }
+
+    // If the node was not identified to be a TypeScript helper, a variable declaration at this
+    // point cannot be resolved as a function.
+    if (ts.isVariableDeclaration(node)) {
+      return null;
+    }
+
     const parameters =
         node.parameters.map(p => ({name: getNameText(p.name), node: p, initializer: null}));
     let lookingForParamInitializers = true;
@@ -161,7 +181,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return !lookingForParamInitializers;
     });
 
-    return {node, body: statements || null, parameters};
+    return {node, body: statements || null, helper: null, parameters};
   }
 
   /**
@@ -563,6 +583,21 @@ function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnSt
 
 function reflectArrayElement(element: ts.Expression) {
   return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
+}
+
+/**
+ * Inspects a function declaration to determine if it corresponds with a TypeScript helper function,
+ * returning its kind if so or null if the declaration does not seem to correspond with such a
+ * helper.
+ */
+function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
+  const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+
+  if (name === '__spread') {
+    return TsHelperFn.Spread;
+  } else {
+    return null;
+  }
 }
 
 /**
