@@ -254,6 +254,66 @@ describe('new styling integration', () => {
               'width': '200px',
             });
           });
+
+  onlyInIvy('only ivy has style debugging support')
+      .it('should support situations where there are more than 32 bindings', () => {
+        const TOTAL_BINDINGS = 34;
+
+        let bindingsHTML = '';
+        let bindingsArr: any[] = [];
+        for (let i = 0; i < TOTAL_BINDINGS; i++) {
+          bindingsHTML += `[style.prop${i}]="bindings[${i}]" `;
+          bindingsArr.push(null);
+        }
+
+        @Component({template: `<div ${bindingsHTML}></div>`})
+        class Cmp {
+          bindings = bindingsArr;
+
+          updateBindings(value: string) {
+            for (let i = 0; i < TOTAL_BINDINGS; i++) {
+              this.bindings[i] = value + i;
+            }
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+
+        let testValue = 'initial';
+        fixture.componentInstance.updateBindings('initial');
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        let values = styles.values;
+        let props = Object.keys(values);
+        expect(props.length).toEqual(TOTAL_BINDINGS);
+
+        for (let i = 0; i < props.length; i++) {
+          const prop = props[i];
+          const value = values[prop] as string;
+          const num = value.substr(testValue.length);
+          expect(value).toEqual(`initial${num}`);
+        }
+
+        testValue = 'final';
+        fixture.componentInstance.updateBindings('final');
+        fixture.detectChanges();
+
+        values = styles.values;
+        props = Object.keys(values);
+        expect(props.length).toEqual(TOTAL_BINDINGS);
+        for (let i = 0; i < props.length; i++) {
+          const prop = props[i];
+          const value = values[prop] as string;
+          const num = value.substr(testValue.length);
+          expect(value).toEqual(`final${num}`);
+        }
+      });
 });
 
 function getDebugNode(element: Node): DebugNode|null {
