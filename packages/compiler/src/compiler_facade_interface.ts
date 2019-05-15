@@ -106,7 +106,6 @@ export interface R3NgModuleMetadataFacade {
   exports: Function[];
   emitInline: boolean;
   schemas: {name: string}[]|null;
-  id: string|null;
 }
 
 export interface R3InjectorMetadataFacade {

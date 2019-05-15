@@ -67,9 +67,6 @@ export interface R3NgModuleMetadata {
    * The set of schemas that declare elements to be allowed in the NgModule.
    */
   schemas: R3Reference[]|null;
-
-  /** Unique ID or expression representing the unique ID of an NgModule. */
-  id: o.Expression|null;
 }
 
 /**
@@ -84,8 +81,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports,
     schemas,
     containsForwardDecls,
-    emitInline,
-    id
+    emitInline
   } = meta;
 
   const additionalStatements: o.Statement[] = [];
@@ -97,8 +93,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     declarations: o.Expression,
     imports: o.Expression,
     exports: o.Expression,
-    schemas: o.LiteralArrayExpr,
-    id: o.Expression
+    schemas: o.LiteralArrayExpr
   };
 
   // Only generate the keys in the metadata if the arrays have values.
@@ -133,10 +128,6 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
   if (schemas && schemas.length) {
     definitionMap.schemas = o.literalArr(schemas.map(ref => ref.value));
-  }
-
-  if (id) {
-    definitionMap.id = id;
   }
 
   const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);

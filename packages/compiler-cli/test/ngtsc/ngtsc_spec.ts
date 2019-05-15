@@ -476,7 +476,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).not.toContain('ΔsetNgModuleScope(TestModule,');
   });
 
-  it('should emit the id when the module\'s id is a string', () => {
+  it('should emit a \u0275registerNgModuleType call when the module has an id', () => {
     env.tsconfig();
     env.write('test.ts', `
         import {NgModule} from '@angular/core';
@@ -488,26 +488,27 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain(`i0.ΔdefineNgModule({ type: TestModule, id: 'test' })`);
+    expect(jsContents).toContain('i0.\u0275registerNgModuleType(\'test\', TestModule);');
   });
 
-  it('should emit the id when the module\'s id is defined as `module.id`', () => {
-    env.tsconfig();
-    env.write('index.d.ts', `
+  it('should emit a \u0275registerNgModuleType call when the module id is defined as `module.id`',
+     () => {
+       env.tsconfig();
+       env.write('index.d.ts', `
          declare const module = {id: string};
        `);
-    env.write('test.ts', `
+       env.write('test.ts', `
          import {NgModule} from '@angular/core';
 
          @NgModule({id: module.id})
          export class TestModule {}
        `);
 
-    env.driveMain();
+       env.driveMain();
 
-    const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ΔdefineNgModule({ type: TestModule, id: module.id })');
-  });
+       const jsContents = env.getContents('test.js');
+       expect(jsContents).toContain('i0.\u0275registerNgModuleType(module.id, TestModule);');
+     });
 
   it('should filter out directives and pipes from module exports in the injector def', () => {
     env.tsconfig();

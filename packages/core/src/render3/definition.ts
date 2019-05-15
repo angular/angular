@@ -366,9 +366,6 @@ export function ΔdefineNgModule<T>(def: {
 
   /** The set of schemas that declare elements to be allowed in the NgModule. */
   schemas?: SchemaMetadata[] | null;
-
-  /** Unique ID for the module that is used with `getModuleFactory`. */
-  id?: string | null;
 }): never {
   const res: NgModuleDef<T> = {
     type: def.type,
@@ -378,7 +375,6 @@ export function ΔdefineNgModule<T>(def: {
     exports: def.exports || EMPTY_ARRAY,
     transitiveCompileScopes: null,
     schemas: def.schemas || null,
-    id: def.id || null,
   };
   return res as never;
 }

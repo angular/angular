@@ -9,6 +9,7 @@
 import {ΔdefineInjectable, ΔdefineInjector,} from '../../di/interface/defs';
 import {Δinject} from '../../di/injector_compatibility';
 import * as r3 from '../index';
+import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
 import * as sanitization from '../../sanitization/sanitization';
 
 
@@ -138,4 +139,6 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ΔsanitizeScript': sanitization.ΔsanitizeScript,
   'ΔsanitizeUrl': sanitization.ΔsanitizeUrl,
   'ΔsanitizeUrlOrResourceUrl': sanitization.ΔsanitizeUrlOrResourceUrl,
+
+  'ɵregisterNgModuleType': registerNgModuleType,
 };

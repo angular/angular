@@ -239,6 +239,9 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static registerNgModuleType:
+      o.ExternalReference = {name: 'ɵregisterNgModuleType', moduleName: CORE};
+
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ΔsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ΔsanitizeStyle', moduleName: CORE};
