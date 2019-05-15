@@ -2,7 +2,6 @@
   "name": "angular-srcs",
   "version": "8.0.0-rc.0",
   "private": true,
-  "branchPattern": "2.0.*",
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
