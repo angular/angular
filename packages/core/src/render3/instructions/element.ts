@@ -78,12 +78,13 @@ export function ɵɵelementStart(
     // instantiated into a context per element)
     setNodeStylingTemplate(tView, tNode, attrs, lastAttrIndex);
 
-    if (tNode.stylingTemplate) {
+    const stylingTemplate = tNode.stylingTemplate;
+    if (stylingTemplate) {
       // the initial style/class values are rendered immediately after having been
       // initialized into the context so the element styling is ready when directives
       // are initialized (since they may read style/class values in their constructor)
-      initialStylesIndex = renderInitialStyles(native, tNode.stylingTemplate, renderer);
-      initialClassesIndex = renderInitialClasses(native, tNode.stylingTemplate, renderer);
+      initialStylesIndex = renderInitialStyles(native, stylingTemplate, renderer);
+      initialClassesIndex = renderInitialClasses(native, stylingTemplate, renderer);
     }
   }
 
