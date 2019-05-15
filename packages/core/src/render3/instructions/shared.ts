@@ -1322,7 +1322,10 @@ function setInputsFromAttrs<T>(
 function generateInitialInputs(
     directiveIndex: number, inputs: {[key: string]: string}, tNode: TNode): InitialInputData {
   const initialInputData: InitialInputData = tNode.initialInputs || (tNode.initialInputs = []);
-  initialInputData[directiveIndex] = null;
+  // Ensure that we don't create sparse arrays
+  for (let i = initialInputData.length; i <= directiveIndex; i++) {
+    initialInputData.push(null);
+  }
 
   const attrs = tNode.attrs !;
   let i = 0;
