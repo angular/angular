@@ -744,7 +744,7 @@ function isDts(fileName: string): boolean {
 }
 
 function isSourceOrDts(fileName: string): boolean {
-  return /\.ts$/.test(fileName);
+  return /\.ts$/.test(fileName) && !/(ngfactory|ngstyle|ngsummary).d.ts$/.test(fileName);
 }
 
 function resolveNpmTreeArtifact(manifestPath: string, resolveFile = 'package.json') {
