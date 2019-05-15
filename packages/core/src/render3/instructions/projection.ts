@@ -10,7 +10,7 @@ import {CssSelectorList} from '../interfaces/projection';
 import {T_HOST} from '../interfaces/view';
 import {appendProjectedNodes} from '../node_manipulation';
 import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
-import {getLView, setIsParent} from '../state';
+import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
 
 import {createNodeAtIndex} from './shared';
@@ -88,7 +88,7 @@ export function ɵɵprojection(
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
-  setIsParent(false);
+  setIsNotParent();
 
   // re-distribution of projectable nodes is stored on a component's view level
   appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));

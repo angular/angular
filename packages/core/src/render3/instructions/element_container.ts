@@ -14,7 +14,8 @@ import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from '../state';
+import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+
 import {createDirectivesAndLocals, createNodeAtIndex, executeContentQueries, setNodeStylingTemplate} from './shared';
 
 /**
@@ -77,11 +78,11 @@ export function ɵɵelementContainerEnd(): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   if (getIsParent()) {
-    setIsParent(false);
+    setIsNotParent();
   } else {
     ngDevMode && assertHasParent(previousOrParentTNode);
     previousOrParentTNode = previousOrParentTNode.parent !;
-    setPreviousOrParentTNode(previousOrParentTNode);
+    setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);

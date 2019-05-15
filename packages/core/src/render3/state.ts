@@ -303,8 +303,9 @@ export function getPreviousOrParentTNode(): TNode {
   return previousOrParentTNode;
 }
 
-export function setPreviousOrParentTNode(tNode: TNode) {
+export function setPreviousOrParentTNode(tNode: TNode, _isParent: boolean) {
   previousOrParentTNode = tNode;
+  isParent = _isParent;
 }
 
 export function setTNodeAndViewData(tNode: TNode, view: LView) {
@@ -325,8 +326,11 @@ export function getIsParent(): boolean {
   return isParent;
 }
 
-export function setIsParent(value: boolean): void {
-  isParent = value;
+export function setIsNotParent(): void {
+  isParent = false;
+}
+export function setIsParent(): void {
+  isParent = true;
 }
 
 
