@@ -518,6 +518,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const i18nAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
     const outputAttrs: t.TextAttribute[] = [];
+    const allOtherInputs: (t.TextAttribute | t.BoundAttribute)[] = [];
 
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
@@ -538,8 +539,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // TODO(FW-1248): prevent attributes duplication in `i18nAttributes` and `elementStart`
           // arguments
           i18nAttrs.push(attr);
+          // We treat this attribute as if it was a binding so that we don't risk calling inputs
+          // with the untranslated value.
+          // Also this generates smaller templates until FW-1248 is fixed.
+          // TODO(FW-1332): Create an AttributeMarker for i18n attributes
+          allOtherInputs.push(attr);
+        } else {
+          outputAttrs.push(attr);
         }
-        outputAttrs.push(attr);
       }
     }
 
@@ -554,7 +561,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Add the attributes
     const attributes: o.Expression[] = [];
-    const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
@@ -1148,7 +1154,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * because those values are intended to always be generated as property instructions.
    */
   private prepareNonRenderAttrs(
-      inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
+      inputs: (t.TextAttribute|t.BoundAttribute)[], outputs: t.BoundEvent[],
+      styles?: StylingBuilder,
       templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
@@ -1176,7 +1183,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const attrsStartIndex = attrExprs.length;
 
       for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i];
+        const input = inputs[i] as t.BoundAttribute;
         if (input.type !== BindingType.Animation) {
           addAttrExpr(input.name);
         }
