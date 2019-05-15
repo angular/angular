@@ -477,7 +477,7 @@ function isStyleSanitizable(prop: string): boolean {
   return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
       prop === 'border-image' || prop === 'borderImage' || prop === 'filter' ||
       prop === 'list-style' || prop === 'listStyle' || prop === 'list-style-image' ||
-      prop === 'listStyleImage';
+      prop === 'listStyleImage' || prop === 'clip-path' || prop === 'clipPath';
 }
 
 /**

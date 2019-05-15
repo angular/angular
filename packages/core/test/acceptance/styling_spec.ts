@@ -180,4 +180,24 @@ describe('styling', () => {
       fixture.detectChanges();
     }).not.toThrow();
   });
+
+  it('should be able to bind a SafeValue to clip-path', () => {
+    @Component({template: '<div [style.clip-path]="path"></div>'})
+    class Cmp {
+      path !: SafeStyle;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+
+    fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
+    fixture.detectChanges();
+
+    const html = fixture.nativeElement.innerHTML;
+
+    // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
+    // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
+    expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
+  });
 });
