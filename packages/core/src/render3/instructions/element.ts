@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {validateAgainstEventAttributes} from '../../sanitization/sanitization';
-import {assertDataInRange, assertEqual} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
@@ -18,7 +18,7 @@ import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsParent, setPreviousOrParentTNode} from '../state';
+import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {registerInitialStylingIntoContext} from '../styling_next/instructions';
@@ -139,12 +139,13 @@ export function ɵɵelementStart(
  */
 export function ɵɵelementEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
+  ngDevMode && assertDefined(previousOrParentTNode, 'No parent node to close.');
   if (getIsParent()) {
-    setIsParent(false);
+    setIsNotParent();
   } else {
     ngDevMode && assertHasParent(getPreviousOrParentTNode());
     previousOrParentTNode = previousOrParentTNode.parent !;
-    setPreviousOrParentTNode(previousOrParentTNode);
+    setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
   // this is required for all host-level styling-related instructions to run
