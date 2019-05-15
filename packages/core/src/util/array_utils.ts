@@ -18,6 +18,9 @@ export function addAllToArray(items: any[], arr: any[]) {
   }
 }
 
+/**
+ * A stack used by flatten to prevent recursive implementation.
+ */
 const flattenQueue: (any[] | number)[] = [];
 
 /**
@@ -27,6 +30,7 @@ const flattenQueue: (any[] | number)[] = [];
  */
 export function flatten(list: any[]): any[] {
   // This is an optimization so that we don't allocate memory until we have to.
+  // We assume that list is already flat.
   let flat: any[] = list;
   let queueIndex = 0;
   let index = 0;
@@ -37,9 +41,11 @@ export function flatten(list: any[]): any[] {
       if (Array.isArray(item)) {
         // we need to inline it.
         if (flat === list) {
+          // Our assumption tha the list was already flat was wrong and
           // we need to clone flat since we need to write to it.
           flat = list.slice(0, index - 1);
         }
+        // push current position on the stack.
         flattenQueue[queueIndex++] = index;
         flattenQueue[queueIndex++] = list;
         list = item;
@@ -51,9 +57,12 @@ export function flatten(list: any[]): any[] {
     }
     if (queueIndex > 0) {
       // There are items in the flattenQueue which need to be processed.
+      // Pop them.
       list = flattenQueue[--queueIndex] as any[];
       length = list.length;
       index = flattenQueue[--queueIndex] as number;
+      // The array is not cleared because doing so would take extra time.
+      // Any memory leaks would be just temporary until next flattening.
     } else {
       break;
     }
