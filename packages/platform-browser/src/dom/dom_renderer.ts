@@ -157,7 +157,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      name = `${namespace}:${name}`;
+      name = namespace + ':' + name;
       // TODO(benlesh): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
