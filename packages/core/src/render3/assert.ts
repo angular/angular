@@ -36,8 +36,9 @@ export function assertPreviousIsParent(isParent: boolean) {
   assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
 }
 
-export function assertHasParent(tNode: TNode) {
-  assertDefined(tNode.parent, 'previousOrParentTNode should have a parent');
+export function assertHasParent(tNode: TNode | null) {
+  assertDefined(tNode, 'previousOrParentTNode should exist!');
+  assertDefined(tNode !.parent, 'previousOrParentTNode should have a parent');
 }
 
 export function assertDataNext(lView: LView, index: number, arr?: any[]) {
