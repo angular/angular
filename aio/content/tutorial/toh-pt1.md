@@ -170,7 +170,7 @@ It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
 
 Angular needs to know how the pieces of your application fit together
 and what other files and libraries the app requires.
-This information is called _metadata_
+This information is called _metadata_.
 
 Some of the metadata is in the `@Component` decorators that you added to your component classes.
 Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
