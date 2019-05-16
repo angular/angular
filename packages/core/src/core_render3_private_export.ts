@@ -9,7 +9,6 @@
 // clang-format off
 export {
   ɵɵattribute,
-  ɵɵattributeInterpolate,
   ɵɵattributeInterpolate1,
   ɵɵattributeInterpolate2,
   ɵɵattributeInterpolate3,

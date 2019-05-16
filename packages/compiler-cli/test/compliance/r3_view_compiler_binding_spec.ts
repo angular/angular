@@ -533,7 +533,7 @@ describe('compiler compliance: bindings', () => {
           i0.ɵɵselect(8);
           i0.ɵɵattributeInterpolate1("title", "a", ctx.one, "b");
           i0.ɵɵselect(9);
-          i0.ɵɵattributeInterpolate("title", ctx.one);
+          i0.ɵɵattribute("title", ctx.one);
       }
       …
       `;
