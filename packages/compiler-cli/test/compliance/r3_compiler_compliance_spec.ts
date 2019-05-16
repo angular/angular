@@ -3253,7 +3253,7 @@ describe('compiler compliance', () => {
             $r3$.ɵɵallocHostVars(1);
           }
           if (rf & 2) {
-            $r3$.ɵɵelementAttribute(elIndex, "tabindex", $r3$.ɵɵbind(ctx.tabindex));
+            $r3$.ɵɵattribute("tabindex", ctx.tabindex);
           }
         }
       });
