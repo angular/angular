@@ -14,7 +14,7 @@ import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
@@ -55,13 +55,10 @@ export function ɵɵelementStart(
                    'elements should be created before any bindings ');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
-
-  const native = elementCreate(name);
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  const native = lView[index + HEADER_OFFSET] = elementCreate(name);
   const renderer = lView[RENDERER];
-
-  ngDevMode && assertDataInRange(lView, index - 1);
-
-  const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
+  const tNode = createNodeAtIndex(index, TNodeType.Element, name, attrs || null);
   let initialStylesIndex = 0;
   let initialClassesIndex = 0;
 

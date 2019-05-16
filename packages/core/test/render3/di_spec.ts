@@ -605,7 +605,7 @@ describe('di', () => {
           null, null, {} as any, {} as any);
       const oldView = enterView(contentView, null);
       try {
-        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null);
+        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
