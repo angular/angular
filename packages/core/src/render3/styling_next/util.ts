@@ -7,13 +7,19 @@
 */
 import {StylingContext} from '../interfaces/styling';
 import {getProp as getOldProp, getSinglePropIndexValue as getOldSinglePropIndexValue} from '../styling/class_and_style_bindings';
-import {TStylingConfigFlags, TStylingContext, TStylingContextIndex} from './interfaces';
+
+import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex} from './interfaces';
+
+const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
 
 /**
  * Creates a new instance of the `TStylingContext`.
+ *
+ * This function will also pre-fill the context with data
+ * for map-based bindings.
  */
 export function allocStylingContext(): TStylingContext {
-  return [TStylingConfigFlags.Initial, 0];
+  return [TStylingConfigFlags.Initial, 0, 0, 0, MAP_BASED_ENTRY_PROP_NAME];
 }
 
 /**
@@ -48,14 +54,14 @@ export function getProp(context: TStylingContext, index: number) {
 }
 
 export function getGuardMask(context: TStylingContext, index: number) {
-  return context[index + TStylingContextIndex.MaskOffset] as number;
+  return context[index + TStylingContextIndex.GuardOffset] as number;
 }
 
 export function getValuesCount(context: TStylingContext, index: number) {
   return context[index + TStylingContextIndex.ValuesCountOffset] as number;
 }
 
-export function getValue(context: TStylingContext, index: number, offset: number) {
+export function getBindingValue(context: TStylingContext, index: number, offset: number) {
   return context[index + TStylingContextIndex.BindingsStartOffset + offset] as number | string;
 }
 
@@ -79,4 +85,33 @@ export function lockContext(context: TStylingContext) {
 
 export function isContextLocked(context: TStylingContext): boolean {
   return (getConfig(context) & TStylingConfigFlags.Locked) > 0;
+}
+
+export function getPropValuesStartPosition(context: TStylingContext) {
+  return TStylingContextIndex.MapBindingsBindingsStartPosition +
+      context[TStylingContextIndex.MapBindingsValuesCountPosition];
+}
+
+export function isMapBased(prop: string) {
+  return prop === MAP_BASED_ENTRY_PROP_NAME;
+}
+
+export function hasValueChanged(
+    a: LStylingMap | number | String | string | null | boolean | undefined | {},
+    b: LStylingMap | number | String | string | null | boolean | undefined | {}): boolean {
+  const compareValueA = Array.isArray(a) ? a[LStylingMapIndex.RawValuePosition] : a;
+  const compareValueB = Array.isArray(b) ? b[LStylingMapIndex.RawValuePosition] : b;
+  return compareValueA !== compareValueB;
+}
+
+/**
+ * Determines whether the provided styling value is truthy or falsy.
+ */
+export function isStylingValueDefined(value: any) {
+  // the reason why null is compared against is because
+  // a CSS class value that is set to `false` must be
+  // respected (otherwise it would be treated as falsy).
+  // Empty string values are because developers usually
+  // set a value to an empty string to remove it.
+  return value != null && value !== '';
 }

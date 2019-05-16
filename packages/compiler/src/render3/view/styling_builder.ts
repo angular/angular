@@ -364,6 +364,11 @@ export class StylingBuilder {
   private _buildMapBasedInstruction(
       valueConverter: ValueConverter, isClassBased: boolean, stylingInput: BoundStylingEntry) {
     let totalBindingSlotsRequired = 0;
+    if (compilerIsNewStylingInUse()) {
+      // the old implementation does not reserve slot values for
+      // binding entries. The new one does.
+      totalBindingSlotsRequired++;
+    }
 
     // these values must be outside of the update block so that they can
     // be evaluated (the AST visit call) during creation time so that any
