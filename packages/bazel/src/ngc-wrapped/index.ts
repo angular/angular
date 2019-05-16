@@ -165,11 +165,11 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   if (inputs) {
     fileLoader = new CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
-    const resolvedInputs: {[path: string]: string} = {};
+    const resolvedInputs = new Map<string, string>();
     const inputKeys = Object.keys(inputs);
     for (let i = 0; i < inputKeys.length; i++) {
       const key = inputKeys[i];
-      resolvedInputs[resolveNormalizedPath(key)] = inputs[key];
+      resolvedInputs.set(resolveNormalizedPath(key), inputs[key]);
     }
     fileCache.updateCache(resolvedInputs);
   } else {
