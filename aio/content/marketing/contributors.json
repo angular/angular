@@ -793,5 +793,13 @@
     "bio": "Andrew is a software engineer at Google on the Angular Core team.",
     "groups": ["Angular"],
     "lead": "kara"
+  },
+  "kamilmysliwiec": {
+    "name": "Kamil Mysliwiec",
+    "picture": "kamilmysliwiec.jpg",
+    "twitter": "kammysliwiec",
+    "website": "https://github.com/kamilmysliwiec",
+    "bio": "Kamil Mysliwiec is a software engineer truly passionate about Web Technologies. Creator of NestJS, Co-Founder of Trilon.io, speaker, and trainer.",
+    "groups": ["GDE"]
   }
 }
