@@ -20,6 +20,7 @@ import * as r3 from '../index';
  */
 export const angularCoreEnv: {[name: string]: Function} =
     (() => ({
+       'ɵɵattribute': r3.ɵɵattribute,
        'ɵɵdefineBase': r3.ɵɵdefineBase,
        'ɵɵdefineComponent': r3.ɵɵdefineComponent,
        'ɵɵdefineDirective': r3.ɵɵdefineDirective,

@@ -547,7 +547,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵɵstyleProp(0, $ctx$.myWidth);
                   $r3$.ɵɵstyleProp(1, $ctx$.myHeight);
                   $r3$.ɵɵstylingApply();
-                  $r3$.ɵɵelementAttribute(0, "style", $r3$.ɵɵbind("border-width: 10px"), $r3$.ɵɵsanitizeStyle);
+                  $r3$.ɵɵattribute("style", "border-width: 10px", $r3$.ɵɵsanitizeStyle);
                 }
               },
               encapsulation: 2
@@ -772,7 +772,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵɵclassProp(0, $ctx$.yesToApple);
                   $r3$.ɵɵclassProp(1, $ctx$.yesToOrange);
                   $r3$.ɵɵstylingApply();
-                  $r3$.ɵɵelementAttribute(0, "class", $r3$.ɵɵbind("banana"));
+                  $r3$.ɵɵattribute("class", "banana");
                 }
               },
               encapsulation: 2
@@ -822,8 +822,8 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵɵselect(0);
-                  $r3$.ɵɵelementAttribute(0, "class", $r3$.ɵɵbind("round"));
-                  $r3$.ɵɵelementAttribute(0, "style", $r3$.ɵɵbind("height:100px"), $r3$.ɵɵsanitizeStyle);
+                  $r3$.ɵɵattribute("class", "round");
+                  $r3$.ɵɵattribute("style", "height:100px", $r3$.ɵɵsanitizeStyle);
                 }
               },
               encapsulation: 2
