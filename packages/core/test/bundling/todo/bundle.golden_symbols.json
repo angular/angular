@@ -12,9 +12,6 @@
     "name": "BINDING_INDEX"
   },
   {
-    "name": "BIT_MASK_APPLY_ALL"
-  },
-  {
     "name": "BLOOM_MASK"
   },
   {
@@ -51,13 +48,10 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "DEFAULT_BINDING_INDEX_VALUE"
-  },
-  {
     "name": "DEFAULT_BINDING_VALUE"
   },
   {
-    "name": "DEFAULT_MASK_VALUE"
+    "name": "DEFAULT_GUARD_MASK_VALUE"
   },
   {
     "name": "DEFAULT_SIZE_VALUE"
@@ -121,6 +115,9 @@
   },
   {
     "name": "IterableDiffers"
+  },
+  {
+    "name": "MAP_BASED_ENTRY_PROP_NAME"
   },
   {
     "name": "MIN_DIRECTIVE_ID"
@@ -219,6 +216,12 @@
     "name": "SANITIZER"
   },
   {
+    "name": "STYLING_INDEX_FOR_MAP_BINDING"
+  },
+  {
+    "name": "STYLING_INDEX_START_VALUE"
+  },
+  {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
   },
   {
@@ -304,6 +307,9 @@
   },
   {
     "name": "__values"
+  },
+  {
+    "name": "_activeStylingMapApplyFn"
   },
   {
     "name": "_c0"
@@ -394,6 +400,9 @@
   },
   {
     "name": "_stylingMode"
+  },
+  {
+    "name": "_stylingProp"
   },
   {
     "name": "_symbolIterator"
@@ -591,6 +600,9 @@
     "name": "currentClassIndex"
   },
   {
+    "name": "currentStyleIndex"
+  },
+  {
     "name": "decreaseElementDepthCount"
   },
   {
@@ -730,6 +742,9 @@
   },
   {
     "name": "getBindingNameFromIndex"
+  },
+  {
+    "name": "getBindingValue"
   },
   {
     "name": "getBindingsEnabled"
@@ -921,6 +936,9 @@
     "name": "getProp"
   },
   {
+    "name": "getPropValuesStartPosition"
+  },
+  {
     "name": "getRenderFlags"
   },
   {
@@ -954,6 +972,9 @@
     "name": "getStylingContextFromLView"
   },
   {
+    "name": "getStylingMapsSyncFn"
+  },
+  {
     "name": "getSymbolIterator"
   },
   {
@@ -967,9 +988,6 @@
   },
   {
     "name": "getTypeNameForDebugging"
-  },
-  {
-    "name": "getValue"
   },
   {
     "name": "getValue"
@@ -997,6 +1015,9 @@
   },
   {
     "name": "hasTagAndTypeMatch"
+  },
+  {
+    "name": "hasValueChanged"
   },
   {
     "name": "hasValueChanged"
@@ -1134,7 +1155,7 @@
     "name": "isStylingContext"
   },
   {
-    "name": "isValueDefined"
+    "name": "isStylingValueDefined"
   },
   {
     "name": "iterateListLike"
@@ -1207,6 +1228,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "normalizeBitMaskValue"
   },
   {
     "name": "patchContextWithStaticAttrs"
@@ -1489,6 +1513,9 @@
   },
   {
     "name": "updateSingleStylingValue"
+  },
+  {
+    "name": "updateStyleBinding"
   },
   {
     "name": "valueExists"
