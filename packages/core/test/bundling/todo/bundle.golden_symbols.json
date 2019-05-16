@@ -561,9 +561,6 @@
     "name": "createLView"
   },
   {
-    "name": "createNodeAtIndex"
-  },
-  {
     "name": "createRootComponent"
   },
   {
@@ -574,6 +571,9 @@
   },
   {
     "name": "createTNode"
+  },
+  {
+    "name": "createTNodeAtIndex"
   },
   {
     "name": "createTView"
@@ -865,6 +865,9 @@
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateTNode"
   },
   {
     "name": "getOrCreateTView"

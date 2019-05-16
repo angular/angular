@@ -225,6 +225,10 @@ export function createLView<T>(
 /**
  * Create and stores the TNode, and hooks it up to the tree.
  *
+ * @param tView The current `TView`.
+ * @param tHostNode This is a hack and we should not have to pass this value in. It is only used to
+ * determine if the parent belongs to a different tView. Instead we should not have parentTView
+ * point to TView other the current one.
  * @param index The index at which the TNode should be saved (null if view, since they are not
  * saved).
  * @param type The type of TNode to create
@@ -232,59 +236,61 @@ export function createLView<T>(
  * @param name The tag name of the associated native element, if applicable
  * @param attrs Any attrs for the native element, if applicable
  */
-export function createNodeAtIndex(
-    index: number, type: TNodeType.Element, name: string | null,
-    attrs: TAttributes | null): TElementNode;
-export function createNodeAtIndex(
-    index: number, type: TNodeType.Container, name: string | null,
-    attrs: TAttributes | null): TContainerNode;
-export function createNodeAtIndex(
-    index: number, type: TNodeType.Projection, name: null,
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType.Element,
+    name: string | null, attrs: TAttributes | null): TElementNode;
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType.Container,
+    name: string | null, attrs: TAttributes | null): TContainerNode;
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType.Projection, name: null,
     attrs: TAttributes | null): TProjectionNode;
-export function createNodeAtIndex(
-    index: number, type: TNodeType.ElementContainer, name: string | null,
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType.ElementContainer,
+    name: string | null, attrs: TAttributes | null): TElementContainerNode;
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType.IcuContainer, name: null,
     attrs: TAttributes | null): TElementContainerNode;
-export function createNodeAtIndex(
-    index: number, type: TNodeType.IcuContainer, name: null,
-    attrs: TAttributes | null): TElementContainerNode;
-export function createNodeAtIndex(
-    index: number, type: TNodeType, name: string | null, attrs: TAttributes | null): TElementNode&
-    TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
-  const lView = getLView();
-  const tView = lView[TVIEW];
+export function getOrCreateTNode(
+    tView: TView, tHostNode: TNode | null, index: number, type: TNodeType, name: string | null,
+    attrs: TAttributes | null): TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&
+    TIcuContainerNode {
+  // Keep this function short, so that the VM will inline it.
   const adjustedIndex = index + HEADER_OFFSET;
-  let tNode = tView.data[adjustedIndex] as TNode;
-  if (tNode == null) {
-    const previousOrParentTNode = getPreviousOrParentTNode();
-    const isParent = getIsParent();
-    const parent =
-        isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
-
-    // Parents cannot cross component boundaries because components will be used in multiple places,
-    // so it's only set if the view is the same.
-    const parentInSameView = parent && parent !== lView[T_HOST];
-    const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
-
-    tNode = tView.data[adjustedIndex] = createTNode(tParentNode, type, adjustedIndex, name, attrs);
-
-    // Now link ourselves into the tree.
-    if (previousOrParentTNode) {
-      if (isParent && previousOrParentTNode.child == null &&
-          (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
-        // We are in the same view, which means we are adding content node to the parent view.
-        previousOrParentTNode.child = tNode;
-      } else if (!isParent) {
-        previousOrParentTNode.next = tNode;
-      }
-    }
-    if (index === 0) {
-      tView.firstChild = tNode;
-    }
-  }
-
+  const tNode = tView.data[adjustedIndex] as TNode ||
+      createTNodeAtIndex(tView, tHostNode, adjustedIndex, type, name, attrs, index);
   setPreviousOrParentTNode(tNode, true);
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
       TProjectionNode & TIcuContainerNode;
+}
+
+function createTNodeAtIndex(
+    tView: TView, tHostNode: TNode | null, adjustedIndex: number, type: TNodeType,
+    name: string | null, attrs: TAttributes | null, index: number) {
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
+  const parent =
+      isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
+  // Parents cannot cross component boundaries because components will be used in multiple places,
+  // so it's only set if the view is the same.
+  const parentInSameView = parent && parent !== tHostNode;
+  const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
+  const tNode = tView.data[adjustedIndex] =
+      createTNode(tParentNode, type, adjustedIndex, name, attrs);
+  if (index === 0) {
+    tView.firstChild = tNode;
+  }
+  // Now link ourselves into the tree.
+  if (previousOrParentTNode) {
+    if (isParent && previousOrParentTNode.child == null &&
+        (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
+      // We are in the same view, which means we are adding content node to the parent view.
+      previousOrParentTNode.child = tNode;
+    } else if (!isParent) {
+      previousOrParentTNode.next = tNode;
+    }
+  }
+  return tNode;
 }
 
 export function assignTViewNodeToLView(

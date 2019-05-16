@@ -14,7 +14,7 @@ import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
@@ -27,8 +27,10 @@ import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
-import {createDirectivesAndLocals, createNodeAtIndex, elementCreate, executeContentQueries, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
+
+import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
 import {getActiveDirectiveStylingIndex} from './styling';
+
 
 
 /**
@@ -58,7 +60,8 @@ export function ɵɵelementStart(
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   const native = lView[index + HEADER_OFFSET] = elementCreate(name);
   const renderer = lView[RENDERER];
-  const tNode = createNodeAtIndex(index, TNodeType.Element, name, attrs || null);
+  const tNode =
+      getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs || null);
   let initialStylesIndex = 0;
   let initialClassesIndex = 0;
 
