@@ -59,7 +59,7 @@ export interface TestBed {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     execute(tokens: any[], fn: Function, context?: any): any;
     get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-    /** @deprecated */ get(token: any, notFoundValue?: any): any;
+    get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
