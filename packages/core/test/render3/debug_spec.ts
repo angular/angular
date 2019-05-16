@@ -7,8 +7,8 @@
  */
 
 import {getLContext} from '../../src/render3/context_discovery';
-import {LViewDebug, toDebug} from '../../src/render3/debug';
 import {RenderFlags, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../src/render3/index';
+import {LViewDebug, toDebug} from '../../src/render3/instructions/lview_debug';
 
 import {ComponentFixture} from './render_util';
 

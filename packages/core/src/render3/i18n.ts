@@ -6,29 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import { getPluralCase } from '../i18n/localization';
+import { getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS } from '../sanitization/html_sanitizer';
+import { InertBodyHelper } from '../sanitization/inert_body';
+import { sanitizeSrcset, _sanitizeUrl } from '../sanitization/url_sanitizer';
+import { addAllToArray } from '../util/array_utils';
+import { assertDataInRange, assertDefined, assertEqual, assertGreaterThan } from '../util/assert';
 import '../util/ng_i18n_closure_mode';
-import {getPluralCase} from '../i18n/localization';
-import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
-import {InertBodyHelper} from '../sanitization/inert_body';
-import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
-import {addAllToArray} from '../util/array_utils';
-import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-import {attachPatchData} from './context_discovery';
-import {attachI18nOpCodesDebug} from './debug';
-import {elementAttributeInternal, ɵɵload, ɵɵtextBinding} from './instructions/all';
-import {allocExpando, elementPropertyInternal, getOrCreateTNode, setInputsForProperty} from './instructions/shared';
-import {LContainer, NATIVE} from './interfaces/container';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
-import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
-import {RComment, RElement, RText} from './interfaces/renderer';
-import {SanitizerFn} from './interfaces/sanitization';
-import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
-import {NO_CHANGE} from './tokens';
-import {renderStringify} from './util/misc_utils';
-import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
+import { attachPatchData } from './context_discovery';
+import { attachI18nOpCodesDebug } from './debug';
+import { elementAttributeInternal, ɵɵload, ɵɵtextBinding } from './instructions/all';
+import { allocExpando, elementPropertyInternal, getOrCreateTNode, setInputsForProperty } from './instructions/shared';
+import { LContainer, NATIVE } from './interfaces/container';
+import { COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu } from './interfaces/i18n';
+import { TElementNode, TIcuContainerNode, TNode, TNodeType } from './interfaces/node';
+import { RComment, RElement, RText } from './interfaces/renderer';
+import { SanitizerFn } from './interfaces/sanitization';
+import { StylingContext } from './interfaces/styling';
+import { BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST } from './interfaces/view';
+import { appendChild, createTextNode, nativeRemoveNode } from './node_manipulation';
+import { getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode } from './state';
+import { NO_CHANGE } from './tokens';
+import { renderStringify } from './util/misc_utils';
+import { getNativeByIndex, getNativeByTNode, getTNode, isLContainer } from './util/view_utils';
+
+
 
 
 const MARKER = `�`;

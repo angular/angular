@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
+import {assertDefined} from '../../util/assert';
 
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
-import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from './interfaces/i18n';
-import {TNode} from './interfaces/node';
-import {LQueries} from './interfaces/query';
-import {RComment, RElement} from './interfaces/renderer';
-import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
-import {runtimeIsNewStylingInUse} from './styling_next/state';
-import {DebugStyling as DebugNewStyling, NodeStylingDebug} from './styling_next/styling_debug';
-import {attachDebugObject} from './util/debug_utils';
-import {getTNode, isStylingContext, unwrapRNode} from './util/view_utils';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
+import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
+import {TNode} from '../interfaces/node';
+import {LQueries} from '../interfaces/query';
+import {RComment, RElement} from '../interfaces/renderer';
+import {StylingContext} from '../interfaces/styling';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from '../interfaces/view';
+import {runtimeIsNewStylingInUse} from '../styling_next/state';
+import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
+import {attachDebugObject} from '../util/debug_utils';
+import {getTNode, isStylingContext, unwrapRNode} from '../util/view_utils';
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
