@@ -43,10 +43,6 @@ describe('inheritance', () => {
       });
 
   describe('ngOnChanges', () => {
-    @Component({selector: 'app-comp', template: ``})
-    class AppComp {
-    }
-
     it('should be inherited when super is a directive', () => {
       const log: string[] = [];
 
@@ -61,10 +57,14 @@ describe('inheritance', () => {
       class SubDirective extends SuperDirective {
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective, SuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
@@ -82,10 +82,14 @@ describe('inheritance', () => {
         @Input() someInput = '';
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
@@ -109,10 +113,15 @@ describe('inheritance', () => {
       class SubDirective extends SuperDirective {
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective, SuperDirective, GrandSuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
@@ -134,10 +143,15 @@ describe('inheritance', () => {
       class SubDirective extends SuperDirective {
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective, SuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
@@ -159,10 +173,15 @@ describe('inheritance', () => {
       class SubDirective extends SuperClass {
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective, GrandSuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
@@ -182,10 +201,15 @@ describe('inheritance', () => {
         @Input() someInput = '';
       }
 
-      TestBed.configureTestingModule({declarations: [AppComp, SubDirective]});
-      TestBed.overrideComponent(
-          AppComp, {set: new Component({template: '<div subDir [someInput]="1"></div>'})});
-      const fixture = TestBed.createComponent(AppComp);
+
+      @Component({template: `<div subDir [someInput]="1"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, SubDirective],
+      });
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(log).toEqual(['on changes!']);
