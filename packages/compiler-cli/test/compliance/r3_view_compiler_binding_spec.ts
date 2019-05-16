@@ -496,6 +496,51 @@ describe('compiler compliance: bindings', () => {
       expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
     });
 
+
+    it('should generate the proper update instructions for interpolated attributes', () => {
+      const files: MockDirectory = getAppFiles(`
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d{{four}}e"></div>
+        <div attr.title="a{{one}}b{{two}}c{{three}}d"></div>
+        <div attr.title="a{{one}}b{{two}}c"></div>
+        <div attr.title="a{{one}}b"></div>
+        <div attr.title="{{one}}"></div>
+      `);
+
+      const template = `
+      …
+        if (rf & 2) {
+          i0.Δselect(0);
+          i0.ΔattributeInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
+          i0.Δselect(1);
+          i0.ΔattributeInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
+          i0.Δselect(2);
+          i0.ΔattributeInterpolate7("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h");
+          i0.Δselect(3);
+          i0.ΔattributeInterpolate6("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g");
+          i0.Δselect(4);
+          i0.ΔattributeInterpolate5("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f");
+          i0.Δselect(5);
+          i0.ΔattributeInterpolate4("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e");
+          i0.Δselect(6);
+          i0.ΔattributeInterpolate3("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d");
+          i0.Δselect(7);
+          i0.ΔattributeInterpolate2("title", "a", ctx.one, "b", ctx.two, "c");
+          i0.Δselect(8);
+          i0.ΔattributeInterpolate1("title", "a", ctx.one, "b");
+          i0.Δselect(9);
+          i0.ΔattributeInterpolate("title", ctx.one);
+      }
+      …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
+    });
+
     it('should keep local ref for host element', () => {
       const files: MockDirectory = getAppFiles(`
         <b ngNonBindable #myRef id="my-id">
