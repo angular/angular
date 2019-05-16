@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual} from '../../util/assert';
+import {assertDataInRange, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {executePreOrderHooks, registerPostOrderHooks} from '../hooks';
@@ -164,9 +164,11 @@ function containerInternal(
                    'container nodes should be created before any bindings');
 
   const adjustedIndex = index + HEADER_OFFSET;
-  const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs);
+  const comment = lView[index + HEADER_OFFSET] =
+      lView[RENDERER].createComment(ngDevMode ? 'container' : '');
+  const tNode = createNodeAtIndex(index, TNodeType.Container, tagName, attrs);
   const lContainer = lView[adjustedIndex] =
       createLContainer(lView[adjustedIndex], lView, comment, tNode);
 
