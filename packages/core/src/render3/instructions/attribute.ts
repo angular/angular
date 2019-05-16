@@ -8,8 +8,8 @@
 import {SanitizerFn} from '../interfaces/sanitization';
 import {getSelectedIndex} from '../state';
 
-import {ΔelementAttribute} from './element';
-import {Δbind} from './property';
+import {ɵɵelementAttribute} from './element';
+import {ɵɵbind} from './property';
 
 /**
  * Updates the value of or removes a bound attribute on an Element.
@@ -24,8 +24,9 @@ import {Δbind} from './property';
  *
  * @codeGenApi
  */
-export function Δattribute(
+export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string) {
   const index = getSelectedIndex();
-  return ΔelementAttribute(index, name, Δbind(value), sanitizer, namespace);
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
+  return ɵɵelementAttribute(index, name, ɵɵbind(value), sanitizer, namespace);
 }
