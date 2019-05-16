@@ -22,7 +22,7 @@ import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, 
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {registerInitialStylingIntoContext} from '../styling_next/instructions';
-import {isNewStylingInUse} from '../styling_next/state';
+import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {renderStringify} from '../util/misc_utils';
@@ -119,7 +119,7 @@ export function ΔelementStart(
     renderInitialStyles(native, tNode.stylingTemplate, renderer, initialStylesIndex);
   }
 
-  if (isNewStylingInUse() && lastAttrIndex >= 0) {
+  if (runtimeIsNewStylingInUse() && lastAttrIndex >= 0) {
     registerInitialStylingIntoContext(tNode, attrs as TAttributes, lastAttrIndex);
   }
 

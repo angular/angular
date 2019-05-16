@@ -18,7 +18,7 @@ import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
 import {getCachedStylingContext, setCachedStylingContext} from '../styling/state';
 import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {classProp as newClassProp, styleProp as newStyleProp, stylingApply as newStylingApply, stylingInit as newStylingInit} from '../styling_next/instructions';
-import {allowOldStyling, isNewStylingInUse} from '../styling_next/state';
+import {runtimeAllowOldStyling, runtimeIsNewStylingInUse} from '../styling_next/state';
 import {getBindingNameFromIndex} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
@@ -79,7 +79,7 @@ export function Δstyling(
     // this is temporary hack to get the existing styling instructions to
     // play ball with the new refactored implementation.
     // TODO (matsko): remove this once the old implementation is not needed.
-    if (isNewStylingInUse()) {
+    if (runtimeIsNewStylingInUse()) {
       newStylingInit();
     }
 
@@ -159,8 +159,12 @@ export function ΔstyleProp(
         stylingContext, styleIndex, valueToAdd, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
   }
 
-  if (isNewStylingInUse()) {
+  if (runtimeIsNewStylingInUse()) {
     const prop = getBindingNameFromIndex(stylingContext, styleIndex, directiveStylingIndex, false);
+
+    // the reason why we cast the value as `boolean` is
+    // because the new styling refactor does not yet support
+    // sanitization or animation players.
     newStyleProp(prop, value as string | number, suffix);
   }
 }
@@ -222,8 +226,12 @@ export function ΔclassProp(
         stylingContext, classIndex, input, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
   }
 
-  if (isNewStylingInUse()) {
+  if (runtimeIsNewStylingInUse()) {
     const prop = getBindingNameFromIndex(stylingContext, classIndex, directiveStylingIndex, true);
+
+    // the reason why we cast the value as `boolean` is
+    // because the new styling refactor does not yet support
+    // sanitization or animation players.
     newClassProp(prop, input as boolean);
   }
 }
@@ -345,7 +353,7 @@ export function ΔstylingApply(): void {
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
   const stylingContext = getStylingContext(index, lView);
 
-  if (allowOldStyling()) {
+  if (runtimeAllowOldStyling()) {
     const totalPlayersQueued = renderStyling(
         stylingContext, renderer, lView, isFirstRender, null, null, directiveStylingIndex);
     if (totalPlayersQueued > 0) {
@@ -363,7 +371,7 @@ export function ΔstylingApply(): void {
   // styling flush has occurred. Note that this will be fixed once FW-1254 lands.
   setCachedStylingContext(null);
 
-  if (isNewStylingInUse()) {
+  if (runtimeIsNewStylingInUse()) {
     newStylingApply();
   }
 }

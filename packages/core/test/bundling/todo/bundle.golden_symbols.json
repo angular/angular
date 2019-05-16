@@ -393,7 +393,7 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_stylingState"
+    "name": "_stylingMode"
   },
   {
     "name": "_symbolIterator"
@@ -445,9 +445,6 @@
   },
   {
     "name": "allowFlush"
-  },
-  {
-    "name": "allowOldStyling"
   },
   {
     "name": "allowStylingFlush"
@@ -1116,9 +1113,6 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
-    "name": "isNewStylingInUse"
-  },
-  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -1315,6 +1309,12 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "runtimeAllowOldStyling"
+  },
+  {
+    "name": "runtimeIsNewStylingInUse"
   },
   {
     "name": "saveNameToExportMap"

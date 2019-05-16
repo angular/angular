@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompilerNewStylingState, compilerUseNewStyling} from '@angular/compiler/src/render3/view/styling_state';
+import {CompilerStylingMode, compilerSetStylingMode} from '@angular/compiler/src/render3/view/styling_state';
 import {Component, Directive, HostBinding, Input} from '@angular/core';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/debug';
-import {NewStylingState, useNewStyling} from '@angular/core/src/render3/styling_next/state';
+import {RuntimeStylingMode, runtimeSetStylingMode} from '@angular/core/src/render3/styling_next/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -16,13 +16,13 @@ import {onlyInIvy} from '@angular/private/testing';
 
 describe('new styling integration', () => {
   beforeEach(() => {
-    useNewStyling(NewStylingState.OnlyUseNew);
-    compilerUseNewStyling(CompilerNewStylingState.OnlyUseNew);
+    runtimeSetStylingMode(RuntimeStylingMode.UseNew);
+    compilerSetStylingMode(CompilerStylingMode.UseNew);
   });
 
   afterEach(() => {
-    useNewStyling(NewStylingState.UseOld);
-    compilerUseNewStyling(CompilerNewStylingState.UseOld);
+    runtimeSetStylingMode(RuntimeStylingMode.UseOld);
+    compilerSetStylingMode(CompilerStylingMode.UseOld);
   });
 
   onlyInIvy('ivy resolves styling across directives, components and templates in unison')

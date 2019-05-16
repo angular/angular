@@ -11,27 +11,27 @@
  * to defer all styling instruction calls to the old or new
  * styling implementation.
  */
-export const enum NewStylingState {
+export const enum RuntimeStylingMode {
   UseOld = 0,
-  UseBothNewAndOld = 1,
-  OnlyUseNew = 2,
+  UseBothOldAndNew = 1,
+  UseNew = 2,
 }
 
-let _stylingState = NewStylingState.UseOld;
+let _stylingMode = 0;
 
 /**
  * Temporary function used to inform the existing styling algorithm
  * code to delegate all styling instruction calls to the new refactored
  * styling code.
  */
-export function useNewStyling(state: NewStylingState) {
-  _stylingState = state;
+export function runtimeSetStylingMode(mode: RuntimeStylingMode) {
+  _stylingMode = mode;
 }
 
-export function isNewStylingInUse() {
-  return _stylingState > NewStylingState.UseOld;
+export function runtimeIsNewStylingInUse() {
+  return _stylingMode > RuntimeStylingMode.UseOld;
 }
 
-export function allowOldStyling() {
-  return _stylingState < NewStylingState.OnlyUseNew;
+export function runtimeAllowOldStyling() {
+  return _stylingMode < RuntimeStylingMode.UseNew;
 }

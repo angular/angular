@@ -15,7 +15,7 @@ import {LQueries} from './interfaces/query';
 import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
-import {isNewStylingInUse} from './styling_next/state';
+import {runtimeIsNewStylingInUse} from './styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from './styling_next/styling_debug';
 import {attachDebugObject} from './util/debug_utils';
 import {getTNode, isStylingContext, unwrapRNode} from './util/view_utils';
@@ -194,7 +194,7 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
 
       let styles: DebugNewStyling|null = null;
       let classes: DebugNewStyling|null = null;
-      if (isNewStylingInUse()) {
+      if (runtimeIsNewStylingInUse()) {
         styles = tNode.newStyles ? new NodeStylingDebug(tNode.newStyles, lView) : null;
         classes = tNode.newClasses ? new NodeStylingDebug(tNode.newClasses, lView) : null;
       }

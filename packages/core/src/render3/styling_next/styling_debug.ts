@@ -80,8 +80,6 @@ export interface TStylingTupleSummary {
   sources: (number|null|string)[];
 }
 
-
-
 /**
  * Instantiates and attaches an instance of `TStylingContextDebug` to the provided context.
  */

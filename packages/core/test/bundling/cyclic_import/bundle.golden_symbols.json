@@ -171,7 +171,7 @@
     "name": "_selectedIndex"
   },
   {
-    "name": "_stylingState"
+    "name": "_stylingMode"
   },
   {
     "name": "addBindingIntoContext"
@@ -531,9 +531,6 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
-    "name": "isNewStylingInUse"
-  },
-  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -652,6 +649,9 @@
   },
   {
     "name": "resolveDirectives"
+  },
+  {
+    "name": "runtimeIsNewStylingInUse"
   },
   {
     "name": "saveNameToExportMap"
