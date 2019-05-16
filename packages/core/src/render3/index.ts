@@ -21,7 +21,9 @@ export {
   markDirty,
   store,
   tick,
+
   ɵɵallocHostVars,
+  ɵɵattribute,
   ɵɵbind,
   ɵɵclassMap,
   ɵɵclassProp,

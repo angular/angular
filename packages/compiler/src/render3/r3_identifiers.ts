@@ -41,6 +41,8 @@ export class Identifiers {
 
   static elementAttribute: o.ExternalReference = {name: 'ɵɵelementAttribute', moduleName: CORE};
 
+  static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
+
   static classProp: o.ExternalReference = {name: 'ɵɵclassProp', moduleName: CORE};
 
   static elementContainerStart:

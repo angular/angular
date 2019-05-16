@@ -8,6 +8,7 @@
 
 // clang-format off
 export {
+  ɵɵattribute,
   ɵɵdefineBase,
   ɵɵdefineComponent,
   ɵɵdefineDirective,

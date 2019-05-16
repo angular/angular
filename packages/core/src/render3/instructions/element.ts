@@ -198,7 +198,7 @@ export function ɵɵelement(
 
 
 /**
- * Updates the value of removes an attribute on an Element.
+ * Updates the value or removes an attribute on an Element.
  *
  * @param number index The index of the element in the data array
  * @param name name The name of the attribute.

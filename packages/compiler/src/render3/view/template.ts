@@ -753,6 +753,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
           if (inputType === BindingType.Property) {
             if (value instanceof Interpolation) {
+              // prop="{{value}}" and friends
               this.updateInstruction(
                   elementIndex, input.sourceSpan, getPropertyInterpolationExpression(value),
                   () =>
@@ -761,23 +762,33 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                        ...params]);
 
             } else {
-              // Bound, un-interpolated properties
+              // [prop]="value"
               this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
                 return [
                   o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
                 ];
               });
             }
-          } else {
-            let instruction: any;
-
-            if (inputType === BindingType.Class) {
-              instruction = R3.classProp;
+          } else if (inputType === BindingType.Attribute) {
+            if (value instanceof Interpolation) {
+              // attr.name="{{value}}" and friends
+              this.updateInstruction(elementIndex, input.sourceSpan, R3.elementAttribute, () => {
+                return [
+                  o.literal(elementIndex), o.literal(attrName),
+                  this.convertPropertyBinding(implicit, value), ...params
+                ];
+              });
             } else {
-              instruction = R3.elementAttribute;
+              // [attr.name]="value"
+              this.updateInstruction(elementIndex, input.sourceSpan, R3.attribute, () => {
+                return [
+                  o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
+                ];
+              });
             }
-
-            this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
+          } else {
+            // class prop
+            this.updateInstruction(elementIndex, input.sourceSpan, R3.classProp, () => {
               return [
                 o.literal(elementIndex), o.literal(attrName),
                 this.convertPropertyBinding(implicit, value), ...params
