@@ -22,7 +22,10 @@ function buildImportsTemplate(data: ExampleMetadata): string {
 
 /** Inlines the example module template with the specified parsed data. */
 function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
-  const exampleImports = parsedData.map(m => buildImportsTemplate(m)).join('\n');
+  // TODO(devversion): re-add line-breaks for debugging once the example module has
+  // been re-added to the repository gitignore.
+  // Blocked on https://github.com/angular/angular/issues/30259
+  const exampleImports = parsedData.map(m => buildImportsTemplate(m)).join('');
   const quotePlaceholder = '◬';
   const exampleList = parsedData.reduce((result, data) => {
     return result.concat(data.component).concat(data.additionalComponents);
@@ -44,8 +47,8 @@ function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace('${exampleImports}', exampleImports)
-    .replace('${exampleComponents}', JSON.stringify(exampleComponents, null, 2))
-    .replace('${exampleList}', `[\n  ${exampleList.join(',\n  ')}\n]`)
+    .replace('${exampleComponents}', JSON.stringify(exampleComponents))
+    .replace('${exampleList}', `[${exampleList.join(', ')}]`)
     .replace(new RegExp(`"${quotePlaceholder}|${quotePlaceholder}"`, 'g'), '');
 }
 

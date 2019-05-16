@@ -7,7 +7,8 @@ load("//tools/package-docs-content:index.bzl", "package_docs_content")
 
 ng_module(
   name = "examples",
-  srcs = glob(["**/*.ts"]) + [":example-module"],
+  # TODO(paul): re-add the example-module genfile once angular/angular#30259 is resolved.
+  srcs = glob(["**/*.ts"]),
   module_name = "@angular/material-examples",
   assets = glob(["**/*.html", "**/*.css"]),
   deps = [

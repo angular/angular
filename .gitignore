@@ -7,7 +7,8 @@
 /bazel-out
 
 # Example module file will be auto-generated.
-/src/material-examples/example-module.ts
+# TODO(devversion): re-add the example-module once angular#30259 is fixed.
+# /src/material-examples/example-module.ts
 
 # dependencies
 node_modules
