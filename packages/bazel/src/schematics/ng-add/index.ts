@@ -174,7 +174,10 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
       replacePropertyInAstObject(
           recorder, architect, 'test', {
             builder: '@angular/bazel:build',
-            options: {'bazelCommand': 'test', 'targetLabel': '//src/...'},
+            options: {
+              bazelCommand: 'test',
+              targetLabel: '//src:test',
+            },
           },
           indent);
     }
