@@ -36,9 +36,9 @@ if (isBrowser) {
 
     it('should reject the Promise on failure', async(() => {
          resourceLoader = createCachedResourceLoader();
-         resourceLoader.get('unknown.html')
-             .then((text) => { throw new Error('Not expected to succeed.'); })
-             .catch((error) => {/** success */});
+         resourceLoader.get('unknown.html').then(() => {
+           throw new Error('Not expected to succeed.');
+         }, () => {/* success */});
        }));
 
     it('should allow fakeAsync Tests to load components with templateUrl synchronously',
