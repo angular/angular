@@ -96,7 +96,7 @@ web_test_repositories()
 
 # Temporary work-around for https://github.com/angular/angular/issues/28681
 # TODO(gregmagolan): go back to @io_bazel_rules_webtesting browser_repositories
-load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
+load("//:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 
