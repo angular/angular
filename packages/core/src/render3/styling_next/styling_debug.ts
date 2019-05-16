@@ -5,12 +5,13 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {attachDebugObject, toDebug} from '../debug';
 import {RElement} from '../interfaces/renderer';
+import {attachDebugObject} from '../util/debug_utils';
 
 import {BIT_MASK_APPLY_ALL, DEFAULT_BINDING_INDEX_VALUE, applyStyling} from './bindings';
 import {StylingBindingData, TStylingContext, TStylingContextIndex} from './interfaces';
 import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked} from './util';
+
 
 /**
  * A debug/testing-oriented summary of a styling entry.
@@ -142,7 +143,7 @@ export class NodeStylingDebug implements DebugStyling {
   private _contextDebug: TStylingContextDebug;
 
   constructor(public context: TStylingContext, private _data: StylingBindingData) {
-    this._contextDebug = toDebug(this.context as any) as any;
+    this._contextDebug = (this.context as any).debug as any;
   }
 
   /**

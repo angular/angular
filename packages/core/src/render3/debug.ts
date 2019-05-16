@@ -17,11 +17,8 @@ import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from './interfaces/view';
 import {isNewStylingInUse} from './styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from './styling_next/styling_debug';
+import {attachDebugObject} from './util/debug_utils';
 import {getTNode, isStylingContext, unwrapRNode} from './util/view_utils';
-
-export function attachDebugObject(obj: any, debug: any) {
-  Object.defineProperty(obj, 'debug', {value: debug, enumerable: false});
-}
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
