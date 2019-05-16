@@ -720,7 +720,7 @@ describe('inheritance', () => {
       });
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -1264,7 +1264,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(2);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -1853,7 +1853,7 @@ describe('inheritance', () => {
       expect(foundChildDir2s !.length).toBe(2);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -2382,7 +2382,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(2);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -2974,7 +2974,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(5);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -3589,7 +3589,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(5);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -4194,7 +4194,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(5);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
@@ -4828,7 +4828,7 @@ describe('inheritance', () => {
       expect(foundQueryList !.length).toBe(5);
     });
 
-    describe(
+    xdescribe(
         'what happens when...',
         () => {
             // TODO: sub has Input and super has Output on same property
