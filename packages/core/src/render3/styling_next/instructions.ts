@@ -11,18 +11,25 @@ import {RElement} from '../interfaces/renderer';
 import {StylingContext as OldStylingContext, StylingIndex as OldStylingIndex} from '../interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST, LView, RENDERER} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getLView, getSelectedIndex} from '../state';
+import {NO_CHANGE} from '../tokens';
 import {getTNode, isStylingContext as isOldStylingContext} from '../util/view_utils';
 
 import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateStyleBinding} from './bindings';
 import {TStylingContext} from './interfaces';
+import {activeStylingMapFeature, normalizeIntoStylingMap} from './map_based_bindings';
 import {attachStylingDebugObject} from './styling_debug';
-import {allocStylingContext, updateContextDirectiveIndex} from './util';
+import {allocStylingContext, hasValueChanged, updateContextDirectiveIndex} from './util';
+
 
 
 /**
+ * --------
+ *
  * This file contains the core logic for how styling instructions are processed in Angular.
  *
  * To learn more about the algorithm see `TStylingContext`.
+ *
+ * --------
  */
 
 /**
@@ -49,26 +56,76 @@ export function stylingInit() {
  */
 export function styleProp(
     prop: string, value: string | number | String | null, suffix?: string | null): void {
-  const index = getSelectedIndex();
-  const lView = getLView();
-  const bindingIndex = lView[BINDING_INDEX]++;
-  const tNode = getTNode(index, lView);
-  const tContext = getStylesContext(tNode);
-  const defer = getActiveDirectiveSuperClassHeight() > 0;
-  updateStyleBinding(tContext, lView, prop, bindingIndex, value, defer);
+  _stylingProp(prop, value, false);
 }
 
 /**
  * Mirror implementation of the `classProp()` instruction (found in `instructions/styling.ts`).
  */
 export function classProp(className: string, value: boolean | null): void {
+  _stylingProp(className, value, true);
+}
+
+/**
+ * Shared function used to update a prop-based styling binding for an element.
+ */
+function _stylingProp(
+    prop: string, value: boolean | number | String | string | null, isClassBased: boolean) {
   const index = getSelectedIndex();
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX]++;
   const tNode = getTNode(index, lView);
-  const tContext = getClassesContext(tNode);
   const defer = getActiveDirectiveSuperClassHeight() > 0;
-  updateClassBinding(tContext, lView, className, bindingIndex, value, defer);
+  if (isClassBased) {
+    updateClassBinding(
+        getClassesContext(tNode), lView, prop, bindingIndex, value as string | boolean | null,
+        defer);
+  } else {
+    updateStyleBinding(
+        getStylesContext(tNode), lView, prop, bindingIndex, value as string | null, defer);
+  }
+}
+
+/**
+ * Mirror implementation of the `styleMap()` instruction (found in `instructions/styling.ts`).
+ */
+export function styleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
+  _stylingMap(styles, false);
+}
+
+/**
+ * Mirror implementation of the `classMap()` instruction (found in `instructions/styling.ts`).
+ */
+export function classMap(classes: {[className: string]: any} | NO_CHANGE | string | null): void {
+  _stylingMap(classes, true);
+}
+
+/**
+ * Shared function used to update a map-based styling binding for an element.
+ *
+ * When this function is called it will activate support for `[style]` and
+ * `[class]` bindings in Angular.
+ */
+function _stylingMap(value: {[key: string]: any} | string | null, isClassBased: boolean) {
+  activeStylingMapFeature();
+  const index = getSelectedIndex();
+  const lView = getLView();
+  const bindingIndex = lView[BINDING_INDEX]++;
+
+  if (value !== NO_CHANGE) {
+    const tNode = getTNode(index, lView);
+    const defer = getActiveDirectiveSuperClassHeight() > 0;
+    const oldValue = lView[bindingIndex];
+    const valueHasChanged = hasValueChanged(oldValue, value);
+    const lStylingMap = normalizeIntoStylingMap(oldValue, value);
+    if (isClassBased) {
+      updateClassBinding(
+          getClassesContext(tNode), lView, null, bindingIndex, lStylingMap, defer, valueHasChanged);
+    } else {
+      updateStyleBinding(
+          getStylesContext(tNode), lView, null, bindingIndex, lStylingMap, defer, valueHasChanged);
+    }
+  }
 }
 
 /**
@@ -95,33 +152,6 @@ export function stylingApply() {
   const directiveIndex = getActiveDirectiveStylingIndex();
   applyClasses(renderer, lView, getClassesContext(tNode), native, directiveIndex);
   applyStyles(renderer, lView, getStylesContext(tNode), native, directiveIndex);
-}
-
-function getStylesContext(tNode: TNode): TStylingContext {
-  return getContext(tNode, false);
-}
-
-function getClassesContext(tNode: TNode): TStylingContext {
-  return getContext(tNode, true);
-}
-
-/**
- * Returns/instantiates a styling context from/to a `tNode` instance.
- */
-function getContext(tNode: TNode, isClassBased: boolean) {
-  let context = isClassBased ? tNode.newClasses : tNode.newStyles;
-  if (!context) {
-    context = allocStylingContext();
-    if (ngDevMode) {
-      attachStylingDebugObject(context);
-    }
-    if (isClassBased) {
-      tNode.newClasses = context;
-    } else {
-      tNode.newStyles = context;
-    }
-  }
-  return context;
 }
 
 /**
@@ -208,4 +238,31 @@ export function getActiveDirectiveStylingIndex(): number {
 function updateLastDirectiveIndex(tNode: TNode, directiveIndex: number) {
   updateContextDirectiveIndex(getClassesContext(tNode), directiveIndex);
   updateContextDirectiveIndex(getStylesContext(tNode), directiveIndex);
+}
+
+function getStylesContext(tNode: TNode): TStylingContext {
+  return getContext(tNode, false);
+}
+
+function getClassesContext(tNode: TNode): TStylingContext {
+  return getContext(tNode, true);
+}
+
+/**
+ * Returns/instantiates a styling context from/to a `tNode` instance.
+ */
+function getContext(tNode: TNode, isClassBased: boolean) {
+  let context = isClassBased ? tNode.newClasses : tNode.newStyles;
+  if (!context) {
+    context = allocStylingContext();
+    if (ngDevMode) {
+      attachStylingDebugObject(context);
+    }
+    if (isClassBased) {
+      tNode.newClasses = context;
+    } else {
+      tNode.newStyles = context;
+    }
+  }
+  return context;
 }

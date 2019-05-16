@@ -17,7 +17,7 @@ import {BoundPlayerFactory} from '../styling/player_factory';
 import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
 import {getCachedStylingContext, setCachedStylingContext} from '../styling/state';
 import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
-import {classProp as newClassProp, styleProp as newStyleProp, stylingApply as newStylingApply, stylingInit as newStylingInit} from '../styling_next/instructions';
+import {classMap as newClassMap, classProp as newClassProp, styleMap as newStyleMap, styleProp as newStyleProp, stylingApply as newStylingApply, stylingInit as newStylingInit} from '../styling_next/instructions';
 import {runtimeAllowOldStyling, runtimeIsNewStylingInUse} from '../styling_next/state';
 import {getBindingNameFromIndex} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
@@ -285,6 +285,10 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
     }
     updateStyleMap(stylingContext, styles);
   }
+
+  if (runtimeIsNewStylingInUse()) {
+    newStyleMap(styles);
+  }
 }
 
 
@@ -327,6 +331,10 @@ export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | s
       classes = NO_CHANGE;
     }
     updateClassMap(stylingContext, classes);
+  }
+
+  if (runtimeIsNewStylingInUse()) {
+    newClassMap(classes);
   }
 }
 

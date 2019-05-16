@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CompilerStylingMode, compilerSetStylingMode} from '@angular/compiler/src/render3/view/styling_state';
-import {Component, Directive, HostBinding, Input} from '@angular/core';
+import {Component, Directive, HostBinding, Input, ViewChild} from '@angular/core';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/debug';
 import {RuntimeStylingMode, runtimeSetStylingMode} from '@angular/core/src/render3/styling_next/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
+import {ngDevModeResetPerfCounters as resetStylingCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -255,7 +256,7 @@ describe('new styling integration', () => {
             });
           });
 
-  onlyInIvy('only ivy has style debugging support')
+  onlyInIvy('only ivy has style/class bindings debugging support')
       .it('should support situations where there are more than 32 bindings', () => {
         const TOTAL_BINDINGS = 34;
 
@@ -314,7 +315,275 @@ describe('new styling integration', () => {
           expect(value).toEqual(`final${num}`);
         }
       });
+
+  onlyInIvy('only ivy has style debugging support')
+      .it('should apply map-based style and class entries', () => {
+        @Component({template: '<div [style]="s" [class]="c"></div>'})
+        class Cmp {
+          public c !: {[key: string]: any};
+          updateClasses(prop: string) {
+            this.c = {...this.c || {}};
+            this.c[prop] = true;
+          }
+
+          public s !: {[key: string]: any};
+          updateStyles(prop: string, value: string|number|null) {
+            this.s = {...this.s || {}};
+            this.s[prop] = value;
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        comp.updateStyles('width', '100px');
+        comp.updateStyles('height', '200px');
+        comp.updateClasses('abc');
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+        const classes = node.classes !;
+
+        const stylesSummary = styles.summary;
+        const widthSummary = stylesSummary['width'];
+        expect(widthSummary.prop).toEqual('width');
+        expect(widthSummary.value).toEqual('100px');
+
+        const heightSummary = stylesSummary['height'];
+        expect(heightSummary.prop).toEqual('height');
+        expect(heightSummary.value).toEqual('200px');
+
+        const classesSummary = classes.summary;
+        const abcSummary = classesSummary['abc'];
+        expect(abcSummary.prop).toEqual('abc');
+        expect(abcSummary.value as any).toEqual(true);
+      });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should resolve styling collisions across templates, directives and components for prop and map-based entries',
+          () => {
+            @Directive({selector: '[dir-that-sets-styling]'})
+            class DirThatSetsStyling {
+              @HostBinding('style') public map: any = {color: 'red', width: '777px'};
+            }
+
+            @Component({
+              template: `
+        <div [style.width]="width"
+             [style]="map"
+             style="width:200px; font-size:99px"
+             dir-that-sets-styling
+             #dir
+             [class.xyz]="xyz"></div>
+      `
+            })
+            class Cmp {
+              map: any = {width: '111px', opacity: '0.5'};
+              width: string|null = '555px';
+
+              @ViewChild('dir', {read: DirThatSetsStyling})
+              dir !: DirThatSetsStyling;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+            fixture.detectChanges();
+
+            const element = fixture.nativeElement.querySelector('div');
+            const node = getDebugNode(element) !;
+
+            const styles = node.styles !;
+            expect(styles.values).toEqual({
+              'width': '555px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': '0.5',
+            });
+
+            comp.width = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '111px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': '0.5',
+            });
+
+            comp.map = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '777px',
+              'color': 'red',
+              'font-size': '99px',
+              'opacity': null,
+            });
+
+            comp.dir.map = null;
+            fixture.detectChanges();
+
+            expect(styles.values).toEqual({
+              'width': '200px',
+              'color': null,
+              'font-size': '99px',
+              'opacity': null,
+            });
+          });
+
+  onlyInIvy('ivy resolves styling across directives, components and templates in unison')
+      .it('should only apply each styling property once per CD across templates, components, directives',
+          () => {
+            @Directive({selector: '[dir-that-sets-styling]'})
+            class DirThatSetsStyling {
+              @HostBinding('style') public map: any = {width: '999px', height: '999px'};
+            }
+
+            @Component({
+              template: `
+                <div #dir
+                  style="width:0px; height:0px"
+                  [style.width]="width"
+                  [style.height]="height"
+                  [style]="map"
+                  dir-that-sets-styling></div>
+              `
+            })
+            class Cmp {
+              width: string|null = '111px';
+              height: string|null = '111px';
+
+              map: any = {width: '555px', height: '555px'};
+
+              @ViewChild('dir', {read: DirThatSetsStyling})
+              dir !: DirThatSetsStyling;
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, DirThatSetsStyling]});
+            const fixture = TestBed.createComponent(Cmp);
+            const comp = fixture.componentInstance;
+
+            resetStylingCounters();
+            fixture.detectChanges();
+            const element = fixture.nativeElement.querySelector('div');
+
+            // both are applied because this is the first pass
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '111px');
+            assertStyle(element, 'height', '111px');
+
+            comp.width = '222px';
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '222px');
+            assertStyle(element, 'height', '111px');
+
+            comp.height = '222px';
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '222px');
+            assertStyle(element, 'height', '222px');
+
+            comp.width = null;
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '555px');
+            assertStyle(element, 'height', '222px');
+
+            comp.width = '123px';
+            comp.height = '123px';
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyle(element, 'width', '123px');
+            assertStyle(element, 'height', '123px');
+
+            comp.map = {};
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            // both are applied because the map was altered
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '123px');
+            assertStyle(element, 'height', '123px');
+
+            comp.width = null;
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '999px');
+            assertStyle(element, 'height', '123px');
+
+            comp.dir.map = null;
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            // both are applied because the map was altered
+            assertStyleCounters(2, 0);
+            assertStyle(element, 'width', '0px');
+            assertStyle(element, 'height', '123px');
+
+            comp.dir.map = {width: '1000px', height: '1000px', color: 'red'};
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            // all three are applied because the map was altered
+            assertStyleCounters(3, 0);
+            assertStyle(element, 'width', '1000px');
+            assertStyle(element, 'height', '123px');
+            assertStyle(element, 'color', 'red');
+
+            comp.height = null;
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            assertStyleCounters(1, 0);
+            assertStyle(element, 'width', '1000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'red');
+
+            comp.map = {color: 'blue', width: '2000px', opacity: '0.5'};
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            // all four are applied because the map was altered
+            assertStyleCounters(4, 0);
+            assertStyle(element, 'width', '2000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'blue');
+            assertStyle(element, 'opacity', '0.5');
+
+            comp.map = {color: 'blue', width: '2000px'};
+            resetStylingCounters();
+            fixture.detectChanges();
+
+            // all four are applied because the map was altered
+            assertStyleCounters(3, 1);
+            assertStyle(element, 'width', '2000px');
+            assertStyle(element, 'height', '1000px');
+            assertStyle(element, 'color', 'blue');
+            assertStyle(element, 'opacity', '');
+          });
 });
+
+function assertStyleCounters(countForSet: number, countForRemove: number) {
+  expect(ngDevMode !.rendererSetStyle).toEqual(countForSet);
+  expect(ngDevMode !.rendererRemoveStyle).toEqual(countForRemove);
+}
+
+function assertStyle(element: HTMLElement, prop: string, value: any) {
+  expect((element.style as any)[prop]).toEqual(value);
+}
 
 function getDebugNode(element: Node): DebugNode|null {
   const lContext = loadLContextFromNode(element);

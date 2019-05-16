@@ -24,7 +24,6 @@ describe('styling debugging tools', () => {
              prop: 'width',
              value: null,
              bindingIndex: null,
-             sourceValues: [{value: null, bindingIndex: null}],
            },
          });
 
@@ -34,9 +33,6 @@ describe('styling debugging tools', () => {
              prop: 'width',
              value: '100px',
              bindingIndex: null,
-             sourceValues: [
-               {bindingIndex: null, value: '100px'},
-             ],
            },
          });
 
@@ -49,10 +45,6 @@ describe('styling debugging tools', () => {
              prop: 'width',
              value: '200px',
              bindingIndex: someBindingIndex1,
-             sourceValues: [
-               {bindingIndex: someBindingIndex1, value: '200px'},
-               {bindingIndex: null, value: '100px'},
-             ],
            },
          });
 
@@ -65,11 +57,6 @@ describe('styling debugging tools', () => {
              prop: 'width',
              value: '200px',
              bindingIndex: someBindingIndex1,
-             sourceValues: [
-               {bindingIndex: someBindingIndex1, value: '200px'},
-               {bindingIndex: someBindingIndex2, value: '500px'},
-               {bindingIndex: null, value: '100px'},
-             ],
            },
          });
        });

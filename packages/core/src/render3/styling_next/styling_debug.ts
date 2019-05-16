@@ -8,9 +8,20 @@
 import {RElement} from '../interfaces/renderer';
 import {attachDebugObject} from '../util/debug_utils';
 
-import {BIT_MASK_APPLY_ALL, DEFAULT_BINDING_INDEX_VALUE, applyStyling} from './bindings';
-import {StylingBindingData, TStylingContext, TStylingContextIndex} from './interfaces';
-import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked} from './util';
+import {applyStyling} from './bindings';
+import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex} from './interfaces';
+import {activeStylingMapFeature} from './map_based_bindings';
+import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked, isMapBased} from './util';
+
+/**
+ * --------
+ *
+ * This file contains the core debug functionality for styling in Angular.
+ *
+ * To learn more about the algorithm see `TStylingContext`.
+ *
+ * --------
+ */
 
 
 /**
@@ -19,18 +30,15 @@ import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked}
  * A value such as this is generated as an artifact of the `DebugStyling`
  * summary.
  */
-export interface StylingSummary {
+export interface LStylingSummary {
   /** The style/class property that the summary is attached to */
   prop: string;
 
   /** The last applied value for the style/class property */
-  value: string|null;
+  value: string|boolean|null;
 
   /** The binding index of the last applied style/class property */
   bindingIndex: number|null;
-
-  /** Every binding source that is writing the style/class property represented in this tuple */
-  sourceValues: {value: string | number | null, bindingIndex: number|null}[];
 }
 
 /**
@@ -44,7 +52,7 @@ export interface DebugStyling {
    * A summarization of each style/class property
    * present in the context.
    */
-  summary: {[key: string]: StylingSummary}|null;
+  summary: {[key: string]: LStylingSummary};
 
   /**
    * A key/value map of all styling properties and their
@@ -108,22 +116,26 @@ class TStylingContextDebug {
   get entries(): {[prop: string]: TStylingTupleSummary} {
     const context = this.context;
     const entries: {[prop: string]: TStylingTupleSummary} = {};
-    const start = TStylingContextIndex.ValuesStartPosition;
+    const start = TStylingContextIndex.MapBindingsPosition;
     let i = start;
     while (i < context.length) {
-      const prop = getProp(context, i);
-      const guardMask = getGuardMask(context, i);
       const valuesCount = getValuesCount(context, i);
-      const defaultValue = getDefaultValue(context, i);
+      // the context may contain placeholder values which are populated ahead of time,
+      // but contain no actual binding values. In this situation there is no point in
+      // classifying this as an "entry" since no real data is stored here yet.
+      if (valuesCount) {
+        const prop = getProp(context, i);
+        const guardMask = getGuardMask(context, i);
+        const defaultValue = getDefaultValue(context, i);
+        const bindingsStartPosition = i + TStylingContextIndex.BindingsStartOffset;
 
-      const bindingsStartPosition = i + TStylingContextIndex.BindingsStartOffset;
-      const sources: (number | string | null)[] = [];
+        const sources: (number | string | null)[] = [];
+        for (let j = 0; j < valuesCount; j++) {
+          sources.push(context[bindingsStartPosition + j] as number | string | null);
+        }
 
-      for (let j = 0; j < valuesCount; j++) {
-        sources.push(context[bindingsStartPosition + j] as number | string | null);
+        entries[prop] = {prop, guardMask, valuesCount, defaultValue, sources};
       }
-
-      entries[prop] = {prop, guardMask, valuesCount, defaultValue, sources};
 
       i += TStylingContextIndex.BindingsStartOffset + valuesCount;
     }
@@ -138,51 +150,19 @@ class TStylingContextDebug {
  * application has `ngDevMode` activated.
  */
 export class NodeStylingDebug implements DebugStyling {
-  private _contextDebug: TStylingContextDebug;
-
-  constructor(public context: TStylingContext, private _data: StylingBindingData) {
-    this._contextDebug = (this.context as any).debug as any;
-  }
+  constructor(public context: TStylingContext, private _data: LStylingData) {}
 
   /**
    * Returns a detailed summary of each styling entry in the context and
    * what their runtime representation is.
    *
-   * See `StylingSummary`.
+   * See `LStylingSummary`.
    */
-  get summary(): {[key: string]: StylingSummary} {
-    const contextEntries = this._contextDebug.entries;
-    const finalValues: {[key: string]: {value: string, bindingIndex: number}} = {};
-    this._mapValues((prop: string, value: any, bindingIndex: number) => {
-      finalValues[prop] = {value, bindingIndex};
+  get summary(): {[key: string]: LStylingSummary} {
+    const entries: {[key: string]: LStylingSummary} = {};
+    this._mapValues((prop: string, value: any, bindingIndex: number | null) => {
+      entries[prop] = {prop, value, bindingIndex};
     });
-
-    const entries: {[key: string]: StylingSummary} = {};
-    const values = this.values;
-    const props = Object.keys(values);
-    for (let i = 0; i < props.length; i++) {
-      const prop = props[i];
-      const contextEntry = contextEntries[prop];
-      const sourceValues = contextEntry.sources.map(v => {
-        let value: string|number|null;
-        let bindingIndex: number|null;
-        if (typeof v === 'number') {
-          value = this._data[v];
-          bindingIndex = v;
-        } else {
-          value = v;
-          bindingIndex = null;
-        }
-        return {bindingIndex, value};
-      });
-
-      const finalValue = finalValues[prop] !;
-      let bindingIndex: number|null = finalValue.bindingIndex;
-      bindingIndex = bindingIndex === DEFAULT_BINDING_INDEX_VALUE ? null : bindingIndex;
-
-      entries[prop] = {prop, value: finalValue.value, bindingIndex, sourceValues};
-    }
-
     return entries;
   }
 
@@ -195,16 +175,21 @@ export class NodeStylingDebug implements DebugStyling {
     return entries;
   }
 
-  private _mapValues(fn: (prop: string, value: any, bindingIndex: number) => any) {
+  private _mapValues(fn: (prop: string, value: any, bindingIndex: number|null) => any) {
     // there is no need to store/track an element instance. The
     // element is only used when the styling algorithm attempts to
     // style the value (and we mock out the stylingApplyFn anyway).
     const mockElement = {} as any;
+    const hasMaps = getValuesCount(this.context, TStylingContextIndex.MapBindingsPosition) > 0;
+    if (hasMaps) {
+      activeStylingMapFeature();
+    }
 
-    const mapFn =
+    const mapFn: ApplyStylingFn =
         (renderer: any, element: RElement, prop: string, value: any, bindingIndex: number) => {
-          fn(prop, value, bindingIndex);
+          fn(prop, value, bindingIndex || null);
         };
-    applyStyling(this.context, null, mockElement, this._data, BIT_MASK_APPLY_ALL, mapFn);
+
+    applyStyling(this.context, null, mockElement, this._data, true, mapFn);
   }
 }

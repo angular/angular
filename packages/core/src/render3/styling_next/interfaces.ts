@@ -9,6 +9,16 @@ import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 import {LView} from '../interfaces/view';
 
 /**
+ * --------
+ *
+ * This file contains the core interfaces for styling in Angular.
+ *
+ * To learn more about the algorithm see `TStylingContext`.
+ *
+ * --------
+ */
+
+/**
  * A static-level representation of all style or class bindings/values
  * associated with a `TNode`.
  *
@@ -143,7 +153,7 @@ import {LView} from '../interfaces/view';
  * styling apply call has been called (this is triggered by the
  * `stylingApply()` instruction for the active element).
  *
- * # How Styles/Classes are Applied
+ * # How Styles/Classes are Rendered
  * Each time a styling instruction (e.g. `[class.name]`, `[style.prop]`,
  * etc...) is executed, the associated `lView` for the view is updated
  * at the current binding location. Also, when this happens, a local
@@ -166,20 +176,78 @@ import {LView} from '../interfaces/view';
  * }
  * ```
  *
+ * ## The Apply Algorithm
+ * As explained above, each time a binding updates its value, the resulting
+ * value is stored in the `lView` array. These styling values have yet to
+ * be flushed to the element.
+ *
  * Once all the styling instructions have been evaluated, then the styling
  * context(s) are flushed to the element. When this happens, the context will
  * be iterated over (property by property) and each binding source will be
  * examined and the first non-null value will be applied to the element.
  *
+ * Let's say that we the following template code:
+ *
+ * ```html
+ * <div [style.width]="w1" dir-that-set-width="w2"></div>
+ * ```
+ *
+ * There are two styling bindings in the code above and they both write
+ * to the `width` property. When styling is flushed on the element, the
+ * algorithm will try and figure out which one of these values to write
+ * to the element.
+ *
+ * In order to figure out which value to apply, the following
+ * binding prioritization is adhered to:
+ *
+ * 1. First template-level styling bindings are applied (if present).
+ *    This includes things like `[style.width]` and `[class.active]`.
+ *
+ * 2. Second are styling-level host bindings present in directives.
+ *    (if there are sub/super directives present then the sub directives
+ *    are applied first).
+ *
+ * 3. Third are styling-level host bindings present in components.
+ *    (if there are sub/super components present then the sub directives
+ *    are applied first).
+ *
+ * This means that in the code above the styling binding present in the
+ * template is applied first and, only if its falsy, then the directive
+ * styling binding for width will be applied.
+ *
+ * ### What about map-based styling bindings?
+ * Map-based styling bindings are activated when there are one or more
+ * `[style]` and/or `[class]` bindings present on an element. When this
+ * code is activated, the apply algorithm will iterate over each map
+ * entry and apply each styling value to the element with the same
+ * prioritization rules as above.
+ *
+ * For the algorithm to apply styling values efficiently, the
+ * styling map entries must be applied in sync (property by property)
+ * with prop-based bindings. (The map-based algorithm is described
+ * more inside of the `render3/stlying_next/map_based_bindings.ts` file.)
  */
-export interface TStylingContext extends Array<number|string|number|boolean|null> {
+export interface TStylingContext extends Array<number|string|number|boolean|null|LStylingMap> {
+  /** Configuration data for the context */
   [TStylingContextIndex.ConfigPosition]: TStylingConfigFlags;
 
-  /* Temporary value used to track directive index entries until
+  /** Temporary value used to track directive index entries until
      the old styling code is fully removed. The reason why this
      is required is to figure out which directive is last and,
      when encountered, trigger a styling flush to happen */
   [TStylingContextIndex.MaxDirectiveIndexPosition]: number;
+
+  /** The bit guard value for all map-based bindings on an element */
+  [TStylingContextIndex.MapBindingsBitGuardPosition]: number;
+
+  /** The total amount of map-based bindings present on an element */
+  [TStylingContextIndex.MapBindingsValuesCountPosition]: number;
+
+  /** The prop value for map-based bindings (there actually isn't a
+   * value at all, but this is just used in the context to avoid
+   * having any special code to update the binding information for
+   * map-based entries). */
+  [TStylingContextIndex.MapBindingsPropPosition]: string;
 }
 
 /**
@@ -210,11 +278,18 @@ export const enum TStylingConfigFlags {
 export const enum TStylingContextIndex {
   ConfigPosition = 0,
   MaxDirectiveIndexPosition = 1,
-  ValuesStartPosition = 2,
+
+  // index/offset values for map-based entries (i.e. `[style]`
+  // and `[class] bindings).
+  MapBindingsPosition = 2,
+  MapBindingsBitGuardPosition = 2,
+  MapBindingsValuesCountPosition = 3,
+  MapBindingsPropPosition = 4,
+  MapBindingsBindingsStartPosition = 5,
 
   // each tuple entry in the context
   // (mask, count, prop, ...bindings||default-value)
-  MaskOffset = 0,
+  GuardOffset = 0,
   ValuesCountOffset = 1,
   PropOffset = 2,
   BindingsStartOffset = 3,
@@ -225,7 +300,7 @@ export const enum TStylingContextIndex {
  */
 export interface ApplyStylingFn {
   (renderer: Renderer3|ProceduralRenderer3|null, element: RElement, prop: string,
-   value: string|null, bindingIndex: number): void;
+   value: string|null, bindingIndex?: number|null): void;
 }
 
 /**
@@ -236,4 +311,82 @@ export interface ApplyStylingFn {
  * this data type to be an array that contains various scalar data types,
  * an instance of `LView` doesn't need to be constructed for tests.
  */
-export type StylingBindingData = LView | (string | number | boolean)[];
+export type LStylingData = LView | (string | number | boolean | null)[];
+
+/**
+ * Array-based representation of a key/value array.
+ *
+ * The format of the array is "property", "value", "property2",
+ * "value2", etc...
+ *
+ * The first value in the array is reserved to store the instance
+ * of the key/value array that was used to populate the property/
+ * value entries that take place in the remainder of the array.
+ */
+export interface LStylingMap extends Array<{}|string|number|null> {
+  [LStylingMapIndex.RawValuePosition]: {}|string|null;
+}
+
+/**
+ * An index of position and offset points for any data stored within a `LStylingMap` instance.
+ */
+export const enum LStylingMapIndex {
+  /** The location of the raw key/value map instance used last to populate the array entries */
+  RawValuePosition = 0,
+
+  /** Where the values start in the array */
+  ValuesStartPosition = 1,
+
+  /** The size of each property/value entry */
+  TupleSize = 2,
+
+  /** The offset for the property entry in the tuple */
+  PropOffset = 0,
+
+  /** The offset for the value entry in the tuple */
+  ValueOffset = 1,
+}
+
+/**
+ * Used to apply/traverse across all map-based styling entries up to the provided `targetProp`
+ * value.
+ *
+ * When called, each of the map-based `LStylingMap` entries (which are stored in
+ * the provided `LStylingData` array) will be iterated over. Depending on the provided
+ * `mode` value, each prop/value entry may be applied or skipped over.
+ *
+ * If `targetProp` value is provided the iteration code will stop once it reaches
+ * the property (if found). Otherwise if the target property is not encountered then
+ * it will stop once it reaches the next value that appears alphabetically after it.
+ *
+ * If a `defaultValue` is provided then it will be applied to the element only if the
+ * `targetProp` property value is encountered and the value associated with the target
+ * property is `null`. The reason why the `defaultValue` is needed is to avoid having the
+ * algorithm apply a `null` value and then apply a default value afterwards (this would
+ * end up being two style property writes).
+ *
+ * @returns whether or not the target property was reached and its value was
+ *  applied to the element.
+ */
+export interface SyncStylingMapsFn {
+  (context: TStylingContext, renderer: Renderer3|ProceduralRenderer3|null, element: RElement,
+   data: LStylingData, applyStylingFn: ApplyStylingFn, mode: StylingMapsSyncMode,
+   targetProp?: string|null, defaultValue?: string|null): boolean;
+}
+
+/**
+ * Used to direct how map-based values are applied/traversed when styling is flushed.
+ */
+export const enum StylingMapsSyncMode {
+  /** Only traverse values (no prop/value styling entries get applied) */
+  TraverseValues = 0b000,
+
+  /** Apply every prop/value styling entry to the element */
+  ApplyAllValues = 0b001,
+
+  /** Only apply the target prop/value entry */
+  ApplyTargetProp = 0b010,
+
+  /** Skip applying the target prop/value entry */
+  SkipTargetProp = 0b100,
+}
