@@ -763,15 +763,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                   R3.property, elementIndex, attrName, input, implicit, value, params);
             }
           } else if (inputType === BindingType.Attribute) {
-            if (value instanceof Interpolation) {
-              // attr.name="{{value}}" and friends
+            if (value instanceof Interpolation && getInterpolationArgsLength(value) > 1) {
+              // attr.name="text{{value}}" and friends
               this.interpolatedUpdateInstruction(
                   getAttributeInterpolationExpression(value), elementIndex, attrName, input, value,
                   params);
             } else {
-              // [attr.name]="value"
+              const boundValue = value instanceof Interpolation ? value.expressions[0] : value;
+              // [attr.name]="value" or attr.name="{{value}}"
               this.boundUpdateInstruction(
-                  R3.attribute, elementIndex, attrName, input, implicit, value, params);
+                  R3.attribute, elementIndex, attrName, input, implicit, boundValue, params);
             }
           } else {
             // class prop
@@ -1714,8 +1715,6 @@ function getPropertyInterpolationExpression(interpolation: Interpolation) {
  */
 function getAttributeInterpolationExpression(interpolation: Interpolation) {
   switch (getInterpolationArgsLength(interpolation)) {
-    case 1:
-      return R3.attributeInterpolate;
     case 3:
       return R3.attributeInterpolate1;
     case 5:

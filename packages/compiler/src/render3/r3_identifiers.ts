@@ -43,8 +43,6 @@ export class Identifiers {
 
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 
-  static attributeInterpolate:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate', moduleName: CORE};
   static attributeInterpolate1:
       o.ExternalReference = {name: 'ɵɵattributeInterpolate1', moduleName: CORE};
   static attributeInterpolate2:
