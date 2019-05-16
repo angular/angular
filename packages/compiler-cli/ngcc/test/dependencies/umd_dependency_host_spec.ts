@@ -69,7 +69,7 @@ describe('UmdDependencyHost', () => {
       expect(dependencies.size).toBe(0);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(1);
-      expect(deepImports.has('/node_modules/lib_1/deep/import')).toBe(true);
+      expect(deepImports.has(_('/node_modules/lib_1/deep/import'))).toBe(true);
     });
 
     it('should recurse into internal dependencies', () => {

@@ -120,7 +120,7 @@ describe('DependencyResolver', () => {
       resolver = new DependencyResolver(new MockLogger(), {esm2015: host});
       expect(() => resolver.sortEntryPointsByDependency([first]))
           .toThrowError(
-              `Could not find a suitable format for computing dependencies of entry-point: '/first'.`);
+              `Could not find a suitable format for computing dependencies of entry-point: '${first.path}'.`);
     });
 
     it('should capture any dependencies that were ignored', () => {
@@ -159,17 +159,17 @@ describe('DependencyResolver', () => {
       const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
       expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
 
-      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/first/index.js');
-      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith('/second/sub/index.js');
-      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/third/index.js');
-      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith('/fourth/sub2/index.js');
-      expect(esm5Host.findDependencies).toHaveBeenCalledWith('/fifth/index.js');
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith(`${first.path}/index.js`);
+      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith(`${second.path}/sub/index.js`);
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith(`${third.path}/index.js`);
+      expect(esm5Host.findDependencies).not.toHaveBeenCalledWith(`${fourth.path}/sub2/index.js`);
+      expect(esm5Host.findDependencies).toHaveBeenCalledWith(`${fifth.path}/index.js`);
 
-      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/first/index.js');
-      expect(esm2015Host.findDependencies).toHaveBeenCalledWith('/second/sub/index.js');
-      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/third/index.js');
-      expect(esm2015Host.findDependencies).toHaveBeenCalledWith('/fourth/sub2/index.js');
-      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith('/fifth/index.js');
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith(`${first.path}/index.js`);
+      expect(esm2015Host.findDependencies).toHaveBeenCalledWith(`${second.path}/sub/index.js`);
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith(`${third.path}/index.js`);
+      expect(esm2015Host.findDependencies).toHaveBeenCalledWith(`${fourth.path}/sub2/index.js`);
+      expect(esm2015Host.findDependencies).not.toHaveBeenCalledWith(`${fifth.path}/index.js`);
     });
 
     interface DepMap {
