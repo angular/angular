@@ -754,37 +754,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           if (inputType === BindingType.Property) {
             if (value instanceof Interpolation) {
               // prop="{{value}}" and friends
-              this.updateInstruction(
-                  elementIndex, input.sourceSpan, getPropertyInterpolationExpression(value),
-                  () =>
-                      [o.literal(attrName),
-                       ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value),
-                       ...params]);
-
+              this.interpolatedUpdateInstruction(
+                  getPropertyInterpolationExpression(value), elementIndex, attrName, input, value,
+                  params);
             } else {
               // [prop]="value"
-              this.updateInstruction(elementIndex, input.sourceSpan, R3.property, () => {
-                return [
-                  o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
-                ];
-              });
+              this.boundUpdateInstruction(
+                  R3.property, elementIndex, attrName, input, implicit, value, params);
             }
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation) {
               // attr.name="{{value}}" and friends
-              this.updateInstruction(
-                  elementIndex, input.sourceSpan, getAttributeInterpolationExpression(value),
-                  () =>
-                      [o.literal(attrName),
-                       ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value),
-                       ...params]);
+              this.interpolatedUpdateInstruction(
+                  getAttributeInterpolationExpression(value), elementIndex, attrName, input, value,
+                  params);
             } else {
               // [attr.name]="value"
-              this.updateInstruction(elementIndex, input.sourceSpan, R3.attribute, () => {
-                return [
-                  o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params
-                ];
-              });
+              this.boundUpdateInstruction(
+                  R3.attribute, elementIndex, attrName, input, implicit, value, params);
             }
           } else {
             // class prop
@@ -817,6 +804,32 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
       this.creationInstruction(span, isNgContainer ? R3.elementContainerEnd : R3.elementEnd);
     }
+  }
+
+  /**
+   * Adds an update instruction for a bound property or attribute, such as `[prop]="value"` or
+   * `[attr.title]="value"`
+   */
+  boundUpdateInstruction(
+      instruction: o.ExternalReference, elementIndex: number, attrName: string,
+      input: t.BoundAttribute, implicit: o.ReadVarExpr, value: any, params: any[]) {
+    this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
+      return [o.literal(attrName), this.convertPropertyBinding(implicit, value, true), ...params];
+    });
+  }
+
+  /**
+   * Adds an update instruction for an interpolated property or attribute, such as
+   * `prop="{{value}}"` or `attr.title="{{value}}"`
+   */
+  interpolatedUpdateInstruction(
+      instruction: o.ExternalReference, elementIndex: number, attrName: string,
+      input: t.BoundAttribute, value: any, params: any[]) {
+    this.updateInstruction(
+        elementIndex, input.sourceSpan, instruction,
+        () =>
+            [o.literal(attrName),
+             ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value), ...params]);
   }
 
   visitTemplate(template: t.Template) {
