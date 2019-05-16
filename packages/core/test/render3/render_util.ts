@@ -12,7 +12,7 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
-import {createLView, createNodeAtIndex, createTView, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
+import {createLView, createTView, getOrCreateTNode, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {enterView, getLView, resetComponentState} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
@@ -32,7 +32,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TVIEW, T_HOST} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/security';
@@ -253,9 +253,10 @@ export function renderTemplate<T>(
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
+    const tView = createTView(-1, null, 1, 0, null, null, null, null);
     const hostLView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null, null), {},
-        LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
+        null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
+        providedRendererFactory, renderer);
     enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
@@ -270,7 +271,8 @@ export function renderTemplate<T>(
     def.pipeDefs = pipes || null;
 
     const componentTView = getOrCreateTView(def);
-    const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
+    const hostTNode = getOrCreateTNode(tView, hostLView[T_HOST], 0, TNodeType.Element, null, null);
+    hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
         providedRendererFactory, renderer, sanitizer);

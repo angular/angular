@@ -8,13 +8,14 @@
 import {assertDataInRange} from '../../util/assert';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {CssSelectorList} from '../interfaces/projection';
-import {HEADER_OFFSET, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, TVIEW, T_HOST} from '../interfaces/view';
 import {appendProjectedNodes} from '../node_manipulation';
 import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
 
-import {createNodeAtIndex} from './shared';
+import {getOrCreateTNode} from './shared';
+
 
 
 /**
@@ -82,7 +83,8 @@ export function ɵɵprojectionDef(selectors?: CssSelectorList[]): void {
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
-  const tProjectionNode = createNodeAtIndex(nodeIndex, TNodeType.Projection, null, attrs || null);
+  const tProjectionNode = getOrCreateTNode(
+      lView[TVIEW], lView[T_HOST], nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;

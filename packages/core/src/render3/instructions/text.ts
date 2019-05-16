@@ -8,13 +8,13 @@
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {TNodeType} from '../interfaces/node';
 import {RText, isProceduralRenderer} from '../interfaces/renderer';
-import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
 import {getLView, setIsNotParent} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getNativeByIndex} from '../util/view_utils';
-import {createNodeAtIndex} from './shared';
+import {getOrCreateTNode} from './shared';
 
 /**
  * Create static text node
@@ -32,7 +32,7 @@ export function ɵɵtext(index: number, value?: any): void {
   ngDevMode && ngDevMode.rendererCreateTextNode++;
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   const textNative = lView[index + HEADER_OFFSET] = createTextNode(value, lView[RENDERER]);
-  const tNode = createNodeAtIndex(index, TNodeType.Element, null, null);
+  const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, TNodeType.Element, null, null);
 
   // Text nodes are self closing.
   setIsNotParent();

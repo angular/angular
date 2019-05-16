@@ -12,12 +12,14 @@ import {executePreOrderHooks, registerPostOrderHooks} from '../hooks';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
-import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getNativeByTNode, loadInternal} from '../util/view_utils';
-import {addToViewTree, createDirectivesAndLocals, createLContainer, createNodeAtIndex, createTView} from './shared';
+
+import {addToViewTree, createDirectivesAndLocals, createLContainer, createTView, getOrCreateTNode} from './shared';
+
 
 /**
  * Creates an LContainer for inline views, e.g.
@@ -168,7 +170,8 @@ function containerInternal(
   ngDevMode && ngDevMode.rendererCreateComment++;
   const comment = lView[index + HEADER_OFFSET] =
       lView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  const tNode = createNodeAtIndex(index, TNodeType.Container, tagName, attrs);
+  const tNode =
+      getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, TNodeType.Container, tagName, attrs);
   const lContainer = lView[adjustedIndex] =
       createLContainer(lView[adjustedIndex], lView, comment, tNode);
 
