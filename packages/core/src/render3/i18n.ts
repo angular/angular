@@ -17,7 +17,7 @@ import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '
 import {attachPatchData} from './context_discovery';
 import {attachI18nOpCodesDebug} from './debug';
 import {ɵɵelementAttribute, ɵɵload, ɵɵtextBinding} from './instructions/all';
-import {allocExpando, createNodeAtIndex} from './instructions/shared';
+import {allocExpando, getOrCreateTNode} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
@@ -676,7 +676,7 @@ function createDynamicNodeAtIndex(
   const previousOrParentTNode = getPreviousOrParentTNode();
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   lView[index + HEADER_OFFSET] = native;
-  const tNode = createNodeAtIndex(index, type as any, name, null);
+  const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
