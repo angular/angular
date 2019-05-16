@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {assertDataInRange} from '../../util/assert';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {CssSelectorList} from '../interfaces/projection';
-import {T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, T_HOST} from '../interfaces/view';
 import {appendProjectedNodes} from '../node_manipulation';
 import {matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
@@ -81,8 +82,7 @@ export function ɵɵprojectionDef(selectors?: CssSelectorList[]): void {
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
-  const tProjectionNode =
-      createNodeAtIndex(nodeIndex, TNodeType.Projection, null, null, attrs || null);
+  const tProjectionNode = createNodeAtIndex(nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
   if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;

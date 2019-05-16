@@ -12,7 +12,7 @@ import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
-import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 
 import {attachPatchData} from './context_discovery';
 import {attachI18nOpCodesDebug} from './debug';
@@ -671,10 +671,12 @@ function i18nEndFirstPass(tView: TView) {
  * Creates and stores the dynamic TNode, and unhooks it from the tree for now.
  */
 function createDynamicNodeAtIndex(
-    index: number, type: TNodeType, native: RElement | RText | null,
+    lView: LView, index: number, type: TNodeType, native: RElement | RText | null,
     name: string | null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const tNode = createNodeAtIndex(index, type as any, native, name, null);
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  lView[index + HEADER_OFFSET] = native;
+  const tNode = createNodeAtIndex(index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
@@ -699,7 +701,8 @@ function readCreateOpCodes(
       const textNodeIndex = createOpCodes[++i] as number;
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
-      currentTNode = createDynamicNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null);
+      currentTNode =
+          createDynamicNodeAtIndex(viewData, textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
       setIsNotParent();
     } else if (typeof opCode == 'number') {
@@ -755,7 +758,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateComment++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
+              viewData, commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
           visitedNodes.push(commentNodeIndex);
           attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
@@ -772,7 +775,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
+              viewData, elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
           visitedNodes.push(elementNodeIndex);
           break;
         default:

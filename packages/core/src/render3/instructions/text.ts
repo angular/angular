@@ -30,8 +30,9 @@ export function ɵɵtext(index: number, value?: any): void {
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'text nodes should be created before any bindings');
   ngDevMode && ngDevMode.rendererCreateTextNode++;
-  const textNative = createTextNode(value, lView[RENDERER]);
-  const tNode = createNodeAtIndex(index, TNodeType.Element, textNative, null, null);
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  const textNative = lView[index + HEADER_OFFSET] = createTextNode(value, lView[RENDERER]);
+  const tNode = createNodeAtIndex(index, TNodeType.Element, null, null);
 
   // Text nodes are self closing.
   setIsNotParent();

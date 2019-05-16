@@ -10,7 +10,7 @@ import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeType} from '../interfaces/node';
-import {BINDING_INDEX, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
@@ -43,11 +43,11 @@ export function ɵɵelementContainerStart(
                    'element containers should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const native = renderer.createComment(ngDevMode ? tagName : '');
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  const native = lView[index + HEADER_OFFSET] = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);
-  const tNode =
-      createNodeAtIndex(index, TNodeType.ElementContainer, native, tagName, attrs || null);
+  const tNode = createNodeAtIndex(index, TNodeType.ElementContainer, tagName, attrs || null);
 
 
   if (attrs) {

@@ -233,30 +233,26 @@ export function createLView<T>(
  * @param attrs Any attrs for the native element, if applicable
  */
 export function createNodeAtIndex(
-    index: number, type: TNodeType.Element, native: RElement | RText | null, name: string | null,
+    index: number, type: TNodeType.Element, name: string | null,
     attrs: TAttributes | null): TElementNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.Container, native: RComment, name: string | null,
+    index: number, type: TNodeType.Container, name: string | null,
     attrs: TAttributes | null): TContainerNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.Projection, native: null, name: null,
+    index: number, type: TNodeType.Projection, name: null,
     attrs: TAttributes | null): TProjectionNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.ElementContainer, native: RComment, name: string | null,
+    index: number, type: TNodeType.ElementContainer, name: string | null,
     attrs: TAttributes | null): TElementContainerNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.IcuContainer, native: RComment, name: null,
+    index: number, type: TNodeType.IcuContainer, name: null,
     attrs: TAttributes | null): TElementContainerNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null): TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&
-    TIcuContainerNode {
+    index: number, type: TNodeType, name: string | null, attrs: TAttributes | null): TElementNode&
+    TContainerNode&TElementContainerNode&TProjectionNode&TIcuContainerNode {
   const lView = getLView();
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
-  ngDevMode &&
-      assertLessThan(adjustedIndex, lView.length, `Slot should have been initialized with null`);
-  lView[adjustedIndex] = native;
 
   const previousOrParentTNode = getPreviousOrParentTNode();
   let tNode = tView.data[adjustedIndex] as TNode;
