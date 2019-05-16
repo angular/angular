@@ -36,7 +36,7 @@
     "name": "DEFAULT_BINDING_VALUE"
   },
   {
-    "name": "DEFAULT_MASK_VALUE"
+    "name": "DEFAULT_GUARD_MASK_VALUE"
   },
   {
     "name": "DEFAULT_SIZE_VALUE"
@@ -70,6 +70,9 @@
   },
   {
     "name": "INJECTOR_BLOOM_PARENT_SIZE"
+  },
+  {
+    "name": "MAP_BASED_ENTRY_PROP_NAME"
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
@@ -430,6 +433,9 @@
   },
   {
     "name": "getProp"
+  },
+  {
+    "name": "getPropValuesStartPosition"
   },
   {
     "name": "getRenderFlags"
