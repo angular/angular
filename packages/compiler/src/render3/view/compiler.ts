@@ -667,9 +667,9 @@ function createHostBindingsFunction(
           sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
         }
       }
-
-      const isPropertyInstruction = instruction === R3.property;
-      const instructionParams: o.Expression[] = isPropertyInstruction ?
+      const isInstructionWithoutElementIndex =
+          instruction === R3.property || instruction === R3.attribute;
+      const instructionParams: o.Expression[] = isInstructionWithoutElementIndex ?
           [
             o.literal(bindingName),
             bindingExpr.currValExpr,
@@ -776,7 +776,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
   const attrMatches = bindingName.match(ATTR_REGEX);
   if (attrMatches) {
     bindingName = attrMatches[1];
-    instruction = R3.elementAttribute;
+    instruction = R3.attribute;
   } else {
     if (binding.isAnimation) {
       bindingName = prepareSyntheticPropertyName(bindingName);

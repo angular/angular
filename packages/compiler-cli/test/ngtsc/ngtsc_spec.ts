@@ -1769,7 +1769,7 @@ describe('ngtsc behavioral tests', () => {
           i0.ɵɵstyling(_c0);
         }
         if (rf & 2) {
-          i0.ɵɵelementAttribute(elIndex, "hello", i0.ɵɵbind(ctx.foo));
+          i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵproperty("prop", ctx.bar, null, true);
           i0.ɵɵclassProp(0, ctx.someClass);
           i0.ɵɵstylingApply();
@@ -1826,7 +1826,7 @@ describe('ngtsc behavioral tests', () => {
     `);
 
     env.driveMain();
-    expect(env.getContents('test.js')).toContain('"hello", i0.ɵɵbind(ctx.foo)');
+    expect(env.getContents('test.js')).toContain('i0.ɵɵattribute("hello", ctx.foo)');
   });
 
   it('should generate host listeners for directives within hostBindings section', () => {
@@ -3216,12 +3216,12 @@ describe('ngtsc behavioral tests', () => {
             i0.ɵɵallocHostVars(6);
           }
           if (rf & 2) {
-            i0.ɵɵelementAttribute(elIndex, "href", i0.ɵɵbind(ctx.attrHref), i0.ɵɵsanitizeUrlOrResourceUrl);
-            i0.ɵɵelementAttribute(elIndex, "src", i0.ɵɵbind(ctx.attrSrc), i0.ɵɵsanitizeUrlOrResourceUrl);
-            i0.ɵɵelementAttribute(elIndex, "action", i0.ɵɵbind(ctx.attrAction), i0.ɵɵsanitizeUrl);
-            i0.ɵɵelementAttribute(elIndex, "profile", i0.ɵɵbind(ctx.attrProfile), i0.ɵɵsanitizeResourceUrl);
-            i0.ɵɵelementAttribute(elIndex, "innerHTML", i0.ɵɵbind(ctx.attrInnerHTML), i0.ɵɵsanitizeHtml);
-            i0.ɵɵelementAttribute(elIndex, "title", i0.ɵɵbind(ctx.attrSafeTitle));
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl);
+            i0.ɵɵattribute("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl);
+            i0.ɵɵattribute("action", ctx.attrAction, i0.ɵɵsanitizeUrl);
+            i0.ɵɵattribute("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl);
+            i0.ɵɵattribute("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml);
+            i0.ɵɵattribute("title", ctx.attrSafeTitle);
           }
         }
       `;
@@ -3314,9 +3314,9 @@ describe('ngtsc behavioral tests', () => {
             i0.ɵɵproperty("src", ctx.srcProp, null, true);
             i0.ɵɵproperty("href", ctx.hrefProp, null, true);
             i0.ɵɵproperty("title", ctx.titleProp, null, true);
-            i0.ɵɵelementAttribute(elIndex, "src", i0.ɵɵbind(ctx.srcAttr));
-            i0.ɵɵelementAttribute(elIndex, "href", i0.ɵɵbind(ctx.hrefAttr));
-            i0.ɵɵelementAttribute(elIndex, "title", i0.ɵɵbind(ctx.titleAttr));
+            i0.ɵɵattribute("src", ctx.srcAttr);
+            i0.ɵɵattribute("href", ctx.hrefAttr);
+            i0.ɵɵattribute("title", ctx.titleAttr);
           }
         }
       `;
