@@ -88,51 +88,26 @@ describe('acceptance integration tests', () => {
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
     });
 
-    it('should add and remove DOM nodes when ng-container is a child of an embedded view (JS block)',
-       () => {
-         @Component({
-           template:
-               '<ng-template [ngIf]="render"><ng-container>content</ng-container></ng-template>'
-         })
-         class App {
-           render = false;
-         }
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view', () => {
 
-         TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
-         const fixture = TestBed.createComponent(App);
+      @Component({template: '<ng-container *ngIf="render">content</ng-container>'})
+      class App {
+        render = false;
+      }
 
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(App);
 
-         fixture.componentInstance.render = true;
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('content');
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
 
-         fixture.componentInstance.render = false;
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
-       });
+      fixture.componentInstance.render = true;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('content');
 
-    it('should add and remove DOM nodes when ng-container is a child of an embedded view (ViewContainerRef)',
-       () => {
-
-         @Component({template: '<ng-container *ngIf="render">content</ng-container>'})
-         class App {
-           render = false;
-         }
-
-         TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
-         const fixture = TestBed.createComponent(App);
-
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
-
-         fixture.componentInstance.render = true;
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('content');
-
-         fixture.componentInstance.render = false;
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
-       });
+      fixture.componentInstance.render = false;
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
+    });
 
     // https://stackblitz.com/edit/angular-tfhcz1?file=src%2Fapp%2Fapp.component.ts
     it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view',
@@ -383,6 +358,8 @@ describe('acceptance integration tests', () => {
   });
 
   describe('ngNonBindable handling', () => {
+    function stripNgNonBindable(str: string) { return str.replace(/ ngnonbindable=""/i, ''); }
+
     it('should keep local ref for host element', () => {
       @Component({
         template: `
@@ -399,7 +376,7 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML.replace(/ ngnonbindable=""/i, ''))
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
           .toEqual('<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ');
     });
 
@@ -426,7 +403,7 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML.replace(/ ngnonbindable=""/i, ''))
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
           .toEqual('<b directive=""><i>Hello {{ name }}!</i></b>');
       expect(directiveInvoked).toEqual(true);
     });
@@ -454,7 +431,7 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML.replace(/ ngnonbindable=""/i, ''))
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
           .toEqual('<b><i directive="">Hello {{ name }}!</i></b>');
       expect(directiveInvoked).toEqual(false);
     });
@@ -661,7 +638,6 @@ describe('acceptance integration tests', () => {
     it('should support a component with sub-views', () => {
       @Component({selector: 'comp', template: '<div *ngIf="condition">text</div>'})
       class MyComp {
-        // TODO(issue/24571): remove '!'.
         @Input()
         condition !: boolean;
       }
