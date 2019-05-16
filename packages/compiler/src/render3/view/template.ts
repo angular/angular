@@ -772,12 +772,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation) {
               // attr.name="{{value}}" and friends
-              this.updateInstruction(elementIndex, input.sourceSpan, R3.elementAttribute, () => {
-                return [
-                  o.literal(elementIndex), o.literal(attrName),
-                  this.convertPropertyBinding(implicit, value), ...params
-                ];
-              });
+              this.updateInstruction(
+                  elementIndex, input.sourceSpan, getAttributeInterpolationExpression(value),
+                  () =>
+                      [o.literal(attrName),
+                       ...this.getUpdateInstructionArguments(o.variable(CONTEXT_NAME), value),
+                       ...params]);
             } else {
               // [attr.name]="value"
               this.updateInstruction(elementIndex, input.sourceSpan, R3.attribute, () => {
@@ -1692,6 +1692,35 @@ function getPropertyInterpolationExpression(interpolation: Interpolation) {
       return R3.propertyInterpolate8;
     default:
       return R3.propertyInterpolateV;
+  }
+}
+
+/**
+ * Gets the instruction to generate for an interpolated attribute
+ * @param interpolation An Interpolation AST
+ */
+function getAttributeInterpolationExpression(interpolation: Interpolation) {
+  switch (getInterpolationArgsLength(interpolation)) {
+    case 1:
+      return R3.attributeInterpolate;
+    case 3:
+      return R3.attributeInterpolate1;
+    case 5:
+      return R3.attributeInterpolate2;
+    case 7:
+      return R3.attributeInterpolate3;
+    case 9:
+      return R3.attributeInterpolate4;
+    case 11:
+      return R3.attributeInterpolate5;
+    case 13:
+      return R3.attributeInterpolate6;
+    case 15:
+      return R3.attributeInterpolate7;
+    case 17:
+      return R3.attributeInterpolate8;
+    default:
+      return R3.attributeInterpolateV;
   }
 }
 
