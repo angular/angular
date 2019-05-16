@@ -217,6 +217,9 @@ describe('inheritance', () => {
   });
 
   describe('of bare super class by a directive', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
+
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -506,196 +509,248 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      class SuperDirective {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        bar = '';
+      it('should inherit inputs', () => {
+        class SuperDirective {
+          @Input()
+          foo = '';
 
-        @Input()
-        baz = '';
-      }
+          @Input()
+          bar = '';
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        @Input()
-        baz = '';
+          @Input()
+          baz = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          @Input()
+          baz = '';
 
-      @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective],
+        @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir =
+            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+        expect(subDir.foo).toBe('a');
+        expect(subDir.bar).toBe('b');
+        expect(subDir.baz).toBe('c');
+        expect(subDir.qux).toBe('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const subDir =
-          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
-
-      expect(subDir.foo).toBe('a');
-      expect(subDir.bar).toBe('b');
-      expect(subDir.baz).toBe('c');
-      expect(subDir.qux).toBe('d');
     });
 
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-    it('should inherit outputs', () => {
-      class SuperDirective {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+      it('should inherit outputs', () => {
+        class SuperDirective {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          ngOnInit() { this.foo.emit('test'); }
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
         <div sub-dir (foo)="handleFoo($event)"></div>
       `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      class SuperDirective {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        class SuperDirective {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
 
-      @Component({
-        template: `
-        <p sub-dir>test</p>
-      `
-      })
-      class App {
-      }
+        @Component({
+          template: `
+          <p sub-dir>test</p>
+        `
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+
+        expect(queryResult.nativeElement.tagName).toBe('P');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(SubDirective));
-
-      expect(queryResult.nativeElement.tagName).toBe('P');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      class SuperDirective {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        class SuperDirective {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
-      @Component({
-        template: `
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
+        @Component({
+          template: `
         <p sub-dir superTitle="test">test</p>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+
+        expect(queryResult.nativeElement.title).toBe('test!!!');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(SubDirective));
-
-      expect(queryResult.nativeElement.title).toBe('test!!!');
     });
 
-    it('should inherit ContentChildren queries', () => {
-      let foundQueryList: QueryList<ChildDir>;
+    describe('ContentChildren', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should inherit ContentChildren queries', () => {
+        let foundQueryList: QueryList<ChildDir>;
 
-      @Directive({selector: '[child-dir]'})
-      class ChildDir {
-      }
+        @Directive({selector: '[child-dir]'})
+        class ChildDir {
+        }
 
-      class SuperDirective {
-        // TODO(issue/24571): remove '!'.
-        @ContentChildren(ChildDir)
-        customDirs !: QueryList<ChildDir>;
-      }
+        class SuperDirective {
+          @ContentChildren(ChildDir)
+          customDirs !: QueryList<ChildDir>;
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        ngAfterViewInit() { foundQueryList = this.customDirs; }
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          ngAfterViewInit() { foundQueryList = this.customDirs; }
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
         <ul sub-dir>
           <li child-dir>one</li>
           <li child-dir>two</li>
         </ul>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, ChildDir],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, ChildDir],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        expect(foundQueryList !.length).toBe(2);
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(foundQueryList !.length).toBe(2);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a directive by another directive', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
+
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -988,162 +1043,183 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Directive({selector: '[super-dir]'})
-      class SuperDirective {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        bar = '';
+      it('should inherit inputs', () => {
+        @Directive({selector: '[super-dir]'})
+        class SuperDirective {
+          @Input()
+          foo = '';
 
-        @Input()
-        baz = '';
-      }
+          @Input()
+          bar = '';
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        @Input()
-        baz = '';
+          @Input()
+          baz = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          @Input()
+          baz = '';
 
-      @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective],
+        @Component({template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir =
+            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+        expect(subDir.foo).toBe('a');
+        expect(subDir.bar).toBe('b');
+        expect(subDir.baz).toBe('c');
+        expect(subDir.qux).toBe('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
 
-      const subDir =
-          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
-
-      expect(subDir.foo).toBe('a');
-      expect(subDir.bar).toBe('b');
-      expect(subDir.baz).toBe('c');
-      expect(subDir.qux).toBe('d');
     });
 
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-    it('should inherit outputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+      it('should inherit outputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          ngOnInit() { this.foo.emit('test'); }
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
         <div sub-dir (foo)="handleFoo($event)"></div>
       `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
         <p sub-dir>test</p>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+
+        expect(queryResult.nativeElement.tagName).toBe('P');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(SubDirective));
-
-      expect(queryResult.nativeElement.tagName).toBe('P');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
-      @Component({
-        template: `
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
+        @Component({
+          template: `
         <p sub-dir superTitle="test">test</p>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+
+        expect(queryResult.nativeElement.title).toBe('test!!!');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(SubDirective));
-
-      expect(queryResult.nativeElement.title).toBe('test!!!');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -1157,7 +1233,6 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -1188,9 +1263,37 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(2);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a directive by a bare class then by another directive', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -1485,191 +1588,212 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Directive({selector: '[super-dir]'})
-      class SuperSuperDirective {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        baz = '';
-      }
+      it('should inherit inputs', () => {
+        @Directive({selector: '[super-dir]'})
+        class SuperSuperDirective {
+          @Input()
+          foo = '';
 
-      class SuperDirective extends SuperSuperDirective {
-        @Input()
-        bar = '';
-      }
+          @Input()
+          baz = '';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        @Input()
-        baz = '';
+        class SuperDirective extends SuperSuperDirective {
+          @Input()
+          bar = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          @Input()
+          baz = '';
 
-      @Component({
-        selector: 'my-app',
-        template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`,
-      })
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        @Component({
+          selector: 'my-app',
+          template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`,
+        })
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir =
+            fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
+
+        expect(subDir.foo).toBe('a');
+        expect(subDir.bar).toBe('b');
+        expect(subDir.baz).toBe('c');
+        expect(subDir.qux).toBe('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const subDir =
-          fixture.debugElement.query(By.directive(SubDirective)).injector.get(SubDirective);
-
-      expect(subDir.foo).toBe('a');
-      expect(subDir.bar).toBe('b');
-      expect(subDir.baz).toBe('c');
-      expect(subDir.qux).toBe('d');
     });
 
-    it('should inherit outputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperSuperDirective {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-      class SuperDirective extends SuperSuperDirective {
-        @Output()
-        bar = new EventEmitter<string>();
-      }
-
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-        ngOnInit() {
-          this.foo.emit('test1');
-          this.bar.emit('test2');
+      it('should inherit outputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperSuperDirective {
+          @Output()
+          foo = new EventEmitter<string>();
         }
-      }
 
-      @Component({
-        template: `
+        class SuperDirective extends SuperSuperDirective {
+          @Output()
+          bar = new EventEmitter<string>();
+        }
+
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+          ngOnInit() {
+            this.foo.emit('test1');
+            this.bar.emit('test2');
+          }
+        }
+
+        @Component({
+          template: `
           <div sub-dir (foo)="handleFoo($event)" (bar)="handleBar($event)"></div>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        bar = '';
+          bar = '';
 
-        handleFoo(event: string) { this.foo = event; }
+          handleFoo(event: string) { this.foo = event; }
 
-        handleBar(event: string) { this.bar = event; }
-      }
+          handleBar(event: string) { this.bar = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test1');
+        expect(app.bar).toBe('test2');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test1');
-      expect(app.bar).toBe('test2');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperSuperDirective {
-        @HostBinding('style.color')
-        color = 'red';
-      }
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperSuperDirective {
+          @HostBinding('style.color')
+          color = 'red';
+        }
 
-      class SuperDirective extends SuperSuperDirective {
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+        class SuperDirective extends SuperSuperDirective {
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <p sub-dir>test</p>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(SubDirective));
+
+        expect(queryResult.nativeElement.tagName).toBe('P');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(SubDirective));
-
-      expect(queryResult.nativeElement.tagName).toBe('P');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperSuperDirective {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperSuperDirective {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      class SuperDirective extends SuperSuperDirective {
-        @HostBinding('accessKey')
-        get boundAltKey() { return this.superAccessKey + '???'; }
+        class SuperDirective extends SuperSuperDirective {
+          @HostBinding('accessKey')
+          get boundAltKey() { return this.superAccessKey + '???'; }
 
-        @Input()
-        superAccessKey = '';
-      }
+          @Input()
+          superAccessKey = '';
+        }
 
-      @Directive({
-        selector: '[sub-dir]',
-      })
-      class SubDirective extends SuperDirective {
-      }
-      @Component({
-        template: `
+        @Directive({
+          selector: '[sub-dir]',
+        })
+        class SubDirective extends SuperDirective {
+        }
+        @Component({
+          template: `
         <p sub-dir superTitle="test1" superAccessKey="test2">test</p>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const p: HTMLParagraphElement =
+            fixture.debugElement.query(By.directive(SubDirective)).nativeElement;
+
+        expect(p.title).toBe('test1!!!');
+        expect(p.accessKey).toBe('test2???');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const p: HTMLParagraphElement =
-          fixture.debugElement.query(By.directive(SubDirective)).nativeElement;
-
-      expect(p.title).toBe('test1!!!');
-      expect(p.accessKey).toBe('test2???');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -1688,13 +1812,11 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperSuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir1)
         childDir1s !: QueryList<ChildDir1>;
       }
 
       class SuperDirective extends SuperSuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir1)
         childDir2s !: QueryList<ChildDir2>;
       }
@@ -1730,9 +1852,37 @@ describe('inheritance', () => {
       expect(foundChildDir1s !.length).toBe(2);
       expect(foundChildDir2s !.length).toBe(2);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of bare super class by a component', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -2025,153 +2175,174 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      class SuperComponent {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        bar = '';
+      it('should inherit inputs', () => {
+        class SuperComponent {
+          @Input()
+          foo = '';
 
-        @Input()
-        baz = '';
-      }
+          @Input()
+          bar = '';
 
-      @Component({selector: 'my-comp', template: `<p>test</p>`})
-      class MyComponent extends SuperComponent {
-        @Input()
-        baz = '';
+          @Input()
+          baz = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Component({selector: 'my-comp', template: `<p>test</p>`})
+        class MyComponent extends SuperComponent {
+          @Input()
+          baz = '';
 
-      @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir: MyComponent =
+            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+
+        expect(subDir.foo).toEqual('a');
+        expect(subDir.bar).toEqual('b');
+        expect(subDir.baz).toEqual('c');
+        expect(subDir.qux).toEqual('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
 
-      const subDir: MyComponent =
-          fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
     });
 
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-    it('should inherit outputs', () => {
-      class SuperComponent {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+      it('should inherit outputs', () => {
+        class SuperComponent {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+          ngOnInit() { this.foo.emit('test'); }
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp (foo)="handleFoo($event)"></my-comp>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      class SuperComponent {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        class SuperComponent {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp>test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      class SuperComponent {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        class SuperComponent {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
+        @Component({
+          template: `
         <my-comp superTitle="test">test</my-comp>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.title).toBe('test!!!');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.title).toBe('test!!!');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -2182,7 +2353,6 @@ describe('inheritance', () => {
       }
 
       class SuperComponent {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -2211,9 +2381,37 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(2);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a directive inherited by a component', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -2510,164 +2708,185 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        bar = '';
+      it('should inherit inputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @Input()
+          foo = '';
 
-        @Input()
-        baz = '';
-      }
+          @Input()
+          bar = '';
 
-      @Component({selector: 'my-comp', template: `<p>test</p>`})
-      class MyComponent extends SuperDirective {
-        @Input()
-        baz = '';
+          @Input()
+          baz = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Component({selector: 'my-comp', template: `<p>test</p>`})
+        class MyComponent extends SuperDirective {
+          @Input()
+          baz = '';
 
-      @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperDirective],
+        @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir: MyComponent =
+            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+
+        expect(subDir.foo).toEqual('a');
+        expect(subDir.bar).toEqual('b');
+        expect(subDir.baz).toEqual('c');
+        expect(subDir.qux).toEqual('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const subDir: MyComponent =
-          fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
     });
 
-    it('should inherit outputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperDirective {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+      it('should inherit outputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperDirective {
+          ngOnInit() { this.foo.emit('test'); }
+        }
+
+        @Component({
+          template: `
           <my-comp (foo)="handleFoo($event)"></my-comp>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperDirective {
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperDirective {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp>test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperDirective {
-      }
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperDirective {
+        }
+        @Component({
+          template: `
         <my-comp superTitle="test">test</my-comp>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.title).toBe('test!!!');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.title).toBe('test!!!');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -2681,7 +2900,6 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -2722,7 +2940,6 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ViewChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -2756,9 +2973,37 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(5);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a directive inherited by a bare class and then by a component', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -3056,180 +3301,200 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        baz = '';
-      }
+      it('should inherit inputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @Input()
+          foo = '';
 
-      class BareClass extends SuperDirective {
-        @Input()
-        bar = '';
-      }
+          @Input()
+          baz = '';
+        }
 
-      @Component({selector: 'my-comp', template: `<p>test</p>`})
-      class MyComponent extends BareClass {
-        @Input()
-        baz = '';
+        class BareClass extends SuperDirective {
+          @Input()
+          bar = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Component({selector: 'my-comp', template: `<p>test</p>`})
+        class MyComponent extends BareClass {
+          @Input()
+          baz = '';
 
-      @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, BareClass, SuperDirective],
+        @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, BareClass, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir: MyComponent =
+            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+
+        expect(subDir.foo).toEqual('a');
+        expect(subDir.bar).toEqual('b');
+        expect(subDir.baz).toEqual('c');
+        expect(subDir.qux).toEqual('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const subDir: MyComponent =
-          fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
     });
 
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-    it('should inherit outputs', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+      it('should inherit outputs', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      class BareClass extends SuperDirective {}
+        class BareClass extends SuperDirective {}
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends BareClass {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends BareClass {
+          ngOnInit() { this.foo.emit('test'); }
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp (foo)="handleFoo($event)"></my-comp>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperDirective],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperDirective],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      class BareClass extends SuperDirective {}
+        class BareClass extends SuperDirective {}
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends BareClass {
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends BareClass {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp>test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Directive({
-        selector: '[super-dir]',
-      })
-      class SuperDirective {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Directive({
+          selector: '[super-dir]',
+        })
+        class SuperDirective {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      class BareClass extends SuperDirective {
-        @HostBinding('accessKey')
-        get boundAccessKey() { return this.superAccessKey + '???'; }
+        class BareClass extends SuperDirective {
+          @HostBinding('accessKey')
+          get boundAccessKey() { return this.superAccessKey + '???'; }
 
-        @Input()
-        superAccessKey = '';
-      }
+          @Input()
+          superAccessKey = '';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends BareClass {
-      }
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends BareClass {
+        }
+        @Component({
+          template: `
           <my-comp superTitle="test1" superAccessKey="test2">test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, SuperDirective, BareClass, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, SuperDirective, BareClass, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.title).toBe('test1!!!');
+        expect(queryResult.nativeElement.accessKey).toBe('test2???');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.title).toBe('test1!!!');
-      expect(queryResult.nativeElement.accessKey).toBe('test2???');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -3243,7 +3508,6 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -3289,7 +3553,6 @@ describe('inheritance', () => {
         selector: '[super-dir]',
       })
       class SuperDirective {
-        // TODO(issue/24571): remove '!'.
         @ViewChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -3325,9 +3588,37 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(5);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a component inherited by a component', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -3628,168 +3919,189 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperComponent {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        bar = '';
+      it('should inherit inputs', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperComponent {
+          @Input()
+          foo = '';
 
-        @Input()
-        baz = '';
-      }
+          @Input()
+          bar = '';
 
-      @Component({selector: 'my-comp', template: `<p>test</p>`})
-      class MyComponent extends SuperComponent {
-        @Input()
-        baz = '';
+          @Input()
+          baz = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Component({selector: 'my-comp', template: `<p>test</p>`})
+        class MyComponent extends SuperComponent {
+          @Input()
+          baz = '';
 
-      @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent],
+        @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const subDir: MyComponent =
+            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+
+        expect(subDir.foo).toEqual('a');
+        expect(subDir.bar).toEqual('b');
+        expect(subDir.baz).toEqual('c');
+        expect(subDir.qux).toEqual('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const subDir: MyComponent =
-          fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
-
-      expect(subDir.foo).toEqual('a');
-      expect(subDir.bar).toEqual('b');
-      expect(subDir.baz).toEqual('c');
-      expect(subDir.qux).toEqual('d');
     });
 
-    it('should inherit outputs', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperComponent {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-        ngOnInit() { this.foo.emit('test'); }
-      }
+      it('should inherit outputs', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperComponent {
+          @Output()
+          foo = new EventEmitter<string>();
+        }
 
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+          ngOnInit() { this.foo.emit('test'); }
+        }
+
+        @Component({
+          template: `
           <my-comp (foo)="handleFoo($event)"></my-comp>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
-      }
+          handleFoo(event: string) { this.foo = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperComponent {
-        @HostBinding('style.color')
-        color = 'red';
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperComponent {
+          @HostBinding('style.color')
+          color = 'red';
 
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp>test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperComponent {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperComponent {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
+        @Component({
+          template: `
         <my-comp superTitle="test">test</my-comp>
       `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.title).toBe('test!!!');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.title).toBe('test!!!');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -3804,7 +4116,6 @@ describe('inheritance', () => {
         template: `<p>super</p>`,
       })
       class SuperComponent {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -3849,7 +4160,6 @@ describe('inheritance', () => {
         template: `<p>super</p>`,
       })
       class SuperComponent {
-        // TODO(issue/24571): remove '!'.
         @ViewChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -3883,9 +4193,37 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(5);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 
   describe('of a component inherited by a bare class then by a component', () => {
+    // TODO: Add tests for ContentChild
+    // TODO: Add tests for ViewChild
     describe('lifecycle hooks', () => {
       const fired: string[] = [];
 
@@ -4188,195 +4526,216 @@ describe('inheritance', () => {
       });
     });
 
-    it('should inherit inputs', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperSuperComponent {
-        @Input()
-        foo = '';
+    describe('inputs', () => {
+      // TODO: add test where the two inputs have a different alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
+      // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
-        @Input()
-        baz = '';
-      }
+      it('should inherit inputs', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperSuperComponent {
+          @Input()
+          foo = '';
 
-      class BareClass extends SuperSuperComponent {
-        @Input()
-        bar = '';
-      }
+          @Input()
+          baz = '';
+        }
 
-      @Component({selector: 'my-comp', template: `<p>test</p>`})
-      class MyComponent extends BareClass {
-        @Input()
-        baz = '';
+        class BareClass extends SuperSuperComponent {
+          @Input()
+          bar = '';
+        }
 
-        @Input()
-        qux = '';
-      }
+        @Component({selector: 'my-comp', template: `<p>test</p>`})
+        class MyComponent extends BareClass {
+          @Input()
+          baz = '';
 
-      @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
-      class App {
-        a = 'a';
-        b = 'b';
-        c = 'c';
-        d = 'd';
-      }
+          @Input()
+          qux = '';
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperSuperComponent, BareClass],
+        @Component({template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`})
+        class App {
+          a = 'a';
+          b = 'b';
+          c = 'c';
+          d = 'd';
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperSuperComponent, BareClass],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+
+        const myComp: MyComponent =
+            fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
+
+        expect(myComp.foo).toEqual('a');
+        expect(myComp.bar).toEqual('b');
+        expect(myComp.baz).toEqual('c');
+        expect(myComp.qux).toEqual('d');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      const myComp: MyComponent =
-          fixture.debugElement.query(By.directive(MyComponent)).componentInstance;
-
-      expect(myComp.foo).toEqual('a');
-      expect(myComp.bar).toEqual('b');
-      expect(myComp.baz).toEqual('c');
-      expect(myComp.qux).toEqual('d');
     });
 
-    it('should inherit outputs', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperSuperComponent {
-        @Output()
-        foo = new EventEmitter<string>();
-      }
+    describe('outputs', () => {
+      // TODO: add tests where both sub and super have Output on same property with different
+      // aliases
+      // TODO: add test where super has property with alias and sub has property with no alias
+      // TODO: add test where super has an @Input() on the property, and sub does not
 
-      class SuperComponent extends SuperSuperComponent {
-        @Output()
-        bar = new EventEmitter<string>();
-      }
-
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-        ngOnInit() {
-          this.foo.emit('test1');
-          this.bar.emit('test2');
+      it('should inherit outputs', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperSuperComponent {
+          @Output()
+          foo = new EventEmitter<string>();
         }
-      }
 
-      @Component({
-        template: `
+        class SuperComponent extends SuperSuperComponent {
+          @Output()
+          bar = new EventEmitter<string>();
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+          ngOnInit() {
+            this.foo.emit('test1');
+            this.bar.emit('test2');
+          }
+        }
+
+        @Component({
+          template: `
           <my-comp (foo)="handleFoo($event)" (bar)="handleBar($event)"></my-comp>
         `
-      })
-      class App {
-        foo = '';
+        })
+        class App {
+          foo = '';
 
-        handleFoo(event: string) { this.foo = event; }
+          handleFoo(event: string) { this.foo = event; }
 
-        bar = '';
+          bar = '';
 
-        handleBar(event: string) { this.bar = event; }
-      }
+          handleBar(event: string) { this.bar = event; }
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const app = fixture.componentInstance;
+
+        expect(app.foo).toBe('test1');
+        expect(app.bar).toBe('test2');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const app = fixture.componentInstance;
-
-      expect(app.foo).toBe('test1');
-      expect(app.bar).toBe('test2');
     });
 
-    it('should compose host bindings for styles', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperSuperComponent {
-        @HostBinding('style.color')
-        color = 'red';
-      }
+    describe('host bindings (style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings for styles', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperSuperComponent {
+          @HostBinding('style.color')
+          color = 'red';
+        }
 
-      class SuperComponent extends SuperSuperComponent {
-        @HostBinding('style.backgroundColor')
-        bg = 'black';
-      }
+        class SuperComponent extends SuperSuperComponent {
+          @HostBinding('style.backgroundColor')
+          bg = 'black';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
 
-      @Component({
-        template: `
+        @Component({
+          template: `
           <my-comp>test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.style.color).toBe('red');
+        expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.style.color).toBe('red');
-      expect(queryResult.nativeElement.style.backgroundColor).toBe('black');
     });
 
-    it('should compose host bindings (non-style related)', () => {
-      @Component({
-        selector: 'super-comp',
-        template: `<p>super</p>`,
-      })
-      class SuperSuperComponent {
-        @HostBinding('title')
-        get boundTitle() { return this.superTitle + '!!!'; }
+    describe('host bindings (non-style related)', () => {
+      // TODO: sub and super HostBinding same property but different bindings
+      // TODO: sub and super HostBinding same binding on two different properties
+      it('should compose host bindings (non-style related)', () => {
+        @Component({
+          selector: 'super-comp',
+          template: `<p>super</p>`,
+        })
+        class SuperSuperComponent {
+          @HostBinding('title')
+          get boundTitle() { return this.superTitle + '!!!'; }
 
-        @Input()
-        superTitle = '';
-      }
+          @Input()
+          superTitle = '';
+        }
 
-      class SuperComponent extends SuperSuperComponent {
-        @HostBinding('accessKey')
-        get boundAccessKey() { return this.superAccessKey + '???'; }
+        class SuperComponent extends SuperSuperComponent {
+          @HostBinding('accessKey')
+          get boundAccessKey() { return this.superAccessKey + '???'; }
 
-        @Input()
-        superAccessKey = '';
-      }
+          @Input()
+          superAccessKey = '';
+        }
 
-      @Component({
-        selector: 'my-comp',
-        template: `<p>test</p>`,
-      })
-      class MyComponent extends SuperComponent {
-      }
-      @Component({
-        template: `
+        @Component({
+          selector: 'my-comp',
+          template: `<p>test</p>`,
+        })
+        class MyComponent extends SuperComponent {
+        }
+        @Component({
+          template: `
           <my-comp superTitle="test1" superAccessKey="test2">test</my-comp>
         `
-      })
-      class App {
-      }
+        })
+        class App {
+        }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        TestBed.configureTestingModule({
+          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.directive(MyComponent));
+
+        expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
+        expect(queryResult.nativeElement.title).toBe('test1!!!');
+        expect(queryResult.nativeElement.accessKey).toBe('test2???');
       });
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      const queryResult = fixture.debugElement.query(By.directive(MyComponent));
-
-      expect(queryResult.nativeElement.tagName).toBe('MY-COMP');
-      expect(queryResult.nativeElement.title).toBe('test1!!!');
-      expect(queryResult.nativeElement.accessKey).toBe('test2???');
     });
 
     it('should inherit ContentChildren queries', () => {
@@ -4391,7 +4750,6 @@ describe('inheritance', () => {
         template: `<p>super</p>`,
       })
       class SuperComponent {
-        // TODO(issue/24571): remove '!'.
         @ContentChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -4436,7 +4794,6 @@ describe('inheritance', () => {
         template: `<p>super</p>`,
       })
       class SuperComponent {
-        // TODO(issue/24571): remove '!'.
         @ViewChildren(ChildDir)
         customDirs !: QueryList<ChildDir>;
       }
@@ -4470,5 +4827,31 @@ describe('inheritance', () => {
 
       expect(foundQueryList !.length).toBe(5);
     });
+
+    xdescribe(
+        'what happens when...',
+        () => {
+            // TODO: sub has Input and super has Output on same property
+            // TODO: sub has Input and super has HostBinding on same property
+            // TODO: sub has Input and super has ViewChild on same property
+            // TODO: sub has Input and super has ViewChildren on same property
+            // TODO: sub has Input and super has ContentChild on same property
+            // TODO: sub has Input and super has ContentChildren on same property
+            // TODO: sub has Output and super has HostBinding on same property
+            // TODO: sub has Output and super has ViewChild on same property
+            // TODO: sub has Output and super has ViewChildren on same property
+            // TODO: sub has Output and super has ContentChild on same property
+            // TODO: sub has Output and super has ContentChildren on same property
+            // TODO: sub has HostBinding and super has ViewChild on same property
+            // TODO: sub has HostBinding and super has ViewChildren on same property
+            // TODO: sub has HostBinding and super has ContentChild on same property
+            // TODO: sub has HostBinding and super has ContentChildren on same property
+            // TODO: sub has ViewChild and super has ViewChildren on same property
+            // TODO: sub has ViewChild and super has ContentChild on same property
+            // TODO: sub has ViewChild and super has ContentChildren on same property
+            // TODO: sub has ViewChildren and super has ContentChild on same property
+            // TODO: sub has ViewChildren and super has ContentChildren on same property
+            // TODO: sub has ContentChild and super has ContentChildren on same property
+        });
   });
 });
