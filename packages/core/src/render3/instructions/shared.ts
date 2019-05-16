@@ -15,7 +15,6 @@ import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLess
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
-import {attachLContainerDebug, attachLViewDebug} from '../debug';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {executeHooks, executePreOrderHooks, registerPreOrderHooks} from '../hooks';
@@ -38,6 +37,7 @@ import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+import {attachLContainerDebug, attachLViewDebug} from './lview_debug';
 
 
 
@@ -605,7 +605,6 @@ export function createTView(
     schemas: schemas,
   };
 }
-
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
   const blueprint = new Array(initialViewLength)
                         .fill(null, 0, bindingStartIndex)
