@@ -160,4 +160,24 @@ describe('styling', () => {
       tNode: 3,
     });
   });
+
+  it('should not throw if host style binding is on a template node', () => {
+    // This ex is a bit contrived. In real apps, you might have a shared class that is extended both
+    // by components with host elements and by directives on template nodes. In that case, the host
+    // styles for the template directives should just be ignored.
+    @Directive({selector: 'ng-template[styleDir]', host: {'[style.display]': 'display'}})
+    class StyleDir {
+      display = 'block';
+    }
+
+    @Component({selector: 'app-comp', template: `<ng-template styleDir></ng-template>`})
+    class MyApp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp, StyleDir]});
+    expect(() => {
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
 });

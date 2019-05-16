@@ -35,9 +35,12 @@ export function registerHostDirective(context: StylingContext, directiveIndex: n
  */
 export function enqueueHostInstruction<T extends Function>(
     context: StylingContext, priority: number, instructionFn: T, instructionFnArgs: ParamsOf<T>) {
-  const buffer: HostInstructionsQueue = context[StylingIndex.HostInstructionsQueue] !;
-  const index = findNextInsertionIndex(buffer, priority);
-  buffer.splice(index, 0, priority, instructionFn, instructionFnArgs);
+  const buffer: HostInstructionsQueue|null = context[StylingIndex.HostInstructionsQueue];
+  // Buffer may be null if host element is a template node. In this case, just ignore the style.
+  if (buffer != null) {
+    const index = findNextInsertionIndex(buffer, priority);
+    buffer.splice(index, 0, priority, instructionFn, instructionFnArgs);
+  }
 }
 
 /**
