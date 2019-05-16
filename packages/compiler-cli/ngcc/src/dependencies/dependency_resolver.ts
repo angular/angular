@@ -10,7 +10,7 @@ import {DepGraph} from 'dependency-graph';
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
-import {DependencyHost} from './dependency_host';
+import {DependencyHost, DependencyInfo} from './dependency_host';
 
 /**
  * Holds information about entry points that are removed because
@@ -98,6 +98,16 @@ export class DependencyResolver {
     };
   }
 
+  getEntryPointDependencies(entryPoint: EntryPoint): DependencyInfo {
+    const formatInfo = this.getEntryPointFormatInfo(entryPoint);
+    const host = this.hosts[formatInfo.format];
+    if (!host) {
+      throw new Error(
+          `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
+    }
+    return host.findDependencies(formatInfo.path);
+  }
+
   /**
    * Computes a dependency graph of the given entry-points.
    *
@@ -116,13 +126,7 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     angularEntryPoints.forEach(entryPoint => {
-      const formatInfo = this.getEntryPointFormatInfo(entryPoint);
-      const host = this.hosts[formatInfo.format];
-      if (!host) {
-        throw new Error(
-            `Could not find a suitable format for computing dependencies of entry-point: '${entryPoint.path}'.`);
-      }
-      const {dependencies, missing, deepImports} = host.findDependencies(formatInfo.path);
+      const {dependencies, missing, deepImports} = this.getEntryPointDependencies(entryPoint);
 
       if (missing.size > 0) {
         // This entry point has dependencies that are missing

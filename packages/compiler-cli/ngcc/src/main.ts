@@ -7,17 +7,18 @@
  */
 import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
-import {DependencyResolver} from './dependencies/dependency_resolver';
+import {DependencyResolver, InvalidEntryPoint, SortedEntryPointsInfo} from './dependencies/dependency_resolver';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
 import {ModuleResolver} from './dependencies/module_resolver';
 import {UmdDependencyHost} from './dependencies/umd_dependency_host';
+import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
+import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
-import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {FileWriter} from './writing/file_writer';
@@ -93,36 +94,12 @@ export function mainNgcc(
     umd: umdDependencyHost,
     commonjs: commonJsDependencyHost
   });
-  const config = new NgccConfiguration(fileSystem, dirname(absoluteFrom(basePath)));
-  const finder = new EntryPointFinder(fileSystem, config, logger, resolver);
+  const absBasePath = absoluteFrom(basePath);
+  const config = new NgccConfiguration(fileSystem, dirname(absBasePath));
   const fileWriter = getFileWriter(fileSystem, createNewEntryPointFormats);
-
-  const absoluteTargetEntryPointPath =
-      targetEntryPointPath ? resolve(basePath, targetEntryPointPath) : undefined;
-
-  if (absoluteTargetEntryPointPath &&
-      hasProcessedTargetEntryPoint(
-          fileSystem, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
-    logger.debug('The target entry-point has already been processed');
-    return;
-  }
-
-  const {entryPoints, invalidEntryPoints} =
-      finder.findEntryPoints(absoluteFrom(basePath), absoluteTargetEntryPointPath, pathMappings);
-
-  invalidEntryPoints.forEach(invalidEntryPoint => {
-    logger.debug(
-        `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
-        `It is missing required dependencies:\n` +
-            invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
-  });
-
-  if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(
-        fileSystem, absoluteTargetEntryPointPath, propertiesToConsider);
-    return;
-  }
-
+  const entryPoints = getEntryPoints(
+      fileSystem, config, logger, resolver, absBasePath, targetEntryPointPath, pathMappings,
+      propertiesToConsider, compileAllFormats);
   for (const entryPoint of entryPoints) {
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
@@ -188,6 +165,47 @@ function getFileWriter(fs: FileSystem, createNewEntryPointFormats: boolean): Fil
   return createNewEntryPointFormats ? new NewEntryPointFileWriter(fs) : new InPlaceFileWriter(fs);
 }
 
+function getEntryPoints(
+    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
+    basePath: AbsoluteFsPath, targetEntryPointPath: string | undefined,
+    pathMappings: PathMappings | undefined, propertiesToConsider: string[],
+    compileAllFormats: boolean): EntryPoint[] {
+  const {entryPoints, invalidEntryPoints} = (targetEntryPointPath !== undefined) ?
+      getTargetedEntryPoints(
+          fs, config, logger, resolver, basePath, targetEntryPointPath, propertiesToConsider,
+          compileAllFormats, pathMappings) :
+      getAllEntryPoints(fs, config, logger, resolver, basePath, pathMappings);
+  logInvalidEntryPoints(logger, invalidEntryPoints);
+  return entryPoints;
+}
+
+function getTargetedEntryPoints(
+    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
+    basePath: AbsoluteFsPath, targetEntryPointPath: string, propertiesToConsider: string[],
+    compileAllFormats: boolean, pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
+  const absoluteTargetEntryPointPath = resolve(basePath, targetEntryPointPath);
+  if (hasProcessedTargetEntryPoint(
+          fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
+    logger.debug('The target entry-point has already been processed');
+    return {entryPoints: [], invalidEntryPoints: [], ignoredDependencies: []};
+  }
+  const finder = new TargetedEntryPointFinder(
+      fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
+  const entryPointInfo = finder.findEntryPoints();
+  if (entryPointInfo.entryPoints.length === 0) {
+    markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath, propertiesToConsider);
+  }
+  return entryPointInfo;
+}
+
+function getAllEntryPoints(
+    fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
+    basePath: AbsoluteFsPath, pathMappings: PathMappings | undefined): SortedEntryPointsInfo {
+  const finder =
+      new DirectoryWalkerEntryPointFinder(fs, config, logger, resolver, basePath, pathMappings);
+  return finder.findEntryPoints();
+}
+
 function hasProcessedTargetEntryPoint(
     fs: FileSystem, targetPath: AbsoluteFsPath, propertiesToConsider: string[],
     compileAllFormats: boolean) {
@@ -231,5 +249,14 @@ function markNonAngularPackageAsProcessed(
   propertiesToConsider.forEach(formatProperty => {
     if (packageJson[formatProperty])
       markAsProcessed(fs, packageJson, packageJsonPath, formatProperty as EntryPointJsonProperty);
+  });
+}
+
+function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {
+  invalidEntryPoints.forEach(invalidEntryPoint => {
+    logger.debug(
+        `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
+        `It is missing required dependencies:\n` +
+            invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
   });
 }
