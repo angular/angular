@@ -840,9 +840,9 @@ After this, the service is injectable anywhere in AngularJS code:
 
 ## Using the Unified Angular Location Service
 
-AngularJS and Angular both have separate routers for configuration, handling navigation, encoding and decoding URLs, redirects, and interacting with browser APIs. When migrating from AngularJS to Angular, you have the option of running both routers to handle navigating in different parts of your application. As you are migrating from AngularJS, you want to take advantage of new APIs, and move as much of this functionality to Angular.
+In AngularJS, the [$location service](https://docs.angularjs.org/api/ng/service/$location) handles all routing configuration and navigation, encoding and decoding of URLS, redirects, and interactions with browser APIs. Angular uses its own underlying `Location` service for all of these tasks. 
 
-To aid in your migration from AngularJS to Angular, a unified location service is provided to shift the routing responsibility previously handled by the [$location service](https://docs.angularjs.org/api/ng/service/$location) in AngularJS to Angular.
+When you migrate from AngularJS to Angular you will want to move as much responsibility as possible to Angular, so that you can take advantage of new APIs. To help with the transition, Angular provides the `LocationUpgradeModule`. This module enables a _unified_ location service that shifts responsibilities from the AngularJS `$location` service to the Angular `Location` service.
 
 To use the `LocationUpgradeModule`, import the symbol from `@angular/common/upgrade` and add it to your `AppModule` imports using the static `LocationUpgradeModule.config()` method.
 
