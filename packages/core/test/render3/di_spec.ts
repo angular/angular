@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, ViewContainerRef} from '@angular/core';
-import {createLView, createNodeAtIndex, createTView} from '@angular/core/src/render3/instructions/shared';
+import {createLView, createTView, getOrCreateTNode} from '@angular/core/src/render3/instructions/shared';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
@@ -16,7 +16,7 @@ import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshSt
 import {TNODE} from '../../src/render3/interfaces/injector';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
-import {LViewFlags} from '../../src/render3/interfaces/view';
+import {LViewFlags, TVIEW} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
 import {ViewRef} from '../../src/render3/view_ref';
 
@@ -605,7 +605,8 @@ describe('di', () => {
           null, null, {} as any, {} as any);
       const oldView = enterView(contentView, null);
       try {
-        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null);
+        const parentTNode =
+            getOrCreateTNode(contentView[TVIEW], null, 0, TNodeType.Element, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
