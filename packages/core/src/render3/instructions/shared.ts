@@ -253,10 +253,9 @@ export function createNodeAtIndex(
   const lView = getLView();
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
-
-  const previousOrParentTNode = getPreviousOrParentTNode();
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode == null) {
+    const previousOrParentTNode = getPreviousOrParentTNode();
     const isParent = getIsParent();
     const parent =
         isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
@@ -369,7 +368,8 @@ export function createEmbeddedViewAndNode<T>(
  *
  * Dynamically created views must store/retrieve their TViews differently from component views
  * because their template functions are nested in the template functions of their hosts, creating
- * closures. If their host template happens to be an embedded template in a loop (e.g. ngFor inside
+ * closures. If their host template happens to be an embedded template in a loop (e.g. ngFor
+ * inside
  * an ngFor), the nesting would mean we'd have multiple instances of the template function, so we
  * can't store TViews in the template function itself (as we do for comps). Instead, we store the
  * TView for dynamically created views on their host TNode, which only has one instance.
@@ -811,7 +811,8 @@ export function elementPropertyInternal<T>(
     savePropertyDebugData(tNode, lView, propName, lView[TVIEW].data, nativeOnly);
 
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
-    // It is assumed that the sanitizer is only added when the compiler determines that the property
+    // It is assumed that the sanitizer is only added when the compiler determines that the
+    // property
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     if (isProceduralRenderer(renderer)) {
@@ -957,7 +958,8 @@ export function instantiateRootComponent<T>(
 function resolveDirectives(
     tView: TView, viewData: LView, directives: DirectiveDef<any>[] | null, tNode: TNode,
     localRefs: string[] | null): void {
-  // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
+  // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in
+  // tsickle.
   ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
   if (directives) {
@@ -1383,7 +1385,8 @@ export function createLContainer(
 
 
 /**
- * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes them
+ * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes
+ * them
  * by executing an associated template function.
  */
 function refreshDynamicEmbeddedViews(lView: LView) {
@@ -1394,7 +1397,8 @@ function refreshDynamicEmbeddedViews(lView: LView) {
     if (current[ACTIVE_INDEX] === -1 && isLContainer(current)) {
       for (let i = CONTAINER_HEADER_OFFSET; i < current.length; i++) {
         const dynamicViewData = current[i];
-        // The directives and pipes are not needed here as an existing view is only being refreshed.
+        // The directives and pipes are not needed here as an existing view is only being
+        // refreshed.
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
         renderEmbeddedTemplate(dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !);
       }
@@ -1471,9 +1475,12 @@ function syncViewWithBlueprint(componentView: LView) {
  * @returns The state passed in
  */
 export function addToViewTree<T extends LView|LContainer>(lView: LView, lViewOrLContainer: T): T {
-  // TODO(benlesh/misko): This implementation is incorrect, because it always adds the LContainer to
-  // the end of the queue, which means if the developer retrieves the LContainers from RNodes out of
-  // order, the change detection will run out of order, as the act of retrieving the the LContainer
+  // TODO(benlesh/misko): This implementation is incorrect, because it always adds the LContainer
+  // to
+  // the end of the queue, which means if the developer retrieves the LContainers from RNodes out
+  // of
+  // order, the change detection will run out of order, as the act of retrieving the the
+  // LContainer
   // from the RNode is what adds it to the queue.
   if (lView[CHILD_HEAD]) {
     lView[CHILD_TAIL] ![NEXT] = lViewOrLContainer;
@@ -1626,7 +1633,8 @@ export function checkNoChangesInRootView(lView: LView): void {
   }
 }
 
-/** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
+/** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck.
+ */
 export function checkView<T>(hostView: LView, component: T) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, hostView[T_HOST]);
