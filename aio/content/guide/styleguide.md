@@ -2468,11 +2468,11 @@ Here is a compliant folder and file structure:
           </div>
 
           <div class='file'>
-            text-filter.component.ts|spec.ts
+            filter-text.component.ts|spec.ts
           </div>
 
           <div class='file'>
-            text-filter.service.ts|spec.ts
+            filter-text.service.ts|spec.ts
           </div>
 
         </div>
@@ -3019,11 +3019,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
         </div>
 
         <div class='file'>
-          text-filter.component.ts|spec.ts
+          filter-text.component.ts|spec.ts
         </div>
 
         <div class='file'>
-          text-filter.service.ts|spec.ts
+          filter-text.service.ts|spec.ts
         </div>
 
       </div>
