@@ -9,6 +9,16 @@
 // clang-format off
 export {
   ɵɵattribute,
+  ɵɵattributeInterpolate,
+  ɵɵattributeInterpolate1,
+  ɵɵattributeInterpolate2,
+  ɵɵattributeInterpolate3,
+  ɵɵattributeInterpolate4,
+  ɵɵattributeInterpolate5,
+  ɵɵattributeInterpolate6,
+  ɵɵattributeInterpolate7,
+  ɵɵattributeInterpolate8,
+  ɵɵattributeInterpolateV,
   ɵɵdefineBase,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
