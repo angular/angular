@@ -2,6 +2,7 @@ version: '1.0'
 
 steps:
   BuildImage:
+    title: Build Docker image
     type: build
     image_name: node-bazel-windows
     working_directory: ./.codefresh
@@ -12,7 +13,7 @@ steps:
     dockerfile: ./Dockerfile.win-1809
 
   RunTests:
-    title: Run Tests
+    title: Run Bazel tests
     image: ${{BuildImage}}
     commands:
     # Install dependencies
