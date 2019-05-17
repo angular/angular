@@ -9,14 +9,15 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
+import {isRequireCall} from '../host/commonjs_host';
+
 import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
-
 
 /**
  * Helper functions for computing dependencies.
  */
-export class EsmDependencyHost implements DependencyHost {
+export class CommonJsDependencyHost implements DependencyHost {
   constructor(private fs: FileSystem, private moduleResolver: ModuleResolver) {}
 
   /**
@@ -51,22 +52,23 @@ export class EsmDependencyHost implements DependencyHost {
    */
   private recursivelyFindDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+      deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
-    if (!this.hasImportOrReexportStatements(fromContents)) {
+    if (!this.hasRequireCalls(fromContents)) {
+      // Avoid parsing the source file as there are no require calls.
       return;
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
     const sf =
         ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
-    sf.statements
-        // filter out statements that are not imports or reexports
-        .filter(this.isStringImportOrReexport)
-        // Grab the id of the module that is being imported
-        .map(stmt => stmt.moduleSpecifier.text)
-        // Resolve this module id into an absolute path
-        .forEach(importPath => {
+
+    for (const statement of sf.statements) {
+      const declarations =
+          ts.isVariableStatement(statement) ? statement.declarationList.declarations : [];
+      for (const declaration of declarations) {
+        if (declaration.initializer && isRequireCall(declaration.initializer)) {
+          const importPath = declaration.initializer.arguments[0].text;
           const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {
@@ -86,19 +88,9 @@ export class EsmDependencyHost implements DependencyHost {
           } else {
             missing.add(importPath);
           }
-        });
-  }
-
-  /**
-   * Check whether the given statement is an import with a string literal module specifier.
-   * @param stmt the statement node to check.
-   * @returns true if the statement is an import with a string literal module specifier.
-   */
-  isStringImportOrReexport(stmt: ts.Statement): stmt is ts.ImportDeclaration&
-      {moduleSpecifier: ts.StringLiteral} {
-    return ts.isImportDeclaration(stmt) ||
-        ts.isExportDeclaration(stmt) && !!stmt.moduleSpecifier &&
-        ts.isStringLiteral(stmt.moduleSpecifier);
+        }
+      }
+    }
   }
 
   /**
@@ -108,10 +100,8 @@ export class EsmDependencyHost implements DependencyHost {
    *
    * @param source The content of the source file to check.
    *
-   * @returns false if there are definitely no import or re-export statements
+   * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  hasImportOrReexportStatements(source: string): boolean {
-    return /(import|export)\s.+from/.test(source);
-  }
+  hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
 }

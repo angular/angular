@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {MockFileSystem} from '../helpers/mock_file_system';
@@ -56,7 +56,7 @@ describe('EsmDependencyHost', () => {
       expect(dependencies.size).toBe(1);
       expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
       expect(missing.size).toBe(1);
-      expect(missing.has('missing')).toBe(true);
+      expect(missing.has(PathSegment.fromFsPath('missing'))).toBe(true);
       expect(deepImports.size).toBe(0);
     });
 
