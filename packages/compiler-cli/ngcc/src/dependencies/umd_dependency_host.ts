@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
 
@@ -31,8 +31,8 @@ export class UmdDependencyHost implements DependencyHost {
    */
   findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
     const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<string>();
-    const deepImports = new Set<string>();
+    const missing = new Set<AbsoluteFsPath|PathSegment>();
+    const deepImports = new Set<AbsoluteFsPath>();
     const alreadySeen = new Set<AbsoluteFsPath>();
     this.recursivelyFindDependencies(
         entryPointPath, dependencies, missing, deepImports, alreadySeen);
