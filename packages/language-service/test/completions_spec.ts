@@ -86,12 +86,10 @@ describe('completions', () => {
 
     expect(() => {
       let chance = 0.05;
-      let requests = 0;
       function tryCompletionsAt(position: number) {
         try {
           if (Math.random() < chance) {
             ngService.getCompletionsAt(fileName, position);
-            requests++;
           }
         } catch (e) {
           // Emit enough diagnostic information to reproduce the error.
