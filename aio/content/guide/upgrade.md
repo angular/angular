@@ -842,9 +842,13 @@ After this, the service is injectable anywhere in AngularJS code:
 
 When migrating large applications from AngularJS to Angular using a hybrid approach, you want to migrate some of the most commonly used features first. For example, a YouTube client application might migrate the home page, then the player page, then search, and finally the settings page.
 
-When both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in a larger bundle size with both frameworks being included in a single bundle. It also means that event if a user only stays on Angular-rendered pages, the AngularJS framework has bootstrapped, and is listening for changes even if it is never accessed, potentially impacting overall application performance. 
+In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance.
 
-From a bundling perspective, this can be done with modern bundling tools, such as the Angular CLI. From a performance perspective, you should only load, bootstrap, and render the AngularJS application when needed. The steps below show you how to create a service that lazy loads and boostraps AngularJS, create a component for AngularJS content, and how to configure the Angular Router to load AngularJS routes only on specific URLs.
+Overall application performance is affected in cases where the user stays on Angular-rendered pages, because the AngularJS framework and application is still loaded, and running, even if it is never accessed.
+
+To address the performance problem, you can use  [lazy loading](guide/glossary#lazy-loading) to only load, bootstrap, and render the AngularJS application when needed. This has the added benefit of reducing the initial bundle size.
+
+The steps below steps below show you how to create a service that lazy loads and boostraps AngularJS, create a component for AngularJS content, and how to configure the Angular Router to load AngularJS routes only on specific URLs.
 
 ### Create a service to lazy load AngularJS
 
@@ -879,12 +883,12 @@ When the Angular Router matches a route that uses AngularJS, the `AngularJSCompo
 
 To configure the Angular router, you must define a route for AngularJS URLs. To match those URLs, you add a route configuration that uses the `matcher` property. The `matcher` allows you to use custom pattern matching for URL paths. The Angular router tries to match on more specific routes such as static and variable routes first. When it doesn't find a match, it then looks at custom matchers defined in your route configuration. If the custom matchers don't match a route, it then goes to catch-all routes, such as a 404 page.
 
-Define a custom matcher function for AngularJS routes:
+The following example defines a custom matcher function for AngularJS routes.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="matcher">
 </code-example>
 
-Then add a route object to your routing configuration using the `matcher` property and custom matcher, and the `component` property with `AngularJSComponent`.
+The following code adds a route object to your routing configuration using the `matcher` property and custom matcher, and the `component` property with `AngularJSComponent`.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts">
 </code-example>
