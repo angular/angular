@@ -10,7 +10,7 @@ import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, Co
 import {ViewEncapsulation} from '../../src/metadata';
 import {injectComponentFactoryResolver, ΔdefineComponent, ΔdefineDirective, Δlistener, ΔloadViewQuery, ΔqueryRefresh, ΔviewQuery,} from '../../src/render3/index';
 
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdirectiveInject, Δelement, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δtemplate, Δtext, ΔtextBinding,} from '../../src/render3/instructions/all';
+import {Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdirectiveInject, Δelement, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δtemplate, Δtext,} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {getLView} from '../../src/render3/state';
@@ -49,17 +49,6 @@ describe('ViewContainerRef', () => {
   }
 
   describe('API', () => {
-    /**
-     * {{name}}
-     */
-    function embeddedTemplate(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        Δtext(0);
-      }
-      if (rf & RenderFlags.Update) {
-        ΔtextBinding(0, Δbind(ctx.name));
-      }
-    }
 
     describe('createEmbeddedView (incl. insert)', () => {
 
@@ -359,19 +348,6 @@ describe('ViewContainerRef', () => {
             .toEqual('header-cmp');
         expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
       });
-
-      it('should work on templates', () => {
-        function createTemplate() {
-          Δtemplate(0, embeddedTemplate, 1, 1, 'ng-template', ['vcref', '']);
-          Δelement(1, 'footer');
-        }
-
-        new TemplateFixture(createTemplate, () => {}, 2, 0, [DirectiveWithVCRef]);
-        expect(directiveInstance !.vcref.element.nativeElement.textContent).toEqual('container');
-        expect(directiveInstance !.vcref.injector.get(ElementRef).nativeElement.textContent)
-            .toEqual('container');
-        expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
-      });
     });
   });
 
@@ -439,79 +415,6 @@ describe('ViewContainerRef', () => {
          const parentInjector = fixture.component.getVCRefParentInjector();
          expect(parentInjector.get('foo')).toEqual('bar');
        });
-
-    it('should check bindings for components dynamically created by root component', () => {
-      class DynamicCompWithBindings {
-        checkCount = 0;
-
-        ngDoCheck() { this.checkCount++; }
-
-        /** check count: {{ checkCount }} */
-        static ngComponentDef = ΔdefineComponent({
-          type: DynamicCompWithBindings,
-          selectors: [['dynamic-cmpt-with-bindings']],
-          factory: () => new DynamicCompWithBindings(),
-          consts: 1,
-          vars: 1,
-          template: (rf: RenderFlags, ctx: DynamicCompWithBindings) => {
-            if (rf & RenderFlags.Create) {
-              Δtext(0);
-            }
-            if (rf & RenderFlags.Update) {
-              ΔtextBinding(0, Δinterpolation1('check count: ', ctx.checkCount, ''));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(AppCmpt);
-      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
-
-      fixture.component.insert(DynamicCompWithBindings);
-      fixture.update();
-      expect(fixture.outerHtml)
-          .toBe(
-              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 1</dynamic-cmpt-with-bindings>');
-
-      fixture.update();
-      expect(fixture.outerHtml)
-          .toBe(
-              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 2</dynamic-cmpt-with-bindings>');
-    });
-
-    it('should create deep DOM tree immediately for dynamically created components', () => {
-      let name = 'text';
-      const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
-        if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div');
-          { Δtext(1); }
-          ΔelementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-          ΔtextBinding(1, Δbind(name));
-        }
-      }, 2, 1);
-
-      const DynamicCompWithChildren =
-          createComponent('dynamic-cmpt-with-children', (rf: RenderFlags, ctx: any) => {
-            if (rf & RenderFlags.Create) {
-              Δelement(0, 'child');
-            }
-          }, 1, 0, [Child]);
-
-      const fixture = new ComponentFixture(AppCmpt);
-      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
-
-      fixture.component.insert(DynamicCompWithChildren);
-      expect(fixture.outerHtml)
-          .toBe(
-              '<div host="mark"></div><dynamic-cmpt-with-children><child><div></div></child></dynamic-cmpt-with-children>');
-
-      fixture.update();
-      expect(fixture.outerHtml)
-          .toBe(
-              '<div host="mark"></div><dynamic-cmpt-with-children><child><div>text</div></child></dynamic-cmpt-with-children>');
-    });
 
     it('should support view queries for dynamically created components', () => {
       let dynamicComp !: DynamicCompWithViewQueries;

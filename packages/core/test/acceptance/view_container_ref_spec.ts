@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, DOCUMENT} from '@angular/common';
 import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed} from '@angular/core/testing';
+import {TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -25,7 +25,11 @@ describe('ViewContainerRef', () => {
         '{$startTagDiv}{$closeTagDiv}{$startTagBefore}{$closeTagBefore}'
   };
 
-  function getElementHtml(element: HTMLElement) {
+  /**
+   * Gets the inner HTML of the given element with all HTML comments and Angular internal
+   * reflect attributes omitted. This makes HTML comparisons easier and less verbose.
+   */
+  function getElementHtml(element: Element) {
     return element.innerHTML.replace(/<!--(\W|\w)*?-->/g, '')
         .replace(/\sng-reflect-\S*="[^"]*"/g, '');
   }
@@ -384,6 +388,34 @@ describe('ViewContainerRef', () => {
       // Invalid indices when detaching throws an exception in Ivy: FW-1330.
       ivyEnabled && expect(() => vcRefDir.vcref.move(viewRef !, -1)).toThrow();
       ivyEnabled && expect(() => vcRefDir.vcref.move(viewRef !, 42)).toThrow();
+    });
+  });
+
+  describe('getters', () => {
+    it('should work on templates', () => {
+      @Component({
+        template: `
+          <ng-template vcref let-name>{{name}}</ng-template>
+          <footer></footer>
+        `
+      })
+      class TestComponent {
+        @ViewChild(VCRefDirective, {static: true}) vcRefDir !: VCRefDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [VCRefDirective, TestComponent]});
+      const fixture = TestBed.createComponent(TestComponent);
+      const {vcRefDir} = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(vcRefDir.vcref.element.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+      // In Ivy, the comment for the view container ref has text that implies
+      // that the comment is a placeholder for a container.
+      ivyEnabled && expect(vcRefDir.vcref.element.nativeElement.textContent).toEqual('container');
+
+      expect(vcRefDir.vcref.injector.get(ElementRef).nativeElement.textContent);
+      expect(getElementHtml(vcRefDir.vcref.parentInjector.get(ElementRef).nativeElement))
+          .toBe('<footer></footer>');
     });
   });
 
@@ -1483,6 +1515,138 @@ describe('ViewContainerRef', () => {
          });
     });
 
+  });
+
+  describe('root view container ref', () => {
+    let containerEl: HTMLElement|null = null;
+
+    beforeEach(() => containerEl = null);
+
+    /**
+     * Creates a new test component renderer instance that wraps the root element
+     * in another element. This allows us to test if elements have been inserted into
+     * the parent element of the root component.
+     */
+    function createTestComponentRenderer(document: any): TestComponentRenderer {
+      return {
+        insertRootElement(rootElementId: string) {
+          const rootEl = document.createElement('div');
+          rootEl.id = rootElementId;
+
+          containerEl = document.createElement('div');
+          document.body.appendChild(containerEl);
+          containerEl !.appendChild(rootEl);
+        }
+      };
+    }
+
+    const TEST_COMPONENT_RENDERER = {
+      provide: TestComponentRenderer,
+      useFactory: createTestComponentRenderer,
+      deps: [DOCUMENT]
+    };
+
+    it('should check bindings for components dynamically created by root component', () => {
+      @Component({
+        selector: 'dynamic-cmpt-with-bindings',
+        template: `check count: {{checkCount}}`,
+      })
+      class DynamicCompWithBindings implements DoCheck {
+        checkCount = 0;
+
+        ngDoCheck() { this.checkCount++; }
+      }
+
+      @Component({template: ``})
+      class TestComp {
+        constructor(public vcRef: ViewContainerRef, public cfResolver: ComponentFactoryResolver) {}
+      }
+
+      @NgModule(
+          {entryComponents: [DynamicCompWithBindings], declarations: [DynamicCompWithBindings]})
+      class DynamicCompWithBindingsModule {
+      }
+
+
+      TestBed.configureTestingModule({
+        declarations: [TestComp],
+        imports: [DynamicCompWithBindingsModule],
+        providers: [TEST_COMPONENT_RENDERER]
+      });
+      const fixture = TestBed.createComponent(TestComp);
+      const {vcRef, cfResolver} = fixture.componentInstance;
+      fixture.detectChanges();
+
+      // Ivy inserts a comment for the root view container ref instance. This is not
+      // the case for view engine and we need to adjust the assertions.
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 2 : 1);
+      ivyEnabled && expect(containerEl !.childNodes[1].nodeType).toBe(Node.COMMENT_NODE);
+
+      expect((containerEl !.childNodes[0] as Element).tagName).toBe('DIV');
+
+      vcRef.createComponent(cfResolver.resolveComponentFactory(DynamicCompWithBindings));
+      fixture.detectChanges();
+
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 3 : 2);
+      expect(containerEl !.childNodes[1].textContent).toBe('check count: 1');
+
+      fixture.detectChanges();
+
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 3 : 2);
+      expect(containerEl !.childNodes[1].textContent).toBe('check count: 2');
+    });
+
+    it('should create deep DOM tree immediately for dynamically created components', () => {
+      @Component({template: ``})
+      class TestComp {
+        constructor(public vcRef: ViewContainerRef, public cfResolver: ComponentFactoryResolver) {}
+      }
+
+      @Component({selector: 'child', template: `<div>{{name}}</div>`})
+      class Child {
+        name = 'text';
+      }
+
+      @Component({selector: 'dynamic-cmpt-with-children', template: `<child></child>`})
+      class DynamicCompWithChildren {
+      }
+
+      @NgModule({
+        entryComponents: [DynamicCompWithChildren],
+        declarations: [DynamicCompWithChildren, Child]
+      })
+      class DynamicCompWithChildrenModule {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestComp],
+        imports: [DynamicCompWithChildrenModule],
+        providers: [TEST_COMPONENT_RENDERER]
+      });
+
+      const fixture = TestBed.createComponent(TestComp);
+      const {vcRef, cfResolver} = fixture.componentInstance;
+      fixture.detectChanges();
+
+      // Ivy inserts a comment for the root view container ref instance. This is not
+      // the case for view engine and we need to adjust the assertions.
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 2 : 1);
+      ivyEnabled && expect(containerEl !.childNodes[1].nodeType).toBe(Node.COMMENT_NODE);
+
+      expect((containerEl !.childNodes[0] as Element).tagName).toBe('DIV');
+
+      vcRef.createComponent(cfResolver.resolveComponentFactory(DynamicCompWithChildren));
+
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 3 : 2);
+      expect(getElementHtml(containerEl !.childNodes[1] as Element))
+          .toBe('<child><div></div></child>');
+
+      fixture.detectChanges();
+
+      expect(containerEl !.childNodes.length).toBe(ivyEnabled ? 3 : 2);
+      expect(getElementHtml(containerEl !.childNodes[1] as Element))
+          .toBe(`<child><div>text</div></child>`);
+    });
   });
 });
 
