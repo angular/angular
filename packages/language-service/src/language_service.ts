@@ -13,7 +13,7 @@ import {getTemplateCompletions} from './completions';
 import {getDefinition} from './definitions';
 import {getDeclarationDiagnostics, getTemplateDiagnostics} from './diagnostics';
 import {getHover} from './hover';
-import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Pipes, Span, TemplateSource} from './types';
+import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 
 
 /**
