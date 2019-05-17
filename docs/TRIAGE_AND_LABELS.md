@@ -126,7 +126,7 @@ Every triaged PR must have a `PR action` label assigned to it:
   * _**Who adds it:** Typically the PR author._
   * _**Who removes it:** Whoever added it._
 * `PR action: review` (optional): One or more reviews are pending. The label is optional, since the review status can be derived from GitHub's Reviewers interface.
-  * _**Who adds it:** Anybody. The caretaker can use it to differentiate PRs pending review from merge-ready PRs._
+  * _**Who adds it:** Any team member. The caretaker can use it to differentiate PRs pending review from merge-ready PRs._
   * _**Who removes it:** Whoever added it or the reviewer adding the last missing review._
 * `PR action: cleanup`: More work is needed from the author.
   * _**Who adds it:** The reviewer requesting changes to the PR._
