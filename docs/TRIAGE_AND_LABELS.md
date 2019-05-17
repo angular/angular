@@ -202,3 +202,9 @@ There should always be a comment added to the PR to explain why the caretaker's 
 The comment should be formatted like this: `merge-assistance: <explain what kind of assistance you need, and if not obvious why>`
 
 For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
+
+### `PR action: rerun CI at HEAD`
+* _**Who adds it:** Any team member._
+* _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
+
+This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD of the branch it targets.
