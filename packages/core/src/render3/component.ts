@@ -174,11 +174,8 @@ export function createRootComponentView(
   const tView = rootView[TVIEW];
   const tNode: TElementNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
   const componentView = createLView(
-      rootView, getOrCreateTView(
-                    def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs,
-                    def.viewQuery, def.schemas),
-      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
-      rendererFactory, renderer, sanitizer);
+      rootView, getOrCreateTView(def), null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+      rootView[HEADER_OFFSET], tNode, rendererFactory, renderer, sanitizer);
 
   if (tView.firstTemplatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);

@@ -142,7 +142,7 @@ function declareTests(config?: {useJit: boolean}) {
         // may face a problem where previously compiled defs available to a given
         // Component/Directive are cached in TView and may become stale (in case any of these defs
         // gets recompiled). In order to avoid this problem, we force fresh TView to be created.
-        componentDef.template.ngPrivateData = null;
+        componentDef.TView = null;
       }
 
       const ngModule = createModule(moduleType, injector);

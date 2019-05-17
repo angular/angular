@@ -7,6 +7,7 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -29,10 +30,16 @@ describe('acceptance integration tests', () => {
     });
 
     it('should render and update basic "Hello, World" template', () => {
+      ngDevModeResetPerfCounters();
       @Component({template: '<h1>Hello, {{name}}!</h1>'})
       class App {
         name = '';
       }
+
+      onlyInIvy('perf counters').expectPerfCounters({
+        tView: 0,
+        tNode: 0,
+      });
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
@@ -41,11 +48,21 @@ describe('acceptance integration tests', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, World!</h1>');
+      onlyInIvy('perf counters').expectPerfCounters({
+        tView: 2,  // Host view + App
+        tNode: 4,  // Host Node + App Node + <span> + #text
+      });
 
       fixture.componentInstance.name = 'New World';
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, New World!</h1>');
+      // Assert that the tView/tNode count does not increase (they are correctly cached)
+      onlyInIvy('perf counters').expectPerfCounters({
+        tView: 2,
+        tNode: 4,
+      });
+
     });
   });
 

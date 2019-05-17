@@ -28,7 +28,7 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -258,8 +258,18 @@ export function renderTemplate<T>(
         LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
     enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
-    const componentTView =
-        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null, null);
+    const def: ComponentDef<any> = ΔdefineComponent({
+      factory: () => null,
+      selectors: [],
+      type: Object,
+      template: templateFn,
+      consts: consts,
+      vars: vars,
+    });
+    def.directiveDefs = directives || null;
+    def.pipeDefs = pipes || null;
+
+    const componentTView = getOrCreateTView(def);
     const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,

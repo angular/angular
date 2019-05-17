@@ -285,6 +285,7 @@ export function ΔdefineComponent<T>(componentDefinition: {
     _: null as never,
     setInput: null,
     schemas: componentDefinition.schemas || null,
+    tView: null,
   };
   def._ = noSideEffects(() => {
     const directiveTypes = componentDefinition.directives !;
