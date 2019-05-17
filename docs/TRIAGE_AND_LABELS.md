@@ -204,8 +204,8 @@ The comment should be formatted like this: `merge-assistance: <explain what kind
 For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
 
 ### `PR action: rerun CI at HEAD`
-* _**Who adds it:** Anybody._
-* _**Who removes it:** ???_
+* _**Who adds it:** Any team member._
+* _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
 
 This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD
 of the branch it targets.
