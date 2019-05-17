@@ -327,7 +327,7 @@ export interface ExpandoInstructions extends Array<number|HostBindingsFunction<a
  * The static data for an LView (shared between all templates of a
  * given type).
  *
- * Stored on the template function as ngPrivateData.
+ * Stored on the `ComponentDef.tView`.
  */
 export interface TView {
   /**
