@@ -253,4 +253,247 @@ describe('directives', () => {
 
   });
 
+  describe('attribute shadowing behaviors', () => {
+    /**
+     * To match ViewEngine, we need to ensure the following behaviors
+     */
+
+    @Directive({
+      selector: '[dir-with-title]',
+    })
+    class DirWithTitle {
+      @Input()
+      title = '';
+    }
+
+    it('should set both the div attribute and the directive input for `title="value"`', () => {
+      @Component({template: `<div dir-with-title title="a"></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, DirWithTitle],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const dirWithTitle =
+          fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+      const div = fixture.nativeElement.querySelector('div');
+      expect(dirWithTitle.title).toBe('a');
+      expect(div.getAttribute('title')).toBe('a');
+    });
+
+    it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`',
+       () => {
+         @Component({template: `<div dir-with-title [title]="value"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         // We are checking the property here, not the attribute, because in the case of
+         // [key]="value" we are always setting the property of the instance, and actually setting
+         // the attribute is just a side-effect of the DOM implementation.
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.title).toBe('');
+       });
+
+    it('should allow setting directive `title` input with `[title]="value"` and a "attr.title" attribute with `attr.title="test"`',
+       () => {
+         @Component({template: `<div dir-with-title [title]="value" attr.title="test"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('attr.title')).toBe('test');
+         expect(div.title).toBe('');
+       });
+
+    it('should allow setting directive `title` input with `[title]="value1"` and attribute with `[attr.title]="value2"`',
+       () => {
+         @Component({template: `<div dir-with-title [title]="value1" [attr.title]="value2"></div>`})
+         class App {
+           value1 = 'a';
+           value2 = 'b';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('title')).toBe('b');
+       });
+
+    it('should allow setting directive `title` input with `[title]="value1"` and attribute with `attr.title="{{value2}}"`',
+       () => {
+         @Component(
+             {template: `<div dir-with-title [title]="value1" attr.title="{{value2}}"></div>`})
+         class App {
+           value1 = 'a';
+           value2 = 'b';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('title')).toBe('b');
+       });
+
+    it('should allow setting directive `title` input with `title="{{value}}"` and a "attr.title" attribute with `attr.title="test"`',
+       () => {
+         @Component({template: `<div dir-with-title title="{{value}}" attr.title="test"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('attr.title')).toBe('test');
+         expect(div.title).toBe('');
+       });
+
+    it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `[attr.title]="value2"`',
+       () => {
+         @Component(
+             {template: `<div dir-with-title title="{{value1}}" [attr.title]="value2"></div>`})
+         class App {
+           value1 = 'a';
+           value2 = 'b';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('title')).toBe('b');
+       });
+
+    it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `attr.title="{{value2}}"`',
+       () => {
+         @Component(
+             {template: `<div dir-with-title title="{{value1}}" attr.title="{{value2}}"></div>`})
+         class App {
+           value1 = 'a';
+           value2 = 'b';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.getAttribute('title')).toBe('b');
+       });
+
+    it('should set the directive input only, shadowing the title property on the div, for `title="{{value}}"`',
+       () => {
+         @Component({template: `<div dir-with-title title="{{value}}"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('a');
+         expect(div.title).toBe('');
+       });
+
+    it('should set the title attribute only, not directive input, for `attr.title="{{value}}"`',
+       () => {
+         @Component({template: `<div dir-with-title attr.title="{{value}}"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('');
+         expect(div.getAttribute('title')).toBe('a');
+       });
+
+    it('should set the title attribute only, not directive input, for `[attr.title]="value"`',
+       () => {
+         @Component({template: `<div dir-with-title [attr.title]="value"></div>`})
+         class App {
+           value = 'a';
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, DirWithTitle],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         const dirWithTitle =
+             fixture.debugElement.query(By.directive(DirWithTitle)).injector.get(DirWithTitle);
+         const div = fixture.nativeElement.querySelector('div');
+         expect(dirWithTitle.title).toBe('');
+         expect(div.getAttribute('title')).toBe('a');
+       });
+  });
 });
