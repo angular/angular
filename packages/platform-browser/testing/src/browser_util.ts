@@ -175,7 +175,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 }
 
 export function createNgZone(): NgZone {
-  return new NgZone({enableLongStackTrace: true});
+  return new NgZone({enableLongStackTrace: true, shouldCoalesceEventChangeDetection: false});
 }
 
 export function isCommentNode(node: Node): boolean {
