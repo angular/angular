@@ -37,7 +37,9 @@ import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
-import {attachLContainerDebug, attachLViewDebug} from './lview_debug';
+
+import {createNamedArrayType} from './debug';
+import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 
 
 
@@ -199,13 +201,12 @@ export function elementCreate(name: string, overriddenRenderer?: Renderer3): REl
   }
   return native;
 }
-
 export function createLView<T>(
     parentLView: LView | null, tView: TView, context: T | null, flags: LViewFlags,
     host: RElement | null, tHostNode: TViewNode | TElementNode | null,
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
-  const lView = tView.blueprint.slice() as LView;
+  const lView = ngDevMode ? cloneToLView(tView.blueprint) : tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
   resetPreOrderHookFlags(lView);
@@ -553,6 +554,7 @@ export function getOrCreateTView(def: ComponentDef<any>): TView {
                            def.viewQuery, def.schemas));
 }
 
+
 /**
  * Creates a TView instance
  *
@@ -575,38 +577,71 @@ export function createTView(
   // that has a host binding, we will update the blueprint with that def's hostVars count.
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
-  return blueprint[TVIEW as any] = {
-    id: viewIndex,
-    blueprint: blueprint,
-    template: templateFn,
-    viewQuery: viewQuery,
-    node: null !,
-    data: blueprint.slice().fill(null, bindingStartIndex),
-    bindingStartIndex: bindingStartIndex,
-    viewQueryStartIndex: initialViewLength,
-    expandoStartIndex: initialViewLength,
-    expandoInstructions: null,
-    firstTemplatePass: true,
-    staticViewQueries: false,
-    staticContentQueries: false,
-    preOrderHooks: null,
-    preOrderCheckHooks: null,
-    contentHooks: null,
-    contentCheckHooks: null,
-    viewHooks: null,
-    viewCheckHooks: null,
-    destroyHooks: null,
-    cleanup: null,
-    contentQueries: null,
-    components: null,
-    directiveRegistry: typeof directives === 'function' ? directives() : directives,
-    pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
-    firstChild: null,
-    schemas: schemas,
-  };
+  return blueprint[TVIEW as any] = ngDevMode ?
+      new TViewConstructor(
+             viewIndex,   // id: number,
+             blueprint,   // blueprint: LView,
+             templateFn,  // template: ComponentTemplate<{}>|null,
+             viewQuery,   // viewQuery: ViewQueriesFunction<{}>|null,
+             null !,      // node: TViewNode|TElementNode|null,
+             cloneToTViewData(blueprint).fill(null, bindingStartIndex),  // data: TData,
+             bindingStartIndex,  // bindingStartIndex: number,
+             initialViewLength,  // viewQueryStartIndex: number,
+             initialViewLength,  // expandoStartIndex: number,
+             null,               // expandoInstructions: ExpandoInstructions|null,
+             true,               // firstTemplatePass: boolean,
+             false,              // staticViewQueries: boolean,
+             false,              // staticContentQueries: boolean,
+             null,               // preOrderHooks: HookData|null,
+             null,               // preOrderCheckHooks: HookData|null,
+             null,               // contentHooks: HookData|null,
+             null,               // contentCheckHooks: HookData|null,
+             null,               // viewHooks: HookData|null,
+             null,               // viewCheckHooks: HookData|null,
+             null,               // destroyHooks: HookData|null,
+             null,               // cleanup: any[]|null,
+             null,               // contentQueries: number[]|null,
+             null,               // components: number[]|null,
+             typeof directives === 'function' ?
+                 directives() :
+                 directives,  // directiveRegistry: DirectiveDefList|null,
+             typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
+             null,                                           // firstChild: TNode|null,
+             schemas,                                        // schemas: SchemaMetadata[]|null,
+             ) :
+      {
+        id: viewIndex,
+        blueprint: blueprint,
+        template: templateFn,
+        viewQuery: viewQuery,
+        node: null !,
+        data: blueprint.slice().fill(null, bindingStartIndex),
+        bindingStartIndex: bindingStartIndex,
+        viewQueryStartIndex: initialViewLength,
+        expandoStartIndex: initialViewLength,
+        expandoInstructions: null,
+        firstTemplatePass: true,
+        staticViewQueries: false,
+        staticContentQueries: false,
+        preOrderHooks: null,
+        preOrderCheckHooks: null,
+        contentHooks: null,
+        contentCheckHooks: null,
+        viewHooks: null,
+        viewCheckHooks: null,
+        destroyHooks: null,
+        cleanup: null,
+        contentQueries: null,
+        components: null,
+        directiveRegistry: typeof directives === 'function' ? directives() : directives,
+        pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
+        firstChild: null,
+        schemas: schemas,
+      };
 }
+
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
-  const blueprint = new Array(initialViewLength)
+  const blueprint = new (ngDevMode ? LViewBlueprint : Array)(initialViewLength)
                         .fill(null, 0, bindingStartIndex)
                         .fill(NO_CHANGE, bindingStartIndex) as LView;
   blueprint[BINDING_INDEX] = bindingStartIndex;
@@ -1130,7 +1165,6 @@ function postProcessBaseDirective<T>(
 }
 
 
-
 /**
 * Matches the current node against all available selectors.
 * If a component is matched (at most one), it is returned in first position in the array.
@@ -1144,7 +1178,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
       if (isNodeMatchingSelectorList(tNode, def.selectors !, /* isProjectionMode */ false)) {
-        matches || (matches = []);
+        matches || (matches = ngDevMode ? new MatchesArray() : []);
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
@@ -1171,7 +1205,8 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
   const tView = getLView()[TVIEW];
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
-  (tView.components || (tView.components = [])).push(previousOrParentTNode.index);
+  (tView.components || (tView.components = ngDevMode ? new TViewComponents() : [
+   ])).push(previousOrParentTNode.index);
 }
 
 
@@ -1179,7 +1214,8 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
 function cacheMatchingLocalNames(
     tNode: TNode, localRefs: string[] | null, exportsMap: {[key: string]: number}): void {
   if (localRefs) {
-    const localNames: (string | number)[] = tNode.localNames = [];
+    const localNames: (string | number)[] = tNode.localNames =
+        ngDevMode ? new TNodeLocalNames() : [];
 
     // Local names must be stored in tNode in the same order that localRefs are defined
     // in the template to ensure the data is loaded in the same slots as their refs
@@ -1318,7 +1354,8 @@ function setInputsFromAttrs<T>(
  */
 function generateInitialInputs(
     directiveIndex: number, inputs: {[key: string]: string}, tNode: TNode): InitialInputData {
-  const initialInputData: InitialInputData = tNode.initialInputs || (tNode.initialInputs = []);
+  const initialInputData: InitialInputData =
+      tNode.initialInputs || (tNode.initialInputs = ngDevMode ? new TNodeInitialInputs() : []);
   // Ensure that we don't create sparse arrays
   for (let i = initialInputData.length; i <= directiveIndex; i++) {
     initialInputData.push(null);
@@ -1345,8 +1382,8 @@ function generateInitialInputs(
     const attrValue = attrs[i + 1];
 
     if (minifiedInputName !== undefined) {
-      const inputsToStore: InitialInputs =
-          initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
+      const inputsToStore: InitialInputs = initialInputData[directiveIndex] ||
+          (initialInputData[directiveIndex] = ngDevMode ? new TNodeInitialData() : []);
       inputsToStore.push(attrName as string, minifiedInputName, attrValue as string);
     }
 
@@ -1358,6 +1395,9 @@ function generateInitialInputs(
 //////////////////////////
 //// ViewContainer & View
 //////////////////////////
+
+// Not sure why I need to do `any` here but TS complains later.
+const LContainerArray: any = createNamedArrayType('LContainer');
 
 /**
  * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.
@@ -1374,16 +1414,17 @@ export function createLContainer(
     tNode: TNode, isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
-  const lContainer: LContainer = [
-    hostNative,  // host native
-    true,        // Boolean `true` in this position signifies that this is an `LContainer`
-    isForViewContainerRef ? -1 : 0,  // active index
-    currentView,                     // parent
-    null,                            // next
-    null,                            // queries
-    tNode,                           // t_host
-    native,                          // native
-  ];
+  // https://jsperf.com/array-literal-vs-new-array-really
+  const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
+      hostNative,  // host native
+      true,        // Boolean `true` in this position signifies that this is an `LContainer`
+      isForViewContainerRef ? -1 : 0,  // active index
+      currentView,                     // parent
+      null,                            // next
+      null,                            // queries
+      tNode,                           // t_host
+      native,                          // native
+      );
   ngDevMode && attachLContainerDebug(lContainer);
   return lContainer;
 }
@@ -1709,14 +1750,13 @@ export function initializeTNodeInputs(tNode: TNode): PropertyAliases|null {
   return tNode.inputs;
 }
 
-
 export function getCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
+  return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
 }
 
 function getTViewCleanup(view: LView): any[] {
-  return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
+  return view[TVIEW].cleanup || (view[TVIEW].cleanup = ngDevMode ? new TCleanup() : []);
 }
 
 /**

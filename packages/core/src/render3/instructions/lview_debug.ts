@@ -6,19 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentTemplate} from '..';
+import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
-
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
+import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
-import {TNode} from '../interfaces/node';
+import {TElementNode, TNode, TViewNode} from '../interfaces/node';
 import {LQueries} from '../interfaces/query';
 import {RComment, RElement} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, T_HOST} from '../interfaces/view';
 import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, isStylingContext, unwrapRNode} from '../util/view_utils';
+
+import {createNamedArrayType} from './debug';
+
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
@@ -48,6 +53,80 @@ import {getTNode, isStylingContext, unwrapRNode} from '../util/view_utils';
  * }
  * ```
  */
+
+
+export const LViewArray = createNamedArrayType('LView');
+let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
+                             // constructor could have side-effects.
+/**
+ * This function clones a blueprint and creates LView.
+ *
+ * Simple slice will keep the same type, and we need it to be LView
+ */
+export function cloneToLView(list: any[]): LView {
+  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray();
+  return LVIEW_EMPTY.concat(list) as any;
+}
+
+/**
+ * This class is a debug version of Object literal so that we can have constructor name show up in
+ * debug tools in ngDevMode.
+ */
+export const TViewConstructor = class TView implements ITView {
+  constructor(
+      public id: number,                                     //
+      public blueprint: LView,                               //
+      public template: ComponentTemplate<{}>|null,           //
+      public viewQuery: ViewQueriesFunction<{}>|null,        //
+      public node: TViewNode|TElementNode|null,              //
+      public data: TData,                                    //
+      public bindingStartIndex: number,                      //
+      public viewQueryStartIndex: number,                    //
+      public expandoStartIndex: number,                      //
+      public expandoInstructions: ExpandoInstructions|null,  //
+      public firstTemplatePass: boolean,                     //
+      public staticViewQueries: boolean,                     //
+      public staticContentQueries: boolean,                  //
+      public preOrderHooks: HookData|null,                   //
+      public preOrderCheckHooks: HookData|null,              //
+      public contentHooks: HookData|null,                    //
+      public contentCheckHooks: HookData|null,               //
+      public viewHooks: HookData|null,                       //
+      public viewCheckHooks: HookData|null,                  //
+      public destroyHooks: HookData|null,                    //
+      public cleanup: any[]|null,                            //
+      public contentQueries: number[]|null,                  //
+      public components: number[]|null,                      //
+      public directiveRegistry: DirectiveDefList|null,       //
+      public pipeRegistry: PipeDefList|null,                 //
+      public firstChild: TNode|null,                         //
+      public schemas: SchemaMetadata[]|null,                 //
+      ) {}
+};
+
+const TViewData = createNamedArrayType('TViewData');
+let TVIEWDATA_EMPTY:
+    unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
+                // constructor could have side-effects.
+/**
+ * This function clones a blueprint and creates TData.
+ *
+ * Simple slice will keep the same type, and we need it to be TData
+ */
+export function cloneToTViewData(list: any[]): TData {
+  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData();
+  return TVIEWDATA_EMPTY.concat(list) as any;
+}
+
+export const LViewBlueprint = createNamedArrayType('LViewBlueprint');
+export const MatchesArray = createNamedArrayType('MatchesArray');
+export const TViewComponents = createNamedArrayType('TViewComponents');
+export const TNodeLocalNames = createNamedArrayType('TNodeLocalNames');
+export const TNodeInitialInputs = createNamedArrayType('TNodeInitialInputs');
+export const TNodeInitialData = createNamedArrayType('TNodeInitialData');
+export const LCleanup = createNamedArrayType('LCleanup');
+export const TCleanup = createNamedArrayType('TCleanup');
+
 
 
 export function attachLViewDebug(lView: LView) {

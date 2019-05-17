@@ -11,6 +11,7 @@ import {global} from './global';
 declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
+    namedConstructors: boolean;
     firstTemplatePass: number;
     tNode: number;
     tView: number;
@@ -45,7 +46,9 @@ declare global {
 }
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
+  const locationString = typeof location !== 'undefined' ? location.toString() : '';
   const newCounters: NgDevModePerfCounters = {
+    namedConstructors: locationString.indexOf('ngDevMode=namedConstructors') != -1,
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -79,7 +82,8 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   };
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
-  global['ngDevMode'] = newCounters;
+  const allowNgDevModeTrue = locationString.indexOf('ngDevMode=false') === -1;
+  global['ngDevMode'] = allowNgDevModeTrue && newCounters;
   return newCounters;
 }
 
