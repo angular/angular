@@ -10,6 +10,7 @@ import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
+import {TView} from './view';
 
 
 /**
@@ -19,7 +20,7 @@ export type ComponentTemplate<T> = {
   // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
   // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
   // in that scenario. By including T this incompatibility is resolved.
-  <U extends T>(rf: RenderFlags, ctx: T | U): void; ngPrivateData?: never;
+  <U extends T>(rf: RenderFlags, ctx: T | U): void;
 };
 
 /**
@@ -301,6 +302,12 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas: SchemaMetadata[]|null;
+
+  /**
+   * Ivy runtime uses this place to store the computed tView for the component. This gets filled on
+   * the first run of component.
+   */
+  tView: TView|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
