@@ -131,6 +131,7 @@ export {
 } from './state';
 
 export {
+  DEFAULT_LOCALE_ID,
   ɵɵi18n,
   ɵɵi18nAttributes,
   ɵɵi18nExp,
@@ -140,6 +141,8 @@ export {
   ɵɵi18nPostprocess,
   i18nConfigureLocalize,
   ɵɵi18nLocalize,
+  getLocaleId,
+  setLocaleId,
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';

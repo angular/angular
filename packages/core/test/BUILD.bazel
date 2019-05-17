@@ -18,6 +18,7 @@ ts_library(
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",

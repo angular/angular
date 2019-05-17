@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵfindLocaleData as findLocaleData} from '@angular/core';
 import localeCaESVALENCIA from '@angular/common/locales/ca-ES-VALENCIA';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
@@ -13,7 +14,7 @@ import localeZh from '@angular/common/locales/zh';
 import localeFrCA from '@angular/common/locales/fr-CA';
 import localeEnAU from '@angular/common/locales/en-AU';
 import {registerLocaleData} from '../../src/i18n/locale_data';
-import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits} from '../../src/i18n/locale_data_api';
+import {getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeEn from './locale_en';
-import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex, CurrencyIndex} from './locale_data';
+import {ɵLocaleDataIndex as LocaleDataIndex, ɵfindLocaleData as findLocaleData, ɵgetLocalePluralCase} from '@angular/core';
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+import {CurrencyIndex, ExtraLocaleDataIndex} from './locale_data';
 
 /**
  * Format styles that can be used to represent numbers.
@@ -31,7 +31,8 @@ export enum NumberFormatStyle {
  * @see `NgPluralCase`
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
  *
- * @publicApi */
+ * @publicApi
+ */
 export enum Plural {
   Zero = 0,
   One = 1,
@@ -485,19 +486,11 @@ function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols
 }
 
 /**
- * Retrieves the plural function used by ICU expressions to determine the plural case to use
- * for a given locale.
- * @param locale A locale code for the locale format rules to use.
- * @returns The plural function for the locale.
- * @see `NgPlural`
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
- *
+ * @alias core/ɵgetLocalePluralCase
  * @publicApi
  */
-export function getLocalePluralCase(locale: string): (value: number) => Plural {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.PluralCase];
-}
+export const getLocalePluralCase: (locale: string) => ((value: number) => Plural) =
+    ɵgetLocalePluralCase;
 
 function checkFullData(data: any) {
   if (!data[LocaleDataIndex.ExtraData]) {
@@ -609,37 +602,7 @@ function extractTime(time: string): Time {
   return {hours: +h, minutes: +m};
 }
 
-/**
- * Finds the locale data for a given locale.
- *
- * @param locale The locale code.
- * @returns The locale data.
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
- *
- * @publicApi
- */
-export function findLocaleData(locale: string): any {
-  const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
 
-  let match = LOCALE_DATA[normalizedLocale];
-  if (match) {
-    return match;
-  }
-
-  // let's try to find a parent locale
-  const parentLocale = normalizedLocale.split('-')[0];
-  match = LOCALE_DATA[parentLocale];
-
-  if (match) {
-    return match;
-  }
-
-  if (parentLocale === 'en') {
-    return localeEn;
-  }
-
-  throw new Error(`Missing locale data for the locale "${locale}".`);
-}
 
 /**
  * Retrieves the currency symbol for a given currency code.

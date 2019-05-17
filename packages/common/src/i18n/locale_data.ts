@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @publicApi
- */
-export const LOCALE_DATA: {[localeId: string]: any} = {};
+import {ɵLOCALE_DATA as LOCALE_DATA, ɵLocaleDataIndex as LocaleDataIndex} from '@angular/core';
 
 /**
  * Register global data to be used internally by Angular. See the
@@ -31,32 +28,6 @@ export function registerLocaleData(data: any, localeId?: string | any, extraData
   if (extraData) {
     LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
   }
-}
-
-/**
- * Index of each type of locale data from the locale data array
- */
-export const enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencySymbol,
-  CurrencyName,
-  Currencies,
-  PluralCase,
-  ExtraData
 }
 
 /**

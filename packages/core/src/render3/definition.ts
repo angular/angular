@@ -7,7 +7,6 @@
  */
 
 import '../util/ng_dev_mode';
-
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {NG_INJECTABLE_DEF, ɵɵdefineInjectable} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
@@ -16,9 +15,8 @@ import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {stringify} from '../util/stringify';
-
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_LOCALE_ID_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction, ɵɵBaseDef} from './interfaces/definition';
 // while SelectorFlags is unused here, it's required so that types don't get resolved lazily
 // see: https://github.com/Microsoft/web-build-tools/issues/1050
@@ -778,4 +776,8 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
     throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
   }
   return ngModuleDef;
+}
+
+export function getNgLocaleIdDef(type: any): string|null {
+  return (type as any)[NG_LOCALE_ID_DEF] || null;
 }
