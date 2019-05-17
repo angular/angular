@@ -164,9 +164,6 @@ When the app starts, the `selectedHero` is `undefined` _by design_.
 
 Binding expressions in the template that refer to properties of `selectedHero` &mdash; expressions like `{{selectedHero.name}}` &mdash; _must fail_ because there is no selected hero.
 
-Now, click one of the list items.
-The app seems to be working again.
-The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
 
 #### The fix - hide empty details with _*ngIf_
 
@@ -188,7 +185,10 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 
 After the browser refreshes, the list of names reappears.
 The details area is blank.
-Click a hero and its details appear.
+Click a hero in the list of heroes and its details appear.
+The app seems to be working again.
+The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
+
 
 #### Why it works
 
