@@ -661,6 +661,7 @@
 /packages/common/upgrade/**                                     @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /packages/examples/upgrade/**                                   @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/upgrade.md                                   @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/upgrade-lazy-load-ajs/**                  @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/upgrade-module/**                         @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/upgrade/**                            @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/upgrade-phonecat-1-typescript/**          @angular/fw-upgrade @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
