@@ -30,7 +30,7 @@ import {StylingContext} from '../interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, resetComponentState, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ΔnamespaceHTML} from '../state';
+import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex, ΔnamespaceHTML} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
@@ -343,43 +343,6 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
 //////////////////////////
 
 /**
- *
- * @param hostNode Existing node to render into.
- * @param templateFn Template function with the instructions.
- * @param consts The number of nodes, local refs, and pipes in this template
- * @param context to pass into the template.
- * @param providedRendererFactory renderer factory to use
- * @param host The host element node to use
- * @param directives Directive defs that should be used for matching
- * @param pipes Pipe defs that should be used for matching
- */
-export function renderTemplate<T>(
-    hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
-    providedRendererFactory: RendererFactory3, componentView: LView | null,
-    directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null): LView {
-  if (componentView === null) {
-    resetComponentState();
-    const renderer = providedRendererFactory.createRenderer(null, null);
-
-    // We need to create a root view so it's possible to look up the host element through its index
-    const hostLView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null, null), {},
-        LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
-    enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
-
-    const componentTView =
-        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null, null);
-    const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
-    componentView = createLView(
-        hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
-        providedRendererFactory, renderer, sanitizer);
-  }
-  renderComponentOrTemplate(componentView, context, templateFn);
-  return componentView;
-}
-
-/**
  * Used for creating the LViewNode of a dynamic embedded view,
  * either through ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
@@ -450,7 +413,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
   }
 }
 
-function renderComponentOrTemplate<T>(
+export function renderComponentOrTemplate<T>(
     hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[T_HOST]);
