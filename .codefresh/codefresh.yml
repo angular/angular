@@ -12,7 +12,7 @@ steps:
     dockerfile: ./Dockerfile.win-1809
 
   RunTests:
-    title: Run Example
+    title: Run Tests
     image: ${{BuildImage}}
     commands:
     # Install dependencies
@@ -20,5 +20,8 @@ steps:
     # Add Bazel CI config
     - copy .codefresh\bazel.rc %ProgramData%\bazel.bazelrc
     # Run tests
-    - yarn test-ivy-aot //packages/animations/test //packages/common/test //packages/forms/test //packages/http/test //packages/platform-browser/test //packages/platform-browser-dynamic/test //packages/router/test
-    - yarn bazel test //tools/ts-api-guardian:all //tools/public_api_guard/... //packages/language-service/test //packages/compiler-cli/ngcc/test:test //packages/compiler-cli/integrationtest:integrationtest //packages/compiler-cli/test/compliance:compliance //packages/compiler/test //packages/compiler-cli/test:ngc //packages/compiler-cli/test/ngtsc:ngtsc
+    # At the moment 'browser:chromium-local' are broken in CI while locally they work
+    # VE
+    - yarn bazel test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //...
+    # Ivy
+    - yarn bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //...

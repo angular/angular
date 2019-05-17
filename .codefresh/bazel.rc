@@ -35,8 +35,3 @@ build --verbose_failures=true
 # https://github.com/bazelbuild/rules_typescript/pull/356
 build --action_env=PATH
 test --action_env=PATH --test_env=PATH
-
-# Exclude tests known to not work on Windows.
-
-# Chrome web tests are currently broken.
-test --test_tag_filters=-browser:chromium-local
