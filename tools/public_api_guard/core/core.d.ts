@@ -624,13 +624,17 @@ export declare class NgProbeToken {
 export declare class NgZone {
     readonly hasPendingMacrotasks: boolean;
     readonly hasPendingMicrotasks: boolean;
+    readonly hasPendingZoneMicrotasks: boolean;
     readonly isStable: boolean;
+    readonly lastRequestAnimationFrameId: number;
     readonly onError: EventEmitter<any>;
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({ enableLongStackTrace }: {
+    readonly shouldCoalesceEventChangeDetection: boolean;
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection }: {
         enableLongStackTrace?: boolean | undefined;
+        shouldCoalesceEventChangeDetection?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
