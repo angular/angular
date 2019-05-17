@@ -40,8 +40,10 @@ const EXAMPLE_DATA: <%= classify(name) %>Item[] = [
  */
 export class <%= classify(name) %>DataSource extends DataSource<<%= classify(name) %>Item> {
   data: <%= classify(name) %>Item[] = EXAMPLE_DATA;
+  paginator: MatPaginator;
+  sort: MatSort;
 
-  constructor(private paginator: MatPaginator, private sort: MatSort) {
+  constructor() {
     super();
   }
 
@@ -58,9 +60,6 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= classify(nam
       this.paginator.page,
       this.sort.sortChange
     ];
-
-    // Set the paginator's length
-    this.paginator.length = this.data.length;
 
     return merge(...dataMutations).pipe(map(() => {
       return this.getPagedData(this.getSortedData([...this.data]));
