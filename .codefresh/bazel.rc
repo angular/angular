@@ -2,11 +2,17 @@
 # We do this by copying this file to /etc/bazel.bazelrc at the start of the build.
 # See documentation in /docs/BAZEL.md
 
-# Save downloaded repositories in a location that can be cached by CodeFresh and shared between
-# builds. This helps speed up the analysis time significantly with Bazel managed node dependencies
-# on the CI.
+# Save built files and downloaded repositories in a location that can be cached by CodeFresh and
+# shared between builds. This helps speed up the analysis time significantly with Bazel managed node
+# dependencies on the CI.
 # https://codefresh.io/docs/docs/configure-ci-cd-pipeline/introduction-to-codefresh-pipelines/#caching-the-artifacts-of-your-build-system
 build --repository_cache=C:/codefresh/volume/bazel_repository_cache
+# Setting the output_base to a Docker volume is currently broken because of a Docker bug on Windows:
+# https://github.com/moby/moby/issues/37024
+# This affects Bazel because bazel_output_base\external\bazel_tools is an absolute path junction.
+# When its fixed we can uncomment this line, and use a different output_base for Ivy tests (they
+# use a separate compiler and destructively replace the cache).
+# startup --output_base=C:/codefresh/volume/bazel_output_base
 
 # Don't be spammy in the logs
 # TODO(gmagolan): Hide progress again once build performance improves
