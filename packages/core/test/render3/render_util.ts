@@ -12,8 +12,9 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
-import {renderTemplate} from '@angular/core/src/render3/instructions/shared';
-import {getLView} from '@angular/core/src/render3/state';
+import {createLView, createNodeAtIndex, createTView, getOrCreateTView, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
+import {TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {enterView, getLView, resetComponentState} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -28,10 +29,10 @@ import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
-import {DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/security';
@@ -229,6 +230,45 @@ export function resetDOM() {
   hostView = null;
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
+
+
+/**
+ *
+ * @param hostNode Existing node to render into.
+ * @param templateFn Template function with the instructions.
+ * @param consts The number of nodes, local refs, and pipes in this template
+ * @param context to pass into the template.
+ * @param providedRendererFactory renderer factory to use
+ * @param host The host element node to use
+ * @param directives Directive defs that should be used for matching
+ * @param pipes Pipe defs that should be used for matching
+ */
+export function renderTemplate<T>(
+    hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
+    providedRendererFactory: RendererFactory3, componentView: LView | null,
+    directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
+    sanitizer?: Sanitizer | null): LView {
+  if (componentView === null) {
+    resetComponentState();
+    const renderer = providedRendererFactory.createRenderer(null, null);
+
+    // We need to create a root view so it's possible to look up the host element through its index
+    const hostLView = createLView(
+        null, createTView(-1, null, 1, 0, null, null, null, null), {},
+        LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
+    enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
+
+    const componentTView =
+        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null, null);
+    const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
+    componentView = createLView(
+        hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
+        providedRendererFactory, renderer, sanitizer);
+  }
+  renderComponentOrTemplate(componentView, context, templateFn);
+  return componentView;
+}
+
 
 /**
  * @deprecated use `TemplateFixture` or `ComponentFixture`
