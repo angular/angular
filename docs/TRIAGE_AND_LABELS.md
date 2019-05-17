@@ -207,5 +207,4 @@ For example, the PR owner might not be a Googler and needs help to run g3sync; o
 * _**Who adds it:** Any team member._
 * _**Who removes it:** The Angular Bot, once it triggers the CI rerun._
 
-This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD
-of the branch it targets.
+This label can be added to instruct the Angular Bot to rerun the CI jobs for the PR at latest HEAD of the branch it targets.
