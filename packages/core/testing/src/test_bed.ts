@@ -402,7 +402,8 @@ export class TestBedViewEngine implements TestBed {
       overrideComponentView(component, compFactory);
     }
 
-    const ngZone = new NgZone({enableLongStackTrace: true});
+    const ngZone =
+        new NgZone({enableLongStackTrace: true, shouldCoalesceEventChangeDetection: false});
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     const ngZoneInjector = Injector.create({
       providers: providers,
