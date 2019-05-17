@@ -20,7 +20,8 @@ import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {ComponentFactoryResolver} from './component_ref';
-import {getNgModuleDef} from './definition';
+import {getNgLocaleIdDef, getNgModuleDef} from './definition';
+import {setLocaleId} from './i18n';
 import {maybeUnwrapFn} from './util/misc_utils';
 
 export interface NgModuleType<T = any> extends Type<T> { ngModuleDef: NgModuleDef<T>; }
@@ -46,6 +47,11 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     ngDevMode && assertDefined(
                      ngModuleDef,
                      `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
+
+    const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
+    if (ngLocaleIdDef) {
+      setLocaleId(ngLocaleIdDef);
+    }
 
     this._bootstrapComponents = maybeUnwrapFn(ngModuleDef !.bootstrap);
     const additionalProviders: StaticProvider[] = [
