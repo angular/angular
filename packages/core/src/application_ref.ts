@@ -219,6 +219,27 @@ export interface BootstrapOptions {
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
   ngZone?: NgZone|'zone.js'|'noop';
+
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can colesce such kind of events to only trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling a animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
+  ngZoneEventCoalescing?: boolean;
 }
 
 /**
@@ -269,7 +290,8 @@ export class PlatformRef {
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
-    const ngZone = getNgZone(ngZoneOption);
+    const ngZoneEventCoalescing = (options && options.ngZoneEventCoalescing) || false;
+    const ngZone = getNgZone(ngZoneOption, ngZoneEventCoalescing);
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
@@ -365,14 +387,17 @@ export class PlatformRef {
   get destroyed() { return this._destroyed; }
 }
 
-function getNgZone(ngZoneOption?: NgZone | 'zone.js' | 'noop'): NgZone {
+function getNgZone(
+    ngZoneOption: NgZone | 'zone.js' | 'noop' | undefined, ngZoneEventCoalescing: boolean): NgZone {
   let ngZone: NgZone;
 
   if (ngZoneOption === 'noop') {
     ngZone = new NoopNgZone();
   } else {
-    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) ||
-        new NgZone({enableLongStackTrace: isDevMode()});
+    ngZone = (ngZoneOption === 'zone.js' ? undefined : ngZoneOption) || new NgZone({
+               enableLongStackTrace: isDevMode(),
+               shouldCoalesceEventChangeDetection: ngZoneEventCoalescing
+             });
   }
   return ngZone;
 }
