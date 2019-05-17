@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completions, Diagnostic, Diagnostics, LanguageService} from '../src/types';
+import {LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
@@ -19,14 +19,12 @@ describe('references', () => {
   let documentRegistry = ts.createDocumentRegistry();
   let mockHost: MockTypescriptHost;
   let service: ts.LanguageService;
-  let program: ts.Program;
   let ngHost: TypeScriptServiceHost;
   let ngService: LanguageService = createLanguageService(undefined !);
 
   beforeEach(() => {
     mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
     service = ts.createLanguageService(mockHost, documentRegistry);
-    program = service.getProgram() !;
     ngHost = new TypeScriptServiceHost(mockHost, service);
     ngService = createLanguageService(ngHost);
     ngHost.setSite(ngService);
