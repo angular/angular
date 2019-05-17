@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockData} from './test_utils';
-
 export const toh = {
   'foo.ts': `export * from './app/app.component.ts';`,
   app: {

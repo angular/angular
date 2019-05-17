@@ -212,12 +212,6 @@ describe('plugin', () => {
         locationMarker, plugin.getCompletionsAtPosition(fileName, location, undefined) !, ...names);
   }
 
-  function expectEmpty(fileName: string, locationMarker: string) {
-    const location = getMarkerLocation(fileName, locationMarker);
-    expect(plugin.getCompletionsAtPosition(fileName, location, undefined) !.entries || []).toEqual([
-    ]);
-  }
-
   function expectSemanticError(fileName: string, locationMarker: string, message: string) {
     const start = getMarkerLocation(fileName, locationMarker);
     const end = getMarkerLocation(fileName, locationMarker + '-end');

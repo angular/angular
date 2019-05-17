@@ -103,7 +103,7 @@ describe('diagnostics', () => {
 
     it('should not report an error for a form\'s host directives', () => {
       const code = '\n@Component({template: \'<form></form>\'}) export class MyComponent {}';
-      addCode(code, (fileName, content) => {
+      addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
         expectOnlyModuleDiagnostics(diagnostics);
       });
