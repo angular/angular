@@ -111,13 +111,13 @@ export function ΔelementStart(
 
   // we render the styling again below in case any directives have set any `style` and/or
   // `class` host attribute values...
-  if (tNode.stylingTemplate) {
+  if (tNode.stylingTemplate !== null) {
     renderInitialClasses(native, tNode.stylingTemplate, renderer, initialClassesIndex);
     renderInitialStyles(native, tNode.stylingTemplate, renderer, initialStylesIndex);
   }
 
   const currentQueries = lView[QUERIES];
-  if (currentQueries) {
+  if (currentQueries !== null) {
     currentQueries.addNode(tNode);
     lView[QUERIES] = currentQueries.clone();
   }
