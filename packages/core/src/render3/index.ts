@@ -25,7 +25,6 @@ export {
   ɵɵallocHostVars,
 
   ɵɵattribute,
-  ɵɵattributeInterpolate,
   ɵɵattributeInterpolate1,
   ɵɵattributeInterpolate2,
   ɵɵattributeInterpolate3,

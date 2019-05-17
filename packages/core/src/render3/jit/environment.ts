@@ -21,7 +21,6 @@ import * as r3 from '../index';
 export const angularCoreEnv: {[name: string]: Function} =
     (() => ({
        'ɵɵattribute': r3.ɵɵattribute,
-       'ɵɵattributeInterpolate': r3.ɵɵattributeInterpolate,
        'ɵɵattributeInterpolate1': r3.ɵɵattributeInterpolate1,
        'ɵɵattributeInterpolate2': r3.ɵɵattributeInterpolate2,
        'ɵɵattributeInterpolate3': r3.ɵɵattributeInterpolate3,

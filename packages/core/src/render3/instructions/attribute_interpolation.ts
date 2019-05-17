@@ -11,36 +11,6 @@ import {ΔelementAttribute} from './element';
 import {Δinterpolation1, Δinterpolation2, Δinterpolation3, Δinterpolation4, Δinterpolation5, Δinterpolation6, Δinterpolation7, Δinterpolation8, ΔinterpolationV} from './property_interpolation';
 import {TsickleIssue1009} from './shared';
 
-/**
- *
- * Update an interpolated attribute on an element with a lone bound value
- *
- * Used when the value passed to a property has 1 interpolated value in it, an no additional text
- * surrounds that interpolated value:
- *
- * ```html
- * <div attr.title="{{v0}}"></div>
- * ```
- *
- * Its compiled representation is::
- *
- * ```ts
- * ΔattributeInterpolate('title', v0);
- * ```
- *
- * @param attrName The name of the attribute to update
- * @param prefix Static value used for concatenation only.
- * @param v0 Value checked for change.
- * @param suffix Static value used for concatenation only.
- * @param sanitizer An optional sanitizer function
- * @returns itself, so that it may be chained.
- * @codeGenApi
- */
-export function ΔattributeInterpolate(
-    attrName: string, v0: any, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
-  ΔattributeInterpolate1(attrName, '', v0, '', sanitizer);
-  return ΔattributeInterpolate;
-}
 
 
 /**
@@ -71,6 +41,8 @@ export function ΔattributeInterpolate1(
     attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue = Δinterpolation1(prefix, v0, suffix);
 
   ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
@@ -108,6 +80,8 @@ export function ΔattributeInterpolate2(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
     sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue = Δinterpolation2(prefix, v0, i0, v1, suffix);
   ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
   return ΔattributeInterpolate2;
@@ -146,6 +120,8 @@ export function ΔattributeInterpolate3(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue = Δinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
   ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
   return ΔattributeInterpolate3;
@@ -186,6 +162,8 @@ export function ΔattributeInterpolate4(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue = Δinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
   return ΔattributeInterpolate4;
@@ -229,6 +207,8 @@ export function ΔattributeInterpolate5(
     v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue = Δinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
   ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
   return ΔattributeInterpolate5;

@@ -27,5 +27,6 @@ import {Δbind} from './property';
 export function Δattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string) {
   const index = getSelectedIndex();
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   return ΔelementAttribute(index, name, Δbind(value), sanitizer, namespace);
 }
