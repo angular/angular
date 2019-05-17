@@ -142,8 +142,8 @@ In addition, PRs can have the following states:
   * _**Who adds it:** The PR author._
   * _**Who removes it:** Whoever added it._
 * `PR state: blocked`: PR is blocked on an issue or other PR. Not ready for merge.
-  * _**Who adds it:** Anybody._
-  * _**Who removes it:** Anybody._
+  * _**Who adds it:** Any team member._
+  * _**Who removes it:** Any team member._
 
 When a PR is ready for review, a review should be requested using the Reviewers interface in Github.
 
@@ -180,7 +180,7 @@ Only the `PR action: merge` label means that the PR is ready for merging.
 ## Special Labels
 
 ### `cla: yes`, `cla: no`
-* _**Who adds it:** @googlebot._
+* _**Who adds it:** @googlebot, or a Googler manually overriding the status in case the bot got it wrong._
 * _**Who removes it:** @googlebot._
 
 Managed by googlebot.
@@ -188,14 +188,14 @@ Indicates whether a PR has a CLA on file for its author(s).
 Only issues with `cla:yes` should be merged into master.
 
 ### `aio: preview`
-* _**Who adds it:** Anybody. (Typically the author or a reviewer.)_
-* _**Who removes it:** Whoever added it._
+* _**Who adds it:** Any team member. (Typically the author or a reviewer.)_
+* _**Who removes it:** Any team member. (Typically, whoever added it.)_
 
 Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
 
 ### `PR action: merge-assistance`
-* _**Who adds it:** Anybody._
-* _**Who removes it:** Anybody._
+* _**Who adds it:** Any team member._
+* _**Who removes it:** Any team member._
 
 This label can be added to let the caretaker know that the PR needs special attention.
 There should always be a comment added to the PR to explain why the caretaker's assistance is needed.
