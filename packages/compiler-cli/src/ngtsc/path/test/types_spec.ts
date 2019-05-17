@@ -11,7 +11,7 @@ import {AbsoluteFsPath} from '../src/types';
 describe('path types', () => {
   describe('AbsoluteFsPath', () => {
     it('should not throw when creating one from an absolute path',
-       () => { expect(AbsoluteFsPath.from('/test.txt')).toEqual('/test.txt'); });
+       () => { expect(() => AbsoluteFsPath.from('/test.txt')).not.toThrow(); });
     it('should not throw when creating one from a windows absolute path',
        () => { expect(AbsoluteFsPath.from('C:\\test.txt')).toEqual('C:/test.txt'); });
     it('should not throw when creating one from a windows absolute path with POSIX separators',
