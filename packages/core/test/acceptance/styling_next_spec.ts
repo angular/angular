@@ -9,7 +9,7 @@ import {CompilerStylingMode, compilerSetStylingMode} from '@angular/compiler/src
 import {Component, Directive, HostBinding, Input, ViewChild} from '@angular/core';
 import {SecurityContext} from '@angular/core/src/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
-import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/debug';
+import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {SANITIZER} from '@angular/core/src/render3/interfaces/view';
 import {RuntimeStylingMode, runtimeSetStylingMode, setCurrentStyleSanitizer} from '@angular/core/src/render3/styling_next/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
