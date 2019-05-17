@@ -6,7 +6,10 @@ import { Injectable } from '@angular/core';
 export class LazyLoaderService {
   bootstrapped = false;
 
-  load(el?: HTMLElement): void {
+  load(el: HTMLElement): void {
+    if (this.bootstrapped) 
+      return;
+    
     import('./angularjs-app').then(app => {
       try {
         app.bootstrap(el);

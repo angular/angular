@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { UpgradeModule } from '@angular/upgrade/static';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,8 +17,7 @@ import { App404Component } from './app404/app404.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    UpgradeModule
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

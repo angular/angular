@@ -1,8 +1,6 @@
 import * as angular from 'angular';
 import 'angular-route';
 
-import 'jquery';
-
 const appName = 'myApp';
 
 angular.module(appName, [
