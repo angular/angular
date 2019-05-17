@@ -8,17 +8,17 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {CommonJsDependencyHost} from '../../src/dependencies/commonjs_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {UmdDependencyHost} from '../../src/dependencies/umd_dependency_host';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
 const _ = AbsoluteFsPath.from;
 
-describe('UmdDependencyHost', () => {
-  let host: UmdDependencyHost;
+describe('CommonJsDependencyHost', () => {
+  let host: CommonJsDependencyHost;
   beforeEach(() => {
     const fs = createMockFileSystem();
-    host = new UmdDependencyHost(fs, new ModuleResolver(fs));
+    host = new CommonJsDependencyHost(fs, new ModuleResolver(fs));
   });
 
   describe('getDependencies()', () => {
@@ -94,13 +94,13 @@ describe('UmdDependencyHost', () => {
 
     it('should support `paths` alias mappings when resolving modules', () => {
       const fs = createMockFileSystem();
-      host = new UmdDependencyHost(fs, new ModuleResolver(fs, {
-                                     baseUrl: '/dist',
-                                     paths: {
-                                       '@app/*': ['*'],
-                                       '@lib/*/test': ['lib/*/test'],
-                                     }
-                                   }));
+      host = new CommonJsDependencyHost(fs, new ModuleResolver(fs, {
+                                          baseUrl: '/dist',
+                                          paths: {
+                                            '@app/*': ['*'],
+                                            '@lib/*/test': ['lib/*/test'],
+                                          }
+                                        }));
       const {dependencies, missing, deepImports} = host.findDependencies(_('/path-alias/index.js'));
       expect(dependencies.size).toBe(4);
       expect(dependencies.has(_('/dist/components'))).toBe(true);
@@ -117,32 +117,32 @@ describe('UmdDependencyHost', () => {
       '/no/imports/or/re-exports/index.js': '// some text but no import-like statements',
       '/no/imports/or/re-exports/package.json': '{"esm2015": "./index.js"}',
       '/no/imports/or/re-exports/index.metadata.json': 'MOCK METADATA',
-      '/external/imports/index.js': umd('imports_index', ['lib_1', 'lib_1/sub_1']),
+      '/external/imports/index.js': commonJs(['lib_1', 'lib_1/sub_1']),
       '/external/imports/package.json': '{"esm2015": "./index.js"}',
       '/external/imports/index.metadata.json': 'MOCK METADATA',
       '/external/re-exports/index.js':
-          umd('imports_index', ['lib_1', 'lib_1/sub_1'], ['lib_1.X', 'lib_1sub_1.Y']),
+          commonJs(['lib_1', 'lib_1/sub_1'], ['lib_1.X', 'lib_1sub_1.Y']),
       '/external/re-exports/package.json': '{"esm2015": "./index.js"}',
       '/external/re-exports/index.metadata.json': 'MOCK METADATA',
-      '/external/imports-missing/index.js': umd('imports_missing', ['lib_1', 'missing']),
+      '/external/imports-missing/index.js': commonJs(['lib_1', 'missing']),
       '/external/imports-missing/package.json': '{"esm2015": "./index.js"}',
       '/external/imports-missing/index.metadata.json': 'MOCK METADATA',
-      '/external/deep-import/index.js': umd('deep_import', ['lib_1/deep/import']),
+      '/external/deep-import/index.js': commonJs(['lib_1/deep/import']),
       '/external/deep-import/package.json': '{"esm2015": "./index.js"}',
       '/external/deep-import/index.metadata.json': 'MOCK METADATA',
-      '/internal/outer/index.js': umd('outer', ['../inner']),
+      '/internal/outer/index.js': commonJs(['../inner']),
       '/internal/outer/package.json': '{"esm2015": "./index.js"}',
       '/internal/outer/index.metadata.json': 'MOCK METADATA',
-      '/internal/inner/index.js': umd('inner', ['lib_1/sub_1'], ['X']),
-      '/internal/circular_a/index.js': umd('circular_a', ['../circular_b', 'lib_1/sub_1'], ['Y']),
-      '/internal/circular_b/index.js': umd('circular_b', ['../circular_a', 'lib_1'], ['X']),
+      '/internal/inner/index.js': commonJs(['lib_1/sub_1'], ['X']),
+      '/internal/circular_a/index.js': commonJs(['../circular_b', 'lib_1/sub_1'], ['Y']),
+      '/internal/circular_b/index.js': commonJs(['../circular_a', 'lib_1'], ['X']),
       '/internal/circular_a/package.json': '{"esm2015": "./index.js"}',
       '/internal/circular_a/index.metadata.json': 'MOCK METADATA',
-      '/re-directed/index.js': umd('re_directed', ['lib_1/sub_2']),
+      '/re-directed/index.js': commonJs(['lib_1/sub_2']),
       '/re-directed/package.json': '{"esm2015": "./index.js"}',
       '/re-directed/index.metadata.json': 'MOCK METADATA',
       '/path-alias/index.js':
-          umd('path_alias', ['@app/components', '@app/shared', '@lib/shared/test', 'lib_1']),
+          commonJs(['@app/components', '@app/shared', '@lib/shared/test', 'lib_1']),
       '/path-alias/package.json': '{"esm2015": "./index.js"}',
       '/path-alias/index.metadata.json': 'MOCK METADATA',
       '/node_modules/lib_1/index.d.ts': 'export declare class X {}',
@@ -171,22 +171,15 @@ describe('UmdDependencyHost', () => {
   }
 });
 
-function umd(moduleName: string, importPaths: string[], exportNames: string[] = []) {
-  const commonJsRequires = importPaths.map(p => `,require('${p}')`).join('');
-  const amdDeps = importPaths.map(p => `,'${p}'`).join('');
-  const globalParams =
-      importPaths.map(p => `,global.${p.replace('@angular/', 'ng.').replace(/\//g, '')}`).join('');
-  const params =
-      importPaths.map(p => `,${p.replace('@angular/', '').replace(/\.?\.?\//g, '')}`).join('');
+function commonJs(importPaths: string[], exportNames: string[] = []) {
+  const commonJsRequires =
+      importPaths
+          .map(
+              p =>
+                  `var ${p.replace('@angular/', '').replace(/\.?\.?\//g, '').replace(/@/,'')} = require('${p}');`)
+          .join('\n');
   const exportStatements =
       exportNames.map(e => `  exports.${e.replace(/.+\./, '')} = ${e};`).join('\n');
-  return `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports${commonJsRequires}) :
-  typeof define === 'function' && define.amd ? define('${moduleName}', ['exports'${amdDeps}], factory) :
-  (factory(global.${moduleName}${globalParams}));
-}(this, (function (exports${params}) { 'use strict';
-${exportStatements}
-})));
-  `;
+  return `${commonJsRequires}
+${exportStatements}`;
 }

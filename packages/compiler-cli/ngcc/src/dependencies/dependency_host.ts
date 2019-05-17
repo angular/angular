@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 
 export interface DependencyHost {
   findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo;
@@ -14,6 +14,6 @@ export interface DependencyHost {
 
 export interface DependencyInfo {
   dependencies: Set<AbsoluteFsPath>;
-  missing: Set<string>;
-  deepImports: Set<string>;
+  missing: Set<AbsoluteFsPath|PathSegment>;
+  deepImports: Set<AbsoluteFsPath>;
 }
