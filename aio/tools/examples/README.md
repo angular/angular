@@ -26,7 +26,6 @@ Inside `/aio/tools/examples/shared/boilerplate` you will find a set of folders r
 Currently you will find the next project types:
 
 * cli - For CLI based examples. This is the default one, to be used in the majority of the examples.
-* elements - CLI-based with additional TypeScript configuration.
 * getting-started - CLI-based with its own set of styles.
 * i18n - CLI-based with additional scripts for internationalization.
 * ivy - CLI-based with additional configuration for running the examples with the Ivy renderer and ngstc compiler.
