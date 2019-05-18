@@ -7,6 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
+import {isForwardRef, resolveForwardRef} from '../forward_ref';
 import {ɵɵinject} from '../injector_compatibility';
 import {getInjectableDef, getInjectorDef, ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs';
 
@@ -26,6 +27,14 @@ export const angularCoreDiEnv: {[name: string]: Function} = {
 
 function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   const typeAny = type as any;
+
+  if (isForwardRef(type)) {
+    return (() => {
+      const factory = getFactoryOf<T>(resolveForwardRef(typeAny));
+      return factory ? factory() : null;
+    }) as any;
+  }
+
   const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
   if (!def || def.factory === undefined) {
     return null;
