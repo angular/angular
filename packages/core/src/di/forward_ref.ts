@@ -57,11 +57,11 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * @publicApi
  */
 export function resolveForwardRef<T>(type: T): T {
-  const fn: any = type;
-  if (typeof fn === 'function' && fn.hasOwnProperty(__forward_ref__) &&
-      fn.__forward_ref__ === forwardRef) {
-    return fn();
-  } else {
-    return type;
-  }
+  return isForwardRef(type) ? type() : type;
+}
+
+/** Checks whether a function is wrapped by a `forwardRef`. */
+export function isForwardRef(fn: any): fn is() => any {
+  return typeof fn === 'function' && fn.hasOwnProperty(__forward_ref__) &&
+      fn.__forward_ref__ === forwardRef;
 }
