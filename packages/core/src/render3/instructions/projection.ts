@@ -39,7 +39,7 @@ import {createNodeAtIndex} from './shared';
  *
  * @codeGenApi
  */
-export function ΔprojectionDef(selectors?: CssSelectorList[]): void {
+export function ɵɵprojectionDef(selectors?: CssSelectorList[]): void {
   const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
@@ -78,7 +78,7 @@ export function ΔprojectionDef(selectors?: CssSelectorList[]): void {
  *
  * @codeGenApi
 */
-export function Δprojection(
+export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();
   const tProjectionNode =

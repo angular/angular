@@ -18,7 +18,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {store, Δload} from './instructions/all';
+import {store, ɵɵload} from './instructions/all';
 import {storeCleanupWithContext} from './instructions/shared';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
@@ -391,7 +391,7 @@ export function query<T>(
  *
  * @codeGenApi
  */
-export function ΔqueryRefresh(queryList: QueryList<any>): boolean {
+export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   const queryListImpl = (queryList as any as QueryList_<any>);
   const creationMode = isCreationMode();
 
@@ -413,10 +413,10 @@ export function ΔqueryRefresh(queryList: QueryList<any>): boolean {
  *
  * @codeGenApi
  */
-export function ΔstaticViewQuery<T>(
+export function ɵɵstaticViewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): void {
-  const queryList = ΔviewQuery(predicate, descend, read) as QueryList_<T>;
+  const queryList = ɵɵviewQuery(predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
   queryList._static = true;
   if (!tView.staticViewQueries) {
@@ -434,7 +434,7 @@ export function ΔstaticViewQuery<T>(
  *
  * @codeGenApi
  */
-export function ΔviewQuery<T>(
+export function ɵɵviewQuery<T>(
     // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   const lView = getLView();
@@ -454,10 +454,10 @@ export function ΔviewQuery<T>(
  *
  * @codeGenApi
  */
-export function ΔloadViewQuery<T>(): T {
+export function ɵɵloadViewQuery<T>(): T {
   const index = getCurrentQueryIndex();
   setCurrentQueryIndex(index + 1);
-  return Δload<T>(index - HEADER_OFFSET);
+  return ɵɵload<T>(index - HEADER_OFFSET);
 }
 
 /**
@@ -472,7 +472,7 @@ export function ΔloadViewQuery<T>(): T {
  *
  * @codeGenApi
  */
-export function ΔcontentQuery<T>(
+export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any): QueryList<T> {
@@ -503,11 +503,11 @@ export function ΔcontentQuery<T>(
  *
  * @codeGenApi
  */
-export function ΔstaticContentQuery<T>(
+export function ɵɵstaticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any): void {
-  const queryList = ΔcontentQuery(directiveIndex, predicate, descend, read) as QueryList_<T>;
+  const queryList = ɵɵcontentQuery(directiveIndex, predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
   queryList._static = true;
   if (!tView.staticContentQueries) {
@@ -519,7 +519,7 @@ export function ΔstaticContentQuery<T>(
  *
  * @codeGenApi
  */
-export function ΔloadContentQuery<T>(): QueryList<T> {
+export function ɵɵloadContentQuery<T>(): QueryList<T> {
   const lView = getLView();
   ngDevMode &&
       assertDefined(

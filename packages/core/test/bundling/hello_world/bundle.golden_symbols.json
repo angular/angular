@@ -498,15 +498,15 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
-    "name": "ΔdefineComponent"
+    "name": "ɵɵdefineComponent"
   },
   {
-    "name": "ΔdefineInjectable"
+    "name": "ɵɵdefineInjectable"
   },
   {
-    "name": "ΔnamespaceHTML"
+    "name": "ɵɵnamespaceHTML"
   },
   {
-    "name": "Δtext"
+    "name": "ɵɵtext"
   }
 ]

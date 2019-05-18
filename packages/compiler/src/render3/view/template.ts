@@ -874,7 +874,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return trimTrailingNulls(parameters);
     });
 
-    // handle property bindings e.g. Δproperty('ngForOf', ctx.items), et al;
+    // handle property bindings e.g. ɵɵproperty('ngForOf', ctx.items), et al;
     const context = o.variable(CONTEXT_NAME);
     this.templatePropertyBindings(template, templateIndex, context, template.templateAttrs);
 

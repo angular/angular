@@ -24,7 +24,7 @@ def ts_api_guardian_test(
         golden,
         actual,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ"],
+        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):

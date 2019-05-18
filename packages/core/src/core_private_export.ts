@@ -13,8 +13,8 @@ export {devModeEqual as ɵdevModeEqual} from './change_detection/change_detectio
 export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
-export {inject, setCurrentInjector as ɵsetCurrentInjector, ɵɵinject, Δinject} from './di/injector_compatibility';
-export {getInjectableDef as ɵgetInjectableDef, ΔInjectableDef as ΔInjectableDef, ΔInjectorDef} from './di/interface/defs';
+export {inject, setCurrentInjector as ɵsetCurrentInjector, ɵɵinject} from './di/injector_compatibility';
+export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
 export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';

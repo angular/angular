@@ -7,8 +7,8 @@
  */
 
 import {noop} from '../../../compiler/src/render3/view/util';
-import {getTranslationForTemplate, Δi18nAttributes, Δi18nPostprocess, Δi18nStart} from '../../src/render3/i18n';
-import {ΔelementEnd, ΔelementStart} from '../../src/render3/instructions/all';
+import {getTranslationForTemplate, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
+import {ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
@@ -68,7 +68,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `simple text`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       // Check debug
       const debugOps = (opCodes as any).create.debug !.operations;
@@ -99,7 +99,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const elementIndex = 2;
       const elementIndex2 = 3;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 5,
@@ -135,7 +135,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect((opCodes as any).update.debug.operations).toEqual([
         {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
@@ -160,7 +160,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV = `Hello �0� and �1�, again �0�!`;
       const nbConsts = 2;
       const index = 1;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -193,7 +193,7 @@ describe('Runtime i18n', () => {
       let nbConsts = 3;
       let index = 1;
       const firstTextNode = 3;
-      let opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      let opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -223,7 +223,7 @@ describe('Runtime i18n', () => {
       index = 0;
       const spanElement = 1;
       const bElementSubTemplate = 2;
-      opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 2,
@@ -250,7 +250,7 @@ describe('Runtime i18n', () => {
       nbConsts = 2;
       index = 0;
       const bElement = 1;
-      opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
+      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
         vars: 1,
@@ -275,7 +275,7 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
       const tIcuIndex = 0;
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
@@ -463,7 +463,7 @@ describe('Runtime i18n', () => {
       }`;
       const nbConsts = 1;
       const index = 0;
-      const opCodes = getOpCodes(() => { Δi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
       const icuCommentNodeIndex = index + 1;
       const firstTextNodeIndex = index + 2;
       const nestedIcuCommentNodeIndex = index + 3;
@@ -579,9 +579,9 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const fixture = prepareFixture(() => {
-        ΔelementStart(0, 'div');
-        Δi18nAttributes(index, MSG_div_attr);
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        ɵɵi18nAttributes(index, MSG_div_attr);
+        ɵɵelementEnd();
       }, null, nbConsts, index);
       const tView = fixture.hostView[TVIEW];
       const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
@@ -598,7 +598,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask
@@ -615,7 +615,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b11,  // bindings mask
@@ -631,7 +631,7 @@ describe('Runtime i18n', () => {
       const nbConsts = 2;
       const index = 1;
       const opCodes =
-          getOpCodes(() => { Δi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
 
       expect(opCodes).toEqual([
         0b1,  // bindings mask
@@ -724,7 +724,7 @@ describe('Runtime i18n', () => {
         ],
       ];
       cases.forEach(([input, replacements, output]) => {
-        expect(Δi18nPostprocess(input as string, replacements as any)).toEqual(output as string);
+        expect(ɵɵi18nPostprocess(input as string, replacements as any)).toEqual(output as string);
       });
     });
 
@@ -776,7 +776,7 @@ describe('Runtime i18n', () => {
         �/*3:1�
         �#4� Bonjour - 5 �/#4�
       `;
-      expect(Δi18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
+      expect(ɵɵi18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
     });
 
     it('should throw in case we have invalid string', () => {
@@ -794,7 +794,7 @@ describe('Runtime i18n', () => {
         ['My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}]
       ];
       cases.forEach(([input, replacements, output]) => {
-        expect(() => Δi18nPostprocess(input as string, replacements as any)).toThrowError();
+        expect(() => ɵɵi18nPostprocess(input as string, replacements as any)).toThrowError();
       });
     });
   });

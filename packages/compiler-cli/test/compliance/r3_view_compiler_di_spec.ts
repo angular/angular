@@ -50,13 +50,13 @@ describe('compiler compliance: dependency injection', () => {
     const factory = `
       factory: function MyComponent_Factory(t) {
         return new (t || MyComponent)(
-          $r3$.ΔinjectAttribute('name'),
-          $r3$.ΔdirectiveInject(MyService),
-          $r3$.ΔdirectiveInject(MyService, 1),
-          $r3$.ΔdirectiveInject(MyService, 2),
-          $r3$.ΔdirectiveInject(MyService, 4),
-          $r3$.ΔdirectiveInject(MyService, 8),
-          $r3$.ΔdirectiveInject(MyService, 10)
+          $r3$.ɵɵinjectAttribute('name'),
+          $r3$.ɵɵdirectiveInject(MyService),
+          $r3$.ɵɵdirectiveInject(MyService, 1),
+          $r3$.ɵɵdirectiveInject(MyService, 2),
+          $r3$.ɵɵdirectiveInject(MyService, 4),
+          $r3$.ɵɵdirectiveInject(MyService, 8),
+          $r3$.ɵɵdirectiveInject(MyService, 10)
         );
       }`;
 

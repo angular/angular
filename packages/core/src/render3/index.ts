@@ -6,115 +6,115 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {ΔdefineBase, ΔdefineComponent, ΔdefineDirective, ΔdefineNgModule, ΔdefinePipe, ΔsetComponentScope, ΔsetNgModuleScope} from './definition';
-import {ΔInheritDefinitionFeature} from './features/inherit_definition_feature';
-import {ΔNgOnChangesFeature} from './features/ng_onchanges_feature';
-import {ΔProvidersFeature} from './features/providers_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ΔBaseDef, ΔComponentDefWithMeta, ΔDirectiveDefWithMeta, ΔPipeDefWithMeta} from './interfaces/definition';
+import {ɵɵdefineBase, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
+import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
+import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
+import {ɵɵProvidersFeature} from './features/providers_feature';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef, ɵɵBaseDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
-export {ΔgetFactoryOf, ΔgetInheritedFactory} from './di';
+export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
 // clang-format off
 export {
   detectChanges,
   markDirty,
   store,
   tick,
-  ΔallocHostVars,
-  Δbind,
-  ΔclassMap,
-  ΔclassProp,
-  ΔcomponentHostSyntheticListener,
-  ΔcomponentHostSyntheticProperty,
+  ɵɵallocHostVars,
+  ɵɵbind,
+  ɵɵclassMap,
+  ɵɵclassProp,
+  ɵɵcomponentHostSyntheticListener,
+  ɵɵcomponentHostSyntheticProperty,
 
-  Δcontainer,
-  ΔcontainerRefreshEnd,
-  ΔcontainerRefreshStart,
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
 
-  ΔdirectiveInject,
+  ɵɵdirectiveInject,
 
-  Δelement,
-  ΔelementAttribute,
-  ΔelementContainerEnd,
+  ɵɵelement,
+  ɵɵelementAttribute,
+  ɵɵelementContainerEnd,
 
-  ΔelementContainerStart,
-  ΔelementEnd,
+  ɵɵelementContainerStart,
+  ɵɵelementEnd,
 
-  ΔelementHostAttrs,
-  ΔelementProperty,
-  ΔelementStart,
-  ΔembeddedViewEnd,
+  ɵɵelementHostAttrs,
+  ɵɵelementProperty,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
 
-  ΔembeddedViewStart,
+  ɵɵembeddedViewStart,
 
-  ΔgetCurrentView,
-  ΔinjectAttribute,
+  ɵɵgetCurrentView,
+  ɵɵinjectAttribute,
 
-  Δinterpolation1,
-  Δinterpolation2,
-  Δinterpolation3,
-  Δinterpolation4,
-  Δinterpolation5,
-  Δinterpolation6,
-  Δinterpolation7,
-  Δinterpolation8,
-  ΔinterpolationV,
+  ɵɵinterpolation1,
+  ɵɵinterpolation2,
+  ɵɵinterpolation3,
+  ɵɵinterpolation4,
+  ɵɵinterpolation5,
+  ɵɵinterpolation6,
+  ɵɵinterpolation7,
+  ɵɵinterpolation8,
+  ɵɵinterpolationV,
 
-  Δlistener,
-  Δload,
+  ɵɵlistener,
+  ɵɵload,
 
-  ΔnamespaceHTML,
-  ΔnamespaceMathML,
-  ΔnamespaceSVG,
+  ɵɵnamespaceHTML,
+  ɵɵnamespaceMathML,
+  ɵɵnamespaceSVG,
 
-  ΔnextContext,
+  ɵɵnextContext,
 
-  Δprojection,
-  ΔprojectionDef,
-  Δproperty,
-  ΔpropertyInterpolate,
-  ΔpropertyInterpolate1,
-  ΔpropertyInterpolate2,
-  ΔpropertyInterpolate3,
-  ΔpropertyInterpolate4,
-  ΔpropertyInterpolate5,
-  ΔpropertyInterpolate6,
-  ΔpropertyInterpolate7,
-  ΔpropertyInterpolate8,
-  ΔpropertyInterpolateV,
+  ɵɵprojection,
+  ɵɵprojectionDef,
+  ɵɵproperty,
+  ɵɵpropertyInterpolate,
+  ɵɵpropertyInterpolate1,
+  ɵɵpropertyInterpolate2,
+  ɵɵpropertyInterpolate3,
+  ɵɵpropertyInterpolate4,
+  ɵɵpropertyInterpolate5,
+  ɵɵpropertyInterpolate6,
+  ɵɵpropertyInterpolate7,
+  ɵɵpropertyInterpolate8,
+  ɵɵpropertyInterpolateV,
 
-  Δreference,
+  ɵɵreference,
 
-  Δselect,
-  ΔstyleMap,
-  ΔstyleProp,
-  Δstyling,
-  ΔstylingApply,
-  Δtemplate,
+  ɵɵselect,
+  ɵɵstyleMap,
+  ɵɵstyleProp,
+  ɵɵstyling,
+  ɵɵstylingApply,
+  ɵɵtemplate,
 
-  Δtext,
-  ΔtextBinding} from './instructions/all';
+  ɵɵtext,
+  ɵɵtextBinding} from './instructions/all';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
 export {
-  ΔrestoreView,
+  ɵɵrestoreView,
 
-  ΔenableBindings,
-  ΔdisableBindings,
+  ɵɵenableBindings,
+  ɵɵdisableBindings,
 } from './state';
 
 export {
-  Δi18n,
-  Δi18nAttributes,
-  Δi18nExp,
-  Δi18nStart,
-  Δi18nEnd,
-  Δi18nApply,
-  Δi18nPostprocess,
+  ɵɵi18n,
+  ɵɵi18nAttributes,
+  ɵɵi18nExp,
+  ɵɵi18nStart,
+  ɵɵi18nEnd,
+  ɵɵi18nApply,
+  ɵɵi18nPostprocess,
   i18nConfigureLocalize,
-  Δi18nLocalize,
+  ɵɵi18nLocalize,
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
@@ -128,71 +128,71 @@ export {
 } from './metadata';
 
 export {
-  Δpipe,
-  ΔpipeBind1,
-  ΔpipeBind2,
-  ΔpipeBind3,
-  ΔpipeBind4,
-  ΔpipeBindV,
+  ɵɵpipe,
+  ɵɵpipeBind1,
+  ɵɵpipeBind2,
+  ɵɵpipeBind3,
+  ɵɵpipeBind4,
+  ɵɵpipeBindV,
 } from './pipe';
 
 export {
-  ΔqueryRefresh,
-  ΔviewQuery,
-  ΔstaticViewQuery,
-  ΔloadViewQuery,
-  ΔcontentQuery,
-  ΔloadContentQuery,
-  ΔstaticContentQuery
+  ɵɵqueryRefresh,
+  ɵɵviewQuery,
+  ɵɵstaticViewQuery,
+  ɵɵloadViewQuery,
+  ɵɵcontentQuery,
+  ɵɵloadContentQuery,
+  ɵɵstaticContentQuery
 } from './query';
 
 export {
-  ΔpureFunction0,
-  ΔpureFunction1,
-  ΔpureFunction2,
-  ΔpureFunction3,
-  ΔpureFunction4,
-  ΔpureFunction5,
-  ΔpureFunction6,
-  ΔpureFunction7,
-  ΔpureFunction8,
-  ΔpureFunctionV,
+  ɵɵpureFunction0,
+  ɵɵpureFunction1,
+  ɵɵpureFunction2,
+  ɵɵpureFunction3,
+  ɵɵpureFunction4,
+  ɵɵpureFunction5,
+  ɵɵpureFunction6,
+  ɵɵpureFunction7,
+  ɵɵpureFunction8,
+  ɵɵpureFunctionV,
 } from './pure_function';
 
-export {ΔtemplateRefExtractor} from './view_engine_compatibility_prebound';
+export {ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
 
-export {ΔresolveWindow, ΔresolveDocument, ΔresolveBody} from './util/misc_utils';
+export {ɵɵresolveWindow, ɵɵresolveDocument, ɵɵresolveBody} from './util/misc_utils';
 
 // clang-format on
 
 export {
-  ΔBaseDef,
+  ɵɵBaseDef,
   ComponentDef,
-  ΔComponentDefWithMeta,
+  ɵɵComponentDefWithMeta,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,
   DirectiveDefFlags,
-  ΔDirectiveDefWithMeta,
+  ɵɵDirectiveDefWithMeta,
   DirectiveType,
-  ΔNgOnChangesFeature,
-  ΔInheritDefinitionFeature,
-  ΔProvidersFeature,
+  ɵɵNgOnChangesFeature,
+  ɵɵInheritDefinitionFeature,
+  ɵɵProvidersFeature,
   PipeDef,
-  ΔPipeDefWithMeta,
+  ɵɵPipeDefWithMeta,
   LifecycleHooksFeature,
-  ΔdefineComponent,
-  ΔdefineDirective,
-  ΔdefineNgModule,
-  ΔdefineBase,
-  ΔdefinePipe,
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
+  ɵɵdefineNgModule,
+  ɵɵdefineBase,
+  ɵɵdefinePipe,
   getHostElement,
   getComponent,
   getDirectives,
   getRenderedText,
   renderComponent,
-  ΔsetComponentScope,
-  ΔsetNgModuleScope,
+  ɵɵsetComponentScope,
+  ɵɵsetNgModuleScope,
   whenRendered,
 };
 

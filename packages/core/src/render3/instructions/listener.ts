@@ -31,7 +31,7 @@ import {BindingDirection, generatePropertyAliases, getCleanup, handleError, load
  *
  * @codeGenApi
  */
-export function Δlistener(
+export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
@@ -58,7 +58,7 @@ export function Δlistener(
  *
  * @codeGenApi
 */
-export function ΔcomponentHostSyntheticListener<T>(
+export function ɵɵcomponentHostSyntheticListener<T>(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);

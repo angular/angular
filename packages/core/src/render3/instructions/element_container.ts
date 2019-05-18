@@ -31,7 +31,7 @@ import {createDirectivesAndLocals, createNodeAtIndex, executeContentQueries, set
  *
  * @codeGenApi
  */
-export function ΔelementContainerStart(
+export function ɵɵelementContainerStart(
     index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -72,7 +72,7 @@ export function ΔelementContainerStart(
  *
  * @codeGenApi
  */
-export function ΔelementContainerEnd(): void {
+export function ɵɵelementContainerEnd(): void {
   let previousOrParentTNode = getPreviousOrParentTNode();
   const lView = getLView();
   const tView = lView[TVIEW];

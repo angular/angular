@@ -28,7 +28,7 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ΔProvidersFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -258,7 +258,7 @@ export function renderTemplate<T>(
         LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
     enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
-    const def: ComponentDef<any> = ΔdefineComponent({
+    const def: ComponentDef<any> = ɵɵdefineComponent({
       factory: () => null,
       selectors: [],
       type: Object,
@@ -367,7 +367,7 @@ export function createComponent(
     viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>): ComponentType<any> {
   return class Component {
     value: any;
-    static ngComponentDef = ΔdefineComponent({
+    static ngComponentDef = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
       consts: consts,
@@ -378,7 +378,7 @@ export function createComponent(
       directives: directives, hostBindings,
       pipes: pipes,
       features: (providers.length > 0 || viewProviders.length > 0)?
-      [ΔProvidersFeature(providers || [], viewProviders || [])]: []
+      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: []
     });
   };
 }
@@ -386,7 +386,7 @@ export function createComponent(
 export function createDirective(
     name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
-    static ngDirectiveDef = ΔdefineDirective({
+    static ngDirectiveDef = ɵɵdefineDirective({
       type: Directive,
       selectors: [['', name, '']],
       factory: () => new Directive(),

@@ -161,7 +161,7 @@ export class MyComponent {
 ```js
 export class MyComponent {
   name: string;
-  static ngComponentDef = ΔdefineComponent({...});
+  static ngComponentDef = ɵɵdefineComponent({...});
 }
 ```
 
@@ -213,7 +213,7 @@ export class MyDirective {
   constructor() {
     this.dirId = 'some id';
   }
-  static ngDirectiveDef = ΔdefineDirective({...});
+  static ngDirectiveDef = ɵɵdefineDirective({...});
 }
 ```
 
@@ -256,7 +256,7 @@ export class MyPipe implements PipeTransform {
 ```js
 export class MyPipe {
   transform(...) ...
-  static ngPipeDef = ΔdefinePipe({...});
+  static ngPipeDef = ɵɵdefinePipe({...});
 }
 ```
 
@@ -329,7 +329,7 @@ export class MyModule {}
 *my.module.js*
 ```js
 export class MyModule {
-  static ngInjectorDef = ΔdefineInjector(...);
+  static ngInjectorDef = ɵɵdefineInjector(...);
 }
 ```
 
@@ -389,7 +389,7 @@ manually written as:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ΔdefineInjector({
+  static ngInjectorDef = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],
@@ -411,7 +411,7 @@ export class MyModule {
 }
 ```
 
-except for the call to `ΔdefineInjector` would generate a `{ __symbolic: 'error' }`
+except for the call to `ɵɵdefineInjector` would generate a `{ __symbolic: 'error' }`
 value which is ignored by the ivy compiler. This allows the system to ignore
 the difference between manually and mechanically created module definitions.
 
@@ -440,7 +440,7 @@ properties by including a `// @__BUILD_OPTIMIZER_REMOVE_` comment:
 
 ```ts
 export class MyModule {
-  static ngInjectorDef = ΔdefineInjector({
+  static ngInjectorDef = ɵɵdefineInjector({
     providers: [{
       provide: Service, useClass: ServiceImpl
     }],

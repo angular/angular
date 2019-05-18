@@ -732,33 +732,33 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
-    "name": "ΔdefineComponent"
+    "name": "ɵɵdefineComponent"
   },
   {
-    "name": "ΔdefineInjectable"
+    "name": "ɵɵdefineInjectable"
   },
   {
-    "name": "ΔdefineInjector"
+    "name": "ɵɵdefineInjector"
   },
   {
-    "name": "ΔdefineNgModule"
+    "name": "ɵɵdefineNgModule"
   },
   {
-    "name": "Δelement"
+    "name": "ɵɵelement"
   },
   {
-    "name": "ΔelementEnd"
+    "name": "ɵɵelementEnd"
   },
   {
-    "name": "ΔelementStart"
+    "name": "ɵɵelementStart"
   },
   {
-    "name": "ΔnamespaceHTML"
+    "name": "ɵɵnamespaceHTML"
   },
   {
-    "name": "ΔsetComponentScope"
+    "name": "ɵɵsetComponentScope"
   },
   {
-    "name": "Δtext"
+    "name": "ɵɵtext"
   }
 ]

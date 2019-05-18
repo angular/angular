@@ -14,8 +14,8 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, injectArgs, setCurrentInjector, Δinject} from './injector_compatibility';
-import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getInjectableDef, getInjectorDef, ΔInjectableDef} from './interface/defs';
+import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, injectArgs, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getInjectableDef, getInjectorDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {APP_ROOT} from './scope';
@@ -366,7 +366,7 @@ export class R3Injector {
     return record.value as T;
   }
 
-  private injectableDefInScope(def: ΔInjectableDef<any>): boolean {
+  private injectableDefInScope(def: ɵɵInjectableDef<any>): boolean {
     if (!def.providedIn) {
       return false;
     } else if (typeof def.providedIn === 'string') {
@@ -450,7 +450,7 @@ export function providerToFactory(
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
     } else if (isExistingProvider(provider)) {
-      factory = () => Δinject(resolveForwardRef(provider.useExisting));
+      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else {

@@ -26,7 +26,7 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  *
  * @publicApi
  */
-export interface ΔInjectableDef<T> {
+export interface ɵɵInjectableDef<T> {
   /**
    * Specifies that the given type belongs to a particular injector:
    * - `InjectorType` such as `NgModule`,
@@ -60,7 +60,7 @@ export interface ΔInjectableDef<T> {
  *
  * @publicApi
  */
-export interface ΔInjectorDef<T> {
+export interface ɵɵInjectorDef<T> {
   factory: () => T;
 
   // TODO(alxhub): Narrow down the type here once decorators properly change the return type of the
@@ -131,28 +131,21 @@ export interface InjectorTypeWithProviders<T> {
  *
  * @codeGenApi
  */
-export function ΔdefineInjectable<T>(opts: {
+export function ɵɵdefineInjectable<T>(opts: {
   providedIn?: Type<any>| 'root' | 'any' | null,
   factory: () => T,
 }): never {
   return ({
     providedIn: opts.providedIn as any || null, factory: opts.factory, value: undefined,
-  } as ΔInjectableDef<T>) as never;
+  } as ɵɵInjectableDef<T>) as never;
 }
 
 /**
  * @deprecated in v8, delete after v10. This API should be used only be generated code, and that
- * code should now use ΔdefineInjectable instead.
+ * code should now use ɵɵdefineInjectable instead.
  * @publicApi
  */
-export const defineInjectable = ΔdefineInjectable;
-
-/**
- * @deprecated delete before v8. Use `defineInjectable`, which is also deprecated, but will be
- * around until v10.
- * @publicApi
- */
-export const ɵɵdefineInjectable = ΔdefineInjectable;
+export const defineInjectable = ɵɵdefineInjectable;
 
 /**
  * Construct an `InjectorDef` which configures an injector.
@@ -174,11 +167,11 @@ export const ɵɵdefineInjectable = ΔdefineInjectable;
  *
  * @publicApi
  */
-export function ΔdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
+export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
     factory: options.factory, providers: options.providers || [], imports: options.imports || [],
-  } as ΔInjectorDef<any>) as never;
+  } as ɵɵInjectorDef<any>) as never;
 }
 
 /**
@@ -187,7 +180,7 @@ export function ΔdefineInjector(options: {factory: () => any, providers?: any[]
  *
  * @param type A type which may have its own (non-inherited) `ngInjectableDef`.
  */
-export function getInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
+export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? type[NG_INJECTABLE_DEF] : null;
 }
 
@@ -199,7 +192,7 @@ export function getInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
  * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
  * `ngInjectableDef` on an ancestor only.
  */
-export function getInheritedInjectableDef<T>(type: any): ΔInjectableDef<T>|null {
+export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   if (type && type[NG_INJECTABLE_DEF]) {
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
@@ -217,7 +210,7 @@ export function getInheritedInjectableDef<T>(type: any): ΔInjectableDef<T>|null
  *
  * @param type type which may have `ngInjectorDef`
  */
-export function getInjectorDef<T>(type: any): ΔInjectorDef<T>|null {
+export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
   return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }
 

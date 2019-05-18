@@ -8,8 +8,8 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
-import {Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δlistener, Δtext} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {renderToHtml} from './render_util';
@@ -21,7 +21,7 @@ describe('outputs', () => {
     change = new EventEmitter();
     resetStream = new EventEmitter();
 
-    static ngComponentDef = ΔdefineComponent({
+    static ngComponentDef = ɵɵdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
       template: function(rf: RenderFlags, ctx: any) {},
@@ -37,7 +37,7 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngDirectiveDef = ΔdefineDirective({
+    static ngDirectiveDef = ɵɵdefineDirective({
       type: OtherDir,
       selectors: [['', 'otherDir', '']],
       factory: () => otherDir = new OtherDir,
@@ -60,39 +60,39 @@ describe('outputs', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'button');
+        ɵɵelementStart(0, 'button');
         {
-          Δlistener('click', function() { return ctx.onClick(); });
-          Δtext(1, 'Click me');
+          ɵɵlistener('click', function() { return ctx.onClick(); });
+          ɵɵtext(1, 'Click me');
         }
-        ΔelementEnd();
-        Δcontainer(2);
+        ɵɵelementEnd();
+        ɵɵcontainer(2);
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(2);
+        ɵɵcontainerRefreshStart(2);
         {
           if (ctx.condition) {
-            let rf1 = ΔembeddedViewStart(0, 1, 0);
+            let rf1 = ɵɵembeddedViewStart(0, 1, 0);
             if (rf1 & RenderFlags.Create) {
-              ΔelementStart(0, 'button-toggle');
+              ɵɵelementStart(0, 'button-toggle');
               {
-                Δlistener('change', function() { return ctx.onChange(); });
+                ɵɵlistener('change', function() { return ctx.onChange(); });
               }
-              ΔelementEnd();
+              ɵɵelementEnd();
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           } else {
-            if (ΔembeddedViewStart(1, 1, 0)) {
-              ΔelementStart(0, 'div', ['otherDir', '']);
+            if (ɵɵembeddedViewStart(1, 1, 0)) {
+              ɵɵelementStart(0, 'div', ['otherDir', '']);
               {
-                Δlistener('change', function() { return ctx.onChange(); });
+                ɵɵlistener('change', function() { return ctx.onChange(); });
               }
-              ΔelementEnd();
+              ɵɵelementEnd();
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }
 

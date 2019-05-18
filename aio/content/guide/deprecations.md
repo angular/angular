@@ -51,8 +51,8 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --- | ----------- | --------------------- | ----- |
 | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
-| [`defineInjectable`](api/core/defineInjectable) | `ΔdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
-| [`inject`](api/core/inject) | `Δinject` | v8 | Used only in generated code. No source code should depend on this API. |
+| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
+| [`inject`](api/core/inject) | `ɵɵinject` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
 | [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2) and  [`Renderer2`](api/core/Renderer2) | v4 | none |

@@ -22,6 +22,6 @@ import {createTemplateRef} from './view_engine_compatibility';
  *
  * @codeGenApi
  */
-export function ΔtemplateRefExtractor(tNode: TNode, currentView: LView) {
+export function ɵɵtemplateRefExtractor(tNode: TNode, currentView: LView) {
   return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
 }
