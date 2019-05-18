@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {TsHelperFn, TypeScriptReflectionHost} from '../../reflection';
+import {FunctionDefinition, TsHelperFn, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
@@ -348,9 +348,9 @@ describe('ngtsc metadata', () => {
   it('should evaluate TypeScript __spread helper', () => {
     const {checker, expression} = makeExpression(
         `
-          import * as tslib from 'tslib';
-          const a = [1];
-          const b = [2, 3];
+        import * as tslib from 'tslib';
+        const a = [1];
+        const b = [2, 3];
       `,
         'tslib.__spread(a, b)', [
           {
@@ -360,16 +360,7 @@ describe('ngtsc metadata', () => {
         `
           },
         ]);
-    const reflectionHost = new TypeScriptReflectionHost(checker);
-    // Customize the resolution of functions to recognize the __spread function. The TypeScript
-    // host itself never identifies the __spread function, as this identification process is only
-    // done in ngcc's ES5 host.
-    reflectionHost.getDefinitionOfFunction = (node) => {
-      if (ts.isFunctionDeclaration(node) && node.name !.text === '__spread') {
-        return TsHelperFn.Spread;
-      }
-      return null;
-    };
+    const reflectionHost = new TsLibAwareReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker);
     const value = evaluator.evaluate(expression);
     expect(value).toEqual([1, 2, 3]);
@@ -425,3 +416,34 @@ describe('ngtsc metadata', () => {
     });
   });
 });
+
+/**
+ * Customizes the resolution of functions to recognize functions from tslib. Such functions are not
+ * handled specially in the default TypeScript host, as only ngcc's ES5 host will have special
+ * powers to recognize functions from tslib.
+ */
+class TsLibAwareReflectionHost extends TypeScriptReflectionHost {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
+    if (ts.isFunctionDeclaration(node)) {
+      const helper = getTsHelperFn(node);
+      if (helper !== null) {
+        return {
+          node,
+          body: null, helper,
+          parameters: [],
+        };
+      }
+    }
+    return super.getDefinitionOfFunction(node);
+  }
+}
+
+function getTsHelperFn(node: ts.FunctionDeclaration): TsHelperFn|null {
+  const name = node.name !== undefined && ts.isIdentifier(node.name) && node.name.text;
+
+  if (name === '__spread') {
+    return TsHelperFn.Spread;
+  } else {
+    return null;
+  }
+}

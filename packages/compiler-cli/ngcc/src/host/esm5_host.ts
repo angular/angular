@@ -148,7 +148,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param node the function declaration to parse.
    * @returns an object containing the node, statements and parameters of the function.
    */
-  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|TsHelperFn|null {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
     if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
         !ts.isFunctionExpression(node) && !ts.isVariableDeclaration(node)) {
       return null;
@@ -156,7 +156,12 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 
     const tsHelperFn = getTsHelperFn(node);
     if (tsHelperFn !== null) {
-      return tsHelperFn;
+      return {
+        node,
+        body: null,
+        helper: tsHelperFn,
+        parameters: [],
+      };
     }
 
     // If the node was not identified to be a TypeScript helper, a variable declaration at this
@@ -176,7 +181,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return !lookingForParamInitializers;
     });
 
-    return {node, body: statements || null, parameters};
+    return {node, body: statements || null, helper: null, parameters};
   }
 
   /**

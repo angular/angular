@@ -125,7 +125,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return this.getDeclarationOfSymbol(symbol);
   }
 
-  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|TsHelperFn|null {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
     if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
         !ts.isFunctionExpression(node)) {
       return null;
@@ -133,6 +133,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       node,
       body: node.body !== undefined ? Array.from(node.body.statements) : null,
+      helper: null,
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;

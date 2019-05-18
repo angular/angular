@@ -394,7 +394,8 @@ export class StaticInterpreter {
       return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
 
-    if (fn === TsHelperFn.Spread) {
+    // If the function corresponds with a tslib helper function, evaluate it with custom logic.
+    if (fn.helper === TsHelperFn.Spread) {
       const args = this.evaluateFunctionArguments(node, context);
       return evaluateTsSpreadHelper(node, args);
     }

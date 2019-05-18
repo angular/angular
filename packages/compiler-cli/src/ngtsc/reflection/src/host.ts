@@ -258,15 +258,23 @@ export interface FunctionDefinition {
   /**
    * A reference to the node which declares the function.
    */
-  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression;
+  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration;
 
   /**
-   * Statements of the function body, if a body is present, or null if no body is present.
+   * Statements of the function body, if a body is present, or null if no body is present or the
+   * function is identified to represent a tslib helper function, in which case `helper` will
+   * indicate which helper this function represents.
    *
    * This list may have been filtered to exclude statements which perform parameter default value
    * initialization.
    */
   body: ts.Statement[]|null;
+
+  /**
+   * The type of tslib helper function, if the function is determined to represent a tslib helper
+   * function. Otherwise, this will be null.
+   */
+  helper: TsHelperFn|null;
 
   /**
    * Metadata regarding the function's parameters, including possible default value expressions.
@@ -413,7 +421,7 @@ export interface ReflectionHost {
    *
    * @returns a `FunctionDefinition` giving metadata about the function definition.
    */
-  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition|TsHelperFn|null;
+  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition|null;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata

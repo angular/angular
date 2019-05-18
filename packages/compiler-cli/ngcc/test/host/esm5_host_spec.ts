@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, CtorParameter, Decorator, FunctionDefinition, Import, TsHelperFn, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, CtorParameter, Decorator, Import, TsHelperFn, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
@@ -1409,7 +1409,7 @@ describe('Esm5ReflectionHost', () => {
 
       const fooNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
-      const fooDef = host.getDefinitionOfFunction(fooNode) as FunctionDefinition;
+      const fooDef = host.getDefinitionOfFunction(fooNode) !;
       expect(fooDef.node).toBe(fooNode);
       expect(fooDef.body !.length).toEqual(1);
       expect(fooDef.body ![0].getText()).toEqual(`return x;`);
@@ -1419,7 +1419,7 @@ describe('Esm5ReflectionHost', () => {
 
       const barNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
-      const barDef = host.getDefinitionOfFunction(barNode) as FunctionDefinition;
+      const barDef = host.getDefinitionOfFunction(barNode) !;
       expect(barDef.node).toBe(barNode);
       expect(barDef.body !.length).toEqual(1);
       expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
@@ -1432,7 +1432,7 @@ describe('Esm5ReflectionHost', () => {
 
       const bazNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
-      const bazDef = host.getDefinitionOfFunction(bazNode) as FunctionDefinition;
+      const bazDef = host.getDefinitionOfFunction(bazNode) !;
       expect(bazDef.node).toBe(bazNode);
       expect(bazDef.body !.length).toEqual(3);
       expect(bazDef.parameters.length).toEqual(1);
@@ -1441,7 +1441,7 @@ describe('Esm5ReflectionHost', () => {
 
       const quxNode =
           getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
-      const quxDef = host.getDefinitionOfFunction(quxNode) as FunctionDefinition;
+      const quxDef = host.getDefinitionOfFunction(quxNode) !;
       expect(quxDef.node).toBe(quxNode);
       expect(quxDef.body !.length).toEqual(2);
       expect(quxDef.parameters.length).toEqual(1);
@@ -1459,8 +1459,11 @@ describe('Esm5ReflectionHost', () => {
 
       const node = getDeclaration(program, file.name, '__spread', isNamedFunctionDeclaration) !;
 
-      const definition = host.getDefinitionOfFunction(node);
-      expect(definition).toBe(TsHelperFn.Spread);
+      const definition = host.getDefinitionOfFunction(node) !;
+      expect(definition.node).toBe(node);
+      expect(definition.body).toBeNull();
+      expect(definition.helper).toBe(TsHelperFn.Spread);
+      expect(definition.parameters.length).toEqual(0);
     });
 
     it('should recognize TypeScript __spread helper function implementation', () => {
@@ -1477,8 +1480,11 @@ describe('Esm5ReflectionHost', () => {
 
       const node = getDeclaration(program, file.name, '__spread', ts.isVariableDeclaration) !;
 
-      const definition = host.getDefinitionOfFunction(node);
-      expect(definition).toBe(TsHelperFn.Spread);
+      const definition = host.getDefinitionOfFunction(node) !;
+      expect(definition.node).toBe(node);
+      expect(definition.body).toBeNull();
+      expect(definition.helper).toBe(TsHelperFn.Spread);
+      expect(definition.parameters.length).toEqual(0);
     });
   });
 
