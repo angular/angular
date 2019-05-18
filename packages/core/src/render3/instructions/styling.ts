@@ -66,7 +66,7 @@ import {scheduleTick, setInputsForProperty} from './shared';
  *
  * @codeGenApi
  */
-export function Δstyling(
+export function ɵɵstyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = getPreviousOrParentTNode();
@@ -143,7 +143,7 @@ function initStyling(
  *
  * @codeGenApi
  */
-export function ΔstyleProp(
+export function ɵɵstyleProp(
     styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, forceOverride?: boolean): void {
   const index = getSelectedIndex();
@@ -209,7 +209,7 @@ function resolveStylePropValue(
  *
  * @codeGenApi
  */
-export function ΔclassProp(
+export function ɵɵclassProp(
     classIndex: number, value: boolean | PlayerFactory, forceOverride?: boolean): void {
   const index = getSelectedIndex();
   const input = (value instanceof BoundPlayerFactory) ?
@@ -262,7 +262,7 @@ function booleanOrNull(value: any): boolean|null {
  *
  * @codeGenApi
  */
-export function ΔstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
+export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null): void {
   const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
@@ -306,7 +306,7 @@ export function ΔstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | null
  *
  * @codeGenApi
  */
-export function ΔclassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
+export function ɵɵclassMap(classes: {[styleName: string]: any} | NO_CHANGE | string | null): void {
   const index = getSelectedIndex();
   const lView = getLView();
   const stylingContext = getStylingContext(index, lView);
@@ -339,7 +339,7 @@ export function ΔclassMap(classes: {[styleName: string]: any} | NO_CHANGE | str
  *
  * @codeGenApi
  */
-export function ΔstylingApply(): void {
+export function ɵɵstylingApply(): void {
   const index = getSelectedIndex();
   const directiveStylingIndex =
       getActiveDirectiveStylingIndex() || DEFAULT_TEMPLATE_DIRECTIVE_INDEX;
