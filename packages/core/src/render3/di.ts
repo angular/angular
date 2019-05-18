@@ -13,6 +13,7 @@ import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual} from '../util/assert';
+import {isForwardRef, resolveForwardRef} from '../util/forward_ref';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
@@ -632,6 +633,9 @@ export class NodeInjector implements Injector {
  * @codeGenApi
  */
 export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
+  if (isForwardRef(type)) {
+    return () => resolveForwardRef(type as any);
+  }
   const typeAny = type as any;
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
       getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);

@@ -319,6 +319,27 @@ describe('providers', () => {
       expect(fixture.componentInstance.myService.dep.value).toBe('one');
     });
 
+    it('should support forward refs in useClass', () => {
+      @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
+      class SomeProvider {
+      }
+
+      @Injectable()
+      class SomeProviderImpl {
+      }
+
+      @Component({template: '', providers: [SomeProvider]})
+      class App {
+        constructor(public foo: SomeProvider) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.foo).toBeTruthy();
+    });
+
   });
 
   describe('flags', () => {
