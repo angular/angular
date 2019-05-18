@@ -9,7 +9,7 @@ import {createLView, createTView} from '@angular/core/src/render3/instructions/s
 
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
-import {ΔclassMap, ΔclassProp, ΔdefineComponent, ΔdefineDirective, ΔelementEnd, ΔelementStart, ΔnamespaceSVG, Δselect, ΔstyleMap, ΔstyleProp, Δstyling, ΔstylingApply} from '../../../src/render3/index';
+import {ɵɵclassMap, ɵɵclassProp, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelementEnd, ɵɵelementStart, ɵɵnamespaceSVG, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply} from '../../../src/render3/index';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
@@ -22,7 +22,7 @@ import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handle
 import {registerHostDirective} from '../../../src/render3/styling/host_instructions_queue';
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
 import {allocStylingContext, createEmptyStylingContext} from '../../../src/render3/styling/util';
-import {ΔdefaultStyleSanitizer} from '../../../src/sanitization/sanitization';
+import {ɵɵdefaultStyleSanitizer} from '../../../src/sanitization/sanitization';
 import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
 import {ComponentFixture, renderToHtml} from '../render_util';
 
@@ -383,7 +383,7 @@ describe('style and class based bindings', () => {
          () => {
            function Template(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               ΔelementStart(0, 'span', [
+               ɵɵelementStart(0, 'span', [
                  AttributeMarker.Styles,
                  'width',
                  '200px',
@@ -392,14 +392,14 @@ describe('style and class based bindings', () => {
                  'opacity',
                  '0.5',
                ]);
-               Δstyling(null, ['width']);
-               ΔelementEnd();
+               ɵɵstyling(null, ['width']);
+               ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               Δselect(0);
-               ΔstyleMap(ctx.myStyles);
-               ΔstyleProp(0, ctx.myWidth);
-               ΔstylingApply();
+               ɵɵselect(0);
+               ɵɵstyleMap(ctx.myStyles);
+               ɵɵstyleProp(0, ctx.myWidth);
+               ɵɵstylingApply();
              }
            }
 
@@ -419,7 +419,7 @@ describe('style and class based bindings', () => {
         class Comp {
           diameter: number = 100;
 
-          static ngComponentDef = ΔdefineComponent({
+          static ngComponentDef = ɵɵdefineComponent({
             type: Comp,
             selectors: [['comp']],
             factory: () => new Comp(),
@@ -427,18 +427,18 @@ describe('style and class based bindings', () => {
             vars: 0,
             template: (rf: RenderFlags, ctx: Comp) => {
               if (rf & RenderFlags.Create) {
-                ΔnamespaceSVG();
-                ΔelementStart(0, 'svg');
-                Δstyling(null, ['width', 'height']);
-                ΔelementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
-                ΔelementEnd();
-                ΔelementEnd();
+                ɵɵnamespaceSVG();
+                ɵɵelementStart(0, 'svg');
+                ɵɵstyling(null, ['width', 'height']);
+                ɵɵelementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
+                ɵɵelementEnd();
+                ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                Δselect(0);
-                ΔstyleProp(0, ctx.diameter, 'px');
-                ΔstyleProp(1, ctx.diameter, 'px');
-                ΔstylingApply();
+                ɵɵselect(0);
+                ɵɵstyleProp(0, ctx.diameter, 'px');
+                ɵɵstyleProp(1, ctx.diameter, 'px');
+                ɵɵstylingApply();
               }
             }
           });
@@ -462,7 +462,7 @@ describe('style and class based bindings', () => {
           borderWidth: string = '3px';
           borderColor: string = 'red';
 
-          static ngComponentDef = ΔdefineComponent({
+          static ngComponentDef = ɵɵdefineComponent({
             type: Comp,
             selectors: [['comp']],
             factory: () => new Comp(),
@@ -470,15 +470,15 @@ describe('style and class based bindings', () => {
             vars: 0,
             template: (rf: RenderFlags, ctx: Comp) => {
               if (rf & RenderFlags.Create) {
-                ΔelementStart(0, 'div');
-                Δstyling(null, ['borderWidth', 'border-color']);
-                ΔelementEnd();
+                ɵɵelementStart(0, 'div');
+                ɵɵstyling(null, ['borderWidth', 'border-color']);
+                ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                Δselect(0);
-                ΔstyleProp(0, ctx.borderWidth);
-                ΔstyleProp(1, ctx.borderColor);
-                ΔstylingApply();
+                ɵɵselect(0);
+                ɵɵstyleProp(0, ctx.borderWidth);
+                ɵɵstyleProp(1, ctx.borderColor);
+                ɵɵstylingApply();
               }
             }
           });
@@ -1279,7 +1279,7 @@ describe('style and class based bindings', () => {
          () => {
            const getStyles = trackStylesFactory();
            const styleBindings = ['border-image', 'border-width'];
-           const styleSanitizer = ΔdefaultStyleSanitizer;
+           const styleSanitizer = ɵɵdefaultStyleSanitizer;
            const stylingContext =
                createStylingContext(null, styleBindings, null, null, styleSanitizer);
 
@@ -3099,7 +3099,7 @@ describe('style and class based bindings', () => {
          const fooFactory = bindPlayerFactory(classBuildFn, true);
 
          class Comp {
-           static ngComponentDef = ΔdefineComponent({
+           static ngComponentDef = ɵɵdefineComponent({
              type: Comp,
              selectors: [['comp']],
              directives: [Comp],
@@ -3108,17 +3108,17 @@ describe('style and class based bindings', () => {
              vars: 0,
              template: (rf: RenderFlags, ctx: Comp) => {
                if (rf & RenderFlags.Create) {
-                 ΔelementStart(0, 'div');
-                 Δstyling(['foo'], ['width']);
-                 ΔelementEnd();
+                 ɵɵelementStart(0, 'div');
+                 ɵɵstyling(['foo'], ['width']);
+                 ɵɵelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 Δselect(0);
-                 ΔstyleMap(styleMapFactory);
-                 ΔclassMap(classMapFactory);
-                 ΔstyleProp(0, widthFactory);
-                 ΔclassProp(0, fooFactory);
-                 ΔstylingApply();
+                 ɵɵselect(0);
+                 ɵɵstyleMap(styleMapFactory);
+                 ɵɵclassMap(classMapFactory);
+                 ɵɵstyleProp(0, widthFactory);
+                 ɵɵclassProp(0, fooFactory);
+                 ɵɵstylingApply();
                }
              }
            });
@@ -3174,7 +3174,7 @@ describe('style and class based bindings', () => {
       let fooFactory = bindPlayerFactory(buildFn, true) as BoundPlayerFactory<any>;
 
       class Comp {
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
           directives: [Comp],
@@ -3183,17 +3183,17 @@ describe('style and class based bindings', () => {
           vars: 0,
           template: (rf: RenderFlags, ctx: Comp) => {
             if (rf & RenderFlags.Create) {
-              ΔelementStart(0, 'div');
-              Δstyling(['foo'], ['width']);
-              ΔelementEnd();
+              ɵɵelementStart(0, 'div');
+              ɵɵstyling(['foo'], ['width']);
+              ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              Δselect(0);
-              ΔstyleMap(styleMapFactory);
-              ΔclassMap(classMapFactory);
-              ΔstyleProp(0, widthFactory);
-              ΔclassProp(0, fooFactory);
-              ΔstylingApply();
+              ɵɵselect(0);
+              ɵɵstyleMap(styleMapFactory);
+              ɵɵclassMap(classMapFactory);
+              ɵɵstyleProp(0, widthFactory);
+              ɵɵclassProp(0, fooFactory);
+              ɵɵstylingApply();
             }
           }
         });
@@ -3251,18 +3251,18 @@ describe('style and class based bindings', () => {
       const fooFactory2 = bindPlayerFactory(classBuildFn, true);
 
       class MyDir {
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: MyDir,
           selectors: [['', 'my-dir', '']],
           factory: () => new MyDir(),
           hostBindings: function(rf: RenderFlags, ctx: MyDir, elementIndex: number) {
             if (rf & RenderFlags.Create) {
-              Δstyling(['foo'], ['width']);
+              ɵɵstyling(['foo'], ['width']);
             }
             if (rf & RenderFlags.Update) {
-              ΔstyleProp(0, ctx.widthFactory);
-              ΔclassProp(0, ctx.fooFactory);
-              ΔstylingApply();
+              ɵɵstyleProp(0, ctx.widthFactory);
+              ɵɵclassProp(0, ctx.fooFactory);
+              ɵɵstylingApply();
             }
           }
         });
@@ -3272,7 +3272,7 @@ describe('style and class based bindings', () => {
       }
 
       class Comp {
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
           directives: [Comp, MyDir],
@@ -3281,15 +3281,15 @@ describe('style and class based bindings', () => {
           vars: 0,
           template: (rf: RenderFlags, ctx: Comp) => {
             if (rf & RenderFlags.Create) {
-              ΔelementStart(0, 'div', ['my-dir', '']);
-              Δstyling(['foo'], ['width']);
-              ΔelementEnd();
+              ɵɵelementStart(0, 'div', ['my-dir', '']);
+              ɵɵstyling(['foo'], ['width']);
+              ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              Δselect(0);
-              ΔstyleProp(0, ctx.widthFactory);
-              ΔclassProp(0, ctx.fooFactory);
-              ΔstylingApply();
+              ɵɵselect(0);
+              ɵɵstyleProp(0, ctx.widthFactory);
+              ɵɵclassProp(0, ctx.fooFactory);
+              ɵɵstylingApply();
             }
           }
         });

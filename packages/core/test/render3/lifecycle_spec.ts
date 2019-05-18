@@ -7,8 +7,8 @@
  */
 
 import {OnDestroy} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, ΔNgOnChangesFeature, ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δprojection, ΔprojectionDef, Δselect, Δtemplate, Δtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ComponentTemplate, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -19,10 +19,10 @@ describe('lifecycles', () => {
   function getParentTemplate(name: string) {
     return (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        Δelement(0, name);
+        ɵɵelement(0, name);
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'val', Δbind(ctx.val));
+        ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
       }
     };
   }
@@ -34,16 +34,16 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
-        ΔprojectionDef();
-        ΔelementStart(0, 'div');
-        { Δprojection(1); }
-        ΔelementEnd();
+        ɵɵprojectionDef();
+        ɵɵelementStart(0, 'div');
+        { ɵɵprojection(1); }
+        ɵɵelementEnd();
       }
     }, 2);
     let Parent = createOnInitComponent('parent', getParentTemplate('comp'), 1, 1, [Comp]);
     let ProjectedComp = createOnInitComponent('projected', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
-        Δtext(0, 'content');
+        ɵɵtext(0, 'content');
       }
     }, 1);
 
@@ -57,7 +57,7 @@ describe('lifecycles', () => {
           events.push(`${name}${this.val}`);
         }
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: Component,
           selectors: [[name]],
           consts: consts,
@@ -72,7 +72,7 @@ describe('lifecycles', () => {
     class Directive {
       ngOnInit() { events.push('dir'); }
 
-      static ngDirectiveDef = ΔdefineDirective(
+      static ngDirectiveDef = ɵɵdefineDirective(
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
@@ -86,20 +86,20 @@ describe('lifecycles', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δcontainer(0);
+          ɵɵcontainer(0);
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(0);
+          ɵɵcontainerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = ΔembeddedViewStart(0, 1, 0);
+              let rf1 = ɵɵembeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
-                Δelement(0, 'comp');
+                ɵɵelement(0, 'comp');
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 1, 0, directives);
 
