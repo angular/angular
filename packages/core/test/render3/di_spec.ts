@@ -10,9 +10,9 @@ import {ChangeDetectorRef, Host, InjectFlags, Injector, Optional, Renderer2, Sel
 import {createLView, createNodeAtIndex, createTView} from '@angular/core/src/render3/instructions/shared';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
-import {ΔdefineComponent} from '../../src/render3/definition';
+import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, ΔdefineDirective, ΔdirectiveInject, Δelement, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation2, Δprojection, ΔprojectionDef, Δreference, Δtext, ΔtextBinding} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation2, ɵɵprojection, ɵɵprojectionDef, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {TNODE} from '../../src/render3/interfaces/injector';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
@@ -31,7 +31,7 @@ describe('di', () => {
       value = 'DirB';
       constructor() { log.push(this.value); }
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         selectors: [['', 'dirB', '']],
         type: DirB,
         factory: () => new DirB(),
@@ -49,10 +49,10 @@ describe('di', () => {
       class DirA {
         constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           selectors: [['', 'dirA', '']],
           type: DirA,
-          factory: () => new DirA(ΔdirectiveInject(DirB))
+          factory: () => new DirA(ɵɵdirectiveInject(DirB))
         });
       }
 
@@ -63,19 +63,19 @@ describe('di', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δcontainer(0);
+          ɵɵcontainer(0);
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(0);
+          ɵɵcontainerRefreshStart(0);
           {
             for (let i = 0; i < 3; i++) {
-              if (ΔembeddedViewStart(0, 1, 0)) {
-                Δelement(0, 'div', ['dirA', '', 'dirB', '']);
+              if (ɵɵembeddedViewStart(0, 1, 0)) {
+                ɵɵelement(0, 'div', ['dirA', '', 'dirB', '']);
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 1, 0, [DirA, DirB]);
 
@@ -92,11 +92,11 @@ describe('di', () => {
           this.injector = vcr.injector;
         }
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: DirA,
           selectors: [['', 'dirA', '']],
-          factory: () =>
-                       new DirA(ΔdirectiveInject(DirB), ΔdirectiveInject(ViewContainerRef as any)),
+          factory:
+              () => new DirA(ɵɵdirectiveInject(DirB), ɵɵdirectiveInject(ViewContainerRef as any)),
           exportAs: ['dirA']
         });
       }
@@ -117,45 +117,45 @@ describe('di', () => {
          */
         const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            ΔelementStart(0, 'div', ['dirB', '']);
-            { Δcontainer(1); }
-            ΔelementEnd();
+            ɵɵelementStart(0, 'div', ['dirB', '']);
+            { ɵɵcontainer(1); }
+            ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
-            ΔcontainerRefreshStart(1);
+            ɵɵcontainerRefreshStart(1);
             {
               if (!ctx.skipContent) {
-                let rf1 = ΔembeddedViewStart(0, 1, 0);
+                let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                 {
                   if (rf1 & RenderFlags.Create) {
-                    Δcontainer(0);
+                    ɵɵcontainer(0);
                   }
                   if (rf1 & RenderFlags.Update) {
-                    ΔcontainerRefreshStart(0);
+                    ɵɵcontainerRefreshStart(0);
                     {
                       if (!ctx.skipContent2) {
-                        let rf2 = ΔembeddedViewStart(0, 3, 1);
+                        let rf2 = ɵɵembeddedViewStart(0, 3, 1);
                         {
                           if (rf2 & RenderFlags.Create) {
-                            ΔelementStart(0, 'div', ['dirA', ''], ['dir', 'dirA']);
-                            { Δtext(2); }
-                            ΔelementEnd();
+                            ɵɵelementStart(0, 'div', ['dirA', ''], ['dir', 'dirA']);
+                            { ɵɵtext(2); }
+                            ɵɵelementEnd();
                           }
                           if (rf2 & RenderFlags.Update) {
-                            const dir = Δreference(1) as DirA;
-                            ΔtextBinding(2, Δbind(dir.dirB.value));
+                            const dir = ɵɵreference(1) as DirA;
+                            ɵɵtextBinding(2, ɵɵbind(dir.dirB.value));
                           }
                         }
-                        ΔembeddedViewEnd();
+                        ɵɵembeddedViewEnd();
                       }
                     }
-                    ΔcontainerRefreshEnd();
+                    ɵɵcontainerRefreshEnd();
                   }
                 }
-                ΔembeddedViewEnd();
+                ɵɵembeddedViewEnd();
               }
             }
-            ΔcontainerRefreshEnd();
+            ɵɵcontainerRefreshEnd();
           }
         }, 2, 0, [DirA, DirB]);
 
@@ -170,7 +170,7 @@ describe('di', () => {
         // TODO(issue/24571): remove '!'.
         value !: string;
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: DirB,
           selectors: [['', 'dirB', '']],
           factory: () => new DirB(),
@@ -184,10 +184,10 @@ describe('di', () => {
         class DirA {
           constructor(@Optional() public dirB: DirB|null) {}
 
-          static ngDirectiveDef = ΔdefineDirective({
+          static ngDirectiveDef = ɵɵdefineDirective({
             type: DirA,
             selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ΔdirectiveInject(DirB, InjectFlags.Optional))
+            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Optional))
           });
         }
 
@@ -198,7 +198,7 @@ describe('di', () => {
           /** <div dirA></div> */
           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δelement(0, 'div', ['dirA', '']);
+              ɵɵelement(0, 'div', ['dirA', '']);
             }
           }, 1, 0, [DirA, DirB]);
 
@@ -213,10 +213,10 @@ describe('di', () => {
         class DirA {
           constructor(@Self() public dirB: DirB) {}
 
-          static ngDirectiveDef = ΔdefineDirective({
+          static ngDirectiveDef = ɵɵdefineDirective({
             type: DirA,
             selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ΔdirectiveInject(DirB, InjectFlags.Self))
+            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Self))
           });
         }
 
@@ -229,9 +229,9 @@ describe('di', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            ΔelementStart(0, 'div', ['dirB', '']);
-            Δelement(1, 'div', ['dirA', '', 'dirC', '']);
-            ΔelementEnd();
+            ɵɵelementStart(0, 'div', ['dirB', '']);
+            ɵɵelement(1, 'div', ['dirA', '', 'dirC', '']);
+            ɵɵelementEnd();
           }
         }, 2, 0, [DirA, DirB, DirC]);
 
@@ -250,10 +250,10 @@ describe('di', () => {
         class DirA {
           constructor(@Host() public dirB: DirB) {}
 
-          static ngDirectiveDef = ΔdefineDirective({
+          static ngDirectiveDef = ɵɵdefineDirective({
             type: DirA,
             selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(ΔdirectiveInject(DirB, InjectFlags.Host))
+            factory: () => dirA = new DirA(ɵɵdirectiveInject(DirB, InjectFlags.Host))
           });
         }
 
@@ -271,27 +271,27 @@ describe('di', () => {
            */
           const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δcontainer(0);
+              ɵɵcontainer(0);
             }
             if (rf & RenderFlags.Update) {
-              ΔcontainerRefreshStart(0);
+              ɵɵcontainerRefreshStart(0);
               {
                 if (ctx.showing) {
-                  let rf1 = ΔembeddedViewStart(0, 1, 0);
+                  let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                   if (rf1 & RenderFlags.Create) {
-                    Δelement(0, 'div', ['dirA', '']);
+                    ɵɵelement(0, 'div', ['dirA', '']);
                   }
-                  ΔembeddedViewEnd();
+                  ɵɵembeddedViewEnd();
                 }
               }
-              ΔcontainerRefreshEnd();
+              ɵɵcontainerRefreshEnd();
             }
           }, 1, 0, [DirA, DirB]);
 
           /* <comp dirB></comp> */
           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δelement(0, 'comp', ['dirB', '']);
+              ɵɵelement(0, 'comp', ['dirB', '']);
             }
             if (rf & RenderFlags.Update) {
               comp = getDirectiveOnNode(0);
@@ -318,16 +318,16 @@ describe('di', () => {
       class MyComp {
         constructor(public cdr: ChangeDetectorRef) {}
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: () => comp = new MyComp(ΔdirectiveInject(ChangeDetectorRef as any)),
+          factory: () => comp = new MyComp(ɵɵdirectiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 0,
           template: function(rf: RenderFlags, ctx: MyComp) {
             if (rf & RenderFlags.Create) {
-              ΔprojectionDef();
-              Δprojection(0);
+              ɵɵprojectionDef();
+              ɵɵprojection(0);
             }
           }
         });
@@ -338,10 +338,10 @@ describe('di', () => {
 
         constructor(public cdr: ChangeDetectorRef) { this.value = (cdr.constructor as any).name; }
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory: () => dir = new Directive(ΔdirectiveInject(ChangeDetectorRef as any)),
+          factory: () => dir = new Directive(ɵɵdirectiveInject(ChangeDetectorRef as any)),
           exportAs: ['dir']
         });
       }
@@ -349,11 +349,11 @@ describe('di', () => {
       class DirectiveSameInstance {
         constructor(public cdr: ChangeDetectorRef) {}
 
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: DirectiveSameInstance,
           selectors: [['', 'dirSame', '']],
           factory: () => dirSameInstance =
-                       new DirectiveSameInstance(ΔdirectiveInject(ChangeDetectorRef as any))
+                       new DirectiveSameInstance(ɵɵdirectiveInject(ChangeDetectorRef as any))
         });
       }
 
@@ -370,10 +370,10 @@ describe('di', () => {
 
           constructor(public cdr: ChangeDetectorRef) {}
 
-          static ngComponentDef = ΔdefineComponent({
+          static ngComponentDef = ɵɵdefineComponent({
             type: MyApp,
             selectors: [['my-app']],
-            factory: () => new MyApp(ΔdirectiveInject(ChangeDetectorRef as any)),
+            factory: () => new MyApp(ɵɵdirectiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 0,
             /**
@@ -383,26 +383,26 @@ describe('di', () => {
              */
             template: function(rf: RenderFlags, ctx: MyApp) {
               if (rf & RenderFlags.Create) {
-                Δcontainer(0);
+                ɵɵcontainer(0);
               }
               if (rf & RenderFlags.Update) {
-                ΔcontainerRefreshStart(0);
+                ɵɵcontainerRefreshStart(0);
                 {
                   if (ctx.showing) {
-                    let rf1 = ΔembeddedViewStart(0, 3, 1);
+                    let rf1 = ɵɵembeddedViewStart(0, 3, 1);
                     if (rf1 & RenderFlags.Create) {
-                      ΔelementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-                      { Δtext(2); }
-                      ΔelementEnd();
+                      ɵɵelementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
+                      { ɵɵtext(2); }
+                      ɵɵelementEnd();
                     }
                     if (rf1 & RenderFlags.Update) {
-                      const tmp = Δreference(1) as any;
-                      ΔtextBinding(2, Δbind(tmp.value));
+                      const tmp = ɵɵreference(1) as any;
+                      ɵɵtextBinding(2, ɵɵbind(tmp.value));
                     }
                   }
-                  ΔembeddedViewEnd();
+                  ɵɵembeddedViewEnd();
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             },
             directives: directives
@@ -424,15 +424,15 @@ describe('di', () => {
     class MyComp {
       constructor(public renderer: Renderer2) {}
 
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
-        factory: () => new MyComp(ΔdirectiveInject(Renderer2 as any)),
+        factory: () => new MyComp(ɵɵdirectiveInject(Renderer2 as any)),
         consts: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {
-            Δtext(0, 'Foo');
+            ɵɵtext(0, 'Foo');
           }
         }
       });
@@ -448,7 +448,7 @@ describe('di', () => {
        () => { expect(() => new ComponentFixture(MyComp)).toThrow(); });
   });
 
-  describe('Δinject', () => {
+  describe('ɵɵinject', () => {
     describe('bloom filter', () => {
       let mockTView: any;
       beforeEach(() => {
@@ -535,10 +535,10 @@ describe('di', () => {
       class ChildDirective {
         value: string;
         constructor(public parent: any) { this.value = (parent.constructor as any).name; }
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           type: ChildDirective,
           selectors: [['', 'childDir', '']],
-          factory: () => new ChildDirective(ΔdirectiveInject(ParentDirective)),
+          factory: () => new ChildDirective(ɵɵdirectiveInject(ParentDirective)),
           exportAs: ['childDir']
         });
       }
@@ -546,11 +546,11 @@ describe('di', () => {
       class Child2Directive {
         value: boolean;
         constructor(parent: any, child: ChildDirective) { this.value = parent === child.parent; }
-        static ngDirectiveDef = ΔdefineDirective({
+        static ngDirectiveDef = ɵɵdefineDirective({
           selectors: [['', 'child2Dir', '']],
           type: Child2Directive,
           factory: () => new Child2Directive(
-                       ΔdirectiveInject(ParentDirective), ΔdirectiveInject(ChildDirective)),
+                       ɵɵdirectiveInject(ParentDirective), ɵɵdirectiveInject(ChildDirective)),
           exportAs: ['child2Dir']
         });
       }
@@ -566,29 +566,29 @@ describe('di', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div', ['parentDir', '']);
-          { Δcontainer(1); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'div', ['parentDir', '']);
+          { ɵɵcontainer(1); }
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(1);
+          ɵɵcontainerRefreshStart(1);
           {
-            let rf1 = ΔembeddedViewStart(0, 4, 2);
+            let rf1 = ɵɵembeddedViewStart(0, 4, 2);
             if (rf1 & RenderFlags.Create) {
-              ΔelementStart(
+              ɵɵelementStart(
                   0, 'span', ['childDir', '', 'child2Dir', ''],
                   ['child1', 'childDir', 'child2', 'child2Dir']);
-              { Δtext(3); }
-              ΔelementEnd();
+              { ɵɵtext(3); }
+              ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              const tmp1 = Δreference(1) as any;
-              const tmp2 = Δreference(2) as any;
-              ΔtextBinding(3, Δinterpolation2('', tmp1.value, '-', tmp2.value, ''));
+              const tmp1 = ɵɵreference(1) as any;
+              const tmp2 = ɵɵreference(2) as any;
+              ɵɵtextBinding(3, ɵɵinterpolation2('', tmp1.value, '-', tmp2.value, ''));
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 2, 0, [ChildDirective, Child2Directive, ParentDirective]);
 

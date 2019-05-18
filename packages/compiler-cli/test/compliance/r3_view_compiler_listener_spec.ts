@@ -45,12 +45,12 @@ describe('compiler compliance: listen()', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "div", $e0_attrs$);
-            $r3$.Δlistener("click", function MyComponent_Template_div_click_0_listener($event) {
+            $r3$.ɵɵelementStart(0, "div", $e0_attrs$);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_div_click_0_listener($event) {
               ctx.onClick($event);
               return 1 == 2;
             });
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementEnd();
           }
         }
         `;
@@ -91,11 +91,11 @@ describe('compiler compliance: listen()', () => {
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ΔelementStart(0, "my-app", $e0_attrs$);
-            $r3$.Δlistener("click", function MyComponent_Template_my_app_click_0_listener($event) {
+            $r3$.ɵɵelementStart(0, "my-app", $e0_attrs$);
+            $r3$.ɵɵlistener("click", function MyComponent_Template_my_app_click_0_listener($event) {
               return ctx.onClick($event);
             });
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementEnd();
           }
         }
         `;
@@ -138,33 +138,33 @@ describe('compiler compliance: listen()', () => {
 
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
-            const $s$ = $r3$.ΔgetCurrentView();
-            $r3$.ΔelementStart(0, "div");
-            $r3$.ΔelementStart(1, "div", $e_attrs$);
-            $r3$.Δlistener("click", function MyComponent_div_0_Template_div_click_1_listener($event) {
-              $r3$.ΔrestoreView($s$);
-              const $comp$ = $r3$.ΔnextContext();
+            const $s$ = $r3$.ɵɵgetCurrentView();
+            $r3$.ɵɵelementStart(0, "div");
+            $r3$.ɵɵelementStart(1, "div", $e_attrs$);
+            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_1_listener($event) {
+              $r3$.ɵɵrestoreView($s$);
+              const $comp$ = $r3$.ɵɵnextContext();
               return $comp$.onClick($comp$.foo);
             });
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementStart(2, "button", $e_attrs$);
-            $r3$.Δlistener("click", function MyComponent_div_0_Template_button_click_2_listener($event) {
-              $r3$.ΔrestoreView($s$);
-              const $comp2$ = $r3$.ΔnextContext();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementStart(2, "button", $e_attrs$);
+            $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_button_click_2_listener($event) {
+              $r3$.ɵɵrestoreView($s$);
+              const $comp2$ = $r3$.ɵɵnextContext();
               return $comp2$.onClick2($comp2$.bar);
             });
-            $r3$.ΔelementEnd();
-            $r3$.ΔelementEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
           }
         }
         // ...
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.Δtemplate(0, MyComponent_div_0_Template, 3, 0, "div", $c0$);
+            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", $c0$);
           }
           if (rf & 2) {
-            $i0$.Δselect(0);
-            $i0$.Δproperty("ngIf", ctx.showing);
+            $i0$.ɵɵselect(0);
+            $i0$.ɵɵproperty("ngIf", ctx.showing);
           }
         }
         `;
@@ -199,7 +199,7 @@ describe('compiler compliance: listen()', () => {
         const $e0_attrs$ = [${AttributeMarker.Bindings}, "click"];
         const $e2_refs$ = ["user", ""];
         …
-        MyComponent.ngComponentDef = $r3$.ΔdefineComponent({
+        MyComponent.ngComponentDef = $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
@@ -207,16 +207,16 @@ describe('compiler compliance: listen()', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              const $s$ = $r3$.ΔgetCurrentView();
-              $r3$.ΔelementStart(0, "button", $e0_attrs$);
-                $r3$.Δlistener("click", function MyComponent_Template_button_click_0_listener($event) {
-                   $r3$.ΔrestoreView($s$);
-                   const $user$ = $r3$.Δreference(3);
+              const $s$ = $r3$.ɵɵgetCurrentView();
+              $r3$.ɵɵelementStart(0, "button", $e0_attrs$);
+                $r3$.ɵɵlistener("click", function MyComponent_Template_button_click_0_listener($event) {
+                   $r3$.ɵɵrestoreView($s$);
+                   const $user$ = $r3$.ɵɵreference(3);
                    return ctx.onClick($user$.value);
                 });
-                $r3$.Δtext(1, "Save");
-              $r3$.ΔelementEnd();
-              $r3$.Δelement(2, "input", null, $e2_refs$);
+                $r3$.ɵɵtext(1, "Save");
+              $r3$.ɵɵelementEnd();
+              $r3$.ɵɵelement(2, "input", null, $e2_refs$);
             }
           },
           encapsulation: 2

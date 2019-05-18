@@ -23,17 +23,17 @@ describe('template source-mapping', () => {
       it('should map simple element with content', () => {
         const mappings = compileAndMap('<h1>Heading 1</h1>');
         expect(mappings).toContain(
-            {source: '<h1>', generated: 'i0.ΔelementStart(0, "h1")', sourceUrl: '../test.ts'});
+            {source: '<h1>', generated: 'i0.ɵɵelementStart(0, "h1")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: 'Heading 1', generated: 'i0.Δtext(1, "Heading 1")', sourceUrl: '../test.ts'});
+            {source: 'Heading 1', generated: 'i0.ɵɵtext(1, "Heading 1")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '</h1>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</h1>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map void element', () => {
         const mappings = compileAndMap('<hr>');
         expect(mappings).toContain(
-            {source: '<hr>', generated: 'i0.Δelement(0, "hr")', sourceUrl: '../test.ts'});
+            {source: '<hr>', generated: 'i0.ɵɵelement(0, "hr")', sourceUrl: '../test.ts'});
       });
     });
 
@@ -41,40 +41,40 @@ describe('template source-mapping', () => {
       it('should map a mix of interpolated and static content', () => {
         const mappings = compileAndMap('<h3>Hello {{ name }}</h3>');
         expect(mappings).toContain(
-            {source: '<h3>', generated: 'i0.ΔelementStart(0, "h3")', sourceUrl: '../test.ts'});
+            {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: 'Hello {{ name }}',
-          generated: 'i0.ΔtextBinding(1, i0.Δinterpolation1("Hello ", ctx.name, ""))',
+          generated: 'i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1("Hello ", ctx.name, ""))',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: '</h3>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map a complex interpolated expression', () => {
         const mappings = compileAndMap('<h2>{{ greeting + " " + name }}</h2>');
         expect(mappings).toContain(
-            {source: '<h2>', generated: 'i0.ΔelementStart(0, "h2")', sourceUrl: '../test.ts'});
+            {source: '<h2>', generated: 'i0.ɵɵelementStart(0, "h2")', sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: '{{ greeting + " " + name }}',
           generated:
-              'i0.ΔtextBinding(1, i0.Δinterpolation1("", ctx.greeting + " " + ctx.name, ""))',
+              'i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1("", ctx.greeting + " " + ctx.name, ""))',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: '</h2>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</h2>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map interpolated properties', () => {
         const mappings = compileAndMap('<div id="{{name}}"></div>');
         expect(mappings).toContain({
           source: '<div id="{{name}}"></div>',
-          generated: 'i0.Δelement(0, "div", _c0)',
+          generated: 'i0.ɵɵelement(0, "div", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: 'id="{{name}}"',
-          generated: 'i0.ΔpropertyInterpolate("id", ctx.name)',
+          generated: 'i0.ɵɵpropertyInterpolate("id", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
@@ -82,15 +82,15 @@ describe('template source-mapping', () => {
       it('should map interpolation with pipe', () => {
         const mappings = compileAndMap('<div>{{200.3 | percent : 2 }}</div>');
         expect(mappings).toContain(
-            {source: '<div>', generated: 'i0.ΔelementStart(0, "div")', sourceUrl: '../test.ts'});
+            {source: '<div>', generated: 'i0.ɵɵelementStart(0, "div")', sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: '{{200.3 | percent : 2 }}',
           generated:
-              'i0.ΔtextBinding(1, i0.Δinterpolation1("", i0.ΔpipeBind2(2, 1, 200.3, 2), ""))',
+              'i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1("", i0.ɵɵpipeBind2(2, 1, 200.3, 2), ""))',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
     });
 
@@ -99,12 +99,12 @@ describe('template source-mapping', () => {
         const mappings = compileAndMap('<div [attr]="name"></div>');
         expect(mappings).toContain({
           source: '<div [attr]="name"></div>',
-          generated: 'i0.Δelement(0, "div", _c0)',
+          generated: 'i0.ɵɵelement(0, "div", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: '[attr]="name"',
-          generated: 'i0.Δproperty("attr", ctx.name)',
+          generated: 'i0.ɵɵproperty("attr", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
@@ -114,12 +114,12 @@ describe('template source-mapping', () => {
 
         expect(mappings).toContain({
           source: '<div [attr]="greeting + name"></div>',
-          generated: 'i0.Δelement(0, "div", _c0)',
+          generated: 'i0.ɵɵelement(0, "div", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: '[attr]="greeting + name"',
-          generated: 'i0.Δproperty("attr", ctx.greeting + ctx.name)',
+          generated: 'i0.ɵɵproperty("attr", ctx.greeting + ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
@@ -128,12 +128,12 @@ describe('template source-mapping', () => {
         const mappings = compileAndMap('<div bind-attr="name"></div>');
         expect(mappings).toContain({
           source: '<div bind-attr="name"></div>',
-          generated: 'i0.Δelement(0, "div", _c0)',
+          generated: 'i0.ɵɵelement(0, "div", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: 'bind-attr="name"',
-          generated: 'i0.Δproperty("attr", ctx.name)',
+          generated: 'i0.ɵɵproperty("attr", ctx.name)',
           sourceUrl: '../test.ts'
         });
       });
@@ -142,15 +142,15 @@ describe('template source-mapping', () => {
         const mappings = compileAndMap('<button (click)="doSomething()">Do it</button>');
         expect(mappings).toContain({
           source: '<button (click)="doSomething()">',
-          generated: 'i0.ΔelementStart(0, "button", _c0)',
+          generated: 'i0.ɵɵelementStart(0, "button", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: 'Do it', generated: 'i0.Δtext(1, "Do it")', sourceUrl: '../test.ts'});
+            {source: 'Do it', generated: 'i0.ɵɵtext(1, "Do it")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
             {source: 'doSomething()', generated: 'ctx.doSomething()', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '</button>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map a complex output binding expression', () => {
@@ -158,11 +158,11 @@ describe('template source-mapping', () => {
             compileAndMap(`<button (click)="items.push('item' + items.length)">Add Item</button>`);
         expect(mappings).toContain({
           source: `<button (click)="items.push('item' + items.length)">`,
-          generated: 'i0.ΔelementStart(0, "button", _c0)',
+          generated: 'i0.ɵɵelementStart(0, "button", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: 'Add Item', generated: 'i0.Δtext(1, "Add Item")', sourceUrl: '../test.ts'});
+            {source: 'Add Item', generated: 'i0.ɵɵtext(1, "Add Item")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
             {source: 'items.push(', generated: 'ctx.items.push(', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
@@ -173,41 +173,41 @@ describe('template source-mapping', () => {
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: '</button>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map a longhand output binding expression', () => {
         const mappings = compileAndMap('<button on-click="doSomething()">Do it</button>');
         expect(mappings).toContain({
           source: '<button on-click="doSomething()">',
-          generated: 'i0.ΔelementStart(0, "button", _c0)',
+          generated: 'i0.ɵɵelementStart(0, "button", _c0)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: 'Do it', generated: 'i0.Δtext(1, "Do it")', sourceUrl: '../test.ts'});
+            {source: 'Do it', generated: 'i0.ɵɵtext(1, "Do it")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
             {source: 'doSomething()', generated: 'ctx.doSomething()', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '</button>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</button>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
 
       it('should map a two-way binding expression', () => {
         const mappings = compileAndMap('Name: <input [(ngModel)]="name">');
         expect(mappings).toContain({
           source: '<input [(ngModel)]="name">',
-          generated: 'i0.ΔelementStart(1, "input", _c0)',
+          generated: 'i0.ɵɵelementStart(1, "input", _c0)',
           sourceUrl: '../test.ts'
         });
         // TODO: improve mappings here
         expect(mappings).toContain({
           source: '[(ngModel)]="name"',
           generated:
-              'i0.Δlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
+              'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: '<input [(ngModel)]="name">',
-          generated: 'i0.ΔelementEnd()',
+          generated: 'i0.ɵɵelementEnd()',
           sourceUrl: '../test.ts'
         });
       });
@@ -216,19 +216,19 @@ describe('template source-mapping', () => {
         const mappings = compileAndMap('Name: <input bindon-ngModel="name">');
         expect(mappings).toContain({
           source: '<input bindon-ngModel="name">',
-          generated: 'i0.ΔelementStart(1, "input", _c0)',
+          generated: 'i0.ɵɵelementStart(1, "input", _c0)',
           sourceUrl: '../test.ts'
         });
         // TODO: improve mappings here
         expect(mappings).toContain({
           source: 'bindon-ngModel="name"',
           generated:
-              'i0.Δlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
+              'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain({
           source: '<input bindon-ngModel="name">',
-          generated: 'i0.ΔelementEnd()',
+          generated: 'i0.ɵɵelementEnd()',
           sourceUrl: '../test.ts'
         });
       });
@@ -237,17 +237,17 @@ describe('template source-mapping', () => {
         const mappings = compileAndMap('<div [class.initial]="isInitial">Message</div>');
         expect(mappings).toContain({
           source: '<div [class.initial]="isInitial">',
-          generated: 'i0.ΔelementStart(0, "div")',
+          generated: 'i0.ɵɵelementStart(0, "div")',
           sourceUrl: '../test.ts'
         });
 
         // TODO: Add better mappings for binding
 
         expect(mappings).toContain(
-            {source: 'Message', generated: 'i0.Δtext(1, "Message")', sourceUrl: '../test.ts'});
+            {source: 'Message', generated: 'i0.ɵɵtext(1, "Message")', sourceUrl: '../test.ts'});
 
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
     });
 
@@ -257,20 +257,20 @@ describe('template source-mapping', () => {
 
         expect(mappings).toContain({
           source: '<div *ngIf="showMessage()">',
-          generated: 'i0.ΔelementStart(0, "div")',
+          generated: 'i0.ɵɵelementStart(0, "div")',
           sourceUrl: '../test.ts'
         });
 
         // TODO - map the bindings better
 
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
 
         // TODO: the `ctx_r...` appears to be dependent upon previous tests!!!
 
         // expect(mappings).toContain({
         //   source: '{{ name }}',
-        //   generated: 'i0.ΔtextBinding(1, i0.Δinterpolation1("", ctx_r0.name, ""))',
+        //   generated: 'i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1("", ctx_r0.name, ""))',
         //   sourceUrl: '../test.ts'
         // });
       });
@@ -283,18 +283,18 @@ describe('template source-mapping', () => {
             `</ng-template>`);
 
         expect(mappings).toContain(
-            {source: '<div>', generated: 'i0.ΔelementStart(0, "div")', sourceUrl: '../test.ts'});
+            {source: '<div>', generated: 'i0.ɵɵelementStart(0, "div")', sourceUrl: '../test.ts'});
 
         // TODO - map the bindings better
 
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
 
         // TODO: the `ctx_r...` appears to be dependent upon previous tests!!!
 
         // expect(mappings).toContain({
         //   source: '{{ name }}',
-        //   generated: 'i0.ΔtextBinding(1, i0.Δinterpolation1("", ctx_r0.name, ""))',
+        //   generated: 'i0.ɵɵtextBinding(1, i0.ɵɵinterpolation1("", ctx_r0.name, ""))',
         //   sourceUrl: '../test.ts'
         // });
       });
@@ -305,14 +305,14 @@ describe('template source-mapping', () => {
 
         expect(mappings).toContain({
           source: '<div *ngFor="let item of items; index as i; trackBy: trackByFn">',
-          generated: 'i0.ΔelementStart(0, "div")',
+          generated: 'i0.ɵɵelementStart(0, "div")',
           sourceUrl: '../test.ts'
         });
 
         // TODO - map the bindings better
 
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
 
       });
 
@@ -331,20 +331,20 @@ describe('template source-mapping', () => {
             `<div><ng-content></ng-content></div>`);
 
         expect(mappings).toContain(
-            {source: '<h3>', generated: 'i0.ΔelementStart(0, "h3")', sourceUrl: '../test.ts'});
+            {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: '<ng-content select="title">',
-          generated: 'i0.Δprojection(1, 1)',
+          generated: 'i0.ɵɵprojection(1, 1)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
-            {source: '</h3>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</h3>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '<div>', generated: 'i0.ΔelementStart(2, "div")', sourceUrl: '../test.ts'});
+            {source: '<div>', generated: 'i0.ɵɵelementStart(2, "div")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '<ng-content>', generated: 'i0.Δprojection(3)', sourceUrl: '../test.ts'});
+            {source: '<ng-content>', generated: 'i0.ɵɵprojection(3)', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '</div>', generated: 'i0.ΔelementEnd()', sourceUrl: '../test.ts'});
+            {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
     });
 
@@ -353,24 +353,24 @@ describe('template source-mapping', () => {
 
       // Creation mode
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain({
-        generated: 'i0.Δtext(1, "this is a test")',
+        generated: 'i0.ɵɵtext(1, "this is a test")',
         source: 'this is a test',
         sourceUrl: '../test.ts'
       });
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.Δtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
 
       // Update mode
       expect(mappings).toContain({
-        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
+        generated: 'i0.ɵɵtextBinding(3, i0.ɵɵinterpolation1("", 1 + 2, ""))',
         source: '{{ 1 + 2 }}',
         sourceUrl: '../test.ts'
       });
@@ -381,24 +381,24 @@ describe('template source-mapping', () => {
 
       // Creation mode
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementStart(0, "div")', source: '<div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain({
-        generated: 'i0.Δtext(1, "this is a test")',
+        generated: 'i0.ɵɵtext(1, "this is a test")',
         source: 'this is a test',
         sourceUrl: '../test.ts'
       });
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementStart(2, "div")', source: '<div>', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.Δtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../test.ts'});
       expect(mappings).toContain(
-          {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
+          {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../test.ts'});
 
       // Update mode
       expect(mappings).toContain({
-        generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
+        generated: 'i0.ɵɵtextBinding(3, i0.ɵɵinterpolation1("", 1 + 2, ""))',
         source: '{{ 1 + 2 }}',
         sourceUrl: '../test.ts'
       });
@@ -410,7 +410,7 @@ describe('template source-mapping', () => {
          const mappings = compileAndMap('<div class=\\"some-class\\">this is a test</div>');
 
          expect(mappings).toContain({
-           generated: 'i0.ΔelementStart(0, "div", _c0)',
+           generated: 'i0.ɵɵelementStart(0, "div", _c0)',
            source: '<div class=\\"some-class\\">',
            sourceUrl: '../test.ts'
          });
@@ -429,30 +429,30 @@ describe('template source-mapping', () => {
 
         // Creation mode
         expect(mappings).toContain({
-          generated: 'i0.ΔelementStart(0, "div")',
+          generated: 'i0.ɵɵelementStart(0, "div")',
           source: '<div>',
           sourceUrl: '../dir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.Δtext(1, "this is a test")',
+          generated: 'i0.ɵɵtext(1, "this is a test")',
           source: 'this is a test',
           sourceUrl: '../dir/test.html'
         });
         expect(mappings).toContain(
-            {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
+            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
         expect(mappings).toContain({
-          generated: 'i0.ΔelementStart(2, "div")',
+          generated: 'i0.ɵɵelementStart(2, "div")',
           source: '<div>',
           sourceUrl: '../dir/test.html'
         });
         expect(mappings).toContain(
-            {generated: 'i0.Δtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../dir/test.html'});
+            {generated: 'i0.ɵɵtext(3)', source: '{{ 1 + 2 }}', sourceUrl: '../dir/test.html'});
         expect(mappings).toContain(
-            {generated: 'i0.ΔelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
+            {generated: 'i0.ɵɵelementEnd()', source: '</div>', sourceUrl: '../dir/test.html'});
 
         // Update mode
         expect(mappings).toContain({
-          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
+          generated: 'i0.ɵɵtextBinding(3, i0.ɵɵinterpolation1("", 1 + 2, ""))',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../dir/test.html'
         });
@@ -464,39 +464,39 @@ describe('template source-mapping', () => {
 
         // Creation mode
         expect(mappings).toContain({
-          generated: 'i0.ΔelementStart(0, "div")',
+          generated: 'i0.ɵɵelementStart(0, "div")',
           source: '<div>',
           sourceUrl: '../extraRootDir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.Δtext(1, "this is a test")',
+          generated: 'i0.ɵɵtext(1, "this is a test")',
           source: 'this is a test',
           sourceUrl: '../extraRootDir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.ΔelementEnd()',
+          generated: 'i0.ɵɵelementEnd()',
           source: '</div>',
           sourceUrl: '../extraRootDir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.ΔelementStart(2, "div")',
+          generated: 'i0.ɵɵelementStart(2, "div")',
           source: '<div>',
           sourceUrl: '../extraRootDir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.Δtext(3)',
+          generated: 'i0.ɵɵtext(3)',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../extraRootDir/test.html'
         });
         expect(mappings).toContain({
-          generated: 'i0.ΔelementEnd()',
+          generated: 'i0.ɵɵelementEnd()',
           source: '</div>',
           sourceUrl: '../extraRootDir/test.html'
         });
 
         // Update mode
         expect(mappings).toContain({
-          generated: 'i0.ΔtextBinding(3, i0.Δinterpolation1("", 1 + 2, ""))',
+          generated: 'i0.ɵɵtextBinding(3, i0.ɵɵinterpolation1("", 1 + 2, ""))',
           source: '{{ 1 + 2 }}',
           sourceUrl: '../extraRootDir/test.html'
         });

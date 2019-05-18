@@ -107,7 +107,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   }
 
   // If requested to emit scope information inline, pass the declarations, imports and exports to
-  // the `ΔdefineNgModule` call. The JIT compilation uses this.
+  // the `ɵɵdefineNgModule` call. The JIT compilation uses this.
   if (emitInline) {
     if (declarations.length) {
       definitionMap.declarations = refsToArray(declarations, containsForwardDecls);
@@ -122,7 +122,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     }
   }
 
-  // If not emitting inline, the scope information is not passed into `ΔdefineNgModule` as it would
+  // If not emitting inline, the scope information is not passed into `ɵɵdefineNgModule` as it would
   // prevent tree-shaking of the declarations, imports and exports references.
   else {
     const setNgModuleScopeCall = generateSetNgModuleScopeCall(meta);
@@ -150,7 +150,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 }
 
 /**
- * Generates a function call to `ΔsetNgModuleScope` with all necessary information so that the
+ * Generates a function call to `ɵɵsetNgModuleScope` with all necessary information so that the
  * transitive module scope can be computed during runtime in JIT mode. This call is marked pure
  * such that the references to declarations, imports and exports may be elided causing these
  * symbols to become tree-shakeable.

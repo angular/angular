@@ -10,7 +10,7 @@ import {NgModuleRef} from '@angular/core';
 import {InjectFlags, inject} from '@angular/core/src/di';
 import {Injector} from '@angular/core/src/di/injector';
 import {INJECTOR} from '@angular/core/src/di/injector_compatibility';
-import {ΔInjectableDef, ΔdefineInjectable} from '@angular/core/src/di/interface/defs';
+import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';
@@ -27,14 +27,14 @@ class MyChildModule {}
 class NotMyModule {}
 
 class Bar {
-  static ngInjectableDef: ΔInjectableDef<Bar> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
     factory: () => new Bar(),
     providedIn: MyModule,
   });
 }
 
 class Baz {
-  static ngInjectableDef: ΔInjectableDef<Baz> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<Baz> = ɵɵdefineInjectable({
     factory: () => new Baz(),
     providedIn: NotMyModule,
   });
@@ -43,7 +43,7 @@ class Baz {
 class HasNormalDep {
   constructor(public foo: Foo) {}
 
-  static ngInjectableDef: ΔInjectableDef<HasNormalDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<HasNormalDep> = ɵɵdefineInjectable({
     factory: () => new HasNormalDep(inject(Foo)),
     providedIn: MyModule,
   });
@@ -52,7 +52,7 @@ class HasNormalDep {
 class HasDefinedDep {
   constructor(public bar: Bar) {}
 
-  static ngInjectableDef: ΔInjectableDef<HasDefinedDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<HasDefinedDep> = ɵɵdefineInjectable({
     factory: () => new HasDefinedDep(inject(Bar)),
     providedIn: MyModule,
   });
@@ -61,14 +61,14 @@ class HasDefinedDep {
 class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
-  static ngInjectableDef: ΔInjectableDef<HasOptionalDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<HasOptionalDep> = ɵɵdefineInjectable({
     factory: () => new HasOptionalDep(inject(Baz, InjectFlags.Optional)),
     providedIn: MyModule,
   });
 }
 
 class ChildDep {
-  static ngInjectableDef: ΔInjectableDef<ChildDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<ChildDep> = ɵɵdefineInjectable({
     factory: () => new ChildDep(),
     providedIn: MyChildModule,
   });
@@ -76,7 +76,7 @@ class ChildDep {
 
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
-  static ngInjectableDef: ΔInjectableDef<FromChildWithOptionalDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<FromChildWithOptionalDep> = ɵɵdefineInjectable({
     factory: () => new FromChildWithOptionalDep(inject(Baz, InjectFlags.Default)),
     providedIn: MyChildModule,
   });
@@ -86,7 +86,7 @@ class FromChildWithSkipSelfDep {
   constructor(
       public skipSelfChildDep: ChildDep|null, public selfChildDep: ChildDep|null,
       public optionalSelfBar: Bar|null) {}
-  static ngInjectableDef: ΔInjectableDef<FromChildWithSkipSelfDep> = ΔdefineInjectable({
+  static ngInjectableDef: ɵɵInjectableDef<FromChildWithSkipSelfDep> = ɵɵdefineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
                  inject(ChildDep, InjectFlags.Self),
@@ -209,7 +209,7 @@ describe('NgModuleRef_ injector', () => {
 
       ngOnDestroy(): void { Service.destroyed++; }
 
-      static ngInjectableDef: ΔInjectableDef<Service> = ΔdefineInjectable({
+      static ngInjectableDef: ɵɵInjectableDef<Service> = ɵɵdefineInjectable({
         factory: () => new Service(),
         providedIn: 'root',
       });

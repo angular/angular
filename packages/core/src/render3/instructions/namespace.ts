@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ΔnamespaceHTML, ΔnamespaceMathML, ΔnamespaceSVG} from '../state';
+export {ɵɵnamespaceHTML, ɵɵnamespaceMathML, ɵɵnamespaceSVG} from '../state';
