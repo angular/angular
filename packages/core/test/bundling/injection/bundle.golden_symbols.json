@@ -156,6 +156,9 @@
     "name": "isFactoryProvider"
   },
   {
+    "name": "isForwardRef"
+  },
+  {
     "name": "isTypeProvider"
   },
   {
