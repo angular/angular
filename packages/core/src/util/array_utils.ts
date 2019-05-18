@@ -21,7 +21,7 @@ export function addAllToArray(items: any[], arr: any[]) {
 /**
  * A stack used by flatten to prevent recursive implementation.
  */
-const flattenQueue: (any[] | number)[] = [];
+const flattenQueue: (any[] | number | null)[] = [];
 
 /**
  * Flattens an array in non-recursive way. Input arrays are not modified.
@@ -59,6 +59,7 @@ export function flatten(list: any[]): any[] {
       // There are items in the flattenQueue which need to be processed.
       // Pop them.
       list = flattenQueue[--queueIndex] as any[];
+      flattenQueue[queueIndex] = null;
       length = list.length;
       index = flattenQueue[--queueIndex] as number;
       // The array is not cleared because doing so would take extra time.
