@@ -8,11 +8,11 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {ΔdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, Δbind, ΔclassMap, Δelement, ΔelementAttribute, ΔelementEnd, ΔelementProperty, ΔelementStart, Δinterpolation1, Δproperty, Δselect, ΔstyleMap, ΔstyleProp, Δstyling, ΔstylingApply, Δtemplate, Δtext, ΔtextBinding} from '../../src/render3/index';
+import {ɵɵdefineComponent} from '../../src/render3/definition';
+import {RenderFlags, ɵɵbind, ɵɵclassMap, ɵɵelement, ɵɵelementAttribute, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
-import {ΔdefaultStyleSanitizer, ΔsanitizeHtml, ΔsanitizeResourceUrl, ΔsanitizeScript, ΔsanitizeStyle, ΔsanitizeUrl} from '../../src/sanitization/sanitization';
+import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
@@ -21,9 +21,9 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('instructions', () => {
   function createAnchor() {
-    ΔelementStart(0, 'a');
-    Δstyling();
-    ΔelementEnd();
+    ɵɵelementStart(0, 'a');
+    ɵɵstyling();
+    ɵɵelementEnd();
   }
 
   function createDiv(
@@ -37,20 +37,20 @@ describe('instructions', () => {
     if (initialStyles) {
       attrs.push(AttributeMarker.Styles, ...initialStyles);
     }
-    ΔelementStart(0, 'div', attrs);
-    Δstyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
-    ΔelementEnd();
+    ɵɵelementStart(0, 'div', attrs);
+    ɵɵstyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
+    ɵɵelementEnd();
   }
 
-  function createScript() { Δelement(0, 'script'); }
+  function createScript() { ɵɵelement(0, 'script'); }
 
-  describe('Δselect', () => {
+  describe('ɵɵselect', () => {
     it('should error in DevMode if index is out of range', () => {
       // Only one constant added, meaning only index `0` is valid.
       const t = new TemplateFixture(createDiv, () => {}, 1, 0);
-      expect(() => { t.update(() => { Δselect(-1); }); }).toThrow();
-      expect(() => { t.update(() => { Δselect(1); }); }).toThrow();
-      expect(() => { t.update(() => { Δselect(0); }); }).not.toThrow();
+      expect(() => { t.update(() => { ɵɵselect(-1); }); }).toThrow();
+      expect(() => { t.update(() => { ɵɵselect(1); }); }).toThrow();
+      expect(() => { t.update(() => { ɵɵselect(0); }); }).not.toThrow();
     });
   });
 
@@ -58,10 +58,10 @@ describe('instructions', () => {
     it('should update bindings when value changes with the correct perf counters', () => {
       const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
 
-      t.update(() => ΔelementProperty(0, 'title', Δbind('Hello')));
+      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('Hello')));
       expect(t.html).toEqual('<a title="Hello"></a>');
 
-      t.update(() => ΔelementProperty(0, 'title', Δbind('World')));
+      t.update(() => ɵɵelementProperty(0, 'title', ɵɵbind('World')));
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -74,7 +74,7 @@ describe('instructions', () => {
 
     it('should not update bindings when value does not change, with the correct perf counters',
        () => {
-         const idempotentUpdate = () => ΔelementProperty(0, 'title', Δbind('Hello'));
+         const idempotentUpdate = () => ɵɵelementProperty(0, 'title', ɵɵbind('Hello'));
          const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
 
          t.update();
@@ -95,7 +95,7 @@ describe('instructions', () => {
   describe('element', () => {
     it('should create an element with the correct perf counters', () => {
       const t = new TemplateFixture(() => {
-        Δelement(0, 'div', ['id', 'test', 'title', 'Hello']);
+        ɵɵelement(0, 'div', ['id', 'test', 'title', 'Hello']);
       }, () => {}, 1);
 
       const div = (t.hostElement as HTMLElement).querySelector('div') !;
@@ -114,12 +114,12 @@ describe('instructions', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1);
 
-      t.update(() => ΔelementAttribute(0, 'title', 'javascript:true', ΔsanitizeUrl));
+      t.update(() => ɵɵelementAttribute(0, 'title', 'javascript:true', ɵɵsanitizeUrl));
       expect(t.html).toEqual('<div title="unsafe:javascript:true"></div>');
 
       t.update(
-          () => ΔelementAttribute(
-              0, 'title', bypassSanitizationTrustUrl('javascript:true'), ΔsanitizeUrl));
+          () => ɵɵelementAttribute(
+              0, 'title', bypassSanitizationTrustUrl('javascript:true'), ɵɵsanitizeUrl));
       expect(t.html).toEqual('<div title="javascript:true"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -141,13 +141,13 @@ describe('instructions', () => {
       // <div [title]="title" [accesskey]="key"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 2);
       t.update(() => {
-        Δselect(0);
-        Δproperty('title', 'one')('accessKey', 'A');
+        ɵɵselect(0);
+        ɵɵproperty('title', 'one')('accessKey', 'A');
       });
       expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
       t.update(() => {
-        Δselect(0);
-        Δproperty('title', 'two')('accessKey', 'B');
+        ɵɵselect(0);
+        ɵɵproperty('title', 'two')('accessKey', 'B');
       });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
@@ -159,13 +159,13 @@ describe('instructions', () => {
       });
     });
 
-    it('should error in dev mode if Δselect was not called prior', () => {
+    it('should error in dev mode if ɵɵselect was not called prior', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
-      expect(() => { t.update(() => { Δproperty('title', 'test'); }); }).toThrow();
+      expect(() => { t.update(() => { ɵɵproperty('title', 'test'); }); }).toThrow();
       expect(() => {
         t.update(() => {
-          Δselect(0);
-          Δproperty('title', 'test');
+          ɵɵselect(0);
+          ɵɵproperty('title', 'test');
         });
       }).not.toThrow();
     });
@@ -174,20 +174,20 @@ describe('instructions', () => {
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
       const t = new TemplateFixture(() => {
-        return createDiv(null, null, null, ['background-image'], ΔdefaultStyleSanitizer);
+        return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
       }, () => {}, 1);
       t.update(() => {
-        Δselect(0);
-        ΔstyleProp(0, 'url("http://server")');
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵstyleProp(0, 'url("http://server")');
+        ɵɵstylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        Δselect(0);
-        ΔstyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server2")');
@@ -201,18 +201,18 @@ describe('instructions', () => {
           1, sanitizerInterceptor);
 
       t.update(() => {
-        Δselect(0);
-        ΔstyleProp(0, bypassSanitizationTrustStyle('apple'));
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstylingApply();
       });
 
       expect(sanitizerInterceptor.lastValue !).toEqual('apple');
       sanitizerInterceptor.lastValue = null;
 
       t.update(() => {
-        Δselect(0);
-        ΔstyleProp(0, bypassSanitizationTrustStyle('apple'));
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstylingApply();
       });
       expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
@@ -220,17 +220,17 @@ describe('instructions', () => {
 
   describe('styleMap', () => {
     function createDivWithStyle() {
-      ΔelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
-      Δstyling([], ['height']);
-      ΔelementEnd();
+      ɵɵelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
+      ɵɵstyling([], ['height']);
+      ɵɵelementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
-        Δselect(0);
-        ΔstyleMap({'background-color': 'red'});
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵstyleMap({'background-color': 'red'});
+        ɵɵstylingApply();
       });
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
@@ -244,8 +244,8 @@ describe('instructions', () => {
           sanitizerInterceptor);
 
       fixture.update(() => {
-        Δselect(0);
-        ΔstyleMap({
+        ɵɵselect(0);
+        ɵɵstyleMap({
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -254,7 +254,7 @@ describe('instructions', () => {
           'filter': 'filter',
           'width': 'width'
         });
-        ΔstylingApply();
+        ɵɵstylingApply();
       });
 
       const props = detectedValues.sort();
@@ -266,17 +266,17 @@ describe('instructions', () => {
 
   describe('elementClass', () => {
     function createDivWithStyling() {
-      ΔelementStart(0, 'div');
-      Δstyling();
-      ΔelementEnd();
+      ɵɵelementStart(0, 'div');
+      ɵɵstyling();
+      ɵɵelementEnd();
     }
 
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
-        Δselect(0);
-        ΔclassMap('multiple classes');
-        ΔstylingApply();
+        ɵɵselect(0);
+        ɵɵclassMap('multiple classes');
+        ɵɵstylingApply();
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
@@ -289,26 +289,26 @@ describe('instructions', () => {
 
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'ul');
-          Δtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
-          ΔelementEnd();
+          ɵɵelementStart(0, 'ul');
+          ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
           const row_r2 = ctx0.$implicit;
-          ΔelementProperty(1, 'ngForOf', Δbind(row_r2));
+          ɵɵelementProperty(1, 'ngForOf', ɵɵbind(row_r2));
         }
       }
 
       function ToDoAppComponent_NgForOf_NgForOf_Template_1(
           rf: RenderFlags, ctx1: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'li');
-          Δtext(1);
-          ΔelementEnd();
+          ɵɵelementStart(0, 'li');
+          ɵɵtext(1);
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
           const col_r3 = ctx1.$implicit;
-          ΔtextBinding(1, Δinterpolation1('', col_r3, ''));
+          ɵɵtextBinding(1, ɵɵinterpolation1('', col_r3, ''));
         }
       }
 
@@ -320,7 +320,7 @@ describe('instructions', () => {
       class NestedLoops {
         rows = [['a', 'b'], ['A', 'B'], ['a', 'b'], ['A', 'B']];
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: NestedLoops,
           selectors: [['nested-loops']],
           factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
@@ -328,10 +328,10 @@ describe('instructions', () => {
           vars: 1,
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              Δtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
+              ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
             }
             if (rf & RenderFlags.Update) {
-              ΔelementProperty(0, 'ngForOf', Δbind(ctx.rows));
+              ɵɵelementProperty(0, 'ngForOf', ɵɵbind(ctx.rows));
             }
           },
           directives: [NgForOf]
@@ -353,7 +353,7 @@ describe('instructions', () => {
       const inputValue = 'http://foo';
       const outputValue = 'http://foo-sanitized';
 
-      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
+      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -364,7 +364,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustUrl('http://foo');
       const outputValue = 'http://foo';
 
-      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
+      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -375,7 +375,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustUrl('http://foo');
       const outputValue = 'http://foo-ivy';
 
-      t.update(() => ΔelementAttribute(0, 'href', inputValue, ΔsanitizeUrl));
+      t.update(() => ɵɵelementAttribute(0, 'href', inputValue, ɵɵsanitizeUrl));
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -386,7 +386,7 @@ describe('instructions', () => {
       const inputValue = 'color:red';
       const outputValue = 'color:blue';
 
-      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
+      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -397,7 +397,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustStyle('color:maroon');
       const outputValue = 'color:maroon';
 
-      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
+      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -408,7 +408,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustStyle('font-family:foo');
       const outputValue = 'font-family:foo-ivy';
 
-      t.update(() => ΔelementAttribute(0, 'style', inputValue, ΔsanitizeStyle));
+      t.update(() => ɵɵelementAttribute(0, 'style', inputValue, ɵɵsanitizeStyle));
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -419,7 +419,7 @@ describe('instructions', () => {
       const inputValue = 'http://resource';
       const outputValue = 'http://resource-sanitized';
 
-      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
+      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -430,7 +430,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf';
 
-      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
+      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -441,7 +441,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf-ivy';
 
-      t.update(() => ΔelementAttribute(0, 'src', inputValue, ΔsanitizeResourceUrl));
+      t.update(() => ɵɵelementAttribute(0, 'src', inputValue, ɵɵsanitizeResourceUrl));
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -452,7 +452,7 @@ describe('instructions', () => {
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -463,7 +463,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -474,7 +474,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeScript));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeScript));
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -485,7 +485,7 @@ describe('instructions', () => {
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -496,7 +496,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -507,7 +507,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 
-      t.update(() => ΔelementProperty(0, 'innerHTML', inputValue, ΔsanitizeHtml));
+      t.update(() => ɵɵelementProperty(0, 'innerHTML', inputValue, ɵɵsanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -552,7 +552,7 @@ class LocalMockSanitizer implements Sanitizer {
 class MockSanitizerInterceptor {
   public lastValue: string|null = null;
   constructor(private _interceptorFn?: ((value: any) => any)|null) {}
-  getStyleSanitizer() { return ΔdefaultStyleSanitizer; }
+  getStyleSanitizer() { return ɵɵdefaultStyleSanitizer; }
   sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
     if (this._interceptorFn) {
       this._interceptorFn(value);

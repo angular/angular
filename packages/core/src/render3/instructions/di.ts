@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
-import {Δinject} from '../../di/injector_compatibility';
+import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
@@ -24,9 +24,9 @@ import {getLView, getPreviousOrParentTNode} from '../state';
  * class SomeDirective {
  *   constructor(directive: DirectiveA) {}
  *
- *   static ngDirectiveDef = ΔdefineDirective({
+ *   static ngDirectiveDef = ɵɵdefineDirective({
  *     type: SomeDirective,
- *     factory: () => new SomeDirective(ΔdirectiveInject(DirectiveA))
+ *     factory: () => new SomeDirective(ɵɵdirectiveInject(DirectiveA))
  *   });
  * }
  * ```
@@ -36,15 +36,15 @@ import {getLView, getPreviousOrParentTNode} from '../state';
  *
  * @codeGenApi
  */
-export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
-export function ΔdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
-export function ΔdirectiveInject<T>(
+export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
+export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   token = resolveForwardRef(token);
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.
-  if (lView == null) return Δinject(token, flags);
+  if (lView == null) return ɵɵinject(token, flags);
 
   return getOrCreateInjectable<T>(
       getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode, lView,
@@ -56,6 +56,6 @@ export function ΔdirectiveInject<T>(
  *
  * @codeGenApi
  */
-export function ΔinjectAttribute(attrNameToInject: string): string|null {
+export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
 }

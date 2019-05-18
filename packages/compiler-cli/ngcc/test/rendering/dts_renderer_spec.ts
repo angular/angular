@@ -140,7 +140,7 @@ describe('DtsRenderer', () => {
     const typingsFile = result.find(f => f.path === '/typings/file.d.ts') !;
     expect(typingsFile.contents)
         .toContain(
-            'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ΔDirectiveDefWithMeta');
+            'foo(x: number): number;\n    static ngDirectiveDef: ɵngcc0.ɵɵDirectiveDefWithMeta');
   });
 
   it('should render imports into typings files', () => {
