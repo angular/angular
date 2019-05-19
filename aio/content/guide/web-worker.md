@@ -6,7 +6,7 @@ If you find your application becomes unresponsive while processing data, using W
 
 ## Adding a Web Worker
 
-You can add a web worker anywhere in your application. If the file that contains your expensive computation is `src/app/app.component.ts`, you can add a Web Worker using `ng generate web-worker app`.
+You can add a web worker anywhere in your application. If the file that contains your expensive computation is `src/app/app.component.ts`, you can add a Web Worker using `ng generate webWorker app`.
 
 Running this command will:
 
