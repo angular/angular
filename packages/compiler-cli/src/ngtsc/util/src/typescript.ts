@@ -10,14 +10,14 @@ const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
 import * as ts from 'typescript';
-import {AbsoluteFsPath} from '../../path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 
-export function isDtsPath(filePath: string): boolean {
-  return D_TS.test(filePath);
+export function isDtsPath(filePath: AbsoluteFsPath): boolean {
+  return D_TS.test(filePath.toString());
 }
 
-export function isNonDeclarationTsPath(filePath: string): boolean {
-  return TS.test(filePath) && !D_TS.test(filePath);
+export function isNonDeclarationTsPath(filePath: AbsoluteFsPath): boolean {
+  return TS.test(filePath.toString()) && !D_TS.test(filePath.toString());
 }
 
 export function isFromDtsFile(node: ts.Node): boolean {
@@ -99,12 +99,15 @@ export function nodeDebugInfo(node: ts.Node): string {
  * Otherwise it will fallback on the `ts.ResolveModuleName()` function.
  */
 export function resolveModuleName(
-    moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
-    compilerHost: ts.CompilerHost): ts.ResolvedModule|undefined {
+    moduleName: ModuleSpecifier, containingFile: AbsoluteFsPath,
+    compilerOptions: ts.CompilerOptions, compilerHost: ts.CompilerHost): ts.ResolvedModule|
+    undefined {
   if (compilerHost.resolveModuleNames) {
-    return compilerHost.resolveModuleNames([moduleName], containingFile)[0];
+    return compilerHost.resolveModuleNames([moduleName.toString()], containingFile.toString())[0];
   } else {
-    return ts.resolveModuleName(moduleName, containingFile, compilerOptions, compilerHost)
+    return ts
+        .resolveModuleName(
+            moduleName.toString(), containingFile.toString(), compilerOptions, compilerHost)
         .resolvedModule;
   }
 }

@@ -8,7 +8,7 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -16,19 +16,20 @@ import {ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_
 import {PrivateDeclarationsAnalyzer, ExportInfo} from '../../src/analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-const _ = AbsoluteFsPath.fromUnchecked;
-
 import {Renderer} from '../../src/rendering/renderer';
 import {MockLogger} from '../helpers/mock_logger';
 import {RenderingFormatter, RedundantDecoratorMap} from '../../src/rendering/rendering_formatter';
 import {makeTestEntryPointBundle, createFileSystemFromProgramFiles} from '../helpers/utils';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
+const _Abs = AbsoluteFsPath.from;
+const _Mod = ModuleSpecifier.from;
+
 class TestRenderingFormatter implements RenderingFormatter {
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
   }
-  addExports(output: MagicString, baseEntryPointPath: string, exports: ExportInfo[]) {
+  addExports(output: MagicString, baseEntryPointPath: AbsoluteFsPath, exports: ExportInfo[]) {
     output.prepend('\n// ADD EXPORTS\n');
   }
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
@@ -51,9 +52,9 @@ class TestRenderingFormatter implements RenderingFormatter {
 }
 
 function createTestRenderer(
-    packageName: string, files: {name: string, contents: string}[],
-    dtsFiles?: {name: string, contents: string}[],
-    mappingFiles?: {name: string, contents: string}[]) {
+    packageName: string, files: {name: AbsoluteFsPath, contents: string}[],
+    dtsFiles?: {name: AbsoluteFsPath, contents: string}[],
+    mappingFiles?: {name: AbsoluteFsPath, contents: string}[]) {
   const logger = new MockLogger();
   const fs = new MockFileSystem(createFileSystemFromProgramFiles(files, dtsFiles, mappingFiles));
   const isCore = packageName === '@angular/core';
@@ -90,22 +91,22 @@ function createTestRenderer(
 
 describe('Renderer', () => {
   const INPUT_PROGRAM = {
-    name: '/src/file.js',
+    name: _Abs('/src/file.js'),
     contents:
         `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
   };
 
   const COMPONENT_PROGRAM = {
-    name: '/src/component.js',
+    name: _Abs('/src/component.js'),
     contents:
         `import { Component } from '@angular/core';\nexport class A {}\nA.decorators = [\n    { type: Component, args: [{ selector: 'a', template: '{{ person!.name }}' }] }\n];\n`
   };
 
   const INPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'file': '/src/file.js',
+    'file': _Abs('/src/file.js'),
     'sourceRoot': '',
-    'sources': ['/src/file.ts'],
+    'sources': [_Abs('/src/file.ts')],
     'names': [],
     'mappings':
         'AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,eAAe,CAAC;AAC1C,MAAM;IACF,GAAG,CAAC,CAAS;QACT,OAAO,CAAC,CAAC;IACb,CAAC;;AACM,YAAU,GAAG;IAChB,EAAE,IAAI,EAAE,SAAS,EAAE,IAAI,EAAE,CAAC,EAAE,QAAQ,EAAE,KAAK,EAAE,CAAC,EAAE;CACnD,CAAC',
@@ -127,7 +128,7 @@ describe('Renderer', () => {
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'file': 'file.js',
-    'sources': ['/src/file.js'],
+    'sources': [_Abs('/src/file.js')],
     'sourcesContent': [INPUT_PROGRAM.contents],
     'names': [],
     'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
@@ -135,7 +136,7 @@ describe('Renderer', () => {
 
   const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'sources': ['/src/file.ts'],
+    'sources': [_Abs('/src/file.ts')],
     'names': [],
     'mappings': ';;;;;;;;;;AAAA',
     'file': 'file.js',
@@ -149,10 +150,10 @@ describe('Renderer', () => {
              createTestRenderer('test-package', [INPUT_PROGRAM]);
          const result = renderer.renderProgram(
              decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-         expect(result[0].path).toEqual('/src/file.js');
+         expect(result[0].path).toEqual(_Abs('/src/file.js'));
          expect(result[0].contents)
              .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
-         expect(result[1].path).toEqual('/src/file.js.map');
+         expect(result[1].path).toEqual(_Abs('/src/file.js.map'));
          expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
        });
 
@@ -200,8 +201,8 @@ describe('Renderer', () => {
            const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
            expect(addDefinitionsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
            expect(addDefinitionsSpy.calls.first().args[1]).toEqual(jasmine.objectContaining({
-             name: _('A'),
-             decorators: [jasmine.objectContaining({name: _('Directive')})]
+             name: _Mod('A'),
+             decorators: [jasmine.objectContaining({name: _Mod('Directive')})]
            }));
            expect(addDefinitionsSpy.calls.first().args[2])
                .toEqual(
@@ -262,7 +263,7 @@ describe('Renderer', () => {
                    }]);
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-           expect(result[0].path).toEqual('/src/file.js');
+           expect(result[0].path).toEqual(_Abs('/src/file.js'));
            expect(result[0].contents)
                .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
            expect(result[1]).toBeUndefined();
@@ -275,15 +276,15 @@ describe('Renderer', () => {
              contents: INPUT_PROGRAM.contents + '\n//# sourceMappingURL=file.js.map'
            }];
            const mappingFiles =
-               [{name: INPUT_PROGRAM.name + '.map', contents: INPUT_PROGRAM_MAP.toJSON()}];
+               [{name: _Abs(INPUT_PROGRAM.name + '.map'), contents: INPUT_PROGRAM_MAP.toJSON()}];
            const {decorationAnalyses, renderer, switchMarkerAnalyses, privateDeclarationsAnalyses} =
                createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-           expect(result[0].path).toEqual('/src/file.js');
+           expect(result[0].path).toEqual(_Abs('/src/file.js'));
            expect(result[0].contents)
                .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
-           expect(result[1].path).toEqual('/src/file.js.map');
+           expect(result[1].path).toEqual(_Abs('/src/file.js.map'));
            expect(JSON.parse(result[1].contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
          });
     });
@@ -291,13 +292,13 @@ describe('Renderer', () => {
     describe('@angular/core support', () => {
       it('should render relative imports in ESM bundles', () => {
         const CORE_FILE = {
-          name: '/src/core.js',
+          name: _Abs('/src/core.js'),
           contents:
               `import { NgModule } from './ng_module';\nexport class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
         };
         const R3_SYMBOLS_FILE = {
           // r3_symbols in the file name indicates that this is the path to rewrite core imports to
-          name: '/src/r3_symbols.js',
+          name: _Abs('/src/r3_symbols.js'),
           contents: `export const NgModule = () => null;`
         };
         // The package name of `@angular/core` indicates that we are compiling the core library.
@@ -316,7 +317,7 @@ describe('Renderer', () => {
 
       it('should render no imports in FESM bundles', () => {
         const CORE_FILE = {
-          name: '/src/core.js',
+          name: _Abs('/src/core.js'),
           contents: `export const NgModule = () => null;
             export class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
         };

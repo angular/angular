@@ -11,26 +11,34 @@ import * as ts from 'typescript';
 import {isAbsolutePath, normalizeSeparators} from './util';
 
 /**
- * A `string` representing a specific type of path, with a particular brand `B`.
- *
- * A `string` is not assignable to a `BrandedPath`, but a `BrandedPath` is assignable to a `string`.
- * Two `BrandedPath`s with different brands are not mutually assignable.
- */
-export type BrandedPath<B extends string> = string & {
-  _brand: B;
-};
-
-/**
  * A fully qualified path in the file system, in POSIX form.
+ *
+ * An `AbsoluteFsPath` is not assignable to a `string` and vice versa,
+ * but the runtime type is actually a string.
+ *
+ * You must use `AbsoluteFsPath.from()` and `AbsoluteFsPath.toString()`
+ * to convert.
  */
-export type AbsoluteFsPath = BrandedPath<'AbsoluteFsPath'>;
+export interface AbsoluteFsPath extends String { _brand: 'AbsoluteFsPath'; }
 
 /**
  * A path that's relative to another (unspecified) root.
  *
  * This does not necessarily have to refer to a physical file.
+ *
+ * A `PathSegment` is not assignable to a `string` and vice versa,
+ * but the runtime type is actually a string.
+ *
+ * You must use `PathSegment.fromFsPath()` and `PathSegment.toString()`
+ * to convert.
  */
-export type PathSegment = BrandedPath<'PathSegment'>;
+export interface PathSegment extends String { _brand: 'PathSegment'; }
+
+/**
+ * A path that is used to specify where to import a module from.
+ * This could be relative or absolute.
+ */
+export type ModuleSpecifier = AbsoluteFsPath | PathSegment;
 
 /**
  * Contains utility functions for creating and manipulating `AbsoluteFsPath`s.
@@ -48,15 +56,10 @@ export const AbsoluteFsPath = {
 
     const normalized = normalizeSeparators(str);
     if (!isAbsolutePath(normalized)) {
-      throw new Error(`Internal Error: AbsoluteFsPath.from(${str}): path is not absolute`);
+      throw new Error(`Internal Error: AbsoluteFsPath.from("${str}"): path is not absolute`);
     }
-    return normalized as AbsoluteFsPath;
+    return normalized as any as AbsoluteFsPath;
   },
-
-  /**
-   * Assume that the path `str` is an `AbsoluteFsPath` in the correct format already.
-   */
-  fromUnchecked: function(str: string): AbsoluteFsPath { return str as AbsoluteFsPath;},
 
   /**
    * Extract an `AbsoluteFsPath` from a `ts.SourceFile`.
@@ -66,26 +69,34 @@ export const AbsoluteFsPath = {
    */
   fromSourceFile: function(sf: ts.SourceFile): AbsoluteFsPath {
     // ts.SourceFile paths are always absolute.
-    return sf.fileName as AbsoluteFsPath;
+    if (sf.fileName !== AbsoluteFsPath.from(sf.fileName).toString()) {
+      throw new Error(`Bad file cast: ${sf.fileName} -> ${AbsoluteFsPath.from(sf.fileName)}`);
+    }
+    return sf.fileName as any as AbsoluteFsPath;
   },
 
   /**
    * Wrapper around `path.dirname` that returns an absolute path.
    */
   dirname: function(file: AbsoluteFsPath):
-      AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked(path.dirname(file));},
+      AbsoluteFsPath { return path.dirname(file as any as string) as any;},
 
   /**
    * Wrapper around `path.join` that returns an absolute path.
    */
-  join: function(basePath: AbsoluteFsPath, ...paths: string[]):
-      AbsoluteFsPath { return AbsoluteFsPath.fromUnchecked(path.posix.join(basePath, ...paths));},
+  join: function(basePath: AbsoluteFsPath, ...paths: Array<PathSegment|AbsoluteFsPath|string>):
+      AbsoluteFsPath {
+        return path.posix.join(basePath as any as string, ...(paths as string[])) as any;
+      },
 
   /**
    * Wrapper around `path.resolve` that returns an absolute paths.
    */
-  resolve: function(basePath: string, ...paths: string[]):
-      AbsoluteFsPath { return AbsoluteFsPath.from(path.resolve(basePath, ...paths));},
+  resolve: function(
+      basePath: AbsoluteFsPath|string, ...paths: Array<AbsoluteFsPath|PathSegment|string>):
+      AbsoluteFsPath {
+        return AbsoluteFsPath.from(path.resolve(basePath as string, ...(paths as string[])));
+      },
 
   /** Returns true when the path provided is the root path. */
   isRoot: function(path: AbsoluteFsPath): boolean { return AbsoluteFsPath.dirname(path) === path;},
@@ -103,20 +114,28 @@ export const PathSegment = {
     if (isAbsolutePath(normalized)) {
       throw new Error(`Internal Error: PathSegment.fromFsPath(${str}): path is not relative`);
     }
-    return normalized as PathSegment;
+    return normalized as any as PathSegment;
   },
-
-  /**
-   * Convert the path `str` to a `PathSegment`, while assuming that `str` is already normalized.
-   */
-  fromUnchecked: function(str: string): PathSegment { return str as PathSegment;},
 
   /**
    * Wrapper around `path.relative` that returns a `PathSegment`.
    */
-  relative: function(from: AbsoluteFsPath, to: AbsoluteFsPath):
-      PathSegment { return PathSegment.fromFsPath(path.relative(from, to));},
+  relative: function(from: AbsoluteFsPath, to: AbsoluteFsPath): PathSegment {
+    return PathSegment.fromFsPath(path.relative(from as any as string, to as any as string));
+  },
 
-  basename: function(filePath: string, extension?: string):
-      PathSegment { return path.basename(filePath, extension) as PathSegment;}
+  basename: function(filePath: AbsoluteFsPath|PathSegment, extension?: string):
+      PathSegment { return path.basename(filePath.toString(), extension) as any as PathSegment;}
 };
+
+/**
+ * Contains utility functions for creating and manipulating `ModuleSpecifier`s.
+ */
+export const ModuleSpecifier = {
+  from: function(specifier: string): ModuleSpecifier {
+    // This could be a relative PathSegment or an AbsoluteFsPath.
+    return specifier as any;
+  }
+};
+
+export const ANGULAR_CORE_SPECIFIER = ModuleSpecifier.from('@angular/core');

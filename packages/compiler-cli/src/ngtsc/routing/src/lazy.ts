@@ -10,11 +10,13 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {ModuleSpecifier} from '../../path';
 
 import {NgModuleRawRouteData} from './analyzer';
 import {RouterEntryPoint, RouterEntryPointManager, entryPointKeyFor} from './route';
 
 const ROUTES_MARKER = '__ngRoutesMarker__';
+const ANGULAR_ROUTER_SPECIFIER = ModuleSpecifier.from('@angular/router');
 
 export interface LazyRouteEntry {
   loadChildren: string;
@@ -165,7 +167,7 @@ const routerModuleFFR: ForeignFunctionResolver =
         return null;
       } else if (
           ref.bestGuessOwningModule === null ||
-          ref.bestGuessOwningModule.specifier !== '@angular/router') {
+          ref.bestGuessOwningModule.specifier !== ANGULAR_ROUTER_SPECIFIER) {
         return null;
       } else if (
           ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
@@ -196,5 +198,6 @@ function isMethodNodeReference(
 
 function isRouteToken(ref: ResolvedValue): boolean {
   return ref instanceof Reference && ref.bestGuessOwningModule !== null &&
-      ref.bestGuessOwningModule.specifier === '@angular/router' && ref.debugName === 'ROUTES';
+      ref.bestGuessOwningModule.specifier === ANGULAR_ROUTER_SPECIFIER &&
+      ref.debugName === 'ROUTES';
 }

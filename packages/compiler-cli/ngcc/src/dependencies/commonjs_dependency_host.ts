@@ -7,12 +7,13 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {isRequireCall} from '../host/commonjs_host';
 
 import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+
 
 /**
  * Helper functions for computing dependencies.
@@ -29,7 +30,7 @@ export class CommonJsDependencyHost implements DependencyHost {
    */
   findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
     const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
+    const missing = new Set<ModuleSpecifier>();
     const deepImports = new Set<AbsoluteFsPath>();
     const alreadySeen = new Set<AbsoluteFsPath>();
     this.recursivelyFindDependencies(
@@ -51,7 +52,7 @@ export class CommonJsDependencyHost implements DependencyHost {
    * circular dependency loop.
    */
   private recursivelyFindDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
+      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<ModuleSpecifier>,
       deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
     if (!this.hasRequireCalls(fromContents)) {
@@ -60,15 +61,15 @@ export class CommonJsDependencyHost implements DependencyHost {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+        file.toString(), fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
 
     for (const statement of sf.statements) {
       const declarations =
           ts.isVariableStatement(statement) ? statement.declarationList.declarations : [];
       for (const declaration of declarations) {
         if (declaration.initializer && isRequireCall(declaration.initializer)) {
-          const importPath = declaration.initializer.arguments[0].text;
+          const importPath = ModuleSpecifier.from(declaration.initializer.arguments[0].text);
           const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
           if (resolvedModule) {
             if (resolvedModule instanceof ResolvedRelativeModule) {

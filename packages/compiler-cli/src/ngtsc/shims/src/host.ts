@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../path/src/types';
+import {isAbsolutePath} from '../../path/src/util';
 
 export interface ShimGenerator {
   /**
@@ -70,18 +71,21 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    for (let i = 0; i < this.shimGenerators.length; i++) {
-      const generator = this.shimGenerators[i];
-      // TypeScript internal paths are guaranteed to be POSIX-like absolute file paths.
-      const absoluteFsPath = AbsoluteFsPath.fromUnchecked(fileName);
-      if (generator.recognize(absoluteFsPath)) {
-        const readFile = (originalFile: string) => {
-          return this.delegate.getSourceFile(
-                     originalFile, languageVersion, onError, shouldCreateNewSourceFile) ||
-              null;
-        };
+    // We are only interested in absolute fileNames.
+    // Occasionally you get relative ones like "lib.d.ts".
+    if (isAbsolutePath(fileName)) {
+      for (let i = 0; i < this.shimGenerators.length; i++) {
+        const generator = this.shimGenerators[i];
+        const absoluteFsPath = AbsoluteFsPath.from(fileName);
+        if (generator.recognize(absoluteFsPath)) {
+          const readFile = (originalFile: string) => {
+            return this.delegate.getSourceFile(
+                       originalFile, languageVersion, onError, shouldCreateNewSourceFile) ||
+                null;
+          };
 
-        return generator.generate(absoluteFsPath, readFile) || undefined;
+          return generator.generate(absoluteFsPath, readFile) || undefined;
+        }
       }
     }
     return this.delegate.getSourceFile(
@@ -118,7 +122,7 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     // Note that we can pass the file name as branded absolute fs path because TypeScript
     // internally only passes POSIX-like paths.
     return this.delegate.fileExists(fileName) ||
-        this.shimGenerators.some(gen => gen.recognize(AbsoluteFsPath.fromUnchecked(fileName)));
+        this.shimGenerators.some(gen => gen.recognize(AbsoluteFsPath.from(fileName)));
   }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }

@@ -8,15 +8,19 @@
 
 import * as ts from 'typescript';
 
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ClassMemberKind, CtorParameter, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
+const _Abs = AbsoluteFsPath.from;
+
 const SOME_DIRECTIVE_FILE = {
-  name: '/some_directive.js',
+  name: _Abs('/some_directive.js'),
   contents: `
     import { Directive, Inject, InjectionToken, Input, HostListener, HostBinding } from '@angular/core';
 
@@ -56,7 +60,7 @@ const SOME_DIRECTIVE_FILE = {
 };
 
 const ACCESSORS_FILE = {
-  name: '/accessors.js',
+  name: _Abs('/accessors.js'),
   contents: `
     import { Directive, Input, Output } from '@angular/core';
 
@@ -74,7 +78,7 @@ const ACCESSORS_FILE = {
 };
 
 const SIMPLE_CLASS_FILE = {
-  name: '/simple_class.js',
+  name: _Abs('/simple_class.js'),
   contents: `
     class EmptyClass {}
     class NoDecoratorConstructorClass {
@@ -84,7 +88,7 @@ const SIMPLE_CLASS_FILE = {
 };
 
 const CLASS_EXPRESSION_FILE = {
-  name: '/class_expression.js',
+  name: _Abs('/class_expression.js'),
   contents: `
     var AliasedClass_1;
     let EmptyClass = class EmptyClass {};
@@ -94,7 +98,7 @@ const CLASS_EXPRESSION_FILE = {
 };
 
 const FOO_FUNCTION_FILE = {
-  name: '/foo_function.js',
+  name: _Abs('/foo_function.js'),
   contents: `
     import { Directive } from '@angular/core';
 
@@ -106,7 +110,7 @@ const FOO_FUNCTION_FILE = {
 };
 
 const INVALID_DECORATORS_FILE = {
-  name: '/invalid_decorators.js',
+  name: _Abs('/invalid_decorators.js'),
   contents: `
     import {Directive} from '@angular/core';
     class NotArrayLiteral {
@@ -139,7 +143,7 @@ const INVALID_DECORATORS_FILE = {
 };
 
 const INVALID_DECORATOR_ARGS_FILE = {
-  name: '/invalid_decorator_args.js',
+  name: _Abs('/invalid_decorator_args.js'),
   contents: `
     import {Directive} from '@angular/core';
     class NoArgsProperty {
@@ -164,7 +168,7 @@ const INVALID_DECORATOR_ARGS_FILE = {
 };
 
 const INVALID_PROP_DECORATORS_FILE = {
-  name: '/invalid_prop_decorators.js',
+  name: _Abs('/invalid_prop_decorators.js'),
   contents: `
     import {Input} from '@angular/core';
     class NotObjectLiteral {
@@ -203,7 +207,7 @@ const INVALID_PROP_DECORATORS_FILE = {
 };
 
 const INVALID_PROP_DECORATOR_ARGS_FILE = {
-  name: '/invalid_prop_decorator_args.js',
+  name: _Abs('/invalid_prop_decorator_args.js'),
   contents: `
     import {Input} from '@angular/core';
     class NoArgsProperty {
@@ -228,7 +232,7 @@ const INVALID_PROP_DECORATOR_ARGS_FILE = {
 };
 
 const INVALID_CTOR_DECORATORS_FILE = {
-  name: '/invalid_ctor_decorators.js',
+  name: _Abs('/invalid_ctor_decorators.js'),
   contents: `
     import {Inject} from '@angular/core';
     class NoParameters {
@@ -299,7 +303,7 @@ const INVALID_CTOR_DECORATORS_FILE = {
 };
 
 const INVALID_CTOR_DECORATOR_ARGS_FILE = {
-  name: '/invalid_ctor_decorator_args.js',
+  name: _Abs('/invalid_ctor_decorator_args.js'),
   contents: `
     import {Inject} from '@angular/core';
     class NoArgsProperty {
@@ -331,13 +335,13 @@ const INVALID_CTOR_DECORATOR_ARGS_FILE = {
 
 const IMPORTS_FILES = [
   {
-    name: '/a.js',
+    name: _Abs('/a.js'),
     contents: `
       export const a = 'a';
     `,
   },
   {
-    name: '/b.js',
+    name: _Abs('/b.js'),
     contents: `
       import {a} from './a.js';
       import {a as foo} from './a.js';
@@ -351,13 +355,13 @@ const IMPORTS_FILES = [
 
 const EXPORTS_FILES = [
   {
-    name: '/a.js',
+    name: _Abs('/a.js'),
     contents: `
       export const a = 'a';
     `,
   },
   {
-    name: '/b.js',
+    name: _Abs('/b.js'),
     contents: `
       import {Directive} from '@angular/core';
       import {a} from './a';
@@ -375,7 +379,7 @@ const EXPORTS_FILES = [
 ];
 
 const FUNCTION_BODY_FILE = {
-  name: '/function_body.js',
+  name: _Abs('/function_body.js'),
   contents: `
     function foo(x) {
       return x;
@@ -407,7 +411,7 @@ const FUNCTION_BODY_FILE = {
 };
 
 const MARKER_FILE = {
-  name: '/marker.js',
+  name: _Abs('/marker.js'),
   contents: `
     let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
 
@@ -426,7 +430,7 @@ const MARKER_FILE = {
 
 const DECORATED_FILES = [
   {
-    name: '/primary.js',
+    name: _Abs('/primary.js'),
     contents: `
     import {Directive} from '@angular/core';
     import {D} from '/secondary';
@@ -445,7 +449,7 @@ const DECORATED_FILES = [
     `
   },
   {
-    name: '/secondary.js',
+    name: _Abs('/secondary.js'),
     contents: `
     import {Directive} from '@angular/core';
     class D {}
@@ -459,7 +463,7 @@ const DECORATED_FILES = [
 
 const ARITY_CLASSES = [
   {
-    name: '/src/class.js',
+    name: _Abs('/src/class.js'),
     contents: `
       export class NoTypeParam {}
       export class OneTypeParam {}
@@ -467,7 +471,7 @@ const ARITY_CLASSES = [
     `,
   },
   {
-    name: '/typings/class.d.ts',
+    name: _Abs('/typings/class.d.ts'),
     contents: `
       export declare class NoTypeParam {}
       export declare class OneTypeParam<T> {}
@@ -478,16 +482,18 @@ const ARITY_CLASSES = [
 
 const TYPINGS_SRC_FILES = [
   {
-    name: '/src/index.js',
+    name: _Abs('/src/index.js'),
     contents:
         `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
   },
-  {name: '/src/class1.js', contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
-  {name: '/src/class2.js', contents: 'export class Class2 {}'},
-  {name: '/src/func1.js', contents: 'export function mooFn() {}'},
-  {name: '/src/internal.js', contents: 'export class InternalClass {}\nexport class Class2 {}'},
-  {name: '/src/missing-class.js', contents: 'export class MissingClass2 {}'}, {
-    name: '/src/flat-file.js',
+  {name: _Abs('/src/class1.js'), contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
+  {name: _Abs('/src/class2.js'), contents: 'export class Class2 {}'},
+  {name: _Abs('/src/func1.js'), contents: 'export function mooFn() {}'}, {
+    name: _Abs('/src/internal.js'),
+    contents: 'export class InternalClass {}\nexport class Class2 {}'
+  },
+  {name: _Abs('/src/missing-class.js'), contents: 'export class MissingClass2 {}'}, {
+    name: _Abs('/src/flat-file.js'),
     contents:
         'export class Class1 {}\nexport class MissingClass1 {}\nexport class MissingClass2 {}\class Class3 {}\nexport {Class3 as xClass3};',
   }
@@ -495,30 +501,30 @@ const TYPINGS_SRC_FILES = [
 
 const TYPINGS_DTS_FILES = [
   {
-    name: '/typings/index.d.ts',
+    name: _Abs('/typings/index.d.ts'),
     contents:
         `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
   },
   {
-    name: '/typings/class1.d.ts',
+    name: _Abs('/typings/class1.d.ts'),
     contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
   },
   {
-    name: '/typings/class2.d.ts',
+    name: _Abs('/typings/class2.d.ts'),
     contents:
         `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
   },
-  {name: '/typings/func1.d.ts', contents: 'export declare function mooFn(): void;'},
+  {name: _Abs('/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
   {
-    name: '/typings/internal.d.ts',
+    name: _Abs('/typings/internal.d.ts'),
     contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
   },
-  {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
+  {name: _Abs('/typings/class3.d.ts'), contents: `export declare class Class3 {}`},
 ];
 
 const MODULE_WITH_PROVIDERS_PROGRAM = [
   {
-    name: '/src/functions.js',
+    name: _Abs('/src/functions.js'),
     contents: `
     import {ExternalModule} from './module';
     import * as mod from './module';
@@ -539,7 +545,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     `
   },
   {
-    name: '/src/methods.js',
+    name: _Abs('/src/methods.js'),
     contents: `
     import {ExternalModule} from './module';
     import * as mod from './module';
@@ -567,7 +573,7 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     `
   },
   {
-    name: '/src/aliased_class.js',
+    name: _Abs('/src/aliased_class.js'),
     contents: `
     var AliasedModule_1;
     let AliasedModule = AliasedModule_1 = class AliasedModule {
@@ -576,11 +582,11 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     export { AliasedModule };
     `
   },
-  {name: '/src/module.js', contents: 'export class ExternalModule {}'},
+  {name: _Abs('/src/module.js'), contents: 'export class ExternalModule {}'},
 ];
 
 const NAMESPACED_IMPORT_FILE = {
-  name: '/some_directive.js',
+  name: _Abs('/some_directive.js'),
   contents: `
     import * as core from '@angular/core';
 
@@ -607,7 +613,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const decorator = decorators[0];
       expect(decorator.name).toEqual('Directive');
-      expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+      expect(decorator.import).toEqual({name: 'Directive', from: ANGULAR_CORE_SPECIFIER});
       expect(decorator.args !.map(arg => arg.getText())).toEqual([
         '{ selector: \'[someDirective]\' }',
       ]);
@@ -674,7 +680,7 @@ describe('Esm2015ReflectionHost', () => {
     });
 
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-      const mockImportInfo = { from: '@angular/core' } as Import;
+      const mockImportInfo = { from: ANGULAR_CORE_SPECIFIER } as Import;
       const spy = spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier')
                       .and.returnValue(mockImportInfo);
 
@@ -889,7 +895,7 @@ describe('Esm2015ReflectionHost', () => {
       const spy =
           spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier').and.callFake(() => {
             callCount++;
-            return {name: `name${callCount}`, from: '@angular/core'};
+            return {name: `name${callCount}`, from: ANGULAR_CORE_SPECIFIER};
           });
 
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
@@ -909,7 +915,7 @@ describe('Esm2015ReflectionHost', () => {
 
       const member = members.find(member => member.name === 'input1') !;
       expect(member.decorators !.length).toBe(1);
-      expect(member.decorators ![0].import).toEqual({name: 'name1', from: '@angular/core'});
+      expect(member.decorators ![0].import).toEqual({name: 'name1', from: ANGULAR_CORE_SPECIFIER});
     });
 
     describe('(returned prop decorators `args`)', () => {
@@ -1062,7 +1068,7 @@ describe('Esm2015ReflectionHost', () => {
     describe('synthesized constructors', () => {
       function getConstructorParameters(constructor: string) {
         const file = {
-          name: '/synthesized_constructors.js',
+          name: _Abs('/synthesized_constructors.js'),
           contents: `
             class BaseClass {}
             class TestClass extends BaseClass {
@@ -1168,7 +1174,7 @@ describe('Esm2015ReflectionHost', () => {
       });
 
       it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-        const mockImportInfo: Import = {name: 'mock', from: '@angular/core'};
+        const mockImportInfo: Import = {name: 'mock', from: ANGULAR_CORE_SPECIFIER};
         const spy = spyOn(Esm2015ReflectionHost.prototype, 'getImportOfIdentifier')
                         .and.returnValue(mockImportInfo);
 
@@ -1303,7 +1309,7 @@ describe('Esm2015ReflectionHost', () => {
           getDeclaration(program, IMPORTS_FILES[1].name, 'b', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
-      expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
+      expect(importOfIdent).toEqual({name: 'a', from: ModuleSpecifier.from('./a.js')});
     });
 
     it('should find the name by which the identifier was exported, not imported', () => {
@@ -1313,7 +1319,7 @@ describe('Esm2015ReflectionHost', () => {
           getDeclaration(program, IMPORTS_FILES[1].name, 'c', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
-      expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
+      expect(importOfIdent).toEqual({name: 'a', from: ModuleSpecifier.from('./a.js')});
     });
 
     it('should return null if the identifier was not imported', () => {
@@ -1359,12 +1365,12 @@ describe('Esm2015ReflectionHost', () => {
                                         .initializer as ts.Identifier;
 
       const expectedDeclarationNode = getDeclaration(
-          program, 'node_modules/@angular/core/index.d.ts', 'Directive',
+          program, _Abs('/node_modules/@angular/core/index.d.ts'), 'Directive',
           isNamedVariableDeclaration);
       const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-      expect(actualDeclaration !.viaModule).toBe('@angular/core');
+      expect(actualDeclaration !.viaModule).toBe(ANGULAR_CORE_SPECIFIER);
     });
 
     it('should return the source-file of an import namespace', () => {
@@ -1379,7 +1385,7 @@ describe('Esm2015ReflectionHost', () => {
                              .expression as ts.Identifier;
 
       const expectedDeclarationNode =
-          program.getSourceFile('node_modules/@angular/core/index.d.ts') !;
+          program.getSourceFile(_Abs('/node_modules/@angular/core/index.d.ts').toString()) !;
       const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1403,7 +1409,7 @@ describe('Esm2015ReflectionHost', () => {
     it('should return a map of all the exports from a given module', () => {
       const program = makeTestProgram(...EXPORTS_FILES);
       const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-      const file = program.getSourceFile(EXPORTS_FILES[1].name) !;
+      const file = program.getSourceFile(EXPORTS_FILES[1].name.toString()) !;
       const exportDeclarations = host.getExportsOfModule(file);
       expect(exportDeclarations).not.toBe(null);
       expect(Array.from(exportDeclarations !.keys())).toEqual([
@@ -1470,7 +1476,7 @@ describe('Esm2015ReflectionHost', () => {
   describe('hasBaseClass()', () => {
     it('should not consider a class without extends clause as having a base class', () => {
       const file = {
-        name: '/base_class.js',
+        name: _Abs('/base_class.js'),
         contents: `class TestClass {}`,
       };
       const program = makeTestProgram(file);
@@ -1481,7 +1487,7 @@ describe('Esm2015ReflectionHost', () => {
 
     it('should consider a class with extends clause as having a base class', () => {
       const file = {
-        name: '/base_class.js',
+        name: _Abs('/base_class.js'),
         contents: `
         class BaseClass {}
         class TestClass extends BaseClass {}`,
@@ -1494,7 +1500,7 @@ describe('Esm2015ReflectionHost', () => {
 
     it('should consider an aliased class with extends clause as having a base class', () => {
       const file = {
-        name: '/base_class.js',
+        name: _Abs('/base_class.js'),
         contents: `
         let TestClass_1;
         class BaseClass {}
@@ -1515,13 +1521,13 @@ describe('Esm2015ReflectionHost', () => {
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
       const noTypeParamClass =
-          getDeclaration(program, '/src/class.js', 'NoTypeParam', isNamedClassDeclaration);
+          getDeclaration(program, _Abs('/src/class.js'), 'NoTypeParam', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
       const oneTypeParamClass =
-          getDeclaration(program, '/src/class.js', 'OneTypeParam', isNamedClassDeclaration);
+          getDeclaration(program, _Abs('/src/class.js'), 'OneTypeParam', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(oneTypeParamClass)).toBe(1);
       const twoTypeParamsClass =
-          getDeclaration(program, '/src/class.js', 'TwoTypeParams', isNamedClassDeclaration);
+          getDeclaration(program, _Abs('/src/class.js'), 'TwoTypeParams', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(twoTypeParamsClass)).toBe(2);
     });
   });
@@ -1531,7 +1537,7 @@ describe('Esm2015ReflectionHost', () => {
        () => {
          const program = makeTestProgram(MARKER_FILE);
          const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-         const file = program.getSourceFile(MARKER_FILE.name) !;
+         const file = program.getSourceFile(MARKER_FILE.name.toString()) !;
          const declarations = host.getSwitchableDeclarations(file);
          expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
            ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_R3__']
@@ -1543,8 +1549,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should return an array of all decorated classes in the given source file', () => {
       const program = makeTestProgram(...DECORATED_FILES);
       const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-      const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
-      const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
+      const primaryFile = program.getSourceFile(DECORATED_FILES[0].name.toString()) !;
+      const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name.toString()) !;
 
       const primaryDecoratedClasses = host.findDecoratedClasses(primaryFile);
       expect(primaryDecoratedClasses.length).toEqual(2);
@@ -1571,31 +1577,31 @@ describe('Esm2015ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class1 =
-          getDeclaration(srcProgram, '/src/class1.js', 'Class1', isNamedClassDeclaration);
+          getDeclaration(srcProgram, _Abs('/src/class1.js'), 'Class1', isNamedClassDeclaration);
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class1);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+      expect(_Abs(dtsDeclaration !.getSourceFile().fileName)).toEqual(_Abs('/typings/class1.d.ts'));
     });
 
     it('should find the dts declaration for exported functions', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const mooFn =
-          getDeclaration(srcProgram, '/src/func1.js', 'mooFn', isNamedFunctionDeclaration);
+          getDeclaration(srcProgram, _Abs('/src/func1.js'), 'mooFn', isNamedFunctionDeclaration);
       const host = new Esm2015ReflectionHost(
           new MockLogger(), false, srcProgram.getTypeChecker(), dtsProgram);
 
       const dtsDeclaration = host.getDtsDeclaration(mooFn);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
+      expect(_Abs(dtsDeclaration !.getSourceFile().fileName)).toEqual(_Abs('/typings/func1.d.ts'));
     });
 
     it('should return null if there is no matching class in the matching dts file', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const missingClass =
-          getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', isNamedClassDeclaration);
+      const missingClass = getDeclaration(
+          srcProgram, _Abs('/src/class1.js'), 'MissingClass1', isNamedClassDeclaration);
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
@@ -1606,7 +1612,7 @@ describe('Esm2015ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass = getDeclaration(
-          srcProgram, '/src/missing-class.js', 'MissingClass2', isNamedClassDeclaration);
+          srcProgram, _Abs('/src/missing-class.js'), 'MissingClass2', isNamedClassDeclaration);
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
@@ -1617,25 +1623,26 @@ describe('Esm2015ReflectionHost', () => {
        () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-         const class1 =
-             getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', isNamedClassDeclaration);
+         const class1 = getDeclaration(
+             srcProgram, _Abs('/src/flat-file.js'), 'Class1', isNamedClassDeclaration);
          const host =
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(class1);
-         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+         expect(_Abs(dtsDeclaration !.getSourceFile().fileName))
+             .toEqual(_Abs('/typings/class1.d.ts'));
        });
 
     it('should find aliased exports', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class3 =
-          getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', isNamedClassDeclaration);
+          getDeclaration(srcProgram, _Abs('/src/flat-file.js'), 'Class3', isNamedClassDeclaration);
       const host =
           new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class3);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
+      expect(_Abs(dtsDeclaration !.getSourceFile().fileName)).toEqual(_Abs('/typings/class3.d.ts'));
     });
 
     it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
@@ -1643,12 +1650,13 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const internalClass = getDeclaration(
-             srcProgram, '/src/internal.js', 'InternalClass', isNamedClassDeclaration);
+             srcProgram, _Abs('/src/internal.js'), 'InternalClass', isNamedClassDeclaration);
          const host =
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(internalClass);
-         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
+         expect(_Abs(dtsDeclaration !.getSourceFile().fileName))
+             .toEqual(_Abs('/typings/internal.d.ts'));
        });
 
     it('should prefer the publicly exported class if there are multiple classes with the same name',
@@ -1656,18 +1664,19 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class2 =
-             getDeclaration(srcProgram, '/src/class2.js', 'Class2', isNamedClassDeclaration);
-         const internalClass2 =
-             getDeclaration(srcProgram, '/src/internal.js', 'Class2', isNamedClassDeclaration);
+             getDeclaration(srcProgram, _Abs('/src/class2.js'), 'Class2', isNamedClassDeclaration);
+         const internalClass2 = getDeclaration(
+             srcProgram, _Abs('/src/internal.js'), 'Class2', isNamedClassDeclaration);
          const host =
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker(), dts);
 
          const class2DtsDeclaration = host.getDtsDeclaration(class2);
-         expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
+         expect(_Abs(class2DtsDeclaration !.getSourceFile().fileName))
+             .toEqual(_Abs('/typings/class2.d.ts'));
 
          const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
-         expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
-             .toEqual('/typings/class2.d.ts');
+         expect(_Abs(internalClass2DtsDeclaration !.getSourceFile().fileName))
+             .toEqual(_Abs('/typings/class2.d.ts'));
        });
   });
 
@@ -1677,7 +1686,7 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
          const host =
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
-         const file = srcProgram.getSourceFile('/src/functions.js') !;
+         const file = getSourceFile(srcProgram, '/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
          expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
              .toEqual([
@@ -1694,7 +1703,7 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
          const host =
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
-         const file = srcProgram.getSourceFile('/src/methods.js') !;
+         const file = getSourceFile(srcProgram, '/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
          expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
              .toEqual([
@@ -1710,7 +1719,7 @@ describe('Esm2015ReflectionHost', () => {
     it('should resolve aliased module references to their original declaration', () => {
       const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
       const host = new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
-      const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
+      const file = getSourceFile(srcProgram, '/src/aliased_class.js') !;
       const fn = host.getModuleWithProvidersFunctions(file);
       expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text])).toEqual([
         ['forRoot', 'AliasedModule'],

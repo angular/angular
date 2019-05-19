@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -230,7 +231,7 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
   function maybeUpdateDecorator(
       dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): void {
     const source = reflector.getImportOfIdentifier(dec);
-    if (source === null || source.from !== '@angular/core') {
+    if (source === null || source.from !== ANGULAR_CORE_SPECIFIER) {
       return;
     }
     switch (source.name) {

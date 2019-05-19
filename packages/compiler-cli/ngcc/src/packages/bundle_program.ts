@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
+import {NODE_MODULES_SEGMENT} from '../utils';
 
 /**
 * An entry point bundle contains one or two programs, e.g. `src` and `dts`,
@@ -37,9 +38,9 @@ export function makeBundleProgram(
   const r3SymbolsPath =
       isCore ? findR3SymbolsPath(fs, AbsoluteFsPath.dirname(path), r3FileName) : null;
   const rootPaths = r3SymbolsPath ? [path, r3SymbolsPath] : [path];
-  const program = ts.createProgram(rootPaths, options, host);
-  const file = program.getSourceFile(path) !;
-  const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
+  const program = ts.createProgram(rootPaths.map(p => p.toString()), options, host);
+  const file = program.getSourceFile(path.toString()) !;
+  const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath.toString()) || null;
 
   return {program, options, host, path, file, r3SymbolsPath, r3SymbolsFile};
 }
@@ -59,7 +60,7 @@ export function findR3SymbolsPath(
           // Not interested in hidden files
           .filter(p => !p.startsWith('.'))
           // Ignore node_modules
-          .filter(p => p !== 'node_modules')
+          .filter(p => p !== NODE_MODULES_SEGMENT)
           // Only interested in directories (and only those that are not symlinks)
           .filter(p => {
             const stat = fs.lstat(AbsoluteFsPath.resolve(directory, p));

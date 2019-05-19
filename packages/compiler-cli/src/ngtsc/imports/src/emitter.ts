@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, WrappedNodeExpr} from '@angular/compiler';
 import {ExternalReference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
-import {LogicalFileSystem, LogicalProjectPath} from '../../path';
+import {AbsoluteFsPath, LogicalFileSystem, LogicalProjectPath, ModuleSpecifier} from '../../path';
 import {ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, nodeNameForError, resolveModuleName} from '../../util/src/typescript';
 
@@ -114,7 +114,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
    * A cache of the exports of specific modules, because resolving a module to its exports is a
    * costly operation.
    */
-  private moduleExportsCache = new Map<string, Map<ts.Declaration, string>|null>();
+  private moduleExportsCache = new Map<ModuleSpecifier, Map<ts.Declaration, string>|null>();
 
   constructor(
       protected program: ts.Program, protected checker: ts.TypeChecker,
@@ -141,11 +141,11 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
           `Symbol ${ref.debugName} declared in ${getSourceFile(ref.node).fileName} is not exported from ${specifier} (import into ${context.fileName})`);
     }
 
-    return new ExternalExpr(new ExternalReference(specifier, symbolName));
+    return new ExternalExpr(new ExternalReference(specifier.toString(), symbolName));
   }
 
-  private resolveImportName(moduleName: string, target: ts.Declaration, fromFile: string): string
-      |null {
+  private resolveImportName(
+      moduleName: ModuleSpecifier, target: ts.Declaration, fromFile: AbsoluteFsPath): string|null {
     const exports = this.getExportsOfModule(moduleName, fromFile);
     if (exports !== null && exports.has(target)) {
       return exports.get(target) !;
@@ -154,7 +154,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     }
   }
 
-  private getExportsOfModule(moduleName: string, fromFile: string):
+  private getExportsOfModule(moduleName: ModuleSpecifier, fromFile: AbsoluteFsPath):
       Map<ts.Declaration, string>|null {
     if (!this.moduleExportsCache.has(moduleName)) {
       this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
@@ -162,7 +162,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     return this.moduleExportsCache.get(moduleName) !;
   }
 
-  protected enumerateExportsOfModule(specifier: string, fromFile: string):
+  private enumerateExportsOfModule(specifier: ModuleSpecifier, fromFile: AbsoluteFsPath):
       Map<ts.Declaration, string>|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
     const resolvedModule = resolveModuleName(specifier, fromFile, this.options, this.host);
@@ -226,7 +226,7 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
 
     // With both files expressed as LogicalProjectPaths, getting the module specifier as a relative
     // path is now straightforward.
-    const moduleName = LogicalProjectPath.relativePathBetween(originPath, destPath);
+    const moduleName = LogicalProjectPath.relativePathBetween(originPath, destPath).toString();
     return new ExternalExpr({moduleName, name});
   }
 }

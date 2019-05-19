@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {relativePathBetween} from '../../util/src/path';
 
 /**
@@ -18,29 +19,31 @@ export interface ImportRewriter {
    * If `true`, the symbol should be imported from the given specifier. If `false`, the symbol
    * should be referenced directly, without an import.
    */
-  shouldImportSymbol(symbol: string, specifier: string): boolean;
+  shouldImportSymbol(symbol: string, specifier: ModuleSpecifier): boolean;
 
   /**
    * Optionally rewrite a reference to an imported symbol, changing either the binding prefix or the
    * symbol name itself.
    */
-  rewriteSymbol(symbol: string, specifier: string): string;
+  rewriteSymbol(symbol: string, specifier: ModuleSpecifier): string;
 
   /**
    * Optionally rewrite the given module specifier in the context of a given file.
    */
-  rewriteSpecifier(specifier: string, inContextOfFile: string): string;
+  rewriteSpecifier(specifier: ModuleSpecifier, inContextOfFile: AbsoluteFsPath): ModuleSpecifier;
 }
 
 /**
  * `ImportRewriter` that does no rewriting.
  */
 export class NoopImportRewriter implements ImportRewriter {
-  shouldImportSymbol(symbol: string, specifier: string): boolean { return true; }
+  shouldImportSymbol(symbol: string, specifier: ModuleSpecifier): boolean { return true; }
 
-  rewriteSymbol(symbol: string, specifier: string): string { return symbol; }
+  rewriteSymbol(symbol: string, specifier: ModuleSpecifier): string { return symbol; }
 
-  rewriteSpecifier(specifier: string, inContextOfFile: string): string { return specifier; }
+  rewriteSpecifier(specifier: ModuleSpecifier, inContextOfFile: AbsoluteFsPath): ModuleSpecifier {
+    return specifier;
+  }
 }
 
 /**
@@ -60,19 +63,17 @@ const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
   ['ɵNgModuleFactory', 'NgModuleFactory'],
 ]);
 
-const CORE_MODULE = '@angular/core';
-
 /**
  * `ImportRewriter` that rewrites imports from '@angular/core' to be imported from the r3_symbols.ts
  * file instead.
  */
 export class R3SymbolsImportRewriter implements ImportRewriter {
-  constructor(private r3SymbolsPath: string) {}
+  constructor(private r3SymbolsPath: AbsoluteFsPath) {}
 
-  shouldImportSymbol(symbol: string, specifier: string): boolean { return true; }
+  shouldImportSymbol(symbol: string, specifier: ModuleSpecifier): boolean { return true; }
 
-  rewriteSymbol(symbol: string, specifier: string): string {
-    if (specifier !== CORE_MODULE) {
+  rewriteSymbol(symbol: string, specifier: ModuleSpecifier): string {
+    if (specifier !== ANGULAR_CORE_SPECIFIER) {
       // This import isn't from core, so ignore it.
       return symbol;
     }
@@ -80,8 +81,8 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
     return validateAndRewriteCoreSymbol(symbol);
   }
 
-  rewriteSpecifier(specifier: string, inContextOfFile: string): string {
-    if (specifier !== CORE_MODULE) {
+  rewriteSpecifier(specifier: ModuleSpecifier, inContextOfFile: AbsoluteFsPath): ModuleSpecifier {
+    if (specifier !== ANGULAR_CORE_SPECIFIER) {
       // This module isn't core, so ignore it.
       return specifier;
     }
@@ -89,7 +90,7 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
     const relativePathToR3Symbols = relativePathBetween(inContextOfFile, this.r3SymbolsPath);
     if (relativePathToR3Symbols === null) {
       throw new Error(
-          `Failed to rewrite import inside ${CORE_MODULE}: ${inContextOfFile} -> ${this.r3SymbolsPath}`);
+          `Failed to rewrite import inside ${ANGULAR_CORE_SPECIFIER}: ${inContextOfFile} -> ${this.r3SymbolsPath}`);
     }
 
     return relativePathToR3Symbols;
@@ -98,7 +99,8 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
 
 export function validateAndRewriteCoreSymbol(name: string): string {
   if (!CORE_SUPPORTED_SYMBOLS.has(name)) {
-    throw new Error(`Importing unexpected symbol ${name} while compiling ${CORE_MODULE}`);
+    throw new Error(
+        `Importing unexpected symbol ${name} while compiling ${ANGULAR_CORE_SPECIFIER}`);
   }
   return CORE_SUPPORTED_SYMBOLS.get(name) !;
 }

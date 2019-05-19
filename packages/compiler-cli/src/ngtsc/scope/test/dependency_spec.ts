@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
 import {DtsMetadataReader} from '../../metadata';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing/in_memory_typescript';
 import {ExportScope} from '../src/api';
@@ -49,7 +50,7 @@ function makeTestEnv(
   // Map the modules object to an array of files for `makeProgram`.
   const files = Object.keys(modules).map(moduleName => {
     return {
-      name: `node_modules/${moduleName}/index.d.ts`,
+      name: AbsoluteFsPath.from(`/node_modules/${moduleName}/index.d.ts`),
       contents: PROLOG + (modules as any)[moduleName],
     };
   });
@@ -66,8 +67,10 @@ function makeTestEnv(
       const exportedSymbol = symbol.exports !.get(name as ts.__String);
       if (exportedSymbol !== undefined) {
         const decl = exportedSymbol.valueDeclaration as ts.ClassDeclaration;
-        const specifier = MODULE_FROM_NODE_MODULES_PATH.exec(sf.fileName) ![1];
-        return new Reference(decl, {specifier, resolutionContext: sf.fileName});
+        const specifier =
+            ModuleSpecifier.from(MODULE_FROM_NODE_MODULES_PATH.exec(sf.fileName) ![1]);
+        const resolutionContext = AbsoluteFsPath.fromSourceFile(sf);
+        return new Reference(decl, {specifier, resolutionContext});
       }
     }
     throw new Error('Class not found: ' + name);
@@ -143,7 +146,8 @@ describe('MetadataDtsModuleScopeResolver', () => {
     expect(scopeToRefs(scope)).toEqual([Dir]);
 
     // Explicitly verify that the directive has the correct owning module.
-    expect(scope.exported.directives[0].ref.ownedByModuleGuess).toBe('declaration');
+    expect(scope.exported.directives[0].ref.ownedByModuleGuess)
+        .toBe(ModuleSpecifier.from('declaration'));
   });
 
   it('should write correct aliases for deep dependencies', () => {

@@ -15,15 +15,15 @@ describe('entry_point logic', () => {
   describe('findFlatIndexEntryPoint', () => {
 
     it('should use the only source file if only a single one is specified', () => {
-      expect(findFlatIndexEntryPoint([AbsoluteFsPath.fromUnchecked('/src/index.ts')]))
-          .toBe('/src/index.ts');
+      expect(findFlatIndexEntryPoint([AbsoluteFsPath.from('/src/index.ts')]))
+          .toBe(AbsoluteFsPath.from('/src/index.ts'));
     });
 
     it('should use the shortest source file ending with "index.ts" for multiple files', () => {
       expect(findFlatIndexEntryPoint([
-        AbsoluteFsPath.fromUnchecked('/src/deep/index.ts'),
-        AbsoluteFsPath.fromUnchecked('/src/index.ts'), AbsoluteFsPath.fromUnchecked('/index.ts')
-      ])).toBe('/index.ts');
+        AbsoluteFsPath.from('/src/deep/index.ts'), AbsoluteFsPath.from('/src/index.ts'),
+        AbsoluteFsPath.from('/index.ts')
+      ])).toBe(AbsoluteFsPath.from('/index.ts'));
     });
   });
 });

@@ -149,8 +149,8 @@ function loadEntryPointPackage(
 }
 
 function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
-  const sourceFile =
-      ts.createSourceFile(sourceFilePath, fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
+  const sourceFile = ts.createSourceFile(
+      sourceFilePath.toString(), fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
   return sourceFile.statements.length > 0 &&
       parseStatementForUmdModule(sourceFile.statements[0]) !== null;
 }

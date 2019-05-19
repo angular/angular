@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {Declaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';

@@ -8,6 +8,7 @@
 import {dirname, relative} from 'canonical-path';
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {UmdReflectionHost} from '../host/umd_host';
@@ -48,7 +49,7 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
    * Add the exports to the bottom of the UMD module factory function.
    */
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {
@@ -61,7 +62,8 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
         lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
     exports.forEach(e => {
       const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+      const relativePath = PathSegment.fromFsPath(
+          './' + PathSegment.relative(AbsoluteFsPath.dirname(entryPointBasePath), basePath));
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};

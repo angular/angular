@@ -8,21 +8,23 @@
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {AbsoluteFsPath} from '../../path';
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DirectiveDecoratorHandler} from '../src/directive';
 
+const _Abs = AbsoluteFsPath.from;
 
 describe('DirectiveDecoratorHandler', () => {
   it('should use the `ReflectionHost` to detect class inheritance', () => {
     const {program} = makeProgram([
       {
-        name: 'node_modules/@angular/core/index.d.ts',
+        name: _Abs('/node_modules/@angular/core/index.d.ts'),
         contents: 'export const Directive: any;',
       },
       {
-        name: 'entry.ts',
+        name: _Abs('/entry.ts'),
         contents: `
           import {Directive} from '@angular/core';
 
@@ -47,7 +49,7 @@ describe('DirectiveDecoratorHandler', () => {
         reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
 
     const analyzeDirective = (dirName: string) => {
-      const DirNode = getDeclaration(program, 'entry.ts', dirName, isNamedClassDeclaration);
+      const DirNode = getDeclaration(program, _Abs('/entry.ts'), dirName, isNamedClassDeclaration);
 
       const detected = handler.detect(DirNode, reflectionHost.getDecoratorsOfDeclaration(DirNode));
       if (detected === undefined) {

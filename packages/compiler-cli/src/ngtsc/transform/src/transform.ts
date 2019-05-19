@@ -10,6 +10,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
@@ -283,5 +284,5 @@ function maybeFilterDecorator(
 }
 
 function isFromAngularCore(decorator: Decorator): boolean {
-  return decorator.import !== null && decorator.import.from === '@angular/core';
+  return decorator.import !== null && decorator.import.from === ANGULAR_CORE_SPECIFIER;
 }

@@ -9,23 +9,27 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DependencyTracker, ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {ResolvedValue} from '../src/result';
 
 export function makeExpression(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): {
+    code: string, expr: string, supportingFiles: {name: AbsoluteFsPath, contents: string}[] = []): {
   expression: ts.Expression,
   host: ts.CompilerHost,
   checker: ts.TypeChecker,
   program: ts.Program,
   options: ts.CompilerOptions
 } {
-  const {program, options, host} = makeProgram(
-      [{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}, ...supportingFiles]);
+  const {program, options, host} = makeProgram([
+    {name: AbsoluteFsPath.from('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
+    ...supportingFiles
+  ]);
   const checker = program.getTypeChecker();
-  const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+  const decl = getDeclaration(
+      program, AbsoluteFsPath.from('/entry.ts'), 'target$', ts.isVariableDeclaration);
   return {
     expression: decl.initializer !,
     host,
@@ -42,14 +46,14 @@ export function makeEvaluator(
 }
 
 export function evaluate<T extends ResolvedValue>(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = [],
+    code: string, expr: string, supportingFiles: {name: AbsoluteFsPath, contents: string}[] = [],
     foreignFunctionResolver?: ForeignFunctionResolver): T {
   const {expression, checker} = makeExpression(code, expr, supportingFiles);
   const evaluator = makeEvaluator(checker);
   return evaluator.evaluate(expression, foreignFunctionResolver) as T;
 }
 
-export function owningModuleOf(ref: Reference): string|null {
+export function owningModuleOf(ref: Reference): ModuleSpecifier|null {
   return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
 }
 

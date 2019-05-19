@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {AbsoluteFsPath} from '../../path';
 import {ReflectionHost} from '../../reflection';
 
 import {StaticInterpreter} from './interpreter';
@@ -36,7 +37,7 @@ export class PartialEvaluator {
     return interpreter.visit(expr, {
       originatingFile: expr.getSourceFile(),
       absoluteModuleName: null,
-      resolutionContext: expr.getSourceFile().fileName,
+      resolutionContext: AbsoluteFsPath.fromSourceFile(expr.getSourceFile()),
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
     });
   }

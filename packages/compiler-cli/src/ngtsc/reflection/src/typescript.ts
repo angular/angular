@@ -8,6 +8,8 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
+
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 
@@ -176,7 +178,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     // Read the module specifier.
-    const from = importDecl.moduleSpecifier.text;
+    const from = ModuleSpecifier.from(importDecl.moduleSpecifier.text);
 
     // Compute the name by which the decorator was exported, not imported.
     const name = (decl.propertyName !== undefined ? decl.propertyName : decl.name).text;
@@ -230,7 +232,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     return {
-      from: importDeclaration.moduleSpecifier.text,
+      from: ModuleSpecifier.from(importDeclaration.moduleSpecifier.text),
       name: id.text,
     };
   }
@@ -251,7 +253,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       }
       return this.getDeclarationOfSymbol(shorthandSymbol);
     }
-    let viaModule: string|null = null;
+    let viaModule: ModuleSpecifier|null = null;
     // Look through the Symbol's immediate declarations, and see if any of them are import-type
     // statements.
     if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
@@ -267,7 +269,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
             // external module, and the import path becomes the viaModule.
             const moduleSpecifier = importDecl.moduleSpecifier.text;
             if (!moduleSpecifier.startsWith('.')) {
-              viaModule = moduleSpecifier;
+              viaModule = ModuleSpecifier.from(moduleSpecifier);
               break;
             }
           }
@@ -383,8 +385,8 @@ export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identif
   return null;
 }
 
-export function reflectTypeEntityToDeclaration(
-    type: ts.EntityName, checker: ts.TypeChecker): {node: ts.Declaration, from: string | null} {
+export function reflectTypeEntityToDeclaration(type: ts.EntityName, checker: ts.TypeChecker):
+    {node: ts.Declaration, from: ModuleSpecifier | null} {
   let realSymbol = checker.getSymbolAtLocation(type);
   if (realSymbol === undefined) {
     throw new Error(`Cannot resolve type entity ${type.getText()} to symbol`);
@@ -418,7 +420,7 @@ export function reflectTypeEntityToDeclaration(
       if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
         throw new Error(`Module specifier is not a string`);
       }
-      return {node, from: importDecl.moduleSpecifier.text};
+      return {node, from: ModuleSpecifier.from(importDecl.moduleSpecifier.text)};
     } else {
       throw new Error(`Unknown import type?`);
     }
@@ -427,8 +429,9 @@ export function reflectTypeEntityToDeclaration(
   }
 }
 
-export function filterToMembersWithDecorator(members: ClassMember[], name: string, module?: string):
-    {member: ClassMember, decorators: Decorator[]}[] {
+export function filterToMembersWithDecorator(
+    members: ClassMember[], name: string,
+    module?: ModuleSpecifier): {member: ClassMember, decorators: Decorator[]}[] {
   return members.filter(member => !member.isStatic)
       .map(member => {
         if (member.decorators === null) {

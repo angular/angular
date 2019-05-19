@@ -16,14 +16,14 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _Abs = AbsoluteFsPath.from;
 
 describe('PrivateDeclarationsAnalyzer', () => {
   describe('analyzeProgram()', () => {
 
     const TEST_PROGRAM = [
       {
-        name: '/src/entry_point.js',
+        name: _Abs('/src/entry_point.js'),
         isRoot: true,
         contents: `
     export {PublicComponent} from './a';
@@ -32,7 +32,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
   `
       },
       {
-        name: '/src/a.js',
+        name: _Abs('/src/a.js'),
         isRoot: false,
         contents: `
     import {Component} from '@angular/core';
@@ -43,7 +43,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
   `
       },
       {
-        name: '/src/b.js',
+        name: _Abs('/src/b.js'),
         isRoot: false,
         contents: `
     import {Component, NgModule} from '@angular/core';
@@ -62,7 +62,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
   `
       },
       {
-        name: '/src/c.js',
+        name: _Abs('/src/c.js'),
         isRoot: false,
         contents: `
     import {Component} from '@angular/core';
@@ -77,7 +77,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
   `
       },
       {
-        name: '/src/mod.js',
+        name: _Abs('/src/mod.js'),
         isRoot: false,
         contents: `
     import {Component, NgModule} from '@angular/core';
@@ -96,7 +96,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
     ];
     const TEST_DTS_PROGRAM = [
       {
-        name: '/typings/entry_point.d.ts',
+        name: _Abs('/typings/entry_point.d.ts'),
         isRoot: true,
         contents: `
     export {PublicComponent} from './a';
@@ -105,28 +105,28 @@ describe('PrivateDeclarationsAnalyzer', () => {
   `
       },
       {
-        name: '/typings/a.d.ts',
+        name: _Abs('/typings/a.d.ts'),
         isRoot: false,
         contents: `
     export declare class PublicComponent {}
   `
       },
       {
-        name: '/typings/b.d.ts',
+        name: _Abs('/typings/b.d.ts'),
         isRoot: false,
         contents: `
     export declare class ModuleB {}
   `
       },
       {
-        name: '/typings/c.d.ts',
+        name: _Abs('/typings/c.d.ts'),
         isRoot: false,
         contents: `
     export declare class InternalComponent1 {}
   `
       },
       {
-        name: '/typings/mod.d.ts',
+        name: _Abs('/typings/mod.d.ts'),
         isRoot: false,
         contents: `
     import {PublicComponent} from './a';
@@ -141,20 +141,22 @@ describe('PrivateDeclarationsAnalyzer', () => {
        () => {
          const {program, referencesRegistry, analyzer} = setup(TEST_PROGRAM, TEST_DTS_PROGRAM);
 
-         addToReferencesRegistry(program, referencesRegistry, '/src/a.js', 'PublicComponent');
-         addToReferencesRegistry(program, referencesRegistry, '/src/b.js', 'PrivateComponent1');
-         addToReferencesRegistry(program, referencesRegistry, '/src/c.js', 'InternalComponent1');
+         addToReferencesRegistry(program, referencesRegistry, _Abs('/src/a.js'), 'PublicComponent');
+         addToReferencesRegistry(
+             program, referencesRegistry, _Abs('/src/b.js'), 'PrivateComponent1');
+         addToReferencesRegistry(
+             program, referencesRegistry, _Abs('/src/c.js'), 'InternalComponent1');
 
          const analyses = analyzer.analyzeProgram(program);
          // Note that `PrivateComponent2` and `InternalComponent2` are not found because they are
          // not added to the ReferencesRegistry (i.e. they were not declared in an NgModule).
          expect(analyses.length).toEqual(2);
          expect(analyses).toEqual([
-           {identifier: 'PrivateComponent1', from: _('/src/b.js'), dtsFrom: null, alias: null},
+           {identifier: 'PrivateComponent1', from: _Abs('/src/b.js'), dtsFrom: null, alias: null},
            {
              identifier: 'InternalComponent1',
-             from: _('/src/c.js'),
-             dtsFrom: _('/typings/c.d.ts'),
+             from: _Abs('/src/c.js'),
+             dtsFrom: _Abs('/typings/c.d.ts'),
              alias: null
            },
          ]);
@@ -162,7 +164,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
 
     const ALIASED_EXPORTS_PROGRAM = [
       {
-        name: '/src/entry_point.js',
+        name: _Abs('/src/entry_point.js'),
         isRoot: true,
         contents: `
         // This component is only exported as an alias.
@@ -172,7 +174,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
       `
       },
       {
-        name: '/src/a.js',
+        name: _Abs('/src/a.js'),
         isRoot: false,
         contents: `
       import {Component} from '@angular/core';
@@ -190,7 +192,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
     ];
     const ALIASED_EXPORTS_DTS_PROGRAM = [
       {
-        name: '/typings/entry_point.d.ts',
+        name: _Abs('/typings/entry_point.d.ts'),
         isRoot: true,
         contents: `
         export declare class aliasedComponentOne {}
@@ -204,13 +206,13 @@ describe('PrivateDeclarationsAnalyzer', () => {
       const {program, referencesRegistry, analyzer} =
           setup(ALIASED_EXPORTS_PROGRAM, ALIASED_EXPORTS_DTS_PROGRAM);
 
-      addToReferencesRegistry(program, referencesRegistry, '/src/a.js', 'ComponentOne');
-      addToReferencesRegistry(program, referencesRegistry, '/src/a.js', 'ComponentTwo');
+      addToReferencesRegistry(program, referencesRegistry, _Abs('/src/a.js'), 'ComponentOne');
+      addToReferencesRegistry(program, referencesRegistry, _Abs('/src/a.js'), 'ComponentTwo');
 
       const analyses = analyzer.analyzeProgram(program);
       expect(analyses).toEqual([{
         identifier: 'ComponentOne',
-        from: _('/src/a.js'),
+        from: _Abs('/src/a.js'),
         dtsFrom: null,
         alias: 'aliasedComponentOne',
       }]);
@@ -219,7 +221,7 @@ describe('PrivateDeclarationsAnalyzer', () => {
 });
 
 type Files = {
-  name: string,
+  name: AbsoluteFsPath,
   contents: string, isRoot?: boolean | undefined
 }[];
 
@@ -238,7 +240,7 @@ function setup(jsProgram: Files, dtsProgram: Files) {
  * This would normally be done by the decoration handlers in the `DecorationAnalyzer`.
  */
 function addToReferencesRegistry(
-    program: ts.Program, registry: NgccReferencesRegistry, fileName: string,
+    program: ts.Program, registry: NgccReferencesRegistry, fileName: AbsoluteFsPath,
     componentName: string) {
   const declaration = getDeclaration(program, fileName, componentName, ts.isClassDeclaration);
   registry.add(null !, new Reference(declaration));

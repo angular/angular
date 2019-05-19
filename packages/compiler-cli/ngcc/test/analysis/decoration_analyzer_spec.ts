@@ -9,19 +9,20 @@ import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Decorator} from '../../../src/ngtsc/reflection';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {DecoratorHandler, DetectResult} from '../../../src/ngtsc/transform';
 import {CompiledClass, DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Folder, MockFileSystem} from '../helpers/mock_file_system';
+import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 import {createFileSystemFromProgramFiles, makeTestBundleProgram} from '../helpers/utils';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _Abs = AbsoluteFsPath.from;
 
 const TEST_PROGRAM = [
   {
-    name: _('/test.js'),
+    name: _Abs('/test.js'),
     contents: `
       import {Component, Directive, Injectable} from '@angular/core';
 
@@ -36,7 +37,7 @@ const TEST_PROGRAM = [
     `,
   },
   {
-    name: _('/other.js'),
+    name: _Abs('/other.js'),
     contents: `
       import {Component} from '@angular/core';
 
@@ -48,7 +49,7 @@ const TEST_PROGRAM = [
 
 const INTERNAL_COMPONENT_PROGRAM = [
   {
-    name: _('/entrypoint.js'),
+    name: _Abs('/entrypoint.js'),
     contents: `
     import {Component, NgModule} from '@angular/core';
     import {ImportedComponent} from './component';
@@ -64,7 +65,7 @@ const INTERNAL_COMPONENT_PROGRAM = [
   `
   },
   {
-    name: _('/component.js'),
+    name: _Abs('/component.js'),
     contents: `
     import {Component} from '@angular/core';
     export class ImportedComponent {}
@@ -142,7 +143,7 @@ describe('DecorationAnalyzer', () => {
       const fs = new MockFileSystem(createFileSystemFromProgramFiles(...progArgs));
       const analyzer = new DecorationAnalyzer(
           fs, program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-          [AbsoluteFsPath.fromUnchecked('/')], false);
+          [AbsoluteFsPath.from('/')], false);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeProgram();
@@ -153,7 +154,7 @@ describe('DecorationAnalyzer', () => {
 
       it('should return an object containing a reference to the original source file', () => {
         TEST_PROGRAM.forEach(({name}) => {
-          const file = program.getSourceFile(name) !;
+          const file = program.getSourceFile(name.toString()) !;
           expect(result.get(file) !.sourceFile).toBe(file);
         });
       });
@@ -170,7 +171,7 @@ describe('DecorationAnalyzer', () => {
          });
 
       it('should return an object containing the classes that were analyzed', () => {
-        const file1 = program.getSourceFile(TEST_PROGRAM[0].name) !;
+        const file1 = program.getSourceFile(TEST_PROGRAM[0].name.toString()) !;
         const compiledFile1 = result.get(file1) !;
         expect(compiledFile1.compiledClasses.length).toEqual(2);
         expect(compiledFile1.compiledClasses[0]).toEqual(jasmine.objectContaining({
@@ -180,7 +181,7 @@ describe('DecorationAnalyzer', () => {
           name: 'MyDirective', compilation: ['@Directive (compiled)'],
         } as unknown as CompiledClass));
 
-        const file2 = program.getSourceFile(TEST_PROGRAM[1].name) !;
+        const file2 = program.getSourceFile(TEST_PROGRAM[1].name.toString()) !;
         const compiledFile2 = result.get(file2) !;
         expect(compiledFile2.compiledClasses.length).toEqual(1);
         expect(compiledFile2.compiledClasses[0]).toEqual(jasmine.objectContaining({
@@ -217,7 +218,7 @@ describe('DecorationAnalyzer', () => {
       // is not yet solved.
       it('should analyze an internally imported component, which is not publicly exported from the entry-point',
          () => {
-           const file = program.getSourceFile('component.js') !;
+           const file = getSourceFile(program, '/component.js') !;
            const analysis = result.get(file) !;
            expect(analysis).toBeDefined();
            const ImportedComponent =
@@ -226,7 +227,7 @@ describe('DecorationAnalyzer', () => {
          });
 
       it('should analyze an internally defined component, which is not exported at all', () => {
-        const file = program.getSourceFile('entrypoint.js') !;
+        const file = getSourceFile(program, '/entrypoint.js') !;
         const analysis = result.get(file) !;
         expect(analysis).toBeDefined();
         const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent') !;

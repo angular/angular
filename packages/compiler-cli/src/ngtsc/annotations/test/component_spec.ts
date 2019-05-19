@@ -10,14 +10,17 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {AbsoluteFsPath} from '../../path';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
+const _Abs = AbsoluteFsPath.from;
+
 export class NoopResourceLoader implements ResourceLoader {
-  resolve(): string { throw new Error('Not implemented.'); }
+  resolve(): AbsoluteFsPath { throw new Error('Not implemented.'); }
   canPreload = false;
   load(): string { throw new Error('Not implemented'); }
   preload(): Promise<void>|undefined { throw new Error('Not implemented'); }
@@ -27,11 +30,11 @@ describe('ComponentDecoratorHandler', () => {
   it('should produce a diagnostic when @Component has non-literal argument', () => {
     const {program, options, host} = makeProgram([
       {
-        name: 'node_modules/@angular/core/index.d.ts',
+        name: _Abs('/node_modules/@angular/core/index.d.ts'),
         contents: 'export const Component: any;',
       },
       {
-        name: 'entry.ts',
+        name: _Abs('/entry.ts'),
         contents: `
           import {Component} from '@angular/core';
 
@@ -56,9 +59,9 @@ describe('ComponentDecoratorHandler', () => {
 
     const handler = new ComponentDecoratorHandler(
         reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, false,
-        new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer, refEmitter,
-        NOOP_DEFAULT_IMPORT_RECORDER);
-    const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', isNamedClassDeclaration);
+        new NoopResourceLoader(), [_Abs('/')], false, true, moduleResolver, cycleAnalyzer,
+        refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
+    const TestCmp = getDeclaration(program, _Abs('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
       return fail('Failed to recognize @Component');

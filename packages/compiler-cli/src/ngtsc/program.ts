@@ -21,7 +21,7 @@ import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTrac
 import {IncrementalState} from './incremental';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
-import {AbsoluteFsPath, LogicalFileSystem} from './path';
+import {AbsoluteFsPath, LogicalFileSystem, ModuleSpecifier} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
@@ -40,8 +40,8 @@ export class NgtscProgram implements api.Program {
   private reuseTsProgram: ts.Program;
   private resourceManager: HostResourceLoader;
   private compilation: IvyCompilation|undefined = undefined;
-  private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
-  private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
+  private factoryToSourceInfo: Map<AbsoluteFsPath, FactoryInfo>|null = null;
+  private sourceToFactorySymbols: Map<AbsoluteFsPath, Set<string>>|null = null;
   private host: ts.CompilerHost;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _importRewriter: ImportRewriter|undefined = undefined;
@@ -84,7 +84,7 @@ export class NgtscProgram implements api.Program {
     if (host.fileNameToModuleName !== undefined) {
       this.fileToModuleHost = host as FileToModuleHost;
     }
-    let rootFiles = [...rootNames];
+    let rootFiles = [...normalizedRootNames];
 
     const generators: ShimGenerator[] = [];
     if (shouldGenerateShims) {
@@ -94,8 +94,8 @@ export class NgtscProgram implements api.Program {
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(normalizedRootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
-      this.factoryToSourceInfo = new Map<string, FactoryInfo>();
-      this.sourceToFactorySymbols = new Map<string, Set<string>>();
+      this.factoryToSourceInfo = new Map<AbsoluteFsPath, FactoryInfo>();
+      this.sourceToFactorySymbols = new Map<AbsoluteFsPath, Set<string>>();
       factoryFileMap.forEach((sourceFilePath, factoryPath) => {
         const moduleSymbolNames = new Set<string>();
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
@@ -111,7 +111,7 @@ export class NgtscProgram implements api.Program {
     generators.push(new TypeCheckShimGenerator(this.typeCheckFilePath));
     rootFiles.push(this.typeCheckFilePath);
 
-    let entryPoint: string|null = null;
+    let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile !== undefined) {
       entryPoint = findFlatIndexEntryPoint(normalizedRootNames);
       if (entryPoint === null) {
@@ -146,11 +146,13 @@ export class NgtscProgram implements api.Program {
       this.host = new GeneratedShimsHostWrapper(host, generators);
     }
 
-    this.tsProgram =
-        ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.reuseTsProgram);
+    this.tsProgram = ts.createProgram(
+        rootFiles.map(f => f.toString()), options, this.host,
+        oldProgram && oldProgram.reuseTsProgram);
     this.reuseTsProgram = this.tsProgram;
 
-    this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
+    this.entryPoint =
+        entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint.toString()) || null : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
@@ -253,7 +255,9 @@ export class NgtscProgram implements api.Program {
       // of the root files.
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
-      const resolvedModule = resolveModuleName(entryPath, containingFile, this.options, this.host);
+      const resolvedModule = resolveModuleName(
+          ModuleSpecifier.from(entryPath), AbsoluteFsPath.from(containingFile), this.options,
+          this.host);
 
       if (resolvedModule) {
         entryRoute = entryPointKeyFor(resolvedModule.resolvedFileName, moduleName);
@@ -340,7 +344,7 @@ export class NgtscProgram implements api.Program {
     const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
 
-    const typeCheckFile = this.tsProgram.getSourceFile(this.typeCheckFilePath);
+    const typeCheckFile = this.tsProgram.getSourceFile(this.typeCheckFilePath.toString());
 
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
       if (targetSourceFile.isDeclarationFile || targetSourceFile === typeCheckFile) {
@@ -536,7 +540,7 @@ export class NgtscProgram implements api.Program {
     if (this._importRewriter === undefined) {
       const coreImportsFrom = this.coreImportsFrom;
       this._importRewriter = coreImportsFrom !== null ?
-          new R3SymbolsImportRewriter(coreImportsFrom.fileName) :
+          new R3SymbolsImportRewriter(AbsoluteFsPath.fromSourceFile(coreImportsFrom)) :
           new NoopImportRewriter();
     }
     return this._importRewriter;
@@ -617,7 +621,7 @@ export class ReferenceGraphAdapter implements ReferencesRegistry {
       }
 
       // Only record local references (not references into .d.ts files).
-      if (sourceFile === undefined || !isDtsPath(sourceFile.fileName)) {
+      if (sourceFile === undefined || !isDtsPath(AbsoluteFsPath.fromSourceFile(sourceFile))) {
         this.graph.add(source, node);
       }
     }

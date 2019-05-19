@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 
 /**
  * Metadata extracted from an instance of a decorator on another declaration.
@@ -310,7 +311,7 @@ export interface Import {
    *
    * This could either be an absolute module name (@angular/core for example) or a relative path.
    */
-  from: string;
+  from: ModuleSpecifier;
 }
 
 /**
@@ -324,11 +325,14 @@ export interface Declaration<T extends ts.Declaration = ts.Declaration> {
   node: T;
 
   /**
-   * The absolute module path from which the symbol was imported into the application, if the symbol
-   * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
-   * of the application and was not imported from an absolute path, this will be `null`.
+   * The module path from which the symbol was imported into the application.
+   *
+   * If the symbol was imported from an external module (even through a chain of relative
+   * re-exports).
+   * If the symbol is part of the application and was not imported from an external module, this
+   * will be `null`.
    */
-  viaModule: string|null;
+  viaModule: ModuleSpecifier|null;
 }
 
 /**

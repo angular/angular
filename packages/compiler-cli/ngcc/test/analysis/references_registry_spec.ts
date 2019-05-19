@@ -10,14 +10,17 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration, makeProgram} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 
+const _Abs = AbsoluteFsPath.from;
+
 describe('NgccReferencesRegistry', () => {
   it('should return a mapping from resolved reference identifiers to their declarations', () => {
     const {program, options, host} = makeProgram([{
-      name: 'index.ts',
+      name: _Abs('/index.ts'),
       contents: `
         export class SomeClass {}
         export function someFunction() {}
@@ -30,12 +33,13 @@ describe('NgccReferencesRegistry', () => {
     const checker = program.getTypeChecker();
 
     const testArrayDeclaration =
-        getDeclaration(program, 'index.ts', 'testArray', ts.isVariableDeclaration);
-    const someClassDecl = getDeclaration(program, 'index.ts', 'SomeClass', ts.isClassDeclaration);
+        getDeclaration(program, _Abs('/index.ts'), 'testArray', ts.isVariableDeclaration);
+    const someClassDecl =
+        getDeclaration(program, _Abs('/index.ts'), 'SomeClass', ts.isClassDeclaration);
     const someFunctionDecl =
-        getDeclaration(program, 'index.ts', 'someFunction', ts.isFunctionDeclaration);
+        getDeclaration(program, _Abs('/index.ts'), 'someFunction', ts.isFunctionDeclaration);
     const someVariableDecl =
-        getDeclaration(program, 'index.ts', 'someVariable', ts.isVariableDeclaration);
+        getDeclaration(program, _Abs('/index.ts'), 'someVariable', ts.isVariableDeclaration);
     const testArrayExpression = testArrayDeclaration.initializer !;
 
     const reflectionHost = new TypeScriptReflectionHost(checker);

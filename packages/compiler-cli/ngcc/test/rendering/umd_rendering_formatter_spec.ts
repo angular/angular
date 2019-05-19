@@ -8,7 +8,7 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ANGULAR_CORE_SPECIFIER, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
@@ -18,10 +18,11 @@ import {MockFileSystem} from '../helpers/mock_file_system';
 import {UmdRenderingFormatter} from '../../src/rendering/umd_rendering_formatter';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestEntryPointBundle, createFileSystemFromProgramFiles} from '../helpers/utils';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _Abs = AbsoluteFsPath.from;
 
-function setup(file: {name: string, contents: string}) {
+function setup(file: {name: AbsoluteFsPath, contents: string}) {
   const fs = new MockFileSystem(createFileSystemFromProgramFiles([file]));
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('esm5', 'esm5', false, [file]);
@@ -31,7 +32,7 @@ function setup(file: {name: string, contents: string}) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses = new DecorationAnalyzer(
                                  fs, src.program, src.options, src.host, typeChecker, host,
-                                 referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
+                                 referencesRegistry, [AbsoluteFsPath.from('/')], false)
                                  .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(src.program);
   const renderer = new UmdRenderingFormatter(host, false);
@@ -46,7 +47,7 @@ function setup(file: {name: string, contents: string}) {
 }
 
 const PROGRAM = {
-  name: _('/some/file.js'),
+  name: _Abs('/some/file.js'),
   contents: `
 /* A copyright notice */
 (function (global, factory) {
@@ -115,7 +116,7 @@ exports.BadIife = BadIife;
 
 
 const PROGRAM_DECORATE_HELPER = {
-  name: '/some/file.js',
+  name: _Abs('/some/file.js'),
   contents: `
 /* A copyright notice */
 (function (global, factory) {
@@ -174,13 +175,13 @@ describe('UmdRenderingFormatter', () => {
   describe('addImports', () => {
     it('should append the given imports into the CommonJS factory call', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js') !;
+      const file = getSourceFile(program, '/some/file.js') !;
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           file);
       expect(output.toString())
@@ -190,13 +191,13 @@ describe('UmdRenderingFormatter', () => {
 
     it('should append the given imports into the AMD initialization', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js') !;
+      const file = getSourceFile(program, '/some/file.js') !;
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           file);
       expect(output.toString())
@@ -206,13 +207,13 @@ describe('UmdRenderingFormatter', () => {
 
     it('should append the given imports into the global initialization', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js') !;
+      const file = getSourceFile(program, '/some/file.js') !;
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           file);
       expect(output.toString())
@@ -222,13 +223,13 @@ describe('UmdRenderingFormatter', () => {
 
     it('should append the given imports as parameters into the factory function definition', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js') !;
+      const file = getSourceFile(program, '/some/file.js') !;
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           file);
       expect(output.toString())
@@ -242,11 +243,11 @@ describe('UmdRenderingFormatter', () => {
       const output = new MagicString(PROGRAM.contents);
       const generateNamedImportSpy = spyOn(importManager, 'generateNamedImport').and.callThrough();
       renderer.addExports(
-          output, PROGRAM.name.replace(/\.js$/, ''),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), identifier: 'ComponentA2'},
+            {from: _Abs('/some/foo/b.js'), identifier: 'ComponentB'},
             {from: PROGRAM.name, identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -272,11 +273,11 @@ exports.TopLevelComponent = TopLevelComponent;
       const {importManager, renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(
-          output, PROGRAM.name.replace(/\.js$/, ''),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
+            {from: _Abs('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
             {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -290,7 +291,7 @@ exports.TopLevelComponent = TopLevelComponent;
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -313,7 +314,7 @@ var A = (function() {`);
   describe('rewriteSwitchableDeclarations', () => {
     it('should switch marked declaration initializers', () => {
       const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -355,18 +356,18 @@ SOME DEFINITION TEXT
       const output = new MagicString(PROGRAM.contents);
 
       const noIifeDeclaration =
-          getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
+          getDeclaration(program, _Abs(sourceFile.fileName), 'NoIife', ts.isFunctionDeclaration);
       const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
       expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
-              'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
+              `Compiled class declaration is not inside an IIFE: NoIife in ${_Abs('/some/file.js')}`);
 
       const badIifeDeclaration =
-          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
+          getDeclaration(program, _Abs(sourceFile.fileName), 'BadIife', ts.isVariableDeclaration);
       const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
       expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
-              'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
+              `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_Abs('/some/file.js')}`);
     });
   });
 

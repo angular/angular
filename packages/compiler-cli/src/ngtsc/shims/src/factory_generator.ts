@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ImportRewriter} from '../../imports';
-import {AbsoluteFsPath} from '../../path/src/types';
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath} from '../../path/src/types';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -24,16 +24,16 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  * class of an input ts.SourceFile.
  */
 export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<string, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<string, string> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
   generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {
     const originalPath = this.map.get(genFilePath) !;
-    const original = readFile(originalPath);
+    const original = readFile(originalPath.toString());
     if (original === null) {
       return null;
     }
@@ -79,7 +79,7 @@ export class FactoryGenerator implements ShimGenerator {
         // okay to leave in at type checking time. TypeScript can handle this reference via its path
         // mapping, but downstream bundlers can't. If the current package is core itself, this will
         // be replaced in the factory transformer before emit.
-        `import * as i0 from '@angular/core';`,
+        `import * as i0 from '${ANGULAR_CORE_SPECIFIER}';`,
         `import {${symbolNames.join(', ')}} from '${relativePathToSource}';`,
         ...varLines,
       ].join('\n');
@@ -90,7 +90,7 @@ export class FactoryGenerator implements ShimGenerator {
     sourceText += '\nexport const ɵNonEmptyModule = true;';
 
     const genFile = ts.createSourceFile(
-        genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
+        genFilePath.toString(), sourceText, original.languageVersion, true, ts.ScriptKind.TS);
     if (original.moduleName !== undefined) {
       genFile.moduleName =
           generatedModuleName(original.moduleName, original.fileName, '.ngfactory');
@@ -99,12 +99,11 @@ export class FactoryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile => map.set(
-                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngfactory.ts')),
-                sourceFile));
+                AbsoluteFsPath.from(sourceFile.replace(/\.ts$/, '.ngfactory.ts')), sourceFile));
     return new FactoryGenerator(map);
   }
 }
@@ -115,12 +114,12 @@ function isExported(decl: ts.Declaration): boolean {
 }
 
 export interface FactoryInfo {
-  sourceFilePath: string;
+  sourceFilePath: AbsoluteFsPath;
   moduleSymbolNames: Set<string>;
 }
 
 export function generatedFactoryTransform(
-    factoryMap: Map<string, FactoryInfo>,
+    factoryMap: Map<AbsoluteFsPath, FactoryInfo>,
     importRewriter: ImportRewriter): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
@@ -130,15 +129,16 @@ export function generatedFactoryTransform(
 }
 
 function transformFactorySourceFile(
-    factoryMap: Map<string, FactoryInfo>, context: ts.TransformationContext,
+    factoryMap: Map<AbsoluteFsPath, FactoryInfo>, context: ts.TransformationContext,
     importRewriter: ImportRewriter, file: ts.SourceFile): ts.SourceFile {
+  const filePath = AbsoluteFsPath.fromSourceFile(file);
   // If this is not a generated file, it won't have factory info associated with it.
-  if (!factoryMap.has(file.fileName)) {
+  if (!factoryMap.has(filePath)) {
     // Don't transform non-generated code.
     return file;
   }
 
-  const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName) !;
+  const {moduleSymbolNames, sourceFilePath} = factoryMap.get(filePath) !;
 
   file = ts.getMutableClone(file);
 
@@ -168,14 +168,14 @@ function transformFactorySourceFile(
   for (const stmt of file.statements) {
     // Look for imports to @angular/core.
     if (ts.isImportDeclaration(stmt) && ts.isStringLiteral(stmt.moduleSpecifier) &&
-        stmt.moduleSpecifier.text === '@angular/core') {
+        stmt.moduleSpecifier.text === ANGULAR_CORE_SPECIFIER.toString()) {
       // Update the import path to point to the correct file using the ImportRewriter.
       const rewrittenModuleSpecifier =
-          importRewriter.rewriteSpecifier('@angular/core', sourceFilePath);
-      if (rewrittenModuleSpecifier !== stmt.moduleSpecifier.text) {
+          importRewriter.rewriteSpecifier(ANGULAR_CORE_SPECIFIER, sourceFilePath);
+      if (rewrittenModuleSpecifier !== ANGULAR_CORE_SPECIFIER) {
         transformedStatements.push(ts.updateImportDeclaration(
             stmt, stmt.decorators, stmt.modifiers, stmt.importClause,
-            ts.createStringLiteral(rewrittenModuleSpecifier)));
+            ts.createStringLiteral(rewrittenModuleSpecifier.toString())));
 
         // Record the identifier by which this imported module goes, so references to its symbols
         // can be discovered later.
@@ -230,7 +230,8 @@ function transformFactorySourceFile(
       if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) &&
           coreImportIdentifiers.has(node.expression.text)) {
         // This is an import of a symbol from @angular/core. Transform it with the importRewriter.
-        const rewrittenSymbol = importRewriter.rewriteSymbol(node.name.text, '@angular/core');
+        const rewrittenSymbol =
+            importRewriter.rewriteSymbol(node.name.text, ANGULAR_CORE_SPECIFIER);
         if (rewrittenSymbol !== node.name.text) {
           const updated =
               ts.updatePropertyAccess(node, node.expression, ts.createIdentifier(rewrittenSymbol));

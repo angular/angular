@@ -7,11 +7,12 @@
  */
 
 import {DepGraph} from 'dependency-graph';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from '../packages/entry_point';
 import {DependencyHost} from './dependency_host';
+
 
 /**
  * Holds information about entry points that are removed because
@@ -30,7 +31,7 @@ import {DependencyHost} from './dependency_host';
  */
 export interface InvalidEntryPoint {
   entryPoint: EntryPoint;
-  missingDependencies: string[];
+  missingDependencies: ModuleSpecifier[];
 }
 
 /**
@@ -42,7 +43,7 @@ export interface InvalidEntryPoint {
  */
 export interface IgnoredDependency {
   entryPoint: EntryPoint;
-  dependencyPath: string;
+  dependencyPath: AbsoluteFsPath;
 }
 
 export interface DependencyDiagnostics {
@@ -83,8 +84,8 @@ export class DependencyResolver {
     let sortedEntryPointNodes: string[];
     if (target) {
       if (target.compiledByAngular) {
-        sortedEntryPointNodes = graph.dependenciesOf(target.path);
-        sortedEntryPointNodes.push(target.path);
+        sortedEntryPointNodes = graph.dependenciesOf(target.path.toString());
+        sortedEntryPointNodes.push(target.path.toString());
       } else {
         sortedEntryPointNodes = [];
       }
@@ -113,7 +114,7 @@ export class DependencyResolver {
     const angularEntryPoints = entryPoints.filter(entryPoint => entryPoint.compiledByAngular);
 
     // Add the Angular compiled entry points to the graph as nodes
-    angularEntryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
+    angularEntryPoints.forEach(entryPoint => graph.addNode(entryPoint.path.toString(), entryPoint));
 
     // Now add the dependencies between them
     angularEntryPoints.forEach(entryPoint => {
@@ -131,11 +132,11 @@ export class DependencyResolver {
         removeNodes(entryPoint, Array.from(missing));
       } else {
         dependencies.forEach(dependencyPath => {
-          if (graph.hasNode(dependencyPath)) {
-            if (graph.hasNode(entryPoint.path)) {
+          if (graph.hasNode(dependencyPath.toString())) {
+            if (graph.hasNode(entryPoint.path.toString())) {
               // The entry-point is still valid (i.e. has no missing dependencies) and
               // the dependency maps to an entry point that exists in the graph so add it
-              graph.addDependency(entryPoint.path, dependencyPath);
+              graph.addDependency(entryPoint.path.toString(), dependencyPath.toString());
             }
           } else if (invalidEntryPoints.some(i => i.entryPoint.path === dependencyPath)) {
             // The dependency path maps to an entry-point that was previously removed
@@ -158,8 +159,9 @@ export class DependencyResolver {
 
     return {invalidEntryPoints, ignoredDependencies, graph};
 
-    function removeNodes(entryPoint: EntryPoint, missingDependencies: string[]) {
-      const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
+    function removeNodes(entryPoint: EntryPoint, missingDependencies: ModuleSpecifier[]) {
+      const nodesToRemove =
+          [entryPoint.path.toString(), ...graph.dependantsOf(entryPoint.path.toString())];
       nodesToRemove.forEach(node => {
         invalidEntryPoints.push({entryPoint: graph.getNodeData(node), missingDependencies});
         graph.removeNode(node);

@@ -7,7 +7,7 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {PathSegment, AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {PathSegment, AbsoluteFsPath, ModuleSpecifier, ANGULAR_CORE_SPECIFIER} from '../../../src/ngtsc/path';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {CompiledClass} from '../analysis/decoration_analyzer';
@@ -140,8 +140,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleFile = AbsoluteFsPath.fromSourceFile(info.ngModule.node.getSourceFile());
       const importPath = info.ngModule.viaModule ||
           (declarationFile !== ngModuleFile ?
-               stripExtension(
-                   `./${PathSegment.relative(AbsoluteFsPath.dirname(declarationFile), ngModuleFile)}`) :
+               stripExtension(PathSegment.fromFsPath(
+                   `./${PathSegment.relative(AbsoluteFsPath.dirname(declarationFile), ngModuleFile)}`)) :
                null);
       const ngModule = generateImportString(importManager, importPath, ngModuleName);
 
@@ -171,7 +171,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
             info.declaration.getEnd();
         outputText.appendLeft(
             insertPoint,
-            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
+            `: ${generateImportString(importManager, ANGULAR_CORE_SPECIFIER, 'ModuleWithProviders')}<${ngModule}>`);
       }
     });
   }
@@ -197,7 +197,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     const id =
         typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
     return (
-        id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
+        id && id.name === 'ModuleWithProviders' &&
+        (this.isCore || id.from === ANGULAR_CORE_SPECIFIER));
   }
 }
 
@@ -212,7 +213,7 @@ function findStatement(node: ts.Node) {
 }
 
 function generateImportString(
-    importManager: ImportManager, importPath: string | null, importName: string) {
+    importManager: ImportManager, importPath: ModuleSpecifier | null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

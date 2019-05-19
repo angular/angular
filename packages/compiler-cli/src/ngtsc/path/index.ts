@@ -7,4 +7,4 @@
  */
 
 export {LogicalFileSystem, LogicalProjectPath} from './src/logical';
-export {AbsoluteFsPath, PathSegment} from './src/types';
+export {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier, PathSegment} from './src/types';

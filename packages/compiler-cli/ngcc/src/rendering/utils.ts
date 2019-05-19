@@ -28,12 +28,12 @@ export function getImportRewriter(
   if (isCore && isFlat) {
     return new NgccFlatImportRewriter();
   } else if (isCore) {
-    return new R3SymbolsImportRewriter(r3SymbolsFile !.fileName);
+    return new R3SymbolsImportRewriter(AbsoluteFsPath.fromSourceFile(r3SymbolsFile !));
   } else {
     return new NoopImportRewriter();
   }
 }
 
-export function stripExtension<T extends string>(filePath: T): T {
-  return filePath.replace(/\.(js|d\.ts)$/, '') as T;
+export function stripExtension<T extends String>(filePath: T): T {
+  return filePath.replace(/\.(js|d\.ts)$/, '') as any;
 }

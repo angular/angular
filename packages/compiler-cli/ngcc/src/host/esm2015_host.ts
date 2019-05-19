@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -1252,7 +1253,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     return {
-      from: importDeclaration.moduleSpecifier.text,
+      from: ModuleSpecifier.from(importDeclaration.moduleSpecifier.text),
       name: id.text,
     };
   }
@@ -1270,9 +1271,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected isFromCore(decorator: Decorator): boolean {
     if (this.isCore) {
-      return !decorator.import || /^\./.test(decorator.import.from);
+      return !decorator.import || /^\./.test(decorator.import.from.toString());
     } else {
-      return !!decorator.import && decorator.import.from === '@angular/core';
+      return !!decorator.import && decorator.import.from === ANGULAR_CORE_SPECIFIER;
     }
   }
 
@@ -1291,13 +1292,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dtsProgram The program containing all the typings files.
    * @returns a map of class names to class declarations.
    */
-  protected computeDtsDeclarationMap(dtsRootFileName: string, dtsProgram: ts.Program):
+  protected computeDtsDeclarationMap(dtsRootFileName: AbsoluteFsPath, dtsProgram: ts.Program):
       Map<string, ts.Declaration> {
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const checker = dtsProgram.getTypeChecker();
 
     // First add all the classes that are publicly exported from the entry-point
-    const rootFile = dtsProgram.getSourceFile(dtsRootFileName);
+    const rootFile = dtsProgram.getSourceFile(dtsRootFileName.toString());
     if (!rootFile) {
       throw new Error(`The given file ${dtsRootFileName} is not part of the typings program.`);
     }

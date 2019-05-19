@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {FileSystem} from '../file_system/file_system';
 import {Logger} from '../logging/logger';
-import {PathMappings} from '../utils';
+import {NODE_MODULES_SEGMENT, PathMappings} from '../utils';
 import {EntryPoint, getEntryPointInfo} from './entry_point';
 
 export class EntryPointFinder {
@@ -76,7 +76,7 @@ export class EntryPointFinder {
         // Not interested in hidden files
         .filter(p => !p.startsWith('.'))
         // Ignore node_modules
-        .filter(p => p !== 'node_modules')
+        .filter(p => p !== NODE_MODULES_SEGMENT)
         // Only interested in directories (and only those that are not symlinks)
         .filter(p => {
           const stat = this.fs.lstat(AbsoluteFsPath.resolve(sourceDirectory, p));
@@ -92,7 +92,7 @@ export class EntryPointFinder {
             entryPoints.push(...this.getEntryPointsForPackage(packagePath));
 
             // Also check for any nested node_modules in this package
-            const nestedNodeModulesPath = AbsoluteFsPath.join(packagePath, 'node_modules');
+            const nestedNodeModulesPath = AbsoluteFsPath.join(packagePath, NODE_MODULES_SEGMENT);
             if (this.fs.exists(nestedNodeModulesPath)) {
               entryPoints.push(...this.walkDirectoryForEntryPoints(nestedNodeModulesPath));
             }
@@ -138,7 +138,7 @@ export class EntryPointFinder {
         // Not interested in hidden files
         .filter(p => !p.startsWith('.'))
         // Ignore node_modules
-        .filter(p => p !== 'node_modules')
+        .filter(p => p !== NODE_MODULES_SEGMENT)
         // Only interested in directories (and only those that are not symlinks)
         .filter(p => {
           const stat = this.fs.lstat(AbsoluteFsPath.resolve(dir, p));
@@ -171,7 +171,7 @@ function extractPathPrefix(path: string) {
  */
 function removeDeeperPaths(value: AbsoluteFsPath, index: number, array: AbsoluteFsPath[]) {
   for (let i = 0; i < index; i++) {
-    if (value.startsWith(array[i])) return false;
+    if (value.startsWith(array[i].toString())) return false;
   }
   return true;
 }

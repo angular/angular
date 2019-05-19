@@ -12,21 +12,21 @@ import {getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
 
 describe('getEntryPointInfo()', () => {
-  const SOME_PACKAGE = _('/some_package');
+  const SOME_PACKAGE = _Abs('/some_package');
 
   it('should return an object containing absolute paths to the formats of the specified entry-point',
      () => {
        const fs = createMockFileSystem();
        const entryPoint = getEntryPointInfo(
-           fs, new MockLogger(), SOME_PACKAGE, _('/some_package/valid_entry_point'));
+           fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/valid_entry_point'));
        expect(entryPoint).toEqual({
          name: 'some-package/valid_entry_point',
          package: SOME_PACKAGE,
-         path: _('/some_package/valid_entry_point'),
-         typings: _(`/some_package/valid_entry_point/valid_entry_point.d.ts`),
+         path: _Abs('/some_package/valid_entry_point'),
+         typings: _Abs(`/some_package/valid_entry_point/valid_entry_point.d.ts`),
          packageJson: loadPackageJson(fs, '/some_package/valid_entry_point'),
          compiledByAngular: true,
        });
@@ -35,14 +35,14 @@ describe('getEntryPointInfo()', () => {
   it('should return null if there is no package.json at the entry-point path', () => {
     const fs = createMockFileSystem();
     const entryPoint = getEntryPointInfo(
-        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_package_json'));
+        fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/missing_package_json'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return null if there is no typings or types field in the package.json', () => {
     const fs = createMockFileSystem();
-    const entryPoint =
-        getEntryPointInfo(fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_typings'));
+    const entryPoint = getEntryPointInfo(
+        fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/missing_typings'));
     expect(entryPoint).toBe(null);
   });
 
@@ -50,12 +50,12 @@ describe('getEntryPointInfo()', () => {
      () => {
        const fs = createMockFileSystem();
        const entryPoint = getEntryPointInfo(
-           fs, new MockLogger(), SOME_PACKAGE, _('/some_package/missing_metadata'));
+           fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/missing_metadata'));
        expect(entryPoint).toEqual({
          name: 'some-package/missing_metadata',
          package: SOME_PACKAGE,
-         path: _('/some_package/missing_metadata'),
-         typings: _(`/some_package/missing_metadata/missing_metadata.d.ts`),
+         path: _Abs('/some_package/missing_metadata'),
+         typings: _Abs(`/some_package/missing_metadata/missing_metadata.d.ts`),
          packageJson: loadPackageJson(fs, '/some_package/missing_metadata'),
          compiledByAngular: false,
        });
@@ -64,12 +64,12 @@ describe('getEntryPointInfo()', () => {
   it('should work if the typings field is named `types', () => {
     const fs = createMockFileSystem();
     const entryPoint = getEntryPointInfo(
-        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/types_rather_than_typings'));
+        fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/types_rather_than_typings'));
     expect(entryPoint).toEqual({
       name: 'some-package/types_rather_than_typings',
       package: SOME_PACKAGE,
-      path: _('/some_package/types_rather_than_typings'),
-      typings: _(`/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
+      path: _Abs('/some_package/types_rather_than_typings'),
+      typings: _Abs(`/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
       packageJson: loadPackageJson(fs, '/some_package/types_rather_than_typings'),
       compiledByAngular: true,
     });
@@ -78,12 +78,12 @@ describe('getEntryPointInfo()', () => {
   it('should work with Angular Material style package.json', () => {
     const fs = createMockFileSystem();
     const entryPoint =
-        getEntryPointInfo(fs, new MockLogger(), SOME_PACKAGE, _('/some_package/material_style'));
+        getEntryPointInfo(fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/material_style'));
     expect(entryPoint).toEqual({
       name: 'some_package/material_style',
       package: SOME_PACKAGE,
-      path: _('/some_package/material_style'),
-      typings: _(`/some_package/material_style/material_style.d.ts`),
+      path: _Abs('/some_package/material_style'),
+      typings: _Abs(`/some_package/material_style/material_style.d.ts`),
       packageJson: loadPackageJson(fs, '/some_package/material_style'),
       compiledByAngular: true,
     });
@@ -92,7 +92,7 @@ describe('getEntryPointInfo()', () => {
   it('should return null if the package.json is not valid JSON', () => {
     const fs = createMockFileSystem();
     const entryPoint = getEntryPointInfo(
-        fs, new MockLogger(), SOME_PACKAGE, _('/some_package/unexpected_symbols'));
+        fs, new MockLogger(), SOME_PACKAGE, _Abs('/some_package/unexpected_symbols'));
     expect(entryPoint).toBe(null);
   });
 });
@@ -164,5 +164,5 @@ function createPackageJson(
 }
 
 export function loadPackageJson(fs: FileSystem, packagePath: string) {
-  return JSON.parse(fs.readFile(_(packagePath + '/package.json')));
+  return JSON.parse(fs.readFile(_Abs(packagePath + '/package.json')));
 }

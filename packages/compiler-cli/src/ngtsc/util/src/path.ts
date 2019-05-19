@@ -5,26 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-/// <reference types="node" />
-
-import * as path from 'path';
+import {AbsoluteFsPath, PathSegment} from '../../path';
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
-export function relativePathBetween(from: string, to: string): string|null {
-  let relative = path.posix.relative(path.dirname(from), to).replace(TS_DTS_JS_EXTENSION, '');
+export function relativePathBetween(from: AbsoluteFsPath, to: AbsoluteFsPath): PathSegment|null {
+  let relative =
+      PathSegment.relative(AbsoluteFsPath.dirname(from), to).replace(TS_DTS_JS_EXTENSION, '');
 
   if (relative === '') {
     return null;
   }
 
-  // path.relative() does not include the leading './'.
+  // PathSegment.relative() does not include the leading './'.
   if (!relative.startsWith('.')) {
     relative = `./${relative}`;
   }
 
-  return relative;
+  return PathSegment.fromFsPath(relative);
 }
 
 export function normalizeSeparators(path: string): string {

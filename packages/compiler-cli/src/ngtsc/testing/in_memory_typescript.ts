@@ -10,15 +10,17 @@
 
 import * as path from 'path';
 import * as ts from 'typescript';
+import {AbsoluteFsPath, PathSegment} from '../path';
 
 export function makeProgram(
-    files: {name: string, contents: string, isRoot?: boolean}[], options?: ts.CompilerOptions,
-    host: ts.CompilerHost = new InMemoryHost(), checkForErrors: boolean = true):
-    {program: ts.Program, host: ts.CompilerHost, options: ts.CompilerOptions} {
-  files.forEach(file => host.writeFile(file.name, file.contents, false, undefined, []));
+    files: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[],
+    options?: ts.CompilerOptions, host: ts.CompilerHost = new InMemoryHost(),
+    checkForErrors: boolean =
+        true): {program: ts.Program, host: ts.CompilerHost, options: ts.CompilerOptions} {
+  files.forEach(file => host.writeFile(file.name.toString(), file.contents, false, undefined, []));
 
-  const rootNames =
-      files.filter(file => file.isRoot !== false).map(file => host.getCanonicalFileName(file.name));
+  const rootNames = files.filter(file => file.isRoot !== false)
+                        .map(file => host.getCanonicalFileName(file.name.toString()));
   const compilerOptions = {
     noLib: true,
     experimentalDecorators: true,
@@ -44,18 +46,19 @@ export function makeProgram(
 }
 
 export class InMemoryHost implements ts.CompilerHost {
-  private fileSystem = new Map<string, string>();
+  private fileSystem = new Map<AbsoluteFsPath, string>();
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
-    const contents = this.fileSystem.get(this.getCanonicalFileName(fileName));
+    const filePath = AbsoluteFsPath.from(this.getCanonicalFileName(fileName));
+    const contents = this.fileSystem.get(filePath);
     if (contents === undefined) {
-      onError && onError(`File does not exist: ${this.getCanonicalFileName(fileName)})`);
+      onError && onError(`File does not exist: ${filePath})`);
       return undefined;
     }
-    return ts.createSourceFile(fileName, contents, languageVersion);
+    return ts.createSourceFile(filePath.toString(), contents, languageVersion);
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return '/lib.d.ts'; }
@@ -64,24 +67,25 @@ export class InMemoryHost implements ts.CompilerHost {
       fileName: string, data: string, writeByteOrderMark?: boolean,
       onError?: ((message: string) => void)|undefined,
       sourceFiles?: ReadonlyArray<ts.SourceFile>): void {
-    this.fileSystem.set(this.getCanonicalFileName(fileName), data);
+    const filePath = AbsoluteFsPath.from(this.getCanonicalFileName(fileName));
+    this.fileSystem.set(filePath, data);
   }
 
-  getCurrentDirectory(): string { return '/'; }
+  getCurrentDirectory(): string { return AbsoluteFsPath.from('/').toString(); }
 
   getDirectories(dir: string): string[] {
-    const fullDir = this.getCanonicalFileName(dir) + '/';
+    const fullDir = AbsoluteFsPath.from(this.getCanonicalFileName(dir) + '/');
     const dirSet = new Set(Array
                                // Look at all paths known to the host.
                                .from(this.fileSystem.keys())
                                // Filter out those that aren't under the requested directory.
-                               .filter(candidate => candidate.startsWith(fullDir))
+                               .filter(candidate => candidate.startsWith(fullDir.toString()))
                                // Relativize the rest by the requested directory.
-                               .map(candidate => candidate.substr(fullDir.length))
+                               .map(candidate => PathSegment.relative(fullDir, candidate))
                                // What's left are dir/.../file.txt entries, and file.txt entries.
                                // Get the dirname, which
                                // yields '.' for the latter and dir/... for the former.
-                               .map(candidate => path.dirname(candidate))
+                               .map(candidate => path.dirname(candidate.toString()))
                                // Filter out the '.' entries, which were files.
                                .filter(candidate => candidate !== '.')
                                // Finally, split on / and grab the first entry.
@@ -92,16 +96,20 @@ export class InMemoryHost implements ts.CompilerHost {
   }
 
   getCanonicalFileName(fileName: string): string {
-    return path.posix.normalize(`${this.getCurrentDirectory()}/${fileName}`);
+    return AbsoluteFsPath.resolve(this.getCurrentDirectory(), fileName).toString();
   }
 
   useCaseSensitiveFileNames(): boolean { return true; }
 
   getNewLine(): string { return '\n'; }
 
-  fileExists(fileName: string): boolean { return this.fileSystem.has(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.fileSystem.has(AbsoluteFsPath.from(fileName));
+  }
 
-  readFile(fileName: string): string|undefined { return this.fileSystem.get(fileName); }
+  readFile(fileName: string): string|undefined {
+    return this.fileSystem.get(AbsoluteFsPath.from(fileName));
+  }
 }
 
 function bindingNameEquals(node: ts.BindingName, name: string): boolean {
@@ -112,8 +120,9 @@ function bindingNameEquals(node: ts.BindingName, name: string): boolean {
 }
 
 export function getDeclaration<T extends ts.Declaration>(
-    program: ts.Program, fileName: string, name: string, assert: (value: any) => value is T): T {
-  const sf = program.getSourceFile(fileName);
+    program: ts.Program, fileName: AbsoluteFsPath, name: string,
+    assert: (value: any) => value is T): T {
+  const sf = program.getSourceFile(fileName.toString());
   if (!sf) {
     throw new Error(`No such file: ${fileName}`);
   }
@@ -154,4 +163,15 @@ export function getDeclaration<T extends ts.Declaration>(
     });
     return chosenDecl;
   }
+}
+
+/**
+ * A helper function to ensure that we are using a correct absolute file path when getting
+ * a source file by its filename.
+ *
+ * The cast to and from AbsoluteFsPath ensures that paths like `/a/b/c` are correctly resolved,
+ * since in Windows this might resolve to something like `C:/a/b/c`.
+ */
+export function getSourceFile(program: ts.Program, fileName: string): ts.SourceFile|undefined {
+  return program.getSourceFile(AbsoluteFsPath.from(fileName).toString());
 }

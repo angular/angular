@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
 import {existsSync, readFileSync, readdirSync, statSync, symlinkSync} from 'fs';
 import * as mockFs from 'mock-fs';
 import * as path from 'path';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
 import {NodeJSFileSystem} from '../../src/file_system/node_js_file_system';
 import {mainNgcc} from '../../src/main';
@@ -18,20 +18,20 @@ import {markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for esm2015', () => {
-    expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']}))
+    expect(() => mainNgcc({basePath: _Abs('/node_modules'), propertiesToConsider: ['esm2015']}))
         .not.toThrow();
   });
 
   it('should run ngcc without errors for esm5', () => {
     expect(() => mainNgcc({
-             basePath: '/node_modules',
+             basePath: _Abs('/node_modules'),
              propertiesToConsider: ['esm5'],
              logger: new MockLogger(),
            }))
@@ -51,7 +51,8 @@ describe('ngcc main()', () => {
         typings: '0.0.0-PLACEHOLDER',
       };
 
-      mainNgcc({basePath: '/node_modules', targetEntryPointPath: '@angular/common/http/testing'});
+      mainNgcc(
+          {basePath: _Abs('/node_modules'), targetEntryPointPath: '@angular/common/http/testing'});
       expect(loadPackage('@angular/common/http/testing').__processed_by_ivy_ngcc__)
           .toEqual(STANDARD_MARKERS);
       // * `common/http` is a dependency of `common/http/testing`, so is compiled.
@@ -66,7 +67,7 @@ describe('ngcc main()', () => {
     });
 
     it('should mark a non-Angular package target as processed', () => {
-      mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package'});
+      mainNgcc({basePath: _Abs('/node_modules'), targetEntryPointPath: 'test-package'});
 
       // `test-package` has no Angular but is marked as processed.
       expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
@@ -85,7 +86,7 @@ describe('ngcc main()', () => {
         const logger = new MockLogger();
         markPropertiesAsProcessed('@angular/common/http/testing', SUPPORTED_FORMAT_PROPERTIES);
         mainNgcc({
-          basePath: '/node_modules',
+          basePath: _Abs('/node_modules'),
           targetEntryPointPath: '@angular/common/http/testing', logger,
         });
         expect(logger.logs.debug).toContain(['The target entry-point has already been processed']);
@@ -95,7 +96,7 @@ describe('ngcc main()', () => {
         const logger = new MockLogger();
         markPropertiesAsProcessed('@angular/common/http/testing', ['esm2015', 'fesm2015']);
         mainNgcc({
-          basePath: '/node_modules',
+          basePath: _Abs('/node_modules'),
           targetEntryPointPath: '@angular/common/http/testing',
           propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'], logger,
         });
@@ -111,7 +112,7 @@ describe('ngcc main()', () => {
            const logger = new MockLogger();
            markPropertiesAsProcessed('@angular/common/http/testing', ['esm2015']);
            mainNgcc({
-             basePath: '/node_modules',
+             basePath: _Abs('/node_modules'),
              targetEntryPointPath: '@angular/common/http/testing',
              propertiesToConsider: ['esm5', 'esm2015'],
              compileAllFormats: false, logger,
@@ -127,7 +128,7 @@ describe('ngcc main()', () => {
            const logger = new MockLogger();
            markPropertiesAsProcessed('@angular/common/http/testing', ['esm2015']);
            mainNgcc({
-             basePath: '/node_modules',
+             basePath: _Abs('/node_modules'),
              targetEntryPointPath: '@angular/common/http/testing',
              // Simulate a property that does not exist on the package.json and will be ignored.
              propertiesToConsider: ['missing', 'esm2015', 'esm5'],
@@ -143,7 +144,7 @@ describe('ngcc main()', () => {
 
 
   function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
-    const basePath = _('/node_modules');
+    const basePath = _Abs('/node_modules');
     const targetPackageJsonPath = AbsoluteFsPath.join(basePath, packagePath, 'package.json');
     const targetPackage = loadPackage(packagePath);
     const fs = new NodeJSFileSystem();
@@ -157,7 +158,7 @@ describe('ngcc main()', () => {
     it('should only compile the entry-point formats given in the `propertiesToConsider` list',
        () => {
          mainNgcc({
-           basePath: '/node_modules',
+           basePath: _Abs('/node_modules'),
            propertiesToConsider: ['main', 'esm5', 'module', 'fesm5'],
            logger: new MockLogger(),
 
@@ -198,7 +199,7 @@ describe('ngcc main()', () => {
   describe('with compileAllFormats set to false', () => {
     it('should only compile the first matching format', () => {
       mainNgcc({
-        basePath: '/node_modules',
+        basePath: _Abs('/node_modules'),
         propertiesToConsider: ['module', 'fesm5', 'esm5'],
         compileAllFormats: false,
         logger: new MockLogger(),
@@ -232,7 +233,7 @@ describe('ngcc main()', () => {
     it('should cope with compiling the same entry-point multiple times with different formats',
        () => {
          mainNgcc({
-           basePath: '/node_modules',
+           basePath: _Abs('/node_modules'),
            propertiesToConsider: ['module'],
            compileAllFormats: false,
            logger: new MockLogger(),
@@ -244,7 +245,7 @@ describe('ngcc main()', () => {
          });
          // If ngcc tries to write out the typings files again, this will throw an exception.
          mainNgcc({
-           basePath: '/node_modules',
+           basePath: _Abs('/node_modules'),
            propertiesToConsider: ['esm5'],
            compileAllFormats: false,
            logger: new MockLogger(),
@@ -261,7 +262,7 @@ describe('ngcc main()', () => {
     it('should create new files rather than overwriting the originals', () => {
       const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
       mainNgcc({
-        basePath: '/node_modules',
+        basePath: _Abs('/node_modules'),
         createNewEntryPointFormats: true,
         propertiesToConsider: ['esm5'],
         logger: new MockLogger(),
@@ -300,7 +301,7 @@ describe('ngcc main()', () => {
   describe('logger', () => {
     it('should log info message to the console by default', () => {
       const consoleInfoSpy = spyOn(console, 'info');
-      mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']});
+      mainNgcc({basePath: _Abs('/node_modules'), propertiesToConsider: ['esm2015']});
       expect(consoleInfoSpy)
           .toHaveBeenCalledWith('Compiling @angular/common/http : esm2015 as esm2015');
     });
@@ -308,7 +309,7 @@ describe('ngcc main()', () => {
     it('should use a custom logger if provided', () => {
       const logger = new MockLogger();
       mainNgcc({
-        basePath: '/node_modules',
+        basePath: _Abs('/node_modules'),
         propertiesToConsider: ['esm2015'], logger,
       });
       expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
@@ -318,7 +319,7 @@ describe('ngcc main()', () => {
   describe('with pathMappings', () => {
     it('should find and compile packages accessible via the pathMappings', () => {
       mainNgcc({
-        basePath: '/node_modules',
+        basePath: _Abs('/node_modules'),
         propertiesToConsider: ['es2015'],
         pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
       });
@@ -393,11 +394,11 @@ function loadDirectory(directoryPath: string): Directory {
   const directory: Directory = {};
 
   readdirSync(directoryPath).forEach(item => {
-    const itemPath = AbsoluteFsPath.resolve(directoryPath, item);
-    if (statSync(itemPath).isDirectory()) {
-      directory[item] = loadDirectory(itemPath);
+    const itemPathString = AbsoluteFsPath.resolve(directoryPath, item).toString();
+    if (statSync(itemPathString).isDirectory()) {
+      directory[item] = loadDirectory(itemPathString);
     } else {
-      directory[item] = readFileSync(itemPath, 'utf-8');
+      directory[item] = readFileSync(itemPathString, 'utf-8');
     }
   });
 

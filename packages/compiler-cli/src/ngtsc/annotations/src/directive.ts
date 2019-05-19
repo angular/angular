@@ -14,6 +14,7 @@ import {DefaultImportRecorder, Reference} from '../../imports';
 import {MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -136,7 +137,7 @@ export function extractDirectiveMetadata(
   const decoratedElements =
       members.filter(member => !member.isStatic && member.decorators !== null);
 
-  const coreModule = isCore ? undefined : '@angular/core';
+  const coreModule = isCore ? undefined : ANGULAR_CORE_SPECIFIER;
 
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated
@@ -322,7 +323,7 @@ export function extractQueriesFromDecorator(
       throw new Error(`query metadata must be an instance of a query type`);
     }
     const type = reflector.getImportOfIdentifier(queryExpr.expression);
-    if (type === null || (!isCore && type.from !== '@angular/core') ||
+    if (type === null || (!isCore && type.from !== ANGULAR_CORE_SPECIFIER) ||
         !QUERY_TYPES.has(type.name)) {
       throw new Error(`query metadata must be an instance of a query type`);
     }
@@ -460,7 +461,7 @@ type StringMap<T> = {
 };
 
 export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: ModuleSpecifier | undefined,
     metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let hostMetadata: StringMap<string|Expression> = {};
   if (metadata && metadata.has('host')) {

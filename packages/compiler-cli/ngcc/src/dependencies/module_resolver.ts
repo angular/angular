@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {PathMappings, isRelativePath} from '../utils';
 
@@ -42,7 +42,7 @@ export class ModuleResolver {
    *  * a JavaScript file of an internal module
    *  * null if none exists.
    */
-  resolveModuleImport(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  resolveModuleImport(moduleName: ModuleSpecifier, fromPath: AbsoluteFsPath): ResolvedModule|null {
     if (isRelativePath(moduleName)) {
       return this.resolveAsRelativePath(moduleName, fromPath);
     } else {
@@ -70,7 +70,8 @@ export class ModuleResolver {
    * For example: `${moduleName}.js` or `${moduleName}/index.js`.
    * If neither of these files exist then the method returns `null`.
    */
-  private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveAsRelativePath(moduleName: ModuleSpecifier, fromPath: AbsoluteFsPath):
+      ResolvedModule|null {
     const resolvedPath = this.resolvePath(
         AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(fromPath), moduleName),
         this.relativeExtensions);
@@ -88,14 +89,15 @@ export class ModuleResolver {
    * check whether it would have resolved to a relative path, in which case it is marked as a
    * "deep-import".
    */
-  private resolveByPathMappings(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveByPathMappings(moduleName: ModuleSpecifier, fromPath: AbsoluteFsPath):
+      ResolvedModule|null {
     const mappedPaths = this.findMappedPaths(moduleName);
     if (mappedPaths.length > 0) {
       const packagePath = this.findPackagePath(fromPath);
       if (packagePath !== null) {
         for (const mappedPath of mappedPaths) {
           const isRelative =
-              mappedPath.startsWith(packagePath) && !mappedPath.includes('node_modules');
+              mappedPath.startsWith(packagePath.toString()) && !mappedPath.includes('node_modules');
           if (isRelative) {
             return this.resolveAsRelativePath(mappedPath, fromPath);
           } else if (this.isEntryPoint(mappedPath)) {
@@ -116,7 +118,8 @@ export class ModuleResolver {
    * If a folder is found but the path does not contain a `package.json` then it is marked as a
    * "deep-import".
    */
-  private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveAsEntryPoint(moduleName: ModuleSpecifier, fromPath: AbsoluteFsPath): ResolvedModule
+      |null {
     let folder = fromPath;
     while (!AbsoluteFsPath.isRoot(folder)) {
       folder = AbsoluteFsPath.dirname(folder);
@@ -141,7 +144,7 @@ export class ModuleResolver {
    */
   private resolvePath(path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
     for (const postFix of postFixes) {
-      const testPath = AbsoluteFsPath.fromUnchecked(path + postFix);
+      const testPath = AbsoluteFsPath.from(path + postFix);
       if (this.fs.exists(testPath)) {
         return testPath;
       }
@@ -166,7 +169,7 @@ export class ModuleResolver {
    * replacing the `matcher.prefix` and `matcher.postfix` strings in `path with the
    * `template.prefix` and `template.postfix` strings.
    */
-  private findMappedPaths(moduleName: string): AbsoluteFsPath[] {
+  private findMappedPaths(moduleName: ModuleSpecifier): AbsoluteFsPath[] {
     const matches = this.pathMappings.map(mapping => this.matchMapping(moduleName, mapping));
 
     let bestMapping: ProcessedPathMapping|undefined;
@@ -201,7 +204,7 @@ export class ModuleResolver {
    *
    * @returns the wildcard segment of a matched `path`, or `null` if no match.
    */
-  private matchMapping(path: string, mapping: ProcessedPathMapping): string|null {
+  private matchMapping(path: ModuleSpecifier, mapping: ProcessedPathMapping): string|null {
     const {prefix, postfix, hasWildcard} = mapping.matcher;
     if (path.startsWith(prefix) && path.endsWith(postfix)) {
       return hasWildcard ? path.substring(prefix.length, path.length - postfix.length) : '';

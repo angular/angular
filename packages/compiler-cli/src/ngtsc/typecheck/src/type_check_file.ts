@@ -31,10 +31,11 @@ export class TypeCheckFile extends Environment {
   private nextTcbId = 1;
   private tcbStatements: ts.Statement[] = [];
 
-  constructor(private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter) {
+  constructor(
+      private fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter,
-        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
+        ts.createSourceFile(fileName.toString(), '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
@@ -63,7 +64,7 @@ export class TypeCheckFile extends Environment {
     }
 
     return ts.createSourceFile(
-        this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+        this.fileName.toString(), source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 
   getPreludeStatements(): ts.Statement[] { return []; }
@@ -71,5 +72,5 @@ export class TypeCheckFile extends Environment {
 
 export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {
   const shortest = rootDirs.concat([]).sort((a, b) => a.length - b.length)[0];
-  return AbsoluteFsPath.fromUnchecked(path.posix.join(shortest, '__ng_typecheck__.ts'));
+  return AbsoluteFsPath.join(shortest, '__ng_typecheck__.ts');
 }

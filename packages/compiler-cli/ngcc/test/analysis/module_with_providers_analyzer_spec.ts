@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -14,9 +15,11 @@ import {BundleProgram} from '../../src/packages/bundle_program';
 import {MockLogger} from '../helpers/mock_logger';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
+const _Abs = AbsoluteFsPath.from;
+
 const TEST_PROGRAM = [
   {
-    name: '/src/entry-point.js',
+    name: _Abs('/src/entry-point.js'),
     contents: `
     export * from './explicit';
     export * from './any';
@@ -26,7 +29,7 @@ const TEST_PROGRAM = [
   `
   },
   {
-    name: '/src/explicit.js',
+    name: _Abs('/src/explicit.js'),
     contents: `
     import {ExternalModule} from './module';
     import {LibraryModule} from 'some-library';
@@ -72,7 +75,7 @@ const TEST_PROGRAM = [
     `
   },
   {
-    name: '/src/any.js',
+    name: _Abs('/src/any.js'),
     contents: `
     import {ExternalModule} from './module';
     import {LibraryModule} from 'some-library';
@@ -118,7 +121,7 @@ const TEST_PROGRAM = [
     `
   },
   {
-    name: '/src/implicit.js',
+    name: _Abs('/src/implicit.js'),
     contents: `
     import {ExternalModule} from './module';
     import {LibraryModule} from 'some-library';
@@ -164,7 +167,7 @@ const TEST_PROGRAM = [
     `
   },
   {
-    name: '/src/no-providers.js',
+    name: _Abs('/src/no-providers.js'),
     contents: `
     import {ExternalModule} from './module';
     import {LibraryModule} from 'some-library';
@@ -199,19 +202,19 @@ const TEST_PROGRAM = [
     `
   },
   {
-    name: '/src/module.js',
+    name: _Abs('/src/module.js'),
     contents: `
     export class ExternalModule {}
     `
   },
   {
-    name: '/node_modules/some-library/index.d.ts',
+    name: _Abs('/node_modules/some-library/index.d.ts'),
     contents: 'export declare class LibraryModule {}'
   },
 ];
 const TEST_DTS_PROGRAM = [
   {
-    name: '/typings/entry-point.d.ts',
+    name: _Abs('/typings/entry-point.d.ts'),
     contents: `
     export * from './explicit';
     export * from './any';
@@ -221,7 +224,7 @@ const TEST_DTS_PROGRAM = [
   `
   },
   {
-    name: '/typings/explicit.d.ts',
+    name: _Abs('/typings/explicit.d.ts'),
     contents: `
     import {ModuleWithProviders} from './core';
     import {ExternalModule} from './module';
@@ -238,7 +241,7 @@ const TEST_DTS_PROGRAM = [
     `
   },
   {
-    name: '/typings/any.d.ts',
+    name: _Abs('/typings/any.d.ts'),
     contents: `
     import {ModuleWithProviders} from './core';
     export declare class AnyInternalModule {}
@@ -253,7 +256,7 @@ const TEST_DTS_PROGRAM = [
     `
   },
   {
-    name: '/typings/implicit.d.ts',
+    name: _Abs('/typings/implicit.d.ts'),
     contents: `
     import {ExternalModule} from './module';
     import {LibraryModule} from 'some-library';
@@ -269,7 +272,7 @@ const TEST_DTS_PROGRAM = [
     `
   },
   {
-    name: '/typings/no-providers.d.ts',
+    name: _Abs('/typings/no-providers.d.ts'),
     contents: `
     import {ModuleWithProviders} from './core';
     import {ExternalModule} from './module';
@@ -287,13 +290,13 @@ const TEST_DTS_PROGRAM = [
     `
   },
   {
-    name: '/typings/module.d.ts',
+    name: _Abs('/typings/module.d.ts'),
     contents: `
     export declare class ExternalModule {}
     `
   },
   {
-    name: '/typings/core.d.ts',
+    name: _Abs('/typings/core.d.ts'),
     contents: `
 
     export declare interface Type<T> {
@@ -307,7 +310,7 @@ const TEST_DTS_PROGRAM = [
   `
   },
   {
-    name: '/node_modules/some-library/index.d.ts',
+    name: _Abs('/node_modules/some-library/index.d.ts'),
     contents: 'export declare class LibraryModule {}'
   },
 ];
@@ -330,11 +333,12 @@ describe('ModuleWithProvidersAnalyzer', () => {
       analyses = analyzer.analyzeProgram(program);
     });
 
-    it('should ignore declarations that already have explicit NgModule type params',
-       () => { expect(getAnalysisDescription(analyses, '/typings/explicit.d.ts')).toEqual([]); });
+    it('should ignore declarations that already have explicit NgModule type params', () => {
+      expect(getAnalysisDescription(analyses, _Abs('/typings/explicit.d.ts'))).toEqual([]);
+    });
 
     it('should find declarations that use `any` for the NgModule type param', () => {
-      const anyAnalysis = getAnalysisDescription(analyses, '/typings/any.d.ts');
+      const anyAnalysis = getAnalysisDescription(analyses, _Abs('/typings/any.d.ts'));
       expect(anyAnalysis).toContain(['anyInternalFunction', 'AnyInternalModule', null]);
       expect(anyAnalysis).toContain(['anyExternalFunction', 'ExternalModule', null]);
       expect(anyAnalysis).toContain(['anyLibraryFunction', 'LibraryModule', 'some-library']);
@@ -346,15 +350,16 @@ describe('ModuleWithProvidersAnalyzer', () => {
     it('should track internal module references in the references registry', () => {
       const declarations = referencesRegistry.getDeclarationMap();
       const externalModuleDeclaration =
-          getDeclaration(program, '/src/module.js', 'ExternalModule', ts.isClassDeclaration);
+          getDeclaration(program, _Abs('/src/module.js'), 'ExternalModule', ts.isClassDeclaration);
       const libraryModuleDeclaration = getDeclaration(
-          program, '/node_modules/some-library/index.d.ts', 'LibraryModule', ts.isClassDeclaration);
+          program, _Abs('/node_modules/some-library/index.d.ts'), 'LibraryModule',
+          ts.isClassDeclaration);
       expect(declarations.has(externalModuleDeclaration.name !)).toBe(true);
       expect(declarations.has(libraryModuleDeclaration.name !)).toBe(false);
     });
 
     it('should find declarations that have implicit return types', () => {
-      const anyAnalysis = getAnalysisDescription(analyses, '/typings/implicit.d.ts');
+      const anyAnalysis = getAnalysisDescription(analyses, _Abs('/typings/implicit.d.ts'));
       expect(anyAnalysis).toContain(['implicitInternalFunction', 'ImplicitInternalModule', null]);
       expect(anyAnalysis).toContain(['implicitExternalFunction', 'ExternalModule', null]);
       expect(anyAnalysis).toContain(['implicitLibraryFunction', 'LibraryModule', 'some-library']);
@@ -365,7 +370,7 @@ describe('ModuleWithProvidersAnalyzer', () => {
 
     it('should find declarations that do not specify a `providers` property in the return type',
        () => {
-         const anyAnalysis = getAnalysisDescription(analyses, '/typings/no-providers.d.ts');
+         const anyAnalysis = getAnalysisDescription(analyses, _Abs('/typings/no-providers.d.ts'));
          expect(anyAnalysis).not.toContain([
            'noProvExplicitInternalFunction', 'NoProvidersInternalModule'
          ]);
@@ -388,8 +393,9 @@ describe('ModuleWithProvidersAnalyzer', () => {
          ]);
        });
 
-    function getAnalysisDescription(analyses: ModuleWithProvidersAnalyses, fileName: string) {
-      const file = dtsProgram.program.getSourceFile(fileName) !;
+    function getAnalysisDescription(
+        analyses: ModuleWithProvidersAnalyses, fileName: AbsoluteFsPath) {
+      const file = dtsProgram.program.getSourceFile(fileName.toString()) !;
       const analysis = analyses.get(file);
       return analysis ?
           analysis.map(

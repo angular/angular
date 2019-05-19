@@ -8,7 +8,10 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../path';
 import {makeProgram} from '../../testing/in_memory_typescript';
+
+const _Abs = AbsoluteFsPath.from;
 
 /**
  * Construct a TS program consisting solely of an import graph, from a string-based representation
@@ -50,7 +53,7 @@ export function makeProgramFromGraph(graph: string): {
                          .join('\n') +
         `export const ${name} = '${name}';\n`;
     return {
-      name: `${name}.ts`,
+      name: _Abs(`/${name}.ts`),
       contents,
     };
   });

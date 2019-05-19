@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {ModuleResolver} from '../../imports';
+import {ModuleSpecifier} from '../../path';
 
 export abstract class RouterEntryPoint {
   abstract readonly filePath: string;
@@ -39,7 +40,8 @@ export class RouterEntryPointManager {
     if (moduleName === undefined) {
       return null;
     }
-    const resolvedSf = this.moduleResolver.resolveModuleName(relativeFile, context);
+    const resolvedSf =
+        this.moduleResolver.resolveModuleName(ModuleSpecifier.from(relativeFile), context);
     if (resolvedSf === null) {
       return null;
     }

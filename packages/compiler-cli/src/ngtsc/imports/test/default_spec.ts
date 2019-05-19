@@ -8,27 +8,36 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../path';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DefaultImportTracker} from '../src/default';
+
+const _Abs = AbsoluteFsPath.from;
 
 describe('DefaultImportTracker', () => {
   it('should prevent a default import from being elided if used', () => {
     const {program, host} = makeProgram(
         [
-          {name: 'dep.ts', contents: `export default class Foo {}`},
-          {name: 'test.ts', contents: `import Foo from './dep'; export function test(f: Foo) {}`},
+          {name: _Abs('/dep.ts'), contents: `export default class Foo {}`},
+          {
+            name: _Abs('/test.ts'),
+            contents: `import Foo from './dep'; export function test(f: Foo) {}`
+          },
 
           // This control file is identical to the test file, but will not have its import marked
           // for preservation. It exists to verify that it is in fact the action of
           // DefaultImportTracker and not some other artifact of the test setup which causes the
           // import to be preserved. It will also verify that DefaultImportTracker does not preserve
           // imports which are not marked for preservation.
-          {name: 'ctrl.ts', contents: `import Foo from './dep'; export function test(f: Foo) {}`},
+          {
+            name: _Abs('/ctrl.ts'),
+            contents: `import Foo from './dep'; export function test(f: Foo) {}`
+          },
         ],
         {
           module: ts.ModuleKind.ES2015,
         });
-    const fooClause = getDeclaration(program, 'test.ts', 'Foo', ts.isImportClause);
+    const fooClause = getDeclaration(program, _Abs('/test.ts'), 'Foo', ts.isImportClause);
     const fooId = fooClause.name !;
     const fooDecl = fooClause.parent;
 
@@ -38,24 +47,27 @@ describe('DefaultImportTracker', () => {
     program.emit(undefined, undefined, undefined, undefined, {
       before: [tracker.importPreservingTransformer()],
     });
-    const testContents = host.readFile('/test.js') !;
+    const testContents = readFile(host, '/test.js') !;
     expect(testContents).toContain(`import Foo from './dep';`);
 
     // The control should have the import elided.
-    const ctrlContents = host.readFile('/ctrl.js');
+    const ctrlContents = readFile(host, '/ctrl.js');
     expect(ctrlContents).not.toContain(`import Foo from './dep';`);
   });
 
   it('should transpile imports correctly into commonjs', () => {
     const {program, host} = makeProgram(
         [
-          {name: 'dep.ts', contents: `export default class Foo {}`},
-          {name: 'test.ts', contents: `import Foo from './dep'; export function test(f: Foo) {}`},
+          {name: _Abs('/dep.ts'), contents: `export default class Foo {}`},
+          {
+            name: _Abs('/test.ts'),
+            contents: `import Foo from './dep'; export function test(f: Foo) {}`
+          },
         ],
         {
           module: ts.ModuleKind.CommonJS,
         });
-    const fooClause = getDeclaration(program, 'test.ts', 'Foo', ts.isImportClause);
+    const fooClause = getDeclaration(program, _Abs('/test.ts'), 'Foo', ts.isImportClause);
     const fooId = ts.updateIdentifier(fooClause.name !);
     const fooDecl = fooClause.parent;
 
@@ -68,7 +80,7 @@ describe('DefaultImportTracker', () => {
         tracker.importPreservingTransformer(),
       ],
     });
-    const testContents = host.readFile('/test.js') !;
+    const testContents = readFile(host, '/test.js') !;
     expect(testContents).toContain(`var dep_1 = require("./dep");`);
     expect(testContents).toContain(`var ref = dep_1["default"];`);
   });
@@ -87,4 +99,8 @@ function addReferenceTransformer(id: ts.Identifier): ts.TransformerFactory<ts.So
       return sf;
     };
   };
+}
+
+function readFile(host: ts.CompilerHost, file: string): string|undefined {
+  return host.readFile(_Abs(file).toString());
 }

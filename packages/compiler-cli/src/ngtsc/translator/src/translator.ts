@@ -10,6 +10,7 @@ import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinTyp
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 
 export class Context {
   constructor(readonly isStatement: boolean) {}
@@ -43,7 +44,7 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
  */
 export interface Import {
   /** The name of the module that has been imported. */
-  specifier: string;
+  specifier: ModuleSpecifier;
   /** The alias of the imported module. */
   qualifier: string;
 }
@@ -60,13 +61,13 @@ export interface NamedImport {
 }
 
 export class ImportManager {
-  private specifierToIdentifier = new Map<string, string>();
+  private specifierToIdentifier = new Map<ModuleSpecifier, string>();
   private nextIndex = 0;
 
   constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
   }
 
-  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport {
+  generateNamedImport(moduleName: ModuleSpecifier, originalSymbol: string): NamedImport {
     // First, rewrite the symbol name.
     const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
 
@@ -87,8 +88,8 @@ export class ImportManager {
     return {moduleImport, symbol};
   }
 
-  getAllImports(contextPath: string): Import[] {
-    const imports: {specifier: string, qualifier: string}[] = [];
+  getAllImports(contextPath: AbsoluteFsPath): Import[] {
+    const imports: {specifier: ModuleSpecifier, qualifier: string}[] = [];
     this.specifierToIdentifier.forEach((qualifier, specifier) => {
       specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
       imports.push({specifier, qualifier});
@@ -254,8 +255,8 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
-    const {moduleImport, symbol} =
-        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    const {moduleImport, symbol} = this.imports.generateNamedImport(
+        ModuleSpecifier.from(ast.value.moduleName), ast.value.name);
     if (moduleImport === null) {
       return ts.createIdentifier(symbol);
     } else {
@@ -439,8 +440,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const {moduleImport, symbol} =
-        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    const {moduleImport, symbol} = this.imports.generateNamedImport(
+        ModuleSpecifier.from(ast.value.moduleName), ast.value.name);
     const symbolIdentifier = ts.createIdentifier(symbol);
 
     const typeName = moduleImport ?

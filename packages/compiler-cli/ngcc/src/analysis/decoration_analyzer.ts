@@ -54,9 +54,9 @@ class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: FileSystem) {}
   canPreload = false;
   preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
-  load(url: string): string { return this.fs.readFile(AbsoluteFsPath.resolve(url)); }
-  resolve(url: string, containingFile: string): string {
-    return AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(AbsoluteFsPath.from(containingFile)), url);
+  load(resolvedUrl: AbsoluteFsPath): string { return this.fs.readFile(resolvedUrl); }
+  resolve(url: string, containingFile: AbsoluteFsPath): AbsoluteFsPath {
+    return AbsoluteFsPath.resolve(AbsoluteFsPath.dirname(containingFile), url);
   }
 }
 

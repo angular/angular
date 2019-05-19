@@ -9,7 +9,7 @@ import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
 
 function createMockFileSystem() {
   return new MockFileSystem({
@@ -87,7 +87,8 @@ describe('entry point bundle', () => {
   it('should resolve JavaScript sources instead of declaration files if they are adjacent', () => {
     const fs = createMockFileSystem();
     const esm5bundle = makeEntryPointBundle(
-        fs, '/node_modules/test', './index.js', './index.d.ts', false, 'esm5', 'esm5', true) !;
+        fs, _Abs('/node_modules/test'), _Abs('/node_modules/test/index.js'),
+        _Abs('/node_modules/test/index.d.ts'), false, 'esm5', 'esm5', true) !;
 
     expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
         .toEqual(jasmine.arrayWithExactContents([
@@ -104,7 +105,7 @@ describe('entry point bundle', () => {
           // Modules resolved from "other" should be declaration files
           '/node_modules/other/public_api.d.ts',
           '/node_modules/other/index.d.ts',
-        ].map(p => _(p).toString())));
+        ].map(p => _Abs(p).toString())));
 
     expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
         .toEqual(jasmine.arrayWithExactContents([
@@ -117,6 +118,6 @@ describe('entry point bundle', () => {
           '/node_modules/test/secondary/index.d.ts',
           '/node_modules/other/public_api.d.ts',
           '/node_modules/other/index.d.ts',
-        ].map(p => _(p).toString())));
+        ].map(p => _Abs(p).toString())));
   });
 });

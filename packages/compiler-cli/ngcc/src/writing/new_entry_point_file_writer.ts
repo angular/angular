@@ -49,7 +49,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
 
   protected writeFile(file: FileToWrite, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath):
       void {
-    if (isDtsPath(file.path.replace(/\.map$/, ''))) {
+    if (isDtsPath(AbsoluteFsPath.from(file.path.replace(/\.map$/, '')))) {
       // This is either `.d.ts` or `.d.ts.map` file
       super.writeFileAndBackup(file);
     } else {

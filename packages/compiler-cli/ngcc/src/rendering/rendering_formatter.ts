@@ -7,6 +7,7 @@
  */
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/decoration_analyzer';
@@ -29,7 +30,7 @@ export interface RenderingFormatter {
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void;
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void;
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void;
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;

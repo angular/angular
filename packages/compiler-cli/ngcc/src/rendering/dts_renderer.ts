@@ -8,6 +8,8 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {CompileResult} from '../../../src/ngtsc/transform';
 import {translateType, ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
@@ -20,7 +22,6 @@ import {Logger} from '../logging/logger';
 import {FileToWrite, getImportRewriter} from './utils';
 import {RenderingFormatter} from './rendering_formatter';
 import {extractSourceMap, renderSourceAndMap} from './source_maps';
-import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
 
 /**
  * A structure that captures information about what needs to be rendered
@@ -97,12 +98,12 @@ export class DtsRenderer {
       });
     });
 
+    const dtsFileName = AbsoluteFsPath.fromSourceFile(dtsFile);
     this.dtsFormatter.addModuleWithProvidersParams(
         outputText, renderInfo.moduleWithProviders, importManager);
     this.dtsFormatter.addExports(
-        outputText, dtsFile.fileName, renderInfo.privateExports, importManager, dtsFile);
-    this.dtsFormatter.addImports(
-        outputText, importManager.getAllImports(dtsFile.fileName), dtsFile);
+        outputText, dtsFileName, renderInfo.privateExports, importManager, dtsFile);
+    this.dtsFormatter.addImports(outputText, importManager.getAllImports(dtsFileName), dtsFile);
 
 
 

@@ -153,7 +153,7 @@ export class TypeCheckContext {
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName)
+    let imports = importManager.getAllImports(AbsoluteFsPath.from(sf.fileName))
                       .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
                       .join('\n');
     code = imports + '\n' + code;

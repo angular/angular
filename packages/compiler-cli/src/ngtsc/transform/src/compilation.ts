@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
+import {AbsoluteFsPath} from '../../path';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -78,7 +79,8 @@ export class IvyCompilation {
   constructor(
       private handlers: DecoratorHandler<any, any>[], private reflector: ReflectionHost,
       private importRewriter: ImportRewriter, private incrementalState: IncrementalState,
-      private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null,
+      private perf: PerfRecorder,
+      private sourceToFactorySymbols: Map<AbsoluteFsPath, Set<string>>|null,
       private scopeRegistry: LocalModuleScopeRegistry) {}
 
 
@@ -175,6 +177,7 @@ export class IvyCompilation {
     if (this.incrementalState.safeToSkip(sf)) {
       return;
     }
+    const sfPath = AbsoluteFsPath.fromSourceFile(sf);
     const analyzeClass = (node: ClassDeclaration): void => {
       const ivyClass = this.detectHandlersForClass(node);
 
@@ -197,9 +200,8 @@ export class IvyCompilation {
             }
 
             if (match.analyzed.factorySymbolName !== undefined &&
-                this.sourceToFactorySymbols !== null &&
-                this.sourceToFactorySymbols.has(sf.fileName)) {
-              this.sourceToFactorySymbols.get(sf.fileName) !.add(match.analyzed.factorySymbolName);
+                this.sourceToFactorySymbols !== null && this.sourceToFactorySymbols.has(sfPath)) {
+              this.sourceToFactorySymbols.get(sfPath) !.add(match.analyzed.factorySymbolName);
             }
           } catch (err) {
             if (err instanceof FatalDiagnosticError) {

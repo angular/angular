@@ -8,12 +8,12 @@
 import * as os from 'os';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {isRelativePath} from '../utils';
 
 export class NgccCompilerHost implements ts.CompilerHost {
-  private _caseSensitive = this.fs.exists(AbsoluteFsPath.fromUnchecked(__filename.toUpperCase()));
+  private _caseSensitive = this.fs.exists(AbsoluteFsPath.from(__filename.toUpperCase()));
 
   constructor(protected fs: FileSystem, protected options: ts.CompilerOptions) {}
 
@@ -28,14 +28,14 @@ export class NgccCompilerHost implements ts.CompilerHost {
 
   getDefaultLibLocation(): string {
     const nodeLibPath = AbsoluteFsPath.from(require.resolve('typescript'));
-    return AbsoluteFsPath.join(nodeLibPath, '..');
+    return AbsoluteFsPath.join(nodeLibPath, '..').toString();
   }
 
   writeFile(fileName: string, data: string): void {
-    this.fs.writeFile(AbsoluteFsPath.fromUnchecked(fileName), data);
+    this.fs.writeFile(AbsoluteFsPath.from(fileName), data);
   }
 
-  getCurrentDirectory(): string { return this.fs.pwd(); }
+  getCurrentDirectory(): string { return this.fs.pwd().toString(); }
 
   getCanonicalFileName(fileName: string): string {
     return this.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
@@ -54,15 +54,13 @@ export class NgccCompilerHost implements ts.CompilerHost {
     }
   }
 
-  fileExists(fileName: string): boolean {
-    return this.fs.exists(AbsoluteFsPath.fromUnchecked(fileName));
-  }
+  fileExists(fileName: string): boolean { return this.fs.exists(AbsoluteFsPath.from(fileName)); }
 
   readFile(fileName: string): string|undefined {
     if (!this.fileExists(fileName)) {
       return undefined;
     }
-    return this.fs.readFile(AbsoluteFsPath.fromUnchecked(fileName));
+    return this.fs.readFile(AbsoluteFsPath.from(fileName));
   }
 }
 
@@ -76,7 +74,8 @@ export class NgccSourcesCompilerHost extends NgccCompilerHost {
   private cache = ts.createModuleResolutionCache(
       this.getCurrentDirectory(), file => this.getCanonicalFileName(file));
 
-  constructor(fs: FileSystem, options: ts.CompilerOptions, protected entryPointPath: string) {
+  constructor(
+      fs: FileSystem, options: ts.CompilerOptions, protected entryPointPath: AbsoluteFsPath) {
     super(fs, options);
   }
 
@@ -93,7 +92,7 @@ export class NgccSourcesCompilerHost extends NgccCompilerHost {
       // JavaScript being present in the program. This logic recognizes this scenario and rewrites
       // the resolved .d.ts declaration file to its .js counterpart, if it exists.
       if (resolvedModule !== undefined && resolvedModule.extension === ts.Extension.Dts &&
-          containingFile.endsWith('.js') && isRelativePath(moduleName)) {
+          containingFile.endsWith('.js') && isRelativePath(ModuleSpecifier.from(moduleName))) {
         const jsFile = resolvedModule.resolvedFileName.replace(/\.d\.ts$/, '.js');
         if (this.fileExists(jsFile)) {
           return {...resolvedModule, resolvedFileName: jsFile, extension: ts.Extension.Js};

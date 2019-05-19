@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative} from 'canonical-path';
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
@@ -14,6 +13,8 @@ import {isRequireCall} from '../host/commonjs_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
+import {relativePathBetween} from '@angular/compiler-cli/src/ngtsc/util/src/path';
 
 /**
  * A RenderingFormatter that works with CommonJS files, instead of `import` and `export` statements
@@ -39,12 +40,13 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
    * Add the exports to the bottom of the file.
    */
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
+      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
       importManager: ImportManager, file: ts.SourceFile): void {
     exports.forEach(e => {
       const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
-      const namedImport = entryPointBasePath !== basePath ?
+
+      const relativePath = relativePathBetween(entryPointBasePath, basePath);
+      const namedImport = relativePath !== null && entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};
       const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';

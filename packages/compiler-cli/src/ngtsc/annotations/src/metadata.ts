@@ -10,10 +10,10 @@ import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr,
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
 
 import {valueReferenceToExpression} from './util';
-
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata
@@ -140,5 +140,5 @@ function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
  * Either it's used in @angular/core, or it's imported from there.
  */
 function isAngularDecorator(decorator: Decorator, isCore: boolean): boolean {
-  return isCore || (decorator.import !== null && decorator.import.from === '@angular/core');
+  return isCore || (decorator.import !== null && decorator.import.from === ANGULAR_CORE_SPECIFIER);
 }

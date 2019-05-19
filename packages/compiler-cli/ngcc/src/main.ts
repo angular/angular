@@ -31,7 +31,7 @@ import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
  */
 export interface NgccOptions {
   /** The absolute path to the `node_modules` folder that contains the packages to process. */
-  basePath: string;
+  basePath: AbsoluteFsPath;
   /**
    * The path to the primary package to be processed. If not absolute then it must be relative to
    * `basePath`.
@@ -104,8 +104,8 @@ export function mainNgcc(
     return;
   }
 
-  const {entryPoints, invalidEntryPoints} = finder.findEntryPoints(
-      AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath, pathMappings);
+  const {entryPoints, invalidEntryPoints} =
+      finder.findEntryPoints(basePath, absoluteTargetEntryPointPath, pathMappings);
 
   invalidEntryPoints.forEach(invalidEntryPoint => {
     logger.debug(
@@ -123,21 +123,21 @@ export function mainNgcc(
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
 
-    const compiledFormats = new Set<string>();
+    const compiledFormats = new Set<AbsoluteFsPath>();
     const entryPointPackageJson = entryPoint.packageJson;
-    const entryPointPackageJsonPath =
-        AbsoluteFsPath.fromUnchecked(`${entryPoint.path}/package.json`);
+    const entryPointPackageJsonPath = AbsoluteFsPath.from(`${entryPoint.path}/package.json`);
 
     const hasProcessedDts = hasBeenProcessed(entryPointPackageJson, 'typings');
 
     for (let i = 0; i < propertiesToConsider.length; i++) {
       const property = propertiesToConsider[i] as EntryPointJsonProperty;
-      const formatPath = entryPointPackageJson[property];
+      const relativeFormatPath = entryPointPackageJson[property];
       const format = getEntryPointFormat(fs, entryPoint, property);
 
       // No format then this property is not supposed to be compiled.
-      if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
+      if (!relativeFormatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
 
+      const formatPath = AbsoluteFsPath.resolve(entryPoint.path, relativeFormatPath);
       if (hasBeenProcessed(entryPointPackageJson, property)) {
         compiledFormats.add(formatPath);
         logger.debug(`Skipping ${entryPoint.name} : ${property} (already compiled).`);

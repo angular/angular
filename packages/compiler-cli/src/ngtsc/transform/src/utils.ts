@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../path';
 import {ImportManager} from '../../translator';
 
 /**
@@ -18,7 +19,7 @@ export function addImports(
     importManager: ImportManager, sf: ts.SourceFile,
     extraStatements: ts.Statement[] = []): ts.SourceFile {
   // Generate the import statements to prepend.
-  const addedImports = importManager.getAllImports(sf.fileName).map(i => {
+  const addedImports = importManager.getAllImports(AbsoluteFsPath.fromSourceFile(sf)).map(i => {
     const qualifier = ts.createIdentifier(i.qualifier);
     const importClause = ts.createImportClause(
         /* name */ undefined,
@@ -27,7 +28,7 @@ export function addImports(
         /* decorators */ undefined,
         /* modifiers */ undefined,
         /* importClause */ importClause,
-        /* moduleSpecifier */ ts.createLiteral(i.specifier));
+        /* moduleSpecifier */ ts.createLiteral(i.specifier.toString()));
   });
 
   // Filter out the existing imports and the source file body. All new statements

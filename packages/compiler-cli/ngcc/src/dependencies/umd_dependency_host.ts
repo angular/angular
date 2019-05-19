@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {FileSystem} from '../file_system/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
-
 import {DependencyHost, DependencyInfo} from './dependency_host';
 import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
-
-
 
 /**
  * Helper functions for computing dependencies.
@@ -31,7 +27,7 @@ export class UmdDependencyHost implements DependencyHost {
    */
   findDependencies(entryPointPath: AbsoluteFsPath): DependencyInfo {
     const dependencies = new Set<AbsoluteFsPath>();
-    const missing = new Set<AbsoluteFsPath|PathSegment>();
+    const missing = new Set<ModuleSpecifier>();
     const deepImports = new Set<AbsoluteFsPath>();
     const alreadySeen = new Set<AbsoluteFsPath>();
     this.recursivelyFindDependencies(
@@ -53,8 +49,8 @@ export class UmdDependencyHost implements DependencyHost {
    * circular dependency loop.
    */
   private recursivelyFindDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<ModuleSpecifier>,
+      deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
     if (!this.hasRequireCalls(fromContents)) {
       // Avoid parsing the source file as there are no require calls.
@@ -62,8 +58,8 @@ export class UmdDependencyHost implements DependencyHost {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+        file.toString(), fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
     if (sf.statements.length !== 1) {
       return;
     }

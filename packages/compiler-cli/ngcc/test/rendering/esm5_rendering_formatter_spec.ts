@@ -8,7 +8,7 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ANGULAR_CORE_SPECIFIER, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -19,8 +19,10 @@ import {Esm5RenderingFormatter} from '../../src/rendering/esm5_rendering_formatt
 import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _Abs = AbsoluteFsPath.from;
+const _Mod = ModuleSpecifier.from;
 
 function setup(file: {name: AbsoluteFsPath, contents: string}) {
   const fs = new MockFileSystem();
@@ -32,7 +34,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
   const decorationAnalyses =
       new DecorationAnalyzer(
           fs, bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
-          referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
+          referencesRegistry, [AbsoluteFsPath.from('/')], false)
           .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new Esm5RenderingFormatter(host, false);
@@ -45,7 +47,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
 }
 
 const PROGRAM = {
-  name: _('/some/file.js'),
+  name: _Abs('/some/file.js'),
   contents: `
 /* A copyright notice */
 import 'some-side-effect';
@@ -105,7 +107,7 @@ export {A, B, C, NoIife, BadIife};`
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: _('/some/file.js'),
+  name: _Abs('/some/file.js'),
   contents: `
 import * as tslib_1 from "tslib";
 /* A copyright notice */
@@ -164,8 +166,8 @@ describe('Esm5RenderingFormatter', () => {
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           sourceFile);
       expect(output.toString()).toContain(`/* A copyright notice */
@@ -181,11 +183,15 @@ import * as i1 from '@angular/common';`);
       const {importManager, renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(
-          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), dtsFrom: _Abs('/some/a.d.ts'), identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), dtsFrom: _Abs('/some/a.d.ts'), identifier: 'ComponentA2'},
+            {
+              from: _Abs('/some/foo/b.js'),
+              dtsFrom: _Abs('/some/foo/b.d.ts'),
+              identifier: 'ComponentB'
+            },
             {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -201,11 +207,11 @@ export {TopLevelComponent};`);
       const {importManager, renderer, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(
-          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), alias: _('eComponentA1'), identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), alias: _('eComponentA2'), identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), alias: _('eComponentB'), identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
+            {from: _Abs('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
             {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -219,7 +225,7 @@ export {TopLevelComponent};`);
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -234,13 +240,13 @@ var A = (function() {`);
 
     it('should insert constants after inserted imports', () => {
       const {renderer, program} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
       const output = new MagicString(PROGRAM.contents);
       renderer.addConstants(output, 'var x = 3;', file);
-      renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
+      renderer.addImports(output, [{specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'}], file);
       expect(output.toString()).toContain(`
 import {Directive} from '@angular/core';
 import * as i0 from '@angular/core';
@@ -253,7 +259,7 @@ var A = (function() {`);
   describe('rewriteSwitchableDeclarations', () => {
     it('should switch marked declaration initializers', () => {
       const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -295,18 +301,18 @@ SOME DEFINITION TEXT
       const output = new MagicString(PROGRAM.contents);
 
       const noIifeDeclaration =
-          getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
-      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: _('NoIife')};
+          getDeclaration(program, _Abs(sourceFile.fileName), 'NoIife', ts.isFunctionDeclaration);
+      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: _Mod('NoIife')};
       expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
-              'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
+              `Compiled class declaration is not inside an IIFE: NoIife in ${_Abs('/some/file.js')}`);
 
       const badIifeDeclaration =
-          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
-      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: _('BadIife')};
+          getDeclaration(program, _Abs(sourceFile.fileName), 'BadIife', ts.isVariableDeclaration);
+      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: _Mod('BadIife')};
       expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
-              'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
+              `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_Abs('/some/file.js')}`);
     });
   });
 

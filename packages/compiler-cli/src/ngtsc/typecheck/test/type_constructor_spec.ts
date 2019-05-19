@@ -11,14 +11,15 @@ import * as ts from 'typescript';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../path';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {getDeclaration, getSourceFile, makeProgram} from '../../testing/in_memory_typescript';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
-import {TypeCheckProgramHost} from '../src/host';
+
+const _Abs = AbsoluteFsPath.from;
 
 const LIB_D_TS = {
-  name: 'lib.d.ts',
+  name: _Abs('/lib.d.ts'),
   contents: `
     type Partial<T> = { [P in keyof T]?: T[P]; };
     type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
@@ -39,7 +40,7 @@ describe('ngtsc typechecking', () => {
     it('compiles a basic type constructor', () => {
       const files = [
         LIB_D_TS, {
-          name: 'main.ts',
+          name: _Abs('/main.ts'),
           contents: `
 class TestClass<T extends string> {
   value: T;
@@ -58,10 +59,11 @@ TestClass.ngTypeCtor({value: 'test'});
             program, checker, options, host, new TypeScriptReflectionHost(checker)),
         new LogicalProjectStrategy(checker, logicalFs),
       ]);
-      const ctx = new TypeCheckContext(
-          ALL_ENABLED_CONFIG, emitter, AbsoluteFsPath.fromUnchecked('/_typecheck_.ts'));
-      const TestClass = getDeclaration(program, 'main.ts', 'TestClass', isNamedClassDeclaration);
-      ctx.addInlineTypeCtor(program.getSourceFile('main.ts') !, new Reference(TestClass), {
+      const ctx =
+          new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, AbsoluteFsPath.from('/_typecheck_.ts'));
+      const TestClass =
+          getDeclaration(program, _Abs('/main.ts'), 'TestClass', isNamedClassDeclaration);
+      ctx.addInlineTypeCtor(getSourceFile(program, '/main.ts') !, new Reference(TestClass), {
         fnName: 'ngTypeCtor',
         body: true,
         fields: {
@@ -76,7 +78,7 @@ TestClass.ngTypeCtor({value: 'test'});
     it('should not consider query fields', () => {
       const files = [
         LIB_D_TS, {
-          name: 'main.ts',
+          name: _Abs('/main.ts'),
           contents: `class TestClass { value: any; }`,
         }
       ];
@@ -89,10 +91,11 @@ TestClass.ngTypeCtor({value: 'test'});
             program, checker, options, host, new TypeScriptReflectionHost(checker)),
         new LogicalProjectStrategy(checker, logicalFs),
       ]);
-      const ctx = new TypeCheckContext(
-          ALL_ENABLED_CONFIG, emitter, AbsoluteFsPath.fromUnchecked('/_typecheck_.ts'));
-      const TestClass = getDeclaration(program, 'main.ts', 'TestClass', isNamedClassDeclaration);
-      ctx.addInlineTypeCtor(program.getSourceFile('main.ts') !, new Reference(TestClass), {
+      const ctx =
+          new TypeCheckContext(ALL_ENABLED_CONFIG, emitter, AbsoluteFsPath.from('/_typecheck_.ts'));
+      const TestClass =
+          getDeclaration(program, _Abs('/main.ts'), 'TestClass', isNamedClassDeclaration);
+      ctx.addInlineTypeCtor(getSourceFile(program, '/main.ts') !, new Reference(TestClass), {
         fnName: 'ngTypeCtor',
         body: true,
         fields: {
@@ -103,7 +106,7 @@ TestClass.ngTypeCtor({value: 'test'});
       });
       const res = ctx.calculateTemplateDiagnostics(program, host, options);
       const TestClassWithCtor =
-          getDeclaration(res.program, 'main.ts', 'TestClass', isNamedClassDeclaration);
+          getDeclaration(res.program, _Abs('/main.ts'), 'TestClass', isNamedClassDeclaration);
       const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
       expect(typeCtor.getText()).not.toContain('queryField');
     });

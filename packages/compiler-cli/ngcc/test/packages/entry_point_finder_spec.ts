@@ -15,7 +15,7 @@ import {EntryPointFinder} from '../../src/packages/entry_point_finder';
 import {MockFileSystem, SymLink} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
 
 describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
@@ -31,56 +31,56 @@ describe('findEntryPoints()', () => {
   });
 
   it('should find sub-entry-points within a package', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/sub_entry_points'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/sub_entry_points'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      [_('/sub_entry_points/common'), _('/sub_entry_points/common')],
-      [_('/sub_entry_points/common'), _('/sub_entry_points/common/http')],
-      [_('/sub_entry_points/common'), _('/sub_entry_points/common/http/testing')],
-      [_('/sub_entry_points/common'), _('/sub_entry_points/common/testing')],
+      [_Abs('/sub_entry_points/common'), _Abs('/sub_entry_points/common')],
+      [_Abs('/sub_entry_points/common'), _Abs('/sub_entry_points/common/http')],
+      [_Abs('/sub_entry_points/common'), _Abs('/sub_entry_points/common/http/testing')],
+      [_Abs('/sub_entry_points/common'), _Abs('/sub_entry_points/common/testing')],
     ]);
   });
 
   it('should find packages inside a namespace', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/namespaced'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/namespaced'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common')],
-      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/http')],
-      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/http/testing')],
-      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/testing')],
+      [_Abs('/namespaced/@angular/common'), _Abs('/namespaced/@angular/common')],
+      [_Abs('/namespaced/@angular/common'), _Abs('/namespaced/@angular/common/http')],
+      [_Abs('/namespaced/@angular/common'), _Abs('/namespaced/@angular/common/http/testing')],
+      [_Abs('/namespaced/@angular/common'), _Abs('/namespaced/@angular/common/testing')],
     ]);
   });
 
   it('should return an empty array if there are no packages', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/no_packages'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/no_packages'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should return an empty array if there are no valid entry-points', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/no_valid_entry_points'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/no_valid_entry_points'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders starting with .', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/dotted_folders'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/dotted_folders'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders that are symlinked', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/symlinked_folders'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/symlinked_folders'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should handle nested node_modules folders', () => {
-    const {entryPoints} = finder.findEntryPoints(_('/nested_node_modules'));
+    const {entryPoints} = finder.findEntryPoints(_Abs('/nested_node_modules'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      [_('/nested_node_modules/outer'), _('/nested_node_modules/outer')],
+      [_Abs('/nested_node_modules/outer'), _Abs('/nested_node_modules/outer')],
       // Note that the inner entry point does not get included as part of the outer package
       [
-        _('/nested_node_modules/outer/node_modules/inner'),
-        _('/nested_node_modules/outer/node_modules/inner'),
+        _Abs('/nested_node_modules/outer/node_modules/inner'),
+        _Abs('/nested_node_modules/outer/node_modules/inner'),
       ],
     ]);
   });
@@ -138,7 +138,7 @@ describe('findEntryPoints()', () => {
         },
       },
       '/symlinked_folders': {
-        'common': new SymLink(_('/sub_entry_points/common')),
+        'common': new SymLink(_Abs('/sub_entry_points/common')),
       },
       '/nested_node_modules': {
         'outer': {

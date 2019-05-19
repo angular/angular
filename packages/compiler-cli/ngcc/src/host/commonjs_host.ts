@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ModuleSpecifier} from '../../../src/ngtsc/path';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -26,7 +27,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     if (requireCall === null) {
       return null;
     }
-    return {from: requireCall.arguments[0].text, name: id.text};
+    return {from: ModuleSpecifier.from(requireCall.arguments[0].text), name: id.text};
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
@@ -78,10 +79,10 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       CommonJsExportDeclaration[] {
     const reexports: CommonJsExportDeclaration[] = [];
     const requireCall = statement.expression.arguments[0];
-    const importPath = requireCall.arguments[0].text;
+    const importPath = ModuleSpecifier.from(requireCall.arguments[0].text);
     const importedFile = this.resolveModuleName(importPath, containingFile);
     if (importedFile !== undefined) {
-      const viaModule = stripExtension(importedFile.fileName);
+      const viaModule = ModuleSpecifier.from(stripExtension(importedFile.fileName));
       const importedExports = this.getExportsOfModule(importedFile);
       if (importedExports !== null) {
         importedExports.forEach(
@@ -117,15 +118,15 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return {node: importedFile, viaModule: importInfo.from};
   }
 
-  private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
-      |undefined {
+  private resolveModuleName(moduleName: ModuleSpecifier, containingFile: ts.SourceFile):
+      ts.SourceFile|undefined {
     if (this.compilerHost.resolveModuleNames) {
       const moduleInfo =
-          this.compilerHost.resolveModuleNames([moduleName], containingFile.fileName)[0];
+          this.compilerHost.resolveModuleNames([moduleName.toString()], containingFile.fileName)[0];
       return moduleInfo && this.program.getSourceFile(moduleInfo.resolvedFileName);
     } else {
       const moduleInfo = ts.resolveModuleName(
-          moduleName, containingFile.fileName, this.program.getCompilerOptions(),
+          moduleName.toString(), containingFile.fileName, this.program.getCompilerOptions(),
           this.compilerHost);
       return moduleInfo.resolvedModule &&
           this.program.getSourceFile(moduleInfo.resolvedModule.resolvedFileName);

@@ -48,7 +48,7 @@ export class MockFileSystem implements FileSystem {
       throw new MockFileSystemError(
           'ENOTDIR', path, `Unable to read directory "${path}". It is a file.`);
     }
-    return Object.keys(folder) as PathSegment[];
+    return Object.keys(folder).map(p => PathSegment.fromFsPath(p));
   }
 
   lstat(path: AbsoluteFsPath): FileStats {
@@ -77,7 +77,7 @@ export class MockFileSystem implements FileSystem {
     this.writeFile(to, this.readFile(from));
     const folder = this.findFromPath(AbsoluteFsPath.dirname(from)) as Folder;
     const basename = PathSegment.basename(from);
-    delete folder[basename];
+    delete folder[basename.toString()];
   }
 
   ensureDir(path: AbsoluteFsPath): void { this.ensureFolders(this.files, path.split('/')); }
@@ -139,7 +139,7 @@ export class MockFileSystem implements FileSystem {
   private splitIntoFolderAndFile(path: AbsoluteFsPath): [AbsoluteFsPath, string] {
     const segments = path.split('/');
     const file = segments.pop() !;
-    return [AbsoluteFsPath.fromUnchecked(segments.join('/')), file];
+    return [AbsoluteFsPath.from(segments.join('/')), file];
   }
 }
 
@@ -158,7 +158,7 @@ class MockFileStats implements FileStats {
 }
 
 class MockFileSystemError extends Error {
-  constructor(public code: string, public path: string, message: string) { super(message); }
+  constructor(public code: string, public path: AbsoluteFsPath, message: string) { super(message); }
 }
 
 function isFile(item: Entity | null): item is File {

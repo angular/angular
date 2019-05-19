@@ -13,17 +13,20 @@ import * as ts from 'typescript';
 import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {AbsoluteFsPath} from '../../path';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
 import {NoopReferencesRegistry} from '../src/references_registry';
 
+const _Abs = AbsoluteFsPath.from;
+
 describe('NgModuleDecoratorHandler', () => {
   it('should resolve forwardRef', () => {
     const {program} = makeProgram([
       {
-        name: 'node_modules/@angular/core/index.d.ts',
+        name: _Abs('/node_modules/@angular/core/index.d.ts'),
         contents: `
           export const Component: any;
           export const NgModule: any;
@@ -31,7 +34,7 @@ describe('NgModuleDecoratorHandler', () => {
         `,
       },
       {
-        name: 'entry.ts',
+        name: _Abs('/entry.ts'),
         contents: `
           import {Component, forwardRef, NgModule} from '@angular/core';
 
@@ -66,7 +69,8 @@ describe('NgModuleDecoratorHandler', () => {
     const handler = new NgModuleDecoratorHandler(
         reflectionHost, evaluator, metaRegistry, scopeRegistry, referencesRegistry, false, null,
         refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
-    const TestModule = getDeclaration(program, 'entry.ts', 'TestModule', isNamedClassDeclaration);
+    const TestModule =
+        getDeclaration(program, _Abs('/entry.ts'), 'TestModule', isNamedClassDeclaration);
     const detected =
         handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
     if (detected === undefined) {

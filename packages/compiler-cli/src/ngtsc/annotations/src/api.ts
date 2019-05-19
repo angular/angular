@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteFsPath} from '../../path';
 
 /**
  * Resolves and loads resource files that are referenced in Angular metadata.
@@ -30,7 +31,7 @@ export interface ResourceLoader {
    * @returns A resolved url of resource.
    * @throws An error if the resource cannot be resolved.
    */
-  resolve(file: string, basePath: string): string;
+  resolve(file: string, basePath: AbsoluteFsPath): AbsoluteFsPath;
 
   /**
    * Preload the specified resource, asynchronously. Once the resource is loaded, its value
@@ -41,7 +42,7 @@ export interface ResourceLoader {
    * if the file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string): Promise<void>|undefined;
+  preload(resolvedUrl: AbsoluteFsPath): Promise<void>|undefined;
 
   /**
    * Load the resource at the given url, synchronously.
@@ -51,5 +52,5 @@ export interface ResourceLoader {
    * @param resolvedUrl The url (resolved by a call to `resolve()`) of the resource to load.
    * @returns The contents of the resource.
    */
-  load(resolvedUrl: string): string;
+  load(resolvedUrl: AbsoluteFsPath): string;
 }

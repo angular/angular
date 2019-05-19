@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ANGULAR_CORE_SPECIFIER, AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ClassMemberKind, CtorParameter, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -17,8 +18,11 @@ import {getDeclaration, makeTestBundleProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
+const _Abs = AbsoluteFsPath.from;
+const _Mod = ModuleSpecifier.from;
+
 const SOME_DIRECTIVE_FILE = {
-  name: '/some_directive.cjs.js',
+  name: _Abs('/some_directive.cjs.js'),
   contents: `
 var core = require('@angular/core');
 
@@ -54,14 +58,14 @@ exports.SomeDirective = SomeDirective;
 };
 
 const SIMPLE_ES2015_CLASS_FILE = {
-  name: '/simple_es2015_class.d.ts',
+  name: _Abs('/simple_es2015_class.d.ts'),
   contents: `
     export class EmptyClass {}
   `,
 };
 
 const SIMPLE_CLASS_FILE = {
-  name: '/simple_class.js',
+  name: _Abs('/simple_class.js'),
   contents: `
 var EmptyClass = (function() {
   function EmptyClass() {
@@ -79,7 +83,7 @@ exports.NoDecoratorConstructorClass = NoDecoratorConstructorClass;
 };
 
 const FOO_FUNCTION_FILE = {
-  name: '/foo_function.js',
+  name: _Abs('/foo_function.js'),
   contents: `
 var core = require('@angular/core');
 function foo() {}
@@ -91,7 +95,7 @@ exports.foo = foo;
 };
 
 const INVALID_DECORATORS_FILE = {
-  name: '/invalid_decorators.js',
+  name: _Abs('/invalid_decorators.js'),
   contents: `
 var core = require('@angular/core');
 var NotArrayLiteral = (function() {
@@ -136,7 +140,7 @@ var NotIdentifier = (function() {
 };
 
 const INVALID_DECORATOR_ARGS_FILE = {
-  name: '/invalid_decorator_args.js',
+  name: _Abs('/invalid_decorator_args.js'),
   contents: `
 var core = require('@angular/core');
 var NoArgsProperty = (function() {
@@ -170,7 +174,7 @@ var NotArrayLiteral = (function() {
 };
 
 const INVALID_PROP_DECORATORS_FILE = {
-  name: '/invalid_prop_decorators.js',
+  name: _Abs('/invalid_prop_decorators.js'),
   contents: `
 var core = require('@angular/core');
 var NotObjectLiteral = (function() {
@@ -221,7 +225,7 @@ var NotIdentifier = (function() {
 };
 
 const INVALID_PROP_DECORATOR_ARGS_FILE = {
-  name: '/invalid_prop_decorator_args.js',
+  name: _Abs('/invalid_prop_decorator_args.js'),
   contents: `
 var core = require('@angular/core');
 var NoArgsProperty = (function() {
@@ -255,7 +259,7 @@ var NotArrayLiteral = (function() {
 };
 
 const INVALID_CTOR_DECORATORS_FILE = {
-  name: '/invalid_ctor_decorators.js',
+  name: _Abs('/invalid_ctor_decorators.js'),
   contents: `
 var core = require('@angular/core');
 var NoParameters = (function() {
@@ -322,7 +326,7 @@ var NotIdentifier = (function() {
 };
 
 const INVALID_CTOR_DECORATOR_ARGS_FILE = {
-  name: '/invalid_ctor_decorator_args.js',
+  name: _Abs('/invalid_ctor_decorator_args.js'),
   contents: `
 var core = require('@angular/core');
 var NoArgsProperty = (function() {
@@ -357,14 +361,14 @@ var NotArrayLiteral = (function() {
 
 const IMPORTS_FILES = [
   {
-    name: '/file_a.js',
+    name: _Abs('/file_a.js'),
     contents: `
 var a = 'a';
 exports.a = a;
 `,
   },
   {
-    name: '/file_b.js',
+    name: _Abs('/file_b.js'),
     contents: `
 var file_a = require('./file_a');
 var b = file_a.a;
@@ -373,7 +377,7 @@ var d = c;
 `,
   },
   {
-    name: '/file_c.js',
+    name: _Abs('/file_c.js'),
     contents: `
 var file_a = require('./file_a');
 var c = file_a.a;
@@ -383,14 +387,14 @@ var c = file_a.a;
 
 const EXPORTS_FILES = [
   {
-    name: '/a_module.js',
+    name: _Abs('/a_module.js'),
     contents: `
 var a = 'a';
 exports.a = a;
 `,
   },
   {
-    name: '/b_module.js',
+    name: _Abs('/b_module.js'),
     contents: `
 var core = require('@angular/core');
 var a_module = require('/a_module');
@@ -412,7 +416,7 @@ exports.SomeClass = SomeClass;
 `,
   },
   {
-    name: '/xtra_module.js',
+    name: _Abs('/xtra_module.js'),
     contents: `
 var xtra1 = 'xtra1';
 var xtra2 = 'xtra2';
@@ -421,7 +425,7 @@ exports.xtra2 = xtra2;
 `,
   },
   {
-    name: '/wildcard_reexports.js',
+    name: _Abs('/wildcard_reexports.js'),
     contents: `
     function __export(m) {
       for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -433,7 +437,7 @@ exports.xtra2 = xtra2;
 ];
 
 const FUNCTION_BODY_FILE = {
-  name: '/function_body.js',
+  name: _Abs('/function_body.js'),
   contents: `
 function foo(x) {
   return x;
@@ -471,7 +475,7 @@ function juu() {
 
 const DECORATED_FILES = [
   {
-    name: '/primary.js',
+    name: _Abs('/primary.js'),
     contents: `
 var core = require('@angular/core');
 var secondary = require('./secondary');
@@ -501,7 +505,7 @@ exports.C = C;
 `
   },
   {
-    name: '/secondary.js',
+    name: _Abs('/secondary.js'),
     contents: `
 var core = require('@angular/core');
 var D = (function() {
@@ -518,7 +522,7 @@ exports.D = D;
 
 const TYPINGS_SRC_FILES = [
   {
-    name: '/src/index.js',
+    name: _Abs('/src/index.js'),
     contents: `
 var internal = require('./internal');
 var class1 = require('./class1');
@@ -532,7 +536,7 @@ __export(class2);
 `
   },
   {
-    name: '/src/class1.js',
+    name: _Abs('/src/class1.js'),
     contents: `
 var Class1 = (function() {
   function Class1() {}
@@ -547,7 +551,7 @@ exports.MissingClass1 = MissingClass1;
 `
   },
   {
-    name: '/src/class2.js',
+    name: _Abs('/src/class2.js'),
     contents: `
 var Class2 = (function() {
   function Class2() {}
@@ -556,8 +560,8 @@ var Class2 = (function() {
 exports.Class2 = Class2;
 `
   },
-  {name: '/src/func1.js', contents: 'function mooFn() {} export {mooFn}'}, {
-    name: '/src/internal.js',
+  {name: _Abs('/src/func1.js'), contents: 'function mooFn() {} export {mooFn}'}, {
+    name: _Abs('/src/internal.js'),
     contents: `
 var InternalClass = (function() {
   function InternalClass() {}
@@ -572,7 +576,7 @@ exports.Class2 = Class2;
 `
   },
   {
-    name: '/src/missing-class.js',
+    name: _Abs('/src/missing-class.js'),
     contents: `
 var MissingClass2 = (function() {
   function MissingClass2() {}
@@ -582,7 +586,7 @@ exports. MissingClass2 = MissingClass2;
 `
   },
   {
-    name: '/src/flat-file.js',
+    name: _Abs('/src/flat-file.js'),
     contents: `
 var Class1 = (function() {
   function Class1() {}
@@ -610,30 +614,30 @@ exports.MissingClass2 = MissingClass2;
 
 const TYPINGS_DTS_FILES = [
   {
-    name: '/typings/index.d.ts',
+    name: _Abs('/typings/index.d.ts'),
     contents:
         `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
   },
   {
-    name: '/typings/class1.d.ts',
+    name: _Abs('/typings/class1.d.ts'),
     contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
   },
   {
-    name: '/typings/class2.d.ts',
+    name: _Abs('/typings/class2.d.ts'),
     contents:
         `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
   },
-  {name: '/typings/func1.d.ts', contents: 'export declare function mooFn(): void;'},
+  {name: _Abs('/typings/func1.d.ts'), contents: 'export declare function mooFn(): void;'},
   {
-    name: '/typings/internal.d.ts',
+    name: _Abs('/typings/internal.d.ts'),
     contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
   },
-  {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
+  {name: _Abs('/typings/class3.d.ts'), contents: `export declare class Class3 {}`},
 ];
 
 const MODULE_WITH_PROVIDERS_PROGRAM = [
   {
-    name: '/src/functions.js',
+    name: _Abs('/src/functions.js'),
     contents: `
 var mod = require('./module');
 var SomeService = (function() {
@@ -676,7 +680,7 @@ exports.InternalModule = InternalModule;
 `
   },
   {
-    name: '/src/methods.js',
+    name: _Abs('/src/methods.js'),
     contents: `
 var mod = require('./module');
 var SomeService = (function() {
@@ -711,7 +715,7 @@ exports.InternalModule = InternalModule;
 `
   },
   {
-    name: '/src/aliased_class.js',
+    name: _Abs('/src/aliased_class.js'),
     contents: `
 var AliasedModule = (function() {
   function AliasedModule() {}
@@ -724,7 +728,7 @@ exports.AliasedModule = AliasedModule;
 `
   },
   {
-    name: '/src/module.js',
+    name: _Abs('/src/module.js'),
     contents: `
 var ExternalModule = (function() {
   function ExternalModule() {}
@@ -751,7 +755,7 @@ describe('CommonJsReflectionHost', () => {
 
       const decorator = decorators[0];
       expect(decorator.name).toEqual('Directive');
-      expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+      expect(decorator.import).toEqual({name: 'Directive', from: ANGULAR_CORE_SPECIFIER});
       expect(decorator.args !.map(arg => arg.getText())).toEqual([
         '{ selector: \'[someDirective]\' }',
       ]);
@@ -820,7 +824,7 @@ describe('CommonJsReflectionHost', () => {
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
       const {program, host: compilerHost} = makeTestBundleProgram([SOME_DIRECTIVE_FILE]);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const mockImportInfo: Import = {from: '@angular/core', name: 'Directive'};
+      const mockImportInfo: Import = {from: ANGULAR_CORE_SPECIFIER, name: 'Directive'};
       const spy = spyOn(host, 'getImportOfIdentifier').and.returnValue(mockImportInfo);
 
       const classNode = getDeclaration(
@@ -1012,7 +1016,7 @@ describe('CommonJsReflectionHost', () => {
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
       const {program, host: compilerHost} = makeTestBundleProgram([SOME_DIRECTIVE_FILE]);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const mockImportInfo = { name: 'mock', from: '@angular/core' } as Import;
+      const mockImportInfo = { name: 'mock', from: ANGULAR_CORE_SPECIFIER } as Import;
       const spy = spyOn(host, 'getImportOfIdentifier').and.returnValue(mockImportInfo);
 
       const classNode = getDeclaration(
@@ -1202,7 +1206,7 @@ describe('CommonJsReflectionHost', () => {
         const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
-        const mockImportInfo: Import = {from: '@angular/core', name: 'Directive'};
+        const mockImportInfo: Import = {from: ANGULAR_CORE_SPECIFIER, name: 'Directive'};
         const spy = spyOn(CommonJsReflectionHost.prototype, 'getImportOfIdentifier')
                         .and.returnValue(mockImportInfo);
 
@@ -1318,7 +1322,8 @@ describe('CommonJsReflectionHost', () => {
     it('should find the import of an identifier', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(IMPORTS_FILES);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const variableNode = getDeclaration(program, '/file_b.js', 'b', isNamedVariableDeclaration);
+      const variableNode =
+          getDeclaration(program, _Abs('/file_b.js'), 'b', isNamedVariableDeclaration);
       const identifier =
           (variableNode.initializer && ts.isPropertyAccessExpression(variableNode.initializer)) ?
           variableNode.initializer.name :
@@ -1326,13 +1331,14 @@ describe('CommonJsReflectionHost', () => {
 
       expect(identifier).not.toBe(null);
       const importOfIdent = host.getImportOfIdentifier(identifier !);
-      expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
+      expect(importOfIdent).toEqual({name: 'a', from: _Mod('./file_a')});
     });
 
     it('should return null if the identifier was not imported', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(IMPORTS_FILES);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const variableNode = getDeclaration(program, '/file_b.js', 'd', isNamedVariableDeclaration);
+      const variableNode =
+          getDeclaration(program, _Abs('/file_b.js'), 'd', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
       expect(importOfIdent).toBeNull();
@@ -1341,7 +1347,8 @@ describe('CommonJsReflectionHost', () => {
     it('should handle factory functions not wrapped in parentheses', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(IMPORTS_FILES);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const variableNode = getDeclaration(program, '/file_c.js', 'c', isNamedVariableDeclaration);
+      const variableNode =
+          getDeclaration(program, _Abs('/file_c.js'), 'c', isNamedVariableDeclaration);
       const identifier =
           (variableNode.initializer && ts.isPropertyAccessExpression(variableNode.initializer)) ?
           variableNode.initializer.name :
@@ -1349,7 +1356,7 @@ describe('CommonJsReflectionHost', () => {
 
       expect(identifier).not.toBe(null);
       const importOfIdent = host.getImportOfIdentifier(identifier !);
-      expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
+      expect(importOfIdent).toEqual({name: 'a', from: _Mod('./file_a')});
     });
   });
 
@@ -1390,7 +1397,7 @@ describe('CommonJsReflectionHost', () => {
       const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
-      expect(actualDeclaration !.viaModule).toBe('@angular/core');
+      expect(actualDeclaration !.viaModule).toBe(ANGULAR_CORE_SPECIFIER);
     });
   });
 
@@ -1545,7 +1552,7 @@ describe('CommonJsReflectionHost', () => {
   describe('hasBaseClass()', () => {
     function hasBaseClass(source: string) {
       const file = {
-        name: '/synthesized_constructors.js',
+        name: _Abs('/synthesized_constructors.js'),
         contents: source,
       };
 
@@ -1591,7 +1598,7 @@ describe('CommonJsReflectionHost', () => {
     it('should return an array of all decorated classes in the given source file', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(DECORATED_FILES);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
-      const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
+      const primary = program.getSourceFile(DECORATED_FILES[0].name.toString()) !;
 
       const primaryDecoratedClasses = host.findDecoratedClasses(primary);
       expect(primaryDecoratedClasses.length).toEqual(2);
@@ -1601,7 +1608,7 @@ describe('CommonJsReflectionHost', () => {
       const classB = primaryDecoratedClasses.find(c => c.name === 'B') !;
       expect(classB.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
 
-      const secondary = program.getSourceFile(DECORATED_FILES[1].name) !;
+      const secondary = program.getSourceFile(DECORATED_FILES[1].name.toString()) !;
       const secondaryDecoratedClasses = host.findDecoratedClasses(secondary);
       expect(secondaryDecoratedClasses.length).toEqual(1);
       // Note that `D` is exported from `secondary.js` but not exported from `primary.js`
@@ -1615,29 +1622,31 @@ describe('CommonJsReflectionHost', () => {
     it('should find the dts declaration that has the same relative path to the source file', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const class1 = getDeclaration(program, '/src/class1.js', 'Class1', ts.isVariableDeclaration);
+      const class1 =
+          getDeclaration(program, _Abs('/src/class1.js'), 'Class1', ts.isVariableDeclaration);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class1);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_Abs('/typings/class1.d.ts'));
     });
 
     it('should find the dts declaration for exported functions', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
       const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const mooFn = getDeclaration(program, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
+      const mooFn =
+          getDeclaration(program, _Abs('/src/func1.js'), 'mooFn', ts.isFunctionDeclaration);
       const host =
           new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dtsProgram);
 
       const dtsDeclaration = host.getDtsDeclaration(mooFn);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_Abs('/typings/func1.d.ts'));
     });
 
     it('should return null if there is no matching class in the matching dts file', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const missingClass =
-          getDeclaration(program, '/src/class1.js', 'MissingClass1', ts.isVariableDeclaration);
+      const missingClass = getDeclaration(
+          program, _Abs('/src/class1.js'), 'MissingClass1', ts.isVariableDeclaration);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
@@ -1647,7 +1656,7 @@ describe('CommonJsReflectionHost', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass = getDeclaration(
-          program, '/src/missing-class.js', 'MissingClass2', ts.isVariableDeclaration);
+          program, _Abs('/src/missing-class.js'), 'MissingClass2', ts.isVariableDeclaration);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
@@ -1658,36 +1667,36 @@ describe('CommonJsReflectionHost', () => {
          const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class1 =
-             getDeclaration(program, '/src/flat-file.js', 'Class1', ts.isVariableDeclaration);
+             getDeclaration(program, _Abs('/src/flat-file.js'), 'Class1', ts.isVariableDeclaration);
          const host =
              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
          const dtsDeclaration = host.getDtsDeclaration(class1);
-         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_Abs('/typings/class1.d.ts'));
        });
 
     it('should find aliased exports', () => {
       const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class3 =
-          getDeclaration(program, '/src/flat-file.js', 'Class3', ts.isVariableDeclaration);
+          getDeclaration(program, _Abs('/src/flat-file.js'), 'Class3', ts.isVariableDeclaration);
       const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class3);
-      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_Abs('/typings/class3.d.ts'));
     });
 
     it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
        () => {
          const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-         const internalClass =
-             getDeclaration(program, '/src/internal.js', 'InternalClass', ts.isVariableDeclaration);
+         const internalClass = getDeclaration(
+             program, _Abs('/src/internal.js'), 'InternalClass', ts.isVariableDeclaration);
          const host =
              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
          const dtsDeclaration = host.getDtsDeclaration(internalClass);
-         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_Abs('/typings/internal.d.ts'));
        });
 
     it('should prefer the publicly exported class if there are multiple classes with the same name',
@@ -1695,18 +1704,19 @@ describe('CommonJsReflectionHost', () => {
          const {program, host: compilerHost} = makeTestBundleProgram(TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class2 =
-             getDeclaration(program, '/src/class2.js', 'Class2', ts.isVariableDeclaration);
+             getDeclaration(program, _Abs('/src/class2.js'), 'Class2', ts.isVariableDeclaration);
          const internalClass2 =
-             getDeclaration(program, '/src/internal.js', 'Class2', ts.isVariableDeclaration);
+             getDeclaration(program, _Abs('/src/internal.js'), 'Class2', ts.isVariableDeclaration);
          const host =
              new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost, dts);
 
          const class2DtsDeclaration = host.getDtsDeclaration(class2);
-         expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
+         expect(class2DtsDeclaration !.getSourceFile().fileName)
+             .toEqual(_Abs('/typings/class2.d.ts'));
 
          const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
          expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
-             .toEqual('/typings/class2.d.ts');
+             .toEqual(_Abs('/typings/class2.d.ts'));
        });
   });
 

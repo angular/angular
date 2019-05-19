@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
@@ -14,7 +14,8 @@ import {EntryPoint} from '../../src/packages/entry_point';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
+const normalize = (path: string) => AbsoluteFsPath.from(path).toString();
 
 describe('DependencyResolver', () => {
   let host: EsmDependencyHost;
@@ -29,37 +30,38 @@ describe('DependencyResolver', () => {
   });
   describe('sortEntryPointsByDependency()', () => {
     const first = {
-      path: _('/first'),
+      path: _Abs('/first'),
       packageJson: {esm5: './index.js'},
       compiledByAngular: true
     } as EntryPoint;
     const second = {
-      path: _('/second'),
+      path: _Abs('/second'),
       packageJson: {esm2015: './sub/index.js'},
       compiledByAngular: true
     } as EntryPoint;
     const third = {
-      path: _('/third'),
+      path: _Abs('/third'),
       packageJson: {fesm5: './index.js'},
       compiledByAngular: true
     } as EntryPoint;
     const fourth = {
-      path: _('/fourth'),
+      path: _Abs('/fourth'),
       packageJson: {fesm2015: './sub2/index.js'},
       compiledByAngular: true
     } as EntryPoint;
     const fifth = {
-      path: _('/fifth'),
+      path: _Abs('/fifth'),
       packageJson: {module: './index.js'},
       compiledByAngular: true
     } as EntryPoint;
 
     const dependencies = {
-      [_('/first/index.js')]: {resolved: [second.path, third.path, '/ignored-1'], missing: []},
-      [_('/second/sub/index.js')]: {resolved: [third.path, fifth.path], missing: []},
-      [_('/third/index.js')]: {resolved: [fourth.path, '/ignored-2'], missing: []},
-      [_('/fourth/sub2/index.js')]: {resolved: [fifth.path], missing: []},
-      [_('/fifth/index.js')]: {resolved: [], missing: []},
+      [normalize('/first/index.js')]:
+          {resolved: [second.path, third.path, _Abs('/ignored-1')], missing: []},
+      [normalize('/second/sub/index.js')]: {resolved: [third.path, fifth.path], missing: []},
+      [normalize('/third/index.js')]: {resolved: [fourth.path, _Abs('/ignored-2')], missing: []},
+      [normalize('/fourth/sub2/index.js')]: {resolved: [fifth.path], missing: []},
+      [normalize('/fifth/index.js')]: {resolved: [], missing: []},
     };
 
     it('should order the entry points by their dependency on each other', () => {
@@ -70,50 +72,54 @@ describe('DependencyResolver', () => {
 
     it('should remove entry-points that have missing direct dependencies', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.js')]: {resolved: [], missing: ['/missing']},
-        [_('/second/sub/index.js')]: {resolved: [], missing: []},
+        ['/first/index.js']: {resolved: [], missing: [ModuleSpecifier.from('/missing')]},
+        ['/second/sub/index.js']: {resolved: [], missing: []},
       }));
       const result = resolver.sortEntryPointsByDependency([first, second]);
       expect(result.entryPoints).toEqual([second]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: first, missingDependencies: ['/missing']},
+        {entryPoint: first, missingDependencies: [ModuleSpecifier.from('/missing')]},
       ]);
     });
 
     it('should remove entry points that depended upon an invalid entry-point', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
-        [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
-        [_('/third/index.js')]: {resolved: [], missing: []},
+        [normalize('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
+        [normalize('/second/sub/index.js')]:
+            {resolved: [], missing: [ModuleSpecifier.from('/missing')]},
+        [normalize('/third/index.js')]: {resolved: [], missing: []},
       }));
       // Note that we will process `first` before `second`, which has the missing dependency.
       const result = resolver.sortEntryPointsByDependency([first, second, third]);
       expect(result.entryPoints).toEqual([third]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: second, missingDependencies: ['/missing']},
-        {entryPoint: first, missingDependencies: ['/missing']},
+        {entryPoint: second, missingDependencies: [ModuleSpecifier.from('/missing')]},
+        {entryPoint: first, missingDependencies: [ModuleSpecifier.from('/missing')]},
       ]);
     });
 
     it('should remove entry points that will depend upon an invalid entry-point', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies({
-        [_('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
-        [_('/second/sub/index.js')]: {resolved: [], missing: ['/missing']},
-        [_('/third/index.js')]: {resolved: [], missing: []},
+        [normalize('/first/index.js')]: {resolved: [second.path, third.path], missing: []},
+        [normalize('/second/sub/index.js')]:
+            {resolved: [], missing: [ModuleSpecifier.from('/missing')]},
+        [normalize('/third/index.js')]: {resolved: [], missing: []},
       }));
       // Note that we will process `first` after `second`, which has the missing dependency.
       const result = resolver.sortEntryPointsByDependency([second, first, third]);
       expect(result.entryPoints).toEqual([third]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: second, missingDependencies: ['/missing']},
+        {entryPoint: second, missingDependencies: [ModuleSpecifier.from('/missing')]},
         {entryPoint: first, missingDependencies: [second.path]},
       ]);
     });
 
     it('should error if the entry point does not have a suitable format', () => {
-      expect(() => resolver.sortEntryPointsByDependency([
-        { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
-      ])).toThrowError(`There is no appropriate source code format in '/first' entry-point.`);
+      expect(() => resolver.sortEntryPointsByDependency([{
+        path: _Abs('/first'), packageJson: {}, compiledByAngular: true
+      } as EntryPoint]))
+          .toThrowError(
+              `There is no appropriate source code format in '${_Abs('/first')}' entry-point.`);
     });
 
     it('should error if there is no appropriate DependencyHost for the given formats', () => {
@@ -127,8 +133,8 @@ describe('DependencyResolver', () => {
       spyOn(host, 'findDependencies').and.callFake(createFakeComputeDependencies(dependencies));
       const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
       expect(result.ignoredDependencies).toEqual([
-        {entryPoint: first, dependencyPath: '/ignored-1'},
-        {entryPoint: third, dependencyPath: '/ignored-2'},
+        {entryPoint: first, dependencyPath: _Abs('/ignored-1')},
+        {entryPoint: third, dependencyPath: _Abs('/ignored-2')},
       ]);
     });
 
@@ -174,16 +180,21 @@ describe('DependencyResolver', () => {
     });
 
     interface DepMap {
-      [path: string]: {resolved: string[], missing: string[]};
+      [path: string]: {resolved: AbsoluteFsPath[], missing: ModuleSpecifier[]};
     }
 
     function createFakeComputeDependencies(deps: DepMap) {
-      return (entryPoint: string) => {
+      return (entryPoint: AbsoluteFsPath) => {
         const dependencies = new Set();
         const missing = new Set();
         const deepImports = new Set();
-        deps[entryPoint].resolved.forEach(dep => dependencies.add(dep));
-        deps[entryPoint].missing.forEach(dep => missing.add(dep));
+        const dependency = deps[entryPoint.toString()];
+        if (!dependency) {
+          throw new Error(
+              `Missing dependency for: ${entryPoint} - deps: ${Object.keys(deps).join(', ')}`);
+        }
+        dependency.resolved.forEach(dep => dependencies.add(dep));
+        dependency.missing.forEach(dep => missing.add(dep));
         return {dependencies, missing, deepImports};
       };
     }

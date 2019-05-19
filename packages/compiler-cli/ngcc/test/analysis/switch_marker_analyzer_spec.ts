@@ -5,35 +5,39 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {makeTestProgram} from '../helpers/utils';
 
+const _Abs = AbsoluteFsPath.from;
+
 const TEST_PROGRAM = [
   {
-    name: 'entrypoint.js',
+    name: _Abs('/entrypoint.js'),
     contents: `
     import {a} from './a';
     import {b} from './b';
     `
   },
   {
-    name: 'a.js',
+    name: _Abs('/a.js'),
     contents: `
     import {c} from './c';
     export const a = 1;
     `
   },
   {
-    name: 'b.js',
+    name: _Abs('/b.js'),
     contents: `
     export const b = 42;
     var factoryB = factory__PRE_R3__;
     `
   },
   {
-    name: 'c.js',
+    name: _Abs('/c.js'),
     contents: `
     export const c = 'So long, and thanks for all the fish!';
     var factoryC = factory__PRE_R3__;
@@ -50,10 +54,10 @@ describe('SwitchMarkerAnalyzer', () => {
       const analyzer = new SwitchMarkerAnalyzer(host);
       const analysis = analyzer.analyzeProgram(program);
 
-      const entrypoint = program.getSourceFile('entrypoint.js') !;
-      const a = program.getSourceFile('a.js') !;
-      const b = program.getSourceFile('b.js') !;
-      const c = program.getSourceFile('c.js') !;
+      const entrypoint = getSourceFile(program, '/entrypoint.js') !;
+      const a = getSourceFile(program, '/a.js') !;
+      const b = getSourceFile(program, '/b.js') !;
+      const c = getSourceFile(program, '/c.js') !;
 
       expect(analysis.size).toEqual(2);
       expect(analysis.has(entrypoint)).toBe(false);

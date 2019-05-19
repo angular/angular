@@ -15,16 +15,16 @@ import {ShimGenerator} from './host';
 import {generatedModuleName} from './util';
 
 export class SummaryGenerator implements ShimGenerator {
-  private constructor(private map: Map<AbsoluteFsPath, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  getSummaryFileNames(): string[] { return Array.from(this.map.keys()); }
+  getSummaryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
   generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {
     const originalPath = this.map.get(genFilePath) !;
-    const original = readFile(originalPath);
+    const original = readFile(originalPath.toString());
     if (original === null) {
       return null;
     }
@@ -69,7 +69,7 @@ export class SummaryGenerator implements ShimGenerator {
     }
     const sourceText = varLines.join('\n');
     const genFile = ts.createSourceFile(
-        genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
+        genFilePath.toString(), sourceText, original.languageVersion, true, ts.ScriptKind.TS);
     if (original.moduleName !== undefined) {
       genFile.moduleName =
           generatedModuleName(original.moduleName, original.fileName, '.ngsummary');
@@ -78,12 +78,11 @@ export class SummaryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): SummaryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile => map.set(
-                AbsoluteFsPath.fromUnchecked(sourceFile.replace(/\.ts$/, '.ngsummary.ts')),
-                sourceFile));
+                AbsoluteFsPath.from(sourceFile.replace(/\.ts$/, '.ngsummary.ts')), sourceFile));
     return new SummaryGenerator(map);
   }
 }

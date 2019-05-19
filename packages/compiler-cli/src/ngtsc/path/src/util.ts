@@ -33,3 +33,7 @@ export function isAbsolutePath(path: string): boolean {
   // TODO: use regExp based on OS in the future
   return ABSOLUTE_PATH.test(path);
 }
+
+export function stripAbsolutePrefix(path: string): string {
+  return path.replace(ABSOLUTE_PATH, '');
+}

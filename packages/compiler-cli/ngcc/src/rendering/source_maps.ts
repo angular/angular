@@ -47,7 +47,7 @@ export function extractSourceMap(
       if (e.code === 'ENOENT') {
         logger.warn(
             `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
-        const mapPath = AbsoluteFsPath.fromUnchecked(file.fileName + '.map');
+        const mapPath = AbsoluteFsPath.from(file.fileName + '.map');
         if (PathSegment.basename(e.path) !== PathSegment.basename(mapPath) && fs.exists(mapPath) &&
             fs.stat(mapPath).isFile()) {
           logger.warn(
@@ -77,19 +77,19 @@ export function extractSourceMap(
 export function renderSourceAndMap(
     sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileToWrite[] {
   const outputPath = AbsoluteFsPath.fromSourceFile(sourceFile);
-  const outputMapPath = AbsoluteFsPath.fromUnchecked(`${outputPath}.map`);
+  const outputMapPath = AbsoluteFsPath.from(`${outputPath}.map`);
   const relativeSourcePath = PathSegment.basename(outputPath);
   const relativeMapPath = `${relativeSourcePath}.map`;
 
   const outputMap = output.generateMap({
-    source: outputPath,
+    source: outputPath.toString(),
     includeContent: true,
     // hires: true // TODO: This results in accurate but huge sourcemaps. Instead we should fix
     // the merge algorithm.
   });
 
   // we must set this after generation as magic string does "manipulation" on the path
-  outputMap.file = relativeSourcePath;
+  outputMap.file = relativeSourcePath.toString();
 
   const mergedMap =
       mergeSourceMaps(input.map && input.map.toObject(), JSON.parse(outputMap.toString()));

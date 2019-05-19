@@ -9,7 +9,8 @@ import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} fro
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {NOOP_DEFAULT_IMPORT_RECORDER} from '@angular/compiler-cli/src/ngtsc/imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {translateStatement, ImportManager} from '../../../src/ngtsc/translator';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
@@ -102,7 +103,8 @@ export class Renderer {
 
     if (isEntryPoint || compiledFile) {
       this.srcFormatter.addImports(
-          outputText, importManager.getAllImports(sourceFile.fileName), sourceFile);
+          outputText, importManager.getAllImports(AbsoluteFsPath.fromSourceFile(sourceFile)),
+          sourceFile);
     }
 
     if (compiledFile || switchMarkerAnalysis || isEntryPoint) {

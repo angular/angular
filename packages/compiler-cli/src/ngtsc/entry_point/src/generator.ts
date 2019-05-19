@@ -7,25 +7,22 @@
  */
 
 /// <reference types="node" />
-
-import * as path from 'path';
 import * as ts from 'typescript';
-
+import {AbsoluteFsPath} from '../../path';
 import {ShimGenerator} from '../../shims';
 import {relativePathBetween} from '../../util/src/path';
 
 export class FlatIndexGenerator implements ShimGenerator {
-  readonly flatIndexPath: string;
+  readonly flatIndexPath: AbsoluteFsPath;
 
   constructor(
-      readonly entryPoint: string, relativeFlatIndexPath: string,
+      readonly entryPoint: AbsoluteFsPath, relativeFlatIndexPath: string,
       readonly moduleName: string|null) {
-    this.flatIndexPath = path.posix.join(path.posix.dirname(entryPoint), relativeFlatIndexPath)
-                             .replace(/\.js$/, '') +
-        '.ts';
+    this.flatIndexPath = AbsoluteFsPath.join(
+        AbsoluteFsPath.dirname(entryPoint), relativeFlatIndexPath.replace(/\.js$/, '') + '.ts');
   }
 
-  recognize(fileName: string): boolean { return fileName === this.flatIndexPath; }
+  recognize(fileName: AbsoluteFsPath): boolean { return fileName === this.flatIndexPath; }
 
   generate(): ts.SourceFile {
     const relativeEntryPoint = relativePathBetween(this.flatIndexPath, this.entryPoint);
@@ -36,7 +33,7 @@ export class FlatIndexGenerator implements ShimGenerator {
 export * from '${relativeEntryPoint}';
 `;
     const genFile = ts.createSourceFile(
-        this.flatIndexPath, contents, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
+        this.flatIndexPath.toString(), contents, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
     if (this.moduleName !== null) {
       genFile.moduleName = this.moduleName;
     }

@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
-
 import {ModuleResolver} from '../../imports';
+import {ModuleSpecifier} from '../../path';
 
 /**
  * A cached graph of imports in the `ts.Program`.
@@ -67,7 +66,7 @@ export class ImportGraph {
       if ((ts.isImportDeclaration(stmt) || ts.isExportDeclaration(stmt)) &&
           stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
         // Resolve the module to a file, and check whether that file is in the ts.Program.
-        const moduleName = stmt.moduleSpecifier.text;
+        const moduleName = ModuleSpecifier.from(stmt.moduleSpecifier.text);
         const moduleFile = this.resolver.resolveModuleName(moduleName, sf);
         if (moduleFile !== null && isLocalFile(moduleFile)) {
           // Record this local import.

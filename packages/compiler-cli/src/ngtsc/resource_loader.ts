@@ -10,6 +10,8 @@ import * as fs from 'fs';
 import * as ts from 'typescript';
 import {CompilerHost} from '../transformers/api';
 import {ResourceLoader} from './annotations/src/api';
+import {AbsoluteFsPath} from './path';
+import {isAbsolutePath, stripAbsolutePrefix} from './path/src/util';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
 
@@ -17,8 +19,8 @@ const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
  * `ResourceLoader` which delegates to a `CompilerHost` resource loading method.
  */
 export class HostResourceLoader implements ResourceLoader {
-  private cache = new Map<string, string>();
-  private fetching = new Map<string, Promise<void>>();
+  private cache = new Map<AbsoluteFsPath, string>();
+  private fetching = new Map<AbsoluteFsPath, Promise<void>>();
 
   canPreload = !!this.host.readResource;
 
@@ -26,20 +28,24 @@ export class HostResourceLoader implements ResourceLoader {
 
   /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
-   * The return value of this method can be used in the `load()` and `preload()` methods.
+   * The return value of this method is an absolute path, which can be used in the `load()` and
+   * `preload()` methods.
    *
    * Uses the provided CompilerHost if it supports mapping resources to filenames.
    * Otherwise, uses a fallback mechanism that searches the module resolution candidates.
    *
    * @param url The, possibly relative, url of the resource.
    * @param fromFile The path to the file that contains the URL of the resource.
-   * @returns A resolved url of resource.
+   * @returns An absolute path to the resource.
    * @throws An error if the resource cannot be resolved.
    */
-  resolve(url: string, fromFile: string): string {
-    let resolvedUrl: string|null = null;
+  resolve(url: string, fromFile: AbsoluteFsPath): AbsoluteFsPath {
+    let resolvedUrl: AbsoluteFsPath|null = null;
     if (this.host.resourceNameToFileName) {
-      resolvedUrl = this.host.resourceNameToFileName(url, fromFile);
+      const resolvedUrlString = this.host.resourceNameToFileName(url, fromFile.toString());
+      if (resolvedUrlString !== null) {
+        resolvedUrl = AbsoluteFsPath.from(resolvedUrlString);
+      }
     } else {
       resolvedUrl = this.fallbackResolve(url, fromFile);
     }
@@ -60,7 +66,7 @@ export class HostResourceLoader implements ResourceLoader {
    * file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string): Promise<void>|undefined {
+  preload(resolvedUrl: AbsoluteFsPath): Promise<void>|undefined {
     if (!this.host.readResource) {
       throw new Error(
           'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.');
@@ -71,7 +77,7 @@ export class HostResourceLoader implements ResourceLoader {
       return this.fetching.get(resolvedUrl);
     }
 
-    const result = this.host.readResource(resolvedUrl);
+    const result = this.host.readResource(resolvedUrl.toString());
     if (typeof result === 'string') {
       this.cache.set(resolvedUrl, result);
       return undefined;
@@ -93,13 +99,13 @@ export class HostResourceLoader implements ResourceLoader {
    * @param resolvedUrl The url (resolved by a call to `resolve()`) of the resource to load.
    * @returns The contents of the resource.
    */
-  load(resolvedUrl: string): string {
+  load(resolvedUrl: AbsoluteFsPath): string {
     if (this.cache.has(resolvedUrl)) {
       return this.cache.get(resolvedUrl) !;
     }
 
-    const result = this.host.readResource ? this.host.readResource(resolvedUrl) :
-                                            fs.readFileSync(resolvedUrl, 'utf8');
+    const result = this.host.readResource ? this.host.readResource(resolvedUrl.toString()) :
+                                            fs.readFileSync(resolvedUrl.toString(), 'utf8');
     if (typeof result !== 'string') {
       throw new Error(`HostResourceLoader: loader(${resolvedUrl}) returned a Promise`);
     }
@@ -111,24 +117,12 @@ export class HostResourceLoader implements ResourceLoader {
    * Attempt to resolve `url` in the context of `fromFile`, while respecting the rootDirs
    * option from the tsconfig. First, normalize the file name.
    */
-  private fallbackResolve(url: string, fromFile: string): string|null {
-    // Strip a leading '/' if one is present.
-    if (url.startsWith('/')) {
-      url = url.substr(1);
-
-      // Do not take current file location into account if we process absolute path.
-      fromFile = '';
-    }
-    // Turn absolute paths into relative paths.
-    if (!url.startsWith('.')) {
-      url = `./${url}`;
-    }
-
+  private fallbackResolve(url: string, fromFile: AbsoluteFsPath|''): AbsoluteFsPath|null {
     const candidateLocations = this.getCandidateLocations(url, fromFile);
     for (const candidate of candidateLocations) {
-      if (fs.existsSync(candidate)) {
+      if (fs.existsSync(candidate.toString())) {
         return candidate;
-      } else if (CSS_PREPROCESSOR_EXT.test(candidate)) {
+      } else if (CSS_PREPROCESSOR_EXT.test(candidate.toString())) {
         /**
          * If the user specified styleUrl points to *.scss, but the Sass compiler was run before
          * Angular, then the resource may have been generated as *.css. Simply try the resolution
@@ -136,7 +130,7 @@ export class HostResourceLoader implements ResourceLoader {
          */
         const cssFallbackUrl = candidate.replace(CSS_PREPROCESSOR_EXT, '.css');
         if (fs.existsSync(cssFallbackUrl)) {
-          return cssFallbackUrl;
+          return AbsoluteFsPath.from(cssFallbackUrl);
         }
       }
     }
@@ -151,23 +145,39 @@ export class HostResourceLoader implements ResourceLoader {
    * a list of file names that were considered, the loader can enumerate the possible locations
    * for the file by setting up a module resolution for it that will fail.
    */
-  private getCandidateLocations(url: string, fromFile: string): string[] {
+  private getCandidateLocations(url: string, fromFile: AbsoluteFsPath|''): AbsoluteFsPath[] {
     // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
     // but is marked @internal in TypeScript. See
     // https://github.com/Microsoft/TypeScript/issues/28770.
     type ResolvedModuleWithFailedLookupLocations =
         ts.ResolvedModuleWithFailedLookupLocations & {failedLookupLocations: ReadonlyArray<string>};
 
+    // If the path starts with a `/` then just strip it but then don't resolve it relative to a
+    // containing file.
+    if (isAbsolutePath(url)) {
+      url = stripAbsolutePrefix(url);
+      fromFile = '';
+    }
+
+    // Add a `./` to avoid accidentally invoking the node.js external module resolution.
+    if (!url.startsWith('.')) {
+      url = './' + url;
+    }
+
     // clang-format off
-    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.host) as ResolvedModuleWithFailedLookupLocations;
+    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile.toString(), this.options, this.host) as ResolvedModuleWithFailedLookupLocations;
     // clang-format on
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
           `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`);
     }
 
+    // If the candidate location is not absolute then resolve it against the current working
+    // directory.
+    const cwd = this.host.getCurrentDirectory();
     return failedLookup.failedLookupLocations
         .filter(candidate => candidate.endsWith('.$ngresource$.ts'))
-        .map(candidate => candidate.replace(/\.\$ngresource\$\.ts$/, ''));
+        .map(candidate => candidate.replace(/\.\$ngresource\$\.ts$/, ''))
+        .map(candidate => AbsoluteFsPath.resolve(cwd, candidate));
   }
 }

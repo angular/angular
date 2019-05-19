@@ -9,14 +9,15 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {ClassDeclaration, ClassMember, ClassMemberKind, ReflectionHost, isNamedClassDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
-    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
-    resolutionContext: string): Reference<ClassDeclaration>[] {
+    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: ModuleSpecifier | null,
+    resolutionContext: AbsoluteFsPath): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }

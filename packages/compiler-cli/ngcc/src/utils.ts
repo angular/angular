@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+import {ModuleSpecifier, PathSegment} from '../../src/ngtsc/path';
 
 export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) => ts.Symbol {
   return function(symbol: ts.Symbol) {
@@ -62,6 +63,8 @@ export type PathMappings = {
  *
  * Relative paths start with `/`, `./` or `../`; or are simply `.` or `..`.
  */
-export function isRelativePath(path: string): boolean {
-  return /^\/|^\.\.?($|\/)/.test(path);
+export function isRelativePath(path: ModuleSpecifier): boolean {
+  return /^\/|^\.\.?($|\/)/.test(path.toString());
 }
+
+export const NODE_MODULES_SEGMENT = PathSegment.fromFsPath('node_modules');

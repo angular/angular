@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
@@ -162,11 +163,12 @@ export function toR3Reference(
 }
 
 export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
-  return decorator.import !== null && decorator.import.from === '@angular/core';
+  return decorator.import !== null && decorator.import.from === ANGULAR_CORE_SPECIFIER;
 }
 
 export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
-  return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
+  return reference.ownedByModuleGuess === ANGULAR_CORE_SPECIFIER &&
+      reference.debugName === symbolName;
 }
 
 export function findAngularDecorator(
@@ -245,7 +247,7 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
     return node;
   }
   const imp = reflector.getImportOfIdentifier(fn);
-  if (imp === null || imp.from !== '@angular/core' || imp.name !== 'forwardRef') {
+  if (imp === null || imp.from !== ANGULAR_CORE_SPECIFIER || imp.name !== 'forwardRef') {
     return node;
   } else {
     return expr;

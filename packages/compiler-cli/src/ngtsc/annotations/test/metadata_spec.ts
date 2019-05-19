@@ -9,13 +9,16 @@
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
+import {AbsoluteFsPath} from '../../path';
 import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {getDeclaration, getSourceFile, makeProgram} from '../../testing/in_memory_typescript';
 import {ImportManager, translateStatement} from '../../translator';
 import {generateSetClassMetadataCall} from '../src/metadata';
 
+const _Abs = AbsoluteFsPath.from;
+
 const CORE = {
-  name: 'node_modules/@angular/core/index.d.ts',
+  name: _Abs('/node_modules/@angular/core/index.d.ts'),
   contents: `
     export declare function Input(...args: any[]): any;
     export declare function Inject(...args: any[]): any;
@@ -28,7 +31,7 @@ describe('ngtsc setClassMetadata converter', () => {
   it('should convert decorated class metadata', () => {
     const res = compileAndPrint(`
     import {Component} from '@angular/core';
-    
+
     @Component('metadata') class Target {}
     `);
     expect(res).toEqual(
@@ -39,7 +42,7 @@ describe('ngtsc setClassMetadata converter', () => {
     const res = compileAndPrint(`
     import {Component, Inject, Injector} from '@angular/core';
     const FOO = 'foo';
-    
+
     @Component('metadata') class Target {
       constructor(@Inject(FOO) foo: any, bar: Injector) {}
     }
@@ -51,7 +54,7 @@ describe('ngtsc setClassMetadata converter', () => {
   it('should convert decorated field metadata', () => {
     const res = compileAndPrint(`
     import {Component, Input} from '@angular/core';
-    
+
     @Component('metadata') class Target {
       @Input() foo: string;
 
@@ -66,7 +69,7 @@ describe('ngtsc setClassMetadata converter', () => {
   it('should not convert non-angular decorators to metadata', () => {
     const res = compileAndPrint(`
     declare function NotAComponent(...args: any[]): any;
-    
+
     @NotAComponent('metadata') class Target {}
     `);
     expect(res).toBe('');
@@ -76,17 +79,17 @@ describe('ngtsc setClassMetadata converter', () => {
 function compileAndPrint(contents: string): string {
   const {program} = makeProgram([
     CORE, {
-      name: 'index.ts',
+      name: _Abs('/index.ts'),
       contents,
     }
   ]);
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
-  const target = getDeclaration(program, 'index.ts', 'Target', ts.isClassDeclaration);
+  const target = getDeclaration(program, _Abs('/index.ts'), 'Target', ts.isClassDeclaration);
   const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
   if (call === null) {
     return '';
   }
-  const sf = program.getSourceFile('index.ts') !;
+  const sf = getSourceFile(program, '/index.ts') !;
   const im = new ImportManager(new NoopImportRewriter(), 'i');
   const tsStatement = translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER);
   const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);

@@ -8,10 +8,8 @@
 
 /// <reference types="node" />
 import * as path from 'path';
-
 import * as ts from 'typescript';
-
-import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
+import {AbsoluteFsPath, PathSegment} from './types';
 import {stripExtension} from './util';
 
 /**
@@ -20,7 +18,7 @@ import {stripExtension} from './util';
  *
  * Paths in the type system use POSIX format.
  */
-export type LogicalProjectPath = BrandedPath<'LogicalProjectPath'>;
+export interface LogicalProjectPath extends String { _brand: 'LogicalProjectPath'; }
 
 export const LogicalProjectPath = {
   /**
@@ -30,11 +28,12 @@ export const LogicalProjectPath = {
    * importing from `to`.
    */
   relativePathBetween: function(from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
-    let relativePath = path.posix.relative(path.posix.dirname(from), to);
+    let relativePath =
+        path.posix.relative(path.posix.dirname(from as any as string), to as any as string);
     if (!relativePath.startsWith('../')) {
       relativePath = ('./' + relativePath);
     }
-    return relativePath as PathSegment;
+    return relativePath as any as PathSegment;
   },
 };
 
@@ -80,7 +79,7 @@ export class LogicalFileSystem {
     if (!this.cache.has(physicalFile)) {
       let logicalFile: LogicalProjectPath|null = null;
       for (const rootDir of this.rootDirs) {
-        if (physicalFile.startsWith(rootDir)) {
+        if (physicalFile.startsWith(rootDir as any as string)) {
           logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
@@ -98,6 +97,6 @@ export class LogicalFileSystem {
   private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
       LogicalProjectPath {
     const logicalPath = stripExtension(file.substr(rootDir.length));
-    return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
+    return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as any;
   }
 }

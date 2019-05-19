@@ -27,7 +27,7 @@ export class TypeCheckShimGenerator implements ShimGenerator {
   generate(genFileName: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {
     return ts.createSourceFile(
-        genFileName, 'export const USED_FOR_NG_TYPE_CHECKING = true;', ts.ScriptTarget.Latest, true,
-        ts.ScriptKind.TS);
+        genFileName.toString(), 'export const USED_FOR_NG_TYPE_CHECKING = true;',
+        ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 }

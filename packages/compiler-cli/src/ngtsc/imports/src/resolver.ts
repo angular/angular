@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import * as ts from 'typescript';
-
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {resolveModuleName} from '../../util/src/typescript';
 import {Reference} from './references';
 
@@ -27,9 +26,9 @@ export class ModuleResolver {
       private program: ts.Program, private compilerOptions: ts.CompilerOptions,
       private host: ts.CompilerHost) {}
 
-  resolveModuleName(module: string, containingFile: ts.SourceFile): ts.SourceFile|null {
-    const resolved =
-        resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host);
+  resolveModuleName(module: ModuleSpecifier, containingFile: ts.SourceFile): ts.SourceFile|null {
+    const resolved = resolveModuleName(
+        module, AbsoluteFsPath.fromSourceFile(containingFile), this.compilerOptions, this.host);
     if (resolved === undefined) {
       return null;
     }

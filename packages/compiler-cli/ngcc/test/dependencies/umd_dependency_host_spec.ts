@@ -7,12 +7,12 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {UmdDependencyHost} from '../../src/dependencies/umd_dependency_host';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
 
 describe('UmdDependencyHost', () => {
   let host: UmdDependencyHost;
@@ -24,38 +24,38 @@ describe('UmdDependencyHost', () => {
   describe('getDependencies()', () => {
     it('should not generate a TS AST if the source does not contain any require calls', () => {
       spyOn(ts, 'createSourceFile');
-      host.findDependencies(_('/no/imports/or/re-exports/index.js'));
+      host.findDependencies(_Abs('/no/imports/or/re-exports/index.js'));
       expect(ts.createSourceFile).not.toHaveBeenCalled();
     });
 
     it('should resolve all the external imports of the source file', () => {
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/external/imports/index.js'));
+          host.findDependencies(_Abs('/external/imports/index.js'));
       expect(dependencies.size).toBe(2);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
-      expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
-      expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1/sub_1'))).toBe(true);
     });
 
     it('should resolve all the external re-exports of the source file', () => {
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/external/re-exports/index.js'));
+          host.findDependencies(_Abs('/external/re-exports/index.js'));
       expect(dependencies.size).toBe(2);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
-      expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
-      expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1/sub_1'))).toBe(true);
     });
 
     it('should capture missing external imports', () => {
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/external/imports-missing/index.js'));
+          host.findDependencies(_Abs('/external/imports-missing/index.js'));
 
       expect(dependencies.size).toBe(1);
-      expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1'))).toBe(true);
       expect(missing.size).toBe(1);
-      expect(missing.has(PathSegment.fromFsPath('missing'))).toBe(true);
+      expect(missing.has(ModuleSpecifier.from('missing'))).toBe(true);
       expect(deepImports.size).toBe(0);
     });
 
@@ -64,30 +64,30 @@ describe('UmdDependencyHost', () => {
       // is found that does not map to an entry-point but still exists on disk, i.e. a deep import.
       // Such deep imports are captured for diagnostics purposes.
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/external/deep-import/index.js'));
+          host.findDependencies(_Abs('/external/deep-import/index.js'));
 
       expect(dependencies.size).toBe(0);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(1);
-      expect(deepImports.has(_('/node_modules/lib_1/deep/import'))).toBe(true);
+      expect(deepImports.has(_Abs('/node_modules/lib_1/deep/import'))).toBe(true);
     });
 
     it('should recurse into internal dependencies', () => {
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/internal/outer/index.js'));
+          host.findDependencies(_Abs('/internal/outer/index.js'));
 
       expect(dependencies.size).toBe(1);
-      expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1/sub_1'))).toBe(true);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
     });
 
     it('should handle circular internal dependencies', () => {
       const {dependencies, missing, deepImports} =
-          host.findDependencies(_('/internal/circular_a/index.js'));
+          host.findDependencies(_Abs('/internal/circular_a/index.js'));
       expect(dependencies.size).toBe(2);
-      expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
-      expect(dependencies.has(_('/node_modules/lib_1/sub_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1/sub_1'))).toBe(true);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
     });
@@ -101,12 +101,13 @@ describe('UmdDependencyHost', () => {
                                        '@lib/*/test': ['lib/*/test'],
                                      }
                                    }));
-      const {dependencies, missing, deepImports} = host.findDependencies(_('/path-alias/index.js'));
+      const {dependencies, missing, deepImports} =
+          host.findDependencies(_Abs('/path-alias/index.js'));
       expect(dependencies.size).toBe(4);
-      expect(dependencies.has(_('/dist/components'))).toBe(true);
-      expect(dependencies.has(_('/dist/shared'))).toBe(true);
-      expect(dependencies.has(_('/dist/lib/shared/test'))).toBe(true);
-      expect(dependencies.has(_('/node_modules/lib_1'))).toBe(true);
+      expect(dependencies.has(_Abs('/dist/components'))).toBe(true);
+      expect(dependencies.has(_Abs('/dist/shared'))).toBe(true);
+      expect(dependencies.has(_Abs('/dist/lib/shared/test'))).toBe(true);
+      expect(dependencies.has(_Abs('/node_modules/lib_1'))).toBe(true);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(0);
     });

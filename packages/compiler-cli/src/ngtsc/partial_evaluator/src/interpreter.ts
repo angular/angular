@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {Declaration, ReflectionHost} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
@@ -69,13 +70,13 @@ interface Context {
   /**
    * The module name (if any) which was used to reach the currently resolving symbols.
    */
-  absoluteModuleName: string|null;
+  absoluteModuleName: ModuleSpecifier|null;
 
   /**
    * A file name representing the context in which the current `absoluteModuleName`, if any, was
    * resolved.
    */
-  resolutionContext: string;
+  resolutionContext: AbsoluteFsPath;
   scope: Scope;
   foreignFunctionResolver?: ForeignFunctionResolver;
 }
@@ -410,7 +411,7 @@ export class StaticInterpreter {
         context = {
           ...context,
           absoluteModuleName: lhs.bestGuessOwningModule.specifier,
-          resolutionContext: node.getSourceFile().fileName,
+          resolutionContext: AbsoluteFsPath.fromSourceFile(node.getSourceFile()),
         };
       }
 
@@ -574,13 +575,13 @@ function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
 const EMPTY = {};
 
 function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration): {
-  absoluteModuleName?: string,
-  resolutionContext?: string,
+  absoluteModuleName?: ModuleSpecifier,
+  resolutionContext?: AbsoluteFsPath,
 } {
   if (decl.viaModule !== null && decl.viaModule !== existing.absoluteModuleName) {
     return {
       absoluteModuleName: decl.viaModule,
-      resolutionContext: node.getSourceFile().fileName,
+      resolutionContext: AbsoluteFsPath.fromSourceFile(node.getSourceFile()),
     };
   } else {
     return EMPTY;

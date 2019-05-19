@@ -26,7 +26,7 @@ export class InPlaceFileWriter implements FileWriter {
 
   protected writeFileAndBackup(file: FileToWrite): void {
     this.fs.ensureDir(AbsoluteFsPath.dirname(file.path));
-    const backPath = AbsoluteFsPath.fromUnchecked(`${file.path}.__ivy_ngcc_bak`);
+    const backPath = AbsoluteFsPath.from(`${file.path}.__ivy_ngcc_bak`);
     if (this.fs.exists(backPath)) {
       throw new Error(
           `Tried to overwrite ${backPath} with an ngcc back up file, which is disallowed.`);

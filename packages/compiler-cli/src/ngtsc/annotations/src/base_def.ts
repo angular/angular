@@ -9,6 +9,7 @@
 import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
 import {PartialEvaluator} from '../../partial_evaluator';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -142,7 +143,7 @@ export class BaseDefDecoratorHandler implements
 
     if (metadata.host) {
       analysis.host = extractHostBindings(
-          metadata.host, this.evaluator, this.isCore ? undefined : '@angular/core');
+          metadata.host, this.evaluator, this.isCore ? undefined : ANGULAR_CORE_SPECIFIER);
     }
 
     return {analysis};

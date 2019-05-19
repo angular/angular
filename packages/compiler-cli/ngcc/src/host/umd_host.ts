@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-
+import {ModuleSpecifier} from '../../../src/ngtsc/path';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -16,7 +16,7 @@ import {Esm5ReflectionHost} from './esm5_host';
 export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules = new Map<ts.SourceFile, UmdModule|null>();
   protected umdExports = new Map<ts.SourceFile, Map<string, Declaration>|null>();
-  protected umdImportPaths = new Map<ts.ParameterDeclaration, string|null>();
+  protected umdImportPaths = new Map<ts.ParameterDeclaration, ModuleSpecifier|null>();
   constructor(
       logger: Logger, isCore: boolean, protected program: ts.Program,
       protected compilerHost: ts.CompilerHost, dts?: BundleProgram|null) {
@@ -51,7 +51,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return this.umdModules.get(sourceFile) !;
   }
 
-  getUmdImportPath(importParameter: ts.ParameterDeclaration): string|null {
+  getUmdImportPath(importParameter: ts.ParameterDeclaration): ModuleSpecifier|null {
     if (this.umdImportPaths.has(importParameter)) {
       return this.umdImportPaths.get(importParameter) !;
     }
@@ -149,15 +149,15 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return {node: importedFile, viaModule: importInfo.from};
   }
 
-  private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
-      |undefined {
+  private resolveModuleName(moduleName: ModuleSpecifier, containingFile: ts.SourceFile):
+      ts.SourceFile|undefined {
     if (this.compilerHost.resolveModuleNames) {
       const moduleInfo =
-          this.compilerHost.resolveModuleNames([moduleName], containingFile.fileName)[0];
+          this.compilerHost.resolveModuleNames([moduleName.toString()], containingFile.fileName)[0];
       return moduleInfo && this.program.getSourceFile(moduleInfo.resolvedFileName);
     } else {
       const moduleInfo = ts.resolveModuleName(
-          moduleName, containingFile.fileName, this.program.getCompilerOptions(),
+          moduleName.toString(), containingFile.fileName, this.program.getCompilerOptions(),
           this.compilerHost);
       return moduleInfo.resolvedModule &&
           this.program.getSourceFile(moduleInfo.resolvedModule.resolvedFileName);
@@ -194,8 +194,8 @@ function getUmdWrapperCall(statement: ts.Statement): ts.CallExpression&
 
 
 export function getImportsOfUmdModule(umdModule: UmdModule):
-    {parameter: ts.ParameterDeclaration, path: string}[] {
-  const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
+    {parameter: ts.ParameterDeclaration, path: ModuleSpecifier}[] {
+  const imports: {parameter: ts.ParameterDeclaration, path: ModuleSpecifier}[] = [];
   for (let i = 1; i < umdModule.factoryFn.parameters.length; i++) {
     imports.push({
       parameter: umdModule.factoryFn.parameters[i],
@@ -227,13 +227,14 @@ interface UmdExportDeclaration {
   declaration: Declaration;
 }
 
-function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: number): string {
+function getRequiredModulePath(
+    wrapperFn: ts.FunctionExpression, paramIndex: number): ModuleSpecifier {
   const statement = wrapperFn.body.statements[0];
   if (!ts.isExpressionStatement(statement)) {
     throw new Error(
         'UMD wrapper body is not an expression statement:\n' + wrapperFn.body.getText());
   }
-  const modulePaths: string[] = [];
+  const modulePaths: ModuleSpecifier[] = [];
   findModulePaths(statement.expression);
 
   // Since we were only interested in the `require()` calls, we miss the `exports` argument, so we
@@ -248,7 +249,7 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
     if (isRequireCall(node)) {
       const argument = node.arguments[0];
       if (ts.isStringLiteral(argument)) {
-        modulePaths.push(argument.text);
+        modulePaths.push(ModuleSpecifier.from(argument.text));
       }
     } else {
       node.forEachChild(findModulePaths);

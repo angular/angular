@@ -8,7 +8,7 @@
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ANGULAR_CORE_SPECIFIER, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -20,12 +20,13 @@ import {makeTestEntryPointBundle} from '../helpers/utils';
 import {MockFileSystem} from '../helpers/mock_file_system';
 import {MockLogger} from '../helpers/mock_logger';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
+import {getSourceFile} from '../../../src/ngtsc/testing/in_memory_typescript';
 
-const _ = AbsoluteFsPath.fromUnchecked;
+const _Abs = AbsoluteFsPath.from;
 
 function setup(
-    files: {name: string, contents: string}[],
-    dtsFiles?: {name: string, contents: string, isRoot?: boolean}[]) {
+    files: {name: AbsoluteFsPath, contents: string}[],
+    dtsFiles?: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[]) {
   const fs = new MockFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('es2015', 'esm2015', false, files, dtsFiles) !;
@@ -34,7 +35,7 @@ function setup(
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses = new DecorationAnalyzer(
                                  fs, bundle.src.program, bundle.src.options, bundle.src.host,
-                                 typeChecker, host, referencesRegistry, [_('/')], false)
+                                 typeChecker, host, referencesRegistry, [_Abs('/')], false)
                                  .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderingFormatter(host, false);
@@ -48,7 +49,7 @@ function setup(
 }
 
 const PROGRAM = {
-  name: _('/some/file.js'),
+  name: _Abs('/some/file.js'),
   contents: `
 /* A copyright notice */
 import 'some-side-effect';
@@ -92,8 +93,8 @@ describe('EsmRenderingFormatter', () => {
       renderer.addImports(
           output,
           [
-            {specifier: '@angular/core', qualifier: 'i0'},
-            {specifier: '@angular/common', qualifier: 'i1'}
+            {specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'},
+            {specifier: ModuleSpecifier.from('@angular/common'), qualifier: 'i1'}
           ],
           sourceFile);
       expect(output.toString()).toContain(`/* A copyright notice */
@@ -109,11 +110,15 @@ import * as i1 from '@angular/common';`);
       const {importManager, renderer, sourceFile} = setup([PROGRAM]);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(
-          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), dtsFrom: _Abs('/some/a.d.ts'), identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), dtsFrom: _Abs('/some/a.d.ts'), identifier: 'ComponentA2'},
+            {
+              from: _Abs('/some/foo/b.js'),
+              dtsFrom: _Abs('/some/foo/b.d.ts'),
+              identifier: 'ComponentB'
+            },
             {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -129,11 +134,11 @@ export {TopLevelComponent};`);
       const {importManager, renderer, sourceFile} = setup([PROGRAM]);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(
-          output, _(PROGRAM.name.replace(/\.js$/, '')),
+          output, _Abs(PROGRAM.name.replace(/\.js$/, '')),
           [
-            {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-            {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-            {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
+            {from: _Abs('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
+            {from: _Abs('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
             {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
           ],
           importManager, sourceFile);
@@ -147,7 +152,7 @@ export {TopLevelComponent};`);
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
       const {renderer, program} = setup([PROGRAM]);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -162,13 +167,13 @@ export class A {}`);
 
     it('should insert constants after inserted imports', () => {
       const {renderer, program} = setup([PROGRAM]);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
       const output = new MagicString(PROGRAM.contents);
       renderer.addConstants(output, 'const x = 3;', file);
-      renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
+      renderer.addImports(output, [{specifier: ANGULAR_CORE_SPECIFIER, qualifier: 'i0'}], file);
       expect(output.toString()).toContain(`
 import {Directive} from '@angular/core';
 import * as i0 from '@angular/core';
@@ -181,7 +186,7 @@ export class A {`);
   describe('rewriteSwitchableDeclarations', () => {
     it('should switch marked declaration initializers', () => {
       const {renderer, program, switchMarkerAnalyses, sourceFile} = setup([PROGRAM]);
-      const file = program.getSourceFile('some/file.js');
+      const file = getSourceFile(program, '/some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
@@ -282,7 +287,7 @@ A.decorators = [
   describe('[__decorate declarations]', () => {
 
     const PROGRAM_DECORATE_HELPER = {
-      name: '/some/file.js',
+      name: _Abs('/some/file.js'),
       contents: `
 import * as tslib_1 from "tslib";
 var D_1;
@@ -376,7 +381,7 @@ export { D };
   describe('addModuleWithProvidersParams', () => {
     const MODULE_WITH_PROVIDERS_PROGRAM = [
       {
-        name: '/src/index.js',
+        name: _Abs('/src/index.js'),
         contents: `
         import {ExternalModule} from './module';
         import {LibraryModule} from 'some-library';
@@ -401,7 +406,7 @@ export { D };
         export function withProviders8() { return {ngModule: SomeModule}; }`,
       },
       {
-        name: '/src/module.js',
+        name: _Abs('/src/module.js'),
         contents: `
         export class ExternalModule {
           static withProviders1() { return {ngModule: ExternalModule}; }
@@ -409,13 +414,13 @@ export { D };
         }`
       },
       {
-        name: '/node_modules/some-library/index.d.ts',
+        name: _Abs('/node_modules/some-library/index.d.ts'),
         contents: 'export declare class LibraryModule {}'
       },
     ];
     const MODULE_WITH_PROVIDERS_DTS_PROGRAM = [
       {
-        name: '/typings/index.d.ts',
+        name: _Abs('/typings/index.d.ts'),
         contents: `
         import {ModuleWithProviders} from '@angular/core';
         export declare class SomeClass {}
@@ -440,7 +445,7 @@ export { D };
         export declare function withProviders8(): MyModuleWithProviders;`
       },
       {
-        name: '/typings/module.d.ts',
+        name: _Abs('/typings/module.d.ts'),
         contents: `
         export interface ModuleWithProviders {}
         export declare class ExternalModule {
@@ -449,7 +454,7 @@ export { D };
         }`
       },
       {
-        name: '/node_modules/some-library/index.d.ts',
+        name: _Abs('/node_modules/some-library/index.d.ts'),
         contents: 'export declare class LibraryModule {}'
       },
     ];
@@ -461,7 +466,7 @@ export { D };
       const referencesRegistry = new NgccReferencesRegistry(host);
       const moduleWithProvidersAnalyses = new ModuleWithProvidersAnalyzer(host, referencesRegistry)
                                               .analyzeProgram(bundle.src.program);
-      const typingsFile = bundle.dts !.program.getSourceFile('/typings/index.d.ts') !;
+      const typingsFile = getSourceFile(bundle.dts !.program, '//typings/index.d.ts') !;
       const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
 
       const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[0].contents);
@@ -497,7 +502,7 @@ export { D };
          const moduleWithProvidersAnalyses =
              new ModuleWithProvidersAnalyzer(host, referencesRegistry)
                  .analyzeProgram(bundle.src.program);
-         const typingsFile = bundle.dts !.program.getSourceFile('/typings/module.d.ts') !;
+         const typingsFile = getSourceFile(bundle.dts !.program, '//typings/module.d.ts') !;
          const moduleWithProvidersInfo = moduleWithProvidersAnalyses.get(typingsFile) !;
 
          const output = new MagicString(MODULE_WITH_PROVIDERS_DTS_PROGRAM[1].contents);

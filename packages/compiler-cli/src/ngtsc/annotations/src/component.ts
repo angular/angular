@@ -7,7 +7,6 @@
  */
 
 import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -16,6 +15,7 @@ import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {AbsoluteFsPath, ModuleSpecifier, PathSegment} from '../../path';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -45,7 +45,7 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
       private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean,
-      private resourceLoader: ResourceLoader, private rootDirs: string[],
+      private resourceLoader: ResourceLoader, private rootDirs: AbsoluteFsPath[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder) {}
@@ -96,7 +96,7 @@ export class ComponentDecoratorHandler implements
 
     const meta = this._resolveLiteral(decorator);
     const component = reflectObjectLiteral(meta);
-    const containingFile = node.getSourceFile().fileName;
+    const containingFile = AbsoluteFsPath.fromSourceFile(node.getSourceFile());
 
     // Convert a styleUrl string into a Promise to preload it.
     const resolveStyleUrl = (styleUrl: string): Promise<void> => {
@@ -130,7 +130,7 @@ export class ComponentDecoratorHandler implements
   }
 
   analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
-    const containingFile = node.getSourceFile().fileName;
+    const containingFile = AbsoluteFsPath.fromSourceFile(node.getSourceFile());
     this.literalCache.delete(decorator);
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
@@ -150,14 +150,15 @@ export class ComponentDecoratorHandler implements
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
-    const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, containingFile);
-      if (previous === undefined || candidate.length < previous.length) {
-        return candidate;
-      } else {
-        return previous;
-      }
-    }, undefined) !;
+    const relativeContextFilePath =
+        this.rootDirs.reduce<PathSegment|undefined>((previous, rootDir) => {
+          const candidate = PathSegment.relative(rootDir, containingFile);
+          if (previous === undefined || candidate.length < previous.length) {
+            return candidate;
+          } else {
+            return previous;
+          }
+        }, undefined) !;
 
     const viewProviders: Expression|null = component.has('viewProviders') ?
         new WrappedNodeExpr(component.get('viewProviders') !) :
@@ -188,7 +189,7 @@ export class ComponentDecoratorHandler implements
             /* escapedString */ false);
       } else {
         // Expect an inline template to be present.
-        const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
+        const inlineTemplate = this._extractInlineTemplate(component, containingFile);
         if (inlineTemplate === null) {
           throw new FatalDiagnosticError(
               ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
@@ -284,7 +285,8 @@ export class ComponentDecoratorHandler implements
           wrapDirectivesAndPipesInClosure: false,  //
           animations,
           viewProviders,
-          i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
+          i18nUseExternalIds: this.i18nUseExternalIds,
+          relativeContextFilePath: relativeContextFilePath.toString()
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
@@ -489,7 +491,7 @@ export class ComponentDecoratorHandler implements
 
   private _preloadAndParseTemplate(
       node: ts.Declaration, decorator: Decorator, component: Map<string, ts.Expression>,
-      containingFile: string): Promise<ParsedTemplate|null> {
+      containingFile: AbsoluteFsPath): Promise<ParsedTemplate|null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
       const templateUrlExpr = component.get('templateUrl') !;
@@ -532,9 +534,9 @@ export class ComponentDecoratorHandler implements
   }
 
   private _extractInlineTemplate(
-      component: Map<string, ts.Expression>, relativeContextFilePath: string): {
+      component: Map<string, ts.Expression>, containingFile: AbsoluteFsPath): {
     templateStr: string,
-    templateUrl: string,
+    templateUrl: AbsoluteFsPath|'',
     templateRange: LexerRange|undefined,
     escapedString: boolean
   }|null {
@@ -544,7 +546,7 @@ export class ComponentDecoratorHandler implements
     }
     const templateExpr = component.get('template') !;
     let templateStr: string;
-    let templateUrl: string = '';
+    let templateUrl: AbsoluteFsPath|'' = '';
     let templateRange: LexerRange|undefined = undefined;
     let escapedString = false;
     // We only support SourceMaps for inline templates that are simple string literals.
@@ -554,7 +556,7 @@ export class ComponentDecoratorHandler implements
       // strip
       templateRange = getTemplateRange(templateExpr);
       templateStr = templateExpr.getSourceFile().text;
-      templateUrl = relativeContextFilePath;
+      templateUrl = containingFile;
       escapedString = true;
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
@@ -568,7 +570,7 @@ export class ComponentDecoratorHandler implements
   }
 
   private _parseTemplate(
-      component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
+      component: Map<string, ts.Expression>, templateStr: string, templateUrl: AbsoluteFsPath|'',
       templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
@@ -595,7 +597,7 @@ export class ComponentDecoratorHandler implements
     }
 
     return {
-        interpolation, ...parseTemplate(templateStr, templateUrl, {
+        interpolation, ...parseTemplate(templateStr, templateUrl.toString(), {
           preserveWhitespaces,
           interpolationConfig: interpolation,
           range: templateRange, escapedString
@@ -609,7 +611,8 @@ export class ComponentDecoratorHandler implements
     }
 
     // Figure out what file is being imported.
-    return this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
+    return this.moduleResolver.resolveModuleName(
+        ModuleSpecifier.from(expr.value.moduleName !), origin);
   }
 
   private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
@@ -644,7 +647,7 @@ function getTemplateRange(templateExpr: ts.Expression) {
   };
 }
 
-function sourceMapUrl(resourceUrl: string): string {
+function sourceMapUrl(resourceUrl: AbsoluteFsPath | ''): AbsoluteFsPath|'' {
   if (!tsSourceMapBug29300Fixed()) {
     // By removing the template URL we are telling the translator not to try to
     // map the external source file to the generated code, since the version

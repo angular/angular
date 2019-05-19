@@ -13,6 +13,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {ANGULAR_CORE_SPECIFIER} from '../../path';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
@@ -329,7 +330,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
 
     // If it's not from @angular/core, bail.
-    if (!this.isCore && id.from !== '@angular/core') {
+    if (!this.isCore && id.from !== ANGULAR_CORE_SPECIFIER) {
       return null;
     }
 

@@ -5,11 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+import {AbsoluteFsPath, ModuleSpecifier} from '../../../src/ngtsc/path';
 import {ModuleResolver, ResolvedDeepImport, ResolvedExternalModule, ResolvedRelativeModule} from '../../src/dependencies/module_resolver';
 import {MockFileSystem} from '../helpers/mock_file_system';
 
-const _ = AbsoluteFsPath.from;
+const _Abs = AbsoluteFsPath.from;
+const _Mod = ModuleSpecifier.from;
 
 function createMockFileSystem() {
   return new MockFileSystem({
@@ -71,59 +72,70 @@ describe('ModuleResolver', () => {
     describe('with relative paths', () => {
       it('should resolve sibling, child and aunt modules', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(resolver.resolveModuleImport('./x', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
-        expect(resolver.resolveModuleImport('./sub-folder', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedRelativeModule(_('/libs/local-package/sub-folder/index.js')));
-        expect(resolver.resolveModuleImport('../x', _('/libs/local-package/sub-folder/index.js')))
-            .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+        expect(resolver.resolveModuleImport(_Mod('./x'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedRelativeModule(_Abs('/libs/local-package/x.js')));
+        expect(resolver.resolveModuleImport(
+                   _Mod('./sub-folder'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedRelativeModule(_Abs('/libs/local-package/sub-folder/index.js')));
+        expect(resolver.resolveModuleImport(
+                   _Mod('../x'), _Abs('/libs/local-package/sub-folder/index.js')))
+            .toEqual(new ResolvedRelativeModule(_Abs('/libs/local-package/x.js')));
       });
 
       it('should return `null` if the resolved module relative module does not exist', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(resolver.resolveModuleImport('./y', _('/libs/local-package/index.js'))).toBe(null);
+        expect(resolver.resolveModuleImport(_Mod('./y'), _Abs('/libs/local-package/index.js')))
+            .toBe(null);
       });
     });
 
     describe('with non-mapped external paths', () => {
       it('should resolve to the package.json of a local node_modules package', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(resolver.resolveModuleImport('package-1', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/libs/local-package/node_modules/package-1')));
         expect(
-            resolver.resolveModuleImport('package-1', _('/libs/local-package/sub-folder/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/libs/local-package/node_modules/package-1')));
-        expect(resolver.resolveModuleImport('package-1', _('/libs/local-package/x.js')))
-            .toEqual(new ResolvedExternalModule(_('/libs/local-package/node_modules/package-1')));
+            resolver.resolveModuleImport(_Mod('package-1'), _Abs('/libs/local-package/index.js')))
+            .toEqual(
+                new ResolvedExternalModule(_Abs('/libs/local-package/node_modules/package-1')));
+        expect(resolver.resolveModuleImport(
+                   _Mod('package-1'), _Abs('/libs/local-package/sub-folder/index.js')))
+            .toEqual(
+                new ResolvedExternalModule(_Abs('/libs/local-package/node_modules/package-1')));
+        expect(resolver.resolveModuleImport(_Mod('package-1'), _Abs('/libs/local-package/x.js')))
+            .toEqual(
+                new ResolvedExternalModule(_Abs('/libs/local-package/node_modules/package-1')));
       });
 
       it('should resolve to the package.json of a higher node_modules package', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(resolver.resolveModuleImport('package-2', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/libs/node_modules/package-2')));
-        expect(resolver.resolveModuleImport('top-package', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/node_modules/top-package')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-2'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/libs/node_modules/package-2')));
+        expect(
+            resolver.resolveModuleImport(_Mod('top-package'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/node_modules/top-package')));
       });
 
       it('should return `null` if the package cannot be found', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(resolver.resolveModuleImport('missing-2', _('/libs/local-package/index.js')))
+        expect(
+            resolver.resolveModuleImport(_Mod('missing-2'), _Abs('/libs/local-package/index.js')))
             .toBe(null);
       });
 
       it('should return `null` if the package is not accessible because it is in a inner node_modules package',
          () => {
            const resolver = new ModuleResolver(createMockFileSystem());
-           expect(resolver.resolveModuleImport('package-3', _('/libs/local-package/index.js')))
+           expect(resolver.resolveModuleImport(
+                      _Mod('package-3'), _Abs('/libs/local-package/index.js')))
                .toBe(null);
          });
 
       it('should identify deep imports into an external module', () => {
         const resolver = new ModuleResolver(createMockFileSystem());
-        expect(
-            resolver.resolveModuleImport('package-1/sub-folder', _('/libs/local-package/index.js')))
-            .toEqual(
-                new ResolvedDeepImport(_('/libs/local-package/node_modules/package-1/sub-folder')));
+        expect(resolver.resolveModuleImport(
+                   _Mod('package-1/sub-folder'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedDeepImport(
+                _Abs('/libs/local-package/node_modules/package-1/sub-folder')));
       });
     });
 
@@ -132,11 +144,13 @@ describe('ModuleResolver', () => {
         const resolver = new ModuleResolver(
             createMockFileSystem(), {baseUrl: '/dist', paths: {'*': ['*', 'sub-folder/*']}});
 
-        expect(resolver.resolveModuleImport('package-4', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/package-4')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-4'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/package-4')));
 
-        expect(resolver.resolveModuleImport('package-5', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-5')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-5'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/sub-folder/package-5')));
       });
 
       it('should select the best match by the length of prefix before the *', () => {
@@ -151,8 +165,8 @@ describe('ModuleResolver', () => {
         // We should match the second path (e.g. `'@lib/sub-folder/*'`), which will actually map to
         // `*` and so the final resolved path will not include the `sub-folder` segment.
         expect(resolver.resolveModuleImport(
-                   '@lib/sub-folder/package-4', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/package-4')));
+                   _Mod('@lib/sub-folder/package-4'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/package-4')));
       });
 
       it('should follow the ordering of `paths` when matching mapped packages', () => {
@@ -160,27 +174,32 @@ describe('ModuleResolver', () => {
 
         const fs = createMockFileSystem();
         resolver = new ModuleResolver(fs, {baseUrl: '/dist', paths: {'*': ['*', 'sub-folder/*']}});
-        expect(resolver.resolveModuleImport('package-4', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/package-4')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-4'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/package-4')));
 
         resolver = new ModuleResolver(fs, {baseUrl: '/dist', paths: {'*': ['sub-folder/*', '*']}});
-        expect(resolver.resolveModuleImport('package-4', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-4')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-4'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/sub-folder/package-4')));
       });
 
       it('should resolve packages when the path mappings have post-fixes', () => {
         const resolver = new ModuleResolver(
             createMockFileSystem(), {baseUrl: '/dist', paths: {'*': ['sub-folder/*/post-fix']}});
-        expect(resolver.resolveModuleImport('package-5', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-5/post-fix')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-5'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/sub-folder/package-5/post-fix')));
       });
 
       it('should match paths against complex path matchers', () => {
         const resolver = new ModuleResolver(
             createMockFileSystem(), {baseUrl: '/dist', paths: {'@shared/*': ['sub-folder/*']}});
-        expect(resolver.resolveModuleImport('@shared/package-4', _('/libs/local-package/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-4')));
-        expect(resolver.resolveModuleImport('package-5', _('/libs/local-package/index.js')))
+        expect(resolver.resolveModuleImport(
+                   _Mod('@shared/package-4'), _Abs('/libs/local-package/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/sub-folder/package-4')));
+        expect(
+            resolver.resolveModuleImport(_Mod('package-5'), _Abs('/libs/local-package/index.js')))
             .toBe(null);
       });
 
@@ -189,18 +208,18 @@ describe('ModuleResolver', () => {
            const resolver = new ModuleResolver(
                createMockFileSystem(), {baseUrl: '/dist', paths: {'@shared/*': ['*']}});
            expect(resolver.resolveModuleImport(
-                      '@shared/package-4/x', _('/dist/package-4/sub-folder/index.js')))
-               .toEqual(new ResolvedRelativeModule(_('/dist/package-4/x.js')));
+                      _Mod('@shared/package-4/x'), _Abs('/dist/package-4/sub-folder/index.js')))
+               .toEqual(new ResolvedRelativeModule(_Abs('/dist/package-4/x.js')));
          });
 
       it('should resolve paths where the wildcard matches more than one path segment', () => {
         const resolver = new ModuleResolver(
             createMockFileSystem(),
             {baseUrl: '/dist', paths: {'@shared/*/post-fix': ['*/post-fix']}});
-        expect(
-            resolver.resolveModuleImport(
-                '@shared/sub-folder/package-5/post-fix', _('/dist/package-4/sub-folder/index.js')))
-            .toEqual(new ResolvedExternalModule(_('/dist/sub-folder/package-5/post-fix')));
+        expect(resolver.resolveModuleImport(
+                   _Mod('@shared/sub-folder/package-5/post-fix'),
+                   _Abs('/dist/package-4/sub-folder/index.js')))
+            .toEqual(new ResolvedExternalModule(_Abs('/dist/sub-folder/package-5/post-fix')));
       });
     });
   });

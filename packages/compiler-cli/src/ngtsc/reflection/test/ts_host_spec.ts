@@ -8,16 +8,19 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, ModuleSpecifier} from '../../path';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {CtorParameter} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
 import {isNamedClassDeclaration} from '../src/util';
 
+const _Abs = AbsoluteFsPath.from;
+
 describe('reflector', () => {
   describe('ctor params', () => {
     it('should reflect a single argument', () => {
       const {program} = makeProgram([{
-        name: 'entry.ts',
+        name: _Abs('/entry.ts'),
         contents: `
             class Bar {}
 
@@ -26,7 +29,7 @@ describe('reflector', () => {
             }
         `
       }]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -37,14 +40,14 @@ describe('reflector', () => {
     it('should reflect a decorated argument', () => {
       const {program} = makeProgram([
         {
-          name: 'dec.ts',
+          name: _Abs('/dec.ts'),
           contents: `
           export function dec(target: any, key: string, index: number) {
           }
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import {dec} from './dec';
             class Bar {}
@@ -55,25 +58,25 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', ModuleSpecifier.from('./dec'));
     });
 
     it('should reflect a decorated argument with a call', () => {
       const {program} = makeProgram([
         {
-          name: 'dec.ts',
+          name: _Abs('/dec.ts'),
           contents: `
           export function dec(target: any, key: string, index: number) {
           }
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import {dec} from './dec';
             class Bar {}
@@ -84,24 +87,24 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', ModuleSpecifier.from('./dec'));
     });
 
     it('should reflect a decorated argument with an indirection', () => {
       const {program} = makeProgram([
         {
-          name: 'bar.ts',
+          name: _Abs('/bar.ts'),
           contents: `
           export class Bar {}
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import {Bar} from './bar';
             import * as star from './bar';
@@ -112,7 +115,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -124,13 +127,13 @@ describe('reflector', () => {
     it('should reflect an argument from an aliased import', () => {
       const {program} = makeProgram([
         {
-          name: 'bar.ts',
+          name: _Abs('/bar.ts'),
           contents: `
           export class Bar {}
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import {Bar as LocalBar} from './bar';
 
@@ -140,7 +143,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -151,13 +154,13 @@ describe('reflector', () => {
     it('should reflect an argument from a default import', () => {
       const {program} = makeProgram([
         {
-          name: 'bar.ts',
+          name: _Abs('/bar.ts'),
           contents: `
           export default class Bar {}
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import Bar from './bar';
 
@@ -167,7 +170,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -183,13 +186,13 @@ describe('reflector', () => {
     it('should reflect a nullable argument', () => {
       const {program} = makeProgram([
         {
-          name: 'bar.ts',
+          name: _Abs('/bar.ts'),
           contents: `
           export class Bar {}
         `
         },
         {
-          name: 'entry.ts',
+          name: _Abs('/entry.ts'),
           contents: `
             import {Bar} from './bar';
 
@@ -199,7 +202,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
+      const clazz = getDeclaration(program, _Abs('/entry.ts'), 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -210,10 +213,10 @@ describe('reflector', () => {
 
   it('should reflect a re-export', () => {
     const {program} = makeProgram([
-      {name: '/node_modules/absolute/index.ts', contents: 'export class Target {}'},
-      {name: 'local1.ts', contents: `export {Target as AliasTarget} from 'absolute';`},
-      {name: 'local2.ts', contents: `export {AliasTarget as Target} from './local1';`}, {
-        name: 'entry.ts',
+      {name: _Abs('/node_modules/absolute/index.ts'), contents: 'export class Target {}'},
+      {name: _Abs('/local1.ts'), contents: `export {Target as AliasTarget} from 'absolute';`},
+      {name: _Abs('/local2.ts'), contents: `export {AliasTarget as Target} from './local1';`}, {
+        name: _Abs('/entry.ts'),
         contents: `
           import {Target} from './local2';
           import {Target as DirectTarget} from 'absolute';
@@ -223,12 +226,12 @@ describe('reflector', () => {
       `
       }
     ]);
-    const target = getDeclaration(program, 'entry.ts', 'target', ts.isVariableDeclaration);
+    const target = getDeclaration(program, _Abs('/entry.ts'), 'target', ts.isVariableDeclaration);
     if (target.initializer === undefined || !ts.isIdentifier(target.initializer)) {
       return fail('Unexpected initializer for target');
     }
     const directTarget =
-        getDeclaration(program, 'entry.ts', 'directTarget', ts.isVariableDeclaration);
+        getDeclaration(program, _Abs('/entry.ts'), 'directTarget', ts.isVariableDeclaration);
     if (directTarget.initializer === undefined || !ts.isIdentifier(directTarget.initializer)) {
       return fail('Unexpected initializer for directTarget');
     }
@@ -244,16 +247,16 @@ describe('reflector', () => {
     } else if (directTargetDecl === null) {
       return fail('No declaration found for DirectTarget');
     }
-    expect(targetDecl.node.getSourceFile().fileName).toBe('/node_modules/absolute/index.ts');
+    expect(targetDecl.node.getSourceFile().fileName).toBe(_Abs('/node_modules/absolute/index.ts'));
     expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
-    expect(directTargetDecl.viaModule).toBe('absolute');
+    expect(directTargetDecl.viaModule).toBe(ModuleSpecifier.from('absolute'));
     expect(directTargetDecl.node).toBe(targetDecl.node);
   });
 });
 
 function expectParameter(
     param: CtorParameter, name: string, type?: string | {name: string, moduleName: string},
-    decorator?: string, decoratorFrom?: string): void {
+    decorator?: string, decoratorFrom?: ModuleSpecifier): void {
   expect(param.name !).toEqual(name);
   if (type === undefined) {
     expect(param.typeValueReference).toBeNull();
