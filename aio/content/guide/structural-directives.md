@@ -829,7 +829,7 @@ The browser won't display an `<option>` within a `<span>`.
 The Angular `<ng-container>` is a grouping element that doesn't interfere with styles or layout
 because Angular _doesn't put it in the DOM_.
 -->
-Angular가 제공하는 `<ng-container>`를 사용하면 스타일이나 레이아웃을 그대로 유지함녀서 여러 엘리먼트를 한 그룹으로 묶을 수 있습니다. 왜냐하면 Angular는 이 엘리먼트를 _DOM에 직접 추가하지 않기 때문_ 입니다.
+Angular가 제공하는 `<ng-container>`를 사용하면 스타일이나 레이아웃을 그대로 유지하면서 여러 엘리먼트를 한 그룹으로 묶을 수 있습니다. 왜냐하면 Angular는 이 엘리먼트를 _DOM에 직접 추가하지 않기 때문_ 입니다.
 
 <!--
 Here's the conditional paragraph again, this time using `<ng-container>`.
