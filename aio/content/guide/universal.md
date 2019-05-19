@@ -265,16 +265,26 @@ Universal 앱이 또 다른 인증 서버로 HTTP 요청을 보낼 때 이 부�
 
 </div>
 
+<!--
 ## Step 1: Install dependencies
+-->
+## 1단계: 의존성 패키지 설치하기
 
+<!--
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
+-->
+먼저, 프로젝트에 `@angular/platform-server` 패키지를 설치합니다. 이때 패키지 버전은 프로젝트에 이미 설치되어 있는 `@angular` 패키지의 버전과 같은 버전을 설치하면 됩니다. 그리고 웹팩으로 빌드하기 위해 `ts-loader`를 추가로 설치하고, 서버사이드 렌더링하면서 지연로딩을 사용하기 위해 `@nguniversal/module-map-ngfactory-loader`도 설치합니다.
 
 ```
 $ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
 ```
 
+<!--
 ## Step 2: Prepare your app
+-->
+## 2단계: 앱 수정하기
 
+<!--
 To prepare your app for Universal rendering, take the following steps:
 
 * Add Universal support to your app.
@@ -284,18 +294,33 @@ To prepare your app for Universal rendering, take the following steps:
 * Create a main file to export the server root module.
 
 * Configure the server root module.
+-->
+애플리케이션이 Universal 렌더링을 지원하려면 다음과 같이 작업해야 합니다:
 
+* 앱에 Universal 기능을 추가합니다.
+
+* 서버 최상위 모듈을 생성합니다.
+
+* Universal 렌더링 메인 파일을 생성합니다.
+
+* 이 서버 최상위 모듈을 빌드할 환경을 설정합니다.
+
+<!--
 ### 2a. Add Universal support to your app
+-->
+### 2a. 앱에 Universal 기능 추가하기
 
+<!--
 Make your `AppModule` compatible with Universal by adding `.withServerTransition()` and an application ID to your `BrowserModule` import in `src/app/app.module.ts`.
+-->
+앱에 Universal 기능을 추가하려면 `src/app/app.module.ts` 파일에 정의된 `AppModule`이 로드하는 `BrowserModule`에 `.withServerTransition()`을 추가하고, 이 때 애플리케이션 ID를 지정하면 됩니다.
 
 <code-example format="." language="typescript" linenums="false">
 @NgModule({
   bootstrap: [AppComponent],
   imports: [
-    // Add .withServerTransition() to support Universal rendering.
-    // The application ID can be any identifier which is unique on
-    // the page.
+    //  Universal 렌더링을 지원하기 위해 .withServerTransition()를 추가합니다.
+    // 애플리케이션 ID는 앱을 구분할 수 있는 값으로 자유롭게 지정할 수 있습니다.
     BrowserModule.withServerTransition({appId: 'my-app'}),
     ...
   ],
@@ -304,11 +329,19 @@ Make your `AppModule` compatible with Universal by adding `.withServerTransition
 export class AppModule {}
 </code-example>
 
+<!--
 ### 2b. Create a server root module
+-->
+### 2b. 서버 최상위 모듈 생성하기
 
+<!--
 Create a module named `AppServerModule` to act as the root module when running on the server. This example places it alongside `app.module.ts` in a file named `app.server.module.ts`. The new module  imports everything from the root `AppModule`, and adds `ServerModule`. It also adds `ModuleMapLoaderModule` to help make lazy-loaded routes possible during server-side renders with the Angular CLI.
 
 Here's an example in `src/app/app.server.module.ts`.
+-->
+서버에서 최상위 모듈로 동작하는 모듈을 `AppServerModule`이라고 합시다. 이 모듈은 `app.server.module.ts` 파일에 정의하는데, `app.module.ts`을 대체하는 용도로 사용하기 때문에 `app.module.ts` 파일과 같은 위치에 생성합니다. `AppServerModule`은 `AppModule`이 로드하는 것을 모두 로드하면서, 추가로 `ServerModule`을 로드합니다. 이 때 지연로딩하는 라우팅 규칙이 있다면 서버에서도 이것을 처리하기 위해 `ModuleMapLoaderModule`을 추가합니다.
+
+그러면 `src/app/app.server.module.ts` 파일은 다음과 같이 구성됩니다.
 
 <code-example format="." language="typescript" linenums="false">
 import {NgModule} from '@angular/core';
@@ -320,33 +353,49 @@ import {AppComponent} from './app.component';
 
 @NgModule({
   imports: [
-    // The AppServerModule should import your AppModule followed
-    // by the ServerModule from @angular/platform-server.
+    // AppModule을 로드한 후에는 @angular/platform-server에서 제공하는
+    // AppServerModule을 로드해야 합니다.
     AppModule,
     ServerModule,
     ModuleMapLoaderModule // <-- *Important* to have lazy-loaded routes work
   ],
-  // Since the bootstrapped component is not inherited from your
-  // imported AppModule, it needs to be repeated here.
+  // 앱을 부트스트랩하면서 로드하는 컴포넌트는 AppModule에 설정한 것과 별개입니다.
+  // AppServerModule에도 이 컴포넌트를 추가합니다.
   bootstrap: [AppComponent],
 })
 export class AppServerModule {}
 </code-example>
 
+<!--
 ### 2c. Create a main file to export AppServerModule
+-->
+### 2c. Universal 렌더링 메인 파일 생성하기
 
+<!--
 Create a main file for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance. This example calls the file `main.server.ts`.
+-->
+`AppServerModule` 인스턴스를 파일 외부로 공개하는 Universal 번들 파일을 `src/` 폴더에 생성합니다.
+이번 예제에서는 `main.server.ts`라는 이름으로 생성합니다.
 
 <code-example format="." language="typescript" linenums="false">
 export { AppServerModule } from './app/app.server.module';
 </code-example>
 
+<!--
 ### 2d. Create a configuration file for AppServerModule 
+-->
+### 2d. AppServerModule 환경설정 파일 생성하기
 
+<!--
 Copy `tsconfig.app.json` to `tsconfig.server.json` and modify it as follows:
 
 * In `"compilerOptions"`, set the  `"module"` target to `"commonjs"`.
 * Add a section for `"angularCompilerOptions"` and set `"entryModule"` to point to your `AppServerModule` instance. Use the format `importPath#symbolName`. In this example, the entry module is `app/app.server.module#AppServerModule`.
+-->
+`tsconfig.app.json` 파일을 복사해서 `tsconfig.server.json` 파일을 만들고 다음과 같이 수정합니다:
+
+* `"compilerOptions"`에서 `"module"`에 지정된 값을 `"commonjs"`로 변경합니다.
+* `"angularCompilerOptions"` 섹션을 추가하고 `"entryModule"` 필드에 `경로#심볼이름` 형식으로 `AppServerModule` 인스턴스를 지정합니다. 이 예제에서는 `app/app.server.module#AppServerModule`라고 지정했습니다.
 
 <code-example format="." language="none" linenums="false">
 {
@@ -354,7 +403,7 @@ Copy `tsconfig.app.json` to `tsconfig.server.json` and modify it as follows:
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    // Set the module format to "commonjs":
+    // 모듈 형식을 "commonjs"로 지정합니다:
     "module": "commonjs",
     "types": []
   },
@@ -362,17 +411,23 @@ Copy `tsconfig.app.json` to `tsconfig.server.json` and modify it as follows:
     "test.ts",
     "**/*.spec.ts"
   ],
-  // Add "angularCompilerOptions" with the AppServerModule you wrote
-  // set as the "entryModule".
+  // "angularCompilerOptions" 섹션을 추가하고
+  // "entryModule" 키로 AppServerModule을 지정합니다.
   "angularCompilerOptions": {
     "entryModule": "app/app.server.module#AppServerModule"
   }
 }
 </code-example>
 
+<!--
 ## Step 3: Create a new build target and build the bundle
+-->
+## 3단계: 새로운 설정으로 빌드하기
 
+<!--
 Open the Angular configuration file, `angular.json`, for your project, and add a new target in the `"architect"` section for the server build. The following example names the new target `"server"`.
+-->
+Angular 프로젝트 설정파일인 `angular.json` 파일을 열고 `"architect"` 섹션에 서버용 빌드 설정을 추가합니다. 이 예제에서는 `"server"`라는 이름으로 지정합니다.
 
 <code-example format="." language="none" linenums="false">
 "architect": {
@@ -388,11 +443,14 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
 }
 </code-example>
 
+<!--
 To build a server bundle for your application, use the `ng run` command, with the format `projectName#serverTarget`. In our example, there are now two targets configured, `"build"` and `"server"`.
+-->
+이제 `"server"` 설정으로 애플리케이션을 빌드하려면 `ng run` 명령을 실행하면서 `프로젝트이름#서버타겟`을 지정하면 됩니다. 이 시점에 이 애플리케이션에는 `"build"` 빌드 설정과 `"server"` 빌드 설정이 존재합니다.
 
 <code-example format="." language="none" linenums="false">
-# This builds your project using the server target, and places the output
-# in dist/my-project-server/
+# 다음과 같이 실행하면 server 빌드 설정으로 앱이 빌드됩니다.
+# 빌드 결과물이 생성되는 위치는 dist/my-project-server/ 입니다.
 $ ng run my-project:server
 
 Date: 2017-07-24T22:42:09.739Z
@@ -402,7 +460,10 @@ chunk {0} main.js (main) 9.49 kB [entry] [rendered]
 chunk {1} styles.css (styles) 0 bytes [entry] [rendered]
 </code-example>
 
+<!--
 ## Step 4: Set up a server to run Universal bundles
+-->
+## 4단계: Universal 번들을 실행하도록 서버 설정하기
 
 To run a Universal bundle, you need to send it to a server. 
 
