@@ -1417,6 +1417,100 @@ describe('ngtsc behavioral tests', () => {
        });
   });
 
+  describe('template assertions', () => {
+    it('should throw if component does not have a template or templateUrl', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+          })
+          export class TestCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors[0].messageText as string)
+          .toContain('No template specified for component TestCmp');
+    });
+
+    it('should throw if component has both template and templateUrl', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'hello',
+            templateUrl: 'test-cmp.html'
+          })
+          export class TestCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors[0].messageText as string)
+          .toContain(`'TestCmp' component cannot define both template and templateUrl`);
+    });
+
+    it('should throw if component templateUrl is not a string', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: 123
+          })
+          export class TestCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors[0].messageText as string)
+          .toContain('The templateUrl specified for component TestCmp is not a string');
+    });
+
+    it('should throw if component template is not a string', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 123
+          })
+          export class TestCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors[0].messageText as string)
+          .toContain('The template specified for component TestCmp is not a string');
+    });
+
+    it('should throw if preserveWhitespaces is not a boolean', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'hello',
+            preserveWhitespaces: 'yes'
+          })
+          export class TestCmp {}
+      `);
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors[0].messageText as string)
+          .toContain('The preserveWhitespaces option for component TestCmp must be a boolean');
+    });
+
+  });
+
   it('should unwrap a ModuleWithProviders-like function if a matching literal type is provided for it',
      () => {
        env.tsconfig();

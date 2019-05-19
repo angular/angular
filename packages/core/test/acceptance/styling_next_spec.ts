@@ -151,7 +151,7 @@ describe('new styling integration', () => {
               @HostBinding('class.dir') public dirClass = true;
             }
 
-            @Component({selector: 'comp-with-styling'})
+            @Component({selector: 'comp-with-styling', template: ''})
             class CompWithStyling {
               @HostBinding('style.width') public width = '900px';
 
@@ -225,7 +225,7 @@ describe('new styling integration', () => {
               @HostBinding('style.width') public w1 = '100px';
             }
 
-            @Component({selector: '[sub-class-dir]'})
+            @Component({selector: '[sub-class-dir]', template: ''})
             class SubClassDirective extends SuperClassDirective {
               @HostBinding('style.width') public w2 = '200px';
             }

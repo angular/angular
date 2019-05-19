@@ -26,7 +26,7 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
 
     it('should throw an error when compiling component that has unresolved styleUrls', () => {
       const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-      compileComponent(MyComponent, {styleUrls: ['someUrl1', 'someUrl2']});
+      compileComponent(MyComponent, {styleUrls: ['someUrl1', 'someUrl2'], template: ''});
       expect(() => MyComponent.ngComponentDef).toThrowError(`
 Component 'MyComponent' is not resolved:
  - styleUrls: ["someUrl1","someUrl2"]

@@ -49,6 +49,32 @@ describe('component', () => {
 
       expect(destroyCalls).toBe(1, 'Expected `ngOnDestroy` to only be called once.');
     });
+
+    it('should invoke onDestroy when directly destroying a root view', () => {
+      let wasOnDestroyCalled = false;
+
+      @Component({selector: 'comp-with-destroy', template: ``})
+      class ComponentWithOnDestroy implements OnDestroy {
+        ngOnDestroy() { wasOnDestroyCalled = true; }
+      }
+
+      // This test asserts that the view tree is set up correctly based on the knowledge that this
+      // tree is used during view destruction. If the child view is not correctly attached as a
+      // child of the root view, then the onDestroy hook on the child view will never be called
+      // when the view tree is torn down following the destruction of that root view.
+      @Component({selector: `test-app`, template: `<comp-with-destroy></comp-with-destroy>`})
+      class TestApp {
+      }
+
+      TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      fixture.destroy();
+      expect(wasOnDestroyCalled)
+          .toBe(
+              true,
+              'Expected component onDestroy method to be called when its parent view is destroyed');
+    });
   });
 
   it('should support entry components from another module', () => {
@@ -151,31 +177,18 @@ describe('component', () => {
     });
   });
 
-  describe('view destruction', () => {
-    it('should invoke onDestroy when directly destroying a root view', () => {
-      let wasOnDestroyCalled = false;
+  it('should throw if component does not have a template or templateUrl', () => {
+    @Component({
+      selector: 'test-cmp',
+    })
+    class TestCmp {
+    }
 
-      @Component({selector: 'comp-with-destroy', template: ``})
-      class ComponentWithOnDestroy implements OnDestroy {
-        ngOnDestroy() { wasOnDestroyCalled = true; }
-      }
+    TestBed.configureTestingModule({declarations: [TestCmp]});
 
-      // This test asserts that the view tree is set up correctly based on the knowledge that this
-      // tree is used during view destruction. If the child view is not correctly attached as a
-      // child of the root view, then the onDestroy hook on the child view will never be called
-      // when the view tree is torn down following the destruction of that root view.
-      @Component({selector: `test-app`, template: `<comp-with-destroy></comp-with-destroy>`})
-      class TestApp {
-      }
-
-      TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
-      const fixture = TestBed.createComponent(TestApp);
-      fixture.detectChanges();
-      fixture.destroy();
-      expect(wasOnDestroyCalled)
-          .toBe(
-              true,
-              'Expected component onDestroy method to be called when its parent view is destroyed');
-    });
+    expect(() => {
+      TestBed.createComponent(TestCmp);
+    }).toThrowError(/No template specified for component TestCmp/);
   });
+
 });

@@ -44,6 +44,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
     get: () => {
       const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
+        if (ngDevMode && metadata.template == null && metadata.templateUrl == null) {
+          throw new Error(`No template specified for component ${type.name}`);
+        }
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
           if (metadata.templateUrl) {

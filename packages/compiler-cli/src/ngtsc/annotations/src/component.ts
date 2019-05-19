@@ -172,31 +172,39 @@ export class ComponentDecoratorHandler implements
       template = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
     } else {
+      if (component.has('templateUrl') && component.has('template')) {
+        throw new FatalDiagnosticError(
+            ErrorCode.COMPONENT_MULTI_TEMPLATE, decorator.node,
+            `'${node.name.getText()}' component cannot define both template and templateUrl`);
+      }
+
       // The template was not already parsed. Either there's a templateUrl, or an inline template.
       if (component.has('templateUrl')) {
         const templateUrlExpr = component.get('templateUrl') !;
         const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
         if (typeof evalTemplateUrl !== 'string') {
           throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+              ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr,
+              `The templateUrl specified for component ${node.name.getText()} is not a string`);
         }
         const templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
         const templateStr = this.resourceLoader.load(templateUrl);
 
         template = this._parseTemplate(
             component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
-            /* escapedString */ false);
+            /* escapedString */ false, node);
       } else {
         // Expect an inline template to be present.
-        const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
+        const inlineTemplate =
+            this._extractInlineTemplate(component, relativeContextFilePath, node);
         if (inlineTemplate === null) {
           throw new FatalDiagnosticError(
               ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
-              'component is missing a template');
+              `No template specified for component ${node.name.getText()}`);
         }
         const {templateStr, templateUrl, templateRange, escapedString} = inlineTemplate;
-        template =
-            this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+        template = this._parseTemplate(
+            component, templateStr, templateUrl, templateRange, escapedString, node);
       }
     }
 
@@ -488,7 +496,7 @@ export class ComponentDecoratorHandler implements
   }
 
   private _preloadAndParseTemplate(
-      node: ts.Declaration, decorator: Decorator, component: Map<string, ts.Expression>,
+      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
       containingFile: string): Promise<ParsedTemplate|null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
@@ -496,7 +504,8 @@ export class ComponentDecoratorHandler implements
       const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr,
+            `The templateUrl specified for component ${node.name.getText()} is not a string`);
       }
       const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
       const templatePromise = this.resourceLoader.preload(resourceUrl);
@@ -508,7 +517,7 @@ export class ComponentDecoratorHandler implements
           const templateStr = this.resourceLoader.load(resourceUrl);
           const template = this._parseTemplate(
               component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
-              /* escapedString */ false);
+              /* escapedString */ false, node);
           this.preanalyzeTemplateCache.set(node, template);
           return template;
         });
@@ -516,23 +525,24 @@ export class ComponentDecoratorHandler implements
         return Promise.resolve(null);
       }
     } else {
-      const inlineTemplate = this._extractInlineTemplate(component, containingFile);
+      const inlineTemplate = this._extractInlineTemplate(component, containingFile, node);
       if (inlineTemplate === null) {
         throw new FatalDiagnosticError(
             ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
-            'component is missing a template');
+            `No template specified for component ${node.name.getText()}`);
       }
 
       const {templateStr, templateUrl, escapedString, templateRange} = inlineTemplate;
-      const template =
-          this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+      const template = this._parseTemplate(
+          component, templateStr, templateUrl, templateRange, escapedString, node);
       this.preanalyzeTemplateCache.set(node, template);
       return Promise.resolve(template);
     }
   }
 
   private _extractInlineTemplate(
-      component: Map<string, ts.Expression>, relativeContextFilePath: string): {
+      component: Map<string, ts.Expression>, relativeContextFilePath: string,
+      node: ClassDeclaration): {
     templateStr: string,
     templateUrl: string,
     templateRange: LexerRange|undefined,
@@ -560,7 +570,8 @@ export class ComponentDecoratorHandler implements
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
       if (typeof resolvedTemplate !== 'string') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr,
+            `The template specified for component ${node.name.getText()} is not a string`);
       }
       templateStr = resolvedTemplate;
     }
@@ -569,14 +580,16 @@ export class ComponentDecoratorHandler implements
 
   private _parseTemplate(
       component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+      templateRange: LexerRange|undefined, escapedString: boolean,
+      node: ClassDeclaration): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces') !;
       const value = this.evaluator.evaluate(expr);
       if (typeof value !== 'boolean') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            `The preserveWhitespaces option for component ${node.name.getText()} must be a boolean`);
       }
       preserveWhitespaces = value;
     }
