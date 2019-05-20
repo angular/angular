@@ -1,5 +1,5 @@
 # Integration tests for Angular
-
+ 
 This directory contains end-to-end tests for Angular. Each directory is a self-contained application that exactly mimics how a user might expect Angular
 to work, so they allow high-fidelity reproductions of real-world issues.
 
@@ -16,7 +16,7 @@ $ yarn ng update @angular/cli @angular-devkit/build-angular
 # yarn build
 # yarn test
 # typescript version
-```
+``` 
 
 ## Render3 tests
 
@@ -51,5 +51,5 @@ you can install the package directly from `file:../../node_modules`.
 $ ./integration/run_tests.sh
 ```
 
-The test runner will first re-build any stale npm packages, then `cd` into each
+The test runner will first re-build any stale npm packages, then `cd`(change directory) into each
 subdirectory to execute the test.
