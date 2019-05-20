@@ -7,11 +7,11 @@ def _sass_bundle(ctx):
 
   # The entry-point scss file for the bundle.
   args.add("--entry")
-  args.add(ctx.attr.entry_point.files)
+  args.add(ctx.file.entry_point)
 
   # The list of files that can be included in the bundle.
   args.add("--srcs")
-  args.add(ctx.files.srcs, join_with =",")
+  args.add_joined(ctx.files.srcs, join_with = ",")
 
   # The generated bundle's filename.
   args.add("--output")
