@@ -10,12 +10,12 @@ const protractor = require('protractor');
 
 module.exports = function(config) {
   // In this example, `@angular/bazel/protractor-utils` is used to run
-  // the server. protractorUtils.runServer() runs the server on a randomly
+  // the server. protractorUtils.startServer() runs the server on a randomly
   // selected port (given a port flag to pass to the server as an argument).
   // The port used is returned in serverSpec and the protractor serverUrl
   // is the configured.
   const portFlag = /prodserver(\.exe)?$/.test(config.server) ? '-p' : '-port';
-  return protractorUtils.runServer(config.workspace, config.server, portFlag, [])
+  return protractorUtils.startServer({config, portFlag})
       .then(serverSpec => {
         const serverUrl = `http://localhost:${serverSpec.port}`;
         protractor.browser.baseUrl = serverUrl;

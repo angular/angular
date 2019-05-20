@@ -132,6 +132,7 @@ _protractor_web_test = rule(
         ),
         "data": attr.label_list(
             doc = "Runtime dependencies",
+            allow_files = True,
         ),
         "on_prepare": attr.label(
             doc = """A file with a node.js script to run once before all tests run.
@@ -173,6 +174,7 @@ def protractor_web_test(
         data = [],
         server = None,
         tags = [],
+        configuration_env_vars = None,
         **kwargs):
     """Runs a protractor test in a browser.
 
@@ -197,6 +199,7 @@ def protractor_web_test(
         entry_point = "protractor/bin/protractor",
         data = srcs + deps + data,
         testonly = 1,
+        configuration_env_vars = configuration_env_vars,
         visibility = ["//visibility:private"],
     )
 
