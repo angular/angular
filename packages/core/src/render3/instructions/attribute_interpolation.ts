@@ -7,8 +7,8 @@
  */
 import {SanitizerFn} from '../interfaces/sanitization';
 import {getSelectedIndex} from '../state';
-import {ΔelementAttribute} from './element';
-import {Δinterpolation1, Δinterpolation2, Δinterpolation3, Δinterpolation4, Δinterpolation5, Δinterpolation6, Δinterpolation7, Δinterpolation8, ΔinterpolationV} from './property_interpolation';
+import {ɵɵelementAttribute} from './element';
+import {ɵɵinterpolation1, ɵɵinterpolation2, ɵɵinterpolation3, ɵɵinterpolation4, ɵɵinterpolation5, ɵɵinterpolation6, ɵɵinterpolation7, ɵɵinterpolation8, ɵɵinterpolationV} from './property_interpolation';
 import {TsickleIssue1009} from './shared';
 
 
@@ -26,7 +26,7 @@ import {TsickleIssue1009} from './shared';
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate1('title', 'prefix', v0, 'suffix');
+ * ɵɵattributeInterpolate1('title', 'prefix', v0, 'suffix');
  * ```
  *
  * @param attrName The name of the attribute to update
@@ -37,17 +37,17 @@ import {TsickleIssue1009} from './shared';
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate1(
+export function ɵɵattributeInterpolate1(
     attrName: string, prefix: string, v0: any, suffix: string, sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
 
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = Δinterpolation1(prefix, v0, suffix);
+  const interpolatedValue = ɵɵinterpolation1(prefix, v0, suffix);
 
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
 
-  return ΔattributeInterpolate1;
+  return ɵɵattributeInterpolate1;
 }
 
 /**
@@ -63,7 +63,7 @@ export function ΔattributeInterpolate1(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate2('title', 'prefix', v0, '-', v1, 'suffix');
+ * ɵɵattributeInterpolate2('title', 'prefix', v0, '-', v1, 'suffix');
  * ```
  *
  * @param attrName The name of the attribute to update
@@ -76,15 +76,15 @@ export function ΔattributeInterpolate1(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate2(
+export function ɵɵattributeInterpolate2(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
     sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
 
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = Δinterpolation2(prefix, v0, i0, v1, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate2;
+  const interpolatedValue = ɵɵinterpolation2(prefix, v0, i0, v1, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate2;
 }
 
 /**
@@ -100,7 +100,7 @@ export function ΔattributeInterpolate2(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate3(
+ * ɵɵattributeInterpolate3(
  * 'title', 'prefix', v0, '-', v1, '-', v2, 'suffix');
  * ```
  *
@@ -116,15 +116,15 @@ export function ΔattributeInterpolate2(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate3(
+export function ɵɵattributeInterpolate3(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
     suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
 
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = Δinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate3;
+  const interpolatedValue = ɵɵinterpolation3(prefix, v0, i0, v1, i1, v2, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate3;
 }
 
 /**
@@ -140,7 +140,7 @@ export function ΔattributeInterpolate3(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate4(
+ * ɵɵattributeInterpolate4(
  * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, 'suffix');
  * ```
  *
@@ -158,15 +158,15 @@ export function ΔattributeInterpolate3(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate4(
+export function ɵɵattributeInterpolate4(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
 
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = Δinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate4;
+  const interpolatedValue = ɵɵinterpolation4(prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate4;
 }
 
 /**
@@ -182,7 +182,7 @@ export function ΔattributeInterpolate4(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate5(
+ * ɵɵattributeInterpolate5(
  * 'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, 'suffix');
  * ```
  *
@@ -202,16 +202,16 @@ export function ΔattributeInterpolate4(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate5(
+export function ɵɵattributeInterpolate5(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, suffix: string, sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
 
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  const interpolatedValue = Δinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate5;
+  const interpolatedValue = ɵɵinterpolation5(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate5;
 }
 
 /**
@@ -227,7 +227,7 @@ export function ΔattributeInterpolate5(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate6(
+ * ɵɵattributeInterpolate6(
  *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, 'suffix');
  * ```
  *
@@ -249,15 +249,16 @@ export function ΔattributeInterpolate5(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate6(
+export function ɵɵattributeInterpolate6(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string, sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue =
-      Δinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate6;
+      ɵɵinterpolation6(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate6;
 }
 
 /**
@@ -273,7 +274,7 @@ export function ΔattributeInterpolate6(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate7(
+ * ɵɵattributeInterpolate7(
  *    'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, 'suffix');
  * ```
  *
@@ -297,15 +298,16 @@ export function ΔattributeInterpolate6(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate7(
+export function ɵɵattributeInterpolate7(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
     sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue =
-      Δinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate7;
+      ɵɵinterpolation7(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate7;
 }
 
 /**
@@ -321,7 +323,7 @@ export function ΔattributeInterpolate7(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolate8(
+ * ɵɵattributeInterpolate8(
  *  'title', 'prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, 'suffix');
  * ```
  *
@@ -347,15 +349,16 @@ export function ΔattributeInterpolate7(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolate8(
+export function ɵɵattributeInterpolate8(
     attrName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
     v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string, sanitizer?: SanitizerFn, namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
   const interpolatedValue =
-      Δinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  ΔelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
-  return ΔattributeInterpolate8;
+      ɵɵinterpolation8(prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+  ɵɵelementAttribute(index, attrName, interpolatedValue, sanitizer, namespace);
+  return ɵɵattributeInterpolate8;
 }
 
 /**
@@ -371,7 +374,7 @@ export function ΔattributeInterpolate8(
  * Its compiled representation is::
  *
  * ```ts
- * ΔattributeInterpolateV(
+ * ɵɵattributeInterpolateV(
  *  'title', ['prefix', v0, '-', v1, '-', v2, '-', v3, '-', v4, '-', v5, '-', v6, '-', v7, '-', v9,
  *  'suffix']);
  * ```
@@ -384,10 +387,11 @@ export function ΔattributeInterpolate8(
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
-export function ΔattributeInterpolateV(
+export function ɵɵattributeInterpolateV(
     attrName: string, values: any[], sanitizer?: SanitizerFn,
     namespace?: string): TsickleIssue1009 {
   const index = getSelectedIndex();
-  ΔelementAttribute(index, attrName, ΔinterpolationV(values), sanitizer, namespace);
-  return ΔattributeInterpolateV;
+  // TODO(FW-1340): Refactor to remove the use of other instructions here.
+  ɵɵelementAttribute(index, attrName, ɵɵinterpolationV(values), sanitizer, namespace);
+  return ɵɵattributeInterpolateV;
 }
