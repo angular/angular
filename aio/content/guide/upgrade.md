@@ -840,15 +840,15 @@ After this, the service is injectable anywhere in AngularJS code:
 
 ## Lazy Loading AngularJS
 
-When migrating large applications from AngularJS to Angular using a hybrid approach, you want to migrate some of the most commonly used features first. For example, a YouTube client application might migrate the home page, then the player page, then search, and finally the settings page.
+When building applications, you want to ensure that only the required resources are loaded when necessary. Whether that be loading of assets or code, making sure everything that can be deferred until needed keeps your application running efficiently. This is especially true when running different frameworks in the same application. When migrating large applications from AngularJS to Angular using a hybrid approach, you want to migrate some of the most commonly used features first, and only use the less commonly used features if needed. Doing so helps you ensure that the application is still providing a seamless experience for your users while you are migrating.
 
-In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance.
+In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance. 
 
-Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed.
+Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed. 
 
-To address the performance problem, you can use  [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This has the added benefit of reducing the initial bundle size.
+You can take steps to mitigate these bundle size and performance issues. By isolating your AngularJS app to a separate bundle, you can use [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This reduces your initial bundle size, defers any potential impact from loading both frameworks until absolutlely necessary, and keeps your application running as efficiently as possible.
 
-The steps below show you how to create a service that lazy loads and bootstraps AngularJS, create a component for AngularJS content, and configure the Angular Router to load AngularJS routes only on specific URLs.
+The steps below show you how to setup a callback function for your AngularJS bundle, create a service that lazy loads and bootstraps your AngularJS app, create a routable component for AngularJS content, create a custom matcher function for AngularJS-specific URLs, and configure the Angular Router with the custom matcher for AngularJS routes.
 
 ### Create a service to lazy load AngularJS
 
