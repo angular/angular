@@ -494,27 +494,6 @@ class CompWithUrlTemplate {
             expect(someModule).toBeAnInstanceOf(SomeModule);
           });
 
-          obsoleteInIvy(`deprecated method, won't be reimplemented for Render3`)
-              .it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
-                let someModule: SomeModule|undefined;
-
-                @NgModule()
-                class SomeModule {
-                  constructor() { someModule = this; }
-                }
-
-                TestBed.configureTestingModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                  ],
-                  imports: [SomeModule]
-                });
-                TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
-
-                expect(TestBed.get('a')).toBe('mockValue');
-                expect(someModule).toBeUndefined();
-              });
-
           describe('injecting eager providers into an eager overwritten provider', () => {
             @NgModule({
               providers: [
