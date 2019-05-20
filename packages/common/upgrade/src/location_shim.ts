@@ -326,9 +326,9 @@ export class $locationShim {
   /**
    * Registers listeners for URL changes. This API is used to catch updates performed by the
    * AngularJS framework. These changes are a subset of the `$locationChangeStart` and
-   * `$locationChangeSuccess` events which fire when AngularJS updates its internally-referenced 
+   * `$locationChangeSuccess` events which fire when AngularJS updates its internally-referenced
    * version of the browser URL.
-   * 
+   *
    * It's possible for `$locationChange` events to happen, but for the browser URL
    * (window.location) to remain unchanged. This `onChange` callback will fire only when AngularJS
    * actually updates the browser URL (window.location).
@@ -446,7 +446,7 @@ export class $locationShim {
   absUrl(): string { return this.$$absUrl; }
 
   /**
-   * Retrieves the current URL, or sets a new URL. When setting a URL, 
+   * Retrieves the current URL, or sets a new URL. When setting a URL,
    * changes the path, search, and hash, and returns a reference to its own instance.
    *
    * ```js
@@ -520,7 +520,8 @@ export class $locationShim {
   port(): number|null { return this.$$port; }
 
   /**
-   * Retrieves the path of the current URL, or changes the path and returns a reference to its own instance.
+   * Retrieves the path of the current URL, or changes the path and returns a reference to its own
+   * instance.
    *
    * Paths should always begin with forward slash (/). This method adds the forward slash
    * if it is missing.
