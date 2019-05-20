@@ -470,7 +470,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 6, ctx.valueA)));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
             $r3$.ɵɵi18nApply(2);
             $r3$.ɵɵselect(3);
@@ -520,7 +520,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 1, ctx.valueA)));
             $r3$.ɵɵi18nApply(2);
           }
         }
@@ -567,7 +567,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 0, $outer_r1$)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 1, $outer_r1$)));
             $r3$.ɵɵi18nApply(3);
           }
         }
@@ -699,7 +699,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             $r3$.ɵɵselect(0);
-            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(1, 6, ctx.valueA)));
             $r3$.ɵɵi18nExp($r3$.ɵɵbind(ctx.valueB));
             $r3$.ɵɵi18nApply(2);
             $r3$.ɵɵselect(3);
@@ -754,7 +754,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $outer_r1$ = ctx.$implicit;
             $r3$.ɵɵselect(1);
-            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 0, $outer_r1$)));
+            $r3$.ɵɵi18nExp($r3$.ɵɵbind($r3$.ɵɵpipeBind1(2, 1, $outer_r1$)));
             $r3$.ɵɵi18nApply(3);
           }
         }
