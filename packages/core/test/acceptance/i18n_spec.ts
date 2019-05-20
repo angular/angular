@@ -570,6 +570,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour John"></div>`);
     });
 
+    it('with pipes', () => {
+      ɵi18nConfigureLocalize(
+          {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
+      const fixture = initWithTemplate(
+          AppComp, `<div i18n i18n-title title="hello {{name | uppercase}}"></div>`);
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div title="bonjour ANGULAR"></div>`);
+    });
+
     it('multiple attributes', () => {
       ɵi18nConfigureLocalize(
           {translations: {'hello {$interpolation}': 'bonjour {$interpolation}'}});
