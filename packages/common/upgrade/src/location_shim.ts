@@ -326,14 +326,15 @@ export class $locationShim {
   /**
    * Registers listeners for URL changes. This API is used to catch updates performed by the
    * AngularJS framework. These changes are a subset of the `$locationChangeStart` and
-   * `$locationChangeSuccess` events
-   * as those events fire when AngularJS updates it's internally referenced version of the browser
-   * URL. It's possible for `$locationChange` events to happen, but for the browser URL
+   * `$locationChangeSuccess` events which fire when AngularJS updates its internally-referenced 
+   * version of the browser URL.
+   * 
+   * It's possible for `$locationChange` events to happen, but for the browser URL
    * (window.location) to remain unchanged. This `onChange` callback will fire only when AngularJS
    * actually updates the browser URL (window.location).
    *
-   * @param fn The function callback that is triggered for the listener when the URL changes
-   * @param err The funcition callback that is triggered when an error occurs
+   * @param fn The callback function that is triggered for the listener when the URL changes.
+   * @param err The callback function that is triggered when an error occurs.
    */
   onChange(
       fn: (url: string, state: unknown, oldUrl: string, oldState: unknown) => void,
@@ -356,7 +357,7 @@ export class $locationShim {
   /**
    * Parses the provided URL, and sets the current URL to the parsed result.
    *
-   * @param url The URL string
+   * @param url The URL string.
    */
   $$parse(url: string) {
     let pathUrl: string|undefined;
@@ -379,10 +380,10 @@ export class $locationShim {
   }
 
   /**
-   * Parses the provided URL and its relative URL
+   * Parses the provided URL and its relative URL.
    *
-   * @param url The full URL string
-   * @param relHref A URL string relative to the full URL string
+   * @param url The full URL string.
+   * @param relHref A URL string relative to the full URL string.
    */
   $$parseLinkUrl(url: string, relHref?: string|null): boolean {
     // When relHref is passed, it should be a hash and is handled separately
@@ -445,11 +446,8 @@ export class $locationShim {
   absUrl(): string { return this.$$absUrl; }
 
   /**
-   * A getter method that returns the URL when called without any parameters.
-   *
-   * When called with a parameters, it changes the path, search and hash, returns a reference to its
-   * own instance.
-   *
+   * Retrieves the current URL, or sets a new URL. When setting a URL, 
+   * changes the path, search, and hash, and returns a reference to its own instance.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -490,9 +488,9 @@ export class $locationShim {
   protocol(): string { return this.$$protocol; }
 
   /**
-   * A getter method that returns the host of the current URL.
+   * Retrieves the protocol of the current URL.
    *
-   * Compared to the non-AngularJS version `location.host` which returns `hostname:port`, this
+   * In contrast to the non-AngularJS version `location.host` which returns `hostname:port`, this
    * returns the `hostname` portion only.
    *
    *
@@ -511,8 +509,7 @@ export class $locationShim {
   host(): string { return this.$$host; }
 
   /**
-   * A getter method that returns the port of the current URL.
-   *
+   * Retrieves the port of the current URL.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -523,12 +520,9 @@ export class $locationShim {
   port(): number|null { return this.$$port; }
 
   /**
-   * A getter method that returns the path of the current URL when called without any parameter.
+   * Retrieves the path of the current URL, or changes the path and returns a reference to its own instance.
    *
-   * When called with a defined paramter, it changes the path and returns a reference to its own
-   * instance.
-   *
-   * Paths should always begin with forward slash (/). This method will add the forward slash
+   * Paths should always begin with forward slash (/). This method adds the forward slash
    * if it is missing.
    *
    * ```js
@@ -555,9 +549,8 @@ export class $locationShim {
   }
 
   /**
-   * A getter method that returns a map of the search parameters of the current URL when called without any parameter.
-   *
-   * Change search part when called with parameter and returns a reference to its own instance.
+   * Retrieves a map of the search parameters of the current URL, or changes a search 
+   * part and returns a reference to its own instance.
    *
    *
    * ```js
@@ -590,7 +583,7 @@ export class $locationShim {
    * If `paramValue` is `true`, the property specified via the first argument will be added with no
    * value nor trailing equal sign.
    *
-   * @return {Object} If no arguments are provided, it returns the parsed `search` object. Otherwise, it returns a reference to its own instance object itself.
+   * @return {Object} The parsed `search` object of the current URL, or the changed `search` object.
    */
   search(): {[key: string]: unknown};
   search(search: string|number|{[key: string]: unknown}): this;
@@ -637,11 +630,8 @@ export class $locationShim {
   }
 
   /**
-   * A getter method that returns the hash fragment when called without any parameters.
-   *
-   * When called with a defined parameter, it changes the hash fragment, and returns a reference to
+   * Retrieves the current hash fragment, or changes the hash fragment and returns a reference to
    * its own instance.
-   * Otherwise, it returns the exising hash
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo#hashValue
