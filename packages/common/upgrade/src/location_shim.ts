@@ -432,7 +432,7 @@ export class $locationShim {
   }
 
   /**
-   * A getter method that returns the full URL representation with all segments encoded according to
+   * Retrieves the full URL representation with all segments encoded according to
    * rules specified in
    * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
    *
@@ -477,7 +477,7 @@ export class $locationShim {
   }
 
   /**
-   * A getter method that returns the protocol of the current URL.
+   * Retrieves the protocol of the current URL.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -662,7 +662,7 @@ export class $locationShim {
   }
 
   /**
-   * A getter method that returns the history state object when called without any parameter.
+   * Retrieves the history state object when called without any parameter.
    *
    * Change the history state object when called with one parameter and return `$location`.
    * The state object is later passed to `pushState` or `replaceState`.
