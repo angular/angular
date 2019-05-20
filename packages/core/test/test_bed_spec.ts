@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵtext as text} from '@angular/core';
+import {Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Input, NgModule, Optional, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -371,6 +371,62 @@ describe('TestBed', () => {
     }).toThrowError();
   });
 
+  onlyInIvy('TestBed new feature to allow declaration and import of component')
+      .it('should allow both the declaration and import of a component into the testing module',
+          () => {
+            // This test validates that a component (Outer) which is both declared and imported
+            // (via its module) in the testing module behaves correctly. That is:
+            //
+            // 1) the component should be compiled in the scope of its original module.
+            //
+            // This condition is tested by having the component (Outer) use another component
+            // (Inner) within its template. Thus, if it's compiled in the correct scope then the
+            // text 'Inner' from the template of (Inner) should appear in the result.
+            //
+            // 2) the component should be available in the TestingModule scope.
+            //
+            // This condition is tested by attempting to use the component (Outer) inside a test
+            // fixture component (Fixture) which is declared in the testing module only.
+
+            @Component({
+              selector: 'inner',
+              template: 'Inner',
+            })
+            class Inner {
+            }
+
+            @Component({
+              selector: 'outer',
+              template: '<inner></inner>',
+            })
+            class Outer {
+            }
+
+            @NgModule({
+              declarations: [Inner, Outer],
+            })
+            class Module {
+            }
+
+            @Component({
+              template: '<outer></outer>',
+              selector: 'fixture',
+            })
+            class Fixture {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [Outer, Fixture],
+              imports: [Module],
+            });
+
+            const fixture = TestBed.createComponent(Fixture);
+            // The Outer component should have its template stamped out, and that template should
+            // include a correct instance of the Inner component with the 'Inner' text from its
+            // template.
+            expect(fixture.nativeElement.innerHTML).toEqual('<outer><inner>Inner</inner></outer>');
+          });
+
   onlyInIvy('TestBed should handle AOT pre-compiled Components')
       .describe('AOT pre-compiled components', () => {
         /**
@@ -430,6 +486,42 @@ describe('TestBed', () => {
           TestBed.overrideTemplateUsingTestingModule(SomeComponent, '');
           const fixture = TestBed.createComponent(SomeComponent);
           expect(fixture.nativeElement.innerHTML).toBe('');
+        });
+
+        it('should allow component in both in declarations and imports', () => {
+          const SomeComponent = getAOTCompiledComponent();
+
+          // This is an AOT compiled module which declares (but does not export) SomeComponent.
+          class ModuleClass {
+            static ngModuleDef = defineNgModule({
+              type: ModuleClass,
+              declarations: [SomeComponent],
+            });
+          }
+
+          @Component({
+            template: '<comp></comp>',
+
+            selector: 'fixture',
+          })
+          class TestFixture {
+          }
+
+          TestBed.configureTestingModule({
+            // Here, SomeComponent is both declared, and then the module which declares it is
+            // also imported. This used to be a duplicate declaration error, but is now interpreted
+            // to mean:
+            // 1) Compile (or reuse) SomeComponent in the context of its original NgModule
+            // 2) Make SomeComponent available in the scope of the testing module, even if it wasn't
+            //    originally exported from its NgModule.
+            //
+            // This allows TestFixture to use SomeComponent, which is asserted below.
+            declarations: [SomeComponent, TestFixture],
+            imports: [ModuleClass],
+          });
+          const fixture = TestBed.createComponent(TestFixture);
+          // The regex avoids any issues with styling attributes.
+          expect(fixture.nativeElement.innerHTML).toMatch(/<comp[^>]*>Some template<\/comp>/);
         });
       });
 
