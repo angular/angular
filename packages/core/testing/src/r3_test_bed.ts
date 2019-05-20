@@ -150,25 +150,6 @@ export class TestBedRender3 implements Injector, TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
-  /**
-   * Overwrites all providers for the given token with the given provider definition.
-   *
-   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
-   */
-  static deprecatedOverrideProvider(token: any, provider: {
-    useFactory: Function,
-    deps: any[],
-  }): void;
-  static deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
-  static deprecatedOverrideProvider(token: any, provider: {
-    useFactory?: Function,
-    useValue?: any,
-    deps?: any[],
-  }): TestBedStatic {
-    _getTestBedRender3().deprecatedOverrideProvider(token, provider as any);
-    return TestBedRender3 as any as TestBedStatic;
-  }
-
   static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /**
    * @deprecated from v8.0.0 use Type<T> or InjectionToken<T>
@@ -315,30 +296,6 @@ export class TestBedRender3 implements Injector, TestBed {
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
     this.compiler.overrideProvider(token, provider);
-  }
-
-  /**
-   * Overwrites all providers for the given token with the given provider definition.
-   *
-   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
-   */
-  deprecatedOverrideProvider(token: any, provider: {
-    useFactory: Function,
-    deps: any[],
-  }): void;
-  deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
-  deprecatedOverrideProvider(
-      token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}): void {
-    // HACK: This is NOT the correct implementation for deprecatedOverrideProvider.
-    // To implement it in a backward compatible way, we would need to record some state
-    // so we know to prevent eager instantiation of NgModules. However, we don't plan
-    // to implement this at all since the API is deprecated and scheduled for removal
-    // in V8. This hack is here temporarily for Ivy testing until we transition apps
-    // inside Google to the overrideProvider API. At that point, we will be able to
-    // remove this method entirely. In the meantime, we can use overrideProvider to
-    // test apps with Ivy that don't care about eager instantiation. This fixes 85%
-    // of cases in our blueprint.
-    this.overrideProvider(token, provider as any);
   }
 
   createComponent<T>(type: Type<T>): ComponentFixture<T> {
