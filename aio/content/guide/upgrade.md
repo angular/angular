@@ -844,11 +844,11 @@ When migrating large applications from AngularJS to Angular using a hybrid appro
 
 In most environments where both Angular and AngularJS are used to render the application, both frameworks are loaded in the initial bundle being sent to the client. This results in both increased bundle size and possible reduced performance.
 
-Overall application performance is affected in cases where the user stays on Angular-rendered pages, because the AngularJS framework and application is still loaded, and running, even if it is never accessed.
+Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed.
 
-To address the performance problem, you can use  [lazy loading](guide/glossary#lazy-loading) to only load, bootstrap, and render the AngularJS application when needed. This has the added benefit of reducing the initial bundle size.
+To address the performance problem, you can use  [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This has the added benefit of reducing the initial bundle size.
 
-The steps below steps below show you how to create a service that lazy loads and boostraps AngularJS, create a component for AngularJS content, and how to configure the Angular Router to load AngularJS routes only on specific URLs.
+The steps below show you how to create a service that lazy loads and bootstraps AngularJS, create a component for AngularJS content, and configure the Angular Router to load AngularJS routes only on specific URLs.
 
 ### Create a service to lazy load AngularJS
 
@@ -881,7 +881,7 @@ When the Angular Router matches a route that uses AngularJS, the `AngularJSCompo
 
 ### Configure a custom route matcher for AngularJS routes
 
-To configure the Angular router, you must define a route for AngularJS URLs. To match those URLs, you add a route configuration that uses the `matcher` property. The `matcher` allows you to use custom pattern matching for URL paths. The Angular router tries to match on more specific routes such as static and variable routes first. When it doesn't find a match, it then looks at custom matchers defined in your route configuration. If the custom matchers don't match a route, it then goes to catch-all routes, such as a 404 page.
+To configure the Angular Router, you must define a route for AngularJS URLs. To match those URLs, you add a route configuration that uses the `matcher` property. The `matcher` allows you to use custom pattern matching for URL paths. The Angular Router tries to match on more specific routes such as static and variable routes first. When it doesn't find a match, it then looks at custom matchers defined in your route configuration. If the custom matchers don't match a route, it then goes to catch-all routes, such as a 404 page.
 
 The following example defines a custom matcher function for AngularJS routes.
 
