@@ -22,7 +22,10 @@ const DEFAULT_PORTS: {[key: string]: number} = {
 };
 
 /**
- * Docs TBD.
+ * Location service that provides a drop-in replacement for the $location service
+ * provided in AngularJS.
+ *
+ * @see [Using the Angular Unified Location Service](guide/upgrade#using-the-unified-angular-location-service)
  *
  * @publicApi
  */
@@ -321,12 +324,17 @@ export class $locationShim {
   }
 
   /**
-   * Register URL change listeners. This API can be used to catch updates performed by the
-   * AngularJS framework. These changes are a subset of the `$locationChangeStart/Success` events
-   * as those events fire when AngularJS updates it's internally referenced version of the browser
-   * URL. It's possible for `$locationChange` events to happen, but for the browser URL
+   * Registers listeners for URL changes. This API is used to catch updates performed by the
+   * AngularJS framework. These changes are a subset of the `$locationChangeStart` and
+   * `$locationChangeSuccess` events which fire when AngularJS updates its internally-referenced
+   * version of the browser URL.
+   *
+   * It's possible for `$locationChange` events to happen, but for the browser URL
    * (window.location) to remain unchanged. This `onChange` callback will fire only when AngularJS
    * actually updates the browser URL (window.location).
+   *
+   * @param fn The callback function that is triggered for the listener when the URL changes.
+   * @param err The callback function that is triggered when an error occurs.
    */
   onChange(
       fn: (url: string, state: unknown, oldUrl: string, oldState: unknown) => void,
@@ -346,6 +354,11 @@ export class $locationShim {
     });
   }
 
+  /**
+   * Parses the provided URL, and sets the current URL to the parsed result.
+   *
+   * @param url The URL string.
+   */
   $$parse(url: string) {
     let pathUrl: string|undefined;
     if (url.startsWith('/')) {
@@ -366,6 +379,12 @@ export class $locationShim {
     this.composeUrls();
   }
 
+  /**
+   * Parses the provided URL and its relative URL.
+   *
+   * @param url The full URL string.
+   * @param relHref A URL string relative to the full URL string.
+   */
   $$parseLinkUrl(url: string, relHref?: string|null): boolean {
     // When relHref is passed, it should be a hash and is handled separately
     if (relHref && relHref[0] === '#') {
@@ -413,9 +432,8 @@ export class $locationShim {
   }
 
   /**
-   * This method is getter only.
-   *
-   * Return full URL representation with all segments encoded according to rules specified in
+   * Retrieves the full URL representation with all segments encoded according to
+   * rules specified in
    * [RFC 3986](http://www.ietf.org/rfc/rfc3986.txt).
    *
    *
@@ -428,12 +446,8 @@ export class $locationShim {
   absUrl(): string { return this.$$absUrl; }
 
   /**
-   * This method is getter / setter.
-   *
-   * Return URL (e.g. `/path?a=b#hash`) when called without any parameter.
-   *
-   * Change path, search and hash, when called with parameter and return `$location`.
-   *
+   * Retrieves the current URL, or sets a new URL. When setting a URL,
+   * changes the path, search, and hash, and returns a reference to its own instance.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -463,10 +477,7 @@ export class $locationShim {
   }
 
   /**
-   * This method is getter only.
-   *
-   * Return protocol of current URL.
-   *
+   * Retrieves the protocol of the current URL.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -477,11 +488,9 @@ export class $locationShim {
   protocol(): string { return this.$$protocol; }
 
   /**
-   * This method is getter only.
+   * Retrieves the protocol of the current URL.
    *
-   * Return host of current URL.
-   *
-   * Note: compared to the non-AngularJS version `location.host` which returns `hostname:port`, this
+   * In contrast to the non-AngularJS version `location.host` which returns `hostname:port`, this
    * returns the `hostname` portion only.
    *
    *
@@ -500,10 +509,7 @@ export class $locationShim {
   host(): string { return this.$$host; }
 
   /**
-   * This method is getter only.
-   *
-   * Return port of current URL.
-   *
+   * Retrieves the port of the current URL.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -514,15 +520,11 @@ export class $locationShim {
   port(): number|null { return this.$$port; }
 
   /**
-   * This method is getter / setter.
+   * Retrieves the path of the current URL, or changes the path and returns a reference to its own
+   * instance.
    *
-   * Return path of current URL when called without any parameter.
-   *
-   * Change path when called with parameter and return `$location`.
-   *
-   * Note: Path should always begin with forward slash (/), this method will add the forward slash
+   * Paths should always begin with forward slash (/). This method adds the forward slash
    * if it is missing.
-   *
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo
@@ -548,11 +550,8 @@ export class $locationShim {
   }
 
   /**
-   * This method is getter / setter.
-   *
-   * Return search part (as object) of current URL when called without any parameter.
-   *
-   * Change search part when called with parameter and return `$location`.
+   * Retrieves a map of the search parameters of the current URL, or changes a search 
+   * part and returns a reference to its own instance.
    *
    *
    * ```js
@@ -585,8 +584,7 @@ export class $locationShim {
    * If `paramValue` is `true`, the property specified via the first argument will be added with no
    * value nor trailing equal sign.
    *
-   * @return {Object} If called with no arguments returns the parsed `search` object. If called with
-   * one or more arguments returns `$location` object itself.
+   * @return {Object} The parsed `search` object of the current URL, or the changed `search` object.
    */
   search(): {[key: string]: unknown};
   search(search: string|number|{[key: string]: unknown}): this;
@@ -633,12 +631,8 @@ export class $locationShim {
   }
 
   /**
-   * This method is getter / setter.
-   *
-   * Returns the hash fragment when called without any parameters.
-   *
-   * Changes the hash fragment when called with a parameter and returns `$location`.
-   *
+   * Retrieves the current hash fragment, or changes the hash fragment and returns a reference to
+   * its own instance.
    *
    * ```js
    * // given URL http://example.com/#/some/path?foo=bar&baz=xoxo#hashValue
@@ -660,7 +654,7 @@ export class $locationShim {
   }
 
   /**
-   * If called, all changes to $location during the current `$digest` will replace the current
+   * Changes to `$location` during the current `$digest` will replace the current
    * history record, instead of adding a new one.
    */
   replace(): this {
@@ -669,15 +663,13 @@ export class $locationShim {
   }
 
   /**
-   * This method is getter / setter.
-   *
-   * Return the history state object when called without any parameter.
+   * Retrieves the history state object when called without any parameter.
    *
    * Change the history state object when called with one parameter and return `$location`.
    * The state object is later passed to `pushState` or `replaceState`.
    *
-   * NOTE: This method is supported only in HTML5 mode and only in browsers supporting
-   * the HTML5 History API (i.e. methods `pushState` and `replaceState`). If you need to support
+   * This method is supported only in HTML5 mode and only in browsers supporting
+   * the HTML5 History API methods such as `pushState` and `replaceState`. If you need to support
    * older browsers (like IE9 or Android < 4.0), don't use this method.
    *
    */
@@ -694,7 +686,8 @@ export class $locationShim {
 }
 
 /**
- * Docs TBD.
+ * The factory function used to create an instance of the `$locationShim` in Angular,
+ * and provides an API-compatiable `$locationProvider` for AngularJS.
  *
  * @publicApi
  */
@@ -704,6 +697,9 @@ export class $locationShimProvider {
       private platformLocation: PlatformLocation, private urlCodec: UrlCodec,
       private locationStrategy: LocationStrategy) {}
 
+  /**
+   * Factory method that returns an instance of the $locationShim
+   */
   $get() {
     return new $locationShim(
         this.ngUpgrade.$injector, this.location, this.platformLocation, this.urlCodec,
