@@ -643,8 +643,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
               converted.expressions.forEach(expression => {
                 hasBindings = true;
-                const binding = this.convertExpressionBinding(implicit, expression);
-                this.updateInstruction(elementIndex, element.sourceSpan, R3.i18nExp, [binding]);
+                this.updateInstruction(
+                    elementIndex, element.sourceSpan, R3.i18nExp,
+                    () => [this.convertExpressionBinding(implicit, expression)]);
               });
             }
           }
