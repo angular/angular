@@ -235,7 +235,17 @@ jobs:
         # fail to acquire browsers. For example:
         # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
         # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
-      - run: yarn bazel test --config=saucelabs //:test_web_all
+      - run:
+          name: Run //:test_web_all on Saucelabs
+          command: yarn bazel test --config=saucelabs //:test_web_all
+        # Also test the /integration/bazel production build on Saucelabs
+        # via protractor with legacy browsers to test differential loading
+      - run:
+          name: Run /integration/bazel //test/e2e:prodserver_sauce_test on Saucelabs
+          command: |
+            cd integration/bazel
+            ./pretest.sh
+            ./run_sauce_tests.sh
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
   test_aio:
@@ -716,9 +726,12 @@ workflows:
   saucelabs_tests:
     jobs:
       - setup
-      - test_saucelabs_bazel:
+      - build-npm-packages:
           requires:
             - setup
+      - test_saucelabs_bazel:
+          requires:
+            - build-npm-packages
     triggers:
       - schedule:
           # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
