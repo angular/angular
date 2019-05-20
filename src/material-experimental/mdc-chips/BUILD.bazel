@@ -2,7 +2,6 @@ package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
 load("//tools:defaults.bzl", "ng_module")
-load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
 
 ng_module(
   name = "mdc-chips",
@@ -13,7 +12,8 @@ ng_module(
     "@npm//@angular/common",
     "@npm//@angular/core",
     "@npm//material-components-web",
-  ] + CDK_TARGETS + MATERIAL_TARGETS,
+    "//src/material/core",
+  ],
 )
 
 sass_library(

@@ -2,7 +2,6 @@ package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
 load("//tools:defaults.bzl", "ng_module")
-load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
 
 ng_module(
   name = "mdc-helpers",
@@ -11,7 +10,7 @@ ng_module(
   assets = glob(["**/*.html"]),
   deps = [
     "@npm//@angular/core",
-  ] + CDK_TARGETS + MATERIAL_TARGETS,
+  ],
 )
 
 # Add all MDC Sass files that we depend on here. After updating MDC dependencies, use the following

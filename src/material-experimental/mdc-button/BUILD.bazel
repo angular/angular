@@ -2,7 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//tools:defaults.bzl", "ng_module")
-load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
 
 ng_module(
     name = "mdc-button",
@@ -12,7 +11,9 @@ ng_module(
     deps = [
         "@npm//@angular/animations",
         "@npm//material-components-web",
-    ] + CDK_TARGETS + MATERIAL_TARGETS,
+        "//src/cdk/platform",
+        "//src/material/core",
+    ],
 )
 
 sass_library(

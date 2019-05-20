@@ -2,7 +2,6 @@ package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
 load("//tools:defaults.bzl", "ng_module")
-load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
 
 ng_module(
   name = "mdc-checkbox",
@@ -15,7 +14,11 @@ ng_module(
     "@npm//@angular/core",
     "@npm//@angular/forms",
     "@npm//material-components-web",
-  ] + CDK_TARGETS + MATERIAL_TARGETS,
+    "//src/cdk/coercion",
+    "//src/cdk/platform",
+    "//src/material/core",
+    "//src/material/checkbox",
+  ],
 )
 
 sass_library(
