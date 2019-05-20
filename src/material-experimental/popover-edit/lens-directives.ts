@@ -24,11 +24,6 @@ import {
 @Directive({
   selector: 'form[matEditLens]',
   host: {
-    '(ngSubmit)': 'handleFormSubmit()',
-    '(keydown.enter)': 'editRef.trackEnterPressForClose(true)',
-    '(keyup.enter)': 'editRef.trackEnterPressForClose(false)',
-    '(keyup.escape)': 'close()',
-    '(document:click)': 'handlePossibleClickOut($event)',
     'class': 'mat-edit-lens',
   },
   inputs: [
@@ -46,7 +41,6 @@ export class MatEditLens<FormValue> extends CdkEditControl<FormValue> {
 @Directive({
   selector: 'button[matEditRevert]',
   host: {
-    '(click)': 'revertEdit()',
     'type': 'button', // Prevents accidental form submits.
   }
 })
@@ -57,7 +51,6 @@ export class MatEditRevert<FormValue> extends CdkEditRevert<FormValue> {
 @Directive({
   selector: 'button[matEditClose]',
   host: {
-    '(click)': 'closeEdit()',
     'type': 'button', // Prevents accidental form submits.
   }
 })

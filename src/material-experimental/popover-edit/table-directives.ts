@@ -107,7 +107,6 @@ export class MatRowHoverContent extends CdkRowHoverContent {
  */
 @Directive({
   selector: '[matEditOpen]',
-  host: {'(click)': 'openEdit($event)'}
 })
 export class MatEditOpen extends CdkEditOpen {
 }
