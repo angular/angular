@@ -76,7 +76,9 @@ genrule(
   # through Gulp), we need to exclude it because otherwise the genrule would fail.
   # TODO(devversion): remove this once gulp has been replaced with bazel.
   srcs = glob(["**/*.ts"], exclude = ["example-module.ts"]),
-  outs = ["example-module.ts"],
+  # TODO(devversion): we can't name the genrule output "example-module.ts" as it would
+  # get accidentally picked up when building the example module. See: angular/angular#30259 
+  outs = ["example-module_generated.ts"],
   cmd = """
     # As a workaround for https://github.com/bazelbuild/rules_nodejs/issues/404, we pass the
     # data to the Bazel entry-point through environment variables.
