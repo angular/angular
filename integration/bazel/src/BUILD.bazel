@@ -62,13 +62,30 @@ rollup_bundle(
 
 web_package(
     name = "prodapp",
+    additional_root_paths = [
+        # Root paths to the polyfills in data
+        "npm/node_modules/core-js/client",
+        "npm/node_modules/reflect-metadata",
+    ],
+    # do not sort
     assets = [
-        # do not sort
+        # We load zone.js outside the bundle. That's because it's a "pollyfill"
+        # which speculates that such features might be available in a browser.
+        # Also it's tricky to configure dead code elimination to understand that
+        # zone.js is used, given that we don't have any import statement that
+        # imports from it.
         "@npm//node_modules/zone.js:dist/zone.min.js",
+        # For differential loading, we supply both an ESModule entry point and an es5 entry point
+        # The injector will put two complimentary script tags in the example.html
         ":bundle.min.js",
+        ":bundle.min.es2015.js",
     ],
     data = [
         ":bundle",
+        # Include polyfills that will be requested by old browsers
+        "@npm//node_modules/core-js:client/core.min.js",
+        ":shims_for_IE.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     index_html = "index.html",
 )

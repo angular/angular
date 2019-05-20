@@ -29,7 +29,7 @@ describe('BannerComponent (inline template)', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HelloWorldComponent);
     comp = fixture.componentInstance;
-    el = fixture.debugElement.query(By.css('div')).nativeElement;
+    el = fixture.debugElement.query(By.css('div#greeting')).nativeElement;
   });
 
   it('should display original title', () => {

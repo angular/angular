@@ -1,14 +1,18 @@
-import {browser, by, element} from 'protractor';
-
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+import { AppPage } from './app.po';
 
 describe('angular example application', () => {
-  it('should display: Hello World!', (done) => {
-    browser.get('');
-    const div = element(by.css('div'));
-    div.getText().then(t => expect(t).toEqual(`Hello world!`));
-    element(by.css('input')).sendKeys('!');
-    div.getText().then(t => expect(t).toEqual(`Hello world!!`));
-    done();
+  let page: AppPage;
+
+  beforeEach(() => {
+    page = new AppPage();
+  });
+
+  it('should display: Hello World!', async () => {
+    await page.navigateTo();
+    expect(await page.getParagraphText()).toEqual(`Hello world!`);
+    await page.clearInput();
+    await page.typeInInput('!');
+    await page.waitForAngular();
+    expect(await page.getParagraphText()).toEqual(`Hello !!`);
   });
 });

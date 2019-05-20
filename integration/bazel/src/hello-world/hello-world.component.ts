@@ -4,7 +4,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'hello-world-app',
   template: `
-    <div>Hello {{ name }}!</div>
+    <div id="greeting">Hello {{ name }}!</div>
     <input type="text" [value]="name" (input)="name = $event.target.value"/>
   `,
   styleUrls: ['./hello-world.component.scss'],

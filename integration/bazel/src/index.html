@@ -9,5 +9,10 @@
   <body>
     <!-- The Angular application will be bootstrapped into this element. -->
     <app-component></app-component>
+
+    <!-- polyfills for browsers that don't support ESModules -->
+    <script nomodule src="/core.min.js"></script>
+    <script nomodule src="/shims_for_IE.js"></script>
+    <script nomodule src="/Reflect.js"></script>
   </body>
 </html>
