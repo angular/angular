@@ -698,6 +698,9 @@ workflows:
       - integration_test:
           requires:
             - build-npm-packages
+      - test_saucelabs_bazel:
+          requires:
+            - build-npm-packages
       - publish_snapshot:
           # Note: no filters on this job because we want it to run for all upstream branches
           # We'd really like to filter out pull requests here, but not yet available:
