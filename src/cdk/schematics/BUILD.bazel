@@ -21,6 +21,7 @@ ts_library(
   tsconfig = ":tsconfig.json",
   deps = [
     "@npm//@schematics/angular",
+    "@npm//@angular-devkit/core",
     "@npm//@angular-devkit/schematics",
     # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
     "@npm//@types/jasmine",

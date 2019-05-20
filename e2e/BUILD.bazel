@@ -21,6 +21,7 @@ ts_library(
    tsconfig = ":tsconfig.json",
    deps = [
      "@npm//@types/jasmine",
+     "@npm//@types/selenium-webdriver",
      "@npm//protractor",
      ":e2e_utils_lib",
    ]

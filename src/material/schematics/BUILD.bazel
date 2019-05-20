@@ -19,6 +19,7 @@ ts_library(
   ]),
   deps = [
     "//src/cdk/schematics",
+    "@npm//@angular-devkit/core",
     "@npm//@angular-devkit/schematics",
     "@npm//@schematics/angular",
     # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
@@ -54,6 +55,7 @@ ts_library(
     "//src/cdk/schematics",
     "//src/cdk/schematics/testing",
     "@npm//@schematics/angular",
+    "@npm//@angular-devkit/core",
     "@npm//@angular-devkit/schematics",
     "@npm//@types/fs-extra",
     "@npm//@types/node",
