@@ -159,7 +159,19 @@
     "name": "ViewEncapsulation"
   },
   {
+    "name": "__global"
+  },
+  {
+    "name": "__globalThis"
+  },
+  {
+    "name": "__self"
+  },
+  {
     "name": "__values"
+  },
+  {
+    "name": "__window"
   },
   {
     "name": "_currentNamespace"
@@ -358,12 +370,6 @@
   },
   {
     "name": "getElementDepthCount"
-  },
-  {
-    "name": "getGlobal"
-  },
-  {
-    "name": "getGuardMask"
   },
   {
     "name": "getHighestElementOrICUContainer"

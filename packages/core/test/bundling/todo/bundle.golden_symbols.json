@@ -303,7 +303,16 @@
     "name": "__forward_ref__"
   },
   {
+    "name": "__global"
+  },
+  {
+    "name": "__globalThis"
+  },
+  {
     "name": "__read"
+  },
+  {
+    "name": "__self"
   },
   {
     "name": "__spread"
@@ -312,7 +321,7 @@
     "name": "__values"
   },
   {
-    "name": "_activeStylingMapApplyFn"
+    "name": "__window"
   },
   {
     "name": "_c0"
@@ -808,9 +817,6 @@
   },
   {
     "name": "getErrorLogger"
-  },
-  {
-    "name": "getGlobal"
   },
   {
     "name": "getGuardMask"
