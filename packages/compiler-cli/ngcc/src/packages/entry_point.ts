@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {relative} from 'canonical-path';
+import {basename} from 'path';
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
 import {parseStatementForUmdModule} from '../host/umd_host';
 import {Logger} from '../logging/logger';
+import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
 /**
  * The possible values for the format of an entry-point.
@@ -34,7 +37,7 @@ export interface EntryPoint {
   compiledByAngular: boolean;
 }
 
-interface PackageJsonFormatProperties {
+export interface PackageJsonFormatProperties {
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -67,18 +70,25 @@ export const SUPPORTED_FORMAT_PROPERTIES: EntryPointJsonProperty[] =
  * @returns An entry-point if it is valid, `null` otherwise.
  */
 export function getEntryPointInfo(
-    fs: FileSystem, logger: Logger, packagePath: AbsoluteFsPath,
+    fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = resolve(entryPointPath, 'package.json');
-  if (!fs.exists(packageJsonPath)) {
+  const entryPointConfig = config.getConfig(packagePath).entryPoints[entryPointPath];
+  if (entryPointConfig === undefined && !fs.exists(packageJsonPath)) {
     return null;
   }
 
-  const entryPointPackageJson = loadEntryPointPackage(fs, logger, packageJsonPath);
-  if (!entryPointPackageJson) {
+  if (entryPointConfig !== undefined && entryPointConfig.ignore === true) {
     return null;
   }
 
+  const loadedEntryPointPackageJson =
+      loadEntryPointPackage(fs, logger, packageJsonPath, entryPointConfig !== undefined);
+  const entryPointPackageJson = mergeConfigAndPackageJson(
+      loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
+  if (entryPointPackageJson === null) {
+    return null;
+  }
 
   // We must have a typings property
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types;
@@ -86,16 +96,18 @@ export function getEntryPointInfo(
     return null;
   }
 
-  // Also there must exist a `metadata.json` file next to the typings entry-point.
+  // An entry-point is assumed to be compiled by Angular if there is either:
+  // * a `metadata.json` file next to the typings entry-point
+  // * a custom config for this entry-point
   const metadataPath = resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  const compiledByAngular = entryPointConfig !== undefined || fs.exists(metadataPath);
 
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     packageJson: entryPointPackageJson,
     package: packagePath,
     path: entryPointPath,
-    typings: resolve(entryPointPath, typings),
-    compiledByAngular: fs.exists(metadataPath),
+    typings: resolve(entryPointPath, typings), compiledByAngular,
   };
 
   return entryPointInfo;
@@ -140,12 +152,15 @@ export function getEntryPointFormat(
  * @returns JSON from the package.json file if it is valid, `null` otherwise.
  */
 function loadEntryPointPackage(
-    fs: FileSystem, logger: Logger, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|null {
+    fs: FileSystem, logger: Logger, packageJsonPath: AbsoluteFsPath,
+    hasConfig: boolean): EntryPointPackageJson|null {
   try {
     return JSON.parse(fs.readFile(packageJsonPath));
   } catch (e) {
-    // We may have run into a package.json with unexpected symbols
-    logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
+    if (!hasConfig) {
+      // We may have run into a package.json with unexpected symbols
+      logger.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
+    }
     return null;
   }
 }
@@ -155,4 +170,24 @@ function isUmdModule(fs: FileSystem, sourceFilePath: AbsoluteFsPath): boolean {
       ts.createSourceFile(sourceFilePath, fs.readFile(sourceFilePath), ts.ScriptTarget.ES5);
   return sourceFile.statements.length > 0 &&
       parseStatementForUmdModule(sourceFile.statements[0]) !== null;
+}
+
+function mergeConfigAndPackageJson(
+    entryPointPackageJson: EntryPointPackageJson | null,
+    entryPointConfig: NgccEntryPointConfig | undefined, packagePath: AbsoluteFsPath,
+    entryPointPath: AbsoluteFsPath): EntryPointPackageJson|null {
+  if (entryPointPackageJson !== null) {
+    if (entryPointConfig === undefined) {
+      return entryPointPackageJson;
+    } else {
+      return {...entryPointPackageJson, ...entryPointConfig.override};
+    }
+  } else {
+    if (entryPointConfig === undefined) {
+      return null;
+    } else {
+      const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
+      return {name, ...entryPointConfig.override};
+    }
+  }
 }
