@@ -327,6 +327,14 @@
     "bio": "Owner and trainer at Ultimate Angular. Lives in England, UK. Has a love for teaching, OSS and speaking at conferences. Google Developer Expert for Web Technologies and Angular.",
     "groups": ["GDE"]
   },
+  "michaelhladky": {
+    "name": "Michael Hladky",
+    "picture": "michael-hladky.jpg",
+    "twitter": "Michael_Hladky",
+    "website": "https://github.com/BioPhoton",
+    "bio": "Michael is a self employed trainer, consultant and developer with the focus on Angular, and located in Vienna, Austria. He gives workshops on Angular, RxJS and Ionic. As Google Developer Expert, founder of Angular-Austria-Association and Angular-Vienna meetup, and speaker he is an active part of the community.",
+    "groups": ["GDE"]
+  },
   "michaelprentice": {
     "name": "Michael Prentice",
     "picture": "michaelprentice.jpg",
