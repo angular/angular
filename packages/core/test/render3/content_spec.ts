@@ -913,7 +913,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]]);
+          ɵɵprojectionDef(['*', [['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
           ɵɵelementEnd();
@@ -958,7 +958,7 @@ describe('content projection', () => {
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([
-            [['span', SelectorFlags.CLASS, 'toFirst']],
+            '*', [['span', SelectorFlags.CLASS, 'toFirst']],
             [['span', SelectorFlags.CLASS, 'toSecond']]
           ]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1005,7 +1005,7 @@ describe('content projection', () => {
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           ɵɵprojectionDef([
-            [['span', SelectorFlags.CLASS, 'toFirst']],
+            '*', [['span', SelectorFlags.CLASS, 'toFirst']],
             [['span', SelectorFlags.CLASS, 'toSecond']]
           ]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
@@ -1051,7 +1051,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]]);
+          ɵɵprojectionDef(['*', [['span']], [['span', SelectorFlags.CLASS, 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
           ɵɵelementEnd();
@@ -1095,7 +1095,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['span', SelectorFlags.CLASS, 'toFirst']]]);
+          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'toFirst']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1, 1); }
           ɵɵelementEnd();
@@ -1140,7 +1140,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['span', SelectorFlags.CLASS, 'toSecond']]]);
+          ɵɵprojectionDef(['*', [['span', SelectorFlags.CLASS, 'toSecond']]]);
           ɵɵelementStart(0, 'div', ['id', 'first']);
           { ɵɵprojection(1); }
           ɵɵelementEnd();
@@ -1192,7 +1192,7 @@ describe('content projection', () => {
        */
       const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['span']]]);
+          ɵɵprojectionDef(['*', [['span']]]);
           ɵɵprojection(0, 1);
           ɵɵelement(1, 'hr');
           ɵɵprojection(2);
@@ -1253,7 +1253,7 @@ describe('content projection', () => {
        */
       const Card = createComponent('card', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['', 'card-title', '']], [['', 'card-content', '']]]);
+          ɵɵprojectionDef(['*', [['', 'card-title', '']], [['', 'card-content', '']]]);
           ɵɵprojection(0, 1);
           ɵɵelement(1, 'hr');
           ɵɵprojection(2, 2);
@@ -1306,7 +1306,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ɵɵprojectionDef([[['div']]]);
+          ɵɵprojectionDef(['*', [['div']]]);
           ɵɵprojection(0, 1);
         }
       }, 1);

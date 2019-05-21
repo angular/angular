@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NO_ERRORS_SCHEMA, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -111,13 +112,48 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('(A, BC)');
   });
 
-  modifiedInIvy(
-      'FW-886: `projectableNodes` passed to a componentFactory should be in the order of declaration')
-      .it('should support passing projectable nodes via factory function', () => {
+  it('should support passing projectable nodes via factory function', () => {
+    @Component({
+      selector: 'multiple-content-tags',
+      template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
+    })
+    class MultipleContentTagsComponent {
+    }
 
+    @NgModule({
+      declarations: [MultipleContentTagsComponent],
+      entryComponents: [MultipleContentTagsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+    })
+    class MyModule {
+    }
+
+    TestBed.configureTestingModule({imports: [MyModule]});
+    const injector: Injector = TestBed.get(Injector);
+
+    const componentFactoryResolver: ComponentFactoryResolver =
+        injector.get(ComponentFactoryResolver);
+    const componentFactory =
+        componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
+    expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
+
+    const nodeOne = getDOM().createTextNode('one');
+    const nodeTwo = getDOM().createTextNode('two');
+    const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
+    expect(component.location.nativeElement).toHaveText('(one, two)');
+  });
+
+  modifiedInIvy(
+      'FW-886: `projectableNodes` passed to a componentFactory should be in the order of' +
+      'declaration. In Ivy, the ng-content slots are determined with breadth-first search.')
+      .it('should respect order of declaration for projectable nodes', () => {
         @Component({
           selector: 'multiple-content-tags',
-          template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
+          template: `
+          1<ng-content select="h1"></ng-content>
+          2<ng-template [ngIf]="true"><ng-content></ng-content></ng-template>
+          3<ng-content select="h2"></ng-content>
+        `,
         })
         class MultipleContentTagsComponent {
         }
@@ -125,6 +161,7 @@ describe('projection', () => {
         @NgModule({
           declarations: [MultipleContentTagsComponent],
           entryComponents: [MultipleContentTagsComponent],
+          imports: [CommonModule],
           schemas: [NO_ERRORS_SCHEMA],
         })
         class MyModule {
@@ -137,12 +174,14 @@ describe('projection', () => {
             injector.get(ComponentFactoryResolver);
         const componentFactory =
             componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
-        expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
+        expect(componentFactory.ngContentSelectors).toEqual(['h1', '*', 'h2']);
 
         const nodeOne = getDOM().createTextNode('one');
         const nodeTwo = getDOM().createTextNode('two');
-        const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
-        expect(component.location.nativeElement).toHaveText('(one, two)');
+        const nodeThree = getDOM().createTextNode('three');
+        const component = componentFactory.create(injector, [[nodeOne], [nodeTwo], [nodeThree]]);
+        component.changeDetectorRef.detectChanges();
+        expect(component.location.nativeElement.textContent.trim()).toBe('1one 2two 3three');
       });
 
   it('should redistribute only direct children', () => {
