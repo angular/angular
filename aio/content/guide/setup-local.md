@@ -23,7 +23,7 @@ Before you begin, make sure your development environment includes `Node.js®` an
 {@a nodejs}
 ### Node.js
 
-Angular requires `Node.js` version 8.x or 10.x.
+Angular requires `Node.js` version 10.9.0 or later.
 
 * To check your version, run `node -v` in a terminal/console window.
 
