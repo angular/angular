@@ -19,7 +19,7 @@ import {NO_CHANGE} from '../tokens';
  *
  * @codeGenApi
  */
-export function ΔallocHostVars(count: number): void {
+export function ɵɵallocHostVars(count: number): void {
   const lView = getLView();
   const tView = lView[TVIEW];
   if (!tView.firstTemplatePass) return;

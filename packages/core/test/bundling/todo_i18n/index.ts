@@ -16,7 +16,7 @@ import '@angular/core/test/bundling/util/src/reflect_metadata';
  */
 import './translations';
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, Δi18nLocalize as localize} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵɵi18nLocalize as localize} from '@angular/core';
 
 class Todo {
   editing: boolean;

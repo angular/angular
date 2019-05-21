@@ -8,8 +8,8 @@
 
 import {TemplateRef} from '@angular/core';
 
-import {AttributeMarker, RenderFlags, ΔdefineDirective} from '../../src/render3/index';
-import {Δbind, ΔdirectiveInject, Δelement, ΔelementContainerEnd, ΔelementContainerStart, ΔelementProperty, Δtemplate, Δtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, RenderFlags, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵbind, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementProperty, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
@@ -19,10 +19,10 @@ describe('TemplateRef', () => {
   describe('rootNodes', () => {
 
     class DirectiveWithTplRef {
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: DirectiveWithTplRef,
         selectors: [['', 'tplRef', '']],
-        factory: () => new DirectiveWithTplRef(ΔdirectiveInject(TemplateRef as any))
+        factory: () => new DirectiveWithTplRef(ɵɵdirectiveInject(TemplateRef as any))
       });
 
       // injecting a ViewContainerRef to create a dynamic container in which embedded views will be
@@ -35,9 +35,9 @@ describe('TemplateRef', () => {
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div');
-          Δtext(1, 'some text');
-          Δelement(2, 'span');
+          ɵɵelement(0, 'div');
+          ɵɵtext(1, 'some text');
+          ɵɵelement(2, 'span');
         }
       }
 
@@ -50,7 +50,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, embeddedTemplate, 3, 0, 'ng-template', ['tplRef', '']);
+          ɵɵtemplate(0, embeddedTemplate, 3, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);
@@ -79,7 +79,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, () => {}, 0, 0, 'ng-template', ['tplRef', '']);
+          ɵɵtemplate(0, () => {}, 0, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);
@@ -102,16 +102,16 @@ describe('TemplateRef', () => {
 
       function ngIfTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtext(0, 'text');
+          ɵɵtext(0, 'text');
         }
       }
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
+          ɵɵtemplate(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'ngIf', Δbind(ctx.showing));
+          ɵɵelementProperty(0, 'ngIf', ɵɵbind(ctx.showing));
         }
       }
 
@@ -120,7 +120,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, embeddedTemplate, 1, 1, 'ng-template', ['tplRef', '']);
+          ɵɵtemplate(0, embeddedTemplate, 1, 1, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef, NgIf]);
@@ -147,9 +147,9 @@ describe('TemplateRef', () => {
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementContainerStart(0);
-          { Δtext(1, 'text'); }
-          ΔelementContainerEnd();
+          ɵɵelementContainerStart(0);
+          { ɵɵtext(1, 'text'); }
+          ɵɵelementContainerEnd();
         }
       }
 
@@ -158,7 +158,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δtemplate(0, embeddedTemplate, 2, 0, 'ng-template', ['tplRef', '']);
+          ɵɵtemplate(0, embeddedTemplate, 2, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);

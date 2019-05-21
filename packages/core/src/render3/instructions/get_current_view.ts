@@ -17,6 +17,6 @@ import {getLView} from '../state';
  *
  * @codeGenApi
  */
-export function ΔgetCurrentView(): OpaqueViewState {
+export function ɵɵgetCurrentView(): OpaqueViewState {
   return getLView() as any as OpaqueViewState;
 }
