@@ -5,15 +5,15 @@ You develop applications in the context of an Angular [workspace](guide/glossary
 The Angular CLI `ng new` command creates a workspace.
 
 <code-example language="bash" linenums="false">
-ng new &lt;project_name&gt;
+ng new &lt;my-project&gt;
 </code-example>
 
-When you run this command, the CLI installs the necessary Angular npm packages and other dependencies in a new workspace, with a root folder named *project_name*.
-The workspace root folder contains workspace configuration files and a README file with generated descriptive text that you can customize.
+When you run this command, the CLI installs the necessary Angular npm packages and other dependencies in a new workspace, with a root-level application named *my-project*.
+The workspace root folder contains various support and configuration files, and a README file with generated descriptive text that you can customize.
 
-By default, `ng new` also creates an initial skeleton application, along with its end-to-end tests.
+By default, `ng new` creates an initial skeleton application at the root level of the workspace, along with its end-to-end tests.
 The skeleton is for a simple Welcome application that is ready to run and easy to modify.
-This *root application* has the same name as the workspace, and the source files reside in the `src/` subfolder of the workspace.
+The root-level application has the same name as the workspace, and the source files reside in the `src/` subfolder of the workspace.
 
 This default behavior is suitable for a typical "multi-repo" development style where each application resides in its own workspace.
 Beginners and intermediate users are encouraged to use `ng new` to create a separate workspace for each application.
@@ -28,27 +28,29 @@ See [Setting up for a multi-project workspace](#multiple-projects) below.
 ## Workspace configuration files
 
 All projects within a workspace share a [CLI configuration context](guide/workspace-config).
-The top level of the workspace contains workspace-wide configuration files.
+The top level of the workspace contains workspace-wide configuration files, configuration files for the root-level application, and subfolders for the root-level application source and test files.
 
 | WORKSPACE CONFIG FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
-| `node_modules/`        | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
 | `.editorconfig`        | Configuration for code editors. See [EditorConfig](https://editorconfig.org/). |
 | `.gitignore`           | Specifies intentionally untracked files that [Git](https://git-scm.com/) should ignore. |
+| `README.md`            | Introductory documentation for the root app. |
 | `angular.json`         | CLI configuration defaults for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [TSLint](https://palantir.github.io/tslint/), [Karma](https://karma-runner.github.io/), and [Protractor](http://www.protractortest.org/). For details, see [Angular Workspace Configuration](guide/workspace-config). |
 | `package.json`          | Configures [npm package dependencies](guide/npm-packages) that are available to all projects in the workspace. See [npm documentation](https://docs.npmjs.com/files/package.json) for the specific format and contents of this file. |
 | `package-lock.json`     | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
-| `README.md`             | Introductory documentation for the root app. |
+| `src/`                  | Source files for the root-level application project. |
+| `node_modules/`         | Provides [npm packages](guide/npm-packages) to the entire workspace. Workspace-wide `node_modules` dependencies are visible to all projects. |
 | `tsconfig.json`         | Default [TypeScript](https://www.typescriptlang.org/) configuration for projects in the workspace. |
 | `tslint.json`           | Default [TSLint](https://palantir.github.io/tslint/) configuration for projects in the workspace. |
 
+
 ## Application project files
 
-By default, the CLI command `ng new my-app` creates a workspace folder named "my-app" and generates a new application skeleton for a root application at the top level of the workspace.
+By default, the CLI command `ng new my-app` creates a workspace folder named "my-app" and generates a new application skeleton in a `src/` folder at the top level of the workspace.
 A newly generated application contains source files for a root module, with a root component and template.
 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the application.
-This initial starter application is the *default app* for CLI commands (unless you change the default after creating [additional apps](#multiple-projects)).
+This initial root-level application is the *default app* for CLI commands (unless you change the default after creating [additional apps](#multiple-projects)).
 
 <div class="alert is-helpful">
 
@@ -105,10 +107,11 @@ Project-specific [TypeScript](https://www.typescriptlang.org/) configuration fil
 
 ### End-to-end test files
 
-An `e2e/` subfolder contains source files for a set of end-to-end tests that correspond to an application, along with test-specific configuration files.
+An `e2e/` folder at the top level contains source files for a set of end-to-end tests that correspond to the root-level application, along with test-specific configuration files.
+
+For a multi-project workspace, application-specific end-to-end tests are in the project root, under `projects/project-name/e2e/`.
 
 <code-example language="none" linenums="false">
-my-app/
   e2e/
      src/                 (end-to-end tests for my-app)
         app.e2e-spec.ts
@@ -126,7 +129,7 @@ A multi-project workspace is suitable for an enterprise that uses a single repos
 ### Setting up for a multi-project workspace
 
 If you intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
-The following command creates a workspace with all of the workspace-wide configuration files, but no root application.
+The following command creates a workspace with all of the workspace-wide configuration files, but no root-level application.
 
 <code-example language="bash" linenums="false">
 ng new my-workspace --createApplication="false"
