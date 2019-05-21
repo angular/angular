@@ -97,9 +97,9 @@ export class LQueries_ implements LQueries {
   track<T>(queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean, read?: Type<T>):
       void {
     if (descend) {
-      this.deep = createQuery(this.deep, queryList, predicate, read != null ? read : null);
+      this.deep = createLQuery(this.deep, queryList, predicate, read != null ? read : null);
     } else {
-      this.shallow = createQuery(this.shallow, queryList, predicate, read != null ? read : null);
+      this.shallow = createLQuery(this.shallow, queryList, predicate, read != null ? read : null);
     }
   }
 
@@ -346,7 +346,7 @@ function createPredicate<T>(predicate: Type<T>| string[], read: Type<T>| null): 
   };
 }
 
-function createQuery<T>(
+function createLQuery<T>(
     previous: LQuery<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
     read: Type<T>| null): LQuery<T> {
   return {
@@ -361,14 +361,14 @@ function createQuery<T>(
 type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
 
 /**
- * Creates and returns a QueryList.
+ * Creates a QueryList and stores it in LView's collection of active queries (LQueries).
  *
  * @param predicate The type for which the query will search
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  * @returns QueryList<T>
  */
-function query<T>(
+function createQueryListInLView<T>(
     // TODO: "read" should be an AbstractType (FW-486)
     lView: LView, predicate: Type<any>| string[], descend: boolean, read: any,
     isStatic: boolean): QueryList<T> {
@@ -447,7 +447,8 @@ function viewQueryInternal<T>(
     tView.expandoStartIndex++;
   }
   const index = getCurrentQueryIndex();
-  const queryList: QueryList<T> = query<T>(lView, predicate, descend, read, isStatic);
+  const queryList: QueryList<T> =
+      createQueryListInLView<T>(lView, predicate, descend, read, isStatic);
   store(index - HEADER_OFFSET, queryList);
   setCurrentQueryIndex(index + 1);
   return queryList;
@@ -490,7 +491,8 @@ function contentQueryInternal<T>(
     descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
     read: any, isStatic: boolean): QueryList<T> {
-  const contentQuery: QueryList<T> = query<T>(lView, predicate, descend, read, isStatic);
+  const contentQuery: QueryList<T> =
+      createQueryListInLView<T>(lView, predicate, descend, read, isStatic);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
