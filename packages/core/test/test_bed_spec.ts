@@ -423,6 +423,14 @@ describe('TestBed', () => {
           const fixture = TestBed.createComponent(SomeComponent);
           expect(fixture.nativeElement.innerHTML).toBe('Template override');
         });
+
+        it('should have an ability to override template with empty string', () => {
+          const SomeComponent = getAOTCompiledComponent();
+          TestBed.configureTestingModule({declarations: [SomeComponent]});
+          TestBed.overrideTemplateUsingTestingModule(SomeComponent, '');
+          const fixture = TestBed.createComponent(SomeComponent);
+          expect(fixture.nativeElement.innerHTML).toBe('');
+        });
       });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
