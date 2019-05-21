@@ -12,7 +12,7 @@ import {EventEmitter} from '../..';
 import {AttributeMarker, detectChanges, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
 import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵload, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {query, ɵɵcontentQuery, ɵɵloadContentQuery, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
+import {ɵɵcontentQuery, ɵɵloadContentQuery, ɵɵloadViewQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
