@@ -13,20 +13,18 @@ Whether you came here directly from [Your First App](start "Getting Started: You
 
 
 
-## Deploying from StackBlitz
+## Share your application
 
-StackBlitz allows you to publish your Angular app directly to Firebase from your project. The steps below outline how to deploy it quickly without setting up your own hosting environment.
+StackBlitz projects are public by default, allowing you to share your Angular app via the project URL. Keep in mind that this is a great way to share ideas and prototypes, but it is not intended for production hosting.
 
-1. In your StackBlitz project, in the left menu bar, click the `Firebase` icon.
-1. If you don’t have a `Firebase` account, visit the [Firebase](https://firebase.google.com/ "Firebase web site") to sign up for a free hosting account.
-1. Click the `Sign into Google` button and follow the prompts to give `StackBlitz` access your `Firebase` projects
-1. Select the `project` where you wish to deploy your application.
-1. Click the `Deploy` button to deploy your application.
-1. After the deployment completes, click the `Open live site` link to view your app live.
+1. In your StackBlitz project, make sure you have forked or saved your project.
+1. In the preview pane, you should see a URL that looks like `https://<Project ID>.stackblitz.io`.
+1. Share this URL with a friend or colleague.
+1. Users that visit your URL will see a development server start up, and then your application will load.
 
 ## Building locally
 
-To build your application locally, you will need to download the source code from your StackBlitz project. Click the `Download Project` icon in the left menu across from `Project` to download your files.
+To build your application locally or for production, you will need to download the source code from your StackBlitz project. Click the `Download Project` icon in the left menu across from `Project` to download your files.
 
 Once you have the source code downloaded and unzipped, use the [Angular Console](https://angularconsole.com "Angular Console web site") to serve the application, or you install Node and have the Angular CLI installed.
 
@@ -76,7 +74,7 @@ Learn more about development and distribution of your application in the [Buildi
 
 ## Join our community
 
-You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://next.angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form"). 
+You are now an Angular developer! [Share this moment](https://twitter.com/intent/tweet?url=https://angular.io/start&text=I%20just%20finished%20the%20Angular%20Getting%20Started%20Tutorial "Angular on Twitter"), tell us what you thought of this Getting Started, or submit [suggestions for future editions](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form"). 
 
 Angular offers many more capabilities, and you now have a foundation that empowers you to build an application and explore those other capabilities:
 
