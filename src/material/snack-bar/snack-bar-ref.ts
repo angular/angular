@@ -7,6 +7,7 @@
  */
 
 import {OverlayRef} from '@angular/cdk/overlay';
+import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {MatSnackBarContainer} from './snack-bar-container';
 
@@ -17,9 +18,8 @@ export interface MatSnackBarDismiss {
   dismissedByAction: boolean;
 }
 
-/**
- * Reference to a snack bar dispatched from the snack bar service.
- */
+/** Reference to a snack bar dispatched from the snack bar service. */
+@Injectable()
 export class MatSnackBarRef<T> {
   /** The instance of the component making up the content of the snack bar. */
   instance: T;

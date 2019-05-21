@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location} from '@angular/common';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {OverlayRef} from '@angular/cdk/overlay';
+import {Location} from '@angular/common';
+import {Injectable} from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
 
 
-/**
- * Reference to a bottom sheet dispatched from the bottom sheet service.
- */
+/** Reference to a bottom sheet dispatched from the bottom sheet service. */
+@Injectable()
 export class MatBottomSheetRef<T = any, R = any> {
   /** Instance of the component making up the content of the bottom sheet. */
   instance: T;
