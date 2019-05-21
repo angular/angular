@@ -14,7 +14,6 @@
   <benchmark-root>loading...</benchmark-root>
 
   <script>
-    window.ngDevMode = location.hash == '#ngDevMode';
     addEventListener('DOMContentLoaded', () => {
       // DevServer has automatic bootstrap code, so if we already have <scripts> than we don't need to bootstrap
       var alreadyBootstraped = document.querySelectorAll('script').length > 1; // 1 for ourselves

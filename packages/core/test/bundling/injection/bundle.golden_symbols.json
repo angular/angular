@@ -96,9 +96,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_global"
-  },
-  {
     "name": "catchInjectorError"
   },
   {
@@ -118,9 +115,6 @@
   },
   {
     "name": "getClosureSafeProperty"
-  },
-  {
-    "name": "getGlobal"
   },
   {
     "name": "getInheritedInjectableDef"
