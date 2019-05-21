@@ -11,6 +11,7 @@ import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
 import {MockLogger} from '../helpers/mock_logger';
@@ -31,7 +32,8 @@ runInEachFileSystem(() => {
       spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
         return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
       });
-      finder = new EntryPointFinder(fs, new MockLogger(), resolver);
+      finder =
+          new EntryPointFinder(fs, new NgccConfiguration(fs, _('/')), new MockLogger(), resolver);
     });
 
     it('should find sub-entry-points within a package', () => {

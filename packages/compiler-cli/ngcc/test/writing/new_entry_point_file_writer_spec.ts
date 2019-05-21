@@ -8,6 +8,7 @@
 import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
+import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
@@ -86,8 +87,9 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs);
+        const config = new NgccConfiguration(fs, _('/'));
         entryPoint = getEntryPointInfo(
-            fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
+            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -174,8 +176,9 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs);
+        const config = new NgccConfiguration(fs, _('/'));
         entryPoint = getEntryPointInfo(
-            fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
+            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -251,8 +254,9 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         fs = getFileSystem();
         fileWriter = new NewEntryPointFileWriter(fs);
+        const config = new NgccConfiguration(fs, _('/'));
         entryPoint = getEntryPointInfo(
-            fs, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
+            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
