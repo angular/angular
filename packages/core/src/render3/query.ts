@@ -18,7 +18,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {store, ɵɵload} from './instructions/all';
+import {store} from './instructions/all';
 import {storeCleanupWithContext} from './instructions/shared';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
@@ -26,6 +26,7 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, u
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW} from './interfaces/view';
 import {getCurrentQueryIndex, getIsParent, getLView, isCreationMode, setCurrentQueryIndex} from './state';
+import {loadInternal} from './util/view_utils';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -456,7 +457,7 @@ export function ɵɵviewQuery<T>(
 export function ɵɵloadViewQuery<T>(): T {
   const index = getCurrentQueryIndex();
   setCurrentQueryIndex(index + 1);
-  return ɵɵload<T>(index - HEADER_OFFSET);
+  return loadInternal<T>(getLView(), index - HEADER_OFFSET);
 }
 
 /**
