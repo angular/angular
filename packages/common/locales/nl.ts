@@ -27,7 +27,7 @@ export default [
   u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-    ['jan.', 'feb.', 'mrt.', 'apr.', 'mei', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'dec.'],
+    ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'],
     [
       'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september',
       'oktober', 'november', 'december'
