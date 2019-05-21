@@ -368,11 +368,10 @@ type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
  * @param read What to save in the query
  * @returns QueryList<T>
  */
-export function query<T>(
+function query<T>(
     // TODO: "read" should be an AbstractType (FW-486)
-    predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
+    lView: LView, predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
-  const lView = getLView();
   const queryList = new QueryList<T>() as QueryList_<T>;
   const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null));
   queryList._valuesTree = [];
@@ -443,7 +442,7 @@ export function ɵɵviewQuery<T>(
     tView.expandoStartIndex++;
   }
   const index = getCurrentQueryIndex();
-  const viewQuery: QueryList<T> = query<T>(predicate, descend, read);
+  const viewQuery: QueryList<T> = query<T>(lView, predicate, descend, read);
   store(index - HEADER_OFFSET, viewQuery);
   setCurrentQueryIndex(index + 1);
   return viewQuery;
@@ -478,7 +477,7 @@ export function ɵɵcontentQuery<T>(
     read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];
-  const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
+  const contentQuery: QueryList<T> = query<T>(lView, predicate, descend, read);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
