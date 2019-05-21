@@ -96,16 +96,15 @@ find them in either location, it will use its own versions of the tools.
 
 
 
-While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with TypeScript 3.1, 
-which you need to develop Angular applications.
+While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with more recent versions of TypeScript, which you need to develop Angular applications.
 
-To install TypeScript 3.1:
+To install the latest version of TypeScript:
 
- * Download and install [TypeScript 3.1 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593),
+ * Download and install the latest [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593),
 
- * OR install it with npm: `npm install -g typescript@3.1`.
+ * OR install it with npm: `npm install -g typescript@latest`.
 
-You can find out more about TypeScript 3.1 support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
+You can find out more about TypeScript support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
 
 At this point, Visual Studio is ready. It’s a good idea to close Visual Studio and 
 restart it to make sure everything is clean.
