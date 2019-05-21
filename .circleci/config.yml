@@ -361,10 +361,14 @@ jobs:
         # two different folders of Angular distributions in the future, we should keep
         # the packages installer unchanged.
       - run: mv dist/packages-dist-ivy-aot dist/packages-dist
+        # Use local Ivy packages for setting up dependencies
+      - run: yarn setup-local
+        # Add Ivy-specific boilerplate files to examples
+      - run: yarn boilerplate:add:ivy
         # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "3", there will be three parallel CircleCI containers
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --ivy --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+      - run: yarn --cwd aio example-e2e --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
