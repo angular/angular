@@ -44,7 +44,7 @@ When you create a library project with `ng generate library`, the library projec
 The following top-level configuration properties are available for each project, under `projects:<project_name>`.
 
 <code-example format="." language="json" linenums="false">
-    "my-v7-app": {
+    "my-app": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
