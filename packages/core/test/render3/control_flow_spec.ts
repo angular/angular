@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ΔdefineComponent} from '../../src/render3/definition';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent} from '../../src/render3/definition';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
@@ -16,29 +16,29 @@ describe('JS control flow', () => {
   it('should work with if block', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = ΔembeddedViewStart(1, 2, 1);
+            let rf1 = ɵɵembeddedViewStart(1, 2, 1);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'span');
-                { Δtext(1); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'span');
+                { ɵɵtext(1); }
+                ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ΔtextBinding(1, Δbind(ctx.message));
+                ɵɵtextBinding(1, ɵɵbind(ctx.message));
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -72,41 +72,41 @@ describe('JS control flow', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = ΔembeddedViewStart(1, 2, 0);
+            let rf1 = ɵɵembeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'span');
-                { Δcontainer(1); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'span');
+                { ɵɵcontainer(1); }
+                ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ΔcontainerRefreshStart(1);
+                ɵɵcontainerRefreshStart(1);
                 {
                   if (ctx.condition2) {
-                    let rf2 = ΔembeddedViewStart(2, 1, 0);
+                    let rf2 = ɵɵembeddedViewStart(2, 1, 0);
                     {
                       if (rf2 & RenderFlags.Create) {
-                        Δtext(0, 'Hello');
+                        ɵɵtext(0, 'Hello');
                       }
                     }
-                    ΔembeddedViewEnd();
+                    ɵɵembeddedViewEnd();
                   }
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -164,51 +164,51 @@ describe('JS control flow', () => {
      *   % }
      * % }
      */
-    function createTemplate() { Δcontainer(0); }
+    function createTemplate() { ɵɵcontainer(0); }
 
     function updateTemplate() {
-      ΔcontainerRefreshStart(0);
+      ɵɵcontainerRefreshStart(0);
       {
         if (ctx.condition) {
-          let rf1 = ΔembeddedViewStart(1, 2, 0);
+          let rf1 = ɵɵembeddedViewStart(1, 2, 0);
           {
             if (rf1 & RenderFlags.Create) {
-              { Δcontainer(0); }
-              { Δcontainer(1); }
+              { ɵɵcontainer(0); }
+              { ɵɵcontainer(1); }
             }
             if (rf1 & RenderFlags.Update) {
-              ΔcontainerRefreshStart(0);
+              ɵɵcontainerRefreshStart(0);
               {
                 if (ctx.condition2) {
-                  let rf2 = ΔembeddedViewStart(2, 1, 0);
+                  let rf2 = ɵɵembeddedViewStart(2, 1, 0);
                   {
                     if (rf2 & RenderFlags.Create) {
-                      Δtext(0, 'Hello');
+                      ɵɵtext(0, 'Hello');
                     }
                   }
-                  ΔembeddedViewEnd();
+                  ɵɵembeddedViewEnd();
                 }
               }
-              ΔcontainerRefreshEnd();
-              ΔcontainerRefreshStart(1);
+              ɵɵcontainerRefreshEnd();
+              ɵɵcontainerRefreshStart(1);
               {
                 if (ctx.condition3) {
-                  let rf2 = ΔembeddedViewStart(2, 1, 0);
+                  let rf2 = ɵɵembeddedViewStart(2, 1, 0);
                   {
                     if (rf2 & RenderFlags.Create) {
-                      Δtext(0, 'World');
+                      ɵɵtext(0, 'World');
                     }
                   }
-                  ΔembeddedViewEnd();
+                  ɵɵembeddedViewEnd();
                 }
               }
-              ΔcontainerRefreshEnd();
+              ɵɵcontainerRefreshEnd();
             }
           }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }
       }
-      ΔcontainerRefreshEnd();
+      ɵɵcontainerRefreshEnd();
     }
 
     const fixture = new TemplateFixture(createTemplate, updateTemplate, 1);
@@ -231,32 +231,32 @@ describe('JS control flow', () => {
     */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δcontainer(0);
+        ɵɵcontainer(0);
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(0);
+        ɵɵcontainerRefreshStart(0);
         if (ctx.condition1) {
-          const rf1 = ΔembeddedViewStart(1, 1, 0);
+          const rf1 = ɵɵembeddedViewStart(1, 1, 0);
           if (rf1 & RenderFlags.Create) {
-            Δtext(0, '1');
+            ɵɵtext(0, '1');
           }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }  // can't have ; here due linting rules
         if (ctx.condition2) {
-          const rf2 = ΔembeddedViewStart(2, 1, 0);
+          const rf2 = ɵɵembeddedViewStart(2, 1, 0);
           if (rf2 & RenderFlags.Create) {
-            Δtext(0, '2');
+            ɵɵtext(0, '2');
           }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }  // can't have ; here due linting rules
         if (ctx.condition3) {
-          const rf3 = ΔembeddedViewStart(3, 1, 0);
+          const rf3 = ɵɵembeddedViewStart(3, 1, 0);
           if (rf3 & RenderFlags.Create) {
-            Δtext(0, '3');
+            ɵɵtext(0, '3');
           }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 1);
 
@@ -275,40 +275,40 @@ describe('JS control flow', () => {
   it('should work with containers with views as parents', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        { Δtext(1, 'hello'); }
-        ΔelementEnd();
-        Δcontainer(2);
+        ɵɵelementStart(0, 'div');
+        { ɵɵtext(1, 'hello'); }
+        ɵɵelementEnd();
+        ɵɵcontainer(2);
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(2);
+        ɵɵcontainerRefreshStart(2);
         {
           if (ctx.condition1) {
-            let rf0 = ΔembeddedViewStart(0, 1, 0);
+            let rf0 = ɵɵembeddedViewStart(0, 1, 0);
             {
               if (rf0 & RenderFlags.Create) {
-                Δcontainer(0);
+                ɵɵcontainer(0);
               }
               if (rf0 & RenderFlags.Update) {
-                ΔcontainerRefreshStart(0);
+                ɵɵcontainerRefreshStart(0);
                 {
                   if (ctx.condition2) {
-                    let rf0 = ΔembeddedViewStart(0, 1, 0);
+                    let rf0 = ɵɵembeddedViewStart(0, 1, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        Δtext(0, 'world');
+                        ɵɵtext(0, 'world');
                       }
                     }
-                    ΔembeddedViewEnd();
+                    ɵɵembeddedViewEnd();
                   }
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 3);
 
@@ -328,29 +328,29 @@ describe('JS control flow', () => {
     let data: string[] = ['a', 'b', 'c'];
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'ul');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'ul');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           for (let i = 0; i < data.length; i++) {
-            let rf1 = ΔembeddedViewStart(1, 2, 1);
+            let rf1 = ɵɵembeddedViewStart(1, 2, 1);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'li');
-                { Δtext(1); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'li');
+                { ɵɵtext(1); }
+                ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ΔtextBinding(1, Δbind(data[i]));
+                ɵɵtextBinding(1, ɵɵbind(data[i]));
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -384,42 +384,42 @@ describe('JS control flow', () => {
 
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'ul');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'ul');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           for (let i = 0; i < data[0].length; i++) {
-            let rf1 = ΔembeddedViewStart(1, 2, 0);
+            let rf1 = ɵɵembeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'li');
-                { Δcontainer(1); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'li');
+                { ɵɵcontainer(1); }
+                ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ΔcontainerRefreshStart(1);
+                ɵɵcontainerRefreshStart(1);
                 {
                   data[1].forEach((value: string, ind: number) => {
-                    let rf2 = ΔembeddedViewStart(2, 1, 1);
+                    let rf2 = ɵɵembeddedViewStart(2, 1, 1);
                     if (rf2 & RenderFlags.Create) {
-                      Δtext(0);
+                      ɵɵtext(0);
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ΔtextBinding(0, Δbind(data[0][i] + value));
+                      ɵɵtextBinding(0, ɵɵbind(data[0][i] + value));
                     }
-                    ΔembeddedViewEnd();
+                    ɵɵembeddedViewEnd();
                   });
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -453,49 +453,49 @@ describe('JS control flow', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
+        ɵɵelementStart(0, 'div');
         {
-          Δtext(1, 'Before');
-          Δcontainer(2);
-          Δtext(3, 'After');
+          ɵɵtext(1, 'Before');
+          ɵɵcontainer(2);
+          ɵɵtext(3, 'After');
         }
-        ΔelementEnd();
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(2);
+        ɵɵcontainerRefreshStart(2);
         {
           for (let i = 0; i < cafes.length; i++) {
-            let rf1 = ΔembeddedViewStart(1, 4, 1);
+            let rf1 = ɵɵembeddedViewStart(1, 4, 1);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'h2');
-                { Δtext(1); }
-                ΔelementEnd();
-                Δcontainer(2);
-                Δtext(3, '-');
+                ɵɵelementStart(0, 'h2');
+                { ɵɵtext(1); }
+                ɵɵelementEnd();
+                ɵɵcontainer(2);
+                ɵɵtext(3, '-');
               }
               if (rf1 & RenderFlags.Update) {
-                ΔtextBinding(1, Δbind(cafes[i].name));
-                ΔcontainerRefreshStart(2);
+                ɵɵtextBinding(1, ɵɵbind(cafes[i].name));
+                ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
-                    let rf2 = ΔembeddedViewStart(2, 1, 1);
+                    let rf2 = ɵɵembeddedViewStart(2, 1, 1);
                     if (rf2 & RenderFlags.Create) {
-                      Δtext(0);
+                      ɵɵtext(0);
                     }
                     if (rf2 & RenderFlags.Update) {
-                      ΔtextBinding(0, Δbind(cafes[i].entrees[j]));
+                      ɵɵtextBinding(0, ɵɵbind(cafes[i].entrees[j]));
                     }
-                    ΔembeddedViewEnd();
+                    ɵɵembeddedViewEnd();
                   }
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 4);
 
@@ -548,68 +548,68 @@ describe('JS control flow', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
+        ɵɵelementStart(0, 'div');
         {
-          Δtext(1, 'Before');
-          Δcontainer(2);
-          Δtext(3, 'After');
+          ɵɵtext(1, 'Before');
+          ɵɵcontainer(2);
+          ɵɵtext(3, 'After');
         }
-        ΔelementEnd();
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(2);
+        ɵɵcontainerRefreshStart(2);
         {
           for (let i = 0; i < cafes.length; i++) {
-            let rf1 = ΔembeddedViewStart(1, 4, 1);
+            let rf1 = ɵɵembeddedViewStart(1, 4, 1);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'h2');
-                { Δtext(1); }
-                ΔelementEnd();
-                Δcontainer(2);
-                Δtext(3, '-');
+                ɵɵelementStart(0, 'h2');
+                { ɵɵtext(1); }
+                ɵɵelementEnd();
+                ɵɵcontainer(2);
+                ɵɵtext(3, '-');
               }
               if (rf1 & RenderFlags.Update) {
-                ΔtextBinding(1, Δbind(cafes[i].name));
-                ΔcontainerRefreshStart(2);
+                ɵɵtextBinding(1, ɵɵbind(cafes[i].name));
+                ɵɵcontainerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
-                    let rf1 = ΔembeddedViewStart(1, 3, 1);
+                    let rf1 = ɵɵembeddedViewStart(1, 3, 1);
                     {
                       if (rf1 & RenderFlags.Create) {
-                        ΔelementStart(0, 'h3');
-                        { Δtext(1); }
-                        ΔelementEnd();
-                        Δcontainer(2);
+                        ɵɵelementStart(0, 'h3');
+                        { ɵɵtext(1); }
+                        ɵɵelementEnd();
+                        ɵɵcontainer(2);
                       }
                       if (rf1 & RenderFlags.Update) {
-                        ΔtextBinding(1, Δbind(cafes[i].entrees[j].name));
-                        ΔcontainerRefreshStart(2);
+                        ɵɵtextBinding(1, ɵɵbind(cafes[i].entrees[j].name));
+                        ɵɵcontainerRefreshStart(2);
                         {
                           for (let k = 0; k < cafes[i].entrees[j].foods.length; k++) {
-                            let rf2 = ΔembeddedViewStart(1, 1, 1);
+                            let rf2 = ɵɵembeddedViewStart(1, 1, 1);
                             if (rf2 & RenderFlags.Create) {
-                              Δtext(0);
+                              ɵɵtext(0);
                             }
                             if (rf2 & RenderFlags.Update) {
-                              ΔtextBinding(0, Δbind(cafes[i].entrees[j].foods[k]));
+                              ɵɵtextBinding(0, ɵɵbind(cafes[i].entrees[j].foods[k]));
                             }
-                            ΔembeddedViewEnd();
+                            ɵɵembeddedViewEnd();
                           }
                         }
-                        ΔcontainerRefreshEnd();
+                        ɵɵcontainerRefreshEnd();
                       }
                     }
-                    ΔembeddedViewEnd();
+                    ɵɵembeddedViewEnd();
                   }
                 }
-                ΔcontainerRefreshEnd();
+                ɵɵcontainerRefreshEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 4);
 
@@ -632,36 +632,36 @@ describe('JS control flow', () => {
   it('should work with if/else blocks', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = ΔembeddedViewStart(1, 2, 0);
+            let rf1 = ɵɵembeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'span');
-                { Δtext(1, 'Hello'); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'span');
+                { ɵɵtext(1, 'Hello'); }
+                ɵɵelementEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           } else {
-            let rf2 = ΔembeddedViewStart(2, 2, 0);
+            let rf2 = ɵɵembeddedViewStart(2, 2, 0);
             {
               if (rf2) {
-                ΔelementStart(0, 'div');
-                { Δtext(1, 'Goodbye'); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'div');
+                { ɵɵtext(1, 'Goodbye'); }
+                ɵɵelementEnd();
               }
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -685,7 +685,7 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates in test below so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         consts: 0,
@@ -702,7 +702,7 @@ describe('JS control flow', () => {
       condition = true;
       condition2 = true;
 
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
         factory: () => new App(),
@@ -710,33 +710,33 @@ describe('JS control flow', () => {
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            Δelement(0, 'div');
-            Δcontainer(1);
-            Δcontainer(2);
+            ɵɵelement(0, 'div');
+            ɵɵcontainer(1);
+            ɵɵcontainer(2);
           }
           if (rf & RenderFlags.Update) {
-            ΔcontainerRefreshStart(1);
+            ɵɵcontainerRefreshStart(1);
             {
               if (ctx.condition) {
-                let rf1 = ΔembeddedViewStart(0, 1, 0);
+                let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
-                  Δelement(0, 'comp');
+                  ɵɵelement(0, 'comp');
                 }
-                ΔembeddedViewEnd();
+                ɵɵembeddedViewEnd();
               }
             }
-            ΔcontainerRefreshEnd();
-            ΔcontainerRefreshStart(2);
+            ɵɵcontainerRefreshEnd();
+            ɵɵcontainerRefreshStart(2);
             {
               if (ctx.condition2) {
-                let rf1 = ΔembeddedViewStart(0, 1, 0);
+                let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
-                  Δelement(0, 'comp');
+                  ɵɵelement(0, 'comp');
                 }
-                ΔembeddedViewEnd();
+                ɵɵembeddedViewEnd();
               }
             }
-            ΔcontainerRefreshEnd();
+            ɵɵcontainerRefreshEnd();
           }
         },
         directives: () => [Comp]
@@ -753,7 +753,7 @@ describe('JS control flow', () => {
     // Intentionally duplicating the templates from above so we are
     // testing the behavior on firstTemplatePass for each of these tests
     class Comp {
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: Comp,
         selectors: [['comp']],
         consts: 0,
@@ -770,7 +770,7 @@ describe('JS control flow', () => {
       condition = false;
       condition2 = true;
 
-      static ngComponentDef = ΔdefineComponent({
+      static ngComponentDef = ɵɵdefineComponent({
         type: App,
         selectors: [['app']],
         factory: () => new App(),
@@ -778,33 +778,33 @@ describe('JS control flow', () => {
         vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            Δelement(0, 'div');
-            Δcontainer(1);
-            Δcontainer(2);
+            ɵɵelement(0, 'div');
+            ɵɵcontainer(1);
+            ɵɵcontainer(2);
           }
           if (rf & RenderFlags.Update) {
-            ΔcontainerRefreshStart(1);
+            ɵɵcontainerRefreshStart(1);
             {
               if (ctx.condition) {
-                let rf1 = ΔembeddedViewStart(0, 1, 0);
+                let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
-                  Δelement(0, 'comp');
+                  ɵɵelement(0, 'comp');
                 }
-                ΔembeddedViewEnd();
+                ɵɵembeddedViewEnd();
               }
             }
-            ΔcontainerRefreshEnd();
-            ΔcontainerRefreshStart(2);
+            ɵɵcontainerRefreshEnd();
+            ɵɵcontainerRefreshStart(2);
             {
               if (ctx.condition2) {
-                let rf1 = ΔembeddedViewStart(0, 1, 0);
+                let rf1 = ɵɵembeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
-                  Δelement(0, 'comp');
+                  ɵɵelement(0, 'comp');
                 }
-                ΔembeddedViewEnd();
+                ɵɵembeddedViewEnd();
               }
             }
-            ΔcontainerRefreshEnd();
+            ɵɵcontainerRefreshEnd();
           }
         },
         directives: () => [Comp]
@@ -835,35 +835,35 @@ describe('JS for loop', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
-        { Δcontainer(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'div');
+        { ɵɵcontainer(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(1);
+        ɵɵcontainerRefreshStart(1);
         {
           for (let i = 0; i < config.data1.length; i++) {
-            let rf2 = ΔembeddedViewStart(1, 1, 1);
+            let rf2 = ɵɵembeddedViewStart(1, 1, 1);
             if (rf2 & RenderFlags.Create) {
-              Δtext(0);
+              ɵɵtext(0);
             }
             if (rf2 & RenderFlags.Update) {
-              ΔtextBinding(0, Δbind(config.data1[i]));
+              ɵɵtextBinding(0, ɵɵbind(config.data1[i]));
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
           for (let j = 0; j < config.data2.length; j++) {
-            let rf2 = ΔembeddedViewStart(1, 1, 1);
+            let rf2 = ɵɵembeddedViewStart(1, 1, 1);
             if (rf2 & RenderFlags.Create) {
-              Δtext(0);
+              ɵɵtext(0);
             }
             if (rf2 & RenderFlags.Update) {
-              ΔtextBinding(0, Δbind(config.data2[j]));
+              ɵɵtextBinding(0, ɵɵbind(config.data2[j]));
             }
-            ΔembeddedViewEnd();
+            ɵɵembeddedViewEnd();
           }
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 2);
 
@@ -891,41 +891,41 @@ describe('function calls', () => {
     function spanify(rf: RenderFlags, ctx: {message: string | null}) {
       const message = ctx.message;
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'span');
-        { Δtext(1); }
-        ΔelementEnd();
+        ɵɵelementStart(0, 'span');
+        { ɵɵtext(1); }
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔtextBinding(1, Δbind(message));
+        ɵɵtextBinding(1, ɵɵbind(message));
       }
     }
 
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        ΔelementStart(0, 'div');
+        ɵɵelementStart(0, 'div');
         {
-          Δtext(1, 'Before');
-          Δcontainer(2);
-          Δcontainer(3);
-          Δtext(4, 'After');
+          ɵɵtext(1, 'Before');
+          ɵɵcontainer(2);
+          ɵɵcontainer(3);
+          ɵɵtext(4, 'After');
         }
-        ΔelementEnd();
+        ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ΔcontainerRefreshStart(2);
+        ɵɵcontainerRefreshStart(2);
         {
-          let rf0 = ΔembeddedViewStart(0, 2, 1);
+          let rf0 = ɵɵembeddedViewStart(0, 2, 1);
           { spanify(rf0, {message: data[0]}); }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }
-        ΔcontainerRefreshEnd();
-        ΔcontainerRefreshStart(3);
+        ɵɵcontainerRefreshEnd();
+        ɵɵcontainerRefreshStart(3);
         {
-          let rf0 = ΔembeddedViewStart(0, 2, 1);
+          let rf0 = ɵɵembeddedViewStart(0, 2, 1);
           { spanify(rf0, {message: data[1]}); }
-          ΔembeddedViewEnd();
+          ɵɵembeddedViewEnd();
         }
-        ΔcontainerRefreshEnd();
+        ɵɵcontainerRefreshEnd();
       }
     }, 5);
 

@@ -225,12 +225,12 @@
     "name": "tryResolveToken"
   },
   {
-    "name": "ΔdefineInjectable"
+    "name": "ɵɵdefineInjectable"
   },
   {
-    "name": "ΔdefineInjector"
+    "name": "ɵɵdefineInjector"
   },
   {
-    "name": "Δinject"
+    "name": "ɵɵinject"
   }
 ]

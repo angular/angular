@@ -8,8 +8,8 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {ΔdefineComponent, ΔdefineDirective} from '../../src/render3/index';
-import {Δbind, Δcontainer, ΔcontainerRefreshEnd, ΔcontainerRefreshStart, Δelement, ΔelementEnd, ΔelementProperty, ΔelementStart, ΔembeddedViewEnd, ΔembeddedViewStart, Δinterpolation1, Δlistener, Δload, Δreference, Δtext, ΔtextBinding} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵlistener, ɵɵload, ɵɵreference, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, createComponent, renderToHtml} from './render_util';
@@ -19,10 +19,10 @@ describe('elementProperty', () => {
   it('should support bindings to properties', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'span');
+        ɵɵelement(0, 'span');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'id', Δbind(ctx.id));
+        ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
       }
     }, 1, 1);
 
@@ -47,8 +47,8 @@ describe('elementProperty', () => {
 
     function Template(rf: RenderFlags, ctx: string) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'span');
-        ΔelementProperty(0, 'id', expensive(ctx));
+        ɵɵelement(0, 'span');
+        ɵɵelementProperty(0, 'id', expensive(ctx));
       }
     }
 
@@ -59,10 +59,10 @@ describe('elementProperty', () => {
   it('should support interpolation for properties', () => {
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        Δelement(0, 'span');
+        ɵɵelement(0, 'span');
       }
       if (rf & RenderFlags.Update) {
-        ΔelementProperty(0, 'id', Δinterpolation1('_', ctx.id, '_'));
+        ɵɵelementProperty(0, 'id', ɵɵinterpolation1('_', ctx.id, '_'));
       }
     }, 1, 1);
 
@@ -86,7 +86,7 @@ describe('elementProperty', () => {
       // TODO(issue/24571): remove '!'.
       disabled !: boolean;
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: MyButton,
         selectors: [['', 'myButton', '']],
         factory: () => button = new MyButton(),
@@ -99,7 +99,7 @@ describe('elementProperty', () => {
       id !: number;
       clickStream = new EventEmitter();
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: OtherDir,
         selectors: [['', 'otherDir', '']],
         factory: () => otherDir = new OtherDir(),
@@ -112,7 +112,7 @@ describe('elementProperty', () => {
       // TODO(issue/24571): remove '!'.
       disabled !: boolean;
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: OtherDisabledDir,
         selectors: [['', 'otherDisabledDir', '']],
         factory: () => otherDisabledDir = new OtherDisabledDir(),
@@ -124,7 +124,7 @@ describe('elementProperty', () => {
       // TODO(issue/24571): remove '!'.
       idNumber !: string;
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: IdDir,
         selectors: [['', 'idDir', '']],
         factory: () => idDir = new IdDir(),
@@ -140,13 +140,13 @@ describe('elementProperty', () => {
       /** <button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'button', ['otherDir', '', 'myButton', '']);
-          { Δtext(1, 'Click me'); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'button', ['otherDir', '', 'myButton', '']);
+          { ɵɵtext(1, 'Click me'); }
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'disabled', Δbind(ctx.isDisabled));
-          ΔelementProperty(0, 'id', Δbind(ctx.id));
+          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
+          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
         }
       }, 2, 2, deps);
 
@@ -171,13 +171,13 @@ describe('elementProperty', () => {
       /** <button myButton [id]="id" [disabled]="isDisabled">Click me</button> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'button', ['myButton', '']);
-          { Δtext(1, 'Click me'); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'button', ['myButton', '']);
+          { ɵɵtext(1, 'Click me'); }
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'disabled', Δbind(ctx.isDisabled));
-          ΔelementProperty(0, 'id', Δbind(ctx.id));
+          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
+          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
         }
       }, 2, 2, deps);
 
@@ -203,7 +203,7 @@ describe('elementProperty', () => {
         // TODO(issue/24571): remove '!'.
         id !: number;
 
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
           consts: 0,
@@ -217,10 +217,10 @@ describe('elementProperty', () => {
       /** <comp [id]="id"></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'comp');
+          ɵɵelement(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'id', Δbind(ctx.id));
+          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
         }
       }, 1, 1, [Comp]);
 
@@ -241,12 +241,12 @@ describe('elementProperty', () => {
       /** <button myButton otherDisabledDir [disabled]="isDisabled">Click me</button> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'button', ['myButton', '', 'otherDisabledDir', '']);
-          { Δtext(1, 'Click me'); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'button', ['myButton', '', 'otherDisabledDir', '']);
+          { ɵɵtext(1, 'Click me'); }
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'disabled', Δbind(ctx.isDisabled));
+          ɵɵelementProperty(0, 'disabled', ɵɵbind(ctx.isDisabled));
         }
       }, 2, 1, deps);
 
@@ -268,15 +268,15 @@ describe('elementProperty', () => {
       /** <button otherDir [id]="id" (click)="onClick()">Click me</button> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'button', ['otherDir', '']);
+          ɵɵelementStart(0, 'button', ['otherDir', '']);
           {
-            Δlistener('click', () => ctx.onClick());
-            Δtext(1, 'Click me');
+            ɵɵlistener('click', () => ctx.onClick());
+            ɵɵtext(1, 'Click me');
           }
-          ΔelementEnd();
+          ɵɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'id', Δbind(ctx.id));
+          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id));
         }
       }, 2, 1, deps);
 
@@ -308,40 +308,40 @@ describe('elementProperty', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'button', ['idDir', '']);
-          { Δtext(1, 'Click me'); }
-          ΔelementEnd();
-          Δcontainer(2);
+          ɵɵelementStart(0, 'button', ['idDir', '']);
+          { ɵɵtext(1, 'Click me'); }
+          ɵɵelementEnd();
+          ɵɵcontainer(2);
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'id', Δbind(ctx.id1));
-          ΔcontainerRefreshStart(2);
+          ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id1));
+          ɵɵcontainerRefreshStart(2);
           {
             if (ctx.condition) {
-              let rf0 = ΔembeddedViewStart(0, 2, 1);
+              let rf0 = ɵɵembeddedViewStart(0, 2, 1);
               if (rf0 & RenderFlags.Create) {
-                ΔelementStart(0, 'button');
-                { Δtext(1, 'Click me too'); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'button');
+                { ɵɵtext(1, 'Click me too'); }
+                ɵɵelementEnd();
               }
               if (rf0 & RenderFlags.Update) {
-                ΔelementProperty(0, 'id', Δbind(ctx.id2));
+                ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id2));
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             } else {
-              let rf1 = ΔembeddedViewStart(1, 2, 1);
+              let rf1 = ɵɵembeddedViewStart(1, 2, 1);
               if (rf1 & RenderFlags.Create) {
-                ΔelementStart(0, 'button', ['otherDir', '']);
-                { Δtext(1, 'Click me too'); }
-                ΔelementEnd();
+                ɵɵelementStart(0, 'button', ['otherDir', '']);
+                { ɵɵtext(1, 'Click me too'); }
+                ɵɵelementEnd();
               }
               if (rf1 & RenderFlags.Update) {
-                ΔelementProperty(0, 'id', Δbind(ctx.id3));
+                ɵɵelementProperty(0, 'id', ɵɵbind(ctx.id3));
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 3, 1, deps);
 
@@ -375,7 +375,7 @@ describe('elementProperty', () => {
       direction !: string;
       changeStream = new EventEmitter();
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: MyDir,
         selectors: [['', 'myDir', '']],
         factory: () => myDir = new MyDir(),
@@ -390,7 +390,7 @@ describe('elementProperty', () => {
       // TODO(issue/24571): remove '!'.
       roleB !: string;
 
-      static ngDirectiveDef = ΔdefineDirective({
+      static ngDirectiveDef = ɵɵdefineDirective({
         type: MyDirB,
         selectors: [['', 'myDirB', '']],
         factory: () => dirB = new MyDirB(),
@@ -405,7 +405,7 @@ describe('elementProperty', () => {
       /** <div role="button" myDir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'button', 'myDir', '']);
+          ɵɵelement(0, 'div', ['role', 'button', 'myDir', '']);
         }
       }, 1, 0, deps);
 
@@ -419,10 +419,10 @@ describe('elementProperty', () => {
       /** <div role="button" [role]="role" myDir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'button', 'myDir', '']);
+          ɵɵelement(0, 'div', ['role', 'button', 'myDir', '']);
         }
         if (rf & RenderFlags.Update) {
-          ΔelementProperty(0, 'role', Δbind(ctx.role));
+          ɵɵelementProperty(0, 'role', ɵɵbind(ctx.role));
         }
       }, 1, 1, deps);
 
@@ -442,7 +442,7 @@ describe('elementProperty', () => {
       /** <div role="button" myDir myDirB></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'button', 'myDir', '', 'myDirB', '']);
+          ɵɵelement(0, 'div', ['role', 'button', 'myDir', '', 'myDirB', '']);
         }
       }, 1, 0, deps);
 
@@ -457,7 +457,7 @@ describe('elementProperty', () => {
       /** <div role="button" dir="rtl" myDir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
+          ɵɵelement(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
         }
       }, 1, 0, deps);
 
@@ -472,9 +472,9 @@ describe('elementProperty', () => {
       /** <div role="button" (change)="onChange()" myDir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          ΔelementStart(0, 'div', ['role', 'button', 'myDir', '']);
-          { Δlistener('change', () => ctx.onChange()); }
-          ΔelementEnd();
+          ɵɵelementStart(0, 'div', ['role', 'button', 'myDir', '']);
+          { ɵɵlistener('change', () => ctx.onChange()); }
+          ɵɵelementEnd();
         }
       }, 1, 0, deps);
 
@@ -497,8 +497,8 @@ describe('elementProperty', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
-          Δelement(1, 'div', ['role', 'listbox', 'myDirB', '']);
+          ɵɵelement(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
+          ɵɵelement(1, 'div', ['role', 'listbox', 'myDirB', '']);
         }
       }, 2, 0, deps);
 
@@ -523,27 +523,27 @@ describe('elementProperty', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δelement(0, 'div', ['role', 'listbox', 'myDir', '']);
-          Δcontainer(1);
+          ɵɵelement(0, 'div', ['role', 'listbox', 'myDir', '']);
+          ɵɵcontainer(1);
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(1);
+          ɵɵcontainerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = ΔembeddedViewStart(0, 1, 0);
+              let rf1 = ɵɵembeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
-                Δelement(0, 'div', ['role', 'button', 'myDirB', '']);
+                ɵɵelement(0, 'div', ['role', 'button', 'myDirB', '']);
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             } else {
-              let rf2 = ΔembeddedViewStart(1, 1, 0);
+              let rf2 = ɵɵembeddedViewStart(1, 1, 0);
               if (rf2 & RenderFlags.Create) {
-                Δelement(0, 'div', ['role', 'menu']);
+                ɵɵelement(0, 'div', ['role', 'menu']);
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 2, 0, deps);
 
@@ -565,7 +565,7 @@ describe('elementProperty', () => {
     it('should process attributes properly inside a for loop', () => {
 
       class Comp {
-        static ngComponentDef = ΔdefineComponent({
+        static ngComponentDef = ɵɵdefineComponent({
           type: Comp,
           selectors: [['comp']],
           consts: 3,
@@ -573,12 +573,12 @@ describe('elementProperty', () => {
           /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
           template: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              Δelement(0, 'div', ['role', 'button', 'myDir', ''], ['dir', 'myDir']);
-              Δtext(2);
+              ɵɵelement(0, 'div', ['role', 'button', 'myDir', ''], ['dir', 'myDir']);
+              ɵɵtext(2);
             }
             if (rf & RenderFlags.Update) {
-              const tmp = Δreference(1) as any;
-              ΔtextBinding(2, Δbind(tmp.role));
+              const tmp = ɵɵreference(1) as any;
+              ɵɵtextBinding(2, ɵɵbind(tmp.role));
             }
           },
           factory: () => new Comp(),
@@ -593,20 +593,20 @@ describe('elementProperty', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          Δcontainer(0);
+          ɵɵcontainer(0);
         }
         if (rf & RenderFlags.Update) {
-          ΔcontainerRefreshStart(0);
+          ɵɵcontainerRefreshStart(0);
           {
             for (let i = 0; i < 2; i++) {
-              let rf1 = ΔembeddedViewStart(0, 1, 0);
+              let rf1 = ɵɵembeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
-                Δelement(0, 'comp');
+                ɵɵelement(0, 'comp');
               }
-              ΔembeddedViewEnd();
+              ɵɵembeddedViewEnd();
             }
           }
-          ΔcontainerRefreshEnd();
+          ɵɵcontainerRefreshEnd();
         }
       }, 1, 0, [Comp]);
 
