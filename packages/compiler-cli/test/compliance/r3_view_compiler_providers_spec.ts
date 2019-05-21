@@ -144,9 +144,19 @@ describe('compiler compliance: providers', () => {
         result.source, `
     export class MyComponent {
     }
-    MyComponent.ngComponentDef = i0.ÉµdefineComponent({ type: MyComponent, selectors: [["my-component"]], factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, consts: 1, vars: 0, template: function MyComponent_Template(rf, ctx) { if (rf & 1) {
-            i0.Éµelement(0, "div");
-        } } });`,
+    MyComponent.ngComponentDef = i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [["my-component"]],
+      factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
+      consts: 1,
+      vars: 0,
+      template: function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+          i0.ɵɵelement(0, "div");
+        }
+      },
+      encapsulation: 2
+    });`,
         'Incorrect features');
   });
 });
