@@ -10,14 +10,14 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
-import {Declaration, ReflectionHost, TsHelperFn} from '../../reflection';
+import {Declaration, ReflectionHost} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {DependencyTracker, ForeignFunctionResolver} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
-import {evaluateTsSpreadHelper} from './ts_helpers';
+import {evaluateTsHelperInline} from './ts_helpers';
 
 
 /**
@@ -395,9 +395,9 @@ export class StaticInterpreter {
     }
 
     // If the function corresponds with a tslib helper function, evaluate it with custom logic.
-    if (fn.helper === TsHelperFn.Spread) {
+    if (fn.helper !== null) {
       const args = this.evaluateFunctionArguments(node, context);
-      return evaluateTsSpreadHelper(node, args);
+      return evaluateTsHelperInline(fn.helper, node, args);
     }
 
     if (!isFunctionOrMethodReference(lhs)) {

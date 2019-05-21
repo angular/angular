@@ -8,11 +8,21 @@
 
 import * as ts from 'typescript';
 
-import {DynamicValue} from './dynamic';
-import {ResolvedValueArray} from './result';
+import {TsHelperFn} from '../../reflection';
 
-export function evaluateTsSpreadHelper(
-    node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
+import {DynamicValue} from './dynamic';
+import {ResolvedValue, ResolvedValueArray} from './result';
+
+export function evaluateTsHelperInline(
+    helper: TsHelperFn, node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+  if (helper === TsHelperFn.Spread) {
+    return evaluateTsSpreadHelper(node, args);
+  } else {
+    throw new Error(`Cannot evaluate unknown helper ${helper} inline`);
+  }
+}
+
+function evaluateTsSpreadHelper(node: ts.Node, args: ResolvedValueArray): ResolvedValueArray {
   const result: ResolvedValueArray = [];
   for (const arg of args) {
     if (arg instanceof DynamicValue) {
