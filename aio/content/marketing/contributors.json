@@ -786,28 +786,5 @@
     "groups": ["Collaborators"],
     "mentor": "gregmagolan",
     "picture": "globegitter.jpg"
-  },
-  "ahsanayaz": {
-    "name": "Muhammad Ahsan Ayaz",
-    "picture": "ahsanayaz.jpg",
-    "twitter": "ahsan_ayz",
-    "website": "https://medium.com/@ahsan.ayaz",
-    "bio": "Muhammad Ahsan Ayaz is Software Architect at Modus Create. He is absolutely passionate about Angular and Web Technologies. Uses Angular daily and talks about it everywhere. Runs NodeSchool Karachi and is a co-organizer of NgPakistan",
-    "groups": ["GDE"]
-  },
-  "andrewkushnir": {
-    "name": "Andrew Kushnir",
-    "picture": "andrew-kushnir.jpg",
-    "bio": "Andrew is a software engineer at Google on the Angular Core team.",
-    "groups": ["Angular"],
-    "lead": "kara"
-  },
-  "kamilmysliwiec": {
-    "name": "Kamil Mysliwiec",
-    "picture": "kamilmysliwiec.jpg",
-    "twitter": "kammysliwiec",
-    "website": "https://github.com/kamilmysliwiec",
-    "bio": "Kamil Mysliwiec is a software engineer truly passionate about Web Technologies. Creator of NestJS, Co-Founder of Trilon.io, speaker, and trainer.",
-    "groups": ["GDE"]
   }
 }
