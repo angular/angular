@@ -48,7 +48,7 @@ describe('ComponentFactory', () => {
           consts: 0,
           vars: 0,
           template: () => undefined,
-          ngContentSelectors: ['a', 'b'],
+          ngContentSelectors: ['*', 'a', 'b'],
           factory: () => new TestComponent(),
           inputs: {
             in1: 'in1',

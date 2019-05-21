@@ -334,7 +334,7 @@ describe('template source-mapping', () => {
             {source: '<h3>', generated: 'i0.ɵɵelementStart(0, "h3")', sourceUrl: '../test.ts'});
         expect(mappings).toContain({
           source: '<ng-content select="title">',
-          generated: 'i0.ɵɵprojection(1, 1)',
+          generated: 'i0.ɵɵprojection(1)',
           sourceUrl: '../test.ts'
         });
         expect(mappings).toContain(
@@ -342,7 +342,7 @@ describe('template source-mapping', () => {
         expect(mappings).toContain(
             {source: '<div>', generated: 'i0.ɵɵelementStart(2, "div")', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
-            {source: '<ng-content>', generated: 'i0.ɵɵprojection(3)', sourceUrl: '../test.ts'});
+            {source: '<ng-content>', generated: 'i0.ɵɵprojection(3, 1)', sourceUrl: '../test.ts'});
         expect(mappings).toContain(
             {source: '</div>', generated: 'i0.ɵɵelementEnd()', sourceUrl: '../test.ts'});
       });
