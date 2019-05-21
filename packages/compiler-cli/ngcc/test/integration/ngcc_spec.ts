@@ -351,6 +351,92 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('with configuration files', () => {
+      it('should process a configured deep-import as an entry-point', () => {
+        loadTestFiles([
+          {
+            name: _('/ngcc.config.js'),
+            contents: `module.exports = { packages: {
+            'deep_import': {
+              entryPoints: {
+                './entry_point': { override: { typings: '../entry_point.d.ts', es2015: '../entry_point.js' } }
+              }
+            }
+          }};`,
+          },
+          {
+            name: _('/node_modules/deep_import/package.json'),
+            contents: '{"name": "deep-import", "es2015": "./index.js", "typings": "./index.d.ts"}',
+          },
+          {
+            name: _('/node_modules/deep_import/entry_point.js'),
+            contents: `
+              import {Component} from '@angular/core';
+              @Component({selector: 'entry-point'})
+              export class EntryPoint {}
+            `,
+          },
+          {
+            name: _('/node_modules/deep_import/entry_point.d.ts'),
+            contents: `
+              import {Component} from '@angular/core';
+              @Component({selector: 'entry-point'})
+              export class EntryPoint {}
+            `,
+          },
+        ]);
+        mainNgcc({
+          basePath: '/node_modules',
+          targetEntryPointPath: 'deep_import/entry_point',
+          propertiesToConsider: ['es2015']
+        });
+        // The containing package is not processed
+        expect(loadPackage('deep_import').__processed_by_ivy_ngcc__).toBeUndefined();
+        // But the configured entry-point and its dependency (@angular/core) are processed.
+        expect(loadPackage('deep_import/entry_point').__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
+
+      it('should not process ignored entry-points', () => {
+        loadTestFiles([
+          {
+            name: _('/ngcc.config.js'),
+            contents: `module.exports = { packages: {
+            '@angular/core': {
+              entryPoints: {
+                './testing': {ignore: true}
+              },
+            },
+            '@angular/common': {
+              entryPoints: {
+                '.': {ignore: true}
+              },
+            }
+          }};`,
+          },
+        ]);
+        mainNgcc({basePath: '/node_modules', propertiesToConsider: ['es2015']});
+        // We process core but not core/testing.
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('@angular/core/testing').__processed_by_ivy_ngcc__).toBeUndefined();
+        // We do not compile common but we do compile its sub-entry-points.
+        expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toBeUndefined();
+        expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
+    });
+
     function loadPackage(
         packageName: string, basePath: AbsoluteFsPath = _('/node_modules')): EntryPointPackageJson {
       return JSON.parse(fs.readFile(fs.resolve(basePath, packageName, 'package.json')));

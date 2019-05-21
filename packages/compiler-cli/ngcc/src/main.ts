@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, dirname, getFileSystem, resolve} from '../../src/ngtsc/file_system';
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver} from './dependencies/dependency_resolver';
 import {EsmDependencyHost} from './dependencies/esm_dependency_host';
@@ -14,6 +14,7 @@ import {UmdDependencyHost} from './dependencies/umd_dependency_host';
 import {ConsoleLogger, LogLevel} from './logging/console_logger';
 import {Logger} from './logging/logger';
 import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
+import {NgccConfiguration} from './packages/configuration';
 import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
@@ -92,7 +93,8 @@ export function mainNgcc(
     umd: umdDependencyHost,
     commonjs: commonJsDependencyHost
   });
-  const finder = new EntryPointFinder(fileSystem, logger, resolver);
+  const config = new NgccConfiguration(fileSystem, dirname(absoluteFrom(basePath)));
+  const finder = new EntryPointFinder(fileSystem, config, logger, resolver);
   const fileWriter = getFileWriter(fileSystem, createNewEntryPointFormats);
 
   const absoluteTargetEntryPointPath =
@@ -192,6 +194,10 @@ function hasProcessedTargetEntryPoint(
     fs: FileSystem, targetPath: AbsoluteFsPath, propertiesToConsider: string[],
     compileAllFormats: boolean) {
   const packageJsonPath = resolve(targetPath, 'package.json');
+  // It might be that this target is configured in which case its package.json might not exist.
+  if (!fs.exists(packageJsonPath)) {
+    return false;
+  }
   const packageJson = JSON.parse(fs.readFile(packageJsonPath));
 
   for (const property of propertiesToConsider) {
