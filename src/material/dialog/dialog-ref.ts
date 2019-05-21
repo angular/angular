@@ -9,7 +9,6 @@
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
-import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
@@ -21,8 +20,9 @@ import {MatDialogContainer} from './dialog-container';
 // Counter for unique dialog ids.
 let uniqueId = 0;
 
-/** Reference to a dialog opened via the MatDialog service. */
-@Injectable()
+/**
+ * Reference to a dialog opened via the MatDialog service.
+ */
 export class MatDialogRef<T, R = any> {
   /** The instance of component opened into the dialog. */
   componentInstance: T;
