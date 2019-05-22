@@ -465,18 +465,23 @@ chunk {1} styles.css (styles) 0 bytes [entry] [rendered]
 -->
 ## 4단계: Universal 번들을 실행하도록 서버 설정하기
 
+<!--
 To run a Universal bundle, you need to send it to a server. 
 
 The following example passes `AppServerModule` (compiled with AoT) to the `PlatformServer` method `renderModuleFactory()`, which serializes the app and returns the result to the browser.
+-->
+Universal 버전으로 번들링한 앱을 실행하려면 이 앱을 서버에서 보내면 됩니다.
+
+아래 예제에서 AoT 방식으로 컴파일된 `AppServerModule`은 `renderModuleFactory()` 메소드의 인자로 전달되어 브라우저로 보내집니다.
 
 <code-example format="." language="typescript" linenums="false">
 app.engine('html', (_, options, callback) => {
   renderModuleFactory(AppServerModuleNgFactory, {
-    // Our index.html
+    // 앱이 실행되는 index.html
     document: template,
     url: options.req.url,
-    // configure DI to make lazy-loading work differently
-    // (we need to instantly render the view)
+    // 지연 로딩을 지원하기 위해 DI 환경을 설정합니다.
+    // (화면을 바로 렌더링하기 위한 코드입니다.)
     extraProviders: [
       provideModuleMap(LAZY_MODULE_MAP)
     ]
@@ -486,7 +491,10 @@ app.engine('html', (_, options, callback) => {
 });
 </code-example>
 
+<!--
 This technique gives you complete flexibility. For convenience, you can also use the `@nguniversal/express-engine` tool that has some built-in features.
+-->
+구현 방식은 얼마든지 달라질 수 있습니다. 더 간단하게 구현하려면 `@nguniversal/express-engine` 툴을 사용해서 다음과 같이 구현해도 됩니다.
 
 <code-example format="." language="typescript" linenums="false">
 import { ngExpressEngine } from '@nguniversal/express-engine';
@@ -499,13 +507,19 @@ app.engine('html', ngExpressEngine({
 }));
 </code-example>
 
+<!--
 The following simple example implements a bare-bones Node Express server to fire everything up. 
 (Note that this is for demonstration only. In a real production environment, you need to set up additional authentication and security.)
 
 At the root level of your project, next to `package.json`, create a file named `server.ts` and add the following content.
+-->
+아래 예제는 Node Express 서버가 제공하는 기능만으로 Universa 앱을 서비스하는 백엔드 서버 코드입니다
+(다만, 이 코드는 Universal을 설명하기 위한 것일 뿐입니다. 실제 운영 환경에서는 인증과 보안 코드가 더 추가되어야 합니다.)
+
+아래 예제 코드는 `package.json` 파일이 있는 프로젝트 최상위 폴더에 `server.ts`라는 이름으로 작성합니다.
 
 <code-example format="." language="typescript" linenums="false">
-// These are important and needed before anything else
+// 아래 두 줄이 가장 중요하며 가장 먼저 로드되어야 합니다.
 import 'zone.js/dist/zone-node';
 import 'reflect-metadata';
 
@@ -516,29 +530,30 @@ import * as express from 'express';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 
-// Faster server renders w/ Prod mode (dev mode never needed)
+// 운영모드로 동작해야 렌더링도 빠릅니다. (개발모드를 사용할 일은 없습니다.)
 enableProdMode();
 
-// Express server
+// Express 서버
 const app = express();
 
 const PORT = process.env.PORT || 4000;
 const DIST_FOLDER = join(process.cwd(), 'dist');
 
-// Our index.html we'll use as our template
+// index.html 파일을 템플릿으로 사용합니다.
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
-// * NOTE :: leave this as require() since this file is built Dynamically from webpack
+// * 참고 :: 이 파일은 webpack으로 동적 빌드되기 때문에 require()를 사용해야 합니다.
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
 app.engine('html', (_, options, callback) => {
   renderModuleFactory(AppServerModuleNgFactory, {
-    // Our index.html
+    // index.html
     document: template,
     url: options.req.url,
-    // DI so that we can get lazy-loading to work differently (since we need it to just instantly render it)
+    // 지연 로딩을 지원하기 위해 DI 환경을 설정합니다.
+    // (화면을 바로 렌더링하기 위한 코드입니다.)
     extraProviders: [
       provideModuleMap(LAZY_MODULE_MAP)
     ]
@@ -550,25 +565,33 @@ app.engine('html', (_, options, callback) => {
 app.set('view engine', 'html');
 app.set('views', join(DIST_FOLDER, 'browser'));
 
-// Server static files from /browser
+// /browser 폴더에 있는 파일은 정적으로 제공합니다.
 app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 
-// All regular routes use the Universal engine
+// 일반적인 라우팅은 Universal 엔진을 사용합니다.
 app.get('*', (req, res) => {
   res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
 });
 
-// Start up the Node server
+// Node 서버를 시작합니다.
 app.listen(PORT, () => {
   console.log(`Node server listening on http://localhost:${PORT}`);
 });
 </code-example>
 
+<!--
 ## Step 5: Pack and run the app on the server
+-->
+## 5단계: 빌드하고 서버에서 앱 서비스하기
 
+<!--
 Set up a webpack configuration to handle the Node Express `server.ts` file and serve your application.
 
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
+-->
+Node Express 서버로 작성한 `server.ts` 파일과 애플리케이션에는 webpack 환경설정 파일이 필요합니다.
+
+앱 최상위 폴더에 webpack 설정 파일(`webpack.server.config.js`)을 만들고 이 환경 설정파일로 `dist/server.js` 파일을 빌드하도록 `server.ts` 파일을 컴파일합니다.
 
 <code-example format="." language="typescript" linenums="false">
 const path = require('path');
@@ -578,7 +601,7 @@ module.exports = {
   entry: {  server: './server.ts' },
   resolve: { extensions: ['.js', '.ts'] },
   target: 'node',
-  // this makes sure we include node_modules and other 3rd party libraries
+  // node_module과 서드파티 라이브러리를 모두 로드해야 합니다.
   externals: [/(node_modules|main\..*\.js)/],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -590,12 +613,12 @@ module.exports = {
     ]
   },
   plugins: [
-    // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
-    // for "WARNING Critical dependency: the request of a dependency is an expression"
+    // "WARNING Critical dependency: the request of a dependency is an expression"
+    // https://github.com/angular/angular/issues/11580 이슈 대응을 위한 임시 코드
     new webpack.ContextReplacementPlugin(
       /(.+)?angular(\\|\/)core(.+)?/,
-      path.join(__dirname, 'src'), // location of your src
-      {} // a map of your routes
+      path.join(__dirname, 'src'), // src 폴더 경로
+      {} // 라우팅 설정 맵
     ),
     new webpack.ContextReplacementPlugin(
       /(.+)?express(\\|\/)(.+)?/,
@@ -606,7 +629,10 @@ module.exports = {
 }
 </code-example>
 
+<!--
 The  project's `dist/` folder now contains both browser and server folders.
+-->
+이제 `dist/` 폴더에는 browser 폴더와 server 폴더가 존재합니다.
 
 <code-example format="." language="none" linenums="false">
 dist/
@@ -614,16 +640,26 @@ dist/
    server/
 </code-example>
 
+<!--
 To run the app on the server, type the following in a command shell.
+-->
+그리고 앱을 서버에서 실행하려면 다음 명령을 실행하면 됩니다.
 
 <code-example format="." language="bash" linenums="false">
 node dist/server.js
 </code-example>
 
+<!--
 ### Creating scripts
+-->
+### 스크립트 추가하기
 
+<!--
 Now let's create a few handy scripts to help us do all of this in the future.
 You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+-->
+이제 다음부터는 이 과정을 편하게 실행하기 위해 스크립트를 추가해 봅시다.
+Angular 환경설정 파일 `angular.json` 파일에 다음과 같이 `"server"` 섹션을 추가합니다.
 
 <code-example format="." language="none" linenums="false">
 "architect": {
@@ -631,25 +667,32 @@ You can add these in the `"server"` section of the Angular configuration file, `
   "server": {
     ...
      "scripts": {
-      // Common scripts
+      // Universal 동작을 위한 스크립트
       "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
       "serve:ssr": "node dist/server.js",
 
-      // Helpers for the scripts
+      // 헬퍼 스크립트
       "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
       "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
     }
    ...
 </code-example>
 
+<!--
 To run a production build of your app with Universal on your local system, use the following command.
+-->
+이제 로컬 환경에서 Universal 버전으로 운영용 앱을 실행하려면 다음 명령을 실행하면 됩니다.
 
 <code-example format="." language="bash" linenums="false">
 npm run build:ssr && npm run serve:ssr
 </code-example>
 
+<!--
 ### Working around the browser APIs
+-->
+### 브라우저 API 활용하기
 
+<!--
 Because a Universal `platform-server` app doesn't execute in the browser, you may have to work around some of the browser APIs and capabilities that are missing on the server.
 
 For example, your server-side page can't reference browser-only native objects such as `window`, `document`, `navigator`, or `location`. 
@@ -664,6 +707,19 @@ This is a good argument for making the app [routable](guide/router).
 
 Because the user of a server-rendered page can't do much more than click links,
 you should swap in the real client app as quickly as possible for a proper interactive experience.
+-->
+Universal `platform-server` 앱은 브라우저에서 실행되지 않기 때문에 브라우저 API를 직접 활용할 수 없습니다.
+
+그래서 서버사이드 페이지는 브라우저에만 존재하는 `window`나 `document`, `navigator`, `location`과 같은 네이티브 API를 참조할 수 없습니다.
+서버사이드 페이지에서 이 API를 사용하지 않는다면 문제되지 않습니다.
+하지만 이 API를 사용해야 한다면 Angular가 추상 클래스로 제공하는 `Localtion`이나 `Document`를 의존성으로 주입받아 사용해야 합니다.
+그리고 Angular가 제공하는 추상 클래스로 해결할 수 없다면 개발자가 직접 이 추상 클래스를 정의해야 합니다.
+
+이와 비슷하게, 마우스 이벤트나 키보드 이벤트도 서버사이드 앱에는 존재하지 않습니다. 서버에서 페이지를 렌더링하는데 컴포넌트를 표시하는 버튼을 누를 사용자가 없기 때문입니다.
+그렇다면 서버사이드 앱은 클라이언트의 요청만으로 온전히 렌더링할 수 있는 로직으로 작성해야 합니다.
+이 방식은 앱을 [라우팅할 수 있도록](guide/router) 구현한다는 측면에서도 활용할 수 있습니다.
+
+결국 서버에서 렌더링된 페이지에서는 사용자가 링크를 클릭한다는 방식을 활용할 수 없기 때문에, 이와 유사한 UX를 제공할 수 있도록 구현방식을 수정해야 할 수도 있습니다.
 
 {@a the-example}
 
