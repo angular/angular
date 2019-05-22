@@ -729,15 +729,14 @@ function getHighestElementOrICUContainer(tNode: TNode): TNode {
   return tNode;
 }
 
-export function getBeforeNodeForView(index: number, lContainer: LContainer) {
-  const containerNative = lContainer[NATIVE];
-
-  if (index + 1 < lContainer.length - CONTAINER_HEADER_OFFSET) {
-    const view = lContainer[CONTAINER_HEADER_OFFSET + index + 1] as LView;
-    const viewTNode = view[T_HOST] as TViewNode;
-    return viewTNode.child ? getNativeByTNode(viewTNode.child, view) : containerNative;
+export function getBeforeNodeForView(viewIndexInContainer: number, lContainer: LContainer): RNode {
+  const nextViewIndex = CONTAINER_HEADER_OFFSET + viewIndexInContainer + 1;
+  if (nextViewIndex < lContainer.length) {
+    const lView = lContainer[nextViewIndex] as LView;
+    const tViewNodeChild = (lView[T_HOST] as TViewNode).child;
+    return tViewNodeChild !== null ? getNativeByTNode(tViewNodeChild, lView) : lContainer[NATIVE];
   } else {
-    return containerNative;
+    return lContainer[NATIVE];
   }
 }
 
