@@ -1,21 +1,30 @@
 ---
-name: Bug
-about: Report a bug found in Angular Material, CDK or our docs
-
+name: Bug Report
+about: Report a bug found in Angular Material or the CDK
 ---
 
-#### What is the expected behavior?
+#### Reproduction
+
+Use StackBlitz to reproduce your issue: https://stackblitz.com/fork/components-issue
+
+Steps to reproduce:
+1. 
+2. 
+ 
+ 
+#### Expected Behavior
+
+What behavior were you expecting to see?
 
 
-#### What is the current behavior?
+#### Actual Behavior
+
+What behavior did you actually see?
 
 
-#### What are the steps to reproduce?
-Providing a StackBlitz reproduction is the *best* way to share your issue. <br/>
-StackBlitz starter: https://goo.gl/wwnhMV<br/>
+#### Environment
 
-
-#### Which versions of Angular, Material, OS, TypeScript, browsers are affected?
-
-
-#### Is there anything else we should know?
+- Angular:
+- CDK/Material:
+- Browser(s):
+- Operating System (e.g. Windows, macOS, Ubuntu): 

@@ -1,13 +1,13 @@
 ---
 name: Feature
-about: Propose a new feature for Angular Material or CDK
-
+about: Propose a new feature for Angular Material or the CDK
+labels: feature
 ---
+ 
+#### Feature Description
 
-#### Please describe the feature you would like to request.
+Provide a brief summary of the feature you would like to see.
 
+#### Use Case
 
-#### What is the use-case or motivation for this proposal?
-
-
-#### Is there anything else we should know?
+Describe the use case(s) that the proposed feature would enable.
