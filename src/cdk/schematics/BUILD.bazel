@@ -29,7 +29,8 @@ ts_library(
     "@npm//glob",
     "@npm//parse5",
     "@npm//tslint",
-    "@npm//typescript"
+    "@npm//typescript",
+    "@npm//chalk"
   ],
 )
 

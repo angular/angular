@@ -138,7 +138,7 @@
     "ts-api-guardian": "^0.4.4",
     "ts-node": "^3.0.4",
     "tsconfig-paths": "^2.3.0",
-    "tslint": "^5.13.1",
+    "tslint": "^5.16.0",
     "tsutils": "^3.0.0",
     "typescript": "~3.4",
     "uglify-js": "^2.8.14"
