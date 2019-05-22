@@ -145,9 +145,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks the name of the `FormControl` bound to the directive. The name corresponds
    * to a key in the parent `FormGroup` or `FormArray`.
+   * Accepts a name as a string or a number.
+   * The name in the form of a string is useful for individual forms,
+   * while the numerical form allows for form controls to be bound
+   * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name !: string;
+  @Input('formControlName') name !: string | number | null;
 
   /**
    * @description
@@ -238,7 +242,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] { return controlPath(this.name, this._parent !); }
+  get path(): string[] {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent !);
+  }
 
   /**
    * @description
