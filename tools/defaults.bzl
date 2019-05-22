@@ -271,7 +271,6 @@ def jasmine_node_test(deps = [], **kwargs):
         "@npm//chokidar",
         "@npm//domino",
         "@npm//jasmine-core",
-        "@npm//mock-fs",
         "@npm//reflect-metadata",
         "@npm//source-map-support",
         "@npm//tslib",
