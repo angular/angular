@@ -12007,4 +12007,4 @@ zip-stream@^1.0.0, zip-stream@^1.1.0, zip-stream@^1.2.0:
 
 "zone.js@git://github.com/JiaLiPassion/zone.js#zone-bazel":
   version "0.9.1"
-  resolved "git://github.com/JiaLiPassion/zone.js#40b821970950b70ebceb5bf741288f8f4a61ac12"
+  resolved "git://github.com/JiaLiPassion/zone.js#3abc99e78aeecc8e422d10d9e90d2cb5b424b243"
