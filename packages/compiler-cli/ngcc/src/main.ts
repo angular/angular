@@ -60,6 +60,10 @@ export interface NgccOptions {
    * These are used to resolve paths to locally built Angular libraries.
    */
   pathMappings?: PathMappings;
+  /**
+   * Provide a file-system service that will be used by ngcc for all file interactions.
+   */
+  fileSystem?: FileSystem;
 }
 
 const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'umd', 'commonjs'];
@@ -76,27 +80,27 @@ export function mainNgcc(
     {basePath, targetEntryPointPath, propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
      compileAllFormats = true, createNewEntryPointFormats = false,
      logger = new ConsoleLogger(LogLevel.info), pathMappings}: NgccOptions): void {
-  const fs = getFileSystem();
-  const transformer = new Transformer(fs, logger);
-  const moduleResolver = new ModuleResolver(fs, pathMappings);
-  const esmDependencyHost = new EsmDependencyHost(fs, moduleResolver);
-  const umdDependencyHost = new UmdDependencyHost(fs, moduleResolver);
-  const commonJsDependencyHost = new CommonJsDependencyHost(fs, moduleResolver);
-  const resolver = new DependencyResolver(fs, logger, {
+  const fileSystem = getFileSystem();
+  const transformer = new Transformer(fileSystem, logger);
+  const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
+  const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
+  const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
+  const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
+  const resolver = new DependencyResolver(fileSystem, logger, {
     esm5: esmDependencyHost,
     esm2015: esmDependencyHost,
     umd: umdDependencyHost,
     commonjs: commonJsDependencyHost
   });
-  const finder = new EntryPointFinder(fs, logger, resolver);
-  const fileWriter = getFileWriter(fs, createNewEntryPointFormats);
+  const finder = new EntryPointFinder(fileSystem, logger, resolver);
+  const fileWriter = getFileWriter(fileSystem, createNewEntryPointFormats);
 
   const absoluteTargetEntryPointPath =
       targetEntryPointPath ? resolve(basePath, targetEntryPointPath) : undefined;
 
   if (absoluteTargetEntryPointPath &&
       hasProcessedTargetEntryPoint(
-          fs, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
+          fileSystem, absoluteTargetEntryPointPath, propertiesToConsider, compileAllFormats)) {
     logger.debug('The target entry-point has already been processed');
     return;
   }
@@ -112,7 +116,8 @@ export function mainNgcc(
   });
 
   if (absoluteTargetEntryPointPath && entryPoints.length === 0) {
-    markNonAngularPackageAsProcessed(fs, absoluteTargetEntryPointPath, propertiesToConsider);
+    markNonAngularPackageAsProcessed(
+        fileSystem, absoluteTargetEntryPointPath, propertiesToConsider);
     return;
   }
 
@@ -122,14 +127,14 @@ export function mainNgcc(
 
     const compiledFormats = new Set<string>();
     const entryPointPackageJson = entryPoint.packageJson;
-    const entryPointPackageJsonPath = fs.resolve(entryPoint.path, 'package.json');
+    const entryPointPackageJsonPath = fileSystem.resolve(entryPoint.path, 'package.json');
 
     const hasProcessedDts = hasBeenProcessed(entryPointPackageJson, 'typings');
 
     for (let i = 0; i < propertiesToConsider.length; i++) {
       const property = propertiesToConsider[i] as EntryPointJsonProperty;
       const formatPath = entryPointPackageJson[property];
-      const format = getEntryPointFormat(fs, entryPoint, property);
+      const format = getEntryPointFormat(fileSystem, entryPoint, property);
 
       // No format then this property is not supposed to be compiled.
       if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
@@ -147,7 +152,7 @@ export function mainNgcc(
       // the property as processed even if its underlying format has been built already.
       if (!compiledFormats.has(formatPath) && (compileAllFormats || isFirstFormat)) {
         const bundle = makeEntryPointBundle(
-            fs, entryPoint.path, formatPath, entryPoint.typings, isCore, property, format,
+            fileSystem, entryPoint.path, formatPath, entryPoint.typings, isCore, property, format,
             processDts, pathMappings);
         if (bundle) {
           logger.info(`Compiling ${entryPoint.name} : ${property} as ${format}`);
@@ -165,9 +170,9 @@ export function mainNgcc(
       // Either this format was just compiled or its underlying format was compiled because of a
       // previous property.
       if (compiledFormats.has(formatPath)) {
-        markAsProcessed(fs, entryPointPackageJson, entryPointPackageJsonPath, property);
+        markAsProcessed(fileSystem, entryPointPackageJson, entryPointPackageJsonPath, property);
         if (processDts) {
-          markAsProcessed(fs, entryPointPackageJson, entryPointPackageJsonPath, 'typings');
+          markAsProcessed(fileSystem, entryPointPackageJson, entryPointPackageJsonPath, 'typings');
         }
       }
     }
