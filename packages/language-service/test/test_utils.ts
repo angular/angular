@@ -72,13 +72,15 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private projectVersion = 0;
   private options: ts.CompilerOptions;
   private overrideDirectory = new Set<string>();
+  private existsCache = new Map<string, boolean>();
+  private fileCache = new Map<string, string|undefined>();
 
   constructor(
       private scriptNames: string[], private data: MockData,
       private node_modules: string = 'node_modules', private myPath: typeof path = path) {
     const support = setup();
-    this.nodeModulesPath = path.join(support.basePath, 'node_modules');
-    this.angularPath = path.join(this.nodeModulesPath, '@angular');
+    this.nodeModulesPath = path.posix.join(support.basePath, 'node_modules');
+    this.angularPath = path.posix.join(this.nodeModulesPath, '@angular');
     this.options = {
       target: ts.ScriptTarget.ES5,
       module: ts.ModuleKind.CommonJS,
@@ -146,7 +148,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     } else if (effectiveName == '/' + this.node_modules) {
       return true;
     } else {
-      return fs.existsSync(effectiveName);
+      return this.pathExists(effectiveName);
     }
   }
 
@@ -186,14 +188,19 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
         cacheUsed.add(fileName);
         return undefined;
       }
-      let effectiveName = this.getEffectiveName(fileName);
-      if (effectiveName === fileName)
+
+      const effectiveName = this.getEffectiveName(fileName);
+      if (effectiveName === fileName) {
         return open(fileName, this.data);
-      else if (
+      } else if (
           !fileName.match(angularts) && !fileName.match(rxjsts) && !fileName.match(rxjsmetadata) &&
           !fileName.match(tsxfile)) {
-        if (fs.existsSync(effectiveName)) {
-          return fs.readFileSync(effectiveName, 'utf8');
+        if (this.fileCache.has(effectiveName)) {
+          return this.fileCache.get(effectiveName);
+        } else if (this.pathExists(effectiveName)) {
+          const content = fs.readFileSync(effectiveName, 'utf8');
+          this.fileCache.set(effectiveName, content);
+          return content;
         } else {
           missingCache.set(fileName, true);
           reportedMissing.add(fileName);
@@ -203,19 +210,29 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     }
   }
 
+  private pathExists(path: string): boolean {
+    if (this.existsCache.has(path)) {
+      return this.existsCache.get(path) !;
+    }
+
+    const exists = fs.existsSync(path);
+    this.existsCache.set(path, exists);
+    return exists;
+  }
+
   private getEffectiveName(name: string): string {
     const node_modules = this.node_modules;
     const at_angular = '/@angular';
     if (name.startsWith('/' + node_modules)) {
       if (this.nodeModulesPath && !name.startsWith('/' + node_modules + at_angular)) {
-        let result = this.myPath.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
-        if (!name.match(rxjsts))
-          if (fs.existsSync(result)) {
-            return result;
-          }
+        const result =
+            this.myPath.posix.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
+        if (!name.match(rxjsts) && this.pathExists(result)) {
+          return result;
+        }
       }
       if (this.angularPath && name.startsWith('/' + node_modules + at_angular)) {
-        return this.myPath.join(
+        return this.myPath.posix.join(
             this.angularPath, name.substr(node_modules.length + at_angular.length + 1));
       }
     }
@@ -279,8 +296,6 @@ function getLocationMarkers(value: string): {[name: string]: number} {
 }
 
 const referenceMarker = /«(((\w|\-)+)|([^ᐱ]*ᐱ(\w+)ᐱ.[^»]*))»/g;
-const definitionMarkerGroup = 1;
-const nameMarkerGroup = 2;
 
 export type ReferenceMarkers = {
   [name: string]: Span[]
