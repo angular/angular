@@ -255,7 +255,7 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     readonly formDirective: any;
     isDisabled: boolean;
     /** @deprecated */ model: any;
-    name: string;
+    name: string | number | null;
     readonly path: string[];
     /** @deprecated */ update: EventEmitter<any>;
     readonly validator: ValidatorFn | null;
@@ -353,7 +353,7 @@ export declare const NG_VALUE_ACCESSOR: InjectionToken<ControlValueAccessor>;
 
 export declare abstract class NgControl extends AbstractControlDirective {
     readonly asyncValidator: AsyncValidatorFn | null;
-    name: string | null;
+    name: string | number | null;
     readonly validator: ValidatorFn | null;
     valueAccessor: ControlValueAccessor | null;
     abstract viewToModelUpdate(newValue: any): void;
