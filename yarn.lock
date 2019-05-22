@@ -12005,7 +12005,6 @@ zip-stream@^1.0.0, zip-stream@^1.1.0, zip-stream@^1.2.0:
     lodash "^4.8.0"
     readable-stream "^2.0.0"
 
-zone.js@^0.9.1:
+"zone.js@git://github.com/JiaLiPassion/zone.js#zone-bazel":
   version "0.9.1"
-  resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.9.1.tgz#e37c6e5c54c13fae4de26b5ffe8d8e9212da6d9b"
-  integrity sha512-GkPiJL8jifSrKReKaTZ5jkhrMEgXbXYC+IPo1iquBjayRa0q86w3Dipjn8b415jpitMExe9lV8iTsv8tk3DGag==
+  resolved "git://github.com/JiaLiPassion/zone.js#40b821970950b70ebceb5bf741288f8f4a61ac12"
