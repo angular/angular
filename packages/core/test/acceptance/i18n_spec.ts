@@ -937,14 +937,14 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(q.query.length).toEqual(1);
       expect(toHtml(fixture.nativeElement))
-          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
+          .toEqual(`<div-query>Contenu<!--ng-container--></div-query>`);
 
       // Disable ng-if
       fixture.componentInstance.visible = false;
       fixture.detectChanges();
       expect(q.query.length).toEqual(0);
       expect(toHtml(fixture.nativeElement))
-          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
+          .toEqual(`<div-query>Contenu<!--ng-container--></div-query>`);
     });
   });
 });

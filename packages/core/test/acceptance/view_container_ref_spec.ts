@@ -61,6 +61,59 @@ describe('ViewContainerRef', () => {
          expect(fixture.componentInstance.foo).toBeAnInstanceOf(TemplateRef);
        });
 
+    it('should use comment node of host ng-container as insertion marker', () => {
+      @Component({template: 'hello'})
+      class HelloComp {
+      }
+
+      @NgModule({entryComponents: [HelloComp], declarations: [HelloComp]})
+      class HelloCompModule {
+      }
+
+      @Component({
+        template: `
+          <ng-container vcref></ng-container>
+        `
+      })
+      class TestComp {
+        @ViewChild(VCRefDirective, {static: true}) vcRefDir !: VCRefDirective;
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [TestComp, VCRefDirective], imports: [HelloCompModule]});
+      const fixture = TestBed.createComponent(TestComp);
+      const {vcref, cfr, elementRef} = fixture.componentInstance.vcRefDir;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML)
+          .toMatch(/<!--(ng-container)?-->/, 'Expected only one comment node to be generated.');
+
+      const testParent = document.createElement('div');
+      testParent.appendChild(elementRef.nativeElement);
+
+      expect(testParent.textContent).toBe('');
+      expect(testParent.childNodes.length).toBe(1);
+      expect(testParent.childNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+
+      // Add a test component to the view container ref to ensure that
+      // the "ng-container" comment was used as marker for the insertion.
+      vcref.createComponent(cfr.resolveComponentFactory(HelloComp));
+      fixture.detectChanges();
+
+      expect(testParent.textContent).toBe('hello');
+      expect(testParent.childNodes.length).toBe(2);
+
+      // With Ivy, views are inserted before the container comment marker.
+      if (ivyEnabled) {
+        expect(testParent.childNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
+        expect(testParent.childNodes[0].textContent).toBe('hello');
+        expect(testParent.childNodes[1].nodeType).toBe(Node.COMMENT_NODE);
+      } else {
+        expect(testParent.childNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+        expect(testParent.childNodes[1].nodeType).toBe(Node.ELEMENT_NODE);
+        expect(testParent.childNodes[1].textContent).toBe('hello');
+      }
+    });
   });
 
   describe('insert', () => {
@@ -1668,7 +1721,9 @@ class VCRefDirective {
 
   // Injecting the ViewContainerRef to create a dynamic container in which
   // embedded views will be created
-  constructor(public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
+  constructor(
+      public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver,
+      public elementRef: ElementRef) {}
 
   createView(s: string, index?: number): EmbeddedViewRef<any> {
     if (!this.tplRef) {
