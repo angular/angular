@@ -18,9 +18,14 @@ describe('reflector_host_spec', () => {
   // Regression #21811
   it('should be able to find angular under windows', () => {
     const originalJoin = path.join;
-    let mockHost = new MockTypescriptHost(
-        ['/app/main.ts', '/app/parsing-cases.ts'], toh, 'app/node_modules',
-        {...path, join: (...args: string[]) => originalJoin.apply(path, args)});
+    const originalPosixJoin = path.posix.join;
+    let mockHost =
+        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh, 'app/node_modules', {
+          ...path,
+          join: (...args: string[]) => originalJoin.apply(path, args),
+          posix:
+              {...path.posix, join: (...args: string[]) => originalPosixJoin.apply(path, args)}
+        });
     const reflectorHost = new ReflectorHost(() => undefined as any, mockHost, {basePath: '\\app'});
 
     if (process.platform !== 'win32') {
