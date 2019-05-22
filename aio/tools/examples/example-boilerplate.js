@@ -57,6 +57,11 @@ BOILERPLATE_PATHS.schematics = [
   'angular.json'
 ];
 
+BOILERPLATE_PATHS['cli-ajs'] = [
+  ...cliRelativePath,
+  'package.json'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
