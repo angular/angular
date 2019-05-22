@@ -81,8 +81,8 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 
 The process should automatically connect to the debugger. For additional info and testing options, see the [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/node/node.html#nodejs_test).
 
-- Click on "Resume script execution" to let the code run until the first `debugger` statement.
-- If you're debugging an ivy test and you want to see the template instructions, disable the `JavaScript source maps` in the settings, and look for `App_Template` in the call stack.
+- Click on "Resume script execution" to let the code run until the first `debugger` statement or a previously set breakpoint.
+- If you're debugging an ivy test and you want to inspect the generated template instructions, find the template of your component in the call stack and click on `(source mapped from [CompName].js)` at the bottom of the code. You can also disable sourcemaps in the options or go to sources and look into ng:// namespace to see all the generated code.
 
 ### Debugging a Node Test in VSCode
 
