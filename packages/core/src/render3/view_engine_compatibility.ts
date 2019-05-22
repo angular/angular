@@ -19,7 +19,7 @@ import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/shared';
-import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
+import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
@@ -29,7 +29,7 @@ import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView, viewAttachedToContainer} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -313,8 +313,15 @@ export function createContainerRef(
     lContainer = slotValue;
     lContainer[ACTIVE_INDEX] = -1;
   } else {
-    const commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
-    ngDevMode && ngDevMode.rendererCreateComment++;
+    let commentNode: RComment;
+    // If the host is an element container, the native host element is guaranteed to be a
+    // comment and we can reuse that comment as anchor element for the new LContainer.
+    if (hostTNode.type === TNodeType.ElementContainer) {
+      commentNode = unwrapRNode(slotValue) as RComment;
+    } else {
+      ngDevMode && ngDevMode.rendererCreateComment++;
+      commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
+    }
 
     // A container can be created on the root (topmost / bootstrapped) component and in this case we
     // can't use LTree to insert container's marker node (both parent of a comment node and the
