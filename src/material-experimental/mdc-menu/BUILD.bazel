@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
   name = "mdc-menu",
@@ -40,4 +40,28 @@ sass_binary(
     "//src/material/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ]
+)
+
+ng_test_library(
+  name = "menu_tests_lib",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    ":mdc-menu",
+    "@npm//@angular/platform-browser",
+    "@npm//rxjs",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/overlay",
+    "//src/cdk/keycodes",
+    "//src/cdk/scrolling",
+    "//src/cdk/testing",
+    "//src/material/core",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [
+    ":menu_tests_lib",
+  ],
 )

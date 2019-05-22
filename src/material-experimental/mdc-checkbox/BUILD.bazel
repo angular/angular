@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
   name = "mdc-checkbox",
@@ -42,4 +42,24 @@ sass_binary(
     "//src/material/core:all_themes",
     "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
   ]
+)
+
+ng_test_library(
+  name = "checkbox_tests_lib",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    ":mdc-checkbox",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/forms",
+    "//src/cdk/testing",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  static_files = ["@npm//node_modules/@material/checkbox:dist/mdc.checkbox.js"],
+  deps = [
+    "//src/material-experimental:mdc_require_config.js",
+    ":checkbox_tests_lib",
+  ],
 )
