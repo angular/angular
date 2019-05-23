@@ -57,14 +57,6 @@ Open the `HeroDetailComponent` class file and import the `Hero` symbol.
 region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)">
 </code-example>
 
-The `hero` property
-[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
-annotated with the `@Input()` decorator,
-because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
-
-<code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding">
-</code-example>
-
 Amend the `@angular/core` import statement to include the `Input` symbol.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
@@ -99,7 +91,12 @@ You won't change the `HeroesComponent` _class_ but you will change its _template
 The `HeroDetailComponent` selector is `'app-hero-detail'`.
 Add an `<app-hero-detail>` element near the bottom of the `HeroesComponent` template, where the hero detail view used to be.
 
-Bind the `HeroesComponent.selectedHero` to the element's `hero` property like this.
+Bind the `HeroesComponent.selectedHero` to the element's `hero` property.
+
+The `hero` property
+[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
+annotated with the `@Input()` decorator,
+because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" header="heroes.component.html (HeroDetail binding)">
 
