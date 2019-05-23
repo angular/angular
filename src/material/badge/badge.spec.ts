@@ -14,7 +14,7 @@ describe('MatBadge', () => {
     TestBed
         .configureTestingModule({
           imports: [MatBadgeModule],
-          declarations: [BadgeTestApp, PreExistingBadge, NestedBadge],
+          declarations: [BadgeTestApp, PreExistingBadge, NestedBadge, BadgeOnTemplate],
         })
         .compileComponents();
 
@@ -205,6 +205,12 @@ describe('MatBadge', () => {
     expect(fixture.componentInstance.badgeInstance.getBadgeElement()).toBe(badgeElement);
   });
 
+  it('should throw if badge is not attached to an element node', () => {
+    expect(() => {
+      TestBed.createComponent(BadgeOnTemplate);
+    }).toThrowError(/matBadge must be attached to an element node/);
+  });
+
 });
 
 /** Test component that contains a MatBadge. */
@@ -259,4 +265,13 @@ class PreExistingBadge {
   `
 })
 class NestedBadge {
+}
+
+
+@Component({
+  template: `
+    <ng-template matBadge="1">Notifications</ng-template>
+  `
+})
+class BadgeOnTemplate {
 }
