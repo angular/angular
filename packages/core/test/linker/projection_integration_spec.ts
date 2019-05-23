@@ -689,7 +689,7 @@ describe('projection', () => {
 
     @Component({selector: 'with-content', template: ''})
     class WithContentCmpt {
-      @ViewChild('ref') directiveRef: any;
+      @ViewChild('ref', {static: true}) directiveRef: any;
     }
 
     @Component({selector: 're-project', template: '<ng-content></ng-content>'})
