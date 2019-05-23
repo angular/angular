@@ -372,10 +372,13 @@ export function checkAndUpdateView(view: ViewData) {
       view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
   callInit = shiftInitState(
       view, ViewState.InitState_CallingAfterContentInit, ViewState.InitState_CallingAfterViewInit);
+
+  if (callInit) console.error('Running AfterViewInit for children of:', view.component.constructor.name);
   callLifecycleHooksChildrenFirst(
       view, NodeFlags.AfterViewChecked | (callInit ? NodeFlags.AfterViewInit : 0));
 
   if (view.def.flags & ViewFlags.OnPush) {
+    console.error('Resetting ChecksEnabled for:', view.component.constructor.name);
     view.state &= ~ViewState.ChecksEnabled;
   }
   view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
