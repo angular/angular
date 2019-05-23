@@ -54,16 +54,16 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   const basePath = process.cwd();
   const logger = context.logger;
 
-  logger.info('------ Static Query migration ------');
+  logger.info('------ Static Query Migration ------');
   logger.info('With Angular version 8, developers need to');
-  logger.info('explicitly specify the timing of ViewChild or');
+  logger.info('explicitly specify the timing of ViewChild and');
   logger.info('ContentChild queries. Read more about this here:');
-  logger.info('https://github.com/angular/angular/pull/28810');
+  logger.info('https://angular.io/guide/static-query-migration');
 
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
         'Could not find any tsconfig file. Cannot migrate queries ' +
-        'to explicit timing.');
+        'to add static flag.');
   }
 
   const analyzedFiles = new Set<string>();
@@ -99,7 +99,9 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   if (failures.length) {
     logger.info('');
     logger.info('Some queries could not be migrated automatically. Please go');
-    logger.info('through those manually and apply the appropriate timing:');
+    logger.info('through these manually and apply the appropriate timing.');
+    logger.info('For more info on how to choose a flag, please see: ');
+    logger.info('https://angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
 
