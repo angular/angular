@@ -498,6 +498,115 @@ describe('static-queries migration with template strategy', () => {
               /^⮑ {3}index.ts@5:11: Multiple components use the query with different timings./);
     });
 
+    it('should be able to migrate an application with type checking failure which ' +
+           'does not affect analysis',
+       async() => {
+         // Fakes the `@angular/package` by creating a `ViewChild` decorator
+         // function that requires developers to specify the "static" flag.
+         writeFile('/node_modules/@angular/core/index.d.ts', `
+           export interface ViewChildDecorator {
+             (selector: Type<any> | Function | string, opts: {
+               static: boolean;
+               read?: any;
+             }): any;
+           }
+         
+           export declare const ViewChild: ViewChildDecorator;
+         `);
+
+         writeFile('/index.ts', `
+           import {NgModule, Component, ViewChild} from '@angular/core';
+           
+           @Component({
+             template: '<ng-template><p #myRef></p></ng-template>'
+           })
+           export class MyComp {
+             @ViewChild('myRef') query: any;
+           }
+         `);
+
+         writeFile('/my-module.ts', `
+           import {NgModule} from '@angular/core';
+           import {MyComp} from './index';
+           
+           @NgModule({declarations: [MyComp]})
+           export class MyModule {}
+         `);
+
+         await runMigration();
+
+         expect(errorOutput.length).toBe(0);
+         expect(tree.readContent('/index.ts'))
+             .toContain(`@ViewChild('myRef', { static: false }) query: any;`);
+       });
+
+    it('should be able to migrate applications with template type checking failure ' +
+           'which does not affect analysis',
+       async() => {
+         writeFile('/index.ts', `
+           import {NgModule, Component, ViewChild} from '@angular/core';
+           
+           @Component({
+             template: '<p #myRef>{{myVar.hello()}}</p>'
+           })
+           export class MyComp {
+             // This causes a type checking exception as the template
+             // tries to call a function called "hello()" on this variable.
+             myVar: boolean = false;
+             
+             @ViewChild('myRef') query: any;
+           }
+         `);
+
+         writeFile('/my-module.ts', `
+           import {NgModule} from '@angular/core';
+           import {MyComp} from './index';
+           
+           @NgModule({declarations: [MyComp]})
+           export class MyModule {}
+         `);
+
+         await runMigration();
+
+         expect(errorOutput.length).toBe(0);
+         expect(tree.readContent('/index.ts'))
+             .toContain(`@ViewChild('myRef', { static: true }) query: any;`);
+       });
+
+    it('should notify user if project has syntax errors which can affect analysis', async() => {
+      writeFile('/index.ts', `
+        import {Component, ViewChild} from '@angular/core';
+        
+        @Component({
+          template: '<p #myRef></p>'
+        })
+        export class MyComp {
+          @ViewChild('myRef') query: any;
+        }
+      `);
+
+      writeFile('/file-with-syntax-error.ts', `     
+        export classX ClassWithSyntaxError {
+          // ...
+        }
+      `);
+
+      writeFile('/my-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyComp} from './index';
+        
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      await runMigration();
+
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(/file-with-syntax-error\.ts\(2,9\): error TS1128.*/);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myRef', { static: true }) query: any;`);
+    });
+
     it('should gracefully exit migration if queries could not be analyzed', async() => {
       writeFile('/index.ts', `
         import {Component, ViewChild} from '@angular/core';
