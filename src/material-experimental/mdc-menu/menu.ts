@@ -6,13 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, ViewEncapsulation, Provider} from '@angular/core';
 import {Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {
-  MatMenu as BaseMatMenu,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Inject,
+  NgZone,
+  Provider,
+  ViewEncapsulation
+} from '@angular/core';
+import {
+  MAT_MENU_DEFAULT_OPTIONS,
   MAT_MENU_PANEL,
-  matMenuAnimations,
   MAT_MENU_SCROLL_STRATEGY,
+  MatMenu as BaseMatMenu,
+  matMenuAnimations,
+  MatMenuDefaultOptions,
 } from '@angular/material/menu';
 
 /** @docs-private */
@@ -45,6 +55,13 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
   ]
 })
 export class MatMenu extends BaseMatMenu {
+
+  constructor(_elementRef: ElementRef<HTMLElement>,
+              _ngZone: NgZone,
+              @Inject(MAT_MENU_DEFAULT_OPTIONS) _defaultOptions: MatMenuDefaultOptions) {
+    super(_elementRef, _ngZone, _defaultOptions);
+  }
+
   setElevation(_depth: number) {
     // TODO(crisbeto): MDC's styles come with elevation already and we haven't mapped our mixins
     // to theirs. Disable the elevation stacking for now until everything has been mapped.
