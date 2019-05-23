@@ -8,12 +8,15 @@
 # ESModule imports (and TypeScript imports) can be absolute starting with the workspace name.
 # The name of the workspace should match the npm package where we publish, so that these
 # imports also make sense when referencing the published package.
-workspace(name = "project")
+workspace(
+    name = "project",
+    managed_directories = {"@npm": ["node_modules"]},
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-RULES_NODEJS_VERSION = "0.29.0"
-RULES_NODEJS_SHA256 = "1db950bbd27fb2581866e307c0130983471d4c3cd49c46063a2503ca7b6770a4"
+RULES_NODEJS_VERSION = "0.30.1"
+RULES_NODEJS_SHA256 = "abcf497e89cfc1d09132adfcd8c07526d026e162ae2cb681dcb896046417ce91"
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = RULES_NODEJS_SHA256,
@@ -21,8 +24,8 @@ http_archive(
 )
 
 # Rules for compiling sass
-RULES_SASS_VERSION = "1.17.3"
-RULES_SASS_SHA256 = "ea79647e5cd36867568d80811a951c7b3170791058f50a5cbd3d542627e78881"
+RULES_SASS_VERSION = "3a4f31c74513ccfacce3f955b5c006352f7e9587"
+RULES_SASS_SHA256 = "4c87befcb17282b039ba8341df9a6cc45f461bf05776dcf35c7e40c7e79ce374"
 http_archive(
     name = "io_bazel_rules_sass",
     sha256 = RULES_SASS_SHA256,
@@ -33,12 +36,19 @@ http_archive(
 ####################################
 # Load and install our dependencies downloaded above.
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
-check_bazel_version("0.22.0")
-node_repositories()
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "yarn_install")
+check_bazel_version(
+    message = """
+You no longer need to install Bazel on your machine.
+Your project should have a dependency on the @bazel/bazel package which supplies it.
+Try running `yarn bazel` instead.
+    (If you did run that, check that you've got a fresh `yarn install`)
+
+""",
+    minimum_bazel_version = "0.26.0",
+)
 yarn_install(
     name = "npm",
-    data = ["//:angular-metadata.tsconfig.json"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
