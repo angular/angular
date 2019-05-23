@@ -79,7 +79,7 @@ describe('change detection', () => {
       })
       class TestCmpt {
         counter = 0;
-        @ViewChild('vc', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
+        @ViewChild('vc', {read: ViewContainerRef, static: false}) vcRef !: ViewContainerRef;
 
         constructor(private _cfr: ComponentFactoryResolver) {}
 

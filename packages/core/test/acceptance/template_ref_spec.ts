@@ -24,7 +24,7 @@ describe('TemplateRef', () => {
         exportAs: 'menuContent'
       })
       class MenuContent {
-        @ViewChild(TemplateRef) template !: TemplateRef<any>;
+        @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
       }
 
       @Component({
@@ -36,7 +36,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild(MenuContent) content !: MenuContent;
+        @ViewChild(MenuContent, {static: false}) content !: MenuContent;
 
         constructor(public viewContainerRef: ViewContainerRef) {}
       }

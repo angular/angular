@@ -578,7 +578,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
         @ContentChild(TemplateRef) template !: TemplateRef<any>;
 
         // TODO(issue/24571): remove '!'.
-        @ViewChild('vc', {read: ViewContainerRef})
+        @ViewChild('vc', {read: ViewContainerRef, static: true})
         vc !: ViewContainerRef;
 
         // TODO(issue/24571): remove '!'.
