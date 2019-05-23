@@ -122,6 +122,19 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --- | ----------- | --------------------- | ----- |
 | [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
 
+{@a platform-webworker}
+### @angular/platform-webworker
+
+| API | Replacement | Deprecation announced | Notes |
+| --- | ----------- | --------------------- | ----- |
+| [All entry points](api/platform-webworker) | none | v8 | See [platform-webworker](#webworker-apps). |
+
+{@a platform-webworker-dynamic}
+### @angular/platform-webworker-dynamic
+
+| API | Replacement | Deprecation announced | Notes |
+| --- | ----------- | --------------------- | ----- |
+| [All entry points](api/platform-webworker-dynamic) | none | v8 | See [platform-webworker](#webworker-apps). |
 
 {@a upgrade}
 ### @angular/upgrade
@@ -301,6 +314,21 @@ In typical Angular project, the polyfill is not used in production builds, so de
 
 We expect to remove the polyfill from most if not all CLI projects via an `ng upgrade` migration from version 8 to 9.
 
+
+{@a webworker-apps}
+### platform-webworker Angular applications
+
+
+platform-webworker has been around since the initial release of Angular version 2. It began as an experiment to leverage Angular's rendering architecture and try something different: to run an entire web application in a web worker.
+
+We've learned a lot from this experiment, and have come to the conclusion that pushing entire applications to run in a web worker is not a recipe for success for most applications. This is due to a number of unresolved issues, including:
+
+* Poor or non-existent support for web worker APIs in web crawlers/indexers.
+* Poor support in build and bundling tooling.
+
+As a result, as of Angular version 8, we are deprecating the `platform-webworker` APIs in Angular. This consists of both NPM packages, `@angular/platform-webworker` and `@angular/platform-webworker-dynamic`.
+
+Going forward, we will focus our efforts related to web workers around their primary use case of offloading CPU-intensive but not critical work.
 
 {@a removed}
 ## Removed APIs
