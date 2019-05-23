@@ -2,7 +2,7 @@
 ​
 **Important note for library authors: This migration is especially crucial for library authors to facilitate their users upgrading to version 9 when it becomes available (approx Oct 2019).**
 
-In version 9, the default setting for `@ViewChild` and `@ContentChild` queries is changing in order to fix buggy and surprising behavior in queries (see the section below for more details on that).
+In version 9, the default setting for `@ViewChild` and `@ContentChild` queries is changing in order to fix buggy and surprising behavior in queries (read more about that [here](#what-does-this-flag-mean)).
 
 In preparation for this change, in version 8, we are migrating all applications and libraries to explicitly specify the resolution strategy for `@ViewChild` and `@ContentChild` queries.
 
@@ -35,11 +35,38 @@ Note: this flag only applies to `@ViewChild` and `@ContentChild` queries specifi
 
 ## FAQ
 
-### Does this change affect `@ViewChildren` or `@ContentChildren` queries?
+{@a what-to-do-with-todo}
+### What should I do if I see a `/* TODO: add static flag */` comment printed by the schematic?
 
-No, this change only affects `@ViewChild` and `@ContentChild` queries specifically. 
-`@ViewChildren` and `@ContentChildren` queries are already "dynamic" by default and don't support static resolution.
+If you see this comment, it means that the schematic couldn't statically figure out the correct flag. In this case, you'll have to add the correct flag based on your application's behavior. 
+For more information on how to choose, see the [next question](#how-do-i-choose).
 
+{@a how-do-i-choose}
+### How do I choose which `static` flag value to use: `true` or `false`?
+
+In the official API docs, we have always recommended retrieving query results in [`ngAfterViewInit` for view queries](https://angular.io/api/core/ViewChild#description) and [`ngAfterContentInit` for content queries](https://angular.io/api/core/ContentChild#description). 
+This is because by the time those lifecycle hooks run, change detection has completed for the relevant nodes and we can guarantee that we have collected all the possible query results. 
+
+Most applications will want to use `{static: false}` for the same reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query. 
+
+There are rarer cases where `{static: true}` flag might be necessary (see [answer here](#should-i-use-static-true)).
+
+{@a should-i-use-static-true}
+### Is there a case where I should use `{static: true}`?
+
+This option was introduced to support creating embedded views on the fly. 
+If you need access to a `TemplateRef` in a query to create a view dynamically, you won't be able to do so in `ngAfterViewInit`. 
+Change detection has already run on that view, so creating a new view with the template will cause an `ExpressionHasChangedAfterChecked` error to be thrown. 
+In this case, you will want to set the `static` flag to `true` and create your view in `ngOnInit`. 
+In most other cases, the best practice is to use `{static: false}`.
+
+However, to facilitate the migration to version 8, you may also want to set the `static` flag to `true` if your component code already depends on the query results being available some time **before** `ngAfterViewInit` (for view queries) or `ngAfterContentInit` (for content queries).
+For example, if your component relies on the query results being populated in the `ngOnInit` hook or in `@Input` setters, you will need to either set the flag to `true` or re-work your component to adjust to later timing. 
+
+Note: Selecting the static option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query. 
+These results are only retrievable after change detection runs. 
+
+{@a what-does-this-flag-mean}
 ### What does this flag mean and why is it necessary?
 
 The default behavior for queries has historically been undocumented and confusing, and has also commonly led to issues that are difficult to debug. 
@@ -90,7 +117,7 @@ Keep in mind that these categories only applied to `@ViewChild` and `@ContentChi
 
 This strategy of resolving queries at different times based on the location of potential query matches has caused a lot of confusion. Namely: 
 
-* Sometimes queries are available in `ngOnInit`, but sometimes they aren't and it's not clear why (see [21800](https://github.com/angular/angular/issues/21800) or [19872](https://github.com/angular/angular/issues/19872)).
+* Sometimes query results are available in `ngOnInit`, but sometimes they aren't and it's not clear why (see [21800](https://github.com/angular/angular/issues/21800) or [19872](https://github.com/angular/angular/issues/19872)).
 
 * `@ViewChild` queries are resolved at a different time from `@ViewChildren` queries, and `@ContentChild` queries are resolved at a different time from `@ContentChildren` queries. 
 If a user turns a `@ViewChild` query into a `@ViewChildren` query, their code can break suddenly because the timing has shifted.
@@ -107,31 +134,14 @@ This makes the logic more consistent and predictable for users.
 That said, if an application does need query results earlier (for example, the query result is needed to create an embedded view), it's possible to add the `{static: true}` flag to explicitly ask for static resolution. 
 With this flag, users can indicate that they only care about results that are statically available and the query results will be populated before `ngOnInit`.
 
-### What should I do if I see a `/* TODO: add static flag */` comment printed by the schematic?
+{@a view-children-and-content-children}
+### Does this change affect `@ViewChildren` or `@ContentChildren` queries?
 
-If you see this comment, it means that the schematic couldn't statically figure out the correct flag. In this case, you'll have to add the correct flag based on your application's behavior. 
-For more information on how to choose, see the next question.
+No, this change only affects `@ViewChild` and `@ContentChild` queries specifically. 
+`@ViewChildren` and `@ContentChildren` queries are already "dynamic" by default and don't support static resolution.
 
-### How do I choose which `static` flag value to use: `true` or `false`?
-
-In the official API docs, we have always recommended retrieving query results in [`ngAfterViewInit` for view queries](https://angular.io/api/core/ViewChild#description) and [`ngAfterContentInit` for content queries](https://angular.io/api/core/ContentChild#description). 
-This is because by the time those lifecycle hooks run, change detection has completed for the relevant nodes and we can guarantee that we have collected all the possible query results. 
-
-Most applications will want to use `{static: false}` for the same reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query. 
-
-There are rarer cases where `{static: true}` flag might be necessary (see next question).
-
-### Is there a case where I should use `{static: true}`?
-
-This option was introduced to support creating embedded views on the fly. 
-If you need to get ahold of a `TemplateRef` in a query to create a view dynamically, you won't be able to do so in `ngAfterViewInit`. 
-Change detection has already run on that view, so creating a new view with the template will cause an `ExpressionHasChangedAfterChecked` error to be thrown. 
-In this case, you will want to set the `static` flag to `true` and create your view in `ngOnInit`.
-
-Note: Selecting this option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query. 
-These results are only retrievable after change detection runs. 
-
-### ​Why generate `{static: false}`? Isn't that the default?
+{@a why-specify-static-false}
+### ​Why do I have to specify `{static: false}`? Isn't that the default?
 
 The goal of this migration is to transition apps that aren't yet on version 9 to a query pattern that is compatible with version 9. 
 However, most applications use libraries, and it's likely that some of these libraries may not be upgraded to version 8 yet (and thus might not have the proper flags). 
@@ -140,6 +150,7 @@ This way, an application's dependencies will behave the same way during the tran
 
 In Angular version 9 and later, it will be safe to remove any `{static: false}` flags and we will do this cleanup for you in a schematic.
 
+{@a libraries}
 ###  Can I keep on using Angular libraries that haven’t yet updated to version 8 yet?
 
 Yes, absolutely! 
