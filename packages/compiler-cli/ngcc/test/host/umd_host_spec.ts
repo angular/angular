@@ -27,6 +27,7 @@ runInEachFileSystem(() => {
 
     let SOME_DIRECTIVE_FILE: TestFile;
     let TOPLEVEL_DECORATORS_FILE: TestFile;
+    let CTOR_DECORATORS_ARRAY_FILE: TestFile;
     let SIMPLE_ES2015_CLASS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
     let FOO_FUNCTION_FILE: TestFile;
@@ -120,6 +121,23 @@ runInEachFileSystem(() => {
 })));`,
       };
 
+      CTOR_DECORATORS_ARRAY_FILE = {
+        name: _('/ctor_decorated_as_array.js'),
+        contents: `
+        (function (global, factory) {
+          typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+          typeof define === 'function' && define.amd ? define('ctor_decorated_as_array', ['exports', '@angular/core'], factory) :
+          (factory(global.ctor_decorated_as_array,global.ng.core));
+        }(this, (function (exports,core) { 'use strict';
+            var CtorDecoratedAsArray = (function() {
+            function CtorDecoratedAsArray(arg1) {
+            }
+            CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
+            return CtorDecoratedAsArray;
+          }());
+          exports.CtorDecoratedAsArray = CtorDecoratedAsArray;
+        })));`,
+      };
 
       SIMPLE_ES2015_CLASS_FILE = {
         name: _('/simple_es2015_class.d.ts'),
@@ -358,15 +376,6 @@ runInEachFileSystem(() => {
     var NoParameters = (function() {
     function NoParameters() {}
     return NoParameters;
-  }());
-
-  var ArrowFunction = (function() {
-    function ArrowFunction(arg1) {
-    }
-    ArrowFunction.ctorParameters = () => [
-      { type: 'ParamType', decorators: [{ type: core.Inject },] }
-    ];
-    return ArrowFunction;
   }());
 
   var NotArrayLiteral = (function() {
@@ -1389,6 +1398,21 @@ runInEachFileSystem(() => {
           'TemplateRef',
           null,
         ]);
+      });
+
+      it('should accept `ctorParameters` as an array', () => {
+        loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
+        const {program, host: compilerHost} =
+            makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
+        const host = new UmdReflectionHost(new MockLogger(), false, program, compilerHost);
+        const classNode = getDeclaration(
+            program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
+            isNamedVariableDeclaration);
+        const parameters = host.getConstructorParameters(classNode) !;
+
+        expect(parameters).toBeDefined();
+        expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
+        expectTypeValueReferencesForParameters(parameters, ['ParamType']);
       });
 
       it('should throw if the symbol is not a class', () => {
