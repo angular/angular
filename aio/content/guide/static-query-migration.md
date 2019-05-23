@@ -33,6 +33,8 @@ Starting with version 9, the `static` flag will default to false.
 
 At that time, any `{static: false}` flags can be safely removed, and we will have a schematic that will update your code for you.
 
+Note: this flag only applies to @ViewChild and @ContentChild queries specifically, as @ViewChildren and @ContentChildren queries do not have a concept of static and dynamic (they are always resolved as if they are "dynamic").
+
 ## FAQ
 
 ### Does this change affect `@ViewChildren` or `@ContentChildren` queries?
@@ -136,7 +138,7 @@ This is because by the time those lifecycle hooks run, change detection has comp
 
 Most applications will want to use `{static: false}` for the same reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query. 
 
-There are rarer cases where `{static: true}` flag might be necessary. See next question.
+There are rarer cases where `{static: true}` flag might be necessary (see next question).
 
 ### Is there a case where I should use `{static: true}`?
 
@@ -154,7 +156,7 @@ These results are only retrievable after change detection runs.
 
 ### ​Why generate {static: false}? Isn't that the default?
 
-The point of this migration is to transition apps that aren't yet on v9 to a query pattern that is compatible with v9. 
+The point of this migration is to transition apps that aren't yet on version 9 to a query pattern that is compatible with version 9. 
 
 However, most applications use libraries, and it's likely that some of these libraries may not be upgraded to version 8 (and thus might not have the proper flags). 
 
