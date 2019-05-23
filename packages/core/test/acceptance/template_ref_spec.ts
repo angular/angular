@@ -25,7 +25,7 @@ describe('TemplateRef', () => {
         exportAs: 'menuContent'
       })
       class MenuContent {
-        @ViewChild(TemplateRef) template !: TemplateRef<any>;
+        @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
       }
 
       @Component({
@@ -37,7 +37,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild(MenuContent) content !: MenuContent;
+        @ViewChild(MenuContent, {static: false}) content !: MenuContent;
 
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
@@ -65,7 +65,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild('templateRef')
+        @ViewChild('templateRef', {static: true})
         templateRef !: TemplateRef<any>;
       }
 
@@ -94,7 +94,7 @@ describe('TemplateRef', () => {
             `
           })
           class App {
-            @ViewChild('templateRef')
+            @ViewChild('templateRef', {static: true})
             templateRef !: TemplateRef<any>;
           }
 
@@ -120,7 +120,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild('templateRef')
+        @ViewChild('templateRef', {static: true})
         templateRef !: TemplateRef<any>;
       }
 
@@ -149,7 +149,7 @@ describe('TemplateRef', () => {
         `
       })
       class App {
-        @ViewChild('templateRef')
+        @ViewChild('templateRef', {static: true})
         templateRef !: TemplateRef<any>;
       }
 
