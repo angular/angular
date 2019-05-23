@@ -9,8 +9,8 @@ In version 9, the default setting for `@ViewChild` and `@ContentChild` queries i
 In preparation for this change, in version 8, we are migrating all applications and libraries to explicitly specify the resolution strategy for 
 `@ViewChild` and `@ContentChild` queries.
 
-Specifically, this migration adds an explicit "static" flag that dictates when that query should be filled. Adding this flag will ensure your code works 
-the same way when upgrading to version 9.   
+Specifically, this migration adds an explicit "static" flag that dictates when that query's results should be assigned. Adding this flag will ensure 
+your code works the same way when upgrading to version 9.   
 
 Before:
 
@@ -34,10 +34,12 @@ OR
 Starting with version 9, the `static` flag will default to false. At this time, any `{static: false}` flags can be safely removed, and we will have a schematic 
 that will update your code for you.
 
-Note: this flag only applies to `@ViewChild` and `@ContentChild` queries specifically, as `@ViewChildren` and `@ContentChildren` queries do not have a concept of 
-static and dynamic (they are always resolved as if they are "dynamic").
-
 ## FAQ
+
+### Does this change affect `@ViewChildren` or `@ContentChildren` queries?
+
+No, this change only affects `@ViewChild` and `@ContentChild` queries specifically. `@ViewChildren` and `@ContentChildren` queries are already "dynamic" by default and don't support 
+static resolution.
 
 ### What does this flag mean and why is it necessary?
 
@@ -50,12 +52,10 @@ Without the `static` flag, the compiler decided when each query would be resolve
 categorized into one of two buckets at compile time: "static" or "dynamic". This classification determined when query results would become available to users.
 
 - **Static queries** were queries where the result could be determined statically because the result didn't depend on runtime values like bindings. Results from 
-queries sorted as static were available before change detection ran for that view (accessible in `ngOnInit`).
+queries classified as static were available before change detection ran for that view (accessible in `ngOnInit`).
 
-- **Dynamic queries** were queries where the result could NOT be determined statically bec
-
-ause the result depended on runtime values (aka bindings). Results from 
-queries sorted as dynamic were not available until after change detection ran for that view (accessible in `ngAfterContentInit` for content queries or 
+- **Dynamic queries** were queries where the result could NOT be determined statically because the result depended on runtime values (aka bindings). Results from 
+queries classified as dynamic were not available until after change detection ran for that view (accessible in `ngAfterContentInit` for content queries or 
 `ngAfterViewInit` for view queries).
 
 For example, let's say we have a component, `Comp`. Inside it, we have this query:
@@ -70,7 +70,7 @@ and this template:
 <div foo></div>
 ```
 
-This `Foo` query would be categorized as static because at compile-time it's known that the `Foo` instance on the <div> is the correct result for the query. Because 
+This `Foo` query would be categorized as static because at compile-time it's known that the `Foo` instance on the `<div>` is the correct result for the query. Because 
 the query result is not dependent on runtime values, we don't have to wait for change detection to run on the template before resolving the query. Consequently, 
 results can be made available in `ngOnInit`.
 
@@ -83,6 +83,8 @@ Let's say the query is the same, but the component template looks like this:
 With that template, the query would be categorized as a dynamic query. We would need to know the runtime value of `showing` before determining what the correct results 
 are for the query. As a result, change detection must run first, and results can only be made available in `ngAfterViewInit` or a setter for the query property.
 
+The effect of this implementation is that adding an `*ngIf` or `*ngFor` anywhere above a query match can change when that query's results become available. 
+
 Keep in mind that these categories only applied to `@ViewChild` and `@ContentChild` queries specifically. `@ViewChildren` and `@ContentChildren` queries did not have a 
 concept of static and dynamic, so they were always resolved as if they were "dynamic".
 
@@ -92,7 +94,7 @@ This strategy of resolving queries at different times based on the location of p
 [19872](https://github.com/angular/angular/issues/19872)).
 * `@ViewChild` queries are resolved at a different time from `@ViewChildren` queries, and `@ContentChild` queries are resolved at a different time from `@ContentChildren` 
 queries. If a user turns a `@ViewChild` query into a `@ViewChildren` query, their code can break suddenly because the timing has shifted. 
-* Code depending on a query result can suddenly stop working as soon as an *ngIf or an *ngFor is added to a template.
+* Code depending on a query result can suddenly stop working as soon as an `*ngIf` or an `*ngFor` is added to a template.
 * A `@ContentChild` query for the same component will resolve at different times in the lifecycle for each usage of the component. This leads to buggy behavior where using 
 a component with *ngIf is broken in subtle ways that aren't obvious to the component author.
 
@@ -101,9 +103,8 @@ when the query result will become available and suddenly break your code, and th
 for users. 
 
 That said, if an application does need query results earlier (for example, the query result is needed to create an embedded view), it's possible to add the `{static: true}` 
-flag to explicitly ask for static resolution. With this flag, users can indicate that they only care about results that are statically available.
-
-Using this flag will ensure that the query will run the same way when version 9 comes around.
+flag to explicitly ask for static resolution. With this flag, users can indicate that they only care about results that are statically available and the query results will 
+be populated before `ngOnInit`.
 
 ### What should I do if I see a `/* TODO: add static flag */` comment printed by the schematic?
 
@@ -132,9 +133,4 @@ that some of these libraries may not be upgraded to version 8 (and thus might no
 components will change and possibly break. This way, an application's dependencies will behave the same during the transition. 
 
 In Angular v9 and later, it will be safe to remove any `{static: false}` flags and we will do this cleanup for you in a schematic.
-
-### Does this change affect `@ViewChildren` or `@ContentChildren` queries?
-
-No, this change only affects ViewChild and ContentChild queries specifically. `@ViewChildren` and `@ContentChildren` queries are already "dynamic" by default and don't support 
-static resolution.
 
