@@ -55,7 +55,7 @@ export class OnChangesParentComponent {
   hero: Hero;
   power: string;
   title = 'OnChanges';
-  @ViewChild(OnChangesComponent) childView: OnChangesComponent;
+  @ViewChild(OnChangesComponent, {static: false}) childView: OnChangesComponent;
 
   constructor() {
     this.reset();

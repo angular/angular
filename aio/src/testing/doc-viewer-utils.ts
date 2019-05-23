@@ -37,7 +37,7 @@ export class TestDocViewerComponent extends DocViewerComponent {
 })
 export class TestParentComponent {
   currentDoc?: DocumentContents|null;
-  @ViewChild(DocViewerComponent) docViewer: DocViewerComponent;
+  @ViewChild(DocViewerComponent, {static: true}) docViewer: DocViewerComponent;
 }
 
 // Mock services.

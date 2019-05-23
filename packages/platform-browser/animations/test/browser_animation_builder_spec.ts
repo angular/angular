@@ -51,7 +51,7 @@ import {el} from '../../testing/src/browser_util';
            template: '...',
          })
          class Cmp {
-           @ViewChild('target') public target: any;
+           @ViewChild('target', {static: false}) public target: any;
 
            constructor(public builder: AnimationBuilder) {}
 
