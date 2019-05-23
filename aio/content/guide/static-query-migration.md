@@ -96,7 +96,7 @@ This strategy of resolving queries at different times based on the location of p
 queries. If a user turns a `@ViewChild` query into a `@ViewChildren` query, their code can break suddenly because the timing has shifted. 
 * Code depending on a query result can suddenly stop working as soon as an `*ngIf` or an `*ngFor` is added to a template.
 * A `@ContentChild` query for the same component will resolve at different times in the lifecycle for each usage of the component. This leads to buggy behavior where using 
-a component with *ngIf is broken in subtle ways that aren't obvious to the component author.
+a component with `*ngIf` is broken in subtle ways that aren't obvious to the component author.
 
 In version 9, we plan to simplify the behavior so all queries resolve after change detection runs by default. The location of query matches in the template cannot affect 
 when the query result will become available and suddenly break your code, and the default behavior is always the same. This makes the logic more consistent and predictable 
@@ -125,6 +125,9 @@ Most applications will want to use `{static: false}` for the same reason. This s
 This option was introduced to support creating embedded views on the fly. If you need to get ahold of a `TemplateRef` in a query to create a view dynamically, you won't be able 
 to do so in `ngAfterViewInit`. Change detection has already run on that view, so creating a new view with the template will cause an `ExpressionHasChangedAfterChecked` error to 
 be thrown. In this case, you will want to set the `static` flag to `true` and create your view in `ngOnInit`.
+
+Note: Selecting this option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query. These results are only retrievable after change detection 
+runs. 
 
 ### ​Why generate {static: false}? Isn't that the default?
 
