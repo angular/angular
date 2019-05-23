@@ -80,6 +80,26 @@ describe('ScrollService', () => {
        expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
      }));
 
+  it('should not support `manual` scrollRestoration when it is not writable', () => {
+    const original = Object.getOwnPropertyDescriptor(window.history, 'scrollRestoration');
+    try {
+      Object.defineProperty(window.history, 'scrollRestoration', {
+        value: 'auto',
+        configurable: true,
+      });
+      scrollService = createScrollService(
+          document, platformLocation as PlatformLocation, viewportScrollerStub, location);
+
+      expect(scrollService.supportManualScrollRestoration).toBe(false);
+    } finally {
+      if (original !== undefined) {
+        Object.defineProperty(window.history, 'scrollRestoration', original);
+      } else {
+        delete window.history.scrollRestoration;
+      }
+    }
+  });
+
   it('should set `scrollRestoration` to `manual` if supported', () => {
     if (scrollService.supportManualScrollRestoration) {
       expect(window.history.scrollRestoration).toBe('manual');

@@ -24,8 +24,7 @@ export class ScrollService implements OnDestroy {
   poppedStateScrollPosition: ScrollPosition|null = null;
   // Whether the browser supports the necessary features for manual scroll restoration.
   supportManualScrollRestoration: boolean = !!window && ('scrollTo' in window) &&
-      ('scrollX' in window) && ('scrollY' in window) && !!history &&
-      ('scrollRestoration' in history);
+      ('scrollX' in window) && ('scrollY' in window) && isScrollRestorationWritable();
 
   // Offset from the top of the document to bottom of any static elements
   // at the top (e.g. toolbar) + some margin
@@ -242,4 +241,21 @@ export class ScrollService implements OnDestroy {
   private getCurrentHash() {
     return decodeURIComponent(this.platformLocation.hash.replace(/^#/, ''));
   }
+}
+
+/**
+ * We need to check whether we can write to `history.scrollRestoration`
+ *
+ * We do this by checking the property descriptor of the property, but
+ * it might actually be defined on the `history` prototype not the instance.
+ *
+ * In this context "writable" means either than the property is a `writable`
+ * data file or a property that has a setter.
+ */
+function isScrollRestorationWritable() {
+  const scrollRestorationDescriptor =
+      Object.getOwnPropertyDescriptor(history, 'scrollRestoration') ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(history), 'scrollRestoration');
+  return scrollRestorationDescriptor !== undefined &&
+      !!(scrollRestorationDescriptor.writable || scrollRestorationDescriptor.set);
 }
