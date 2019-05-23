@@ -143,7 +143,7 @@ describe('acceptance integration tests', () => {
            template: '<ng-template testDirective><ng-container>content</ng-container></ng-template>'
          })
          class App {
-           @ViewChild(TestDirective) testDirective !: TestDirective;
+           @ViewChild(TestDirective, {static: true}) testDirective !: TestDirective;
          }
 
          TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -213,7 +213,7 @@ describe('acceptance integration tests', () => {
             '<ng-template testDirective><ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container></ng-template>'
       })
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective, {static: true}) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -243,7 +243,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<div><ng-container dir></ng-container></div>'})
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -273,7 +273,7 @@ describe('acceptance integration tests', () => {
             '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
       })
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -303,7 +303,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<ng-container><ng-template dir>Content</ng-template></ng-container>'})
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective, {static: false}) testDirective !: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -608,7 +608,8 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<todo></todo>'})
       class App {
-        @ViewChild(TodoComponentHostBinding) todoComponentHostBinding !: TodoComponentHostBinding;
+        @ViewChild(TodoComponentHostBinding, {static: false})
+        todoComponentHostBinding !: TodoComponentHostBinding;
       }
 
       TestBed.configureTestingModule({declarations: [App, TodoComponentHostBinding]});
@@ -843,7 +844,7 @@ describe('acceptance integration tests', () => {
 
         @Component({template: '<div hostBindingDir></div>'})
         class App {
-          @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+          @ViewChild(HostBindingDir, {static: false}) hostBindingDir !: HostBindingDir;
         }
 
         TestBed.configureTestingModule({declarations: [App, HostBindingDir]});
@@ -1011,7 +1012,7 @@ describe('acceptance integration tests', () => {
           `
         })
         class App {
-          @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+          @ViewChild(StructuralComp, {static: false}) structuralComp !: StructuralComp;
           value: any;
         }
 
@@ -1052,7 +1053,8 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
            class App {
-             @ViewChild(DirWithClassDirective) mockClassDirective !: DirWithClassDirective;
+             @ViewChild(DirWithClassDirective, {static: false})
+             mockClassDirective !: DirWithClassDirective;
            }
 
            TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
@@ -1067,7 +1069,8 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div style="width:100px;height:200px" DirWithStyle></div>'})
            class App {
-             @ViewChild(DirWithStyleDirective) mockStyleDirective !: DirWithStyleDirective;
+             @ViewChild(DirWithStyleDirective, {static: false})
+             mockStyleDirective !: DirWithStyleDirective;
            }
 
            TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
@@ -1085,7 +1088,8 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div DirWithClass [class]="value"></div>'})
            class App {
-             @ViewChild(DirWithClassDirective) mockClassDirective !: DirWithClassDirective;
+             @ViewChild(DirWithClassDirective, {static: false})
+             mockClassDirective !: DirWithClassDirective;
              value = '';
            }
 
@@ -1103,7 +1107,8 @@ describe('acceptance integration tests', () => {
               () => {
                 @Component({template: '<div DirWithStyle [style]="value"></div>'})
                 class App {
-                  @ViewChild(DirWithStyleDirective) mockStyleDirective !: DirWithStyleDirective;
+                  @ViewChild(DirWithStyleDirective, {static: false})
+                  mockStyleDirective !: DirWithStyleDirective;
                   value !: {[key: string]: string};
                 }
 
@@ -1179,7 +1184,7 @@ describe('acceptance integration tests', () => {
             `
                 })
                 class App {
-                  @ViewChild(DirWithSingleStylingBindings)
+                  @ViewChild(DirWithSingleStylingBindings, {static: false})
                   dirInstance !: DirWithSingleStylingBindings;
                 }
 
@@ -1235,8 +1240,8 @@ describe('acceptance integration tests', () => {
                 @Component(
                     {template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
                 class App {
-                  @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
-                  @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
+                  @ViewChild(Dir1WithStyle, {static: false}) dir1Instance !: Dir1WithStyle;
+                  @ViewChild(Dir2WithStyle, {static: false}) dir2Instance !: Dir2WithStyle;
                   width: string|null = null;
                 }
 
@@ -1300,8 +1305,8 @@ describe('acceptance integration tests', () => {
                       '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
                 })
                 class App {
-                  @ViewChild(Dir1WithStyling) dir1Instance !: Dir1WithStyling;
-                  @ViewChild(Dir2WithStyling) dir2Instance !: Dir2WithStyling;
+                  @ViewChild(Dir1WithStyling, {static: false}) dir1Instance !: Dir1WithStyling;
+                  @ViewChild(Dir2WithStyling, {static: false}) dir2Instance !: Dir2WithStyling;
                   stylesExp: any = {};
                   classesExp: any = {};
                 }
@@ -1491,7 +1496,7 @@ describe('acceptance integration tests', () => {
     @Component(
         {selector: 'test-component', template: `foo`, host: {'[attr.aria-disabled]': 'true'}})
     class TestComponent {
-      @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+      @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
     }
 
     TestBed.configureTestingModule({declarations: [TestComponent]});
