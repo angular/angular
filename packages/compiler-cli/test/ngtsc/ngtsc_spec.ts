@@ -1537,10 +1537,10 @@ describe('ngtsc behavioral tests', () => {
           }
         })
         class FooCmp {
-          @ContentChild('bar', {read: TemplateRef}) child: any;
+          @ContentChild('bar', {read: TemplateRef, static: false}) child: any;
           @ContentChildren(TemplateRef) children: any;
           get aview(): any { return null; }
-          @ViewChild('accessor') set aview(value: any) {}
+          @ViewChild('accessor', {static: false}) set aview(value: any) {}
         }
     `);
 
@@ -1569,7 +1569,7 @@ describe('ngtsc behavioral tests', () => {
           }
         })
         class FooCmp {
-          @ContentChild('bar', {read: TemplateRef}) child: any;
+          @ContentChild('bar', {read: TemplateRef, static: false}) child: any;
           @ContentChildren(TemplateRef) children: any;
           get aview(): any { return null; }
           @ViewChild('accessor') set aview(value: any) {}
@@ -1601,11 +1601,11 @@ describe('ngtsc behavioral tests', () => {
           template: '<div #foo></div>',
         })
         class FooCmp {
-          @ContentChild(forwardRef(() => TemplateRef)) child: any;
+          @ContentChild(forwardRef(() => TemplateRef), {static: false}) child: any;
 
-          @ContentChild(forwardRef(function() { return ViewContainerRef; })) child2: any;
+          @ContentChild(forwardRef(function() { return ViewContainerRef; }), {static: false}) child2: any;
 
-          @ContentChild((forwardRef((function() { return 'parens'; }) as any))) childInParens: any;
+          @ContentChild((forwardRef((function() { return 'parens'; }) as any)), {static: false}) childInParens: any;
         }
     `);
 
