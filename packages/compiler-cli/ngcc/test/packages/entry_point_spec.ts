@@ -10,7 +10,7 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {getEntryPointInfo} from '../../src/packages/entry_point';
+import {SUPPORTED_FORMAT_PROPERTIES, getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -178,6 +178,43 @@ runInEachFileSystem(() => {
       expect(entryPoint).toBe(null);
     });
 
+    for (let prop of SUPPORTED_FORMAT_PROPERTIES) {
+      // Ignore the UMD format
+      if (prop === 'main') continue;
+      // Let's give 'module' a specific path, otherwise compute it based on the property.
+      const typingsPath = prop === 'module' ? 'index' : `${prop}/missing_typings`;
+
+      it(`should return an object if it can guess the typings path from the "${prop}" field`, () => {
+        loadTestFiles([
+          {
+            name: _('/project/node_modules/some_package/missing_typings/package.json'),
+            contents: createPackageJson('missing_typings', {excludes: ['typings']}),
+          },
+          {
+            name: _(
+                `/project/node_modules/some_package/missing_typings/${typingsPath}.metadata.json`),
+            contents: 'some meta data',
+          },
+          {
+            name: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+            contents: '// some typings file',
+          },
+        ]);
+        const config = new NgccConfiguration(fs, _('/project'));
+        const entryPoint = getEntryPointInfo(
+            fs, config, new MockLogger(), SOME_PACKAGE,
+            _('/project/node_modules/some_package/missing_typings'));
+        expect(entryPoint).toEqual({
+          name: 'some_package/missing_typings',
+          package: SOME_PACKAGE,
+          path: _('/project/node_modules/some_package/missing_typings'),
+          typings: _(`/project/node_modules/some_package/missing_typings/${typingsPath}.d.ts`),
+          packageJson: loadPackageJson(fs, '/project/node_modules/some_package/missing_typings'),
+          compiledByAngular: true,
+        });
+      });
+    }
+
     it('should return an object with `compiledByAngular` set to false if there is no metadata.json file next to the typing file',
        () => {
          loadTestFiles([
@@ -311,9 +348,11 @@ runInEachFileSystem(() => {
       [typingsProp]: `./${packageName}.d.ts`,
       fesm2015: `./fesm2015/${packageName}.js`,
       esm2015: `./esm2015/${packageName}.js`,
-      fesm5: `./fesm2015/${packageName}.js`,
-      esm5: `./esm2015/${packageName}.js`,
+      es2015: `./es2015/${packageName}.js`,
+      fesm5: `./fesm5/${packageName}.js`,
+      esm5: `./esm5/${packageName}.js`,
       main: `./bundles/${packageName}.umd.js`,
+      module: './index.js',
     };
     if (excludes) {
       excludes.forEach(exclude => delete packageJson[exclude]);
