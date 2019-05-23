@@ -556,8 +556,8 @@ export function ɵɵi18nPostprocess(
     const templateIdsStack: number[] = [ROOT_TEMPLATE_ID];
     result = result.replace(PP_PLACEHOLDERS_REGEXP, (m: any, phs: string, tmpl: string): string => {
       const content = phs || tmpl;
-      if (!matches[content]) {
-        const placeholders: PostprocessPlaceholder[] = [];
+      const placeholders: PostprocessPlaceholder[] = matches[content] || [];
+      if (!placeholders.length) {
         content.split('|').forEach((placeholder: string) => {
           const match = placeholder.match(PP_TEMPLATE_ID_REGEXP);
           const templateId = match ? parseInt(match[1], 10) : ROOT_TEMPLATE_ID;
@@ -566,11 +566,12 @@ export function ɵɵi18nPostprocess(
         });
         matches[content] = placeholders;
       }
-      if (!matches[content].length) {
+
+      if (!placeholders.length) {
         throw new Error(`i18n postprocess: unmatched placeholder - ${content}`);
       }
+
       const currentTemplateId = templateIdsStack[templateIdsStack.length - 1];
-      const placeholders = matches[content];
       let idx = 0;
       // find placeholder index that matches current template id
       for (let i = 0; i < placeholders.length; i++) {
@@ -590,12 +591,6 @@ export function ɵɵi18nPostprocess(
       placeholders.splice(idx, 1);
       return placeholder;
     });
-
-    // verify that we injected all values
-    const hasUnmatchedValues = Object.keys(matches).some(key => !!matches[key].length);
-    if (hasUnmatchedValues) {
-      throw new Error(`i18n postprocess: unmatched values - ${JSON.stringify(matches)}`);
-    }
   }
 
   // return current result if no replacements specified
