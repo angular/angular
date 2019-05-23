@@ -31,7 +31,7 @@ OR
 @ViewChild('foo', {static: false}) foo: ElementRef;
 ```
 
-Starting with version 9, the `static` flag will default to false. At this time, any `{static: false}` flags can be safely removed, and we will have a schematic 
+Starting with version 9, the `static` flag will default to false. At that time, any `{static: false}` flags can be safely removed, and we will have a schematic 
 that will update your code for you.
 
 ## FAQ
