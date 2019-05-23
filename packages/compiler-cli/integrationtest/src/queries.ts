@@ -15,7 +15,7 @@ export class CompForChildQuery {
 @Component(
     {selector: 'comp-with-child-query', template: '<comp-for-child-query></comp-for-child-query>'})
 export class CompWithChildQuery {
-  @ViewChild(CompForChildQuery) child: CompForChildQuery;
+  @ViewChild(CompForChildQuery, {static: true}) child: CompForChildQuery;
   @ViewChildren(CompForChildQuery) children: QueryList<CompForChildQuery>;
 }
 

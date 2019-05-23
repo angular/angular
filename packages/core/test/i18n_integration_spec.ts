@@ -575,7 +575,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
       class DivQuery {
         // TODO(issue/24571): remove '!'.
-        @ContentChild(TemplateRef) template !: TemplateRef<any>;
+        @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
 
         // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef, static: true})
