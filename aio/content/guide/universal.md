@@ -203,7 +203,7 @@ Universal 앱을 만들려면 `platform-server` 패키지를 설치해야 하는
 <!--
 ## Preparing for server-side rendering
 -->
-## 서버사이드 렌더링 준비하기
+## 서버 사이드 렌더링 준비하기
 
 <!--
 Before your app can be rendered on a server, you must make changes in the app itself, and also set up the server.
@@ -235,7 +235,7 @@ The following sections go into each of these main steps in more detail.
   -->
   **참고:** 아래에서 다루는 [Universal 튜토리얼](#the-example)은 "히어로들의 여행" 튜토리얼을 확장하는 방식으로 살펴봅니다.
 
-  서버사이드 렌더링이 동작하는 앱을 직접 실행해보려면 [Angular Universal starter](https://github.com/angular/universal-starter) 레파지토리를 복제해서 실행해도 됩니다.
+  서버 사이드 렌더링이 동작하는 앱을 직접 실행해보려면 [Angular Universal starter](https://github.com/angular/universal-starter) 레파지토리를 복제해서 실행해도 됩니다.
 
 </div>
 
@@ -273,7 +273,7 @@ Universal 앱이 또 다른 인증 서버로 HTTP 요청을 보낼 때 이 부�
 <!--
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 -->
-먼저, 프로젝트에 `@angular/platform-server` 패키지를 설치합니다. 이때 패키지 버전은 프로젝트에 이미 설치되어 있는 `@angular` 패키지의 버전과 같은 버전을 설치하면 됩니다. 그리고 웹팩으로 빌드하기 위해 `ts-loader`를 추가로 설치하고, 서버사이드 렌더링하면서 지연로딩을 사용하기 위해 `@nguniversal/module-map-ngfactory-loader`도 설치합니다.
+먼저, 프로젝트에 `@angular/platform-server` 패키지를 설치합니다. 이때 패키지 버전은 프로젝트에 이미 설치되어 있는 `@angular` 패키지의 버전과 같은 버전을 설치하면 됩니다. 그리고 웹팩으로 빌드하기 위해 `ts-loader`를 추가로 설치하고, 서버 사이드 렌더링하면서 지연로딩을 사용하기 위해 `@nguniversal/module-map-ngfactory-loader`도 설치합니다.
 
 ```
 $ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
@@ -710,21 +710,25 @@ you should swap in the real client app as quickly as possible for a proper inter
 -->
 Universal `platform-server` 앱은 브라우저에서 실행되지 않기 때문에 브라우저 API를 직접 활용할 수 없습니다.
 
-그래서 서버사이드 페이지는 브라우저에만 존재하는 `window`나 `document`, `navigator`, `location`과 같은 네이티브 API를 참조할 수 없습니다.
-서버사이드 페이지에서 이 API를 사용하지 않는다면 문제되지 않습니다.
+그래서 서버 사이드 페이지는 브라우저에만 존재하는 `window`나 `document`, `navigator`, `location`과 같은 네이티브 API를 참조할 수 없습니다.
+서버 사이드 페이지에서 이 API를 사용하지 않는다면 문제되지 않습니다.
 하지만 이 API를 사용해야 한다면 Angular가 추상 클래스로 제공하는 `Localtion`이나 `Document`를 의존성으로 주입받아 사용해야 합니다.
 그리고 Angular가 제공하는 추상 클래스로 해결할 수 없다면 개발자가 직접 이 추상 클래스를 정의해야 합니다.
 
-이와 비슷하게, 마우스 이벤트나 키보드 이벤트도 서버사이드 앱에는 존재하지 않습니다. 서버에서 페이지를 렌더링하는데 컴포넌트를 표시하는 버튼을 누를 사용자가 없기 때문입니다.
-그렇다면 서버사이드 앱은 클라이언트의 요청만으로 온전히 렌더링할 수 있는 로직으로 작성해야 합니다.
+이와 비슷하게, 마우스 이벤트나 키보드 이벤트도 서버 사이드 앱에는 존재하지 않습니다. 서버에서 페이지를 렌더링하는데 컴포넌트를 표시하는 버튼을 누를 사용자가 없기 때문입니다.
+그렇다면 서버 사이드 앱은 클라이언트의 요청만으로 온전히 렌더링할 수 있는 로직으로 작성해야 합니다.
 이 방식은 앱을 [라우팅할 수 있도록](guide/router) 구현한다는 측면에서도 활용할 수 있습니다.
 
 결국 서버에서 렌더링된 페이지에서는 사용자가 링크를 클릭한다는 방식을 활용할 수 없기 때문에, 이와 유사한 UX를 제공할 수 있도록 구현방식을 수정해야 할 수도 있습니다.
 
 {@a the-example}
 
+<!--
 ## Universal tutorial 
+-->
+## Universal 튜토리얼
 
+<!--
 The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough. 
 
 The core application files are mostly untouched, with a few exceptions described below.
@@ -735,6 +739,16 @@ In this example, the Angular CLI compiles and bundles the Universal version of t
 A Node Express web server turns client requests into the HTML pages rendered by Universal.
 
 To create server-side app module, `app.server.module.ts`, run the following CLI command.
+-->
+이번 섹션에서는 [히어로들의 여행](tutorial)을 기반으로 Universal에 대해 알아봅시다.
+
+이 튜토리얼의 기본 기능은 수정하지 않습니다.
+튜토리얼을 Universal 버전으로 빌드하고 서비스하기 위해 파일을 몇 개 추가해 봅시다.
+
+그리고 이번에는 Universal 버전의 앱은 [Ahead-of-Time (AoT) 컴파일러](guide/aot-compiler)로 컴파일하고 번들링합니다.
+Node Express 웹 서버는 클라이언트가 보낸 요청에 대한 응답으로 Universal 버전으로 렌더링된 HTML 페이지를 보냅니다.
+
+서버 사이드 앱 모듈 `app.server.module.ts`을 만들기 위해 Angular CLI로 다음 명령을 실행합니다.
 
 <code-example format="." language="bash">
 
@@ -742,33 +756,43 @@ ng add @nguniversal/express-engine --clientProject angular.io-example
 
 </code-example>
 
+<!--
 The command creates the following folder structure.
+-->
+그러면 다음과 같은 폴더 구조가 생성됩니다.
 
 <code-example format="." language="none" linenums="false">
 src/
-  index.html                 <i>app web page</i>
-  main.ts                    <i>bootstrapper for client app</i>
-  main.server.ts             <i>* bootstrapper for server app</i>
-  tsconfig.app.json          <i>TypeScript client configuration</i>
-  tsconfig.server.json       <i>* TypeScript server configuration</i>
-  tsconfig.spec.json         <i>TypeScript spec configuration</i>
-  style.css                  <i>styles for the app</i>
-  app/ ...                   <i>application code</i>
-    app.server.module.ts     <i>* server-side application module</i>
-server.ts                    <i>* express web server</i>
-tsconfig.json                <i>TypeScript client configuration</i>
-package.json                 <i>npm configuration</i>
-webpack.server.config.js     <i>* webpack server configuration</i>
+  index.html                 <i>앱이 시작되는 웹 페이지</i>
+  main.ts                    <i>클라이언트에서 앱을 부트스트랩하는 파일</i>
+  main.server.ts             <i>* 서버에서 앱을 부트스트랩하는 파일</i>
+  tsconfig.app.json          <i>TypeScript 클라이언트 환경설정 파일</i>
+  tsconfig.server.json       <i>* TypeScript 서버 환경설정 파일</i>
+  tsconfig.spec.json         <i>TypeScript 테스트 환경설정 파일</i>
+  style.css                  <i>앱 전역 스타일</i>
+  app/ ...                   <i>애플리케이션 코드</i>
+    app.server.module.ts     <i>* 서버 사이드 애플리케이션 모듈</i>
+server.ts                    <i>* express 웹 서버</i>
+tsconfig.json                <i>TypeScript 클라이언트 환경설정 파일</i>
+package.json                 <i>npm 설정 파일</i>
+webpack.server.config.js     <i>* webpack 서버 설정 파일</i>
 </code-example>
 
+<!--
 The files marked with `*` are new and not in the original tutorial sample.
 This guide covers them in the sections below.
-
+-->
+위 폴더 구조에서 `*`로 표시된 파일이 새로 추가된 파일입니다.
+이 문서에서는 이 파일들에 대해 다룹니다.
 
 {@a http-urls}
 
+<!--
 ### Using absolute URLs for server requests
+-->
+### 서버에서 절대 URL로 요청 보내기
 
+<!--
 The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
 In a Universal app, HTTP URLs must be _absolute_ (for example, `https://my-server.com/api/heroes`) even when the Universal web server is capable of handling relative requests.
@@ -778,27 +802,54 @@ One solution is to provide the server's runtime origin under Angular's [`APP_BAS
 inject it into the service, and prepend the origin to the request URL.
 
 Start by changing the `HeroService` constructor to take a second `origin` parameter that is optionally injected via the `APP_BASE_HREF` token.
+-->
+튜토리얼에서 `HeroService`와 `HeroSearchService`는 Angular `HttpClient` 모듈을 사용해서 애플리케이션 데이터를 가져옵니다.
+그리고 이 서비스들은 `api/heroes`와 같은 _상대_ URL을 사용합니다.
+하지만 Universal 앱에서는 서버가 상대주소를 지원하더라도 반드시 _절대_ 주소(ex. `https://my-server.com/api/heroes`)를 사용해야 합니다.
+그래서 애플리케이션에 있는 서비스는 서버로 요청을 보낼 때 절대 URL을 사용해야 하며, 브라우저에서 실행될 때는 상대 URL을 사용해야 합니다.
 
+두 경우를 모두 커버하려면 서버 사이드 앱에서는 서비스에 Angular [`APP_BASE_HREF`](api/common/APP_BASE_HREF) 토큰을 의존성으로 주입해서 서버로 요청하는 URL을 조정해야 합니다.
+
+그래서 `APP_BASE_HREF` 토큰을 `HeroService`의 생성자의 두 번째 인자로 주입받도록 다음과 같이 수정합니다.
+
+<!--
 <code-example path="universal/src/app/hero.service.ts" region="ctor" header="src/app/hero.service.ts (constructor with optional origin)">
 </code-example>
+-->
+<code-example path="universal/src/app/hero.service.ts" region="ctor" header="src/app/hero.service.ts (옵션 인자 origin을 추가한 생성자)">
+</code-example>
 
+<!--
 The constructor uses the `@Optional()` directive to prepend the origin to `heroesUrl` _if it exists_.
 You don't provide `APP_BASE_HREF` in the browser version, so `heroesUrl` remains relative.
+-->
+이 때 생성자에는 `APP_BASE_HREF`가 _존재할 때만_ 의존성을 주입하기 위해 `@Optional()` 디렉티브를 사용했습니다.
+앱이 브라우저에서 실행될 때는 `APP_BASE_HREF`를 지정하지 않기 때문에 `heroesUrl`은 상대 주소로 사용됩니다.
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:** You can ignore `APP_BASE_HREF` in the browser if you've specified `<base href="/">` in the `index.html` file to satisfy the router's need for a base address (as the tutorial sample does).
+  -->
+  **참고:** 라우터가 동작하는 기본 주소를 변경하기 위해 `index.html` 파일에 `<base href="/">`를 지정했으면 `APP_BASE_HREF`는 무시해도 됩니다. (튜토리얼 문서를 참고하세요.)
 
 </div>
 
 {@a universal-engine}
+<!--
 ### Universal template engine
+-->
+### Universal 템플릿 엔진
 
+<!--
 The important bit in the `server.ts` file is the `ngExpressEngine()` function.
+-->
+`server.ts` 파일에서는 `ngExpressEngine()` 함수가 중요합니다.
 
 <code-example path="universal/server.ts" header="server.ts" region="ngExpressEngine">
 </code-example>
 
+<!--
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModuleFactory()` function which turns a client's requests into server-rendered HTML pages.
 You'll call that function within a _template engine_ that's appropriate for your server stack.
 
@@ -813,11 +864,28 @@ The `ngExpressEngine()` function returns a `Promise` callback that resolves to t
 It's up to your engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server,
 which then forwards it to the client in the HTTP response.
+-->
+`ngExpressEngine()` 함수는 Universal이 제공하는 `renderModuleFactory()` 함수를 랩핑한 함수이며, `renderModuleFactory()` 함수는 클라이언트의 요청을 서버가 렌더링한 HTML 페이지로 변경해서 요청하는 함수입니다.
+이 함수는 서버에서 사용하는 _템플릿 엔진_ 에 따라 적절하게 실행하면 됩니다.
+
+* 첫번째 인자는 `AppServerModule` 입니다.
+이 모듈은 Universal 서버 사이드 렌더러와 애플리케이션을 이어주는 역할을 합니다.
+
+* 두번째 인자 `extraProviders`는 생략할 수 있습니다. 이 인자에는 서버에만 필요한 의존성 객체의 프로바이더를 지정합니다.
+이 인자는 서버 인스턴스와 관련된 정보를 앱에 사용해야 할 때 지정합니다.
+그래서 이 예제에서처럼 서버 사이드 앱이 [HTTP URL을 절대 주소로](#http-urls) 요청해야 할 때 서버의 절대 주소를 `APP_BASE_HREF` 토큰으로 주입하는 방식으로 사용할 수 있습니다.
+
+`ngExpressEngine()` 함수는 렌더링된 페이지를 `Promise` 콜백 형태로 반환합니다.
+그리고 이 페이지를 어떻게 활용할 것인지는 서버에서 사용하는 엔진에 따라 달라집니다.
+단순하게 구현하면, `Promise` 콜백 형태로 전달된 페이지를 웹 서버로 반환하면, 웹 서버가 HTTP 응답으로 클라이언트에 전달할 수 있습니다.
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:**  These wrappers help hide the complexity of the `renderModuleFactory()` function. There are more wrappers for different backend technologies
   at the [Universal repository](https://github.com/angular/universal).
+  -->
+  **참고:** `renderModuleFactory()` 함수를 직접 사용하는 것보다는 `ngExpressEngine()` 랩핑 헬퍼를 사용하는 것이 편합니다. 이와 비슷한 방식으로 제공되는 랩퍼 함수들을 알아보려면 [Universal 레파지토리](https://github.com/angular/universal)를 참고하세요.
 
 </div>
 
