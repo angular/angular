@@ -389,7 +389,7 @@ describe('MatSlideToggle without forms', () => {
   });
 
   describe('custom action configuration', () => {
-    it('should not change value on click when click action is noop', fakeAsync(() => {
+    it('should not change value on click when click action is noop', () => {
       TestBed
         .resetTestingModule()
         .configureTestingModule({
@@ -430,7 +430,7 @@ describe('MatSlideToggle without forms', () => {
       expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
       expect(testComponent.toggleTriggered).toBe(2, 'Expect toggle twice');
       expect(testComponent.dragTriggered).toBe(0);
-    }));
+    });
 
     it('should not change value on dragging when drag action is noop', fakeAsync(() => {
       TestBed
