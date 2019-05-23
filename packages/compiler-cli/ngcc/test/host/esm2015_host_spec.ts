@@ -25,6 +25,7 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
 
     let SOME_DIRECTIVE_FILE: TestFile;
+    let CTOR_DECORATORS_ARRAY_FILE: TestFile;
     let ACCESSORS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
     let CLASS_EXPRESSION_FILE: TestFile;
@@ -87,6 +88,17 @@ runInEachFileSystem(() => {
       "onClick": [{ type: HostListener, args: ['click',] },],
     };
   `,
+      };
+
+      CTOR_DECORATORS_ARRAY_FILE = {
+        name: _('/ctor_decorated_as_array.js'),
+        contents: `
+          class CtorDecoratedAsArray {
+            constructor(arg1) {
+            }
+          }
+          CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
+        `,
       };
 
       ACCESSORS_FILE = {
@@ -1076,6 +1088,20 @@ runInEachFileSystem(() => {
         ]);
         expectTypeValueReferencesForParameters(
             parameters, ['ViewContainerRef', 'TemplateRef', null]);
+      });
+
+      it('should accept `ctorParameters` as an array', () => {
+        loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
+        const {program} = makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(
+            program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
+            isNamedClassDeclaration);
+        const parameters = host.getConstructorParameters(classNode) !;
+
+        expect(parameters).toBeDefined();
+        expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
+        expectTypeValueReferencesForParameters(parameters, ['ParamType']);
       });
 
       it('should throw if the symbol is not a class', () => {

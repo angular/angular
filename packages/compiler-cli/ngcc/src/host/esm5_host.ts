@@ -355,8 +355,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    */
   protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
     const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
+    // The decorators array may be wrapped in a function. If so unwrap it.
     const returnStatement = getReturnStatement(paramDecorators);
-    const expression = returnStatement && returnStatement.expression;
+    const expression = returnStatement ? returnStatement.expression : paramDecorators;
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
@@ -366,6 +367,11 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
         return {typeExpression, decorators};
       });
+    } else if (paramDecorators !== undefined) {
+      this.logger.warn(
+          'Invalid constructor parameter decorator in ' + paramDecorators.getSourceFile().fileName +
+              ':\n',
+          paramDecorators.getText());
     }
     return null;
   }

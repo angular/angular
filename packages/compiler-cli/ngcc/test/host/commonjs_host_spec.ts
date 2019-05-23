@@ -27,6 +27,7 @@ runInEachFileSystem(() => {
 
     let SOME_DIRECTIVE_FILE: TestFile;
     let TOPLEVEL_DECORATORS_FILE: TestFile;
+    let CTOR_DECORATORS_ARRAY_FILE: TestFile;
     let SIMPLE_ES2015_CLASS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
     let FOO_FUNCTION_FILE: TestFile;
@@ -110,6 +111,20 @@ SomeDirective.propDecorators = {
 };
 exports.SomeDirective = SomeDirective;
 `
+      };
+
+      CTOR_DECORATORS_ARRAY_FILE = {
+        name: _('/ctor_decorated_as_array.js'),
+        contents: `
+        var core = require('@angular/core');
+        var CtorDecoratedAsArray = (function() {
+        function CtorDecoratedAsArray(arg1) {
+          }
+          CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
+          return CtorDecoratedAsArray;
+        }());
+        exports.SomeDirective = SomeDirective;
+      `,
       };
 
       SIMPLE_ES2015_CLASS_FILE = {
@@ -1282,6 +1297,21 @@ exports.ExternalModule = ExternalModule;
             'TemplateRef',
             null,
           ]);
+        });
+
+        it('should accept `ctorParameters` as an array', () => {
+          loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
+          const {program, host: compilerHost} =
+              makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
+          const host = new CommonJsReflectionHost(new MockLogger(), false, program, compilerHost);
+          const classNode = getDeclaration(
+              program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
+              isNamedVariableDeclaration);
+          const parameters = host.getConstructorParameters(classNode) !;
+
+          expect(parameters).toBeDefined();
+          expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
+          expectTypeValueReferencesForParameters(parameters, ['ParamType']);
         });
 
         it('should throw if the symbol is not a class', () => {

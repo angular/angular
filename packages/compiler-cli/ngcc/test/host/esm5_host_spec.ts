@@ -26,6 +26,7 @@ runInEachFileSystem(() => {
     let _: typeof absoluteFrom;
 
     let SOME_DIRECTIVE_FILE: TestFile;
+    let CTOR_DECORATORS_ARRAY_FILE: TestFile;
     let ACCESSORS_FILE: TestFile;
     let SIMPLE_ES2015_CLASS_FILE: TestFile;
     let SIMPLE_CLASS_FILE: TestFile;
@@ -110,6 +111,18 @@ runInEachFileSystem(() => {
       "input2": [{ type: Input },],
     };
   `,
+      };
+
+      CTOR_DECORATORS_ARRAY_FILE = {
+        name: _('/ctor_decorated_as_array.js'),
+        contents: `
+          var CtorDecoratedAsArray = (function() {
+            function CtorDecoratedAsArray(arg1) {
+            }
+            CtorDecoratedAsArray.ctorParameters = [{ type: ParamType, decorators: [{ type: Inject },] }];
+            return CtorDecoratedAsArray;
+          }());
+        `,
       };
 
       ACCESSORS_FILE = {
@@ -366,15 +379,6 @@ runInEachFileSystem(() => {
     var NoParameters = (function() {
       function NoParameters() {}
       return NoParameters;
-    }());
-
-    var ArrowFunction = (function() {
-      function ArrowFunction(arg1) {
-      }
-      ArrowFunction.ctorParameters = () => [
-        { type: 'ParamType', decorators: [{ type: Inject },] }
-      ];
-      return ArrowFunction;
     }());
 
     var NotArrayLiteral = (function() {
@@ -1132,6 +1136,20 @@ runInEachFileSystem(() => {
         expect(staticProperty.isStatic).toEqual(true);
         expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
         expect(staticProperty.value !.getText()).toEqual(`'static'`);
+      });
+
+      it('should accept `ctorParameters` as an array', () => {
+        loadTestFiles([CTOR_DECORATORS_ARRAY_FILE]);
+        const {program} = makeTestBundleProgram(CTOR_DECORATORS_ARRAY_FILE.name);
+        const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const classNode = getDeclaration(
+            program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
+            isNamedVariableDeclaration);
+        const parameters = host.getConstructorParameters(classNode) !;
+
+        expect(parameters).toBeDefined();
+        expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
+        expectTypeValueReferencesForParameters(parameters, ['ParamType']);
       });
 
       it('should throw if the symbol is not a class', () => {
