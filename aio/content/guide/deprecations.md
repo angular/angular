@@ -317,24 +317,7 @@ We expect to remove the polyfill from most if not all CLI projects via an `ng up
 {@a static-query-resolution}
 ### `@ViewChild()` / `@ContentChild()` static resolution as the default
 
-The API docs have always recommended searching for `ViewChild()` query results in
-the `ngAfterViewInit()` hook at the earliest and searching for
-`ContentChild()` query results in the `ngAfterContentInit()` hook at the earliest.
-
-However, in practice, `@ViewChild()` and `@ContentChild()` queries are sometimes
-resolved earlier in the lifecycle (that is, before change detection runs) if the
-results are not influenced by bindings (for example, some results are
-embedded in an `*ngIf` or `*ngFor`).
-
-This default resolution behavior is deprecated. In a future version of Angular, all queries will be resolved only before their guaranteed hooks by default.
-
-If you do need to access the `ViewChild()` or `ContentChild()` value
-before change detection runs (for example, in `ngOnInit()`), you can
-use a static flag as in the following example:
-
-```
-@ViewChild('foo', {static: true}) foo !: ElementRef;
-```
+See our [dedicated migration guide for static queries](guide/static-query-migration).
 
 {@a contentchild-input-together}
 ### `@ContentChild()` / `@Input()` used together
