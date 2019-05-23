@@ -146,7 +146,9 @@ export function validateConstructorDependencies(
     // There is at least one error.
     throw new FatalDiagnosticError(
         ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name!.text}'. Found: ${param.typeNode!.getText()}`);
+        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name.text}'.\n` +
+            (param.typeNode !== null ? `Found ${param.typeNode.getText()}` :
+                                       'no type or decorator'));
   }
 }
 
