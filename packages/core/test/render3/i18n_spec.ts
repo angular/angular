@@ -780,22 +780,10 @@ describe('Runtime i18n', () => {
     });
 
     it('should throw in case we have invalid string', () => {
-      const arr = ['�*1:1��#2:1�', '�#4:2�', '�6:4�', '�/#2:1��/*1:1�'];
-      const str = `[${arr.join('|')}]`;
-
-      const cases = [
-        // less placeholders than we have
-        [`Start: ${str}, ${str} and ${str} end.`, {}],
-
-        // more placeholders than we have
-        [`Start: ${str}, ${str} and ${str}, ${str} ${str} end.`, {}],
-
-        // not enough ICU replacements
-        ['My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}]
-      ];
-      cases.forEach(([input, replacements, output]) => {
-        expect(() => ɵɵi18nPostprocess(input as string, replacements as any)).toThrowError();
-      });
+      expect(
+          () => ɵɵi18nPostprocess(
+              'My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}))
+          .toThrowError();
     });
   });
 });
