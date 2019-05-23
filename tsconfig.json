@@ -15,7 +15,19 @@
     "skipLibCheck": true,
     "target": "es2015",
     "lib": ["es5", "es2015", "dom"],
-    "types": ["jasmine"]
+    "types": ["jasmine"],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/cdk": ["./src/cdk"],
+      "@angular/cdk/*": ["./src/cdk/*"],
+      "@angular/material/*": ["./src/material/*"],
+      "@angular/material-experimental/*": ["./src/material-experimental/*"],
+      "@angular/material-experimental": ["./src/material-experimental"],
+      "@angular/cdk-experimental/*": ["./src/cdk-experimental/*"],
+      "@angular/cdk-experimental": ["./src/cdk-experimental"],
+      "@angular/material-moment-adapter": ["./src/material-moment-adapter"],
+      "@angular/material-examples": ["./src/packages/material-examples"]
+    }
   },
   "include": [
     "src/**/*.ts",
@@ -33,6 +45,12 @@
 
     // IDEs should not type-check the different node_modules directories of the different packages.
     // This would cause the IDEs to be slower and also linters would check the node_modules.
-    "node_modules/"
+    "node_modules/",
+
+    // Exclude schematic template files and test cases which aren't valid TS files.
+    "src/material/schematics/ng-generate/*/files/**/*",
+    "src/cdk/schematics/ng-generate/*/files/**/*",
+    "src/cdk/schematics/ng-update/test-cases/**/*",
+    "src/material/schematics/ng-update/test-cases/**/*"
   ]
 }
