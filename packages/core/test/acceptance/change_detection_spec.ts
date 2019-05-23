@@ -80,7 +80,7 @@ describe('change detection', () => {
       })
       class TestCmpt {
         counter = 0;
-        @ViewChild('vc', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
+        @ViewChild('vc', {read: ViewContainerRef, static: false}) vcRef !: ViewContainerRef;
 
         constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -146,7 +146,7 @@ describe('change detection', () => {
 
     @Component({selector: 'my-app', template: '<my-comp [name]="name"></my-comp>'})
     class MyApp {
-      @ViewChild(MyComponent) comp !: MyComponent;
+      @ViewChild(MyComponent, {static: false}) comp !: MyComponent;
       name: string = 'Nancy';
     }
 
@@ -238,7 +238,7 @@ describe('change detection', () => {
         template: '<my-comp></my-comp><button id="parent" (click)="noop()"></button>'
       })
       class ButtonParent {
-        @ViewChild(MyComponent) comp !: MyComponent;
+        @ViewChild(MyComponent, {static: false}) comp !: MyComponent;
         noop() {}
       }
 
@@ -264,7 +264,7 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class ButtonParent implements DoCheck {
-        @ViewChild(MyComponent) comp !: MyComponent;
+        @ViewChild(MyComponent, {static: false}) comp !: MyComponent;
         noop() {}
 
         doCheckCount = 0;
@@ -273,7 +273,7 @@ describe('change detection', () => {
 
       @Component({selector: 'my-button-app', template: '<button-parent></button-parent>'})
       class MyButtonApp {
-        @ViewChild(ButtonParent) parent !: ButtonParent;
+        @ViewChild(ButtonParent, {static: false}) parent !: ButtonParent;
       }
 
       TestBed.configureTestingModule({declarations: [MyButtonApp, MyComponent, ButtonParent]});
@@ -326,7 +326,7 @@ describe('change detection', () => {
 
       @Component({selector: 'parent-comp', template: `{{ doCheckCount}} - <my-comp></my-comp>`})
       class ParentComp implements DoCheck {
-        @ViewChild(MyComp) myComp !: MyComp;
+        @ViewChild(MyComp, {static: false}) myComp !: MyComp;
 
         doCheckCount = 0;
 
@@ -411,8 +411,8 @@ describe('change detection', () => {
       it('should check component view when called by directive on component node', () => {
         @Component({template: '<my-comp dir></my-comp>'})
         class MyApp {
-          @ViewChild(MyComp) myComp !: MyComp;
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(MyComp, {static: false}) myComp !: MyComp;
+          @ViewChild(Dir, {static: false}) dir !: Dir;
         }
 
         TestBed.configureTestingModule({declarations: [MyComp, Dir, MyApp]});
@@ -429,8 +429,8 @@ describe('change detection', () => {
       it('should check host component when called by directive on element node', () => {
         @Component({template: '{{ value }}<div dir></div>'})
         class MyApp {
-          @ViewChild(MyComp) myComp !: MyComp;
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(MyComp, {static: false}) myComp !: MyComp;
+          @ViewChild(Dir, {static: false}) dir !: Dir;
           value = '';
         }
 
@@ -450,7 +450,7 @@ describe('change detection', () => {
       it('should check the host component when called from EmbeddedViewRef', () => {
         @Component({template: '{{ name }}<div *ngIf="showing" dir></div>'})
         class MyApp {
-          @ViewChild(Dir) dir !: Dir;
+          @ViewChild(Dir, {static: false}) dir !: Dir;
           showing = true;
           name = 'Amelia';
         }
@@ -563,7 +563,7 @@ describe('change detection', () => {
                 '<ng-template #foo let-ctx="ctx">{{ ctx.value }}</ng-template><structural-comp [tmp]="foo"></structural-comp>'
           })
           class App {
-            @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+            @ViewChild(StructuralComp, {static: false}) structuralComp !: StructuralComp;
           }
 
           TestBed.configureTestingModule({declarations: [App, StructuralComp]});
@@ -592,7 +592,7 @@ describe('change detection', () => {
             template: '<ng-template #foo>Template text</ng-template><structural-comp [tmp]="foo">'
           })
           class App {
-            @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+            @ViewChild(StructuralComp, {static: false}) structuralComp !: StructuralComp;
           }
 
           TestBed.configureTestingModule({declarations: [App, StructuralComp]});
@@ -623,7 +623,7 @@ describe('change detection', () => {
 
       @Component({template: '<detached-comp></detached-comp>'})
       class MyApp {
-        @ViewChild(DetachedComp) comp !: DetachedComp;
+        @ViewChild(DetachedComp, {static: false}) comp !: DetachedComp;
 
         constructor(public cdr: ChangeDetectorRef) {}
       }
@@ -734,7 +734,7 @@ describe('change detection', () => {
 
         @Component({template: '<on-push-comp [value]="value"></on-push-comp>'})
         class OnPushApp {
-          @ViewChild(OnPushComp) onPushComp !: OnPushComp;
+          @ViewChild(OnPushComp, {static: false}) onPushComp !: OnPushComp;
           value = '';
         }
 
@@ -781,7 +781,7 @@ describe('change detection', () => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class OnPushParent {
-        @ViewChild(OnPushComp) comp !: OnPushComp;
+        @ViewChild(OnPushComp, {static: false}) comp !: OnPushComp;
         value = 'one';
       }
 
@@ -843,7 +843,7 @@ describe('change detection', () => {
           changeDetection: ChangeDetectionStrategy.OnPush
         })
         class EmbeddedViewParent {
-          @ViewChild(OnPushComp) comp !: OnPushComp;
+          @ViewChild(OnPushComp, {static: false}) comp !: OnPushComp;
           value = 'one';
           showing = true;
         }

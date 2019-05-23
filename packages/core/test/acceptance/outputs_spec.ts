@@ -43,7 +43,7 @@ describe('outputs', () => {
 
     @Component({template: '<button-toggle (change)="onChange()"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
       onChange() { counter++; }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle]});
@@ -64,7 +64,7 @@ describe('outputs', () => {
     @Component(
         {template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
       onChange() { counter++; }
       onReset() { resetCounter++; }
     }
@@ -82,7 +82,7 @@ describe('outputs', () => {
   it('should eval component output expression when event is emitted', () => {
     @Component({template: '<button-toggle (change)="counter = counter + 1"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
       counter = 0;
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle]});
@@ -102,7 +102,7 @@ describe('outputs', () => {
     @Component(
         {template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
       condition = true;
 
       onChange() { counter++; }
@@ -133,7 +133,7 @@ describe('outputs', () => {
       `
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
       condition = true;
       condition2 = true;
 
@@ -168,8 +168,8 @@ describe('outputs', () => {
       `
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(DestroyComp) destroyComp !: DestroyComp;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
+      @ViewChild(DestroyComp, {static: false}) destroyComp !: DestroyComp;
       condition = true;
 
       onClick() { clickCounter++; }
@@ -206,7 +206,7 @@ describe('outputs', () => {
 
     @Component({template: '<button myButton (click)="onClick()">Click me</button>'})
     class App {
-      @ViewChild(MyButton) buttonDir !: MyButton;
+      @ViewChild(MyButton, {static: false}) buttonDir !: MyButton;
       onClick() { counter++; }
     }
     TestBed.configureTestingModule({declarations: [App, MyButton]});
@@ -228,8 +228,8 @@ describe('outputs', () => {
 
     @Component({template: '<button-toggle (change)="onChange()" otherDir></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(OtherDir) otherDir !: OtherDir;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
+      @ViewChild(OtherDir, {static: false}) otherDir !: OtherDir;
       onChange() { counter++; }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle, OtherDir]});
@@ -257,8 +257,8 @@ describe('outputs', () => {
           '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>'
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(OtherChangeDir) otherDir !: OtherChangeDir;
+      @ViewChild(ButtonToggle, {static: false}) buttonToggle !: ButtonToggle;
+      @ViewChild(OtherChangeDir, {static: false}) otherDir !: OtherChangeDir;
       change = true;
 
       onChange() { counter++; }

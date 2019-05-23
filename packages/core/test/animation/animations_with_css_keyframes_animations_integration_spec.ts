@@ -11,7 +11,6 @@ import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_gr
 import {Component, ViewChild} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {ivyEnabled} from '@angular/private/testing';
 
 import {TestBed} from '../../testing';
 
@@ -166,7 +165,7 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        @ViewChild('elm') public element: any;
+        @ViewChild('elm', {static: false}) public element: any;
 
         public myAnimationExp = '';
       }
@@ -217,7 +216,7 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        @ViewChild('elm') public element: any;
+        @ViewChild('elm', {static: false}) public element: any;
 
         public myAnimationExp = '';
       }
@@ -280,7 +279,7 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           @ViewChild('elm') public element: any;
+           @ViewChild('elm', {static: true}) public element: any;
 
            public myAnimationExp = '';
          }
@@ -290,10 +289,6 @@ import {TestBed} from '../../testing';
          const engine = TestBed.get(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
-
-         // In Ivy, change detection needs to run before the ViewQuery for cmp.element will resolve.
-         // Keeping this test enabled since we still want to test the animation logic in Ivy.
-         if (ivyEnabled) fixture.detectChanges();
 
          const elm = cmp.element.nativeElement;
          const foo = elm.querySelector('.foo') as HTMLElement;
@@ -332,7 +327,7 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           @ViewChild('elm') public element: any;
+           @ViewChild('elm', {static: true}) public element: any;
 
            public myAnimationExp = '';
          }
@@ -342,10 +337,6 @@ import {TestBed} from '../../testing';
          const engine = TestBed.get(AnimationEngine);
          const fixture = TestBed.createComponent(Cmp);
          const cmp = fixture.componentInstance;
-
-         // In Ivy, change detection needs to run before the ViewQuery for cmp.element will resolve.
-         // Keeping this test enabled since we still want to test the animation logic in Ivy.
-         if (ivyEnabled) fixture.detectChanges();
 
          const elm = cmp.element.nativeElement;
          expect(elm.style.getPropertyValue('display')).toEqual('table');

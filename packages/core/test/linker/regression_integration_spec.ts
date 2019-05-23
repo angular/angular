@@ -362,7 +362,7 @@ function declareTests(config?: {useJit: boolean}) {
               @Directive({selector: 'test'})
               class Test {
                 // TODO(issue/24571): remove '!'.
-                @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+                @Input() @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
               }
 
               @Component({
@@ -392,7 +392,7 @@ function declareTests(config?: {useJit: boolean}) {
         .it('should throw if @ContentChild and @Input are on the same property', () => {
           @Directive({selector: 'test'})
           class Test {
-            @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+            @Input() @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
           }
 
           @Component({selector: 'my-app', template: `<test></test>`})

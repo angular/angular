@@ -1770,7 +1770,7 @@ class ViewContainerRefComp {
   `
 })
 class ViewContainerRefApp {
-  @ViewChild(ViewContainerRefComp) vcrComp !: ViewContainerRefComp;
+  @ViewChild(ViewContainerRefComp, {static: false}) vcrComp !: ViewContainerRefComp;
 }
 
 @Directive({selector: '[structDir]'})
@@ -1803,7 +1803,7 @@ class ConstructorDir {
   `
 })
 class ConstructorApp {
-  @ViewChild('foo') foo !: ElementRef;
+  @ViewChild('foo', {static: true}) foo !: ElementRef;
 }
 
 @Component({
@@ -1815,5 +1815,5 @@ class ConstructorApp {
   `
 })
 class ConstructorAppWithQueries {
-  @ViewChild('foo') foo !: TemplateRef<any>;
+  @ViewChild('foo', {static: true}) foo !: TemplateRef<any>;
 }

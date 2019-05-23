@@ -245,7 +245,7 @@ describe('projection', () => {
        @Component(
            {selector: 'comp', template: `<ng-template><ng-content></ng-content></ng-template>`})
        class Comp {
-         @ViewChild(TemplateRef) template !: TemplateRef<any>;
+         @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
        }
 
        @Directive({selector: '[trigger]'})

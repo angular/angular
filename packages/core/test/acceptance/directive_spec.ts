@@ -213,7 +213,7 @@ describe('directives', () => {
     it('should allow outputs of directive on ng-template', () => {
       @Component({template: `<ng-template (out)="value = true"></ng-template>`})
       class TestComp {
-        @ViewChild(TestDir) testDir: TestDir|undefined;
+        @ViewChild(TestDir, {static: true}) testDir: TestDir|undefined;
         value = false;
       }
 

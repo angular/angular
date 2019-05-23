@@ -16,7 +16,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
@@ -386,14 +385,14 @@ class SomeComponent {
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
         // TODO(issue/24571): remove '!'.
-        @ViewChild('vc', {read: ViewContainerRef})
+        @ViewChild('vc', {read: ViewContainerRef, static: false})
         vc !: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
         // TODO(issue/24571): remove '!'.
-        @ViewChild(TemplateRef)
+        @ViewChild(TemplateRef, {static: true})
         tplRef !: TemplateRef<Object>;
       }
 
@@ -446,10 +445,6 @@ class SomeComponent {
       it('should detach attached embedded views if they are destroyed', () => {
         const comp = TestBed.createComponent(EmbeddedViewComp);
         const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-
-        // In Ivy, change detection needs to run before the ViewQuery for tplRef will resolve.
-        // Keeping this test enabled since we still want to test this destroy logic in Ivy.
-        if (ivyEnabled) comp.detectChanges();
 
         const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
 

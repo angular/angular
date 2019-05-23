@@ -70,7 +70,7 @@ describe('pipe', () => {
       template: `<div my-dir [dirProp]="'a'|double"></div>`,
     })
     class App {
-      @ViewChild(Dir) directive !: Dir;
+      @ViewChild(Dir, {static: false}) directive !: Dir;
     }
 
     TestBed.configureTestingModule({declarations: [App, DoublePipe, Dir]});

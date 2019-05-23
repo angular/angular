@@ -70,7 +70,7 @@ describe('component', () => {
       entryComponents: [OtherComponent]
     })
     class TestComponent {
-      @ViewChild('vc', {read: ViewContainerRef}) vcref !: ViewContainerRef;
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref !: ViewContainerRef;
 
       constructor(private _cfr: ComponentFactoryResolver) {}
 
