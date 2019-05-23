@@ -14,11 +14,21 @@ import {By} from '@angular/platform-browser';
 describe('view insertion', () => {
   describe('of a simple template', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
+      let _counter = 0;
+
+      @Component({
+        selector: 'increment-comp',
+        template: `<span>created{{counter}}</span>`,
+      })
+      class IncrementComp {
+        counter = _counter++;
+      }
+
       @Component({
         template: `
-          <ng-template #simple>test</ng-template>
-          <div #container></div>
-        `
+              <ng-template #simple><increment-comp></increment-comp></ng-template>
+              <div #container></div>
+            `
       })
       class App {
         @ViewChild('container', {read: ViewContainerRef})
@@ -32,23 +42,30 @@ describe('view insertion', () => {
         view2: EmbeddedViewRef<any> = null !;
         view3: EmbeddedViewRef<any> = null !;
 
+        constructor(public changeDetector: ChangeDetectorRef) {}
+
         ngAfterViewInit() {
           // insert at the front
-          this.view1 = this.container.createEmbeddedView(this.simple);
+          this.view1 = this.container.createEmbeddedView(this.simple);  // "created0"
 
           // insert at the front again
-          this.view0 = this.container.createEmbeddedView(this.simple, {}, 0);
+          this.view0 = this.container.createEmbeddedView(this.simple, {}, 0);  // "created1"
 
           // insert at the end
-          this.view3 = this.container.createEmbeddedView(this.simple);
+          this.view3 = this.container.createEmbeddedView(this.simple);  // "created2"
 
           // insert in the middle
-          this.view2 = this.container.createEmbeddedView(this.simple, {}, 2);
+          this.view2 = this.container.createEmbeddedView(this.simple, {}, 2);  // "created3"
+
+          // We need to run change detection here to avoid
+          // ExpressionChangedAfterItHasBeenCheckedError because of the value updating in
+          // increment-comp
+          this.changeDetector.detectChanges();
         }
       }
 
       TestBed.configureTestingModule({
-        declarations: [App],
+        declarations: [App, IncrementComp],
       });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -58,7 +75,8 @@ describe('view insertion', () => {
       expect(app.container.indexOf(app.view1)).toBe(1);
       expect(app.container.indexOf(app.view2)).toBe(2);
       expect(app.container.indexOf(app.view3)).toBe(3);
-      expect(fixture.nativeElement.textContent).toBe('testtesttesttest');
+      // The text in each component differs based on *when* it was created.
+      expect(fixture.nativeElement.textContent).toBe('created1created0created3created2');
     });
   });
 
