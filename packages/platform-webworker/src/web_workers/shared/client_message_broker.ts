@@ -12,6 +12,7 @@ import {Serializer, SerializerTypes} from './serializer';
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 @Injectable()
 export class ClientMessageBrokerFactory {
@@ -39,6 +40,7 @@ interface PromiseCompleter {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export class ClientMessageBroker {
   private _pending = new Map<string, PromiseCompleter>();
