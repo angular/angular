@@ -64,3 +64,11 @@ export function getTableUnknownDataSourceError() {
 export function getTableTextColumnMissingParentTableError() {
   return Error(`Text column could not find a parent table for registration.`);
 }
+
+/**
+ * Returns an error to be thrown when a table text column doesn't have a name.
+ * @docs-private
+ */
+export function getTableTextColumnMissingNameError() {
+  return Error(`Table text column must have a name.`);
+}

@@ -1,7 +1,10 @@
 import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {getTableTextColumnMissingParentTableError} from './table-errors';
+import {
+  getTableTextColumnMissingParentTableError,
+  getTableTextColumnMissingNameError,
+} from './table-errors';
 import {CdkTableModule} from './table-module';
 import {expectTableToMatchContent} from './table.spec';
 import {TEXT_COLUMN_OPTIONS, TextColumnOptions} from './text-column';
@@ -19,6 +22,7 @@ describe('CdkTextColumn', () => {
           declarations: [
             BasicTextColumnApp,
             MissingTableApp,
+            TextColumnWithoutNameApp,
           ],
         })
         .compileComponents();
@@ -43,6 +47,11 @@ describe('CdkTextColumn', () => {
   it('should throw an error if the text column is not in the content of a table', () => {
     expect(() => TestBed.createComponent(MissingTableApp).detectChanges())
         .toThrowError(getTableTextColumnMissingParentTableError().message);
+  });
+
+  it('should throw an error if the text column does not have a name', () => {
+    expect(() => TestBed.createComponent(TextColumnWithoutNameApp).detectChanges())
+        .toThrowError(getTableTextColumnMissingNameError().message);
   });
 
   it('should allow for alternate header text', () => {
@@ -182,3 +191,18 @@ class BasicTextColumnApp {
 })
 class MissingTableApp {
 }
+
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="data">
+      <cdk-text-column [dataAccessor]="dataAccessorA"></cdk-text-column>
+
+      <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: displayedColumns"></cdk-row>
+    </cdk-table>
+  `
+})
+class TextColumnWithoutNameApp extends BasicTextColumnApp {
+}
+
