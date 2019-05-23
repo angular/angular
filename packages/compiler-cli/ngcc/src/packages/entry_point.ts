@@ -91,7 +91,8 @@ export function getEntryPointInfo(
   }
 
   // We must have a typings property
-  const typings = entryPointPackageJson.typings || entryPointPackageJson.types;
+  const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
+      guessTypingsFromPackageJson(fs, entryPointPath, entryPointPackageJson);
   if (!typings) {
     return null;
   }
@@ -190,4 +191,22 @@ function mergeConfigAndPackageJson(
       return {name, ...entryPointConfig.override};
     }
   }
+}
+
+function guessTypingsFromPackageJson(
+    fs: FileSystem, entryPointPath: AbsoluteFsPath,
+    entryPointPackageJson: EntryPointPackageJson): AbsoluteFsPath|null {
+  for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
+    const field = entryPointPackageJson[prop];
+    if (typeof field !== 'string') {
+      // Some crazy packages have things like arrays in these fields!
+      continue;
+    }
+    const relativeTypingsPath = field.replace(/\.js$/, '.d.ts');
+    const typingsPath = resolve(entryPointPath, relativeTypingsPath);
+    if (fs.exists(typingsPath)) {
+      return typingsPath;
+    }
+  }
+  return null;
 }
