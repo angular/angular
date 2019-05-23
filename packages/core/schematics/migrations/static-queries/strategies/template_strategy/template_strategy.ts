@@ -57,13 +57,9 @@ export class QueryTemplateStrategy implements TimingStrategy {
     // used to determine the timing for registered queries.
     const analyzedModules = (aotProgram as any)['analyzedModules'] as NgAnalyzedModules;
 
-    const ngDiagnostics = [
-      ...aotProgram.getNgStructuralDiagnostics(),
-      ...aotProgram.getNgSemanticDiagnostics(),
-    ];
-
-    if (ngDiagnostics.length) {
-      throw this._createDiagnosticsError(ngDiagnostics);
+    const ngStructuralDiagnostics = aotProgram.getNgStructuralDiagnostics();
+    if (ngStructuralDiagnostics.length) {
+      throw this._createDiagnosticsError(ngStructuralDiagnostics);
     }
 
     analyzedModules.files.forEach(file => {
@@ -178,8 +174,8 @@ export class QueryTemplateStrategy implements TimingStrategy {
         .template;
   }
 
-  private _createDiagnosticsError(diagnostics: (ts.Diagnostic|Diagnostic)[]) {
-    return new Error(`${diagnostics.map(d => d.messageText).join(`\n `)}`);
+  private _createDiagnosticsError(diagnostics: ReadonlyArray<Diagnostic>) {
+    return new Error(ts.formatDiagnostics(diagnostics as ts.Diagnostic[], this.host));
   }
 
   private _getViewQueryUniqueKey(filePath: string, className: string, propName: string) {
