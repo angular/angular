@@ -27,10 +27,11 @@ import * as core from '@angular/core';
       typeExtends<compilerCore.Query, core.Query>();
       typeExtends<core.Query, compilerCore.Query>();
       compareRuntimeShape(
-          new core.ContentChild('someSelector'), compilerCore.createContentChild('someSelector'));
+          new core.ContentChild('someSelector', {static: false}),
+          compilerCore.createContentChild('someSelector', {static: false}));
       compareRuntimeShape(
-          new core.ContentChild('someSelector', {read: 'someRead'}),
-          compilerCore.createContentChild('someSelector', {read: 'someRead'}));
+          new core.ContentChild('someSelector', {read: 'someRead', static: false}),
+          compilerCore.createContentChild('someSelector', {read: 'someRead', static: false}));
       compareRuntimeShape(
           new core.ContentChildren('someSelector'),
           compilerCore.createContentChildren('someSelector'));
@@ -39,10 +40,11 @@ import * as core from '@angular/core';
           compilerCore.createContentChildren(
               'someSelector', {read: 'someRead', descendants: false}));
       compareRuntimeShape(
-          new core.ViewChild('someSelector'), compilerCore.createViewChild('someSelector'));
+          new core.ViewChild('someSelector', {static: false}),
+          compilerCore.createViewChild('someSelector', {static: false}));
       compareRuntimeShape(
-          new core.ViewChild('someSelector', {read: 'someRead'}),
-          compilerCore.createViewChild('someSelector', {read: 'someRead'}));
+          new core.ViewChild('someSelector', {read: 'someRead', static: false}),
+          compilerCore.createViewChild('someSelector', {read: 'someRead', static: false}));
       compareRuntimeShape(
           new core.ViewChildren('someSelector'), compilerCore.createViewChildren('someSelector'));
       compareRuntimeShape(
