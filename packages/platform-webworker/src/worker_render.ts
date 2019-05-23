@@ -26,6 +26,7 @@ import {MessageBasedRenderer2} from './web_workers/ui/renderer';
  * and underlying {@link MessageBus} for lower level message passing.
  *
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 @Injectable()
 export class WebWorkerInstance {
@@ -43,6 +44,7 @@ export class WebWorkerInstance {
 
 /**
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
 
@@ -51,6 +53,7 @@ export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
  * created.
  *
  * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new InjectionToken<({start: () => void})[]>('WorkerRenderStartableMsgService');
