@@ -86,7 +86,6 @@ As a result, change detection must run first, and results can only be made avail
 The effect of this implementation is that adding an `*ngIf` or `*ngFor` anywhere above a query match can change when that query's results become available. 
 
 Keep in mind that these categories only applied to `@ViewChild` and `@ContentChild` queries specifically. 
-
 `@ViewChildren` and `@ContentChildren` queries did not have a concept of static and dynamic, so they were always resolved as if they were "dynamic".
 
 This strategy of resolving queries at different times based on the location of potential query matches has caused a lot of confusion. Namely: 
@@ -132,7 +131,7 @@ In this case, you will want to set the `static` flag to `true` and create your v
 Note: Selecting this option means that query results nested in `*ngIf` or `*ngFor` will not be found by the query. 
 These results are only retrievable after change detection runs. 
 
-### ​Why generate {static: false}? Isn't that the default?
+### ​Why generate `{static: false}`? Isn't that the default?
 
 The goal of this migration is to transition apps that aren't yet on version 9 to a query pattern that is compatible with version 9. 
 However, most applications use libraries, and it's likely that some of these libraries may not be upgraded to version 8 yet (and thus might not have the proper flags). 
