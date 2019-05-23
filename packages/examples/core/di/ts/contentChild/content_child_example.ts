@@ -23,7 +23,7 @@ export class Pane {
 })
 export class Tab {
   // TODO(issue/24571): remove '!'.
-  @ContentChild(Pane) pane !: Pane;
+  @ContentChild(Pane, {static: false}) pane !: Pane;
 }
 
 @Component({
