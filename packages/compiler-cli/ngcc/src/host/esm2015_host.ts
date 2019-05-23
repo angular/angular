@@ -1084,16 +1084,28 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
   /**
    * Get the parameter type and decorators for the constructor of a class,
-   * where the information is stored on a static method of the class.
+   * where the information is stored on a static property of the class.
    *
-   * Note that in ESM2015, the method is defined by an arrow function that returns an array of
-   * decorator and type information.
+   * Note that in ESM2015, the property is defined an array, or by an arrow function that returns an
+   * array, of decorator and type information.
+   *
+   * For example,
    *
    * ```
    * SomeDirective.ctorParameters = () => [
-   *   { type: ViewContainerRef, },
-   *   { type: TemplateRef, },
-   *   { type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN,] },] },
+   *   {type: ViewContainerRef},
+   *   {type: TemplateRef},
+   *   {type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN]}]},
+   * ];
+   * ```
+   *
+   * or
+   *
+   * ```
+   * SomeDirective.ctorParameters = [
+   *   {type: ViewContainerRef},
+   *   {type: TemplateRef},
+   *   {type: undefined, decorators: [{type: Inject, args: [INJECTED_TOKEN]}]},
    * ];
    * ```
    *
@@ -1102,9 +1114,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
     const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
-    if (paramDecorators && ts.isArrowFunction(paramDecorators)) {
-      if (ts.isArrayLiteralExpression(paramDecorators.body)) {
-        const elements = paramDecorators.body.elements;
+    if (paramDecorators) {
+      // The decorators array may be wrapped in an arrow function. If so unwrap it.
+      const container =
+          ts.isArrowFunction(paramDecorators) ? paramDecorators.body : paramDecorators;
+      if (ts.isArrayLiteralExpression(container)) {
+        const elements = container.elements;
         return elements
             .map(
                 element =>
@@ -1119,6 +1134,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                       .filter(decorator => this.isFromCore(decorator));
               return {typeExpression, decorators};
             });
+      } else if (paramDecorators !== undefined) {
+        this.logger.warn(
+            'Invalid constructor parameter decorator in ' +
+                paramDecorators.getSourceFile().fileName + ':\n',
+            paramDecorators.getText());
       }
     }
     return null;
