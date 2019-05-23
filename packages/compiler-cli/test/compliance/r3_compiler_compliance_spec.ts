@@ -1714,7 +1714,7 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild(SomeDirective) someDir: SomeDirective;
+              @ContentChild(SomeDirective, {static: false}) someDir: SomeDirective;
               @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
             }
 
@@ -1786,7 +1786,7 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild('myRef') myRef: any;
+              @ContentChild('myRef', {static: false}) myRef: any;
               @ContentChildren('myRef1, myRef2, myRef3') myRefs: QueryList<any>;
             }
             @NgModule({declarations: [ContentQueryComponent]})
@@ -1911,9 +1911,9 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @ContentChild('myRef', {read: TemplateRef}) myRef: TemplateRef;
+              @ContentChild('myRef', {read: TemplateRef, static: false}) myRef: TemplateRef;
               @ContentChildren('myRef1, myRef2, myRef3', {read: ElementRef}) myRefs: QueryList<ElementRef>;
-              @ContentChild(SomeDirective, {read: ElementRef}) someDir: ElementRef;
+              @ContentChild(SomeDirective, {read: ElementRef, static: false}) someDir: ElementRef;
               @ContentChildren(SomeDirective, {read: TemplateRef}) someDirs: QueryList<TemplateRef>;
             }
             @NgModule({declarations: [ContentQueryComponent]})
@@ -1966,7 +1966,7 @@ describe('compiler compliance', () => {
               \`
             })
             export class ContentQueryComponent {
-              @Input() @ContentChild('foo') foo: any;
+              @Input() @ContentChild('foo', {static: false}) foo: any;
             }
 
             @Component({
@@ -3139,7 +3139,7 @@ describe('compiler compliance', () => {
           'spec.ts': `
             import {Component, NgModule, ContentChild} from '@angular/core';
             export class BaseClass {
-              @ContentChild('something') something: any;
+              @ContentChild('something', {static: false}) something: any;
             }
 
             @Component({
