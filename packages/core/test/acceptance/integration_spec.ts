@@ -106,7 +106,7 @@ describe('acceptance integration tests', () => {
     @Component(
         {selector: 'test-component', template: `foo`, host: {'[attr.aria-disabled]': 'true'}})
     class TestComponent {
-      @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+      @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
     }
 
     TestBed.configureTestingModule({declarations: [TestComponent]});

@@ -345,7 +345,7 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-          @ViewChild('element')
+          @ViewChild('element', {static: false})
           element: any;
           exp: any = '';
         }
@@ -1433,7 +1433,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ])]
         })
         class Cmp {
-          @ViewChild('green') public element: any;
+          @ViewChild('green', {static: false}) public element: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1770,7 +1770,7 @@ const DEFAULT_COMPONENT_ID = '1';
         class Cmp {
           public exp: any;
 
-          @ViewChild('parent') public parentElement: any;
+          @ViewChild('parent', {static: false}) public parentElement: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1824,9 +1824,9 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent') public parent: any;
+             @ViewChild('parent', {static: false}) public parent: any;
 
-             @ViewChild('child') public child: any;
+             @ViewChild('child', {static: false}) public child: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1881,11 +1881,11 @@ const DEFAULT_COMPONENT_ID = '1';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent') public parent: any;
+             @ViewChild('parent', {static: false}) public parent: any;
 
-             @ViewChild('child1') public child1Elm: any;
+             @ViewChild('child1', {static: false}) public child1Elm: any;
 
-             @ViewChild('child2') public child2Elm: any;
+             @ViewChild('child2', {static: false}) public child2Elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2240,7 +2240,7 @@ const DEFAULT_COMPONENT_ID = '1';
               [transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))])])]
         })
         class OuterCmp {
-          @ViewChild('inner') public inner: any;
+          @ViewChild('inner', {static: false}) public inner: any;
           public exp: any = null;
 
           update() { this.exp = 'go'; }
@@ -3073,7 +3073,7 @@ const DEFAULT_COMPONENT_ID = '1';
             exp: any = false;
             disableExp = false;
 
-            @ViewChild('elm') public element: any;
+            @ViewChild('elm', {static: true}) public element: any;
           }
 
           TestBed.configureTestingModule({declarations: [Cmp]});
@@ -3231,7 +3231,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]
           })
           class Cmp {
-            @ViewChild('parent') public parentElm: any;
+            @ViewChild('parent', {static: false}) public parentElm: any;
             disableExp = false;
             exp = false;
           }
@@ -3322,7 +3322,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class ParentCmp {
-               @ViewChild('child') public child: ChildCmp|null = null;
+               @ViewChild('child', {static: false}) public child: ChildCmp|null = null;
                disableExp = false;
              }
 
@@ -3438,7 +3438,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 `
              })
              class Cmp {
-               @ViewChild('container') public container: any;
+               @ViewChild('container', {static: false}) public container: any;
 
                disableExp = false;
                exp = '';
@@ -3661,7 +3661,7 @@ const DEFAULT_COMPONENT_ID = '1';
     });
 
     modifiedInIvy('FW-952 - Error recovery is handled differently in Ivy than VE')
-        .it('should continue to clean up DOM-related animation artificats even if a compiler-level error is thrown midway',
+        .it('should continue to clean up DOM-related animation artifacts even if a compiler-level error is thrown midway',
             () => {
               @Component({
                 selector: 'if-cmp',
@@ -3684,7 +3684,7 @@ const DEFAULT_COMPONENT_ID = '1';
               class Cmp {
                 exp: any = false;
 
-                @ViewChild('contents') public contents: any;
+                @ViewChild('contents', {static: true}) public contents: any;
               }
 
               TestBed.configureTestingModule({declarations: [Cmp]});

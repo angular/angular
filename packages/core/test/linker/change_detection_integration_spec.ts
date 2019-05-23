@@ -1356,9 +1356,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            class Comp {
              name = 'Tom';
              // TODO(issue/24571): remove '!'.
-             @ViewChild('vc', {read: ViewContainerRef}) vc !: ViewContainerRef;
+             @ViewChild('vc', {read: ViewContainerRef, static: true}) vc !: ViewContainerRef;
              // TODO(issue/24571): remove '!'.
-             @ViewChild(TemplateRef) template !: TemplateRef<any>;
+             @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
            }
 
            TestBed.configureTestingModule({declarations: [Comp]});
@@ -1399,7 +1399,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         })
         class OuterComp {
           // TODO(issue/24571): remove '!'.
-          @ContentChild(TemplateRef)
+          @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1413,7 +1413,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         })
         class InnerComp {
           // TODO(issue/24571): remove '!'.
-          @ContentChild(TemplateRef)
+          @ContentChild(TemplateRef, {static: true})
           tpl !: TemplateRef<any>;
 
           // TODO(issue/24571): remove '!'.
