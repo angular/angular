@@ -73,9 +73,10 @@ describe('Integration', () => {
          })
          class ComponentWithRouterLink {
            // TODO(issue/24571): remove '!'.
-           @ViewChild(TemplateRef) templateRef !: TemplateRef<any>;
+           @ViewChild(TemplateRef, {static: true}) templateRef !: TemplateRef<any>;
            // TODO(issue/24571): remove '!'.
-           @ViewChild('container', {read: ViewContainerRef}) container !: ViewContainerRef;
+           @ViewChild('container', {read: ViewContainerRef, static: true})
+           container !: ViewContainerRef;
 
            addLink() {
              this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});

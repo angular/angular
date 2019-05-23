@@ -52,7 +52,8 @@ describe('jit directive helper functions', () => {
         descendants: false,
         first: false,
         isViewQuery: false,
-        read: undefined
+        read: undefined,
+        static: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['localRef'],
@@ -69,7 +70,8 @@ describe('jit directive helper functions', () => {
         descendants: true,
         first: true,
         isViewQuery: true,
-        read: undefined
+        read: undefined,
+        static: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['foo', 'bar', 'baz'],
