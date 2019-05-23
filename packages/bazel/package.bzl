@@ -40,9 +40,9 @@ def rules_angular_dev_dependencies():
     #############################################
     http_archive(
         name = "io_bazel_rules_sass",
-        sha256 = "76ae498b9a96fa029f026f8358ed44b93c934dde4691a798cb3a4137c307b7dc",
-        strip_prefix = "rules_sass-1.15.1",
-        url = "https://github.com/bazelbuild/rules_sass/archive/1.15.1.zip",
+        sha256 = "4c87befcb17282b039ba8341df9a6cc45f461bf05776dcf35c7e40c7e79ce374",
+        strip_prefix = "rules_sass-3a4f31c74513ccfacce3f955b5c006352f7e9587",
+        url = "https://github.com/bazelbuild/rules_sass/archive/3a4f31c74513ccfacce3f955b5c006352f7e9587.zip",
     )
 
     http_archive(
