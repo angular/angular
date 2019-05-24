@@ -451,7 +451,7 @@ Here's the markup for an "avoid" example in the
 {@a code-tabs}
 ### Code Tabs
 
-Code tabs display code much like _code examples_ do.  The added advantage is that they can display mutiple code samples within a tabbed interface.  Each tab is displayed using _code pane_.
+Code tabs display code much like _code examples_ do.  The added advantage is that they can display multiple code samples within a tabbed interface.  Each tab is displayed using _code pane_.
 
 #### Code-tabs attributes
 
