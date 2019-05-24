@@ -192,7 +192,7 @@
     "name": "allocStylingContext"
   },
   {
-    "name": "allocStylingContext"
+    "name": "allocTStylingContext"
   },
   {
     "name": "allocateNewContextEntry"
@@ -363,6 +363,9 @@
     "name": "getGlobal"
   },
   {
+    "name": "getGuardMask"
+  },
+  {
     "name": "getHighestElementOrICUContainer"
   },
   {
@@ -433,6 +436,9 @@
   },
   {
     "name": "getProp"
+  },
+  {
+    "name": "getPropConfig"
   },
   {
     "name": "getPropValuesStartPosition"
@@ -685,6 +691,9 @@
   },
   {
     "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setGuardMask"
   },
   {
     "name": "setHostBindings"
