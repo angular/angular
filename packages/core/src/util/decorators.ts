@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 /**
  * An interface implemented by all Angular type decorators, which allows them to be used as ES7
@@ -19,7 +19,8 @@ import {Type} from '../type';
  * @ng.Component({...})
  * class MyClass {...}
  * ```
- * @stable
+ *
+ * @publicApi
  */
 export interface TypeDecorator {
   /**
@@ -35,36 +36,40 @@ export interface TypeDecorator {
 }
 
 export const ANNOTATIONS = '__annotations__';
-export const PARAMETERS = '__paramaters__';
+export const PARAMETERS = '__parameters__';
 export const PROP_METADATA = '__prop__metadata__';
 
 /**
  * @suppress {globalThis}
  */
-export function makeDecorator(
+export function makeDecorator<T>(
     name: string, props?: (...args: any[]) => any, parentClass?: any,
-    chainFn?: (fn: Function) => void):
+    additionalProcessing?: (type: Type<T>) => void,
+    typeFn?: (type: Type<T>, ...args: any[]) => void):
     {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
   const metaCtor = makeMetadataCtor(props);
 
-  function DecoratorFactory(objOrType: any): (cls: any) => any {
+  function DecoratorFactory(...args: any[]): (cls: Type<T>) => any {
     if (this instanceof DecoratorFactory) {
-      metaCtor.call(this, objOrType);
+      metaCtor.call(this, ...args);
       return this;
     }
 
-    const annotationInstance = new (<any>DecoratorFactory)(objOrType);
-    const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type<any>) {
+    const annotationInstance = new (DecoratorFactory as any)(...args);
+    return function TypeDecorator(cls: Type<T>) {
+      if (typeFn) typeFn(cls, ...args);
       // Use of Object.defineProperty is important since it creates non-enumerable property which
       // prevents the property is copied during subclassing.
       const annotations = cls.hasOwnProperty(ANNOTATIONS) ?
           (cls as any)[ANNOTATIONS] :
           Object.defineProperty(cls, ANNOTATIONS, {value: []})[ANNOTATIONS];
       annotations.push(annotationInstance);
+
+
+      if (additionalProcessing) additionalProcessing(cls);
+
       return cls;
     };
-    if (chainFn) chainFn(TypeDecorator);
-    return TypeDecorator;
   }
 
   if (parentClass) {
@@ -72,7 +77,7 @@ export function makeDecorator(
   }
 
   DecoratorFactory.prototype.ngMetadataName = name;
-  (<any>DecoratorFactory).annotationCls = DecoratorFactory;
+  (DecoratorFactory as any).annotationCls = DecoratorFactory;
   return DecoratorFactory as any;
 }
 
@@ -126,7 +131,8 @@ export function makeParamDecorator(
 }
 
 export function makePropDecorator(
-    name: string, props?: (...args: any[]) => any, parentClass?: any): any {
+    name: string, props?: (...args: any[]) => any, parentClass?: any,
+    additionalProcessing?: (target: any, name: string, ...args: any[]) => void): any {
   const metaCtor = makeMetadataCtor(props);
 
   function PropDecoratorFactory(...args: any[]): any {
@@ -137,7 +143,7 @@ export function makePropDecorator(
 
     const decoratorInstance = new (<any>PropDecoratorFactory)(...args);
 
-    return function PropDecorator(target: any, name: string) {
+    function PropDecorator(target: any, name: string) {
       const constructor = target.constructor;
       // Use of Object.defineProperty is important since it creates non-enumerable property which
       // prevents the property is copied during subclassing.
@@ -146,7 +152,11 @@ export function makePropDecorator(
           Object.defineProperty(constructor, PROP_METADATA, {value: {}})[PROP_METADATA];
       meta[name] = meta.hasOwnProperty(name) && meta[name] || [];
       meta[name].unshift(decoratorInstance);
-    };
+
+      if (additionalProcessing) additionalProcessing(target, name, ...args);
+    }
+
+    return PropDecorator;
   }
 
   if (parentClass) {

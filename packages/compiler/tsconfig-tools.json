@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig-build.json",
-
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "outDir": "../../dist/tools/@angular/compiler"
-  }
-}

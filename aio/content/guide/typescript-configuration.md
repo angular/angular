@@ -21,7 +21,7 @@ that are important to Angular developers, including details about the following 
 Typically, you add a TypeScript configuration file called `tsconfig.json` to your project to
 guide the compiler as it generates JavaScript files.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -34,7 +34,21 @@ For details about `tsconfig.json`, see the official
 
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 
-<code-example path="quickstart/src/tsconfig.1.json" title="tsconfig.json" linenums="false"></code-example>
+<code-example lang="json" header="tsconfig.json" linenums="false">
+  {
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [ "es2015", "dom" ],
+      "noImplicitAny": true,
+      "suppressImplicitAnyIndexErrors": true
+    }
+  }
+</code-example>
 
 This file contains options and flags that are essential for Angular applications.
 
@@ -131,7 +145,16 @@ QuickStart identifies two *typings*, or `d.ts`, files:
 
 * [jasmine](http://jasmine.github.io/) typings for the Jasmine test framework.
 
-* [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *nodejs* environment;
-you can view an example in the [webpack](guide/webpack) page.
+* [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *Node.js®* environment;
+
 
 QuickStart doesn't require these typings but many of the samples do.
+
+
+{@a target}
+
+
+### *target*
+
+By default, the target is `es5`, you can configure the target to `es6` if you only want to deploy the application to
+es6 compatible browser. But if you configure the target to `es6` in some old browser such as `IE`, `Syntax Error` will be thrown.

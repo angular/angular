@@ -9,14 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['mn.', 'h.', 'mrg.', 'sd.', 'kv.', 'n.'],
-    ['miðn.', 'hád.', 'að morgni', 'síðd.', 'að kv.', 'að nóttu'],
-    ['miðnætti', 'hádegi', 'að morgni', 'síðdegis', 'að kvöldi', 'að nóttu']
+    ['miðnætti', 'hádegi', 'að morgni', 'síðdegis', 'að kvöldi', 'að nóttu'], u
   ],
   [
-    ['mn.', 'hd.', 'mrg.', 'sd.', 'kv.', 'n.'], ['miðn.', 'hád.', 'morg.', 'síðd.', 'kv.', 'nótt'],
+    ['mn.', 'hd.', 'mrg.', 'sd.', 'kv.', 'n.'],
+    ['miðnætti', 'hádegi', 'morgunn', 'síðdegis', 'kvöld', 'nótt'],
     ['miðnætti', 'hádegi', 'morgunn', 'eftir hádegi', 'kvöld', 'nótt']
   ],
   [

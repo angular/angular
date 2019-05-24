@@ -12,6 +12,7 @@ import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 import {NgForm} from './directives/ng_form';
+import {NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
 import {NgNoValidate} from './directives/ng_no_validate_directive';
@@ -32,12 +33,13 @@ export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {NgControl} from './directives/ng_control';
 export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
+export {NG_FORM_SELECTOR_WARNING, NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';
-export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
+export {FormControlDirective, NG_MODEL_WITH_FORM_CONTROL_WARNING} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
@@ -65,7 +67,8 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   EmailValidator,
 ];
 
-export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
+export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] =
+    [NgModel, NgModelGroup, NgForm, NgFormSelectorWarning];
 
 export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
     [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
@@ -77,5 +80,7 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
   declarations: SHARED_FORM_DIRECTIVES,
   exports: SHARED_FORM_DIRECTIVES,
 })
-export class InternalFormsSharedModule {
+export class ɵInternalFormsSharedModule {
 }
+
+export {ɵInternalFormsSharedModule as InternalFormsSharedModule};

@@ -13,9 +13,9 @@ import {ActivatedRoute} from './router_state';
 
 
 /**
- * Store contextual information about a {@link RouterOutlet}
+ * Store contextual information about a `RouterOutlet`
  *
- * @stable
+ * @publicApi
  */
 export class OutletContext {
   outlet: RouterOutlet|null = null;
@@ -26,9 +26,9 @@ export class OutletContext {
 }
 
 /**
- * Store contextual information about the children (= nested) {@link RouterOutlet}
+ * Store contextual information about the children (= nested) `RouterOutlet`
  *
- * @stable
+ * @publicApi
  */
 export class ChildrenOutletContexts {
   // contexts for child outlets, by name.

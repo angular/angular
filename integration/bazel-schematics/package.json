@@ -1,0 +1,14 @@
+{
+  "name": "bazel-schematics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/bazel": "file:../../dist/packages-dist/bazel",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
+  },
+  "scripts": {
+    "test": "./test.sh"
+  }
+}

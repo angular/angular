@@ -1,29 +1,21 @@
-/** @stable */
 export declare class BrowserModule {
-    constructor(parentModule: BrowserModule);
-    /** @experimental */ static withServerTransition(params: {
+    constructor(parentModule: BrowserModule | null);
+    static withServerTransition(params: {
         appId: string;
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<BrowserModule>;
 }
 
-/** @experimental */
 export declare class BrowserTransferStateModule {
 }
 
-/** @experimental */
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
     static directive(type: Type<any>): Predicate<DebugElement>;
 }
 
-/** @experimental */
 export declare function disableDebugTools(): void;
 
-/** @deprecated */
-export declare const DOCUMENT: InjectionToken<Document>;
-
-/** @stable */
 export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
@@ -33,13 +25,10 @@ export declare abstract class DomSanitizer implements Sanitizer {
     abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
 }
 
-/** @experimental */
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
-/** @stable */
 export declare const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
-/** @stable */
 export declare class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
@@ -47,22 +36,32 @@ export declare class EventManager {
     getZone(): NgZone;
 }
 
-/** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
-/** @experimental */
+export declare const HAMMER_LOADER: InjectionToken<HammerLoader>;
+
 export declare class HammerGestureConfig {
     events: string[];
+    options?: {
+        cssProps?: any;
+        domEvents?: boolean;
+        enable?: boolean | ((manager: any) => boolean);
+        preset?: any[];
+        touchAction?: string;
+        recognizers?: any[];
+        inputClass?: any;
+        inputTarget?: EventTarget;
+    };
     overrides: {
         [key: string]: Object;
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
 
-/** @experimental */
-export declare function makeStateKey<T =
+export declare type HammerLoader = () => Promise<void>;
 
-/** @experimental */
+export declare function makeStateKey<T = void>(key: string): StateKey<T>;
+
 export declare class Meta {
     constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
@@ -74,7 +73,6 @@ export declare class Meta {
     updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null;
 }
 
-/** @experimental */
 export declare type MetaDefinition = {
     charset?: string;
     content?: string;
@@ -89,46 +87,36 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-/** @stable */
 export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
-/** @stable */
 export interface SafeHtml extends SafeValue {
 }
 
-/** @stable */
 export interface SafeResourceUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeScript extends SafeValue {
 }
 
-/** @stable */
 export interface SafeStyle extends SafeValue {
 }
 
-/** @stable */
 export interface SafeUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeValue {
 }
 
-/** @experimental */
 export declare type StateKey<T> = string & {
     __not_a_string: never;
 };
 
-/** @experimental */
 export declare class Title {
     constructor(_doc: any);
     getTitle(): string;
     setTitle(newTitle: string): void;
 }
 
-/** @experimental */
 export declare class TransferState {
     get<T>(key: StateKey<T>, defaultValue: T): T;
     hasKey<T>(key: StateKey<T>): boolean;
@@ -138,5 +126,4 @@ export declare class TransferState {
     toJson(): string;
 }
 
-/** @stable */
 export declare const VERSION: Version;

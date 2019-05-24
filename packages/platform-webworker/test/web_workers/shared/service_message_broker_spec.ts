@@ -14,7 +14,7 @@ import {ServiceMessageBroker} from '@angular/platform-webworker/src/web_workers/
 
 import {createPairedMessageBuses} from './web_worker_test_util';
 
-export function main() {
+{
   const CHANNEL = 'UIMessageBroker Test Channel';
   const TEST_METHOD = 'TEST_METHOD';
   const PASSED_ARG_1 = 5;
@@ -34,9 +34,10 @@ export function main() {
     });
     it('should call registered method with correct arguments',
        inject([Serializer], (serializer: Serializer) => {
-         const broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
+         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(
-             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE], (arg1, arg2) => {
+             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE],
+             (arg1: any, arg2: any) => {
                expect(arg1).toEqual(PASSED_ARG_1);
                expect(arg2).toEqual(PASSED_ARG_2);
              });
@@ -47,8 +48,8 @@ export function main() {
        }));
 
     it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
-         const broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1) => {
+         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
+         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1: any) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return new Promise((res, rej) => {
              try {

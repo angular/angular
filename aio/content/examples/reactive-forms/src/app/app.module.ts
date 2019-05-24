@@ -1,39 +1,34 @@
 // #docplaster
-// #docregion
-// #docregion v1
-import { NgModule }            from '@angular/core';
-import { BrowserModule }       from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';  // <-- #1 import module
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+// #docregion imports
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppComponent }        from './app.component';
-import { HeroDetailComponent } from './hero-detail.component'; // <-- #1 import component
-// #enddocregion v1
-import { HeroListComponent }   from './hero-list.component';
+// #enddocregion imports
+import { AppComponent } from './app.component';
+import { NameEditorComponent } from './name-editor/name-editor.component';
+import { ProfileEditorComponent } from './profile-editor/profile-editor.component';
 
-import { HeroService }         from './hero.service'; //  <-- #1 import service
-// #docregion v1
-
+// #docregion imports
 @NgModule({
-  imports: [
-    BrowserModule,
-    ReactiveFormsModule // <-- #2 add to @NgModule imports
-  ],
+// #enddocregion imports
   declarations: [
     AppComponent,
-    HeroDetailComponent, // <-- #3 declare app component
-// #enddocregion v1
-    HeroListComponent
-// #docregion v1
+    NameEditorComponent,
+    ProfileEditorComponent
   ],
-// #enddocregion v1
-  exports: [ // export for the DemoModule
-    AppComponent,
-    HeroDetailComponent,
-    HeroListComponent
+// #docregion imports
+  imports: [
+// #enddocregion imports
+    BrowserModule,
+// #docregion imports
+    // other imports ...
+    ReactiveFormsModule
   ],
-  providers: [ HeroService ], // <-- #4 provide HeroService
-// #docregion v1
-  bootstrap: [ AppComponent ]
+// #enddocregion imports
+  providers: [],
+  bootstrap: [AppComponent]
+// #docregion imports
 })
 export class AppModule { }
-// #enddocregion v1
+// #enddocregion imports

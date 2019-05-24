@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleRef, RootRenderer, Sanitizer} from '@angular/core';
-import {ArgumentType, NodeCheckFn, NodeDef, RootData, Services, ViewData, ViewDefinition, initServicesIfNeeded} from '@angular/core/src/view/index';
+import {Injector, NgModuleRef} from '@angular/core';
+import {ArgumentType, NodeCheckFn, NodeDef, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewUpdateFn, initServicesIfNeeded, rootRenderNodes, viewDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
@@ -39,6 +39,39 @@ export function createRootView(
 
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
   return Services.createEmbeddedView(parent, anchorDef, anchorDef.element !.template !, context);
+}
+
+export function compViewDef(
+    nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn, updateRenderer?: null | ViewUpdateFn,
+    viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
+  const def = viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
+
+  def.nodes.forEach((node, index) => {
+    if (node.nodeIndex !== index) {
+      throw new Error('nodeIndex should be the same as the index of the node');
+    }
+
+    // This check should be removed when we start reordering nodes at runtime
+    if (node.checkIndex > -1 && node.checkIndex !== node.nodeIndex) {
+      throw new Error(
+          `nodeIndex and checkIndex should be the same, got ${node.nodeIndex} !== ${node.checkIndex}`);
+    }
+  });
+
+  return def;
+}
+
+export function compViewDefFactory(
+    nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn, updateRenderer?: null | ViewUpdateFn,
+    viewFlags: ViewFlags = ViewFlags.None): ViewDefinitionFactory {
+  return () => compViewDef(nodes, updateDirectives, updateRenderer, viewFlags);
+}
+
+export function createAndGetRootNodes(
+    viewDef: ViewDefinition, ctx?: any): {rootNodes: any[], view: ViewData} {
+  const view = createRootView(viewDef, ctx);
+  const rootNodes = rootRenderNodes(view);
+  return {rootNodes, view};
 }
 
 let removeNodes: Node[];

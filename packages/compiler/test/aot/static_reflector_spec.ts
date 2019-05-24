@@ -7,7 +7,7 @@
  */
 
 import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, core as compilerCore} from '@angular/compiler';
-import {CollectorOptions} from '@angular/compiler-cli/src/metadata/index';
+import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 
@@ -33,7 +33,7 @@ describe('StaticReflector', () => {
   beforeEach(() => init());
 
   function simplify(context: StaticSymbol, value: any) {
-    return reflector.simplify(context, value);
+    return (reflector as any).simplify(context, value);
   }
 
   it('should get annotations for NgFor', () => {
@@ -107,8 +107,11 @@ describe('StaticReflector', () => {
   it('should provide context for errors reported by the collector', () => {
     const SomeClass = reflector.findDeclaration('src/error-reporting', 'SomeClass');
     expect(() => reflector.annotations(SomeClass))
-        .toThrow(new Error(
-            'Error encountered resolving symbol values statically. A reasonable error message (position 13:34 in the original .ts file), resolving symbol ErrorSym in /tmp/src/error-references.d.ts, resolving symbol Link2 in /tmp/src/error-references.d.ts, resolving symbol Link1 in /tmp/src/error-references.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts, resolving symbol SomeClass in /tmp/src/error-reporting.d.ts'));
+        .toThrow(new Error(`Error during template compile of 'SomeClass'
+  A reasonable error message in 'Link1'
+    'Link1' references 'Link2'
+      'Link2' references 'ErrorSym'
+        'ErrorSym' contains the error at /tmp/src/error-references.ts(13,34).`));
   });
 
   it('should simplify primitive into itself', () => {
@@ -330,10 +333,12 @@ describe('StaticReflector', () => {
   it('should error on direct recursive calls', () => {
     expect(
         () => simplify(
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
             reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'recursion')))
-        .toThrow(new Error(
-            'Recursion not supported, resolving symbol recursive in /tmp/src/function-recursive.d.ts, resolving symbol recursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+        .toThrow(new Error(`Error during template compile of 'MyComp'
+  Recursion is not supported in 'recursion'
+    'recursion' references 'recursive'
+      'recursive' called 'recursive' recursively.`));
   });
 
   it('should throw a SyntaxError without stack trace when the required resource cannot be resolved',
@@ -345,8 +350,8 @@ describe('StaticReflector', () => {
                  message:
                      'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts'
                })))
-           .toThrowError(
-               'Error encountered resolving symbol values statically. Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts, resolving symbol AppModule in /tmp/src/function-reference.ts');
+           .toThrowError(`Error during template compile of 'AppModule'
+  Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts.`);
      });
 
   it('should record data about the error in the exception', () => {
@@ -359,9 +364,10 @@ describe('StaticReflector', () => {
       const classData: any = moduleMetadata['InvalidMetadata'];
       expect(classData).toBeDefined();
       simplify(
-          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
+          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''),
+          classData.decorators[0].arguments);
     } catch (e) {
-      expect(e.fileName).toBe('/tmp/src/invalid-metadata.ts');
+      expect(e.position).toBeDefined();
       threw = true;
     }
     expect(threw).toBe(true);
@@ -370,10 +376,13 @@ describe('StaticReflector', () => {
   it('should error on indirect recursive calls', () => {
     expect(
         () => simplify(
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
             reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'indirectRecursion')))
-        .toThrow(new Error(
-            'Recursion not supported, resolving symbol indirectRecursion2 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion1 in /tmp/src/function-recursive.d.ts, resolving symbol indirectRecursion in /tmp/src/function-reference.ts, resolving symbol  in /tmp/src/function-reference.ts'));
+        .toThrow(new Error(`Error during template compile of 'MyComp'
+  Recursion is not supported in 'indirectRecursion'
+    'indirectRecursion' references 'indirectRecursion1'
+      'indirectRecursion1' references 'indirectRecursion2'
+        'indirectRecursion2' called 'indirectRecursion1' recursively.`));
   });
 
   it('should simplify a spread expression', () => {
@@ -401,7 +410,8 @@ describe('StaticReflector', () => {
         () => reflector.annotations(
             reflector.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent')))
         .toThrow(new Error(
-            `Error encountered resolving symbol values statically. Calling function 'someFunction', function calls are not supported. Consider replacing the function or lambda with a reference to an exported function, resolving symbol MyComponent in /tmp/src/invalid-calls.ts, resolving symbol MyComponent in /tmp/src/invalid-calls.ts`));
+            `/tmp/src/invalid-calls.ts(8,29): Error during template compile of 'MyComponent'
+  Function calls are not supported in decorators but 'someFunction' was called.`));
   });
 
   it('should be able to get metadata for a class containing a static method call', () => {
@@ -878,12 +888,434 @@ describe('StaticReflector', () => {
     });
   });
 
+  // Regression #18170
+  it('should continue to aggresively evaluate enum member accessors', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {intermediate} from './index';
+
+      @Component({
+        template: '<div></div>',
+        providers: [{provide: 'foo', useValue: [...intermediate]}]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/intermediate.ts'] = `
+      import {MyEnum} from './indirect';
+      export const intermediate = [{
+        data: {
+          c: [MyEnum.Value]
+        }
+      }];`;
+    data['/tmp/src/index.ts'] = `export * from './intermediate';`;
+    data['/tmp/src/indirect.ts'] = `export * from './consts';`;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 3
+      }
+    `;
+    init(data);
+
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0]
+               .useValue)
+        .toEqual([{data: {c: [3]}}]);
+  });
+
+  // Regression #18170
+  it('should evaluate enums and statics that are 0', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {MyEnum, MyClass} from './consts';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: MyEnum.Value
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 0,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 0}});
+  });
+
+  // Regression #18170
+  it('should eagerly evaluate enums selects', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E.Value,
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {MyEnum} from './consts';
+
+      export const E = MyEnum;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 1,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
+
+  // Regression #18170
+  it('should aggressively evaluate array indexes', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E[E[E[1]]],
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {A} from './consts';
+
+      export const E = A;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export const A = [0, 1];
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
+
+  describe('resolveExternalReference', () => {
+    it('should register modules names in the StaticSymbolResolver if no containingFile is given',
+       () => {
+         init({
+           '/tmp/root.ts': ``,
+           '/tmp/a.ts': `export const x = 1;`,
+         });
+         let symbol = reflector.resolveExternalReference(
+             {moduleName: './a', name: 'x', runtime: null}, '/tmp/root.ts');
+         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
+
+         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x', runtime: null});
+         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
+       });
+  });
+
+  describe('formatted error reporting', () => {
+    describe('function calls', () => {
+      const fileName = '/tmp/src/invalid/components.ts';
+      beforeEach(() => {
+        const localData = {
+          '/tmp/src/invalid/function-call.ts': `
+        import {functionToCall} from 'some-module';
+        export const CALL_FUNCTION = functionToCall();
+    `,
+          '/tmp/src/invalid/indirect.ts': `
+        import {CALL_FUNCTION} from './function-call';
+
+        export const INDIRECT_CALL_FUNCTION = CALL_FUNCTION + 1;
+    `,
+          '/tmp/src/invalid/two-levels-indirect.ts': `
+        import {INDIRECT_CALL_FUNCTION} from './indirect';
+
+        export const TWO_LEVELS_INDIRECT_CALL_FUNCTION = INDIRECT_CALL_FUNCTION + 1;
+    `,
+          '/tmp/src/invalid/components.ts': `
+        import {functionToCall} from 'some-module';
+        import {Component} from '@angular/core';
+        import {CALL_FUNCTION} from './function-call';
+        import {INDIRECT_CALL_FUNCTION} from './indirect';
+        import {TWO_LEVELS_INDIRECT_CALL_FUNCTION} from './two-levels-indirect';
+
+        @Component({
+          value: functionToCall()
+        })
+        export class CallImportedFunction {}
+
+        @Component({
+          value: CALL_FUNCTION
+        })
+        export class ReferenceCalledFunction {}
+
+        @Component({
+          value: INDIRECT_CALL_FUNCTION
+        })
+        export class IndirectReferenceCalledFunction {}
+
+        @Component({
+          value: TWO_LEVELS_INDIRECT_CALL_FUNCTION
+        })
+        export class TwoLevelsIndirectReferenceCalledFunction {}
+    `
+        };
+        init({...DEFAULT_TEST_DATA, ...localData});
+      });
+
+      it('should report a formatted error for a direct function call', () => {
+        expect(() => {
+          return reflector.annotations(reflector.getStaticSymbol(fileName, 'CallImportedFunction'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(9,18): Error during template compile of 'CallImportedFunction'
+  Function calls are not supported in decorators but 'functionToCall' was called.`);
+      });
+
+      it('should report a formatted error for a reference to a function call', () => {
+        expect(() => {
+          return reflector.annotations(
+              reflector.getStaticSymbol(fileName, 'ReferenceCalledFunction'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(14,18): Error during template compile of 'ReferenceCalledFunction'
+  Function calls are not supported in decorators but 'functionToCall' was called in 'CALL_FUNCTION'
+    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      });
+
+      it('should report a formatted error for an indirect reference to a function call', () => {
+        expect(() => {
+          return reflector.annotations(
+              reflector.getStaticSymbol(fileName, 'IndirectReferenceCalledFunction'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(19,18): Error during template compile of 'IndirectReferenceCalledFunction'
+  Function calls are not supported in decorators but 'functionToCall' was called in 'INDIRECT_CALL_FUNCTION'
+    'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
+      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      });
+
+      it('should report a formatted error for a double-indirect reference to a function call', () => {
+        expect(() => {
+          return reflector.annotations(
+              reflector.getStaticSymbol(fileName, 'TwoLevelsIndirectReferenceCalledFunction'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(24,18): Error during template compile of 'TwoLevelsIndirectReferenceCalledFunction'
+  Function calls are not supported in decorators but 'functionToCall' was called in 'TWO_LEVELS_INDIRECT_CALL_FUNCTION'
+    'TWO_LEVELS_INDIRECT_CALL_FUNCTION' references 'INDIRECT_CALL_FUNCTION' at /tmp/src/invalid/two-levels-indirect.ts(4,58)
+      'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
+        'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      });
+    });
+
+    describe('macro functions', () => {
+      const fileName = '/tmp/src/invalid/components.ts';
+      beforeEach(() => {
+        const localData = {
+          '/tmp/src/invalid/function-call.ts': `
+        import {functionToCall} from 'some-module';
+        export const CALL_FUNCTION = functionToCall();
+    `,
+          '/tmp/src/invalid/indirect.ts': `
+        import {CALL_FUNCTION} from './function-call';
+
+        export const INDIRECT_CALL_FUNCTION = CALL_FUNCTION + 1;
+    `,
+          '/tmp/src/invalid/macros.ts': `
+        export function someMacro(value: any) {
+          return [ { provide: 'key', value: value } ];
+        }
+    `,
+          '/tmp/src/invalid/components.ts': `
+        import {Component} from '@angular/core';
+        import {functionToCall} from 'some-module';
+        import {someMacro} from './macros';
+        import {CALL_FUNCTION} from './function-call';
+        import {INDIRECT_CALL_FUNCTION} from './indirect';
+
+        @Component({
+          template: someMacro(functionToCall())
+        })
+        export class DirectCall {}
+
+        @Component({
+          template: someMacro(CALL_FUNCTION)
+        })
+        export class IndirectCall {}
+
+        @Component({
+          template: someMacro(INDIRECT_CALL_FUNCTION)
+        })
+        export class DoubleIndirectCall {}
+    `
+        };
+        init({...DEFAULT_TEST_DATA, ...localData});
+      });
+
+      it('should report a formatted error for a direct function call', () => {
+        expect(() => {
+          return reflector.annotations(reflector.getStaticSymbol(fileName, 'DirectCall'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(9,31): Error during template compile of 'DirectCall'
+  Function calls are not supported in decorators but 'functionToCall' was called.`);
+      });
+
+      it('should report a formatted error for a reference to a function call', () => {
+        expect(() => {
+          return reflector.annotations(reflector.getStaticSymbol(fileName, 'IndirectCall'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(14,31): Error during template compile of 'IndirectCall'
+  Function calls are not supported in decorators but 'functionToCall' was called in 'CALL_FUNCTION'
+    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      });
+
+      it('should report a formatted error for an indirect refernece to a function call', () => {
+        expect(() => {
+          return reflector.annotations(reflector.getStaticSymbol(fileName, 'DoubleIndirectCall'));
+        })
+            .toThrowError(
+                `/tmp/src/invalid/components.ts(19,31): Error during template compile of 'DoubleIndirectCall'
+  Function calls are not supported in decorators but 'functionToCall' was called in 'INDIRECT_CALL_FUNCTION'
+    'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
+      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      });
+    });
+
+    describe('and give advice', () => {
+      // If in a reference expression, advice the user to replace with a reference.
+      const fileName = '/tmp/src/invalid/components.ts';
+
+      function collectError(symbol: string): string {
+        try {
+          reflector.annotations(reflector.getStaticSymbol(fileName, symbol));
+        } catch (e) {
+          return e.message;
+        }
+        fail('Expected an exception to be thrown');
+        return '';
+      }
+
+      function initWith(content: string) {
+        init({
+          ...DEFAULT_TEST_DATA,
+          [fileName]: `import {Component} from '@angular/core';\n${content}`
+        });
+      }
+
+      it('should advise exorting a local', () => {
+        initWith(`const f: string; @Component({value: f}) export class MyComp {}`);
+        expect(collectError('MyComp')).toContain(`Consider exporting 'f'`);
+      });
+
+      it('should advise export a class', () => {
+        initWith('class Foo {} @Component({value: Foo}) export class MyComp {}');
+        expect(collectError('MyComp')).toContain(`Consider exporting 'Foo'`);
+      });
+
+      it('should advise avoiding destructuring', () => {
+        initWith(
+            'export const {foo, bar} = {foo: 1, bar: 2}; @Component({value: foo}) export class MyComp {}');
+        expect(collectError('MyComp')).toContain(`Consider simplifying to avoid destructuring`);
+      });
+
+      it('should advise converting an arrow function into an exported function', () => {
+        initWith('@Component({value: () => true}) export class MyComp {}');
+        expect(collectError('MyComp'))
+            .toContain(`Consider changing the function expression into an exported function`);
+      });
+
+      it('should advise converting a function expression into an exported function', () => {
+        initWith('@Component({value: function () { return true; }}) export class MyComp {}');
+        expect(collectError('MyComp'))
+            .toContain(`Consider changing the function expression into an exported function`);
+      });
+    });
+  });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
   '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
     '__symbolic': 'module',
-    'version': 3,
+    'version': METADATA_VERSION,
     'metadata': {
       'FORM_DIRECTIVES': [{
         '__symbolic': 'reference',
@@ -894,7 +1326,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   }],
   '/tmp/@angular/common/src/directives/ng_for.d.ts': {
     '__symbolic': 'module',
-    'version': 3,
+    'version': METADATA_VERSION,
     'metadata': {
       'NgFor': {
         '__symbolic': 'class',
@@ -924,19 +1356,19 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
     }
   },
   '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-      {version: 3, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+      {version: METADATA_VERSION, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
   '/tmp/@angular/core/src/linker/template_ref.d.ts': {
-    version: 3,
+    version: METADATA_VERSION,
     'module': './template_ref',
     'metadata': {'TemplateRef': {'__symbolic': 'class'}}
   },
   '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-      {version: 3, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
+      {version: METADATA_VERSION, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
   '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-      {version: 3, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+      {version: METADATA_VERSION, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
   '/tmp/src/app/hero-detail.component.d.ts': {
     '__symbolic': 'module',
-    'version': 3,
+    'version': METADATA_VERSION,
     'metadata': {
       'HeroDetailComponent': {
         '__symbolic': 'class',
@@ -971,10 +1403,10 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       }
     }
   },
-  '/src/extern.d.ts': {'__symbolic': 'module', 'version': 3, metadata: {s: 's'}},
+  '/src/extern.d.ts': {'__symbolic': 'module', 'version': METADATA_VERSION, metadata: {s: 's'}},
   '/tmp/src/error-reporting.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       SomeClass: {
         __symbolic: 'class',
@@ -994,7 +1426,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/error-references.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       Link1: {__symbolic: 'reference', module: 'src/error-references', name: 'Link2'},
       Link2: {__symbolic: 'reference', module: 'src/error-references', name: 'ErrorSym'},
@@ -1004,7 +1436,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/function-declaration.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       one: {
         __symbolic: 'function',
@@ -1031,7 +1463,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/function-reference.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       one: {
         __symbolic: 'call',
@@ -1058,7 +1490,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/function-recursive.d.ts': {
     __symbolic: 'modules',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       recursive: {
         __symbolic: 'function',
@@ -1103,7 +1535,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/spread.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]}
   },
   '/tmp/src/custom-decorator.ts': `
@@ -1119,7 +1551,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           @CustomDecorator() get foo(): string { return ''; }
         }
       `,
-  '/tmp/src/invalid-calll-definitions.ts': `
+  '/tmp/src/invalid-call-definitions.ts': `
         export function someFunction(a: any) {
           if (Array.isArray(a)) {
             return a;
@@ -1128,7 +1560,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         }
       `,
   '/tmp/src/invalid-calls.ts': `
-        import {someFunction} from './nvalid-calll-definitions.ts';
+        import {someFunction} from './nvalid-call-definitions.ts';
         import {Component} from '@angular/core';
         import {NgIf} from '@angular/common';
 
@@ -1267,5 +1699,5 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         export class Dep {
           @Input f: Forward;
         }
-      `
+      `,
 };

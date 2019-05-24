@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Runs the Bazel workspace status command in order to ensure that the version placeholder
+# will be replaced with the proper version name when building the release output.
+
+# Ensure that the stamping script is executed within the project directory.
+cd $(dirname ${0})/../..
+
+# The "0.0.0-PLACEHOLDER" is based on the value of the "BUILD_SCM_VERSION" status variable.
+versionName=$(node tools/bazel_stamp_vars.js | grep -e "BUILD_SCM_VERSION" | cut -d " " -f2)
+
+if [[ ! ${versionName} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc).[0-9]+)?$ ]]; then
+  echo "ERROR: The release will currently have the following version: ${versionName}"
+  echo "This does not match the version format for releases to NPM."
+  echo ""
+  echo "Please ensure that the most recent commit in the current branch is tagged"
+  echo "with the proper version tag."
+  exit 1
+fi
+
+# Verify peer deps constraints and package.json before publishing to npm
+# There should be no npm errors
+
+mkdir tmp
+cd tmp
+npm init -y
+npm install --save ../dist/packages-dist/* typescript@~2.7 rxjs@^6.0.0-beta.4 zone.js@~0.8.20
+cd ..
+rm -rf ./tmp

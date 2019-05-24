@@ -12,6 +12,9 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 __karma__.loaded = function() {};
 
+window.isNode = false;
+window.isBrowser = true;
+
 function isJsFile(path) {
   return path.slice(-3) == '.js';
 }
@@ -33,7 +36,10 @@ System.config({
 });
 
 System.config({
-  map: {'rxjs': 'node_modules/rxjs', '@angular': 'dist/all/@angular'},
+  map: {
+    '@angular': 'dist/all/@angular',
+    'rxjs': 'node_modules/rxjs',
+  },
   packages: {
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
@@ -45,9 +51,16 @@ System.config({
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/private/testing': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/upgrade/static': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/router/upgrade': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
-    'rxjs': {main: 'Rx.js', defaultExtension: 'js'},
+    'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs': {main: 'index.js', defaultExtension: 'js'},
   }
 });
 

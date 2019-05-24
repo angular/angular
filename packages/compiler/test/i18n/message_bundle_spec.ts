@@ -13,7 +13,7 @@ import {Serializer} from '../../src/i18n/serializers/serializer';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
-export function main(): void {
+{
   describe('MessageBundle', () => {
     describe('Messages', () => {
       let messages: MessageBundle;

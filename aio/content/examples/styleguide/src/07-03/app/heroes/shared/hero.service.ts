@@ -1,15 +1,16 @@
 // #docregion
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
+import { Observable, of } from 'rxjs';
 
 import { Hero } from './hero.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class HeroService {
   getHeroes() {
     let heroes: Hero[] = [];
-    return Observable.of(heroes);
+    return of(heroes);
   }
 }

@@ -10,9 +10,11 @@ PublicTestability.prototype.isStable = function() {};
 
 /**
  * @param {?} callback
+ * @param {?} timeout
+ * @param {?} updateCallback
  * @return {?}
  */
-PublicTestability.prototype.whenStable = function(callback) {};
+PublicTestability.prototype.whenStable = function(callback, timeout, updateCallback) {};
 
 /**
  * @param {?} using

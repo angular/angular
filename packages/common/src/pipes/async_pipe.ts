@@ -6,26 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {ISubscription} from 'rxjs/Subscription';
+import {ChangeDetectorRef, EventEmitter, Injectable, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise, ɵlooseIdentical} from '@angular/core';
+import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
-  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): ISubscription
+  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): SubscriptionLike
       |Promise<any>;
-  dispose(subscription: ISubscription|Promise<any>): void;
-  onDestroy(subscription: ISubscription|Promise<any>): void;
+  dispose(subscription: SubscriptionLike|Promise<any>): void;
+  onDestroy(subscription: SubscriptionLike|Promise<any>): void;
 }
 
 class ObservableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Observable<any>, updateLatestValue: any): ISubscription {
+  createSubscription(async: Observable<any>, updateLatestValue: any): SubscriptionLike {
     return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
   }
 
-  dispose(subscription: ISubscription): void { subscription.unsubscribe(); }
+  dispose(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
 
-  onDestroy(subscription: ISubscription): void { subscription.unsubscribe(); }
+  onDestroy(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
@@ -43,16 +42,18 @@ const _observableStrategy = new ObservableStrategy();
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Unwraps a value from an asynchronous primitive.
- * @howToUse `observable_or_promise_expression | async`
  * @description
+ *
+ * Unwraps a value from an asynchronous primitive.
+ *
  * The `async` pipe subscribes to an `Observable` or `Promise` and returns the latest value it has
  * emitted. When a new value is emitted, the `async` pipe marks the component to be checked for
  * changes. When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
  * potential memory leaks.
  *
+ * @usageNotes
  *
- * ## Examples
+ * ### Examples
  *
  * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
  * promise.
@@ -64,14 +65,15 @@ const _observableStrategy = new ObservableStrategy();
  *
  * {@example common/pipes/ts/async_pipe.ts region='AsyncPipeObservable'}
  *
- * @stable
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
   private _latestReturnedValue: any = null;
 
-  private _subscription: ISubscription|Promise<any>|null = null;
+  private _subscription: SubscriptionLike|Promise<any>|null = null;
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
   private _strategy: SubscriptionStrategy = null !;
 
@@ -85,8 +87,8 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
   transform<T>(obj: null): null;
   transform<T>(obj: undefined): undefined;
-  transform<T>(obj: Observable<T>): T|null;
-  transform<T>(obj: Promise<T>): T|null;
+  transform<T>(obj: Observable<T>|null|undefined): T|null;
+  transform<T>(obj: Promise<T>|null|undefined): T|null;
   transform(obj: Observable<any>|Promise<any>|null|undefined): any {
     if (!this._obj) {
       if (obj) {
@@ -101,7 +103,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       return this.transform(obj as any);
     }
 
-    if (this._latestValue === this._latestReturnedValue) {
+    if (ɵlooseIdentical(this._latestValue, this._latestReturnedValue)) {
       return this._latestReturnedValue;
     }
 

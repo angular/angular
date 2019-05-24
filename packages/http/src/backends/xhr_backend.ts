@@ -8,8 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observable, Observer} from 'rxjs';
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {Headers} from '../headers';
@@ -29,7 +28,8 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  * This class would typically not be created or interacted with directly inside applications, though
  * the {@link MockConnection} may be interacted with in tests.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class XHRConnection implements Connection {
   request: Request;
@@ -38,7 +38,8 @@ export class XHRConnection implements Connection {
    * `XMLHttpRequest`.
    */
   response: Observable<Response>;
-  readyState: ReadyState;
+  // TODO(issue/24571): remove '!'.
+  readyState !: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
@@ -188,7 +189,8 @@ export class XHRConnection implements Connection {
  * with different `cookieName` and `headerName` values. See the main HTTP documentation for more
  * details.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class CookieXSRFStrategy implements XSRFStrategy {
   constructor(
@@ -209,6 +211,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
  * overridden if a different backend implementation should be used,
  * such as in a node backend.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -226,7 +229,8 @@ export class CookieXSRFStrategy implements XSRFStrategy {
  *   }
  * }
  * ```
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class XHRBackend implements ConnectionBackend {

@@ -8,8 +8,8 @@ import { TextboxQuestion }  from './question-textbox';
 @Injectable()
 export class QuestionService {
 
-  // Todo: get from a remote source of question metadata
-  // Todo: make asynchronous
+  // TODO: get from a remote source of question metadata
+  // TODO: make asynchronous
   getQuestions() {
 
     let questions: QuestionBase<any>[] = [

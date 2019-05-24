@@ -13,12 +13,12 @@ import {ComponentRef} from './linker/component_factory';
 /**
  * A DI Token representing a unique string id assigned to the application by Angular and used
  * primarily for prefixing application attributes and CSS styles when
- * {@link ViewEncapsulation#Emulated} is being used.
+ * {@link ViewEncapsulation#Emulated ViewEncapsulation.Emulated} is being used.
  *
  * If you need to avoid randomly generated value to be used as an application id, you can provide
  * a custom value via a DI provider <!-- TODO: provider --> configuring the root {@link Injector}
  * using this token.
- * @experimental
+ * @publicApi
  */
 export const APP_ID = new InjectionToken<string>('AppId');
 
@@ -28,7 +28,7 @@ export function _appIdRandomProviderFactory() {
 
 /**
  * Providers that will generate a random APP_ID_TOKEN.
- * @experimental
+ * @publicApi
  */
 export const APP_ID_RANDOM_PROVIDER = {
   provide: APP_ID,
@@ -42,13 +42,13 @@ function _randomChar(): string {
 
 /**
  * A function that will be executed when a platform is initialized.
- * @experimental
+ * @publicApi
  */
 export const PLATFORM_INITIALIZER = new InjectionToken<Array<() => void>>('Platform Initializer');
 
 /**
  * A token that indicates an opaque platform id.
- * @experimental
+ * @publicApi
  */
 export const PLATFORM_ID = new InjectionToken<Object>('Platform ID');
 
@@ -58,13 +58,13 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID');
  *
  * `(componentRef: ComponentRef) => void`.
  *
- * @experimental
+ * @publicApi
  */
 export const APP_BOOTSTRAP_LISTENER =
     new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
 
 /**
  * A token which indicates the root directory of the application
- * @experimental
+ * @publicApi
  */
 export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');

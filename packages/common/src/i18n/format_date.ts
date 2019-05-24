@@ -8,6 +8,9 @@
 
 import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
 
+export const ISO8601_DATE_REGEX =
+    /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
+//    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
     /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
@@ -26,7 +29,7 @@ enum DateType {
   Hours,
   Minutes,
   Seconds,
-  Milliseconds,
+  FractionalSeconds,
   Day
 }
 
@@ -38,11 +41,29 @@ enum TranslationType {
 }
 
 /**
- * Transforms a date to a locale string based on a pattern and a timezone
+ * @ngModule CommonModule
+ * @description
  *
- * @internal
+ * Formats a date according to locale rules.
+ *
+ * @param value The date to format, as a Date, or a number (milliseconds since UTC epoch)
+ * or an [ISO date-time string](https://www.w3.org/TR/NOTE-datetime).
+ * @param format The date-time components to include. See `DatePipe` for details.
+ * @param locale A locale code for the locale format rules to use.
+ * @param timezone The time zone. A time zone offset from GMT (such as `'+0430'`),
+ * or a standard UTC/GMT or continental US time zone abbreviation.
+ * If not specified, uses host system settings.
+ *
+ * @returns The formatted date string.
+ *
+ * @see `DatePipe`
+ * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ *
+ * @publicApi
  */
-export function formatDate(date: Date, format: string, locale: string, timezone?: string): string {
+export function formatDate(
+    value: string | number | Date, format: string, locale: string, timezone?: string): string {
+  let date = toDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
 
@@ -165,12 +186,19 @@ function padNumber(
       neg = minusSign;
     }
   }
-  let strNum = '' + num;
-  while (strNum.length < digits) strNum = '0' + strNum;
+  let strNum = String(num);
+  while (strNum.length < digits) {
+    strNum = '0' + strNum;
+  }
   if (trim) {
     strNum = strNum.substr(strNum.length - digits);
   }
   return neg + strNum;
+}
+
+function formatFractionalSeconds(milliseconds: number, digits: number): string {
+  const strMs = padNumber(milliseconds, 3);
+  return strMs.substr(0, digits);
 }
 
 /**
@@ -180,20 +208,26 @@ function dateGetter(
     name: DateType, size: number, offset: number = 0, trim = false,
     negWrap = false): DateFormatter {
   return function(date: Date, locale: string): string {
-    let part = getDatePart(name, date, size);
+    let part = getDatePart(name, date);
     if (offset > 0 || part > -offset) {
       part += offset;
     }
-    if (name === DateType.Hours && part === 0 && offset === -12) {
-      part = 12;
+
+    if (name === DateType.Hours) {
+      if (part === 0 && offset === -12) {
+        part = 12;
+      }
+    } else if (name === DateType.FractionalSeconds) {
+      return formatFractionalSeconds(part, size);
     }
-    return padNumber(
-        part, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim, negWrap);
+
+    const localeMinus = getLocaleNumberSymbol(locale, NumberSymbol.MinusSign);
+    return padNumber(part, size, localeMinus, trim, negWrap);
   };
 }
 
-function getDatePart(name: DateType, date: Date, size: number): number {
-  switch (name) {
+function getDatePart(part: DateType, date: Date): number {
+  switch (part) {
     case DateType.FullYear:
       return date.getFullYear();
     case DateType.Month:
@@ -206,13 +240,12 @@ function getDatePart(name: DateType, date: Date, size: number): number {
       return date.getMinutes();
     case DateType.Seconds:
       return date.getSeconds();
-    case DateType.Milliseconds:
-      const div = size === 1 ? 100 : (size === 2 ? 10 : 1);
-      return Math.round(date.getMilliseconds() / div);
+    case DateType.FractionalSeconds:
+      return date.getMilliseconds();
     case DateType.Day:
       return date.getDay();
     default:
-      throw new Error(`Unknown DateType value "${name}".`);
+      throw new Error(`Unknown DateType value "${part}".`);
   }
 }
 
@@ -270,6 +303,13 @@ function getDateTranslation(
       return getLocaleDayPeriods(locale, form, <TranslationWidth>width)[currentHours < 12 ? 0 : 1];
     case TranslationType.Eras:
       return getLocaleEraNames(locale, <TranslationWidth>width)[date.getFullYear() <= 0 ? 0 : 1];
+    default:
+      // This default case is not needed by TypeScript compiler, as the switch is exhaustive.
+      // However Closure Compiler does not understand that and reports an error in typed mode.
+      // The `throw new Error` below works around the problem, and the unexpected: never variable
+      // makes sure tsc still checks this code is unreachable.
+      const unexpected: never = name;
+      throw new Error(`unexpected translation type ${unexpected}`);
   }
 }
 
@@ -532,16 +572,15 @@ function getDateFormatter(format: string): DateFormatter|null {
       formatter = dateGetter(DateType.Seconds, 2);
       break;
 
-    // Fractional second padded (0-9)
+    // Fractional second
     case 'S':
-      formatter = dateGetter(DateType.Milliseconds, 1);
+      formatter = dateGetter(DateType.FractionalSeconds, 1);
       break;
     case 'SS':
-      formatter = dateGetter(DateType.Milliseconds, 2);
+      formatter = dateGetter(DateType.FractionalSeconds, 2);
       break;
-    // = millisecond
     case 'SSS':
-      formatter = dateGetter(DateType.Milliseconds, 3);
+      formatter = dateGetter(DateType.FractionalSeconds, 3);
       break;
 
 
@@ -599,4 +638,91 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
   const dateTimezoneOffset = date.getTimezoneOffset();
   const timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
   return addDateMinutes(date, reverseValue * (timezoneOffset - dateTimezoneOffset));
+}
+
+/**
+ * Converts a value to date.
+ *
+ * Supported input formats:
+ * - `Date`
+ * - number: timestamp
+ * - string: numeric (e.g. "1234"), ISO and date strings in a format supported by
+ *   [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
+ *   Note: ISO strings without time return a date without timeoffset.
+ *
+ * Throws if unable to convert to a date.
+ */
+export function toDate(value: string | number | Date): Date {
+  if (isDate(value)) {
+    return value;
+  }
+
+  if (typeof value === 'number' && !isNaN(value)) {
+    return new Date(value);
+  }
+
+  if (typeof value === 'string') {
+    value = value.trim();
+
+    const parsedNb = parseFloat(value);
+
+    // any string that only contains numbers, like "1234" but not like "1234hello"
+    if (!isNaN(value as any - parsedNb)) {
+      return new Date(parsedNb);
+    }
+
+    if (/^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
+      /* For ISO Strings without time the day, month and year must be extracted from the ISO String
+      before Date creation to avoid time offset and errors in the new Date.
+      If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
+      date, some browsers (e.g. IE 9) will throw an invalid Date error.
+      If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
+      is applied.
+      Note: ISO months are 0 for January, 1 for February, ... */
+      const [y, m, d] = value.split('-').map((val: string) => +val);
+      return new Date(y, m - 1, d);
+    }
+
+    let match: RegExpMatchArray|null;
+    if (match = value.match(ISO8601_DATE_REGEX)) {
+      return isoStringToDate(match);
+    }
+  }
+
+  const date = new Date(value as any);
+  if (!isDate(date)) {
+    throw new Error(`Unable to convert "${value}" into a date`);
+  }
+  return date;
+}
+
+/**
+ * Converts a date in ISO8601 to a Date.
+ * Used instead of `Date.parse` because of browser discrepancies.
+ */
+export function isoStringToDate(match: RegExpMatchArray): Date {
+  const date = new Date(0);
+  let tzHour = 0;
+  let tzMin = 0;
+
+  // match[8] means that the string contains "Z" (UTC) or a timezone like "+01:00" or "+0100"
+  const dateSetter = match[8] ? date.setUTCFullYear : date.setFullYear;
+  const timeSetter = match[8] ? date.setUTCHours : date.setHours;
+
+  // if there is a timezone defined like "+01:00" or "+0100"
+  if (match[9]) {
+    tzHour = Number(match[9] + match[10]);
+    tzMin = Number(match[9] + match[11]);
+  }
+  dateSetter.call(date, Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const h = Number(match[4] || 0) - tzHour;
+  const m = Number(match[5] || 0) - tzMin;
+  const s = Number(match[6] || 0);
+  const ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
+  timeSetter.call(date, h, m, s, ms);
+  return date;
+}
+
+export function isDate(value: any): value is Date {
+  return value instanceof Date && !isNaN(value.valueOf());
 }

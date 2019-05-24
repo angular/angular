@@ -21,6 +21,7 @@ export abstract class SummaryResolver<T> {
   abstract resolveSummary(reference: T): Summary<T>|null;
   abstract getSymbolsOf(filePath: string): T[]|null;
   abstract getImportAs(reference: T): T;
+  abstract getKnownModuleName(fileName: string): string|null;
   abstract addSummary(summary: Summary<T>): void;
 }
 
@@ -35,5 +36,6 @@ export class JitSummaryResolver implements SummaryResolver<Type> {
   }
   getSymbolsOf(): Type[] { return []; }
   getImportAs(reference: Type): Type { return reference; }
+  getKnownModuleName(fileName: string) { return null; }
   addSummary(summary: Summary<Type>) { this._summaries.set(summary.symbol, summary); }
 }

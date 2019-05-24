@@ -1,26 +1,27 @@
-// #docplaster
-// #docregion
-import { Hero } from './hero';
-import { HEROES } from './mock-heroes';
 import { Injectable } from '@angular/core';
 
-@Injectable()
-export class HeroService {
-  getHeroes(): Promise<Hero[]> {
-    return Promise.resolve(HEROES);
-  }
+import { Observable, of } from 'rxjs';
 
-  getHeroesSlowly(): Promise<Hero[]> {
-    return new Promise(resolve => {
-      // Simulate server latency with 2 second delay
-      setTimeout(() => resolve(this.getHeroes()), 2000);
-    });
+import { Hero } from './hero';
+import { HEROES } from './mock-heroes';
+import { MessageService } from './message.service';
+
+@Injectable({ providedIn: 'root' })
+export class HeroService {
+
+  constructor(private messageService: MessageService) { }
+
+  getHeroes(): Observable<Hero[]> {
+    // TODO: send the message _after_ fetching the heroes
+    this.messageService.add('HeroService: fetched heroes');
+    return of(HEROES);
   }
 
   // #docregion getHero
-  getHero(id: number): Promise<Hero> {
-    return this.getHeroes()
-               .then(heroes => heroes.find(hero => hero.id === id));
+  getHero(id: number): Observable<Hero> {
+    // TODO: send the message _after_ fetching the hero
+    this.messageService.add(`HeroService: fetched hero id=${id}`);
+    return of(HEROES.find(hero => hero.id === id));
   }
   // #enddocregion getHero
 }

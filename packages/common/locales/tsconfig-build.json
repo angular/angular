@@ -4,7 +4,7 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../../../dist/packages/common/locales",
     "paths": {
@@ -21,6 +21,7 @@
     "./closure-locale.ts"
   ],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "skipMetadataEmit": true
   }
 }

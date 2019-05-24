@@ -12,7 +12,7 @@ import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
-export function main() {
+{
   describe('I18nParser', () => {
 
     describe('elements', () => {
@@ -330,7 +330,7 @@ export function _extractMessages(
     html: string, implicitTags: string[] = [],
     implicitAttrs: {[k: string]: string[]} = {}): Message[] {
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(html, 'extractor spec', true);
+  const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
   if (parseResult.errors.length > 1) {
     throw Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }

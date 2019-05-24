@@ -1,0 +1,17 @@
+<!-- #docplaster -->
+<h3>Search Npm Packages</h3>
+<p><i>Searches when typing stops. Caches for 30 seconds.</i></p>
+<!-- #docregion search -->
+<input (keyup)="search($event.target.value)" id="name" placeholder="Search"/>
+<!-- #enddocregion search -->
+<input type="checkbox" id="refresh" [checked]="withRefresh" (click)="toggleRefresh()">
+<label for="refresh">with refresh</label>
+<!-- #docregion search -->
+
+<ul>
+  <li *ngFor="let package of packages$ | async">
+    <b>{{package.name}} v.{{package.version}}</b> -
+    <i>{{package.description}}</i>
+  </li>
+</ul>
+<!-- #enddocregion search -->

@@ -8,9 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ModuleMetadata} from '../../src/metadata/index';
-import {LowerMetadataCache, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {MetadataCollector, ModuleMetadata} from '../../src/metadata/index';
+import {LowerMetadataTransform, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
+
+const DEFAULT_FIELDS_TO_LOWER = ['useFactory', 'useValue', 'data'];
 
 describe('Expression lowering', () => {
   describe('transform', () => {
@@ -99,8 +102,20 @@ describe('Expression lowering', () => {
           .toBeTruthy('did not find the data field');
     });
 
-    it('should throw a validation execption for invalid files', () => {
-      const cache = new LowerMetadataCache({}, /* strict */ true);
+    it('should not lower a non-module', () => {
+      const collected = collect(`
+          declare const global: any;
+          const ngDevMode: boolean = (function(global: any) {
+            return global.ngDevMode = true;
+          })(typeof window != 'undefined' && window || typeof self != 'undefined' && self || typeof global != 'undefined' && global);
+       `);
+      expect(collected.requests.size).toBe(0, 'unexpected rewriting');
+    });
+
+    it('should throw a validation exception for invalid files', () => {
+      const cache = new MetadataCache(
+          new MetadataCollector({}), /* strict */ true,
+          [new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER)]);
       const sourceFile = ts.createSourceFile(
           'foo.ts', `
         import {Injectable} from '@angular/core';
@@ -116,7 +131,9 @@ describe('Expression lowering', () => {
     });
 
     it('should not report validation errors on a .d.ts file', () => {
-      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const cache = new MetadataCache(
+          new MetadataCollector({}), /* strict */ true,
+          [new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER)]);
       const dtsFile = ts.createSourceFile(
           'foo.d.ts', `
         import {Injectable} from '@angular/core';
@@ -179,15 +196,17 @@ function convert(annotatedSource: string) {
 
   const program = ts.createProgram(
       [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
-  const moduleSourceFile = program.getSourceFile(fileName);
+  const moduleSourceFile = program.getSourceFile(fileName) !;
   const transformers: ts.CustomTransformers = {
-    before: [getExpressionLoweringTransformFactory({
-      getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
-        if (sourceFile.fileName == moduleSourceFile.fileName) {
-          return requests;
-        } else {return new Map();}
-      }
-    })]
+    before: [getExpressionLoweringTransformFactory(
+        {
+          getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
+            if (sourceFile.fileName == moduleSourceFile.fileName) {
+              return requests;
+            } else {return new Map();}
+          }
+        },
+        program)]
   };
   let result: string = '';
   const emitResult = program.emit(
@@ -229,11 +248,12 @@ function normalizeResult(result: string): string {
 
 function collect(annotatedSource: string) {
   const {annotations, unannotatedSource} = getAnnotations(annotatedSource);
-  const cache = new LowerMetadataCache({});
+  const transformer = new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER);
+  const cache = new MetadataCache(new MetadataCollector({}), false, [transformer]);
   const sourceFile = ts.createSourceFile(
       'someName.ts', unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {
     metadata: cache.getMetadata(sourceFile),
-    requests: cache.getRequests(sourceFile), annotations
+    requests: transformer.getRequests(sourceFile), annotations
   };
 }

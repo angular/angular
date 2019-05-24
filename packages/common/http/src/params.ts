@@ -11,7 +11,7 @@
  *
  * Used by `HttpParams`.
  *
- * @stable
+ * @publicApi
  **/
 export interface HttpParameterCodec {
   encodeKey(key: string): string;
@@ -22,19 +22,21 @@ export interface HttpParameterCodec {
 }
 
 /**
- * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
- * serialize and parse URL parameter keys and values.
+ * A class that uses `encodeURIComponent` and `decodeURIComponent` to
+ * serialize and parse URL parameter keys and values. If you pass URL query parameters
+ * without encoding, the query parameters can get misinterpreted at the receiving end.
+ * Use the `HttpParameterCodec` class to encode and decode the query-string values.
  *
- * @stable
+ * @publicApi
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(value: string): string { return standardEncoding(value); }
 
-  decodeKey(k: string): string { return decodeURIComponent(k); }
+  decodeKey(key: string): string { return decodeURIComponent(key); }
 
-  decodeValue(v: string) { return decodeURIComponent(v); }
+  decodeValue(value: string) { return decodeURIComponent(value); }
 }
 
 
@@ -73,13 +75,28 @@ interface Update {
   op: 'a'|'d'|'s';
 }
 
+/** Options used to construct an `HttpParams` instance. */
+export interface HttpParamsOptions {
+  /**
+   * String representation of the HTTP params in URL-query-string format. Mutually exclusive with
+   * `fromObject`.
+   */
+  fromString?: string;
+
+  /** Object map of the HTTP params. Mutually exclusive with `fromString`. */
+  fromObject?: {[param: string]: string | string[]};
+
+  /** Encoding codec used to parse and serialize the params. */
+  encoder?: HttpParameterCodec;
+}
+
 /**
  * An HTTP request/response body that represents serialized parameters,
  * per the MIME type `application/x-www-form-urlencoded`.
  *
  * This class is immutable - all mutation operations return a new instance.
  *
- * @stable
+ * @publicApi
  */
 export class HttpParams {
   private map: Map<string, string[]>|null;
@@ -87,11 +104,7 @@ export class HttpParams {
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
-  constructor(options: {
-    fromString?: string,
-    fromObject?: {[param: string]: string | string[]},
-    encoder?: HttpParameterCodec,
-  } = {}) {
+  constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
     if (!!options.fromString) {
       if (!!options.fromObject) {
@@ -175,7 +188,7 @@ export class HttpParams {
   }
 
   private clone(update: Update): HttpParams {
-    const clone = new HttpParams({encoder: this.encoder});
+    const clone = new HttpParams({ encoder: this.encoder } as HttpParamsOptions);
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;
@@ -214,7 +227,7 @@ export class HttpParams {
             }
         }
       });
-      this.cloneFrom = null;
+      this.cloneFrom = this.updates = null;
     }
   }
 }

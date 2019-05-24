@@ -1,59 +1,79 @@
 #!/usr/bin/env bash
 
+set -eu -o pipefail
+
 readonly PROJECT_NAME="angular-payload-size"
+NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
+
+# Get the gzip size of a file with the specified compression level.
+#   $1: string - The file path.
+#   $2: number - The level of compression.
+getGzipSize() {
+  local filePath=$1
+  local compLevel=$2
+  local compPath=$1$2.gz
+  local size=-1
+
+  gzip -c -$compLevel "$filePath" >> "$compPath"
+  size=$(stat -c%s "$compPath")
+  rm "$compPath"
+
+  echo $size
+}
 
 # Calculate the size of target file uncompressed size, gzip7 size, gzip9 size
 # Write to global variable $payloadData, $filename
 calculateSize() {
-  size["uncompressed"]=$(stat -c%s "$filename")
   label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
-  payloadData="$payloadData\"uncompressed/$label\": ${size["uncompressed"]}, "
 
-  gzip -7 $filename -c >> "${filename}7.gz"
-  size["gzip7"]=$(stat -c%s "${filename}7.gz")
-  payloadData="$payloadData\"gzip7/$label\": ${size["gzip7"]}, "
-
-  gzip -9 $filename -c >> "${filename}9.gz"
-  size["gzip9"]=$(stat -c%s "${filename}9.gz")
-  payloadData="$payloadData\"gzip9/$label\": ${size["gzip9"]}, "
+  payloadData="$payloadData\"uncompressed/$label\": $(stat -c%s "$filename"), "
+  payloadData="$payloadData\"gzip7/$label\": $(getGzipSize "$filename" 7), "
+  payloadData="$payloadData\"gzip9/$label\": $(getGzipSize "$filename" 9), "
 }
 
-# Check whether the file size is under limit
-# Write to global variable $failed
-# Read from global variables $size, $size7, $size9, $label, $limitUncompressed
+# Check whether the file size is under limit.
+# Exit with an error if limit is exceeded.
+#   $1: string - The name in database.
+#   $2: string - The payload size limit file.
 checkSize() {
-  for fileType in "uncompressed" "gzip7" "gzip9"; do
-    if [[ ${size[$fileType]} -gt ${payloadLimits[$name, $fileType, $label]} ]]; then
-      failed=true
-      echo "$fileType $label size is ${size[$fileType]} which is greater than ${payloadLimits[$name, $fileType, $label]}"
-    fi
-  done
+  name="$1"
+  limitFile="$2"
+
+  # In non-PR builds, `CI_BRANCH` is the branch being built (e.g. `pull/12345`), not the targeted branch.
+  # Thus, PRs will fall back to using the size limits for `master`.
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $CI_BRANCH $CI_COMMIT
 }
 
-# Write timestamp to global variable $payloadData
+# Write timestamp to global variable `$payloadData`.
 addTimestamp() {
   # Add Timestamp
   timestamp=$(date +%s)
   payloadData="$payloadData\"timestamp\": $timestamp, "
 }
 
-# Write travis commit message to global variable $payloadData
+# Write the commit message for the current CI commit range to global variable `$payloadData`.
+#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
 addMessage() {
+  commitRange="$1"
+
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
-  # because $TRAVIS_COMMIT_RANGE will contain the previous SHA which will not be in the
+  # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $TRAVIS_COMMIT_RANGE -- || git log --oneline -n1)
+  message=$(git log --oneline $commitRange -- || git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-  payloadData="$payloadData\"message\": \"$message\""
+  payloadData="$payloadData\"message\": \"$message\", "
 }
 
-# Add change source: application, dependencies, or 'application+dependencies'
-# Read from global variables $parentDir
-# Update the change source to global variable $payloadData
-addChange() {
+# Add change source: `application`, `dependencies`, or `application+dependencies`
+# Read from global variable `$parentDir`.
+# Update the change source in global variable `$payloadData`.
+#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
+addChangeType() {
+  commitRange="$1"
+
   yarnChanged=false
-  allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
+  allChangedFiles=$(git diff --name-only $commitRange $parentDir | wc -l)
+  allChangedFileNames=$(git diff --name-only $commitRange $parentDir)
 
   if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
     yarnChanged=true
@@ -73,51 +93,61 @@ addChange() {
   payloadData="$payloadData\"change\": \"$change\", "
 }
 
-# Upload data to firebase database if it's commit, print out data for pull
-# requests
-uploadData() {
-  name="$1"
-  payloadData="{${payloadData}}"
-
-  echo The data for $name is:
-  echo $payloadData
-
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
-    readonly dbPath=/payload/$name/$safeBranchName/$TRAVIS_COMMIT
-
-    # WARNING: FIREBASE_TOKEN should NOT be printed.
-    set +x
-    $PROJECT_ROOT/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
-  fi
+# Convert the current `payloadData` value to a JSON string.
+# (Basically remove trailing `,` and wrap in `{...}`.)
+payloadToJson() {
+  echo "{$(sed -r 's|, *$||' <<< $payloadData)}"
 }
 
-# Track payload size, $1 is the name in database, $2 is the file path
-# $3 is whether we check the payload size and fail the test if the size exceeds
-# limit, $4 is whether record the type of changes: true | false
+# Upload data to firebase database if it's commit, print out data for pull requests.
+#   $1: string - The name in database.
+uploadData() {
+  name="$1"
+
+  readonly safeBranchName=$(echo $CI_BRANCH | sed -e 's/\./_/g')
+  readonly dbPath=/payload/$name/$safeBranchName/$CI_COMMIT
+  readonly jsonPayload=$(payloadToJson)
+
+  # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
+  set +x
+  $NODE_MODULES_BIN/firebase database:update --data "$jsonPayload" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
+}
+
+# Track payload size.
+#   $1: string       - The name in database.
+#   $2: string       - The file path.
+#   $3: true | false - Whether to check the payload size and fail the test if it exceeds limit.
+#   $4: true | false - Whether to record the type of changes.
+#   $5: [string]     - The payload size limit file. Only necessary if `$3` is `true`.
 trackPayloadSize() {
   name="$1"
   path="$2"
   checkSize="$3"
-  trackChange=$4
+  trackChangeType="$4"
+  limitFile="${5:-}"
 
   payloadData=""
-  failed=false
+
+  # Calculate the file sizes.
   for filename in $path; do
-    declare -A size
     calculateSize
-    if [[ $checkSize = true ]]; then
-      checkSize
-    fi
   done
-  addTimestamp
-  if [[ $trackChange = true ]]; then
-    addChange
+
+  # Save the file sizes to be retrieved from `payload-size.js`.
+  echo "$(payloadToJson)" > /tmp/current.log
+
+  # If this is a non-PR build, upload the data to firebase.
+  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
+    if [[ $trackChangeType = true ]]; then
+      addChangeType $CI_COMMIT_RANGE
+    fi
+    addTimestamp
+    addMessage $CI_COMMIT_RANGE
+    uploadData $name
   fi
-  addMessage
-  uploadData $name
-  if [[ $failed = true ]]; then
-    echo exit 1
-    exit 1
+
+  # Check the file sizes against the specified limits.
+  if [[ $checkSize = true ]]; then
+    checkSize $name $limitFile
   fi
 }

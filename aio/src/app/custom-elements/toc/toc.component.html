@@ -1,0 +1,31 @@
+<div *ngIf="type !== 'None'" class="toc-inner no-print" [class.collapsed]="isCollapsed">
+
+  <div *ngIf="type === 'EmbeddedSimple'" class="toc-heading embedded">
+    Contents
+  </div>
+
+  <button *ngIf="type === 'EmbeddedExpandable'" type="button" (click)="toggle(false)"
+    class="toc-heading embedded secondary"
+    title="Expand/collapse contents"
+    aria-label="Expand/collapse contents"
+    [attr.aria-pressed]="!isCollapsed">
+    Contents
+    <mat-icon class="rotating-icon" svgIcon="keyboard_arrow_right" [class.collapsed]="isCollapsed"></mat-icon>
+  </button>
+
+  <ul class="toc-list" [class.embedded]="type !== 'Floating'">
+    <ng-container *ngFor="let toc of tocList; let i = index">
+      <li #tocItem title="{{toc.title}}" *ngIf="type === 'Floating' || toc.level !== 'h1'"
+        class="{{toc.level}}" [class.secondary]="type === 'EmbeddedExpandable' && i >= primaryMax" [class.active]="i === activeIndex">
+        <a [href]="toc.href" [innerHTML]="toc.content"></a>
+      </li>
+    </ng-container>
+  </ul>
+
+  <button *ngIf="type === 'EmbeddedExpandable'" type="button" (click)="toggle()"
+    class="toc-more-items embedded material-icons" [class.collapsed]="isCollapsed"
+    title="Expand/collapse contents"
+    aria-label="Expand/collapse contents"
+    [attr.aria-pressed]="!isCollapsed">
+  </button>
+</div>

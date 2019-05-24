@@ -12,7 +12,7 @@ import {BrowserModule, Meta} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('Meta service', () => {
     let doc: Document;
     let metaService: Meta;

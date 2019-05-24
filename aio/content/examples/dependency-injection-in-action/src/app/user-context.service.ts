@@ -6,7 +6,9 @@ import { LoggerService } from './logger.service';
 import { UserService }   from './user.service';
 
 // #docregion injectables, injectable
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserContextService {
 // #enddocregion injectables, injectable
   name: string;

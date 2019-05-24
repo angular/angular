@@ -1,0 +1,101 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+# Test that should only be run in node
+NODE_ONLY = [
+    "**/*_node_only_spec.ts",
+    "aot/**/*.ts",
+]
+
+UTILS = [
+    "aot/test_util.ts",
+]
+
+ts_library(
+    name = "test_utils",
+    testonly = True,
+    srcs = UTILS,
+    visibility = [
+        "//packages/compiler-cli/test:__subpackages__",
+        "//packages/compiler/test:__subpackages__",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = NODE_ONLY + UTILS,
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_library(
+    name = "test_node_only_lib",
+    testonly = True,
+    srcs = glob(
+        NODE_ONLY,
+        exclude = UTILS,
+    ),
+    deps = [
+        ":test_lib",
+        ":test_utils",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+        "//packages/animations:npm_package",
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+    ],
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":test_lib",
+        ":test_node_only_lib",
+        "//tools/testing:node",
+        "@npm//base64-js",
+        "@npm//source-map",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test_web",
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

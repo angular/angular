@@ -9,36 +9,32 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'dyo',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'dyo', [['AM', 'PM'], u, u], u,
   [
     ['D', 'T', 'T', 'A', 'A', 'A', 'S'], ['Dim', 'Ten', 'Tal', 'Ala', 'Ara', 'Arj', 'Sib'],
     ['Dimas', 'Teneŋ', 'Talata', 'Alarbay', 'Aramisay', 'Arjuma', 'Sibiti'],
     ['Dim', 'Ten', 'Tal', 'Ala', 'Ara', 'Arj', 'Sib']
   ],
-  ,
+  u,
   [
     ['S', 'F', 'M', 'A', 'M', 'S', 'S', 'U', 'S', 'O', 'N', 'D'],
     ['Sa', 'Fe', 'Ma', 'Ab', 'Me', 'Su', 'Sú', 'Ut', 'Se', 'Ok', 'No', 'De'],
     [
-      'Sanvie', 'Fébirie', 'Mars', 'Aburil', 'Mee', 'Sueŋ', 'Súuyee', 'Ut', 'Settembar', 'Oktobar',
-      'Novembar', 'Disambar'
+      'Sanvie', 'Fébirie', 'Mars', 'Aburil', 'Mee', 'Sueŋ', 'Súuyee', 'Ut', 'Settembar',
+      'Oktobar', 'Novembar', 'Disambar'
     ]
   ],
-  , [['ArY', 'AtY'], , ['Ariŋuu Yeesu', 'Atooŋe Yeesu']], 1, [6, 0],
+  u, [['ArY', 'AtY'], u, ['Ariŋuu Yeesu', 'Atooŋe Yeesu']], 1, [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'CFA', 'seefa yati BCEAO',
-  function(n: number): number { return 5;}
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

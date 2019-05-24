@@ -86,12 +86,10 @@ describe('completions', () => {
 
     expect(() => {
       let chance = 0.05;
-      let requests = 0;
       function tryCompletionsAt(position: number) {
         try {
           if (Math.random() < chance) {
             ngService.getCompletionsAt(fileName, position);
-            requests++;
           }
         } catch (e) {
           // Emit enough diagnostic information to reproduce the error.
@@ -158,6 +156,54 @@ export class MyComponent {
       }).not.toThrow();
     });
 
+  });
+
+  it('should respect paths configuration', () => {
+    mockHost.overrideOptions(options => {
+      options.baseUrl = '/app';
+      options.paths = {'bar/*': ['foo/bar/*']};
+      return options;
+    });
+    mockHost.addScript('/app/foo/bar/shared.ts', `
+      export interface Node {
+        children: Node[];
+      }
+    `);
+    mockHost.addScript('/app/my.component.ts', `
+      import { Component } from '@angular/core';
+      import { Node } from 'bar/shared';
+
+      @Component({
+        selector: 'my-component',
+        template: '{{tree.~{tree} }}'
+      })
+      export class MyComponent {
+        tree: Node;
+      }
+    `);
+    ngHost.updateAnalyzedModules();
+    contains('/app/my.component.ts', 'tree', 'children');
+  });
+
+  it('should work with input and output', () => {
+    addCode(
+        `
+      @Component({
+        selector: 'foo-component',
+        template: \`
+          <div string-model ~{stringMarker}="text"></div>
+          <div number-model ~{numberMarker}="value"></div>
+        \`,
+      })
+      export class FooComponent {
+        text: string;
+        value: number;
+      }
+    `,
+        (fileName) => {
+          contains(fileName, 'stringMarker', '[model]', '(model)');
+          contains(fileName, 'numberMarker', '[inputAlias]', '(outputAlias)');
+        });
   });
 
   function addCode(code: string, cb: (fileName: string, content?: string) => void) {

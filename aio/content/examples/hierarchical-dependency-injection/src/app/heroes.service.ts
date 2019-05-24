@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Observable, Observer } from 'rxjs';
 
 import { Hero, HeroTaxReturn } from './hero';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class HeroesService {
   heroes: Hero[] = [
     { id: 1, name: 'RubberMan', tid: '082-27-5678'},

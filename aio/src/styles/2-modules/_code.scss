@@ -3,8 +3,9 @@ code-example, code-tabs {
     display: block;
 }
 
-code-example,
-code-tabs md-tab-body {
+code-example {
+
+
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -22,6 +23,16 @@ code-tabs md-tab-body {
     }
   }
 
+  code {
+    overflow: auto;
+  }
+}
+
+code-example, code-tabs {
+  .mat-card {
+    padding: 0;
+    border-radius: 5px;
+  }
   code {
     overflow: auto;
   }
@@ -49,8 +60,8 @@ code-example.avoidFile header {
 
 code-example.avoid,
 code-example.avoidFile,
-code-tabs.avoid md-tab-body,
-code-tabs.avoidFile md-tab-body {
+code-tabs.avoid mat-tab-body,
+code-tabs.avoidFile mat-tab-body {
   border: 0.5px solid $anti-pattern;
 }
 
@@ -58,7 +69,7 @@ code-tabs div .mat-tab-body-content {
   height: auto;
 }
 
-code-tabs .mat-tab-body-wrapper md-tab-body .mat-tab-body {
+code-tabs .mat-tab-body-wrapper mat-tab-body .mat-tab-body {
   overflow-y: hidden;
 }
 
@@ -69,7 +80,7 @@ code-tabs mat-tab-body-content .fadeIn {
 aio-code pre {
     display: flex;
     min-height: 32px;
-    margin: 16px 32px;
+    margin: 16px 24px;
     white-space: pre-wrap;
     align-items: center;
 
@@ -85,10 +96,10 @@ aio-code pre {
 
 
 .copy-button {
-  display: inline-block;
   position: absolute;
-  top: -8px;
-  right: -32px;
+  top: -7px;
+  right: -19px;
+  padding: 0;
 
   color: $blue-grey-200;
   background-color: transparent;
@@ -107,6 +118,9 @@ aio-code pre {
 }
 
 .code-tab-group .mat-tab-label {
+  &:hover {
+    background: rgba(black, 0.04);
+  }
   white-space: nowrap;
 }
 
@@ -123,6 +137,7 @@ aio-code pre {
 .sidenav-content code a {
   color: inherit;
   font-size: inherit;
+  font-weight: inherit;
 }
 
 /* PRETTY PRINTING STYLES for prettify.js. */
@@ -180,7 +195,7 @@ ol.linenums {
 /* SHELL / TERMINAL CODE BLOCKS */
 
 code-example.code-shell, code-example[language=sh], code-example[language=bash] {
-  & .pnk, .blk,.pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+  .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
     color: $codegreen;
   }
 }

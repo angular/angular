@@ -7,9 +7,8 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Inject, Injectable} from '@angular/core';
+import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
@@ -35,7 +34,7 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  * In the browser, this should always be the `window` object.
  *
- * @stable
+ *
  */
 export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
 
@@ -43,7 +42,7 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  * `HttpBackend` that only processes `HttpRequest` with the JSONP method,
  * by performing JSONP style requests.
  *
- * @stable
+ * @publicApi
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
@@ -156,7 +155,7 @@ export class JsonpClientBackend implements HttpBackend {
           statusText: 'OK', url,
         }));
 
-        // Complete the stream, the resposne is over.
+        // Complete the stream, the response is over.
         observer.complete();
       };
 
@@ -207,7 +206,7 @@ export class JsonpClientBackend implements HttpBackend {
  * An `HttpInterceptor` which identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
  *
- * @stable
+ * @publicApi
  */
 @Injectable()
 export class JsonpInterceptor {

@@ -6,22 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {APP_ID, Inject, Injectable, NgZone, RenderComponentType, Renderer, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, RootRenderer, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
-import {DOCUMENT, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
+import {Inject, Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵgetDOM as getDOM, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
+
+const DEFAULT_SCHEMA = new DomElementSchemaRegistry();
 
 @Injectable()
 export class ServerRendererFactory2 implements RendererFactory2 {
   private rendererByCompId = new Map<string, Renderer2>();
   private defaultRenderer: Renderer2;
-  private schema = new DomElementSchemaRegistry();
+  private schema = DEFAULT_SCHEMA;
 
   constructor(
-      private ngZone: NgZone, @Inject(DOCUMENT) private document: any,
-      private sharedStylesHost: SharedStylesHost) {
-    this.defaultRenderer = new DefaultServerRenderer2(document, ngZone, this.schema);
+      private eventManager: EventManager, private ngZone: NgZone,
+      @Inject(DOCUMENT) private document: any, private sharedStylesHost: SharedStylesHost) {
+    this.defaultRenderer = new DefaultServerRenderer2(eventManager, document, ngZone, this.schema);
   }
 
   createRenderer(element: any, type: RendererType2|null): Renderer2 {
@@ -34,14 +37,13 @@ export class ServerRendererFactory2 implements RendererFactory2 {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationServerRenderer2(
-              this.document, this.ngZone, this.sharedStylesHost, this.schema, type);
+              this.eventManager, this.document, this.ngZone, this.sharedStylesHost, this.schema,
+              type);
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
         return renderer;
       }
-      case ViewEncapsulation.Native:
-        throw new Error('Native encapsulation is not supported on the server!');
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
@@ -61,7 +63,8 @@ class DefaultServerRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
   constructor(
-      private document: any, private ngZone: NgZone, private schema: DomElementSchemaRegistry) {}
+      private eventManager: EventManager, protected document: any, private ngZone: NgZone,
+      private schema: DomElementSchemaRegistry) {}
 
   destroy(): void {}
 
@@ -69,10 +72,10 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string, debugInfo?: any): any {
     if (namespace) {
-      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name);
+      return getDOM().createElementNS(NAMESPACE_URIS[namespace], name, this.document);
     }
 
-    return getDOM().createElement(name);
+    return getDOM().createElement(name, this.document);
   }
 
   createComment(value: string, debugInfo?: any): any { return getDOM().createComment(value); }
@@ -152,9 +155,11 @@ class DefaultServerRenderer2 implements Renderer2 {
     checkNoSyntheticProp(name, 'property');
     getDOM().setProperty(el, name, value);
     // Mirror property values for known HTML element properties in the attributes.
+    // Skip `innerhtml` which is conservatively marked as an attribute for security
+    // purposes but is not actually an attribute.
     const tagName = (el.tagName as string).toLowerCase();
     if (value != null && (typeof value === 'number' || typeof value == 'string') &&
-        this.schema.hasElement(tagName, EMPTY_ARRAY) &&
+        name.toLowerCase() !== 'innerhtml' && this.schema.hasElement(tagName, EMPTY_ARRAY) &&
         this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
         this._isSafeToReflectProperty(tagName, name)) {
       this.setAttribute(el, name, value.toString());
@@ -166,14 +171,25 @@ class DefaultServerRenderer2 implements Renderer2 {
   listen(
       target: 'document'|'window'|'body'|any, eventName: string,
       callback: (event: any) => boolean): () => void {
-    // Note: We are not using the EventsPlugin here as this is not needed
-    // to run our tests.
     checkNoSyntheticProp(eventName, 'listener');
-    const el =
-        typeof target === 'string' ? getDOM().getGlobalEventTarget(this.document, target) : target;
-    const outsideHandler = (event: any) => this.ngZone.runGuarded(() => callback(event));
-    return this.ngZone.runOutsideAngular(
-        () => getDOM().onAndCancel(el, eventName, outsideHandler) as any);
+    if (typeof target === 'string') {
+      return <() => void>this.eventManager.addGlobalEventListener(
+          target, eventName, this.decoratePreventDefault(callback));
+    }
+    return <() => void>this.eventManager.addEventListener(
+               target, eventName, this.decoratePreventDefault(callback)) as() => void;
+  }
+
+  private decoratePreventDefault(eventHandler: Function): Function {
+    return (event: any) => {
+      // Run the event handler inside the ngZone because event handlers are not patched
+      // by Zone on the server. This is required only for tests.
+      const allowDefaultBehavior = this.ngZone.runGuarded(() => eventHandler(event));
+      if (allowDefaultBehavior === false) {
+        event.preventDefault();
+        event.returnValue = false;
+      }
+    };
   }
 }
 
@@ -190,20 +206,22 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
   private hostAttr: string;
 
   constructor(
-      document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
+      eventManager: EventManager, document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
       schema: DomElementSchemaRegistry, private component: RendererType2) {
-    super(document, ngZone, schema);
-    const styles = flattenStyles(component.id, component.styles, []);
+    super(eventManager, document, ngZone, schema);
+    // Add a 's' prefix to style attributes to indicate server.
+    const componentId = 's' + component.id;
+    const styles = flattenStyles(componentId, component.styles, []);
     sharedStylesHost.addStyles(styles);
 
-    this.contentAttr = shimContentAttribute(component.id);
-    this.hostAttr = shimHostAttribute(component.id);
+    this.contentAttr = shimContentAttribute(componentId);
+    this.hostAttr = shimHostAttribute(componentId);
   }
 
   applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
 
   createElement(parent: any, name: string): Element {
-    const el = super.createElement(parent, name);
+    const el = super.createElement(parent, name, this.document);
     super.setAttribute(el, this.contentAttr, '');
     return el;
   }

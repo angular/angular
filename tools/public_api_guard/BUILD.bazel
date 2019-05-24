@@ -1,0 +1,67 @@
+load("//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
+load(":public_api_guard.bzl", "generate_targets")
+
+generate_targets(golden_files = glob(
+    ["*/**/*.d.ts"],
+    # exclude the following target because we have an explicit target for it bellow, see :core_api, etc
+    exclude = [
+        "core/core.d.ts",
+        "upgrade/upgrade.d.ts",
+        "upgrade/static.d.ts",
+    ],
+))
+
+# Explicit target because core is broken down into sub-packages.
+# The ts_api_guardian rule does not know how to collect the .d.ts files from the sub-packages so we have to list it here explicitly.
+# see: https://github.com/angular/angular/issues/28057
+ts_api_guardian_test(
+    name = "core_api",
+    actual = "angular/packages/core/core.d.ts",
+    data = ["//tools/public_api_guard:core/core.d.ts"] + [
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
+    ],
+    golden = "angular/tools/public_api_guard/core/core.d.ts",
+    tags = [
+        "fixme-ivy-aot",  # ivy no longer emits generated index file
+    ],
+)
+
+ts_api_guardian_test(
+    name = "upgrade_api",
+    actual = "angular/packages/upgrade/upgrade.d.ts",
+    data = ["//tools/public_api_guard:upgrade/upgrade.d.ts"] + [
+        "//packages/upgrade",
+        "//packages/upgrade/src/common",
+    ],
+    golden = "angular/tools/public_api_guard/upgrade/upgrade.d.ts",
+    tags = [
+        "fixme-ivy-aot",  # ivy no longer emits generated index file
+    ],
+)
+
+ts_api_guardian_test(
+    name = "upgrade_static_api",
+    actual = "angular/packages/upgrade/static/index.d.ts",
+    data = ["//tools/public_api_guard:upgrade/static.d.ts"] + [
+        "//packages/upgrade/static",
+        "//packages/upgrade/src/common",
+    ],
+    golden = "angular/tools/public_api_guard/upgrade/static.d.ts",
+    tags = [
+        "fixme-ivy-aot",  # ivy no longer emits generated index file
+    ],
+)
+
+# explicit target because the d.ts file is nested in the core and not part of typical public d.ts api
+ts_api_guardian_test(
+    name = "ng_global_utils_api",
+    actual = "angular/packages/core/src/render3/global_utils_api.d.ts",
+    data = [
+        ":global_utils.d.ts",
+        "//packages/core",
+    ],
+    golden = "angular/tools/public_api_guard/global_utils.d.ts",
+)

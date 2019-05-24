@@ -7,15 +7,15 @@
   */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-import {ISO8601_DATE_REGEX, isoStringToDate} from '../date_pipe';
+import {ISO8601_DATE_REGEX, isoStringToDate} from '../../i18n/format_date';
 import {invalidPipeArgumentError} from '../invalid_pipe_argument_error';
 import {DateFormatter} from './intl';
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a date according to locale rules.
- * @howToUse `date_expression | date[:format]`
  * @description
+ *
+ * Formats a date according to locale rules.
  *
  * Where:
  * - `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
@@ -64,6 +64,8 @@ import {DateFormatter} from './intl';
  * - this pipe uses the Internationalization API. Therefore it is only reliable in Chrome and Opera
  *   browsers.
  *
+ * @usageNotes
+ *
  * ### Examples
  *
  * Assuming `dateObj` is (year: 2010, month: 9, day: 3, hour: 12 PM, minute: 05, second: 08)
@@ -71,7 +73,7 @@ import {DateFormatter} from './intl';
  *
  * {@example common/pipes/ts/date_pipe.ts region='DeprecatedDatePipe'}
  *
- * @stable
+ * @publicApi
  */
 @Pipe({name: 'date', pure: true})
 export class DeprecatedDatePipe implements PipeTransform {

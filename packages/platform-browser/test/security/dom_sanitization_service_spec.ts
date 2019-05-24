@@ -8,10 +8,9 @@
 
 import {SecurityContext} from '@angular/core';
 import * as t from '@angular/core/testing/src/testing_internal';
+import {DomSanitizerImpl} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
-import {DomSanitizerImpl} from '../../src/security/dom_sanitization_service';
-
-export function main() {
+{
   t.describe('DOM Sanitization Service', () => {
     t.it('accepts resource URL values for resource contexts', () => {
       const svc = new DomSanitizerImpl(null);

@@ -9,16 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)),
+      t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+  if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
+  return 5;
+}
+
 export default [
-  'da',
-  [
-    ['a', 'p'],
-    ['AM', 'PM'],
-  ],
-  [
-    ['AM', 'PM'],
-    ,
-  ],
+  'da', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'O', 'T', 'F', 'L'], ['søn.', 'man.', 'tir.', 'ons.', 'tor.', 'fre.', 'lør.'],
     ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'],
@@ -37,25 +38,20 @@ export default [
       'oktober', 'november', 'december'
     ]
   ],
-  ,
-  [
-    ['fKr', 'eKr'],
-    ['f.Kr.', 'e.Kr.'],
-  ],
-  1, [6, 0], ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
-  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    '{1} \'kl\'. {0}',
-  ],
+  u, [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], u], 1, [6, 0],
+  ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
+  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'], ['{1} {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
-        if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', {
+    'AUD': ['AU$', '$'],
+    'DKK': ['kr.'],
+    'ISK': [u, 'kr.'],
+    'JPY': ['JP¥', '¥'],
+    'NOK': [u, 'kr.'],
+    'RON': [u, 'L'],
+    'SEK': [u, 'kr.'],
+    'THB': ['฿'],
+    'TWD': ['NT$']
+  },
+  plural
 ];

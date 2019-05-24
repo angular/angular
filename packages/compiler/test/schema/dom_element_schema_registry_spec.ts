@@ -16,7 +16,7 @@ import {HtmlParser} from '../../src/ml_parser/html_parser';
 
 import {extractSchema} from './schema_extractor';
 
-export function main() {
+{
   describe('DOMElementSchema', () => {
     let registry: DomElementSchemaRegistry;
     beforeEach(() => { registry = new DomElementSchemaRegistry(); });

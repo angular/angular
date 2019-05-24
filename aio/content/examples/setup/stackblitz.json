@@ -1,0 +1,12 @@
+{
+  "description": "QuickStart Setup",
+  "files": [
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/index.html",
+    "src/main.ts",
+    "src/styles.css"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["quickstart", "setup", "seed"]
+}

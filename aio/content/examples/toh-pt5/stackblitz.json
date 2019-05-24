@@ -1,0 +1,9 @@
+{
+  "description": "Tour of Heroes: Part 5",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0,1,2,3].*"
+  ],
+  "tags": ["tutorial", "tour", "heroes", "router"]
+}

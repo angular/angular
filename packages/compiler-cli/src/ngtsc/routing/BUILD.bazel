@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "routing",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/routing",
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)

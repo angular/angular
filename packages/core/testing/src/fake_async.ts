@@ -5,29 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {discardPeriodicTasksFallback, fakeAsyncFallback, flushFallback, flushMicrotasksFallback, resetFakeAsyncZoneFallback, tickFallback} from './fake_async_fallback';
 
-
-const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
-type ProxyZoneSpec = {
-  setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
-};
-const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
-    (Zone as any)['ProxyZoneSpec'];
-
-let _fakeAsyncTestZoneSpec: any = null;
+const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
+const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
 /**
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
  *
- * @experimental
+ * @publicApi
  */
-export function resetFakeAsyncZone() {
-  _fakeAsyncTestZoneSpec = null;
-  ProxyZoneSpec.assertPresent().resetDelegate();
+export function resetFakeAsyncZone(): void {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.resetFakeAsyncZone();
+  } else {
+    return resetFakeAsyncZoneFallback();
+  }
 }
-
-let _inFakeAsyncCall = false;
 
 /**
  * Wraps a function to be executed in the fakeAsync zone:
@@ -38,65 +33,22 @@ let _inFakeAsyncCall = false;
  *
  * Can be used to wrap inject() calls.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
- * {@example testing/ts/fake_async.ts region='basic'}
+ * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
  * @returns The function wrapped to be executed in the fakeAsync zone
  *
- * @experimental
+ * @publicApi
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
-  // Not using an arrow function to preserve context passed from call site
-  return function(...args: any[]) {
-    const proxyZoneSpec = ProxyZoneSpec.assertPresent();
-    if (_inFakeAsyncCall) {
-      throw new Error('fakeAsync() calls can not be nested');
-    }
-    _inFakeAsyncCall = true;
-    try {
-      if (!_fakeAsyncTestZoneSpec) {
-        if (proxyZoneSpec.getDelegate() instanceof FakeAsyncTestZoneSpec) {
-          throw new Error('fakeAsync() calls can not be nested');
-        }
-
-        _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec();
-      }
-
-      let res: any;
-      const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
-      proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
-      try {
-        res = fn.apply(this, args);
-        flushMicrotasks();
-      } finally {
-        proxyZoneSpec.setDelegate(lastProxyZoneSpec);
-      }
-
-      if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-        throw new Error(
-            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-            `periodic timer(s) still in the queue.`);
-      }
-
-      if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
-        throw new Error(
-            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
-      }
-      return res;
-    } finally {
-      _inFakeAsyncCall = false;
-      resetFakeAsyncZone();
-    }
-  };
-}
-
-function _getFakeAsyncZoneSpec(): any {
-  if (_fakeAsyncTestZoneSpec == null) {
-    throw new Error('The code should be running in the fakeAsync zone to call this function');
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.fakeAsync(fn);
+  } else {
+    return fakeAsyncFallback(fn);
   }
-  return _fakeAsyncTestZoneSpec;
 }
 
 /**
@@ -105,14 +57,19 @@ function _getFakeAsyncZoneSpec(): any {
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
- * {@example testing/ts/fake_async.ts region='basic'}
+ * {@example core/testing/ts/fake_async.ts region='basic'}
  *
- * @experimental
+ * @publicApi
  */
 export function tick(millis: number = 0): void {
-  _getFakeAsyncZoneSpec().tick(millis);
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.tick(millis);
+  } else {
+    return tickFallback(millis);
+  }
 }
 
 /**
@@ -123,28 +80,38 @@ export function tick(millis: number = 0): void {
  * @param maxTurns
  * @returns The simulated time elapsed, in millis.
  *
- * @experimental
+ * @publicApi
  */
 export function flush(maxTurns?: number): number {
-  return _getFakeAsyncZoneSpec().flush(maxTurns);
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.flush(maxTurns);
+  } else {
+    return flushFallback(maxTurns);
+  }
 }
 
 /**
  * Discard all remaining periodic tasks.
  *
- * @experimental
+ * @publicApi
  */
 export function discardPeriodicTasks(): void {
-  const zoneSpec = _getFakeAsyncZoneSpec();
-  const pendingTimers = zoneSpec.pendingPeriodicTimers;
-  zoneSpec.pendingPeriodicTimers.length = 0;
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.discardPeriodicTasks();
+  } else {
+    discardPeriodicTasksFallback();
+  }
 }
 
 /**
  * Flush any pending microtasks.
  *
- * @experimental
+ * @publicApi
  */
 export function flushMicrotasks(): void {
-  _getFakeAsyncZoneSpec().flushMicrotasks();
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.flushMicrotasks();
+  } else {
+    return flushMicrotasksFallback();
+  }
 }

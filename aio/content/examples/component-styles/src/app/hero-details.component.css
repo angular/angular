@@ -1,5 +1,6 @@
 /* #docregion import */
-@import 'hero-details-box.css';
+/* The AOT compiler needs the `./` to show that this is local */
+@import './hero-details-box.css';
 /* #enddocregion import */
 
 /* #docregion host */

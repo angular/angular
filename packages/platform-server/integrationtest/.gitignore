@@ -1,6 +1,0 @@
-built/
-*/src/*.d.ts
-*/src/*.js
-**/*.ngfactory.ts
-**/*.ngsummary.json
-npm-debug.log

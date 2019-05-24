@@ -95,4 +95,36 @@ describe('remark: renderMarkdown service', () => {
     '</code-example>\n'
     );
   });
+
+  it('should map heading levels as specified', () => {
+    const content =
+    '# heading 1\n' +
+    '\n' +
+    'some paragraph\n' +
+    '\n' +
+    '## heading 2a\n' +
+    '\n' +
+    'some paragraph\n' +
+    '\n' +
+    '### heading 3\n' +
+    '\n' +
+    'some paragraph\n' +
+    '\n' +
+    '## heading 2b\n' +
+    '\n' +
+    'some paragraph\n' +
+    '\n';
+    const headingMappings = { h2: 'h3', h3: 'h5' };
+    const output = renderMarkdown(content, headingMappings);
+    expect(output).toEqual(
+      '<h1>heading 1</h1>\n' +
+      '<p>some paragraph</p>\n' +
+      '<h3>heading 2a</h3>\n' +
+      '<p>some paragraph</p>\n' +
+      '<h5>heading 3</h5>\n' +
+      '<p>some paragraph</p>\n' +
+      '<h3>heading 2b</h3>\n' +
+      '<p>some paragraph</p>\n'
+      );
+  });
 });

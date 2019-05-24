@@ -11,7 +11,7 @@ export {HttpClient} from './src/client';
 export {HttpHeaders} from './src/headers';
 export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
-export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, interceptingHandler as ɵinterceptingHandler} from './src/module';
+export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpUrlEncodingCodec} from './src/params';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpUserEvent} from './src/response';

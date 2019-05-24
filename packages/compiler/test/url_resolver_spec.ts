@@ -9,7 +9,7 @@
 import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('UrlResolver', () => {
     let resolver = new UrlResolver();
 

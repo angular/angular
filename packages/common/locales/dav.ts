@@ -9,13 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'dav',
-  [
-    ['Luma lwa K', 'luma lwa p'],
-    ,
-  ],
-  ,
+  'dav', [['Luma lwa K', 'luma lwa p'], u, u], u,
   [
     ['J', 'J', 'K', 'K', 'K', 'K', 'N'], ['Jum', 'Jim', 'Kaw', 'Kad', 'Kan', 'Kas', 'Ngu'],
     [
@@ -24,7 +25,7 @@ export default [
     ],
     ['Jum', 'Jim', 'Kaw', 'Kad', 'Kan', 'Kas', 'Ngu']
   ],
-  ,
+  u,
   [
     ['I', 'K', 'K', 'K', 'K', 'K', 'M', 'W', 'I', 'I', 'I', 'I'],
     ['Imb', 'Kaw', 'Kad', 'Kan', 'Kas', 'Kar', 'Mfu', 'Wun', 'Ike', 'Iku', 'Imw', 'Iwi'],
@@ -34,15 +35,10 @@ export default [
       'Mori ghwa ikenda', 'Mori ghwa ikumi', 'Mori ghwa ikumi na imweri', 'Mori ghwa ikumi na iwi'
     ]
   ],
-  , [['KK', 'BK'], , ['Kabla ya Kristo', 'Baada ya Kristo']], 0, [6, 0],
+  u, [['KK', 'BK'], u, ['Kabla ya Kristo', 'Baada ya Kristo']], 0, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Shilingi ya Kenya',
-  function(n: number): number { return 5;}
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural
 ];

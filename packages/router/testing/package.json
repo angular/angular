@@ -2,6 +2,10 @@
   "name": "@angular/router/testing",
   "typings": "./testing.d.ts",
   "main": "../bundles/router-testing.umd.js",
-  "module": "../esm5/testing.js",
-  "es2015": "../esm2015/testing.js"
+  "module": "../fesm5/testing.js",
+  "es2015": "../fesm2015/testing.js",
+  "esm5": "../esm5/testing/testing.js",
+  "esm2015": "../esm2015/testing/testing.js",
+  "fesm5": "../fesm5/testing.js",
+  "fesm2015": "../fesm2015/testing.js"
 }

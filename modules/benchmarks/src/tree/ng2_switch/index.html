@@ -1,5 +1,9 @@
 <!doctype html>
 <html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
 <body>
 
   <h2>Params</h2>
@@ -21,11 +25,5 @@
   <div>
     <tree id="root">Loading...</tree>
   </div>
-
-  <script>
-    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
-      || '../../bootstrap_ng2.js';
-    document.write('<script src="' + mainUrl + '">\u003c/script>');
-  </script>
 </body>
 </html>

@@ -15,10 +15,8 @@ import { LoggerService }  from './logger.service';
 export class SpyParentComponent {
   newName = 'Herbie';
   heroes: string[] = ['Windstorm', 'Magneta'];
-  spyLog: string[];
 
-  constructor(private logger: LoggerService) {
-    this.spyLog = logger.logs;
+  constructor(public logger: LoggerService) {
   }
 
   addHero() {
@@ -34,7 +32,7 @@ export class SpyParentComponent {
   }
   reset() {
     this.logger.log('-- reset --');
-    this.heroes.length = 0;
+    this.heroes = [];
     this.logger.tick();
   }
 }

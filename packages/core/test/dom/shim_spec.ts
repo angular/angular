@@ -8,7 +8,7 @@
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('Shim', () => {
 
     it('should provide correct function.name ', () => {

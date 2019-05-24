@@ -7,9 +7,9 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {URLSearchParams} from '../src/url_search_params';
+import {URLSearchParams} from '@angular/http/src/url_search_params';
 
-export function main() {
+{
   describe('URLSearchParams', () => {
     it('should conform to spec', () => {
       const paramsString = 'q=URLUtils.searchParams&topic=api';

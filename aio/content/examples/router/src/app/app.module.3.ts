@@ -7,8 +7,8 @@ import { AppComponent }     from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeroesModule }     from './heroes/heroes.module';
 
-import { CrisisListComponent }   from './crisis-list.component';
-import { PageNotFoundComponent } from './not-found.component';
+import { CrisisListComponent }   from './crisis-list/crisis-list.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
 // #docregion module-imports
@@ -27,3 +27,15 @@ import { PageNotFoundComponent } from './not-found.component';
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+// #enddocregion
+
+/*
+// #docregion module-imports-2
+  imports: [
+    RouterModule.forChild([
+      // Heroes Routes
+    ]),
+    AppRoutingModule
+  ],
+// #enddocregion module-imports-2
+*/

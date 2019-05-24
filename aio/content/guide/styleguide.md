@@ -4,8 +4,6 @@ Looking for an opinionated guide to Angular syntax, conventions, and application
 Step right in!
 This style guide presents preferred conventions and, as importantly, explains why.
 
-
-
 {@a toc}
 
 ## Style vocabulary
@@ -14,55 +12,33 @@ Each guideline describes either a good or bad practice, and all have a consisten
 
 The wording of each guideline indicates how strong the recommendation is.
 
-
 <div class="s-rule do">
-
-
 
 **Do** is one that should always be followed.
 _Always_ might be a bit too strong of a word.
 Guidelines that literally should always be followed are extremely rare.
 On the other hand, you need a really unusual case for breaking a *Do* guideline.
 
-
 </div>
 
-
-
 <div class="s-rule consider">
-
-
 
 **Consider** guidelines should generally be followed.
 If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
 
-
 </div>
-
-
 
 <div class="s-rule avoid">
 
-
-
-**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
-
+**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakable red header.
 
 </div>
-
-
 
 <div class="s-why">
 
-
-
 **Why?** gives reasons for following the previous recommendations.
 
-
 </div>
-
-
-
 
 ## File structure conventions
 
@@ -72,9 +48,7 @@ For example, `hero.component.ts` and `hero.component.html`.
 The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
 
 
-
 {@a single-responsibility}
-
 
 ## Single responsibility
 
@@ -89,10 +63,7 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 
 #### Style 01-01
 
-
 <div class="s-rule do">
-
-
 
 **Do** define one thing, such as a service or component, per file.
 
@@ -152,7 +123,7 @@ defines the `Hero` model object, and loads heroes from the server all in the sam
 *Don't do this*.
 
 
-<code-example path="styleguide/src/01-01/app/heroes/hero.component.avoid.ts" title="app/heroes/hero.component.ts">
+<code-example path="styleguide/src/01-01/app/heroes/hero.component.avoid.ts" header="app/heroes/hero.component.ts">
 
 </code-example>
 
@@ -164,31 +135,31 @@ supporting classes into their own, dedicated files.
 
 <code-tabs>
 
-  <code-pane title="main.ts" path="styleguide/src/01-01/main.ts">
+  <code-pane header="main.ts" path="styleguide/src/01-01/main.ts">
 
   </code-pane>
 
-  <code-pane title="app/app.module.ts" path="styleguide/src/01-01/app/app.module.ts">
+  <code-pane header="app/app.module.ts" path="styleguide/src/01-01/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="app/app.component.ts" path="styleguide/src/01-01/app/app.component.ts">
+  <code-pane header="app/app.component.ts" path="styleguide/src/01-01/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/heroes.component.ts" path="styleguide/src/01-01/app/heroes/heroes.component.ts">
+  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/01-01/app/heroes/heroes.component.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/shared/hero.service.ts" path="styleguide/src/01-01/app/heroes/shared/hero.service.ts">
+  <code-pane header="app/heroes/shared/hero.service.ts" path="styleguide/src/01-01/app/heroes/shared/hero.service.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/shared/hero.model.ts" path="styleguide/src/01-01/app/heroes/shared/hero.model.ts">
+  <code-pane header="app/heroes/shared/hero.model.ts" path="styleguide/src/01-01/app/heroes/shared/hero.model.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/shared/mock-heroes.ts" path="styleguide/src/01-01/app/heroes/shared/mock-heroes.ts">
+  <code-pane header="app/heroes/shared/mock-heroes.ts" path="styleguide/src/01-01/app/heroes/shared/mock-heroes.ts">
 
   </code-pane>
 
@@ -858,10 +829,7 @@ As always, strive for consistency.
 
 </table>
 
-
-
 <a href="#toc">Back to top</a>
-
 
 {@a 02-05}
 
@@ -872,66 +840,139 @@ As always, strive for consistency.
 
 <div class="s-rule do">
 
-
-
 **Do** put bootstrapping and platform logic for the app in a file named `main.ts`.
-
 
 </div>
 
+<div class="s-rule do">
+
+**Do** include error handling in the bootstrapping logic.
+
+</div>
+
+<div class="s-rule avoid">
+
+**Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
+
+</div>
+
+<div class="s-why">
+
+**Why?** Follows a consistent convention for the startup logic of an app.
+
+</div>
+
+<div class="s-why-last">
+
+**Why?** Follows a familiar convention from other technology platforms.
+
+</div>
+
+
+<code-example path="styleguide/src/02-05/main.ts" header="main.ts">
+
+</code-example>
+
+<a href="#toc">Back to top</a>
+
+{@a 05-02}
+
+### Component selectors
+
+#### Style 05-02
+
+<div class="s-rule do">
+
+**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
+
+</div>
+
+<div class="s-why-last">
+
+**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
+
+</div>
+
+<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
+
+</code-example>
+
+<code-tabs>
+
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+
+  </code-pane>
+
+  <code-pane header="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
+
+  </code-pane>
+
+</code-tabs>
+
+<a href="#toc">Back to top</a>
+
+{@a 02-07}
+
+### Component custom prefix
+
+#### Style 02-07
 
 
 <div class="s-rule do">
 
-
-
-**Do** include error handling in the bootstrapping logic.
-
+**Do** use a hyphenated, lowercase element selector value; for example, `admin-users`.
 
 </div>
 
+<div class="s-rule do">
 
-
-<div class="s-rule avoid">
-
-
-
-**Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
-
+**Do** use a custom prefix for a component selector.
+For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 
 </div>
 
+<div class="s-rule do">
 
+**Do** use a prefix that identifies the feature area or the app itself.
+
+</div>
 
 <div class="s-why">
 
-
-
-**Why?** Follows a consistent convention for the startup logic of an app.
-
+**Why?** Prevents element name collisions with components in other apps and with native HTML elements.
 
 </div>
 
+<div class="s-why">
 
+**Why?** Makes it easier to promote and share the component in other apps.
+
+</div>
 
 <div class="s-why-last">
 
-
-
-**Why?** Follows a familiar convention from other technology platforms.
-
+**Why?** Components are easy to identify in the DOM.
 
 </div>
 
-
-
-<code-example path="styleguide/src/02-05/main.ts" title="main.ts">
+<code-example path="styleguide/src/02-07/app/heroes/hero.component.avoid.ts" region="example" header="app/heroes/hero.component.ts">
 
 </code-example>
 
+<code-example path="styleguide/src/02-07/app/users/users.component.avoid.ts" region="example" header="app/users/users.component.ts">
 
+</code-example>
+
+<code-example path="styleguide/src/02-07/app/heroes/hero.component.ts" region="example" header="app/heroes/hero.component.ts">
+
+</code-example>
+
+<code-example path="styleguide/src/02-07/app/users/users.component.ts" region="example" header="app/users/users.component.ts">
+
+</code-example>
 
 <a href="#toc">Back to top</a>
+
 
 {@a 02-06}
 
@@ -939,150 +980,31 @@ As always, strive for consistency.
 
 #### Style 02-06
 
-
 <div class="s-rule do">
-
-
 
 **Do** Use lower camel case for naming the selectors of directives.
 
-
 </div>
 
-
-
 <div class="s-why">
-
-
 
 **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
 
-
 </div>
 
-
-
 <div class="s-why-last">
-
-
 
 **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
 
-
 </div>
+
+
 
 <a href="#toc">Back to top</a>
 
-{@a 02-07}
-
-### Custom prefix for components
-
-#### Style 02-07
-
-
-<div class="s-rule do">
-
-
-
-**Do** use a hyphenated, lowercase element selector value (e.g. `admin-users`).
-
-
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** use a custom prefix for a component selector.
-For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
-
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** use a prefix that identifies the feature area or the app itself.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Prevents element name collisions with components in other apps and with native HTML elements.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Makes it easier to promote and share the component in other apps.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** Components are easy to identify in the DOM.
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/02-07/app/heroes/hero.component.avoid.ts" region="example" title="app/heroes/hero.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/02-07/app/users/users.component.avoid.ts" region="example" title="app/users/users.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/02-07/app/heroes/hero.component.ts" region="example" title="app/heroes/hero.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/02-07/app/users/users.component.ts" region="example" title="app/users/users.component.ts">
-
-</code-example>
-
-
-
-
-
 {@a 02-08}
 
-### Custom prefix for directives
+### Directive custom prefix
 
 #### Style 02-08
 
@@ -1130,7 +1052,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-<code-example path="styleguide/src/02-08/app/shared/validate.directive.avoid.ts" region="example" title="app/shared/validate.directive.ts">
+<code-example path="styleguide/src/02-08/app/shared/validate.directive.avoid.ts" region="example" header="app/shared/validate.directive.ts">
 
 </code-example>
 
@@ -1138,7 +1060,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-<code-example path="styleguide/src/02-08/app/shared/validate.directive.ts" region="example" title="app/shared/validate.directive.ts">
+<code-example path="styleguide/src/02-08/app/shared/validate.directive.ts" region="example" header="app/shared/validate.directive.ts">
 
 </code-example>
 
@@ -1704,8 +1626,6 @@ A consistent class and file name convention make these modules easy to spot and 
 
 Have a consistent set of coding, naming, and whitespace conventions.
 
-
-
 {@a 03-01}
 
 ### Classes
@@ -1714,50 +1634,31 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 <div class="s-rule do">
 
-
-
-**Do** use upper camel case when naming classes.
-
+**Do** use upper camel case, also known as PascalCase, when naming classes.
 
 </div>
-
-
 
 <div class="s-why">
 
-
-
 **Why?** Follows conventional thinking for class names.
-
 
 </div>
 
-
-
 <div class="s-why-last">
-
-
 
 **Why?** Classes can be instantiated and construct an instance.
 By convention, upper camel case indicates a constructable asset.
 
-
 </div>
 
-
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.avoid.ts" region="example" title="app/shared/exception.service.ts">
+<code-example path="styleguide/src/03-01/app/core/exception.service.avoid.ts" region="example" header="app/shared/exception.service.ts">
 
 </code-example>
 
 
-
-
-
-<code-example path="styleguide/src/03-01/app/core/exception.service.ts" region="example" title="app/shared/exception.service.ts">
+<code-example path="styleguide/src/03-01/app/core/exception.service.ts" region="example" header="app/shared/exception.service.ts">
 
 </code-example>
-
 
 
 <a href="#toc">Back to top</a>
@@ -1771,21 +1672,13 @@ By convention, upper camel case indicates a constructable asset.
 
 <div class="s-rule do">
 
-
-
 **Do** declare variables with `const` if their values should not change during the application lifetime.
-
 
 </div>
 
-
-
 <div class="s-why">
 
-
-
 **Why?** Conveys to readers that the value is invariant.
-
 
 </div>
 
@@ -1793,11 +1686,8 @@ By convention, upper camel case indicates a constructable asset.
 
 <div class="s-why-last">
 
-
-
 **Why?** TypeScript helps enforce that intent by requiring immediate initialization and by
 preventing subsequent re-assignment.
-
 
 </div>
 
@@ -1805,10 +1695,7 @@ preventing subsequent re-assignment.
 
 <div class="s-rule consider">
 
-
-
 **Consider** spelling `const` variables in lower camel case.
-
 
 </div>
 
@@ -1816,11 +1703,8 @@ preventing subsequent re-assignment.
 
 <div class="s-why">
 
-
-
 **Why?** Lower camel case variable names (`heroRoutes`) are easier to read and understand
 than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
-
 
 </div>
 
@@ -1828,12 +1712,9 @@ than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
 
 <div class="s-why-last">
 
-
-
 **Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects
 an era before the modern IDEs that quickly reveal the `const` declaration.
 TypeScript prevents accidental reassignment.
-
 
 </div>
 
@@ -1841,29 +1722,19 @@ TypeScript prevents accidental reassignment.
 
 <div class="s-rule do">
 
-
-
 **Do** tolerate _existing_ `const` variables that are spelled in UPPER_SNAKE_CASE.
-
 
 </div>
 
-
-
 <div class="s-why-last">
-
-
 
 **Why?** The tradition of UPPER_SNAKE_CASE remains popular and pervasive,
 especially in third party modules.
 It is rarely worth the effort to change them at the risk of breaking existing code and documentation.
 
-
 </div>
 
-
-
-<code-example path="styleguide/src/03-02/app/core/data.service.ts" title="app/shared/data.service.ts">
+<code-example path="styleguide/src/03-02/app/core/data.service.ts" header="app/shared/data.service.ts">
 
 </code-example>
 
@@ -1904,7 +1775,18 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Consider** using a class instead of an interface.
+**Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
+
+
+</div>
+
+
+
+<div class="s-rule consider">
+
+
+
+**Consider** using an interface for data models.
 
 
 </div>
@@ -1956,7 +1838,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example" title="app/shared/hero-collector.service.ts">
+<code-example path="styleguide/src/03-03/app/core/hero-collector.service.avoid.ts" region="example" header="app/shared/hero-collector.service.ts">
 
 </code-example>
 
@@ -1964,7 +1846,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-03/app/core/hero-collector.service.ts" region="example" title="app/shared/hero-collector.service.ts">
+<code-example path="styleguide/src/03-03/app/core/hero-collector.service.ts" region="example" header="app/shared/hero-collector.service.ts">
 
 </code-example>
 
@@ -2034,7 +1916,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-04/app/core/toast.service.avoid.ts" region="example" title="app/shared/toast.service.ts">
+<code-example path="styleguide/src/03-04/app/core/toast.service.avoid.ts" region="example" header="app/shared/toast.service.ts">
 
 </code-example>
 
@@ -2042,7 +1924,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-04/app/core/toast.service.ts" region="example" title="app/shared/toast.service.ts">
+<code-example path="styleguide/src/03-04/app/core/toast.service.ts" region="example" header="app/shared/toast.service.ts">
 
 </code-example>
 
@@ -2112,7 +1994,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example" title="app/heroes/shared/hero.service.ts">
+<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.avoid.ts" region="example" header="app/heroes/shared/hero.service.ts">
 
 </code-example>
 
@@ -2120,7 +2002,7 @@ discourage the `I` prefix.
 
 
 
-<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.ts" region="example" title="app/heroes/shared/hero.service.ts">
+<code-example path="styleguide/src/03-06/app/heroes/shared/hero.service.ts" region="example" header="app/heroes/shared/hero.service.ts">
 
 </code-example>
 
@@ -2271,7 +2153,7 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2586,11 +2468,11 @@ Here is a compliant folder and file structure:
           </div>
 
           <div class='file'>
-            text-filter.component.ts|spec.ts
+            filter-text.component.ts|spec.ts
           </div>
 
           <div class='file'>
-            text-filter.service.ts|spec.ts
+            filter-text.service.ts|spec.ts
           </div>
 
         </div>
@@ -2695,7 +2577,7 @@ Here is a compliant folder and file structure:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2718,98 +2600,60 @@ Whatever you choose, be consistent.
 
 <div class="s-rule do">
 
-
-
 **Do** create folders named for the feature area they represent.
-
 
 </div>
 
-
-
 <div class="s-why">
-
-
 
 **Why?** A developer can locate the code and identify what each file represents
 at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.
 
-
 </div>
 
-
-
 <div class="s-why">
-
-
 
 **Why?** The LIFT guidelines are all covered.
 
-
 </div>
 
-
-
 <div class="s-why">
-
-
 
 **Why?** Helps reduce the app from becoming cluttered through organizing the
 content and keeping them aligned with the LIFT guidelines.
 
-
 </div>
 
-
-
 <div class="s-why">
-
-
 
 **Why?** When there are a lot of files, for example 10+,
 locating them is easier with a consistent folder structure
 and more difficult in a flat structure.
 
-
 </div>
-
-
 
 <div class="s-rule do">
 
-
-
 **Do** create an NgModule for each feature area.
 
-
 </div>
-
-
 
 <div class="s-why">
 
-
-
 **Why?** NgModules make it easy to lazy load routable features.
 
-
 </div>
-
-
 
 <div class="s-why-last">
 
-
-
-**Why?** NgModules make it easier to isolate, test, and re-use features.
-
+**Why?** NgModules make it easier to isolate, test, and reuse features.
 
 </div>
 
+<div>
 
+  For more information, refer to <a href="#file-tree">this folder and file structure example.</a>
 
-<div class='file-tree-reference'>
-  <a href="#file-tree">Refer to this _folder and file structure_ example.</a>
 </div>
 
 <a href="#toc">Back to top
@@ -2868,7 +2712,7 @@ for example, in `/src/app`.
 
 
 
-<code-example path="styleguide/src/04-08/app/app.module.ts" region="example" title="app/app.module.ts">
+<code-example path="styleguide/src/04-08/app/app.module.ts" region="example" header="app/app.module.ts">
 
 </code-example>
 
@@ -3045,9 +2889,9 @@ module are referenced across the entire application.
 
 
 
-**Avoid** providing services in shared modules. Services are usually
+**Consider** _not_ providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
-in a particular feature module.
+in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
 
 
 </div>
@@ -3175,11 +3019,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
         </div>
 
         <div class='file'>
-          text-filter.component.ts|spec.ts
+          filter-text.component.ts|spec.ts
         </div>
 
         <div class='file'>
-          text-filter.service.ts|spec.ts
+          filter-text.service.ts|spec.ts
         </div>
 
       </div>
@@ -3220,31 +3064,32 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 <code-tabs>
 
-  <code-pane title="app/shared/shared.module.ts" path="styleguide/src/04-10/app/shared/shared.module.ts">
+  <code-pane header="app/shared/shared.module.ts" path="styleguide/src/04-10/app/shared/shared.module.ts">
 
   </code-pane>
 
-  <code-pane title="app/shared/init-caps.pipe.ts" path="styleguide/src/04-10/app/shared/init-caps.pipe.ts">
+  <code-pane header="app/shared/init-caps.pipe.ts" path="styleguide/src/04-10/app/shared/init-caps.pipe.ts">
 
   </code-pane>
 
-  <code-pane title="app/shared/filter-text/filter-text.component.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.component.ts">
+  <code-pane header="app/shared/filter-text/filter-text.component.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.component.ts">
 
   </code-pane>
 
-  <code-pane title="app/shared/filter-text/filter-text.service.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.service.ts">
+  <code-pane header="app/shared/filter-text/filter-text.service.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.service.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/heroes.component.ts" path="styleguide/src/04-10/app/heroes/heroes.component.ts">
+  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/04-10/app/heroes/heroes.component.ts">
 
   </code-pane>
 
-  <code-pane title="app/heroes/heroes.component.html" path="styleguide/src/04-10/app/heroes/heroes.component.html">
+  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/04-10/app/heroes/heroes.component.html">
 
   </code-pane>
 
 </code-tabs>
+
 
 
 
@@ -3252,326 +3097,23 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 {@a 04-11}
 
-### Core feature module
+### Lazy Loaded folders
 
 #### Style 04-11
 
-
-<div class="s-rule consider">
-
-
-
-**Consider** collecting numerous, auxiliary, single-use classes inside a core module
-to simplify the apparent structure of a feature module.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** calling the application-wide core module, `CoreModule`.
-Importing `CoreModule` into the root `AppModule` reduces its complexity
-and emphasizes its role as orchestrator of the application as a whole.
-
-
-</div>
-
+A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
 
 
 <div class="s-rule do">
 
-
-
-**Do** create a feature module named `CoreModule` in a `core` folder (e.g. `app/core/core.module.ts` defines `CoreModule`).
-
+**Do** put the contents of lazy loaded features in a *lazy loaded folder*.
+A typical *lazy loaded folder* contains a *routing component*, its child components, and their related assets and modules.
 
 </div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** put a singleton service whose instance will be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
-
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** import all modules required by the assets in the `CoreModule` (e.g. `CommonModule` and `FormsModule`).
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** `CoreModule` provides one or more singleton services. Angular registers the providers with the app root injector, making a singleton instance of each service available to any component that needs them, whether that component is eagerly or lazily loaded.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** `CoreModule` will contain singleton services. When a lazy loaded module imports these, it will get a new instance and not the intended app-wide singleton.
-
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** gather application-wide, single use components in the `CoreModule`.
-Import it once (in the `AppModule`) when the app starts and never import it anywhere else. (e.g. `NavComponent` and `SpinnerComponent`).
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Real world apps can have several single-use components (e.g., spinners, message toasts, and modal dialogs) that appear only in the `AppComponent` template.
-They are not imported elsewhere so they're not shared in that sense.
-Yet they're too big and messy to leave loose in the root folder.
-
-
-</div>
-
-
-
-<div class="s-rule avoid">
-
-
-
-**Avoid** importing the `CoreModule` anywhere except in the `AppModule`.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesirable results.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services.
-
-
-</div>
-
-
-
-<div class="s-rule do">
-
-
-
-**Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** `CoreModule` exists to make commonly used singleton services available for use in the many other modules.
-
-
-</div>
-
-
 
 <div class="s-why-last">
 
-
-
-**Why?** You want the entire app to use the one, singleton instance.
-You don't want each module to have its own separate instance of singleton services.
-Yet there is a real danger of that happening accidentally if the `CoreModule` provides a service.
-
-
-
-</div>
-
-
-
-<div class='filetree'>
-
-  <div class='file'>
-    src
-  </div>
-
-  <div class='children'>
-
-    <div class='file'>
-      app
-    </div>
-
-    <div class='children'>
-
-      <div class='file'>
-        core
-      </div>
-
-      <div class='children'>
-
-        <div class='file'>
-          core.module.ts
-        </div>
-
-        <div class='file'>
-          logger.service.ts|spec.ts
-        </div>
-
-        <div class='file'>
-          nav
-        </div>
-
-        <div class='children'>
-
-          <div class='file'>
-            nav.component.ts|html|css|spec.ts
-          </div>
-
-        </div>
-
-        <div class='file'>
-          spinner
-        </div>
-
-        <div class='children'>
-
-          <div class='file'>
-            spinner.component.ts|html|css|spec.ts
-          </div>
-
-          <div class='file'>
-            spinner.service.ts|spec.ts
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class='file'>
-        app.component.ts|html|css|spec.ts
-      </div>
-
-      <div class='file'>
-        app.module.ts
-      </div>
-
-      <div class='file'>
-        app-routing.module.ts
-      </div>
-
-    </div>
-
-    <div class='file'>
-      main.ts
-    </div>
-
-    <div class='file'>
-      index.html
-    </div>
-
-  </div>
-
-  <div class='file'>
-    ...
-  </div>
-
-</div>
-
-
-
-
-
-<code-tabs>
-
-  <code-pane title="app/app.module.ts" path="styleguide/src/04-11/app/app.module.ts" region="example">
-
-  </code-pane>
-
-  <code-pane title="app/core/core.module.ts" path="styleguide/src/04-11/app/core/core.module.ts">
-
-  </code-pane>
-
-  <code-pane title="app/core/logger.service.ts" path="styleguide/src/04-11/app/core/logger.service.ts">
-
-  </code-pane>
-
-  <code-pane title="app/core/nav/nav.component.ts" path="styleguide/src/04-11/app/core/nav/nav.component.ts">
-
-  </code-pane>
-
-  <code-pane title="app/core/nav/nav.component.html" path="styleguide/src/04-11/app/core/nav/nav.component.html">
-
-  </code-pane>
-
-  <code-pane title="app/core/spinner/spinner.component.ts" path="styleguide/src/04-11/app/core/spinner/spinner.component.ts">
-
-  </code-pane>
-
-  <code-pane title="app/core/spinner/spinner.component.html" path="styleguide/src/04-11/app/core/spinner/spinner.component.html">
-
-  </code-pane>
-
-  <code-pane title="app/core/spinner/spinner.service.ts" path="styleguide/src/04-11/app/core/spinner/spinner.service.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-
-
-<div class="l-sub-section">
-
-
-
-`AppModule` is a little smaller because many app/root classes have moved to other modules.
-`AppModule` is stable because you will add future components and providers to other modules, not this one.
-`AppModule` delegates to imported modules rather than doing work.
-`AppModule` is focused on its main task, orchestrating the app as a whole.
-
+**Why?** The folder makes it easy to identify and isolate the feature content.
 
 </div>
 
@@ -3579,178 +3121,26 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 {@a 04-12}
 
-### Prevent re-import of the core module
-
-#### Style 04-12
-
-Only the root `AppModule` should import the `CoreModule`.
-
-
-<div class="s-rule do">
-
-
-
-**Do** guard against reimporting of `CoreModule` and fail fast by adding guard logic.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Guards against reimporting of the `CoreModule`.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** Guards against creating multiple instances of assets intended to be singletons.
-
-
-</div>
-
-
-
-<code-tabs>
-
-  <code-pane title="app/core/module-import-guard.ts" path="styleguide/src/04-12/app/core/module-import-guard.ts">
-
-  </code-pane>
-
-  <code-pane title="app/core/core.module.ts" path="styleguide/src/04-12/app/core/core.module.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<a href="#toc">Back to top</a>
-
-{@a 04-13}
-
-### Lazy Loaded folders
-
-#### Style 04-13
-
-A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
-
-
-<div class="s-rule do">
-
-
-
-**Do** put the contents of lazy loaded features in a *lazy loaded folder*.
-A typical *lazy loaded folder* contains a *routing component*, its child components, and their related assets and modules.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** The folder makes it easy to identify and isolate the feature content.
-
-
-</div>
-
-<a href="#toc">Back to top</a>
-
-{@a 04-14}
-
 ### Never directly import lazy loaded folders
 
-#### Style 04-14
+#### Style 04-12
 
 
 <div class="s-rule avoid">
 
-
-
 **Avoid** allowing modules in sibling and parent folders to directly import a module in a *lazy loaded feature*.
-
 
 </div>
 
-
-
 <div class="s-why-last">
-
-
 
 **Why?** Directly importing and using a module will load it immediately when the intention is to load it on demand.
 
-
 </div>
 
 <a href="#toc">Back to top</a>
-
 
 ## Components
-
-{@a 05-02}
-
-### Component selector names
-
-#### Style 05-02
-
-
-<div class="s-rule do">
-
-
-
-**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-tabs>
-
-  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
-
-  </code-pane>
-
-  <code-pane title="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<a href="#toc">Back to top</a>
 
 {@a 05-03}
 
@@ -3758,65 +3148,47 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 #### Style 05-03
 
-
 <div class="s-rule do">
 
-
-
-**Do** give components an _element_ selector, as opposed to _attribute_ or _class_ selectors.
-
+**Consider** giving components an _element_ selector, as opposed to _attribute_ or _class_ selectors.
 
 </div>
-
-
 
 <div class="s-why">
 
-
-
-**Why?** components have templates containing HTML and optional Angular template syntax.
+**Why?** Components have templates containing HTML and optional Angular template syntax.
 They display content.
 Developers place components on the page as they would native HTML elements and web components.
 
-
 </div>
-
-
 
 <div class="s-why-last">
 
-
-
 **Why?** It is easier to recognize that a symbol is a component by looking at the template's html.
-
 
 </div>
 
+<div class="alert is-helpful">
 
+There are a few cases where you give a component an attribute, such as when you want to augment a built-in element. For example, [Material Design](https://material.angular.io/components/button/overview) uses this technique with `<button mat-button>`. However, you wouldn't use this technique on a custom element.
 
-<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/hero-button/hero-button.component.ts">
+</div>
 
-</code-example>
-
-
-
-
-
-<code-example path="styleguide/src/05-03/app/app.component.avoid.html" title="app/app.component.html">
+<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/hero-button/hero-button.component.ts">
 
 </code-example>
 
+<code-example path="styleguide/src/05-03/app/app.component.avoid.html" header="app/app.component.html">
 
-
-
+</code-example>
 
 <code-tabs>
 
-  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane title="app/app.component.html" path="styleguide/src/05-03/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/05-03/app/app.component.html">
 
   </code-pane>
 
@@ -3835,10 +3207,7 @@ Developers place components on the page as they would native HTML elements and w
 
 <div class="s-rule do">
 
-
-
 **Do** extract templates and styles into a separate file, when more than 3 lines.
-
 
 </div>
 
@@ -3846,14 +3215,9 @@ Developers place components on the page as they would native HTML elements and w
 
 <div class="s-rule do">
 
-
-
 **Do** name the template file `[component-name].component.html`, where [component-name] is the component name.
 
-
 </div>
-
-
 
 <div class="s-rule do">
 
@@ -3924,7 +3288,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
-<code-example path="styleguide/src/05-04/app/heroes/heroes.component.avoid.ts" region="example" title="app/heroes/heroes.component.ts">
+<code-example path="styleguide/src/05-04/app/heroes/heroes.component.avoid.ts" region="example" header="app/heroes/heroes.component.ts">
 
 </code-example>
 
@@ -3934,15 +3298,15 @@ in those editors that support it; it won't help with CSS styles.
 
 <code-tabs>
 
-  <code-pane title="app/heroes/heroes.component.ts" path="styleguide/src/05-04/app/heroes/heroes.component.ts" region="example">
+  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/05-04/app/heroes/heroes.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane title="app/heroes/heroes.component.html" path="styleguide/src/05-04/app/heroes/heroes.component.html">
+  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/05-04/app/heroes/heroes.component.html">
 
   </code-pane>
 
-  <code-pane title="app/heroes/heroes.component.css" path="styleguide/src/05-04/app/heroes/heroes.component.css">
+  <code-pane header="app/heroes/heroes.component.css" path="styleguide/src/05-04/app/heroes/heroes.component.css">
 
   </code-pane>
 
@@ -4028,7 +3392,7 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
-<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -4036,7 +3400,7 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
-<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -4086,7 +3450,7 @@ and the directive name doesn't describe the property.
 
 
 
-<code-example path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -4094,7 +3458,7 @@ and the directive name doesn't describe the property.
 
 
 
-<code-example path="styleguide/src/05-13/app/app.component.avoid.html" title="app/app.component.html">
+<code-example path="styleguide/src/05-13/app/app.component.avoid.html" header="app/app.component.html">
 
 </code-example>
 
@@ -4104,15 +3468,15 @@ and the directive name doesn't describe the property.
 
 <code-tabs>
 
-  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane title="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="styleguide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
+  <code-pane header="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="styleguide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
 
   </code-pane>
 
-  <code-pane title="app/app.component.html" path="styleguide/src/05-13/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/05-13/app/app.component.html">
 
   </code-pane>
 
@@ -4163,7 +3527,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.avoid.ts" region="example" title="app/shared/toast/toast.component.ts">
+<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.avoid.ts" region="example" header="app/shared/toast/toast.component.ts">
 
 </code-example>
 
@@ -4171,7 +3535,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.ts" region="example" title="app/shared/toast/toast.component.ts">
+<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.ts" region="example" header="app/shared/toast/toast.component.ts">
 
 </code-example>
 
@@ -4252,7 +3616,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-15/app/heroes/hero-list/hero-list.component.avoid.ts" title="app/heroes/hero-list/hero-list.component.ts">
+<code-example path="styleguide/src/05-15/app/heroes/hero-list/hero-list.component.avoid.ts" header="app/heroes/hero-list/hero-list.component.ts">
 
 </code-example>
 
@@ -4260,7 +3624,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-15/app/heroes/hero-list/hero-list.component.ts" region="example" title="app/heroes/hero-list/hero-list.component.ts">
+<code-example path="styleguide/src/05-15/app/heroes/hero-list/hero-list.component.ts" region="example" header="app/heroes/hero-list/hero-list.component.ts">
 
 </code-example>
 
@@ -4319,7 +3683,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-16/app/heroes/hero.component.avoid.ts" region="example" title="app/heroes/hero.component.ts">
+<code-example path="styleguide/src/05-16/app/heroes/hero.component.avoid.ts" region="example" header="app/heroes/hero.component.ts">
 
 </code-example>
 
@@ -4327,7 +3691,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-16/app/app.component.avoid.html" title="app/app.component.html">
+<code-example path="styleguide/src/05-16/app/app.component.avoid.html" header="app/app.component.html">
 
 </code-example>
 
@@ -4337,11 +3701,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <code-tabs>
 
-  <code-pane title="app/heroes/hero.component.ts" path="styleguide/src/05-16/app/heroes/hero.component.ts" region="example">
+  <code-pane header="app/heroes/hero.component.ts" path="styleguide/src/05-16/app/heroes/hero.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane title="app/app.component.html" path="styleguide/src/05-16/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/05-16/app/app.component.html">
 
   </code-pane>
 
@@ -4391,7 +3755,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-17/app/heroes/hero-list/hero-list.component.avoid.ts" region="example" title="app/heroes/hero-list/hero-list.component.ts">
+<code-example path="styleguide/src/05-17/app/heroes/hero-list/hero-list.component.avoid.ts" region="example" header="app/heroes/hero-list/hero-list.component.ts">
 
 </code-example>
 
@@ -4399,7 +3763,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-17/app/heroes/hero-list/hero-list.component.ts" region="example" title="app/heroes/hero-list/hero-list.component.ts">
+<code-example path="styleguide/src/05-17/app/heroes/hero-list/hero-list.component.ts" region="example" header="app/heroes/hero-list/hero-list.component.ts">
 
 </code-example>
 
@@ -4450,7 +3814,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/06-01/app/shared/highlight.directive.ts" region="example" title="app/shared/highlight.directive.ts">
+<code-example path="styleguide/src/06-01/app/shared/highlight.directive.ts" region="example" header="app/shared/highlight.directive.ts">
 
 </code-example>
 
@@ -4458,7 +3822,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/06-01/app/app.component.html" title="app/app.component.html">
+<code-example path="styleguide/src/06-01/app/app.component.html" header="app/app.component.html">
 
 </code-example>
 
@@ -4502,15 +3866,15 @@ helps instantly identify which members of the component serve which purpose.
 
 **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
 can be modified only in a single place&mdash;in the directive's class.
-If you use the `host` metadata property, you must modify both the property declaration inside the controller,
-and the metadata associated with the directive.
+If you use the `host` metadata property, you must modify both the property/method declaration in the
+directive's class and the metadata in the decorator associated with the directive.
 
 
 </div>
 
 
 
-<code-example path="styleguide/src/06-03/app/shared/validator.directive.ts" title="app/shared/validator.directive.ts">
+<code-example path="styleguide/src/06-03/app/shared/validator.directive.ts" header="app/shared/validator.directive.ts">
 
 </code-example>
 
@@ -4530,7 +3894,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-<code-example path="styleguide/src/06-03/app/shared/validator2.directive.ts" title="app/shared/validator2.directive.ts">
+<code-example path="styleguide/src/06-03/app/shared/validator2.directive.ts" header="app/shared/validator2.directive.ts">
 
 </code-example>
 
@@ -4581,7 +3945,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-<code-example path="styleguide/src/07-01/app/heroes/shared/hero.service.ts" region="example" title="app/heroes/shared/hero.service.ts">
+<code-example path="styleguide/src/07-01/app/heroes/shared/hero.service.ts" region="example" header="app/heroes/shared/hero.service.ts">
 
 </code-example>
 
@@ -4651,7 +4015,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Do** provide services to the Angular injector at the top-most component where they will be shared.
+**Do** provide a service with the app root injector in the `@Injectable` decorator of the service.
 
 
 </div>
@@ -4673,8 +4037,8 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Why?** When providing the service to a top level component,
-that instance is shared and available to all child components of that top level component.
+**Why?** When you provide the service to a root injector, that instance of the service is shared and available in every class that needs the service. This is ideal when a service is sharing methods or state.
+
 
 
 </div>
@@ -4685,8 +4049,7 @@ that instance is shared and available to all child components of that top level 
 
 
 
-**Why?** This is ideal when a service is sharing methods or state.
-
+**Why?** When you register a service in the `@Injectable` decorator of the service, optimization tools such as those used by the [Angular CLI's](cli) production builds can perform tree shaking and remove services that aren't used by your app.
 
 </div>
 
@@ -4701,19 +4064,8 @@ that instance is shared and available to all child components of that top level 
 
 </div>
 
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" header="src/app/treeshaking/service.ts" linenums="false"> </code-example>
 
-
-<code-tabs>
-
-  <code-pane title="app/app.component.ts" path="styleguide/src/07-03/app/app.component.ts">
-
-  </code-pane>
-
-  <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="styleguide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
-
-  </code-pane>
-
-</code-tabs>
 
 
 
@@ -4760,7 +4112,7 @@ dependencies based on the declared types of that service's constructor parameter
 
 
 
-<code-example path="styleguide/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts" region="example" title="app/heroes/shared/hero-arena.service.ts">
+<code-example path="styleguide/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts" region="example" header="app/heroes/shared/hero-arena.service.ts">
 
 </code-example>
 
@@ -4768,7 +4120,7 @@ dependencies based on the declared types of that service's constructor parameter
 
 
 
-<code-example path="styleguide/src/07-04/app/heroes/shared/hero-arena.service.ts" region="example" title="app/heroes/shared/hero-arena.service.ts">
+<code-example path="styleguide/src/07-04/app/heroes/shared/hero-arena.service.ts" region="example" header="app/heroes/shared/hero-arena.service.ts">
 
 </code-example>
 
@@ -4877,14 +4229,14 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 
 **Why?** Lifecycle interfaces prescribe typed method
-signatures. use those signatures to flag spelling and syntax mistakes.
+signatures. Use those signatures to flag spelling and syntax mistakes.
 
 
 </div>
 
 
 
-<code-example path="styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -4892,7 +4244,7 @@ signatures. use those signatures to flag spelling and syntax mistakes.
 
 
 
-<code-example path="styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -4955,8 +4307,6 @@ Useful tools and tips for Angular.
 
 
 <div class="s-rule consider">
-
-
 
 **Consider** using [snippets](https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2) for [Visual Studio Code](https://code.visualstudio.com/) that follow these styles and guidelines.
 

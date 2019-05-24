@@ -19,18 +19,21 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 @Injectable()
 export class PerflogMetric extends Metric {
   static SET_TIMEOUT = new InjectionToken('PerflogMetric.setTimeout');
+  static IGNORE_NAVIGATION = new InjectionToken('PerflogMetric.ignoreNavigation');
   static PROVIDERS = [
     {
       provide: PerflogMetric,
       deps: [
         WebDriverExtension, PerflogMetric.SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC,
-        Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT
+        Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT,
+        PerflogMetric.IGNORE_NAVIGATION
       ]
     },
     {
       provide: PerflogMetric.SET_TIMEOUT,
       useValue: (fn: Function, millis: number) => <any>setTimeout(fn, millis)
-    }
+    },
+    {provide: PerflogMetric.IGNORE_NAVIGATION, useValue: false}
   ];
 
   private _remainingEvents: PerfLogEvent[];
@@ -41,6 +44,8 @@ export class PerflogMetric extends Metric {
    * @param driverExtension
    * @param setTimeout
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
+   * @param ignoreNavigation If true, don't measure from navigationStart events. These events are
+   *   usually triggered by a page load, but can also be triggered when adding iframes to the DOM.
    **/
   constructor(
       private _driverExtension: WebDriverExtension,
@@ -49,7 +54,8 @@ export class PerflogMetric extends Metric {
       @Inject(Options.FORCE_GC) private _forceGc: boolean,
       @Inject(Options.CAPTURE_FRAMES) private _captureFrames: boolean,
       @Inject(Options.RECEIVED_DATA) private _receivedData: boolean,
-      @Inject(Options.REQUEST_COUNT) private _requestCount: boolean) {
+      @Inject(Options.REQUEST_COUNT) private _requestCount: boolean,
+      @Inject(PerflogMetric.IGNORE_NAVIGATION) private _ignoreNavigation: boolean) {
     super();
 
     this._remainingEvents = [];
@@ -231,7 +237,7 @@ export class PerflogMetric extends Metric {
       const name = event['name'];
       if (ph === 'B' && name === markName) {
         markStartEvent = event;
-      } else if (ph === 'I' && name === 'navigationStart') {
+      } else if (ph === 'I' && name === 'navigationStart' && !this._ignoreNavigation) {
         // if a benchmark measures reload of a page, use the last
         // navigationStart as begin event
         markStartEvent = event;
@@ -242,6 +248,9 @@ export class PerflogMetric extends Metric {
     if (!markStartEvent || !markEndEvent) {
       // not all events have been received, no further processing for now
       return null;
+    }
+    if (markStartEvent.pid !== markEndEvent.pid) {
+      result['invalid'] = 1;
     }
 
     let gcTimeInScript = 0;

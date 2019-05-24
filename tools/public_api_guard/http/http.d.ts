@@ -97,8 +97,8 @@ export declare class JsonpModule {
 
 /** @deprecated */
 export declare class QueryEncoder {
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
 }
 
 /** @deprecated */
@@ -108,7 +108,7 @@ export declare enum ReadyState {
     HeadersReceived = 2,
     Loading = 3,
     Done = 4,
-    Cancelled = 5,
+    Cancelled = 5
 }
 
 /** @deprecated */
@@ -132,7 +132,7 @@ export declare enum RequestMethod {
     Delete = 3,
     Options = 4,
     Head = 5,
-    Patch = 6,
+    Patch = 6
 }
 
 /** @deprecated */
@@ -184,7 +184,7 @@ export declare enum ResponseContentType {
     Text = 0,
     Json = 1,
     ArrayBuffer = 2,
-    Blob = 3,
+    Blob = 3
 }
 
 /** @deprecated */
@@ -213,7 +213,7 @@ export declare enum ResponseType {
     Cors = 1,
     Default = 2,
     Error = 3,
-    Opaque = 4,
+    Opaque = 4
 }
 
 /** @deprecated */
@@ -249,7 +249,7 @@ export declare class XHRConnection implements Connection {
     request: Request;
     response: Observable<Response>;
     constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions);
-    setDetectedContentType(req: any, _xhr: any): void;
+    setDetectedContentType(req: any /** TODO Request */, _xhr: any /** XMLHttpRequest */): void;
 }
 
 /** @deprecated */

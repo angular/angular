@@ -25,7 +25,7 @@ class SomeComp {
 class SomeCompWithUrlTemplate {
 }
 
-export function main() {
+{
   describe('RuntimeCompiler', () => {
 
     describe('compilerComponentSync', () => {

@@ -20,7 +20,7 @@ import {SpyResourceLoader} from '../spies';
 
 import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_common';
 
-export function main() {
+{
   describe('i18n XLIFF 2.0 integration spec', () => {
 
     beforeEach(async(() => {
@@ -95,6 +95,12 @@ const XLIFF2_TOMERGE = `
         <target>sur des balises non traductibles</target>
       </segment>
     </unit>
+    <unit id="2174788525135228764">
+      <segment>
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
+        <target>&lt;b&gt;gras&lt;/b&gt;</target>
+      </segment>
+    </unit>
     <unit id="8670732454866344690">
       <segment>
         <source>on translatable node</source>
@@ -107,38 +113,38 @@ const XLIFF2_TOMERGE = `
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">beaucoup</pc>} }</target>
       </segment>
     </unit>
-    <unit id="4360321700965841752">
+    <unit id="703464324060964421">
       <segment>
         <source>
-        <ph id="0" equiv="ICU" disp="{sex, select, 0 {...} m {...} f {...}}"/>
+        <ph id="0" equiv="ICU" disp="{sex, select, other {...} male {...} female {...}}"/>
     </source>
-        <target><ph id="0" equiv="ICU" disp="{sex, select, 0 {...} m {...} f {...}}"/></target>
+        <target><ph id="0" equiv="ICU" disp="{sex, select, other {...} male {...} female {...}}"/></target>
       </segment>
     </unit>
-    <unit id="5460933846928880074">
+    <unit id="5430374139308914421">
       <notes>
         <note category="location">file.ts:23</note>
       </notes>
       <segment>
-        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
-        <target>{VAR_SELECT, select, 0 {autre} m {homme} f {femme} }</target>
+        <source>{VAR_SELECT, select, other {other} male {m} female {female} }</source>
+        <target>{VAR_SELECT, select, other {autre} male {homme} female {femme} }</target>
       </segment>
     </unit>
-    <unit id="1746565782635215">
+    <unit id="1300564767229037107">
       <notes>
         <note category="location">file.ts:25,27</note>
       </notes>
       <segment>
         <source>
-        <ph id="0" equiv="ICU" disp="{sexB, select, m {...} f {...}}"/>
+        <ph id="0" equiv="ICU" disp="{sexB, select, male {...} female {...}}"/>
     </source>
-      <target><ph id="0" equiv="ICU" disp="{sexB, select, m {...} f {...}}"/></target>
+      <target><ph id="0" equiv="ICU" disp="{sexB, select, male {...} female {...}}"/></target>
       </segment>
     </unit>
-    <unit id="5868084092545682515">
+    <unit id="2500580913783245106">
       <segment>
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
-        <target>{VAR_SELECT, select, m {homme} f {femme} }</target>
+        <source>{VAR_SELECT, select, male {m} female {f} }</source>
+        <target>{VAR_SELECT, select, male {homme} female {femme} }</target>
       </segment>
     </unit>
     <unit id="4851788426695310455">
@@ -165,15 +171,15 @@ const XLIFF2_TOMERGE = `
         <target>dans une section traductible</target>
       </segment>
     </unit>
-    <unit id="2387287228265107305">
+    <unit id="2329001734457059408">
       <segment>
         <source>
-    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Markers in html comments</pc>   
+    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Markers in html comments</pc>
     <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"></pc>
     <pc id="2" equivStart="START_TAG_DIV_1" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"><ph id="3" equiv="ICU" disp="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/></pc>
 </source>
         <target>
-    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Balises dans les commentaires html</pc>   
+    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Balises dans les commentaires html</pc>
     <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"></pc>
     <pc id="2" equivStart="START_TAG_DIV_1" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"><ph id="3" equiv="ICU" disp="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/></pc>
 </target>
@@ -267,6 +273,14 @@ const XLIFF2_EXTRACTED = `
         <source>on not translatable node</source>
       </segment>
     </unit>
+    <unit id="2174788525135228764">
+      <notes>
+        <note category="location">file.ts:14</note>
+      </notes>
+      <segment>
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
+      </segment>
+    </unit>
     <unit id="8670732454866344690">
       <notes>
         <note category="location">file.ts:15</note>
@@ -284,40 +298,40 @@ const XLIFF2_EXTRACTED = `
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">many</pc>} }</source>
       </segment>
     </unit>
-    <unit id="4360321700965841752">
+    <unit id="703464324060964421">
       <notes>
         <note category="location">file.ts:22,24</note>
       </notes>
       <segment>
         <source>
-        <ph id="0" equiv="ICU" disp="{sex, select, 0 {...} m {...} f {...}}"/>
+        <ph id="0" equiv="ICU" disp="{sex, select, male {...} female {...} other {...}}"/>
     </source>
       </segment>
     </unit>
-    <unit id="5460933846928880074">
+    <unit id="5430374139308914421">
       <notes>
         <note category="location">file.ts:23</note>
       </notes>
       <segment>
-        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
+        <source>{VAR_SELECT, select, male {m} female {f} other {other} }</source>
       </segment>
     </unit>
-    <unit id="1746565782635215">
+    <unit id="1300564767229037107">
       <notes>
         <note category="location">file.ts:25,27</note>
       </notes>
       <segment>
         <source>
-        <ph id="0" equiv="ICU" disp="{sexB, select, m {...} f {...}}"/>
+        <ph id="0" equiv="ICU" disp="{sexB, select, male {...} female {...}}"/>
     </source>
       </segment>
     </unit>
-    <unit id="5868084092545682515">
+    <unit id="2500580913783245106">
       <notes>
         <note category="location">file.ts:26</note>
       </notes>
       <segment>
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
+        <source>{VAR_SELECT, select, male {m} female {f} }</source>
       </segment>
     </unit>
     <unit id="4851788426695310455">
@@ -353,13 +367,13 @@ const XLIFF2_EXTRACTED = `
         <source>in a translatable section</source>
       </segment>
     </unit>
-    <unit id="2387287228265107305">
+    <unit id="2329001734457059408">
       <notes>
         <note category="location">file.ts:34,38</note>
       </notes>
       <segment>
         <source>
-    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Markers in html comments</pc>   
+    <pc id="0" equivStart="START_HEADING_LEVEL1" equivEnd="CLOSE_HEADING_LEVEL1" type="other" dispStart="&lt;h1&gt;" dispEnd="&lt;/h1&gt;">Markers in html comments</pc>
     <pc id="1" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"></pc>
     <pc id="2" equivStart="START_TAG_DIV_1" equivEnd="CLOSE_TAG_DIV" type="other" dispStart="&lt;div&gt;" dispEnd="&lt;/div&gt;"><ph id="3" equiv="ICU" disp="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/></pc>
 </source>

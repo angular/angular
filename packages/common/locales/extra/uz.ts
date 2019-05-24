@@ -9,12 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
-  [
-    ['yarim tun', 'tush payti', 'ertalab', 'kunduzi', 'kechqurun', 'kechasi'],
-    ,
-  ],
-  ,
+  [['yarim tun', 'tush payti', 'ertalab', 'kunduzi', 'kechqurun', 'kechasi'], u, u], u,
   [
     '00:00', '12:00', ['06:00', '11:00'], ['11:00', '18:00'], ['18:00', '22:00'],
     ['22:00', '06:00']

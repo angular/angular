@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+const shell = require('shelljs');
+shell.config.fatal = true;
+const util = require('./utils/git_util');
+
+if (require.main === module) {
+  main(process.argv.splice(2)).then(
+    (v) => process.exitCode = v, 
+    (e) => console.error(process.exitCode = 1, e)
+  );
+}
+
+async function main(args) {
+  let prNumber = 0;
+
+  args.forEach((arg) => {
+    if (prNumber == 0 && arg > 0) {
+        prNumber = arg;
+    } else {
+        shell.echo('Unexpected argument: ', arg);
+    }
+  });
+
+  if (prNumber === 0) {
+    shell.echo('Bring github pull request onto your local repo for review and edit');
+    shell.echo('');
+    shell.echo(`${process.argv[1]} PR_NUMBER`);
+    shell.echo('');
+    return 1;
+  }
+
+  if (util.gitHasLocalModifications()) {
+    shell.echo('Local modification detected. exiting...');
+    return 1;
+  }
+
+  let prShaCount = (await util.githubPrInfo(prNumber)).commits;
+
+  shell.exec(`git checkout master`);
+  if (util.execNoFatal(`git rev-parse --verify --quiet pr/${prNumber}`).code == 0) {
+    shell.exec(`git branch -D pr/${prNumber}`);
+  }
+
+  shell.echo(`Fetching pull request #${prNumber} with ${prNumber} SHA(s) into branch range: pr/${prNumber}_base..pr/${prNumber}_top`);
+  shell.exec(`git fetch -f git@github.com:angular/angular.git pull/${prNumber}/head:pr/${prNumber}_top`);
+
+  shell.exec(`git branch -f pr/${prNumber}_bottom pr/${prNumber}_top~${prShaCount - 1}`);
+  shell.exec(`git branch -f pr/${prNumber}_base pr/${prNumber}_top~${prShaCount}`);
+
+  // Create aliases
+  shell.exec(`git branch -f pr/TOP pr/${prNumber}_top`);
+  shell.exec(`git branch -f pr/BASE pr/${prNumber}_base`);
+  shell.exec(`git branch -f pr/BOTTOM pr/${prNumber}_bottom`);
+
+  shell.echo(`======================================================================================`);
+  shell.exec(`git log --oneline --color pr/${prNumber}_base..pr/${prNumber}_top`);
+  shell.echo(`======================================================================================`);
+
+  // Reset the HEAD so that we can see changed files for review
+  shell.exec(`git checkout --force -b pr/${prNumber} pr/${prNumber}_top`);
+  shell.exec(`git reset pr/${prNumber}_base`);
+  shell.exec(`git status`);
+
+  return 0;
+}

@@ -7,23 +7,30 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
+import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
+import {PlatformLocation} from './platform_location';
 
-/** @experimental */
+/** @publicApi */
 export interface PopStateEvent {
   pop?: boolean;
+  state?: any;
   type?: string;
   url?: string;
 }
 
 /**
- * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
  * @description
- * Depending on which {@link LocationStrategy} is used, `Location` will either persist
+ *
+ * A service that applications can use to interact with a browser's URL.
+ *
+ * Depending on the {@link LocationStrategy} used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
- * Note: it's better to use {@link Router#navigate} service to trigger route changes. Use
+ * @usageNotes
+ *
+ * It's better to use the {@link Router#navigate} service to trigger route changes. Use
  * `Location` only if you need to interact with or create normalized URLs outside of
  * routing.
  *
@@ -35,8 +42,10 @@ export interface PopStateEvent {
  * - `/my/app/user/123/` **is not** normalized
  *
  * ### Example
+ *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
- * @stable
+ *
+ * @publicApi
  */
 @Injectable()
 export class Location {
@@ -46,15 +55,21 @@ export class Location {
   _baseHref: string;
   /** @internal */
   _platformStrategy: LocationStrategy;
+  /** @internal */
+  _platformLocation: PlatformLocation;
+  /** @internal */
+  _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
 
-  constructor(platformStrategy: LocationStrategy) {
+  constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
     const browserBaseHref = this._platformStrategy.getBaseHref();
+    this._platformLocation = platformLocation;
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
     this._platformStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
         'pop': true,
+        'state': ev.state,
         'type': ev.type,
       });
     });
@@ -62,6 +77,10 @@ export class Location {
 
   /**
    * Returns the normalized URL path.
+   *
+   * @param includeHash Whether path has an anchor fragment.
+   *
+   * @returns The normalized URL path.
    */
   // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
   // removed.
@@ -70,15 +89,30 @@ export class Location {
   }
 
   /**
+   * Returns the current value of the history.state object.
+   */
+  getState(): unknown { return this._platformLocation.getState(); }
+
+  /**
    * Normalizes the given path and compares to the current normalized path.
+   *
+   * @param path The given URL path
+   * @param query Query parameters
+   *
+   * @returns `true` if the given URL path is equal to the current normalized path, `false`
+   * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
     return this.path() == this.normalize(path + Location.normalizeQueryParams(query));
   }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path without leading or
+   * Given a string representing a URL, returns the URL path after stripping the
    * trailing slashes.
+   *
+   * @param url String representing a URL.
+   *
+   * @returns Normalized URL string.
    */
   normalize(url: string): string {
     return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
@@ -87,8 +121,13 @@ export class Location {
   /**
    * Given a string representing a URL, returns the platform-specific external URL path.
    * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
-   * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+   * before normalizing. This method also adds a hash if `HashLocationStrategy` is
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
+   *
+   *
+   * @param url String representing a URL.
+   *
+   * @returns  A normalized platform-specific URL.
    */
   prepareExternalUrl(url: string): string {
     if (url && url[0] !== '/') {
@@ -99,19 +138,32 @@ export class Location {
 
   // TODO: rename this method to pushState
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and pushes a
+   * Changes the browsers URL to a normalized version of the given URL, and pushes a
    * new item onto the platform's history.
+   *
+   * @param path  URL path to normalizze
+   * @param query Query parameters
+   * @param state Location history state
+   *
    */
-  go(path: string, query: string = ''): void {
-    this._platformStrategy.pushState(null, '', path, query);
+  go(path: string, query: string = '', state: any = null): void {
+    this._platformStrategy.pushState(state, '', path, query);
+    this._notifyUrlChangeListeners(
+        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and replaces
+   * Changes the browser's URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
+   *
+   * @param path  URL path to normalizze
+   * @param query Query parameters
+   * @param state Location history state
    */
-  replaceState(path: string, query: string = ''): void {
-    this._platformStrategy.replaceState(null, '', path, query);
+  replaceState(path: string, query: string = '', state: any = null): void {
+    this._platformStrategy.replaceState(state, '', path, query);
+    this._notifyUrlChangeListeners(
+        this.prepareExternalUrl(path + Location.normalizeQueryParams(query)), state);
   }
 
   /**
@@ -125,24 +177,53 @@ export class Location {
   back(): void { this._platformStrategy.back(); }
 
   /**
+   * Register URL change listeners. This API can be used to catch updates performed by the Angular
+   * framework. These are not detectible through "popstate" or "hashchange" events.
+   */
+  onUrlChange(fn: (url: string, state: unknown) => void) {
+    this._urlChangeListeners.push(fn);
+    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
+  }
+
+  /** @internal */
+  _notifyUrlChangeListeners(url: string = '', state: unknown) {
+    this._urlChangeListeners.forEach(fn => fn(url, state));
+  }
+
+  /**
    * Subscribe to the platform's `popState` events.
+   *
+   * @param value Event that is triggered when the state history changes.
+   * @param exception The exception to throw.
+   *
+   * @returns Subscribed events.
    */
   subscribe(
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): Object {
+      onReturn?: (() => void)|null): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
   /**
-   * Given a string of url parameters, prepend with '?' if needed, otherwise return parameters as
-   * is.
+   * Given a string of url parameters, prepend with `?` if needed, otherwise return the
+   * parameters as is.
+   *
+   *  @param  params String of URL parameters
+   *
+   *  @returns URL parameters prepended with `?` or the parameters as is.
    */
   public static normalizeQueryParams(params: string): string {
     return params && params[0] !== '?' ? '?' + params : params;
   }
 
   /**
-   * Given 2 parts of a url, join them with a slash if needed.
+   * Given 2 parts of a URL, join them with a slash if needed.
+   *
+   * @param start  URL string
+   * @param end    URL string
+   *
+   *
+   * @returns Given URL strings joined with a slash, if needed.
    */
   public static joinWithSlash(start: string, end: string): string {
     if (start.length == 0) {
@@ -168,9 +249,14 @@ export class Location {
   }
 
   /**
-   * If url has a trailing slash, remove it, otherwise return url as is. This
-   * method looks for the first occurence of either #, ?, or the end of the
-   * line as `/` characters after any of these should not be replaced.
+   * If URL has a trailing slash, remove it, otherwise return the URL as is. The
+   * method looks for the first occurrence of either `#`, `?`, or the end of the
+   * line as `/` characters and removes the trailing slash if one exists.
+   *
+   * @param url URL string
+   *
+   * @returns Returns a URL string after removing the trailing slash if one exists, otherwise
+   * returns the string as is.
    */
   public static stripTrailingSlash(url: string): string {
     const match = url.match(/#|\?|$/);

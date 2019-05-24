@@ -12,7 +12,7 @@ import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModu
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+{
   describe('value accessors', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
@@ -164,6 +164,7 @@ export function main() {
       describe('in reactive forms', () => {
 
         it(`should support primitive values`, () => {
+          if (isNode) return;
           const fixture = initTest(FormControlNameSelect);
           fixture.detectChanges();
 
@@ -183,6 +184,7 @@ export function main() {
         });
 
         it(`should support objects`, () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectNgValue);
           fixture.detectChanges();
 
@@ -201,6 +203,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectWithCompareFn);
           fixture.detectChanges();
 
@@ -211,6 +214,7 @@ export function main() {
         });
 
         it('should support re-assigning the options array with compareWith', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectWithCompareFn);
           fixture.detectChanges();
 
@@ -239,6 +243,7 @@ export function main() {
 
       describe('in template-driven forms', () => {
         it('with option values that are objects', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
@@ -263,6 +268,7 @@ export function main() {
            }));
 
         it('when new options are added', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
@@ -300,6 +306,7 @@ export function main() {
            }));
 
         it('when option values have same content, but different identities', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
@@ -320,7 +327,7 @@ export function main() {
              const fixture = initTest(NgModelSelectWithNullForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
-             comp.selectedCity = null !;
+             comp.selectedCity = null;
              fixture.detectChanges();
 
              const select = fixture.debugElement.query(By.css('select'));
@@ -329,7 +336,7 @@ export function main() {
              dispatchEvent(select.nativeElement, 'change');
              fixture.detectChanges();
              tick();
-             expect(comp.selectedCity['name']).toEqual('NYC');
+             expect(comp.selectedCity !['name']).toEqual('NYC');
 
              select.nativeElement.value = '0: null';
              dispatchEvent(select.nativeElement, 'change');
@@ -347,6 +354,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
              const comp = fixture.componentInstance;
              comp.selectedCity = {id: 1, name: 'SF'};
@@ -361,6 +369,7 @@ export function main() {
            }));
 
         it('should support re-assigning the options array with compareWith', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
              fixture.componentInstance.selectedCity = {id: 1, name: 'SF'};
              fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
@@ -400,6 +409,7 @@ export function main() {
       describe('in reactive forms', () => {
 
         it('should support primitive values', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectMultiple);
           fixture.detectChanges();
 
@@ -410,6 +420,7 @@ export function main() {
         });
 
         it('should support objects', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectMultipleNgValue);
           fixture.detectChanges();
 
@@ -427,6 +438,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(FormControlSelectMultipleWithCompareFn);
              fixture.detectChanges();
              tick();
@@ -478,6 +490,7 @@ export function main() {
 
         it('should reflect state of model after option selected and new options subsequently added',
            fakeAsync(() => {
+             if (isNode) return;
              setSelectedCities([]);
 
              selectOptionViaUI('1: Object');
@@ -491,6 +504,7 @@ export function main() {
 
         it('should reflect state of model after option selected and then other options removed',
            fakeAsync(() => {
+             if (isNode) return;
              setSelectedCities([]);
 
              selectOptionViaUI('1: Object');
@@ -512,6 +526,7 @@ export function main() {
       });
 
       it('should compare options using provided compareWith function', fakeAsync(() => {
+           if (isNode) return;
            const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
            const comp = fixture.componentInstance;
            comp.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'LA'}];
@@ -1063,7 +1078,6 @@ export function main() {
                });
              });
            }));
-
       });
 
     });
@@ -1073,7 +1087,8 @@ export function main() {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 export class FormControlComp {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -1084,10 +1099,14 @@ export class FormControlComp {
     </form>`
 })
 export class FormGroupComp {
-  control: FormControl;
-  form: FormGroup;
-  myGroup: FormGroup;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  myGroup !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
 }
 
 @Component({
@@ -1095,7 +1114,8 @@ export class FormGroupComp {
   template: `<input type="number" [formControl]="control">`
 })
 class FormControlNumberInput {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -1210,7 +1230,7 @@ class NgModelSelectForm {
   `
 })
 class NgModelSelectWithNullForm {
-  selectedCity: {[k: string]: string} = {};
+  selectedCity: {[k: string]: string}|null = {};
   cities: any[] = [];
 }
 
@@ -1254,7 +1274,8 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
   `
 })
 class NgModelSelectMultipleForm {
-  selectedCities: any[];
+  // TODO(issue/24571): remove '!'.
+  selectedCities !: any[];
   cities: any[] = [];
 }
 
@@ -1263,7 +1284,8 @@ class NgModelSelectMultipleForm {
   template: `<input type="range" [formControl]="control">`
 })
 class FormControlRangeInput {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({selector: 'ng-model-range-form', template: '<input type="range" [(ngModel)]="val">'})
@@ -1284,7 +1306,8 @@ class NgModelRangeForm {
     <input type="radio" [formControl]="showRadio" value="no">`
 })
 export class FormControlRadioButtons {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
   showRadio = new FormControl('yes');
 }
 
@@ -1301,8 +1324,10 @@ export class FormControlRadioButtons {
   `
 })
 class NgModelRadioForm {
-  food: string;
-  drink: string;
+  // TODO(issue/24571): remove '!'.
+  food !: string;
+  // TODO(issue/24571): remove '!'.
+  drink !: string;
 }
 
 @Directive({
@@ -1315,7 +1340,8 @@ class NgModelRadioForm {
 })
 class WrappedValue implements ControlValueAccessor {
   value: any;
-  onChange: Function;
+  // TODO(issue/24571): remove '!'.
+  onChange !: Function;
 
   writeValue(value: any) { this.value = `!${value}!`; }
 
@@ -1330,7 +1356,8 @@ class WrappedValue implements ControlValueAccessor {
 @Component({selector: 'my-input', template: ''})
 export class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
-  value: string;
+  // TODO(issue/24571): remove '!'.
+  value !: string;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
 
@@ -1351,7 +1378,8 @@ export class MyInput implements ControlValueAccessor {
     </div>`
 })
 export class MyInputForm {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -1362,7 +1390,8 @@ export class MyInputForm {
     </div>`
 })
 class WrappedValueForm {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -1373,9 +1402,11 @@ class WrappedValueForm {
   providers: [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: NgModelCustomComp}]
 })
 export class NgModelCustomComp implements ControlValueAccessor {
-  model: string;
+  // TODO(issue/24571): remove '!'.
+  model !: string;
   @Input('disabled') isDisabled: boolean = false;
-  changeFn: (value: any) => void;
+  // TODO(issue/24571): remove '!'.
+  changeFn !: (value: any) => void;
 
   writeValue(value: any) { this.model = value; }
 
@@ -1395,6 +1426,7 @@ export class NgModelCustomComp implements ControlValueAccessor {
   `
 })
 export class NgModelCustomWrapper {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   isDisabled = false;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs';
 
 import {createUrlTree} from '../src/create_url_tree';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
@@ -243,10 +243,10 @@ describe('createUrlTree', () => {
 });
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
-  const s = new ActivatedRouteSnapshot(
+  const s = new (ActivatedRouteSnapshot as any)(
       [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1,
       <any>null);
-  const a = new ActivatedRoute(
+  const a = new (ActivatedRoute as any)(
       new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
       new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
@@ -259,10 +259,10 @@ function create(
   if (!segment) {
     expect(segment).toBeDefined();
   }
-  const s = new ActivatedRouteSnapshot(
+  const s = new (ActivatedRouteSnapshot as any)(
       [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
       startIndex, <any>null);
-  const a = new ActivatedRoute(
+  const a = new (ActivatedRoute as any)(
       new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
       new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);

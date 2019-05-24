@@ -44,7 +44,8 @@ export class DirectiveResolver {
       const metadata = findLast(typeMetadata, isDirectiveMetadata);
       if (metadata) {
         const propertyMetadata = this._reflector.propMetadata(type);
-        return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
+        const guards = this._reflector.guards(type);
+        return this._mergeWithPropertyMetadata(metadata, propertyMetadata, guards, type);
       }
     }
 
@@ -56,12 +57,12 @@ export class DirectiveResolver {
   }
 
   private _mergeWithPropertyMetadata(
-      dm: Directive, propertyMetadata: {[key: string]: any[]}, directiveType: Type): Directive {
+      dm: Directive, propertyMetadata: {[key: string]: any[]}, guards: {[key: string]: any},
+      directiveType: Type): Directive {
     const inputs: string[] = [];
     const outputs: string[] = [];
     const host: {[key: string]: string} = {};
     const queries: {[key: string]: any} = {};
-
     Object.keys(propertyMetadata).forEach((propName: string) => {
       const input = findLast(propertyMetadata[propName], (a) => createInput.isTypeOf(a));
       if (input) {
@@ -105,18 +106,20 @@ export class DirectiveResolver {
         queries[propName] = query;
       }
     });
-    return this._merge(dm, inputs, outputs, host, queries, directiveType);
+    return this._merge(dm, inputs, outputs, host, queries, guards, directiveType);
   }
 
   private _extractPublicName(def: string) { return splitAtColon(def, [null !, def])[1].trim(); }
 
   private _dedupeBindings(bindings: string[]): string[] {
     const names = new Set<string>();
+    const publicNames = new Set<string>();
     const reversedResult: string[] = [];
     // go last to first to allow later entries to overwrite previous entries
     for (let i = bindings.length - 1; i >= 0; i--) {
       const binding = bindings[i];
       const name = this._extractPublicName(binding);
+      publicNames.add(name);
       if (!names.has(name)) {
         names.add(name);
         reversedResult.push(binding);
@@ -127,14 +130,13 @@ export class DirectiveResolver {
 
   private _merge(
       directive: Directive, inputs: string[], outputs: string[], host: {[key: string]: string},
-      queries: {[key: string]: any}, directiveType: Type): Directive {
+      queries: {[key: string]: any}, guards: {[key: string]: any}, directiveType: Type): Directive {
     const mergedInputs =
         this._dedupeBindings(directive.inputs ? directive.inputs.concat(inputs) : inputs);
     const mergedOutputs =
         this._dedupeBindings(directive.outputs ? directive.outputs.concat(outputs) : outputs);
     const mergedHost = directive.host ? {...directive.host, ...host} : host;
     const mergedQueries = directive.queries ? {...directive.queries, ...queries} : queries;
-
     if (createComponent.isTypeOf(directive)) {
       const comp = directive as Component;
       return createComponent({
@@ -166,7 +168,7 @@ export class DirectiveResolver {
         host: mergedHost,
         exportAs: directive.exportAs,
         queries: mergedQueries,
-        providers: directive.providers
+        providers: directive.providers, guards
       });
     }
   }

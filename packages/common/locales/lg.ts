@@ -9,19 +9,21 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'lg',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'lg', [['AM', 'PM'], u, u], u,
   [
     ['S', 'B', 'L', 'L', 'L', 'L', 'L'], ['Sab', 'Bal', 'Lw2', 'Lw3', 'Lw4', 'Lw5', 'Lw6'],
     ['Sabbiiti', 'Balaza', 'Lwakubiri', 'Lwakusatu', 'Lwakuna', 'Lwakutaano', 'Lwamukaaga'],
     ['Sab', 'Bal', 'Lw2', 'Lw3', 'Lw4', 'Lw5', 'Lw6']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mar', 'Apu', 'Maa', 'Juu', 'Jul', 'Agu', 'Seb', 'Oki', 'Nov', 'Des'],
@@ -30,19 +32,10 @@ export default [
       'Sebuttemba', 'Okitobba', 'Novemba', 'Desemba'
     ]
   ],
-  , [['BC', 'AD'], , ['Kulisito nga tannaza', 'Bukya Kulisito Azaal']], 1, [6, 0],
+  u, [['BC', 'AD'], u, ['Kulisito nga tannaza', 'Bukya Kulisito Azaal']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'USh', 'Silingi eya Yuganda', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'USh', 'Silingi eya Yuganda',
+  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']}, plural
 ];

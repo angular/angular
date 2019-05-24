@@ -2,7 +2,7 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('renderExamples processor', () => {
-  var injector, processor, exampleMap, collectExamples;
+  var injector, processor, exampleMap, collectExamples, log;
 
   beforeEach(function() {
     const dgeni = new Dgeni([testPackage('examples-package', true)]);
@@ -12,6 +12,7 @@ describe('renderExamples processor', () => {
     processor = injector.get('renderExamples');
     collectExamples = injector.get('collectExamples');
     exampleMap = injector.get('exampleMap');
+    log = injector.get('log');
 
     collectExamples.exampleFolders = ['examples'];
     exampleMap['examples'] = {
@@ -34,10 +35,10 @@ describe('renderExamples processor', () => {
     describe(CODE_TAG, () => {
       it(`should ignore a <${CODE_TAG}> tags with no path attribute`, () => {
         const docs = [
-          { renderedContent: `Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do not do this</${CODE_TAG}>` }
+          { renderedContent: `Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do <strong>not</strong> do this</${CODE_TAG}>` }
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do not do this</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do <strong>not</strong> do this</${CODE_TAG}>`);
       });
 
       it(`should replace the content of the <${CODE_TAG}> tag with the whole contents from an example file if a path is provided`, () => {
@@ -83,10 +84,87 @@ describe('renderExamples processor', () => {
 
       it('should cope with spaces and double quotes inside attribute values', () => {
         const docs = [
-          { renderedContent: `<${CODE_TAG} title='a "quoted" value' path="test/url"></${CODE_TAG}>`}
+          { renderedContent: `<${CODE_TAG} header='a "quoted" value' path="test/url"></${CODE_TAG}>`}
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} title="a &quot;quoted&quot; value" path="test/url">\nwhole file\n</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} header="a &quot;quoted&quot; value" path="test/url">\nwhole file\n</${CODE_TAG}>`);
+      });
+
+      it('should throw an exception if the code-example tag is not closed correctly', () => {
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url"></p></${CODE_TAG}>`}
+        ];
+        expect(() => processor.$process(docs)).toThrowError(
+          'Badly formed example: <' + CODE_TAG + ' path="test/url"></p> - closing tag does not match opening tag.\n' +
+          ' - Perhaps you forgot to put a blank line before the example?');
+      });
+
+      it('should not throw if `ignoreBrokenExamples` is set to true', () => {
+        processor.ignoreBrokenExamples = true;
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url"></p></${CODE_TAG}>`},
+          { renderedContent: `<${CODE_TAG} path="test/url" region="missing"></${CODE_TAG}>`},
+          { renderedContent: `<${CODE_TAG} path="missing/url"></${CODE_TAG}>`}
+        ];
+        expect(() => processor.$process(docs)).not.toThrow();
+        expect(log.warn).toHaveBeenCalledWith(
+          'Badly formed example: <' + CODE_TAG + ' path="test/url"></p> - closing tag does not match opening tag.\n' +
+          ' - Perhaps you forgot to put a blank line before the example? - doc');
+        expect(log.warn).toHaveBeenCalledWith(
+          'Missing example region... relativePath: "test/url", region: "missing". - doc\n' +
+          'Regions available are: "", "region-1" - doc');
+        expect(log.warn).toHaveBeenCalledWith(
+          'Missing example file... relativePath: "missing/url". - doc\n' +
+          'Example files can be found in the following relative paths: "examples" - doc');
+      });
+
+      it('should throw an exception if any code-example tag has a `title` attribute', () => {
+        const docs = [
+          {
+            name: 'Document A',
+            renderedContent: `
+              Example 1: <${CODE_TAG} path="test/url" header="This is a header "></${CODE_TAG}>
+              Example 2: <${CODE_TAG} path="test/url" title="This is a title 2"></${CODE_TAG}>
+            `,
+          },
+          {
+            name: 'Document B',
+            renderedContent: `
+              Example 3: <${CODE_TAG} path="test/url" title="This is a title 3"></${CODE_TAG}>
+              Example 4: <${CODE_TAG} path="test/url" header="This is a header 4"></${CODE_TAG}>
+            `,
+          },
+        ];
+
+        expect(() => processor.$process(docs)).toThrowError(
+          'Some code snippets use the `title` attribute instead of `header`.');
+
+        expect(log.error).toHaveBeenCalledTimes(2);
+        expect(log.error).toHaveBeenCalledWith(
+          `Using the "title" attribute for specifying a ${CODE_TAG} header is no longer supported. ` +
+          'Use the "header" attribute instead.\n' +
+          `<${CODE_TAG} path="test/url" title="This is a title 2"> - doc "Document A"`);
+        expect(log.error).toHaveBeenCalledWith(
+          `Using the "title" attribute for specifying a ${CODE_TAG} header is no longer supported. ` +
+          'Use the "header" attribute instead.\n' +
+          `<${CODE_TAG} path="test/url" title="This is a title 3"> - doc "Document B"`);
+      });
+
+      it('should throw an exception for `title` attribute even if `ignoreBrokenExamples` is set to true', () => {
+        processor.ignoreBrokenExamples = true;
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url" title="This is a title"></${CODE_TAG}>` },
+        ];
+        expect(() => processor.$process(docs)).toThrowError(
+          'Some code snippets use the `title` attribute instead of `header`.');
+      });
+
+      it('should throw an exception for `title` attribute even if there is no `path` attribute', () => {
+        const docs = [
+          { renderedContent: `<${CODE_TAG} title="This is a title">Hard-coded contents.</${CODE_TAG}>` },
+        ];
+        expect(() => processor.$process(docs)).toThrowError(
+          'Some code snippets use the `title` attribute instead of `header`.');
       });
     })
   );

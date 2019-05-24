@@ -18,3 +18,5 @@ import {SimpleFormComp} from './simple_form_example';
 })
 export class AppModule {
 }
+
+export {SimpleFormComp as AppComponent};

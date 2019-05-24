@@ -11,13 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, readCommandLineAndConfiguration, watchMode} from '../src/main';
-import {makeTempDir} from './test_support';
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {setup} from './test_support';
 
 describe('ngc transformer command-line', () => {
   let basePath: string;
@@ -43,15 +37,12 @@ describe('ngc transformer command-line', () => {
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    basePath = makeTempDir();
-    write = (fileName: string, content: string) => {
-      const dir = path.dirname(fileName);
-      if (dir != '.') {
-        const newDir = path.join(basePath, dir);
-        if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-      }
-      fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-    };
+    const support = setup();
+    basePath = support.basePath;
+    outDir = path.join(basePath, 'built');
+    process.chdir(basePath);
+    write = (fileName: string, content: string) => { support.write(fileName, content); };
+
     write('tsconfig-base.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,
@@ -63,21 +54,13 @@ describe('ngc transformer command-line', () => {
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
+        "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
         "typeRoots": ["node_modules/@types"]
       }
     }`);
-    outDir = path.resolve(basePath, 'built');
-    const ngRootDir = getNgRootDir();
-    const nodeModulesPath = path.resolve(basePath, 'node_modules');
-    fs.mkdirSync(nodeModulesPath);
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-        path.resolve(nodeModulesPath, '@angular'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
   });
 
   it('should compile without errors', () => {
@@ -87,6 +70,25 @@ describe('ngc transformer command-line', () => {
     const exitCode = main(['-p', basePath], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
+  });
+
+  it('should respect the "newLine" compiler option when printing diagnostics', () => {
+    writeConfig(`{
+      "extends": "./tsconfig-base.json",
+      "compilerOptions": {
+        "newLine": "CRLF",
+      }
+    }`);
+    write('test.ts', 'export NOT_VALID = true;');
+
+    // Stub the error spy because we don't want to call through and print the
+    // expected error diagnostic.
+    errorSpy.and.stub();
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `test.ts(1,1): error TS1128: Declaration or statement expected.\r\n`);
+    expect(exitCode).toBe(1);
   });
 
   describe('errors', () => {
@@ -101,7 +103,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
-          `error TS6053: File '` + path.join(basePath, 'test.ts') + `' not found.` +
+          `error TS6053: File '` + path.posix.join(basePath, 'test.ts') + `' not found.` +
           '\n');
       expect(exitCode).toEqual(1);
     });
@@ -135,9 +137,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
-          `test.ts(1,9): error TS2305: Module '"` + path.join(basePath, 'empty-deps') +
-          `"' has no exported member 'MyClass'.` +
-          '\n');
+          `test.ts(1,9): error TS2305: Module '"./empty-deps"' has no exported member 'MyClass'.\n`);
       expect(exitCode).toEqual(1);
     });
 
@@ -162,7 +162,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', 'not-exist'], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
-      expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
+      expect(errorSpy.calls.mostRecent().args[0]).toMatch(/at Object\.(fs\.)?lstatSync/);
       expect(exitCode).toEqual(2);
     });
 
@@ -183,8 +183,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ng://' + path.join(basePath, 'mymodule.ts.MyComp.html'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('mymodule.ts.MyComp.html');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -214,8 +213,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ng://' + path.join(basePath, 'my.component.html(1,5):'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('my.component.html(1,5):');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -244,10 +242,93 @@ describe('ngc transformer command-line', () => {
       expect(exitCode).toEqual(0);
 
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
-      expect(fs.existsSync(path.resolve(
-                 outDir, 'node_modules', '@angular', 'core', 'src',
-                 'application_module.ngfactory.js')))
+      expect(fs.existsSync(
+                 path.resolve(outDir, 'node_modules', '@angular', 'core', 'core.ngfactory.js')))
           .toBe(true);
+    });
+
+    describe('comments', () => {
+      function compileAndRead(contents: string) {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {"allowEmptyCodegenFiles": true}
+        }`);
+        write('mymodule.ts', contents);
+
+        const exitCode = main(['-p', basePath], errorSpy);
+        expect(exitCode).toEqual(0);
+
+        const modPath = path.resolve(outDir, 'mymodule.ngfactory.js');
+        expect(fs.existsSync(modPath)).toBe(true);
+        return fs.readFileSync(modPath, {encoding: 'UTF-8'});
+      }
+
+      it('should be added', () => {
+        const contents = compileAndRead(`
+        import {CommonModule} from '@angular/common';
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [CommonModule]
+        })
+        export class MyModule {}
+      `);
+        expect(contents).toContain('@fileoverview');
+        expect(contents).toContain('generated by the Angular template compiler');
+        expect(contents).toContain('@suppress {suspiciousCode');
+      });
+
+      it('should be merged with existing fileoverview comments', () => {
+        const contents = compileAndRead(`/** Hello world. */
+
+        import {CommonModule} from '@angular/common';
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [CommonModule]
+        })
+        export class MyModule {}
+      `);
+        expect(contents).toContain('Hello world.');
+      });
+
+      it('should only pick file comments', () => {
+        const contents = compileAndRead(`
+          /** Comment on class. */
+          class MyClass {
+
+          }
+        `);
+        expect(contents).toContain('@fileoverview');
+        expect(contents).not.toContain('Comment on class.');
+      });
+
+      it('should not be merged with @license comments', () => {
+        const contents = compileAndRead(`/** @license Some license. */
+
+        import {CommonModule} from '@angular/common';
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [CommonModule]
+        })
+        export class MyModule {}
+      `);
+        expect(contents).toContain('@fileoverview');
+        expect(contents).not.toContain('@license');
+      });
+
+      it('should be included in empty files', () => {
+        const contents = compileAndRead(`/** My comment. */
+
+        import {Inject, Injectable, Optional} from '@angular/core';
+
+        @Injectable()
+        export class NotAnAngularComponent {}
+      `);
+        expect(contents).toContain('My comment');
+      });
     });
 
     it('should compile with an explicit tsconfig reference', () => {
@@ -268,9 +349,8 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
-      expect(fs.existsSync(path.resolve(
-                 outDir, 'node_modules', '@angular', 'core', 'src',
-                 'application_module.ngfactory.js')))
+      expect(fs.existsSync(
+                 path.resolve(outDir, 'node_modules', '@angular', 'core', 'core.ngfactory.js')))
           .toBe(true);
     });
 
@@ -336,18 +416,21 @@ describe('ngc transformer command-line', () => {
         });
       }
 
-      function expectAllGeneratedFilesToExist() {
+      function expectAllGeneratedFilesToExist(enableSummariesForJit = true) {
         modules.forEach(moduleName => {
           if (/module|comp/.test(moduleName)) {
             shouldExist(moduleName + '.ngfactory.js');
             shouldExist(moduleName + '.ngfactory.d.ts');
-            shouldExist(moduleName + '.ngsummary.js');
-            shouldExist(moduleName + '.ngsummary.d.ts');
           } else {
             shouldNotExist(moduleName + '.ngfactory.js');
             shouldNotExist(moduleName + '.ngfactory.d.ts');
+          }
+          if (enableSummariesForJit) {
             shouldExist(moduleName + '.ngsummary.js');
             shouldExist(moduleName + '.ngsummary.d.ts');
+          } else {
+            shouldNotExist(moduleName + '.ngsummary.js');
+            shouldNotExist(moduleName + '.ngsummary.d.ts');
           }
           shouldExist(moduleName + '.ngsummary.json');
           shouldNotExist(moduleName + '.ngfactory.metadata.json');
@@ -359,10 +442,11 @@ describe('ngc transformer command-line', () => {
         shouldExist('emulated.css.shim.ngstyle.d.ts');
       }
 
-      it('should emit generated files from sources', () => {
+      it('should emit generated files from sources with summariesForJit', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
+              "enableSummariesForJit": true
             },
             "include": ["src/**/*.ts"]
           }`);
@@ -370,7 +454,22 @@ describe('ngc transformer command-line', () => {
         expect(exitCode).toEqual(0);
         outDir = path.resolve(basePath, 'built', 'src');
         expectJsDtsMetadataJsonToExist();
-        expectAllGeneratedFilesToExist();
+        expectAllGeneratedFilesToExist(true);
+      });
+
+      it('should not emit generated files from sources without summariesForJit', () => {
+        writeConfig(`{
+            "extends": "./tsconfig-base.json",
+            "angularCompilerOptions": {
+              "enableSummariesForJit": false
+            },
+            "include": ["src/**/*.ts"]
+          }`);
+        const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        expect(exitCode).toEqual(0);
+        outDir = path.resolve(basePath, 'built', 'src');
+        expectJsDtsMetadataJsonToExist();
+        expectAllGeneratedFilesToExist(false);
       });
 
       it('should emit generated files from libraries', () => {
@@ -408,7 +507,8 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "skipTemplateCodegen": false
+              "skipTemplateCodegen": false,
+              "enableSummariesForJit": true
             },
             "compilerOptions": {
               "outDir": "built"
@@ -425,10 +525,10 @@ describe('ngc transformer command-line', () => {
     });
 
     describe('closure', () => {
-      it('should not generate closure specific code by default', () => {
+      it('should not run tsickle by default', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"]
+          "files": ["mymodule.ts"],
         }`);
         write('mymodule.ts', `
         import {NgModule, Component} from '@angular/core';
@@ -446,7 +546,8 @@ describe('ngc transformer command-line', () => {
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).not.toContain('@fileoverview added by tsickle');
-        expect(mymoduleSource).toContain('MyComp.decorators = [');
+        expect(mymoduleSource).toContain('MyComp = __decorate');
+        expect(mymoduleSource).not.toContain('MyComp.decorators = [');
       });
 
       it('should add closure annotations', () => {
@@ -481,30 +582,107 @@ describe('ngc transformer command-line', () => {
       it('should add metadata as decorators', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": true
+          },
           "angularCompilerOptions": {
             "annotationsAs": "decorators"
           },
           "files": ["mymodule.ts"]
         }`);
+        write('aclass.ts', `export class AClass {}`);
         write('mymodule.ts', `
-        import {NgModule, Component} from '@angular/core';
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
 
-        @Component({template: ''})
-        export class MyComp {
-          fn(p: any) {}
-        }
-
-        @NgModule({declarations: [MyComp]})
-        export class MyModule {}
-      `);
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
 
         const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
-        expect(mymoduleSource).toContain('MyComp = __decorate([');
+        expect(mymoduleSource).toContain('MyModule = __decorate([');
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`__metadata("design:paramtypes", [AClass])`);
       });
+
+      it('should add metadata as static fields', () => {
+        // Note: Don't specify emitDecoratorMetadata here on purpose,
+        // as regression test for https://github.com/angular/angular/issues/19916.
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": false
+          },
+          "angularCompilerOptions": {
+            "annotationsAs": "static fields"
+          },
+          "files": ["mymodule.ts"]
+        }`);
+        write('aclass.ts', `export class AClass {}`);
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
+
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
+
+        const exitCode = main(['-p', basePath], errorSpy);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).not.toContain('__decorate');
+        expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
+        expect(mymoduleSource).not.toContain(`__metadata`);
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`{ type: AClass }`);
+      });
+    });
+
+    it('should not rewrite imports when annotating with closure', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "compilerOptions": {
+          "paths": {
+            "submodule": ["./src/submodule/public_api.ts"]
+          }
+        },
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true
+        },
+        "files": ["mymodule.ts"]
+      }`);
+      write('src/test.txt', ' ');
+      write('src/submodule/public_api.ts', `
+        export const A = 1;
+      `);
+      write('mymodule.ts', `
+        import {NgModule, Component} from '@angular/core';
+        import {A} from 'submodule';
+
+        @Component({template: ''})
+        export class MyComp {
+          fn(p: any) { return A; }
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+    `);
+
+      const exitCode = main(['-p', basePath], errorSpy);
+      expect(exitCode).toEqual(0);
+      const mymodulejs = path.resolve(outDir, 'mymodule.js');
+      const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+      expect(mymoduleSource).toContain(`import { A } from 'submodule'`);
     });
 
     describe('expression lowering', () => {
@@ -646,6 +824,93 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).not.toContain('ɵ0');
       });
 
+      it('should lower an NgModule id', () => {
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({
+            id: (() => 'test')(),
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('id: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*'test'/);
+      });
+
+      it('should lower loadChildren', () => {
+        write('mymodule.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          export function foo(): string {
+            console.log('side-effect');
+            return 'test';
+          }
+
+          @Component({
+            selector: 'route',
+            template: 'route',
+          })
+          export class Route {}
+
+          @NgModule({
+            declarations: [Route],
+            imports: [
+              RouterModule.forRoot([
+                {path: '', pathMatch: 'full', component: Route, loadChildren: foo()}
+              ]),
+            ]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('loadChildren: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*foo\(\)/);
+      });
+
+      it('should lower loadChildren in an exported variable expression', () => {
+        write('mymodule.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          export function foo(): string {
+            console.log('side-effect');
+            return 'test';
+          }
+
+          @Component({
+            selector: 'route',
+            template: 'route',
+          })
+          export class Route {}
+
+          export const routes = [
+            {path: '', pathMatch: 'full', component: Route, loadChildren: foo()}
+          ];
+
+          @NgModule({
+            declarations: [Route],
+            imports: [
+              RouterModule.forRoot(routes),
+            ]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('loadChildren: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*foo\(\)/);
+      });
+
       it('should be able to lower supported expressions', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
@@ -718,12 +983,12 @@ describe('ngc transformer command-line', () => {
 
           export * from './util';
 
-          // Note: the lamda will be lowered into an exported expression
+          // Note: the lambda will be lowered into an exported expression
           @NgModule({providers: [{provide: 'aToken', useValue: () => 2}]})
           export class MyModule {}
         `);
         write('util.ts', `
-          // Note: The lamda will be lowered into an exported expression
+          // Note: The lambda will be lowered into an exported expression
           const x = () => 2;
 
           export const y = x;
@@ -752,7 +1017,8 @@ describe('ngc transformer command-line', () => {
         "angularCompilerOptions": {
           "flatModuleId": "flat_module",
           "flatModuleOutFile": "${outFile}",
-          "skipTemplateCodegen": true
+          "skipTemplateCodegen": true,
+          "enableResourceInlining": true
         },
         "files": ["public-api.ts"]
       }
@@ -781,7 +1047,7 @@ describe('ngc transformer command-line', () => {
           ],
           exports: [
             FlatComponent,
-          ]
+          ],
         })
         export class FlatModule {
         }`);
@@ -796,58 +1062,18 @@ describe('ngc transformer command-line', () => {
       shouldExist('index.metadata.json');
     });
 
-    it('should use the importAs for flat libraries instead of deep imports', () => {
-      // compile the flat module
+    it('should downlevel templates in flat module metadata', () => {
       writeFlatModule('index.js');
-      expect(main(['-p', basePath], errorSpy)).toBe(0);
 
-      // move the flat module output into node_modules
-      const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
-      fs.renameSync(outDir, flatModuleNodeModulesPath);
-      fs.renameSync(
-          path.resolve(basePath, 'src/flat.component.html'),
-          path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
-      // add a package.json
-      fs.writeFileSync(
-          path.resolve(flatModuleNodeModulesPath, 'package.json'), `{"typings": "./index.d.ts"}`);
-
-      // and remove the sources.
-      fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
-      fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
-
-      writeConfig(`
-      {
-        "extends": "./tsconfig-base.json",
-        "files": ["index.ts"]
-      }
-      `);
-      write('index.ts', `
-        import {NgModule} from '@angular/core';
-        import {FlatModule} from 'flat_module';
-
-        @NgModule({
-          imports: [FlatModule]
-        })
-        export class MyModule {}
-      `);
-
-      expect(main(['-p', basePath], errorSpy)).toBe(0);
-
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
       shouldExist('index.js');
+      shouldExist('index.metadata.json');
 
-      const summary =
-          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngsummary.json')).toString();
-      // reference to the module itself
-      expect(summary).toMatch(/"filePath":"flat_module"/);
-      // no reference to a deep file
-      expect(summary).not.toMatch(/"filePath":"flat_module\//);
-
-      const factory =
-          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngfactory.js')).toString();
-      // reference to the module itself
-      expect(factory).toMatch(/from "flat_module"/);
-      // no reference to a deep file
-      expect(factory).not.toMatch(/from "flat_module\//);
+      const metadataPath = path.resolve(outDir, 'index.metadata.json');
+      const metadataSource = fs.readFileSync(metadataPath, 'utf8');
+      expect(metadataSource).not.toContain('templateUrl');
+      expect(metadataSource).toContain('<div>flat module component</div>');
     });
 
     describe('with tree example', () => {
@@ -886,18 +1112,21 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('should be able to compile multiple libraries with summaries', () => {
-      // Note: we need to emit the generated code for the libraries
-      // into the node_modules, as that is the only way that we
-      // currently support when using summaries.
-      // TODO(tbosch): add support for `paths` to our CompilerHost.fileNameToModuleName
-      // and then use `paths` here instead of writing to node_modules.
+    describe('with external symbol re-exports enabled', () => {
 
-      // Angular
-      write('tsconfig-ng.json', `{
+      it('should be able to compile multiple libraries with summaries', () => {
+        // Note: we need to emit the generated code for the libraries
+        // into the node_modules, as that is the only way that we
+        // currently support when using summaries.
+        // TODO(tbosch): add support for `paths` to our CompilerHost.fileNameToModuleName
+        // and then use `paths` here instead of writing to node_modules.
+
+        // Angular
+        write('tsconfig-ng.json', `{
           "extends": "./tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": true
+            "generateCodeForLibraries": true,
+            "enableSummariesForJit": true
           },
           "compilerOptions": {
             "outDir": "."
@@ -909,43 +1138,187 @@ describe('ngc transformer command-line', () => {
           ]
         }`);
 
-      // Lib 1
-      write('lib1/tsconfig-lib1.json', `{
+        // Lib 1
+        write('lib1/tsconfig-lib1.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": false
+            "generateCodeForLibraries": false,
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
           },
           "compilerOptions": {
             "rootDir": ".",
             "outDir": "../node_modules/lib1_built"
           }
         }`);
-      write('lib1/module.ts', `
+        write('lib1/module.ts', `
           import {NgModule} from '@angular/core';
-
           export function someFactory(): any { return null; }
-
           @NgModule({
             providers: [{provide: 'foo', useFactory: someFactory}]
           })
           export class Module {}
         `);
-      write('lib1/class1.ts', `export class Class1 {}`);
+        write('lib1/class1.ts', `export class Class1 {}`);
 
-      // Lib 2
-      write('lib2/tsconfig-lib2.json', `{
+        // Lib 2
+        write('lib2/tsconfig-lib2.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": false
+            "generateCodeForLibraries": false,
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
           },
           "compilerOptions": {
             "rootDir": ".",
             "outDir": "../node_modules/lib2_built"
           }
         }`);
-      write('lib2/module.ts', `
+        write('lib2/module.ts', `
           export {Module} from 'lib1_built/module';
         `);
+        write('lib2/class2.ts', `
+          import {Class1} from 'lib1_built/class1';
+          export class Class2 {
+            constructor(class1: Class1) {}
+          }
+        `);
+
+        // Application
+        write('app/tsconfig-app.json', `{
+          "extends": "../tsconfig-base.json",
+          "angularCompilerOptions": {
+            "generateCodeForLibraries": false,
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
+          },
+          "compilerOptions": {
+            "rootDir": ".",
+            "outDir": "../built/app"
+          }
+        }`);
+        write('app/main.ts', `
+          import {NgModule, Inject} from '@angular/core';
+          import {Module} from 'lib2_built/module';
+          @NgModule({
+            imports: [Module]
+          })
+          export class AppModule {
+            constructor(@Inject('foo') public foo: any) {}
+          }
+        `);
+
+        expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
+
+        // library 1
+        // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+        outDir = path.resolve(basePath, 'node_modules');
+        shouldExist('lib1_built/module.js');
+        shouldExist('lib1_built/module.ngsummary.json');
+        shouldExist('lib1_built/module.ngsummary.js');
+        shouldExist('lib1_built/module.ngsummary.d.ts');
+        shouldExist('lib1_built/module.ngfactory.js');
+        shouldExist('lib1_built/module.ngfactory.d.ts');
+
+        // library 2
+        // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+        outDir = path.resolve(basePath, 'node_modules');
+        shouldExist('lib2_built/module.js');
+        shouldExist('lib2_built/module.ngsummary.json');
+        shouldExist('lib2_built/module.ngsummary.js');
+        shouldExist('lib2_built/module.ngsummary.d.ts');
+        shouldExist('lib2_built/module.ngfactory.js');
+        shouldExist('lib2_built/module.ngfactory.d.ts');
+
+        shouldExist('lib2_built/class2.ngsummary.json');
+        shouldNotExist('lib2_built/class2.ngsummary.js');
+        shouldNotExist('lib2_built/class2.ngsummary.d.ts');
+        shouldExist('lib2_built/class2.ngfactory.js');
+        shouldExist('lib2_built/class2.ngfactory.d.ts');
+
+        // app
+        // make `shouldExist` / `shouldNotExist` relative to `built`
+        outDir = path.resolve(basePath, 'built');
+        shouldExist('app/main.js');
+      });
+
+      it('should create external symbol re-exports', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "angularCompilerOptions": {
+            "generateCodeForLibraries": false,
+            "createExternalSymbolFactoryReexports": true
+          }
+        }`);
+
+        write('test.ts', `
+          import {Injectable, NgZone} from '@angular/core';
+
+          @Injectable({providedIn: 'root'})
+          export class MyService {
+            constructor(public ngZone: NgZone) {}
+          }
+        `);
+
+        expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+        shouldExist('test.js');
+        shouldExist('test.metadata.json');
+        shouldExist('test.ngsummary.json');
+        shouldExist('test.ngfactory.js');
+        shouldExist('test.ngfactory.d.ts');
+
+        const summaryJson = require(path.join(outDir, 'test.ngsummary.json'));
+        const factoryOutput = fs.readFileSync(path.join(outDir, 'test.ngfactory.js'), 'utf8');
+
+        expect(summaryJson['symbols'][0].name).toBe('MyService');
+        expect(summaryJson['symbols'][1])
+            .toEqual(jasmine.objectContaining({name: 'NgZone', importAs: 'NgZone_1'}));
+
+        expect(factoryOutput).toContain(`export { NgZone as NgZone_1 } from "@angular/core";`);
+      });
+    });
+
+    it('should be able to compile multiple libraries with summaries', () => {
+      // Lib 1
+      write('lib1/tsconfig-lib1.json', `{
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../node_modules/lib1_built"
+        }
+      }`);
+      write('lib1/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        export function someFactory(): any { return null; }
+
+        @NgModule({
+          providers: [{provide: 'foo', useFactory: someFactory}]
+        })
+        export class Module {}
+      `);
+      write('lib1/class1.ts', `export class Class1 {}`);
+
+      // Lib 2
+      write('lib2/tsconfig-lib2.json', `{
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../node_modules/lib2_built"
+        }
+      }`);
+      write('lib2/module.ts', `export {Module} from 'lib1_built/module';`);
       write('lib2/class2.ts', `
         import {Class1} from 'lib1_built/class1';
 
@@ -956,28 +1329,28 @@ describe('ngc transformer command-line', () => {
 
       // Application
       write('app/tsconfig-app.json', `{
-          "extends": "../tsconfig-base.json",
-          "angularCompilerOptions": {
-            "generateCodeForLibraries": false
-          },
-          "compilerOptions": {
-            "rootDir": ".",
-            "outDir": "../built/app"
-          }
-        }`);
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../built/app"
+        }
+      }`);
       write('app/main.ts', `
-          import {NgModule, Inject} from '@angular/core';
-          import {Module} from 'lib2_built/module';
+        import {NgModule, Inject} from '@angular/core';
+        import {Module} from 'lib2_built/module';
 
-          @NgModule({
-            imports: [Module]
-          })
-          export class AppModule {
-            constructor(@Inject('foo') public foo: any) {}
-          }
-        `);
+        @NgModule({
+          imports: [Module]
+        })
+        export class AppModule {
+          constructor(@Inject('foo') public foo: any) {}
+        }
+      `);
 
-      expect(main(['-p', path.join(basePath, 'tsconfig-ng.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
@@ -996,24 +1369,77 @@ describe('ngc transformer command-line', () => {
       // make `shouldExist` / `shouldNotExist` relative to `node_modules`
       outDir = path.resolve(basePath, 'node_modules');
       shouldExist('lib2_built/module.js');
+
+      // "module.ts" re-exports an external symbol and will therefore
+      // have a summary JSON file and its corresponding JIT summary.
       shouldExist('lib2_built/module.ngsummary.json');
       shouldExist('lib2_built/module.ngsummary.js');
       shouldExist('lib2_built/module.ngsummary.d.ts');
-      shouldExist('lib2_built/module.ngfactory.js');
-      shouldExist('lib2_built/module.ngfactory.d.ts');
+      // "module.ts" only re-exports an external symbol and the AOT compiler does not
+      // need to generate anything. Therefore there should be no factory files.
+      shouldNotExist('lib2_built/module.ngfactory.js');
+      shouldNotExist('lib2_built/module.ngfactory.d.ts');
 
       shouldExist('lib2_built/class2.ngsummary.json');
       shouldNotExist('lib2_built/class2.ngsummary.js');
       shouldNotExist('lib2_built/class2.ngsummary.d.ts');
-      shouldExist('lib2_built/class2.ngfactory.js');
-      shouldExist('lib2_built/class2.ngfactory.d.ts');
+      // We don't expect factories here because the "class2.ts" file
+      // just exports a class that does not produce any AOT code.
+      shouldNotExist('lib2_built/class2.ngfactory.js');
+      shouldNotExist('lib2_built/class2.ngfactory.d.ts');
 
       // app
       // make `shouldExist` / `shouldNotExist` relative to `built`
       outDir = path.resolve(basePath, 'built');
       shouldExist('app/main.js');
     });
+
+    describe('enableResourceInlining', () => {
+      it('should inline templateUrl and styleUrl in JS and metadata', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "enableResourceInlining": true
+          }
+        }`);
+        write('my.component.ts', `
+        import {Component} from '@angular/core';
+        @Component({
+          templateUrl: './my.component.html',
+          styleUrls: ['./my.component.css'],
+        })
+        export class MyComp {}
+      `);
+        write('my.component.html', `<h1>Some template content</h1>`);
+        write('my.component.css', `h1 {color: blue}`);
+        write('mymodule.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyComp} from './my.component';
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const exitCode = main(['-p', basePath]);
+        expect(exitCode).toEqual(0);
+        outDir = path.resolve(basePath, 'built');
+        const outputJs = fs.readFileSync(path.join(outDir, 'my.component.js'), {encoding: 'utf-8'});
+        expect(outputJs).not.toContain('templateUrl');
+        expect(outputJs).not.toContain('styleUrls');
+        expect(outputJs).toContain('Some template content');
+        expect(outputJs).toContain('color: blue');
+
+        const outputMetadata =
+            fs.readFileSync(path.join(outDir, 'my.component.metadata.json'), {encoding: 'utf-8'});
+        expect(outputMetadata).not.toContain('templateUrl');
+        expect(outputMetadata).not.toContain('styleUrls');
+        expect(outputMetadata).toContain('Some template content');
+        expect(outputMetadata).toContain('color: blue');
+      });
+    });
   });
+
 
   describe('expression lowering', () => {
     const shouldExist = (fileName: string) => {
@@ -1235,10 +1661,626 @@ describe('ngc transformer command-line', () => {
         `);
        }));
 
-    it('should recomiple when the html file changes',
+    it('should recompile when the html file changes',
        expectRecompile(() => { write('greet.html', '<p> Hello {{name}} again!</p>'); }));
 
     it('should recompile when the css file changes',
        expectRecompile(() => { write('greet.css', `p.greeting { color: blue }`); }));
+  });
+
+  describe('regressions', () => {
+    //#20479
+    it('should not generate an invalid metadata file', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["lib.ts"],
+        "angularCompilerOptions": {
+          "skipTemplateCodegen": true
+        }
+      }`);
+      write('src/lib.ts', `
+        export namespace A{
+          export class C1 {
+          }
+          export interface I1{
+          }
+        }`);
+      expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+      shouldNotExist('src/lib.metadata.json');
+    });
+
+    //#19544
+    it('should recognize @NgModule() directive with a redundant @Injectable()', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "outDir": "../dist",
+          "rootDir": ".",
+          "rootDirs": [
+            ".",
+            "../dist"
+          ]
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<p>hello</p>',
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+        import {TestComponent} from './test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        @Injectable()
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(0, 'Compile failed unexpectedly.\n  ' + messages.join('\n  '));
+    });
+
+    // #19765
+    it('should not report an error when the resolved .css file is in outside rootDir', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "outDir": "../dist",
+          "rootDir": ".",
+          "rootDirs": [
+            ".",
+            "../dist"
+          ]
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<p>hello</p>',
+          styleUrls: ['./test.component.css']
+        })
+        export class TestComponent {}
+      `);
+      write('dist/dummy.txt', '');  // Force dist to be created
+      write('dist/lib/test.component.css', `
+        p { color: blue }
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(0, 'Compile failed unexpectedly.\n  ' + messages.join('\n  '));
+    });
+
+    it('should emit all structural errors', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/indirect2.ts', `
+        declare var f: any;
+        export const t2 = f\`<p>hello</p>\`;
+      `);
+      write('src/lib/indirect1.ts', `
+        import {t2} from './indirect2';
+        export const t1 = t2 + ' ';
+      `);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+        import {t1} from './indirect1';
+
+        @Component({
+          template: t1
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain('Tagged template expressions are not supported in metadata');
+    });
+
+    // Regression: #20076
+    it('should report template error messages', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '{{thing.?stuff}}'
+        })
+        export class TestComponent {
+          thing: string;
+        }
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain('Parser Error: Unexpected token');
+    });
+
+    // Regression test for #19979
+    it('should not stack overflow on a recursive module export', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+
+      write('src/test-module.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          template: 'Hello'
+        })
+        export class MyFaultyComponent {}
+
+        @NgModule({
+          exports: [MyFaultyModule],
+          declarations: [MyFaultyComponent],
+          providers: [],
+        })
+        export class MyFaultyModule { }
+      `);
+      const messages: string[] = [];
+      expect(
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message)))
+          .toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain(`module 'MyFaultyModule' is exported recursively`);
+    });
+
+    // Regression test for #19979
+    it('should not stack overflow on a recursive module import', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+
+      write('src/test-module.ts', `
+        import {Component, NgModule, forwardRef} from '@angular/core';
+
+        @Component({
+          template: 'Hello'
+        })
+        export class MyFaultyComponent {}
+
+        @NgModule({
+          imports: [forwardRef(() => MyFaultyModule)]
+        })
+        export class MyFaultyImport {}
+
+        @NgModule({
+          imports: [MyFaultyImport],
+          declarations: [MyFaultyComponent]
+        })
+        export class MyFaultyModule { }
+      `);
+      const messages: string[] = [];
+      expect(
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message)))
+          .toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain(`is imported recursively by the module 'MyFaultyImport`);
+    });
+
+    // Regression test for #21273
+    it('should not report errors for unknown property annotations', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+
+      write('src/test-decorator.ts', `
+        export function Convert(p: any): any {
+          // Make sur this doesn't look like a macro function
+          var r = p;
+          return r;
+        }
+      `);
+      write('src/test-module.ts', `
+        import {Component, Input, NgModule} from '@angular/core';
+        import {Convert} from './test-decorator';
+
+        @Component({template: '{{name}}'})
+        export class TestComponent {
+          @Input() @Convert(convert) name: string;
+        }
+
+        function convert(n: any) { return n; }
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      expect(
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message)))
+          .toBe(0, `Compile failed:\n ${messages.join('\n    ')}`);
+    });
+
+    it('should allow using 2 classes with the same name in declarations with noEmitOnError=true',
+       () => {
+         write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "noEmitOnError": true
+        },
+        "files": ["test-module.ts"]
+      }`);
+         function writeComp(fileName: string) {
+           write(fileName, `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'comp', template: ''})
+        export class TestComponent {}
+      `);
+         }
+         writeComp('src/comp1.ts');
+         writeComp('src/comp2.ts');
+         write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent as Comp1} from './comp1';
+        import {TestComponent as Comp2} from './comp2';
+
+        @NgModule({
+          declarations: [Comp1, Comp2],
+        })
+        export class MyModule {}
+      `);
+         expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+       });
+
+    it('should not type check a .js files from node_modules with allowJs', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "noEmitOnError": true,
+          "allowJs": true,
+          "declaration": false
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/test-module.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import 'my-library';
+
+        @Component({
+          template: 'hello'
+        })
+        export class HelloCmp {}
+
+        @NgModule({
+          declarations: [HelloCmp],
+        })
+        export class MyModule {}
+      `);
+      write('src/node_modules/t.txt', ``);
+      write('src/node_modules/my-library/index.js', `
+        export someVar = 1;
+        export someOtherVar = undefined + 1;
+      `);
+      expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+    });
+  });
+
+  describe('formatted messages', () => {
+    it('should emit a formatted error message for a structural error', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/indirect2.ts', `
+        declare var f: any;
+
+        export const t2 = f\`<p>hello</p>\`;
+      `);
+      write('src/lib/indirect1.ts', `
+        import {t2} from './indirect2';
+        export const t1 = t2 + ' ';
+      `);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+        import {t1} from './indirect1';
+
+        @Component({
+          template: t1,
+          styleUrls: ['./test.component.css']
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      const srcPathWithSep = `lib${path.sep}`;
+      expect(messages[0])
+          .toEqual(
+              `${srcPathWithSep}test.component.ts(6,21): Error during template compile of 'TestComponent'
+  Tagged template expressions are not supported in metadata in 't1'
+    't1' references 't2' at ${srcPathWithSep}indirect1.ts(3,27)
+      't2' contains the error at ${srcPathWithSep}indirect2.ts(4,27).
+`);
+    });
+  });
+
+  describe('tree shakeable services', () => {
+
+    function compileService(source: string): string {
+      write('service.ts', source);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const servicePath = path.resolve(outDir, 'service.js');
+      return fs.readFileSync(servicePath, 'utf8');
+    }
+
+    beforeEach(() => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["service.ts"]
+      }`);
+      write('module.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class Module {}
+      `);
+    });
+
+    describe(`doesn't break existing injectables`, () => {
+      it('on simple services', () => {
+        const source = compileService(`
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Service {
+          constructor(public param: string) {}
+        }
+
+        @NgModule({
+          providers: [{provide: Service, useValue: new Service('test')}],
+        })
+        export class ServiceModule {}
+        `);
+        expect(source).not.toMatch(/ngInjectableDef/);
+      });
+      it('on a service with a base class service', () => {
+        const source = compileService(`
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        export class Base {
+          constructor(private dep: Dep) {}
+        }
+        @Injectable()
+        export class Service extends Base {}
+
+        @NgModule({
+          providers: [Service],
+        })
+        export class ServiceModule {}
+        `);
+        expect(source).not.toMatch(/ngInjectableDef/);
+      });
+    });
+
+    it('compiles a basic InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef.*token: Service/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+    });
+
+    it('ngInjectableDef in es5 mode is annotated @nocollapse when closure options are enabled',
+       () => {
+         writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true
+        },
+        "files": ["service.ts"]
+      }`);
+         const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {}
+      `);
+         expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ngInjectableDef =/);
+       });
+
+    it('compiles a useValue InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        export const CONST_SERVICE: Service = null;
+
+        @Injectable({
+          providedIn: Module,
+          useValue: CONST_SERVICE
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return CONST_SERVICE/);
+    });
+
+    it('compiles a useExisting InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useExisting: Existing,
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\.ɵɵinject\(Existing\)/);
+    });
+
+    it('compiles a useFactory InjectableDef with optional dep', () => {
+      const source = compileService(`
+        import {Injectable, Optional} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useFactory: (existing: Existing|null) => new Service(existing),
+          deps: [[new Optional(), Existing]],
+        })
+        export class Service {
+          constructor(e: Existing|null) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.ɵɵinject\(Existing, 8\)/);
+    });
+
+    it('compiles a useFactory InjectableDef with skip-self dep', () => {
+      const source = compileService(`
+        import {Injectable, SkipSelf} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useFactory: (existing: Existing) => new Service(existing),
+          deps: [[new SkipSelf(), Existing]],
+        })
+        export class Service {
+          constructor(e: Existing) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.ɵɵinject\(Existing, 4\)/);
+    });
+
+    it('compiles a service that depends on a token', () => {
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken('desc', {providedIn: Module, factory: () => true});
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {
+          constructor(@Inject(TOKEN) value: boolean) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef.*token: Service/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+    });
+
+    it('generates exports.* references when outputting commonjs', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "compilerOptions": {
+          "module": "commonjs"
+        },
+        "files": ["service.ts"]
+      }`);
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken<string>('test token', {
+          providedIn: 'root',
+          factory: () => 'this is a test',
+        });
+
+        @Injectable({providedIn: 'root'})
+        export class Service {
+          constructor(@Inject(TOKEN) token: any) {}
+        }
+      `);
+      expect(source).toMatch(/new Service\(i0\.ɵɵinject\(exports\.TOKEN\)\);/);
+    });
+  });
+
+  it('libraries should not break strictMetadataEmit', () => {
+    // first only generate .d.ts / .js / .metadata.json files
+    writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "skipTemplateCodegen": true,
+          "strictMetadataEmit": true,
+          "fullTemplateTypeCheck": true
+        },
+        "compilerOptions": {
+          "outDir": "lib"
+        },
+        "files": ["main.ts", "test.d.ts"]
+      }`);
+    write('main.ts', `
+        import {Test} from './test';
+        export const bar = Test.bar;
+    `);
+    write('test.d.ts', `
+        declare export class Test {
+          static bar: string;
+        }
+    `);
+    let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+    expect(exitCode).toEqual(0);
   });
 });

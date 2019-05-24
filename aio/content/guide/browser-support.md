@@ -2,239 +2,166 @@
 
 Angular supports most recent browsers. This includes the following specific versions:
 
-
 <table>
 
   <tr>
 
-    <th>
+<th>
+      Browser
+</th>
+
+<th>
+      Supported versions
+</th>
+
+  </tr>
+
+  <tr>
+
+    <td>
       Chrome
-    </th>
+    </td>
 
-    <th>
+    <td>
+      latest
+    </td>
+  </tr>
+
+  <tr>
+
+    <td>
       Firefox
-    </th>
+    </td>
 
-    <th>
+    <td>
+      latest
+    </td>
+  </tr>
+
+  <tr>
+
+    <td>
       Edge
-    </th>
+    </td>
 
-    <th>
+    <td>
+      2 most recent major versions
+    </td>
+  </tr>
+  <tr> 
+    <td>
       IE
-    </th>
-
-    <th>
-      Safari
-    </th>
-
-    <th>
-      iOS
-    </th>
-
-    <th>
-      Android
-    </th>
-
-    <th>
+    </td>
+    <td>
+      11<br>10<br>9
+    </td>
+  </tr>
+ <tr>
+   <tr> 
+    <td>
       IE Mobile
-    </th>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      latest
     </td>
-
-    <td>
-      latest
-    </td>
-
-    <td>
-      14
-    </td>
-
     <td>
       11
     </td>
-
-    <td>
-      10
-    </td>
-
-    <td>
-      10
-    </td>
-
-    <td>
-      Nougat (7.0)<br>Marshmallow (6.0)
-    </td>
-
-    <td>
-      11
-    </td>
-
   </tr>
+ <tr>
+    <td>
+      Safari
+    </td>
 
+    <td>
+      2 most recent major versions
+    </td>
+  </tr>
   <tr>
-
     <td>
-
+      iOS
     </td>
 
     <td>
-
+      2 most recent major versions
     </td>
-
-    <td>
-      13
-    </td>
-
-    <td>
-      10
-    </td>
-
-    <td>
-      9
-    </td>
-
-    <td>
-      9
-    </td>
-
-    <td>
-      Lollipop<br>(5.0, 5.1)
-    </td>
-
-    <td>
-
-    </td>
-
-  </tr>
-
+  </tr> 
   <tr>
-
     <td>
-
+      Android
     </td>
 
     <td>
-
+      Nougat (7.0)<br>Marshmallow (6.0)<br>Lollipop (5.0, 5.1)<br>KitKat (4.4)
     </td>
-
-    <td>
-
-    </td>
-
-    <td>
-      9
-    </td>
-
-    <td>
-      8
-    </td>
-
-    <td>
-      8
-    </td>
-
-    <td>
-      KitKat<br>(4.4)
-    </td>
-
-    <td>
-
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-
-    </td>
-
-    <td>
-
-    </td>
-
-    <td>
-
-    </td>
-
-    <td>
-
-    </td>
-
-    <td>
-      7
-    </td>
-
-    <td>
-      7
-    </td>
-
-    <td>
-      Jelly Bean<br>(4.1, 4.2, 4.3)
-    </td>
-
-    <td>
-
-    </td>
-
-  </tr>
+  </tr> 
 
 </table>
 
-
-
-<div class="l-sub-section">
-
-
+<div class="alert is-helpful">
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
 using <a href="https://saucelabs.com/">SauceLabs</a> and
 <a href="https://www.browserstack.com">Browserstack</a>.
 
-
 </div>
 
 
+## Polyfills
 
-## Polyfills #
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
 
-You can compensate by loading polyfill scripts ("polyfills") on the host web page (`index.html`)
-that implement missing features in JavaScript.
-
-<code-example path="quickstart/src/index.html" region="polyfills" title="quickstart/src/index.html" linenums="false">
-
-</code-example>
-
-
-
-A particular browser may require at least one polyfill to run _any_ Angular application.
-You may need additional polyfills for specific features.
-
-The tables below can help you determine which polyfills to load, depending on the browsers you target and the features you use.
-
+You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
+The [table below](#polyfill-libs) identifies most of the polyfills you might need.
 
 <div class="alert is-important">
-
-
 
 The suggested polyfills are the ones that run full Angular applications.
 You may need additional polyfills to support features not covered by this list.
 Note that polyfills cannot magically transform an old, slow browser into a modern, fast one.
 
-
 </div>
 
+## Enabling polyfills
 
+[Angular CLI](cli) users enable polyfills through the `src/polyfills.ts` file that
+the CLI created with your project.
 
-### Mandatory polyfills ##
+This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
+
+The npm packages for the _mandatory_ polyfills (such as `zone.js`) were installed automatically for you when you created your project and their corresponding `import` statements are ready to go. You probably won't touch these.
+
+But if you need an optional polyfill, you'll have to install its npm package.
+For example, [if you need the web animations polyfill](http://caniuse.com/#feat=web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
+
+<code-example language="sh" class="code-shell">
+  # note that the web-animations-js polyfill is only here as an example
+  # it isn't a strict requirement of Angular anymore (more below)
+  npm install --save web-animations-js
+</code-example>
+
+Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
+
+<code-example header="src/polyfills.ts">
+  /**
+  * Required to support Web Animations `@angular/platform-browser/animations`.
+  * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
+  **/
+  import 'web-animations-js';  // Run `npm install --save web-animations-js`.
+</code-example>
+
+If you can't find the polyfill you want in `polyfills.ts`,
+add it yourself, following the same pattern:
+
+1. install the npm package
+1. `import` the file in `polyfills.ts`
+
+<div class="alert is-helpful">
+
+Non-CLI users should follow the instructions [below](#non-cli).
+</div>
+
+{@a polyfill-libs}
+
+### Mandatory polyfills
 These are the polyfills required to run an Angular application on each supported browser:
 
 
@@ -259,7 +186,9 @@ These are the polyfills required to run an Angular application on each supported
     </td>
 
     <td>
-      None
+
+      [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only)
+
     </td>
 
   </tr>
@@ -272,8 +201,8 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
 
-
       [ES6](guide/browser-support#core-es6)
+
     </td>
 
   </tr>
@@ -286,7 +215,6 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
 
-
       [ES6<br>classList](guide/browser-support#classlist)
 
     </td>
@@ -296,12 +224,12 @@ These are the polyfills required to run an Angular application on each supported
 </table>
 
 
+### Optional browser features to polyfill
 
-### Optional browser features to polyfill ##
 Some features of Angular may require additional polyfills.
 
 For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today.
-You'll need a polyfill to use animations in other browsers.
+(note that the dependency of web-animations-js in Angular is only necessary if `AnimationBuilder` is used.)
 
 Here are the features which may require additional polyfills:
 
@@ -328,17 +256,20 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Animations](guide/animations)
+      [JIT compilation](guide/aot-compiler).
+
+      Required to reflect for metadata.
     </td>
 
     <td>
 
+      [ES7/reflect](guide/browser-support#core-es7-reflect)
 
-      [Web Animations](guide/browser-support#web-animations)
     </td>
 
     <td>
-      All but Chrome and Firefox<br>Not supported in IE9
+      All current browsers. Enabled by default.
+      Can remove if you always use AOT and only use Angular decorators.
     </td>
 
   </tr>
@@ -347,13 +278,46 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-    If you use the following deprecated i18n pipes: [date](api/common/DeprecatedDatePipe), [currency](api/common/DeprecatedCurrencyPipe), [decimal](api/common/DeprecatedDecimalPipe) and [percent](api/common/DeprecatedPercentPipe)
+      [Animations](guide/animations)
+      <br>Only if `Animation Builder` is used within the application--standard
+      animation support in Angular doesn't require any polyfills (as of NG6).
+
     </td>
 
     <td>
 
+      [Web Animations](guide/browser-support#web-animations)
+
+    </td>
+
+    <td>
+      <p>If AnimationBuilder is used then the polyfill will enable scrubbing
+      support for IE/Edge and Safari (Chrome and Firefox support this natively).</p>
+    </td>
+
+  </tr>
+
+  <tr style="vertical-align: top">
+
+    <td>
+
+    If you use the following deprecated i18n pipes:
+    
+
+     [date](api/common/DeprecatedDatePipe), 
+     
+     [currency](api/common/DeprecatedCurrencyPipe),
+     
+     [decimal](api/common/DeprecatedDecimalPipe), 
+     
+     [percent](api/common/DeprecatedPercentPipe)
+
+    </td>
+
+    <td>
 
       [Intl API](guide/browser-support#intl)
+
     </td>
 
     <td>
@@ -366,13 +330,15 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-       [NgClass](api/common/NgClass) on SVG elements
+       [NgClass](api/common/NgClass) 
+       
+       on SVG elements
     </td>
 
     <td>
 
-
       [classList](guide/browser-support#classlist)
+
     </td>
 
     <td>
@@ -385,18 +351,44 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Http](guide/http) when sending and receiving binary data
+      [Http](guide/http) 
+      
+      when sending and receiving binary data
     </td>
 
     <td>
 
       [Typed&nbsp;Array](guide/browser-support#typedarray)<br>
+
       [Blob](guide/browser-support#blob)<br>
+
       [FormData](guide/browser-support#formdata)
+
     </td>
 
     <td>
       IE 9
+    </td>
+
+  </tr>
+
+  <tr style="vertical-align: top">
+
+    <td>
+
+      [Router](guide/router) 
+      
+      when using [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
+    </td>
+
+    <td>
+
+      [ES7/array](guide/browser-support#core-es7-array)
+
+    </td>
+
+    <td>
+      IE 11
     </td>
 
   </tr>
@@ -430,7 +422,45 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
+      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/tree/v2/fn/reflect">ES7/reflect</a>
+
+    </td>
+
+    <td>
+      MIT
+    </td>
+
+    <td>
+      0.5KB
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td>
+
+      <a id='core-es7-array' href="https://github.com/zloirock/core-js/tree/v2/fn/array">ES7/array</a>
+
+    </td>
+
+    <td>
+      MIT
+    </td>
+
+    <td>
+      0.1KB
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td>
+
       <a id='core-es6' href="https://github.com/zloirock/core-js">ES6</a>
+
     </td>
 
     <td>
@@ -446,7 +476,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
       <a id='classlist' href="https://github.com/eligrey/classList.js">classList</a>
+
     </td>
 
     <td>
@@ -462,7 +494,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
       <a id='intl' href="https://github.com/andyearnshaw/Intl.js">Intl</a>
+
     </td>
 
     <td>
@@ -478,7 +512,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
        <a id='web-animations' href="https://github.com/web-animations/web-animations-js">Web Animations</a>
+
     </td>
 
     <td>
@@ -494,7 +530,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
       <a id='typedarray' href="https://github.com/inexorabletash/polyfill/blob/master/typedarray.js">Typed Array</a>
+
     </td>
 
     <td>
@@ -510,7 +548,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
        <a id='blob' href="https://github.com/eligrey/Blob.js">Blob</a>
+
     </td>
 
     <td>
@@ -526,7 +566,9 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <td>
+
        <a id='formdata' href="https://github.com/francois2metz/html5-formdata">FormData</a>
+
     </td>
 
     <td>
@@ -542,6 +584,36 @@ Below are the polyfills which are used to test the framework itself. They are a 
 </table>
 
 
-
 \* Figures are for minified and gzipped code,
 computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
+
+{@a non-cli}
+## Polyfills for non-CLI users
+
+If you are not using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
+
+<code-example header="src/index.html">
+  &lt;!-- pre-zone polyfills -->
+  &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
+  &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
+  &lt;script>
+    /**
+     * you can configure some zone flags which can disable zone interception for some
+     * asynchronous activities to improve startup performance - use these options only
+     * if you know what you are doing as it could result in hard to trace down bugs..
+     */
+    // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+    // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
+    // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+
+    /*
+     * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
+     * with the following flag, it will bypass `zone.js` patch for IE/Edge
+     */
+    // __Zone_enable_cross_context_check = true;
+  &lt;/script>
+  &lt;!-- zone.js required by Angular -->
+  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+
+  &lt;!-- application polyfills -->
+</code-example>

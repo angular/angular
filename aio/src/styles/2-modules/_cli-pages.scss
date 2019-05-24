@@ -1,0 +1,9 @@
+.cli-name {
+  font-weight: bold;
+
+  .kwd { color: initial }  /* override code format */
+}
+
+.cli-option-syntax {
+  white-space: pre;
+}

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
@@ -20,7 +20,7 @@ import {HttpEvent} from './response';
  *
  * In an `HttpInterceptor`, the `HttpHandler` parameter is the next interceptor in the chain.
  *
- * @stable
+ * @publicApi
  */
 export abstract class HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
@@ -34,7 +34,7 @@ export abstract class HttpHandler {
  * When injected, `HttpBackend` dispatches requests directly to the backend, without going
  * through the interceptor chain.
  *
- * @stable
+ * @publicApi
  */
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;

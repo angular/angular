@@ -18,7 +18,8 @@ import {Component} from '@angular/core';
   </div>`
 })
 export class LowerUpperPipeComponent {
-  value: string;
+  // TODO(issue/24571): remove '!'.
+  value !: string;
   change(value: string) { this.value = value; }
 }
 // #enddocregion

@@ -1,4 +1,4 @@
-// Not used. Keep away from plunker
+// Not used. Keep away from stackblitz
 // Keeps ATLS from complaining about undeclared directives.
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';

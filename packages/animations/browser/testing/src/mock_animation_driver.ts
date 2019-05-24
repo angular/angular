@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
-
-import {AnimationDriver} from '../../src/render/animation_driver';
-import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../../src/render/shared';
-import {allowPreviousPlayerStylesMerge} from '../../src/util';
+import {ɵAnimationDriver as AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵinvokeQuery as invokeQuery, ɵmatchesElement as matchesElement, ɵvalidateStyleProperty as validateStyleProperty} from '@angular/animations/browser';
 
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
@@ -45,7 +42,7 @@ export class MockAnimationDriver implements AnimationDriver {
 }
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;
@@ -58,7 +55,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       public element: any, public keyframes: {[key: string]: string | number}[],
       public duration: number, public delay: number, public easing: string,
       public previousPlayers: any[]) {
-    super();
+    super(duration, delay);
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
       previousPlayers.forEach(player => {
@@ -68,8 +65,6 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
         }
       });
     }
-
-    this.totalTime = delay + duration;
   }
 
   /* @internal */

@@ -7,30 +7,21 @@
  */
 
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as ng from '../index';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
 
-const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
-
-export function writeTempFile(name: string, contents: string): string {
-  // TEST_TMPDIR is set by bazel.
-  const id = (Math.random() * 1000000).toFixed(0);
-  const fn = path.join(tmpdir, `tmp.${id}.${name}`);
-  fs.writeFileSync(fn, contents);
-  return fn;
-}
+// TEST_TMPDIR is always set by Bazel.
+const tmpdir = process.env.TEST_TMPDIR !;
 
 export function makeTempDir(): string {
-  const id = (Math.random() * 1000000).toFixed(0);
-  const dir = path.join(tmpdir, `tmp.${id}`);
+  let dir: string;
+  while (true) {
+    const id = (Math.random() * 1000000).toFixed(0);
+    dir = path.posix.join(tmpdir, `tmp.${id}`);
+    if (!fs.existsSync(dir)) break;
+  }
   fs.mkdirSync(dir);
   return dir;
 }
@@ -44,30 +35,62 @@ export interface TestSupport {
   shouldNotExist(fileName: string): void;
 }
 
-export function setup(): TestSupport {
-  const basePath = makeTempDir();
+function createTestSupportFor(basePath: string) {
+  // Typescript uses identity comparison on `paths` and other arrays in order to determine
+  // if program structure can be reused for incremental compilation, so we reuse the default
+  // values unless overriden, and freeze them so that they can't be accidentaly changed somewhere
+  // in tests.
+  const defaultCompilerOptions = {
+    basePath,
+    'experimentalDecorators': true,
+    'skipLibCheck': true,
+    'strict': true,
+    'strictPropertyInitialization': false,
+    'types': Object.freeze<string>([]) as string[],
+    'outDir': path.resolve(basePath, 'built'),
+    'rootDir': basePath,
+    'baseUrl': basePath,
+    'declaration': true,
+    'target': ts.ScriptTarget.ES5,
+    'newLine': ts.NewLineKind.LineFeed,
+    'module': ts.ModuleKind.ES2015,
+    'moduleResolution': ts.ModuleResolutionKind.NodeJs,
+    'lib': Object.freeze([
+      path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
+    ]) as string[],
+    // clang-format off
+    'paths': Object.freeze({'@angular/*': ['./node_modules/@angular/*']}) as {[index: string]: string[]}
+    // clang-format on
+  };
 
-  const ngRootDir = getNgRootDir();
-  const nodeModulesPath = path.resolve(basePath, 'node_modules');
-  fs.mkdirSync(nodeModulesPath);
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-      path.resolve(nodeModulesPath, '@angular'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'typescript'),
-      path.resolve(nodeModulesPath, 'typescript'));
 
-  return {basePath, write, writeFiles, createCompilerOptions, shouldExist, shouldNotExist};
+  return {
+    // We normalize the basePath into a posix path, so that multiple assertions which compare
+    // paths don't need to normalize the path separators each time.
+    basePath: normalizeSeparators(basePath),
+    write,
+    writeFiles,
+    createCompilerOptions,
+    shouldExist,
+    shouldNotExist
+  };
+
+  function ensureDirExists(absolutePathToDir: string) {
+    if (fs.existsSync(absolutePathToDir)) {
+      if (!fs.statSync(absolutePathToDir).isDirectory()) {
+        throw new Error(`'${absolutePathToDir}' exists and is not a directory.`);
+      }
+    } else {
+      const parentDir = path.dirname(absolutePathToDir);
+      ensureDirExists(parentDir);
+      fs.mkdirSync(absolutePathToDir);
+    }
+  }
 
   function write(fileName: string, content: string) {
-    const dir = path.dirname(fileName);
-    if (dir != '.') {
-      const newDir = path.join(basePath, dir);
-      if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-    }
-    fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
+    const absolutePathToFile = path.resolve(basePath, fileName);
+    ensureDirExists(path.dirname(absolutePathToFile));
+    fs.writeFileSync(absolutePathToFile, content);
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {
@@ -76,24 +99,7 @@ export function setup(): TestSupport {
   }
 
   function createCompilerOptions(overrideOptions: ng.CompilerOptions = {}): ng.CompilerOptions {
-    return {
-      basePath,
-      'experimentalDecorators': true,
-      'skipLibCheck': true,
-      'strict': true,
-      'types': [],
-      'outDir': path.resolve(basePath, 'built'),
-      'rootDir': basePath,
-      'baseUrl': basePath,
-      'declaration': true,
-      'target': ts.ScriptTarget.ES5,
-      'module': ts.ModuleKind.ES2015,
-      'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-      'lib': [
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
-      ],
-      ...overrideOptions,
-    };
+    return {...defaultCompilerOptions, ...overrideOptions};
   }
 
   function shouldExist(fileName: string) {
@@ -109,9 +115,43 @@ export function setup(): TestSupport {
   }
 }
 
+export function setupBazelTo(tmpDirPath: string) {
+  const nodeModulesPath = path.join(tmpDirPath, 'node_modules');
+  const angularDirectory = path.join(nodeModulesPath, '@angular');
+
+  fs.mkdirSync(nodeModulesPath);
+  fs.mkdirSync(angularDirectory);
+
+  getAngularPackagesFromRunfiles().forEach(({pkgPath, name}) => {
+    fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'junction');
+  });
+
+  // Link typescript
+  const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
+  const typescriptDest = path.join(nodeModulesPath, 'typescript');
+  fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
+
+  // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
+  // not all compiler-cli tests need "rxjs" set up.
+  try {
+    const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
+    const rxjsDest = path.join(nodeModulesPath, 'rxjs');
+    fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') throw e;
+  }
+}
+
+export function setup(): TestSupport {
+  const tmpDirPath = makeTempDir();
+  setupBazelTo(tmpDirPath);
+  return createTestSupportFor(tmpDirPath);
+}
+
 export function expectNoDiagnostics(options: ng.CompilerOptions, diags: ng.Diagnostics) {
-  if (diags.length) {
-    throw new Error(`Expected no diagnostics: ${ng.formatDiagnostics(options, diags)}`);
+  const errorDiags = diags.filter(d => d.category !== ts.DiagnosticCategory.Message);
+  if (errorDiags.length) {
+    throw new Error(`Expected no diagnostics: ${ng.formatDiagnostics(errorDiags)}`);
   }
 }
 
@@ -120,4 +160,8 @@ export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.
     ...p.getNgStructuralDiagnostics(), ...p.getTsSemanticDiagnostics(),
     ...p.getNgSemanticDiagnostics()
   ]);
+}
+
+export function normalizeSeparators(path: string): string {
+  return path.replace(/\\/g, '/');
 }

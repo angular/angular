@@ -2,7 +2,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import {
+  CurrentNodes, NavigationNode, navigationPath, NavigationService, NavigationViews, VersionInfo,
+} from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 
@@ -45,23 +47,22 @@ describe('NavigationService', () => {
 
     it('navigationViews observable should complete', () => {
       let completed = false;
-      navService.navigationViews.subscribe(null, null, () => completed = true);
-      expect(true).toBe(true, 'observable completed');
+      navService.navigationViews.subscribe(undefined, undefined, () => completed = true);
 
-      // Stop `$httpMock.verify()` from complaining.
-      httpMock.expectOne({});
+      httpMock.expectOne({method: 'get', url: navigationPath}).flush({});
+      expect(completed).toBe(true, 'observable completed');
     });
 
     it('should return the same object to all subscribers', () => {
-      let views1: NavigationViews;
+      let views1: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views1 = views);
 
-      let views2: NavigationViews;
+      let views2: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views2 = views);
 
       httpMock.expectOne({}).flush({ TopBar: [{ url: 'a' }] });
 
-      let views3: NavigationViews;
+      let views3: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views3 = views);
 
       expect(views2).toBe(views1);
@@ -143,7 +144,7 @@ describe('NavigationService', () => {
           url: 'b',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }
@@ -155,8 +156,8 @@ describe('NavigationService', () => {
           url: 'd',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0].children[1],
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0].children![1],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }
@@ -200,8 +201,8 @@ describe('NavigationService', () => {
           url: 'c',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0].children[0],
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0].children![0],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }

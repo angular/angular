@@ -7,7 +7,8 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, copyStyles} from '../../util';
+import {computeStyle} from '../../util';
+import {SpecialCasedStyles} from '../special_cased_styles';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -21,29 +22,23 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _finished = false;
   private _started = false;
   private _destroyed = false;
-  private _finalKeyframe: {[key: string]: string | number};
+  // TODO(issue/24571): remove '!'.
+  private _finalKeyframe !: {[key: string]: string | number};
 
-  public readonly domPlayer: DOMAnimation;
+  // TODO(issue/24571): remove '!'.
+  public readonly domPlayer !: DOMAnimation;
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
-  public previousStyles: {[styleName: string]: string | number} = {};
   public currentSnapshot: {[styleName: string]: string | number} = {};
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
       public options: {[key: string]: string | number},
-      private previousPlayers: WebAnimationsPlayer[] = []) {
+      private _specialStyles?: SpecialCasedStyles|null) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
-
-    if (allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
-      previousPlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-      });
-    }
   }
 
   private _onFinish() {
@@ -63,30 +58,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._initialized) return;
     this._initialized = true;
 
-    const keyframes = this.keyframes.map(styles => copyStyles(styles, false));
-    const previousStyleProps = Object.keys(this.previousStyles);
-    if (previousStyleProps.length) {
-      let startingKeyframe = keyframes[0];
-      let missingStyleProps: string[] = [];
-      previousStyleProps.forEach(prop => {
-        if (!startingKeyframe.hasOwnProperty(prop)) {
-          missingStyleProps.push(prop);
-        }
-        startingKeyframe[prop] = this.previousStyles[prop];
-      });
-
-      if (missingStyleProps.length) {
-        const self = this;
-        // tslint:disable-next-line
-        for (var i = 1; i < keyframes.length; i++) {
-          let kf = keyframes[i];
-          missingStyleProps.forEach(function(prop) {
-            kf[prop] = _computeStyle(self.element, prop);
-          });
-        }
-      }
-    }
-
+    const keyframes = this.keyframes;
     (this as{domPlayer: DOMAnimation}).domPlayer =
         this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
@@ -121,6 +93,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
       this._started = true;
+      if (this._specialStyles) {
+        this._specialStyles.start();
+      }
     }
     this.domPlayer.play();
   }
@@ -132,6 +107,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   finish(): void {
     this.init();
+    if (this._specialStyles) {
+      this._specialStyles.finish();
+    }
     this._onFinish();
     this.domPlayer.finish();
   }
@@ -161,6 +139,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._destroyed = true;
       this._resetDomPlayerState();
       this._onFinish();
+      if (this._specialStyles) {
+        this._specialStyles.destroy();
+      }
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];
     }
@@ -178,14 +159,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       Object.keys(this._finalKeyframe).forEach(prop => {
         if (prop != 'offset') {
           styles[prop] =
-              this._finished ? this._finalKeyframe[prop] : _computeStyle(this.element, prop);
+              this._finished ? this._finalKeyframe[prop] : computeStyle(this.element, prop);
         }
       });
     }
     this.currentSnapshot = styles;
   }
-}
 
-function _computeStyle(element: any, prop: string): string {
-  return (<any>window.getComputedStyle(element))[prop];
+  /** @internal */
+  triggerCallback(phaseName: string): void {
+    const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
+    methods.forEach(fn => fn());
+    methods.length = 0;
+  }
 }

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
+
+import {error} from './util';
 
 export interface Node { sourceSpan: ParseSourceSpan|null; }
 
@@ -19,34 +21,141 @@ const _VALID_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 export class TypeScriptNodeEmitter {
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
       [ts.SourceFile, Map<ts.Node, Node>] {
-    const converter = new _NodeEmitterVisitor();
+    const converter = new NodeEmitterVisitor();
     // [].concat flattens the result so that each `visit...` method can also return an array of
     // stmts.
     const statements: any[] = [].concat(
         ...stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null));
     const preambleStmts: ts.Statement[] = [];
     if (preamble) {
-      if (preamble.startsWith('/*') && preamble.endsWith('*/')) {
-        preamble = preamble.substr(2, preamble.length - 4);
-      }
-      const commentStmt = ts.createNotEmittedStatement(sourceFile);
-      ts.setSyntheticLeadingComments(
-          commentStmt,
-          [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}]);
-      ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+      const commentStmt = this.createCommentStatement(sourceFile, preamble);
       preambleStmts.push(commentStmt);
     }
-    const newSourceFile = ts.updateSourceFileNode(
-        sourceFile,
-        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements]);
+    const sourceStatements =
+        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements];
+    converter.updateSourceMap(sourceStatements);
+    const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatements);
     return [newSourceFile, converter.getNodeMap()];
+  }
+
+  /** Creates a not emitted statement containing the given comment. */
+  createCommentStatement(sourceFile: ts.SourceFile, comment: string): ts.Statement {
+    if (comment.startsWith('/*') && comment.endsWith('*/')) {
+      comment = comment.substr(2, comment.length - 4);
+    }
+    const commentStmt = ts.createNotEmittedStatement(sourceFile);
+    ts.setSyntheticLeadingComments(
+        commentStmt,
+        [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: comment, pos: -1, end: -1}]);
+    ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+    return commentStmt;
   }
 }
 
-// A recorded node is a subtype of the node that is marked as being recoreded. This is used
+/**
+ * Update the given source file to include the changes specified in module.
+ *
+ * The module parameter is treated as a partial module meaning that the statements are added to
+ * the module instead of replacing the module. Also, any classes are treated as partial classes
+ * and the included members are added to the class with the same name instead of a new class
+ * being created.
+ */
+export function updateSourceFile(
+    sourceFile: ts.SourceFile, module: PartialModule,
+    context: ts.TransformationContext): [ts.SourceFile, Map<ts.Node, Node>] {
+  const converter = new NodeEmitterVisitor();
+  converter.loadExportedVariableIdentifiers(sourceFile);
+
+  const prefixStatements = module.statements.filter(statement => !(statement instanceof ClassStmt));
+  const classes =
+      module.statements.filter(statement => statement instanceof ClassStmt) as ClassStmt[];
+  const classMap = new Map(
+      classes.map<[string, ClassStmt]>(classStatement => [classStatement.name, classStatement]));
+  const classNames = new Set(classes.map(classStatement => classStatement.name));
+
+  const prefix: ts.Statement[] =
+      prefixStatements.map(statement => statement.visitStatement(converter, sourceFile));
+
+  // Add static methods to all the classes referenced in module.
+  let newStatements = sourceFile.statements.map(node => {
+    if (node.kind == ts.SyntaxKind.ClassDeclaration) {
+      const classDeclaration = node as ts.ClassDeclaration;
+      const name = classDeclaration.name;
+      if (name) {
+        const classStatement = classMap.get(name.text);
+        if (classStatement) {
+          classNames.delete(name.text);
+          const classMemberHolder =
+              converter.visitDeclareClassStmt(classStatement) as ts.ClassDeclaration;
+          const newMethods =
+              classMemberHolder.members.filter(member => member.kind !== ts.SyntaxKind.Constructor);
+          const newMembers = [...classDeclaration.members, ...newMethods];
+
+          return ts.updateClassDeclaration(
+              classDeclaration,
+              /* decorators */ classDeclaration.decorators,
+              /* modifiers */ classDeclaration.modifiers,
+              /* name */ classDeclaration.name,
+              /* typeParameters */ classDeclaration.typeParameters,
+              /* heritageClauses */ classDeclaration.heritageClauses || [],
+              /* members */ newMembers);
+        }
+      }
+    }
+    return node;
+  });
+
+  // Validate that all the classes have been generated
+  classNames.size == 0 ||
+      error(
+          `${classNames.size == 1 ? 'Class' : 'Classes'} "${Array.from(classNames.keys()).join(', ')}" not generated`);
+
+  // Add imports to the module required by the new methods
+  const imports = converter.getImports();
+  if (imports && imports.length) {
+    // Find where the new imports should go
+    const index = firstAfter(
+        newStatements, statement => statement.kind === ts.SyntaxKind.ImportDeclaration ||
+            statement.kind === ts.SyntaxKind.ImportEqualsDeclaration);
+    newStatements =
+        [...newStatements.slice(0, index), ...imports, ...prefix, ...newStatements.slice(index)];
+  } else {
+    newStatements = [...prefix, ...newStatements];
+  }
+
+  converter.updateSourceMap(newStatements);
+  const newSourceFile = ts.updateSourceFileNode(sourceFile, newStatements);
+
+  return [newSourceFile, converter.getNodeMap()];
+}
+
+// Return the index after the first value in `a` that doesn't match the predicate after a value that
+// does or 0 if no values match.
+function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
+  let index = 0;
+  const len = a.length;
+  for (; index < len; index++) {
+    const value = a[index];
+    if (predicate(value)) break;
+  }
+  if (index >= len) return 0;
+  for (; index < len; index++) {
+    const value = a[index];
+    if (!predicate(value)) break;
+  }
+  return index;
+}
+
+// A recorded node is a subtype of the node that is marked as being recorded. This is used
 // to ensure that NodeEmitterVisitor.record has been called on all nodes returned by the
 // NodeEmitterVisitor
-type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
+export type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any;}) | null;
+
+function escapeLiteral(value: string): string {
+  return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
+    return n ? '\\n' : '\\r';
+  });
+}
 
 function createLiteral(value: any) {
   if (value === null) {
@@ -54,17 +163,52 @@ function createLiteral(value: any) {
   } else if (value === undefined) {
     return ts.createIdentifier('undefined');
   } else {
-    return ts.createLiteral(value);
+    const result = ts.createLiteral(value);
+    if (ts.isStringLiteral(result) && result.text.indexOf('\\') >= 0) {
+      // Hack to avoid problems cause indirectly by:
+      //    https://github.com/Microsoft/TypeScript/issues/20192
+      // This avoids the string escaping normally performed for a string relying on that
+      // TypeScript just emits the text raw for a numeric literal.
+      (result as any).kind = ts.SyntaxKind.NumericLiteral;
+      result.text = `"${escapeLiteral(result.text)}"`;
+    }
+    return result;
   }
+}
+
+function isExportTypeStatement(statement: ts.Statement): boolean {
+  return !!statement.modifiers &&
+      statement.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
 }
 
 /**
  * Visits an output ast and produces the corresponding TypeScript synthetic nodes.
  */
-class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
+export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _nodeMap = new Map<ts.Node, Node>();
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
+  private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
+  private _exportedVariableIdentifiers = new Map<string, ts.Identifier>();
+
+  /**
+   * Process the source file and collect exported identifiers that refer to variables.
+   *
+   * Only variables are collected because exported classes still exist in the module scope in
+   * CommonJS, whereas variables have their declarations moved onto the `exports` object, and all
+   * references are updated accordingly.
+   */
+  loadExportedVariableIdentifiers(sourceFile: ts.SourceFile): void {
+    sourceFile.statements.forEach(statement => {
+      if (ts.isVariableStatement(statement) && isExportTypeStatement(statement)) {
+        statement.declarationList.declarations.forEach(declaration => {
+          if (ts.isIdentifier(declaration.name)) {
+            this._exportedVariableIdentifiers.set(declaration.name.text, declaration.name);
+          }
+        });
+      }
+    });
+  }
 
   getReexports(): ts.Statement[] {
     return Array.from(this._reexports.entries())
@@ -90,12 +234,69 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   getNodeMap() { return this._nodeMap; }
 
+  updateSourceMap(statements: ts.Statement[]) {
+    let lastRangeStartNode: ts.Node|undefined = undefined;
+    let lastRangeEndNode: ts.Node|undefined = undefined;
+    let lastRange: ts.SourceMapRange|undefined = undefined;
+
+    const recordLastSourceRange = () => {
+      if (lastRange && lastRangeStartNode && lastRangeEndNode) {
+        if (lastRangeStartNode == lastRangeEndNode) {
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+        } else {
+          ts.setSourceMapRange(lastRangeStartNode, lastRange);
+          // Only emit the pos for the first node emitted in the range.
+          ts.setEmitFlags(lastRangeStartNode, ts.EmitFlags.NoTrailingSourceMap);
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+          // Only emit emit end for the last node emitted in the range.
+          ts.setEmitFlags(lastRangeEndNode, ts.EmitFlags.NoLeadingSourceMap);
+        }
+      }
+    };
+
+    const visitNode = (tsNode: ts.Node) => {
+      const ngNode = this._nodeMap.get(tsNode);
+      if (ngNode) {
+        const range = this.sourceRangeOf(ngNode);
+        if (range) {
+          if (!lastRange || range.source != lastRange.source || range.pos != lastRange.pos ||
+              range.end != lastRange.end) {
+            recordLastSourceRange();
+            lastRangeStartNode = tsNode;
+            lastRange = range;
+          }
+          lastRangeEndNode = tsNode;
+        }
+      }
+      ts.forEachChild(tsNode, visitNode);
+    };
+    statements.forEach(visitNode);
+    recordLastSourceRange();
+  }
+
   private record<T extends ts.Node>(ngNode: Node, tsNode: T|null): RecordedNode<T> {
     if (tsNode && !this._nodeMap.has(tsNode)) {
       this._nodeMap.set(tsNode, ngNode);
-      ts.forEachChild(tsNode, child => this.record(ngNode, tsNode));
     }
     return tsNode as RecordedNode<T>;
+  }
+
+  private sourceRangeOf(node: Node): ts.SourceMapRange|null {
+    if (node.sourceSpan) {
+      const span = node.sourceSpan;
+      if (span.start.file == span.end.file) {
+        const file = span.start.file;
+        if (file.url) {
+          let source = this._templateSources.get(file);
+          if (!source) {
+            source = ts.createSourceMapSource(file.url, file.content, pos => pos);
+            this._templateSources.set(file, source);
+          }
+          return {pos: span.start.offset, end: span.end.offset, source};
+        }
+      }
+    }
+    return null;
   }
 
   private getModifiers(stmt: Statement) {
@@ -142,7 +343,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
   }
 
-  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
+  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt) {
     return this.record(
         stmt, ts.createFunctionDeclaration(
                   /* decorators */ undefined, this.getModifiers(stmt),
@@ -167,9 +368,12 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     const modifiers = this.getModifiers(stmt);
     const fields = stmt.fields.map(
         field => ts.createProperty(
-            /* decorators */ undefined, /* modifiers */ undefined, field.name,
+            /* decorators */ undefined, /* modifiers */ translateModifiers(field.modifiers),
+            field.name,
             /* questionToken */ undefined,
-            /* type */ undefined, ts.createNull()));
+            /* type */ undefined,
+            field.initializer == null ? ts.createNull() :
+                                        field.initializer.visitExpression(this, null)));
     const getters = stmt.getters.map(
         getter => ts.createGetAccessor(
             /* decorators */ undefined, /* modifiers */ undefined, getter.name, /* parameters */[],
@@ -191,7 +395,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     const methods = stmt.methods.filter(method => method.name)
                         .map(
                             method => ts.createMethod(
-                                /* decorators */ undefined, /* modifiers */ undefined,
+                                /* decorators */ undefined,
+                                /* modifiers */ translateModifiers(method.modifiers),
                                 /* astriskToken */ undefined, method.name !/* guarded by filter */,
                                 /* questionToken */ undefined, /* typeParameters */ undefined,
                                 method.params.map(
@@ -239,7 +444,31 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(stmt, ts.createThrow(stmt.error.visitExpression(this, null)));
   }
 
-  visitCommentStmt(stmt: CommentStmt) { return null; }
+  visitCommentStmt(stmt: CommentStmt, sourceFile: ts.SourceFile) {
+    const text = stmt.multiline ? ` ${stmt.comment} ` : ` ${stmt.comment}`;
+    return this.createCommentStmt(text, stmt.multiline, sourceFile);
+  }
+
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, sourceFile: ts.SourceFile) {
+    return this.createCommentStmt(stmt.toString(), true, sourceFile);
+  }
+
+  private createCommentStmt(text: string, multiline: boolean, sourceFile: ts.SourceFile):
+      ts.NotEmittedStatement {
+    const commentStmt = ts.createNotEmittedStatement(sourceFile);
+    const kind =
+        multiline ? ts.SyntaxKind.MultiLineCommentTrivia : ts.SyntaxKind.SingleLineCommentTrivia;
+    ts.setSyntheticLeadingComments(commentStmt, [{kind, text, pos: -1, end: -1}]);
+    return commentStmt;
+  }
+
+  // ExpressionVisitor
+  visitWrappedNodeExpr(expr: WrappedNodeExpr<any>) { return this.record(expr, expr.node); }
+
+  visitTypeofExpr(expr: TypeofExpr) {
+    const typeOf = ts.createTypeOf(expr.expr.visitExpression(this, null));
+    return this.record(expr, typeOf);
+  }
 
   // ExpressionVisitor
   visitReadVarExpr(expr: ReadVarExpr) {
@@ -336,7 +565,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   visitFunctionExpr(expr: FunctionExpr) {
     return this.record(
         expr, ts.createFunctionExpression(
-                  /* modifiers */ undefined, /* astriskToken */ undefined, /* name */ undefined,
+                  /* modifiers */ undefined, /* astriskToken */ undefined,
+                  /* name */ expr.name || undefined,
                   /* typeParameters */ undefined,
                   expr.params.map(
                       p => ts.createParameter(
@@ -345,11 +575,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                   /* type */ undefined, this._visitStatements(expr.statements)));
   }
 
-  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.ParenthesizedExpression> {
+  visitBinaryOperatorExpr(expr: BinaryOperatorExpr):
+      RecordedNode<ts.BinaryExpression|ts.ParenthesizedExpression> {
     let binaryOperator: ts.BinaryOperator;
     switch (expr.operator) {
       case BinaryOperator.And:
         binaryOperator = ts.SyntaxKind.AmpersandAmpersandToken;
+        break;
+      case BinaryOperator.BitwiseAnd:
+        binaryOperator = ts.SyntaxKind.AmpersandToken;
         break;
       case BinaryOperator.Bigger:
         binaryOperator = ts.SyntaxKind.GreaterThanToken;
@@ -396,10 +630,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       default:
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
-    return this.record(
-        expr, ts.createParen(ts.createBinary(
-                  expr.lhs.visitExpression(this, null), binaryOperator,
-                  expr.rhs.visitExpression(this, null))));
+    const binary = ts.createBinary(
+        expr.lhs.visitExpression(this, null), binaryOperator, expr.rhs.visitExpression(this, null));
+    return this.record(expr, expr.parens ? ts.createParen(binary) : binary);
   }
 
   visitReadPropExpr(expr: ReadPropExpr): RecordedNode<ts.PropertyAccessExpression> {
@@ -449,7 +682,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   }
 
   private _visitIdentifier(value: ExternalReference): ts.Expression {
-    const {name, moduleName} = value;
+    // name can only be null during JIT which never executes this code.
+    const moduleName = value.moduleName, name = value.name !;
     let prefixIdent: ts.Identifier|null = null;
     if (moduleName) {
       let prefix = this._importsWithPrefixes.get(moduleName);
@@ -459,10 +693,17 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       }
       prefixIdent = ts.createIdentifier(prefix);
     }
-    // name can only be null during JIT which never executes this code.
-    let result: ts.Expression =
-        prefixIdent ? ts.createPropertyAccess(prefixIdent, name !) : ts.createIdentifier(name !);
-    return result;
+    if (prefixIdent) {
+      return ts.createPropertyAccess(prefixIdent, name);
+    } else {
+      const id = ts.createIdentifier(name);
+      if (this._exportedVariableIdentifiers.has(name)) {
+        // In order for this new identifier node to be properly rewritten in CommonJS output,
+        // it must have its original node set to a parsed instance of the same identifier.
+        ts.setOriginalNode(id, this._exportedVariableIdentifiers.get(name));
+      }
+      return id;
+    }
   }
 }
 
@@ -481,4 +722,22 @@ function getMethodName(methodRef: {name: string | null; builtin: BuiltinMethod |
     }
   }
   throw new Error('Unexpected method reference form');
+}
+
+function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
+  switch (modifier) {
+    case StmtModifier.Exported:
+      return ts.createToken(ts.SyntaxKind.ExportKeyword);
+    case StmtModifier.Final:
+      return ts.createToken(ts.SyntaxKind.ConstKeyword);
+    case StmtModifier.Private:
+      return ts.createToken(ts.SyntaxKind.PrivateKeyword);
+    case StmtModifier.Static:
+      return ts.createToken(ts.SyntaxKind.StaticKeyword);
+  }
+  return error(`unknown statement modifier`);
+}
+
+function translateModifiers(modifiers: StmtModifier[] | null): ts.Modifier[]|undefined {
+  return modifiers == null ? undefined : modifiers !.map(modifierFromModifier);
 }

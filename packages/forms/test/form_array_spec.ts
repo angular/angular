@@ -9,10 +9,10 @@
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors} from '@angular/forms';
-import {of } from 'rxjs/observable/of';
-import {Validators} from '../src/validators';
+import {Validators} from '@angular/forms/src/validators';
+import {of } from 'rxjs';
 
-export function main() {
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -59,6 +59,20 @@ export function main() {
         expect(a.controls).toEqual([c1, c3]);
       });
 
+      it('should support clearing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+      });
+
       it('should support inserting', () => {
         a.push(c1);
         a.push(c3);
@@ -93,6 +107,58 @@ export function main() {
         (a.at(1) as FormArray).at(1).disable();
 
         expect(a.getRawValue()).toEqual([{'c2': 'v2', 'c3': 'v3'}, ['v4', 'v5']]);
+      });
+    });
+
+    describe('markAllAsTouched', () => {
+      it('should mark all descendants as touched', () => {
+        const formArray: FormArray = new FormArray([
+          new FormControl('v1'), new FormControl('v2'),
+          new FormGroup({'c1': new FormControl('v1')}),
+          new FormArray([new FormGroup({'c2': new FormControl('v2')})])
+        ]);
+
+        expect(formArray.touched).toBe(false);
+
+        const control1 = formArray.at(0) as FormControl;
+
+        expect(control1.touched).toBe(false);
+
+        const group1 = formArray.at(2) as FormGroup;
+
+        expect(group1.touched).toBe(false);
+
+        const group1Control1 = group1.get('c1') as FormControl;
+
+        expect(group1Control1.touched).toBe(false);
+
+        const innerFormArray = formArray.at(3) as FormArray;
+
+        expect(innerFormArray.touched).toBe(false);
+
+        const innerFormArrayGroup = innerFormArray.at(0) as FormGroup;
+
+        expect(innerFormArrayGroup.touched).toBe(false);
+
+        const innerFormArrayGroupControl1 = innerFormArrayGroup.get('c2') as FormControl;
+
+        expect(innerFormArrayGroupControl1.touched).toBe(false);
+
+        formArray.markAllAsTouched();
+
+        expect(formArray.touched).toBe(true);
+
+        expect(control1.touched).toBe(true);
+
+        expect(group1.touched).toBe(true);
+
+        expect(group1Control1.touched).toBe(true);
+
+        expect(innerFormArray.touched).toBe(true);
+
+        expect(innerFormArrayGroup.touched).toBe(true);
+
+        expect(innerFormArrayGroupControl1.touched).toBe(true);
       });
     });
 
@@ -534,6 +600,23 @@ export function main() {
           a.reset();
           expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
         });
+
+        it('should mark as pristine and not dirty before emitting valueChange and statusChange events when resetting',
+           () => {
+             const pristineAndNotDirty = () => {
+               expect(a.pristine).toBe(true);
+               expect(a.dirty).toBe(false);
+             };
+
+             c2.markAsDirty();
+             expect(a.pristine).toBe(false);
+             expect(a.dirty).toBe(true);
+
+             a.valueChanges.subscribe(pristineAndNotDirty);
+             a.statusChanges.subscribe(pristineAndNotDirty);
+
+             a.reset();
+           });
       });
     });
 
@@ -622,6 +705,36 @@ export function main() {
         expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(false);
       });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          a.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event from parent when onlySelf is true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should emit event when parent is markedAsPending', () => {
+          a.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+      });
+
     });
 
     describe('valueChanges', () => {
@@ -1053,6 +1166,28 @@ export function main() {
           expect(logger).toEqual(['control', 'array', 'form']);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          a.valueChanges.subscribe(() => logger.push('array'));
+          form.valueChanges.subscribe(() => logger.push('form'));
+
+          a.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          a.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          a.statusChanges.subscribe(() => logger.push('array'));
+          form.statusChanges.subscribe(() => logger.push('form'));
+
+          a.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          a.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
 
       describe('setControl()', () => {
@@ -1100,4 +1235,4 @@ export function main() {
 
     });
   });
-}
+})();

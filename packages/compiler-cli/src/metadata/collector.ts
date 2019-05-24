@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {Evaluator, errorSymbol} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+import {Evaluator, errorSymbol, recordMapEntry} from './evaluator';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
-const isStatic = (node: ts.Node) => ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Static;
+const isStatic = (node: ts.Declaration) =>
+    ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Static;
 
 /**
  * A set of collector options to use when collecting metadata.
@@ -76,8 +77,10 @@ export class MetadataCollector {
     }
 
     function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
-      nodeMap.set(entry, node);
-      return entry;
+      if (composedSubstituter) {
+        entry = composedSubstituter(entry as MetadataValue, node) as T;
+      }
+      return recordMapEntry(entry, node, nodeMap, sourceFile);
     }
 
     function errorSym(
@@ -116,8 +119,8 @@ export class MetadataCollector {
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       const result: ClassMetadata = {__symbolic: 'class'};
 
-      function getDecorators(decorators: ts.Decorator[] | undefined): MetadataSymbolicExpression[]|
-          undefined {
+      function getDecorators(decorators: ReadonlyArray<ts.Decorator>| undefined):
+          MetadataSymbolicExpression[]|undefined {
         if (decorators && decorators.length)
           return decorators.map(decorator => objFromDecorator(decorator));
         return undefined;
@@ -275,8 +278,8 @@ export class MetadataCollector {
       }
     });
 
-    const isExport = (node: ts.Node) =>
-        sourceFile.isDeclarationFile || ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export;
+    const isExport = (node: ts.Node) => sourceFile.isDeclarationFile ||
+        ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export;
     const isExportedIdentifier = (identifier?: ts.Identifier) =>
         identifier && exportMap.has(identifier.text);
     const isExported =
@@ -290,7 +293,7 @@ export class MetadataCollector {
          ts.TypeAliasDeclaration | ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
-    // Predeclare classes and functions
+    // Pre-declare classes and functions
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
@@ -455,7 +458,7 @@ export class MetadataCollector {
                 };
               } else {
                 nextDefaultValue =
-                    recordEntry(errorSym('Unsuppported enum member name', member.name), node);
+                    recordEntry(errorSym('Unsupported enum member name', member.name), node);
               }
             }
             if (writtenMembers) {
@@ -549,8 +552,9 @@ export class MetadataCollector {
       }
       const result: ModuleMetadata = {
         __symbolic: 'module',
-        version: this.options.version || VERSION, metadata
+        version: this.options.version || METADATA_VERSION, metadata
       };
+      if (sourceFile.moduleName) result.importAs = sourceFile.moduleName;
       if (exports) result.exports = exports;
       return result;
     }

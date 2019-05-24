@@ -2,7 +2,6 @@
 // #docplaster
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router }   from '@angular/router';
-import 'rxjs/add/operator/map';
 
 import { Hero }              from '../model/hero';
 import { HeroDetailService } from './hero-detail.service';
@@ -29,18 +28,18 @@ export class HeroDetailComponent implements OnInit {
   // #docregion ng-on-init
   ngOnInit(): void {
     // get hero when `id` param changes
-    this.route.paramMap.subscribe(p => this.getHero(p.has('id') && p.get('id')));
+    this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
   }
   // #enddocregion ng-on-init
 
   private getHero(id: string): void {
-    // when no id or id===0, create new hero
+    // when no id or id===0, create new blank hero
     if (!id) {
-      this.hero = new Hero();
+      this.hero = { id: 0, name: '' } as Hero;
       return;
     }
 
-    this.heroDetailService.getHero(id).then(hero => {
+    this.heroDetailService.getHero(id).subscribe(hero => {
       if (hero) {
         this.hero = hero;
       } else {
@@ -50,7 +49,7 @@ export class HeroDetailComponent implements OnInit {
   }
 
   save(): void {
-    this.heroDetailService.saveHero(this.hero).then(() => this.gotoList());
+    this.heroDetailService.saveHero(this.hero).subscribe(() => this.gotoList());
   }
 
   cancel() { this.gotoList(); }

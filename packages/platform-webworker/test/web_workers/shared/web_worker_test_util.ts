@@ -130,7 +130,9 @@ export class MockMessageBus extends MessageBus {
   attachToZone(zone: NgZone) {}
 }
 
-export class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
+export const _ClientMessageBrokerFactory: {new (a: any, b: any): ClientMessageBrokerFactory} =
+    ClientMessageBrokerFactory;
+export class MockMessageBrokerFactory extends _ClientMessageBrokerFactory {
   constructor(private _messageBroker: ClientMessageBroker) { super(null !, null !); }
   createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

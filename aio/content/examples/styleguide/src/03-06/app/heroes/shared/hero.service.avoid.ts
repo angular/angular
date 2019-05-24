@@ -3,7 +3,7 @@
 /* avoid */
 
 import { ExceptionService, SpinnerService, ToastService } from '../../core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Hero } from './hero.model';
 // #enddocregion example
@@ -15,18 +15,15 @@ export class HeroService {
     private exceptionService: ExceptionService,
     private spinnerService: SpinnerService,
     private toastService: ToastService,
-    private http: Http
+    private http: HttpClient
   ) { }
 
   getHero(id: number) {
-    return this.http.get(`api/heroes/${id}`)
-      .map(response => response.json().data as Hero);
+    return this.http.get<Hero>(`api/heroes/${id}`);
   }
 
   getHeroes() {
-    return this.http.get(`api/heroes`)
-      .map(response => response.json().data as Hero[]);
+    return this.http.get<Hero[]>(`api/heroes`);
   }
 
 }
-

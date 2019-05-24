@@ -12,7 +12,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-export function main() {
+{
   describe('QueryList', () => {
     let queryList: QueryList<string>;
     let log: string;
@@ -22,6 +22,22 @@ export function main() {
     });
 
     function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+
+    describe('dirty and reset', () => {
+
+      it('should initially be dirty and empty', () => {
+        expect(queryList.dirty).toBeTruthy();
+        expect(queryList.length).toBe(0);
+      });
+
+      it('should be not dirty after reset', () => {
+        expect(queryList.dirty).toBeTruthy();
+        queryList.reset(['one', 'two']);
+        expect(queryList.dirty).toBeFalsy();
+        expect(queryList.length).toBe(2);
+      });
+
+    });
 
     it('should support resetting and iterating over the new objects', () => {
       queryList.reset(['one']);

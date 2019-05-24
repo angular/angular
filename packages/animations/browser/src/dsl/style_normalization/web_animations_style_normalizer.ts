@@ -34,9 +34,10 @@ export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {
   }
 }
 
-const DIMENSIONAL_PROP_MAP = makeBooleanMap(
-    'width,height,minWidth,minHeight,maxWidth,maxHeight,left,top,bottom,right,fontSize,outlineWidth,outlineOffset,paddingTop,paddingLeft,paddingBottom,paddingRight,marginTop,marginLeft,marginBottom,marginRight,borderRadius,borderWidth,borderTopWidth,borderLeftWidth,borderRightWidth,borderBottomWidth,textIndent,perspective'
-        .split(','));
+const DIMENSIONAL_PROP_MAP =
+    (() => makeBooleanMap(
+         'width,height,minWidth,minHeight,maxWidth,maxHeight,left,top,bottom,right,fontSize,outlineWidth,outlineOffset,paddingTop,paddingLeft,paddingBottom,paddingRight,marginTop,marginLeft,marginBottom,marginRight,borderRadius,borderWidth,borderTopWidth,borderLeftWidth,borderRightWidth,borderBottomWidth,textIndent,perspective'
+             .split(',')))();
 
 function makeBooleanMap(keys: string[]): {[key: string]: boolean} {
   const map: {[key: string]: boolean} = {};

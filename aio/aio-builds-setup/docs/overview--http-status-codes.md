@@ -1,8 +1,8 @@
 # Overview - HTTP Status Codes
 
 
-This is a list of all the possible HTTP status codes returned by the nginx anf upload servers, along
-with a bried explanation of what they mean:
+This is a list of all the possible HTTP status codes returned by the nginx and preview servers,
+along with a brief explanation of what they mean:
 
 
 ## `http://*.ngbuilds.io/*`
@@ -25,7 +25,24 @@ with a bried explanation of what they mean:
   File not found.
 
 
-## `https://ngbuilds.io/create-build/<pr>/<sha>`
+## `https://ngbuilds.io/can-have-public-preview/<pr>`
+
+- **200 (OK)**:
+  Whether the PR can have a public preview (based on its author, label, changed files).
+  _Response type:_ JSON
+  _Response format:_
+  ```ts
+  {
+    canHavePublicPreview: boolean,
+    reason: string | null,
+  }
+  ```
+
+- **405 (Method Not Allowed)**:
+  Request method other than GET.
+
+
+## `https://ngbuilds.io/circle-build`
 
 - **201 (Created)**:
   Build deployed successfully and is publicly available.
@@ -33,14 +50,14 @@ with a bried explanation of what they mean:
 - **202 (Accepted)**:
   Build not automatically verifiable. Stored for later deployment (after re-verification).
 
-- **400 (Bad Request)**:
-  No payload.
+- **204 (No Content)**:
+  Build was not successful, so no further action is being taken.
 
-- **401 (Unauthorized)**:
-  No `AUTHORIZATION` header.
+- **400 (Bad Request)**:
+  Invalid payload.
 
 - **403 (Forbidden)**:
-  Unable to verify build (e.g. invalid JWT token, or unable to talk to 3rd-party APIs, etc).
+  Unable to talk to 3rd-party APIs.
 
 - **405 (Method Not Allowed)**:
   Request method other than POST.
@@ -48,9 +65,6 @@ with a bried explanation of what they mean:
 - **409 (Conflict)**:
   Request to overwrite existing (public or non-public) directory (e.g. deploy existing build or
   change PR visibility when the destination directory does already exist).
-
-- **413 (Payload Too Large)**:
-  Payload larger than size specified in `AIO_UPLOAD_MAX_SIZE`.
 
 
 ## `https://ngbuilds.io/health-check`

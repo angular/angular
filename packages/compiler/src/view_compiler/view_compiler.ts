@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, CompileQueryMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
@@ -145,7 +145,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const queryId = queryIndex + 1;
         const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
         const flags =
-            NodeFlags.TypeViewQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
+            NodeFlags.TypeViewQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query);
         this.nodes.push(() => ({
                           sourceSpan: null,
                           nodeFlags: flags,
@@ -230,12 +230,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   visitText(ast: TextAst, context: any): any {
-    // textDef(ngContentIndex: number, constants: string[]): NodeDef;
+    // Static text nodes have no check function
+    const checkIndex = -1;
     this.nodes.push(() => ({
                       sourceSpan: ast.sourceSpan,
                       nodeFlags: NodeFlags.TypeText,
                       nodeDef: o.importExpr(Identifiers.textDef).callFn([
-                        o.literal(ast.ngContentIndex), o.literalArr([o.literal(ast.value)])
+                        o.literal(checkIndex),
+                        o.literal(ast.ngContentIndex),
+                        o.literalArr([o.literal(ast.value)]),
                       ])
                     }));
   }
@@ -252,12 +255,17 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         (expr, bindingIndex) => this._preprocessUpdateExpression(
             {nodeIndex, bindingIndex, sourceSpan: ast.sourceSpan, context: COMP_VAR, value: expr}));
 
-    // textDef(ngContentIndex: number, constants: string[]): NodeDef;
+    // Check index is the same as the node index during compilation
+    // They might only differ at runtime
+    const checkIndex = nodeIndex;
+
     this.nodes[nodeIndex] = () => ({
       sourceSpan: ast.sourceSpan,
       nodeFlags: NodeFlags.TypeText,
       nodeDef: o.importExpr(Identifiers.textDef).callFn([
-        o.literal(ast.ngContentIndex), o.literalArr(inter.strings.map(s => o.literal(s)))
+        o.literal(checkIndex),
+        o.literal(ast.ngContentIndex),
+        o.literalArr(inter.strings.map(s => o.literal(s))),
       ]),
       updateRenderer: updateRendererExpressions
     });
@@ -344,18 +352,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       compRendererType = this.outputCtx.importExpr(compAst.directive.rendererType);
     }
 
-    // elementDef(
-    //   flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    //   ngContentIndex: number, childCount: number, namespaceAndName: string,
-    //   fixedAttrs: [string, string][] = [],
-    //   bindings?: [BindingFlags, string, string | SecurityContext][],
-    //   outputs?: ([OutputType.ElementOutput | OutputType.DirectiveHostOutput, string, string])[],
-    //   handleEvent?: ElementHandleEventFn,
-    //   componentView?: () => ViewDefinition, componentRendererType?: RendererType2): NodeDef;
+    // Check index is the same as the node index during compilation
+    // They might only differ at runtime
+    const checkIndex = nodeIndex;
+
     this.nodes[nodeIndex] = () => ({
       sourceSpan: ast.sourceSpan,
       nodeFlags: NodeFlags.TypeElement | flags,
       nodeDef: o.importExpr(Identifiers.elementDef).callFn([
+        o.literal(checkIndex),
         o.literal(flags),
         queryMatchesExpr,
         o.literal(ast.ngContentIndex),
@@ -488,7 +493,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     dirAst.directive.queries.forEach((query, queryIndex) => {
       const queryId = dirAst.contentQueryStartId + queryIndex;
       const flags =
-          NodeFlags.TypeContentQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query.first);
+          NodeFlags.TypeContentQuery | calcStaticDynamicQueryFlags(queryIds, queryId, query);
       const bindingType = query.first ? QueryBindingType.First : QueryBindingType.All;
       this.nodes.push(() => ({
                         sourceSpan: dirAst.sourceSpan,
@@ -561,20 +566,22 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                                                eventAst: hostEventAst, dirAst,
                                              }));
 
+    // Check index is the same as the node index during compilation
+    // They might only differ at runtime
+    const checkIndex = nodeIndex;
 
-    // directiveDef(
-    //   flags: NodeFlags, matchedQueries: [string, QueryValueType][], childCount: number, ctor:
-    //   any,
-    //   deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
-    //   outputs?: {[name: string]: string}, component?: () => ViewDefinition): NodeDef;
     this.nodes[nodeIndex] = () => ({
       sourceSpan: dirAst.sourceSpan,
       nodeFlags: NodeFlags.TypeDirective | flags,
       nodeDef: o.importExpr(Identifiers.directiveDef).callFn([
-        o.literal(flags), queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
-        o.literal(childCount), providerExpr, depsExpr,
+        o.literal(checkIndex),
+        o.literal(flags),
+        queryMatchExprs.length ? o.literalArr(queryMatchExprs) : o.NULL_EXPR,
+        o.literal(childCount),
+        providerExpr,
+        depsExpr,
         inputDefs.length ? new o.LiteralMapExpr(inputDefs) : o.NULL_EXPR,
-        outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR
+        outputDefs.length ? new o.LiteralMapExpr(outputDefs) : o.NULL_EXPR,
       ]),
       updateDirectives: updateDirectiveExpressions,
       directive: dirAst.directive.type,
@@ -687,15 +694,18 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       return () => valueExpr;
     }
 
-    const nodeIndex = this.nodes.length;
-    // pureArrayDef(argCount: number): NodeDef;
+    const checkIndex = this.nodes.length;
+
     this.nodes.push(() => ({
                       sourceSpan,
                       nodeFlags: NodeFlags.TypePureArray,
-                      nodeDef: o.importExpr(Identifiers.pureArrayDef).callFn([o.literal(argCount)])
+                      nodeDef: o.importExpr(Identifiers.pureArrayDef).callFn([
+                        o.literal(checkIndex),
+                        o.literal(argCount),
+                      ])
                     }));
 
-    return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
+    return (args: o.Expression[]) => callCheckStmt(checkIndex, args);
   }
 
   private _createLiteralMapConverter(
@@ -705,28 +715,32 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       return () => valueExpr;
     }
 
-    // function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef
     const map = o.literalMap(keys.map((e, i) => ({...e, value: o.literal(i)})));
-    const nodeIndex = this.nodes.length;
+    const checkIndex = this.nodes.length;
     this.nodes.push(() => ({
                       sourceSpan,
                       nodeFlags: NodeFlags.TypePureObject,
-                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([map])
+                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([
+                        o.literal(checkIndex),
+                        map,
+                      ])
                     }));
 
-    return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
+    return (args: o.Expression[]) => callCheckStmt(checkIndex, args);
   }
 
   private _createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
     const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name) !;
     if (pipe.pure) {
-      const nodeIndex = this.nodes.length;
-      // function purePipeDef(argCount: number): NodeDef;
+      const checkIndex = this.nodes.length;
       this.nodes.push(() => ({
                         sourceSpan: expression.sourceSpan,
                         nodeFlags: NodeFlags.TypePurePipe,
-                        nodeDef: o.importExpr(Identifiers.purePipeDef).callFn([o.literal(argCount)])
+                        nodeDef: o.importExpr(Identifiers.purePipeDef).callFn([
+                          o.literal(checkIndex),
+                          o.literal(argCount),
+                        ])
                       }));
 
       // find underlying pipe in the component view
@@ -742,7 +756,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
       return (args: o.Expression[]) => callUnwrapValue(
                  expression.nodeIndex, expression.bindingIndex,
-                 callCheckStmt(nodeIndex, [pipeValueExpr].concat(args)));
+                 callCheckStmt(checkIndex, [pipeValueExpr].concat(args)));
     } else {
       const nodeIndex = this._createPipe(expression.sourceSpan, pipe);
       const nodeValueExpr =
@@ -845,7 +859,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const bindingId = `${updateBindingCount++}`;
         const nameResolver = context === COMP_VAR ? self : null;
         const {stmts, currValExpr} =
-            convertPropertyBinding(nameResolver, context, value, bindingId);
+            convertPropertyBinding(nameResolver, context, value, bindingId, BindingForm.General);
         updateStmts.push(...stmts.map(
             (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
         return o.applySourceSpanToExpressionIfNeeded(currValExpr, sourceSpan);
@@ -926,7 +940,8 @@ function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
 
 
 function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveAst): o.Expression {
-  switch (inputAst.type) {
+  const inputType = inputAst.type;
+  switch (inputType) {
     case PropertyBindingType.Attribute:
       return o.literalArr([
         o.literal(BindingFlags.TypeElementAttribute), o.literal(inputAst.name),
@@ -951,6 +966,13 @@ function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveA
       return o.literalArr([
         o.literal(BindingFlags.TypeElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
       ]);
+    default:
+      // This default case is not needed by TypeScript compiler, as the switch is exhaustive.
+      // However Closure Compiler does not understand that and reports an error in typed mode.
+      // The `throw new Error` below works around the problem, and the unexpected: never variable
+      // makes sure tsc still checks this code is unreachable.
+      const unexpected: never = inputType;
+      throw new Error(`unexpected ${unexpected}`);
   }
 }
 
@@ -1001,7 +1023,7 @@ interface StaticAndDynamicQueryIds {
 }
 
 
-function findStaticQueryIds(
+export function findStaticQueryIds(
     nodes: TemplateAst[], result = new Map<TemplateAst, StaticAndDynamicQueryIds>()):
     Map<TemplateAst, StaticAndDynamicQueryIds> {
   nodes.forEach((node) => {
@@ -1034,7 +1056,7 @@ function findStaticQueryIds(
   return result;
 }
 
-function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
+export function staticViewQueryIds(nodeStaticQueryIds: Map<TemplateAst, StaticAndDynamicQueryIds>):
     StaticAndDynamicQueryIds {
   const staticQueryIds = new Set<number>();
   const dynamicQueryIds = new Set<number>();
@@ -1059,16 +1081,26 @@ function elementEventNameAndTarget(
 }
 
 function calcStaticDynamicQueryFlags(
-    queryIds: StaticAndDynamicQueryIds, queryId: number, isFirst: boolean) {
+    queryIds: StaticAndDynamicQueryIds, queryId: number, query: CompileQueryMetadata) {
   let flags = NodeFlags.None;
   // Note: We only make queries static that query for a single item.
   // This is because of backwards compatibility with the old view compiler...
-  if (isFirst && (queryIds.staticQueryIds.has(queryId) || !queryIds.dynamicQueryIds.has(queryId))) {
+  if (query.first && shouldResolveAsStaticQuery(queryIds, queryId, query)) {
     flags |= NodeFlags.StaticQuery;
   } else {
     flags |= NodeFlags.DynamicQuery;
   }
   return flags;
+}
+
+function shouldResolveAsStaticQuery(
+    queryIds: StaticAndDynamicQueryIds, queryId: number, query: CompileQueryMetadata): boolean {
+  // If query.static has been set by the user, use that value to determine whether
+  // the query is static. If none has been set, sort the query into static/dynamic
+  // based on query results (i.e. dynamic if CD needs to run to get all results).
+  return query.static ||
+      query.static == null &&
+      (queryIds.staticQueryIds.has(queryId) || !queryIds.dynamicQueryIds.has(queryId));
 }
 
 export function elementEventFullName(target: string | null, name: string): string {

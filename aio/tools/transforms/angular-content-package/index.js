@@ -18,7 +18,7 @@ const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples) {
+  .config(function(readFilesProcessor, collectExamples, renderExamples) {
 
     const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
     const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
@@ -43,7 +43,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
       {
         basePath: CONTENTS_PATH,
-        include: CONTENTS_PATH + '/{cookbook,guide,tutorial}/**/*.md',
+        include: CONTENTS_PATH + '/{start,guide,tutorial}/**/*.md',
         fileReader: 'contentFileReader'
       },
       {
@@ -69,6 +69,11 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       },
       {
         basePath: CONTENTS_PATH,
+        include: CONTENTS_PATH + '/marketing/announcements.json',
+        fileReader: 'jsonFileReader'
+      },
+      {
+        basePath: CONTENTS_PATH,
         include: CONTENTS_PATH + '/marketing/contributors.json',
         fileReader: 'jsonFileReader'
       },
@@ -81,6 +86,8 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
 
     collectExamples.exampleFolders.push('examples');
     collectExamples.registerIgnoredExamples(ignoredExamplePaths, gitignoreFilePath);
+
+    renderExamples.ignoreBrokenExamples = true;
   })
 
 
@@ -102,6 +109,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       },
       {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+      {docTypes: ['announcements-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
     ]);
   })

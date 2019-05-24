@@ -8,7 +8,7 @@
 /* eslint no-console: "off" */
 
 function createPackage(changedFile) {
-  const marketingMatch = /^aio\/content\/marketing\/(.*)/.exec(changedFile);
+  const marketingMatch = /^aio\/content\/(?:marketing\/|navigation\.json)/.exec(changedFile);
   if (marketingMatch) {
     console.log('Building marketing docs');
     return require('./marketing-package').createPackage();
@@ -20,6 +20,14 @@ function createPackage(changedFile) {
     const tutorialName = tutorialMatch && tutorialMatch[1] || tutorialExampleMatch[1];
     console.log('Building tutorial docs');
     return require('./tutorial-package').createPackage(tutorialName);
+  }
+
+  const gettingStartedMatch = /^aio\/content\/start\/([^.]+)\.md/.exec(changedFile);
+  const gettingStartedExampleMatch = /^aio\/content\/examples\/getting-started\/([^\/]+)\//.exec(changedFile);
+  if (gettingStartedMatch || gettingStartedExampleMatch) {
+    const gettingStartedName = gettingStartedMatch && gettingStartedMatch[1] || 'index';
+    console.log('Building getting started docs');
+    return require('./getting-started-package').createPackage(gettingStartedName);
   }
 
   const guideMatch = /^aio\/content\/guide\/([^.]+)\.md/.exec(changedFile);

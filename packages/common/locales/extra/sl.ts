@@ -9,10 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['24.00', '12.00', 'zj', 'd', 'p', 'zv', 'po'],
-    ['opoln.', 'opold.', 'zjut.', 'dop.', 'pop.', 'zveč.', 'noč'],
+    ['opoln.', 'opold.', 'zjut.', 'dop.', 'pop.', 'zveč.', 'ponoči'],
     ['opolnoči', 'opoldne', 'zjutraj', 'dopoldan', 'popoldan', 'zvečer', 'ponoči']
   ],
   [

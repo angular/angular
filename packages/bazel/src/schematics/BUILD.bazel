@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "collection.json",
+    ],
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        "//packages/bazel/src/schematics/ng-add:test",
+        "//packages/bazel/src/schematics/ng-new:test",
+        "//packages/bazel/src/schematics/utility:test",
+        "//tools/testing:node",
+    ],
+)

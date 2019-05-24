@@ -1,0 +1,10 @@
+{
+  "description": "Feature Modules",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["feature modules"]
+}

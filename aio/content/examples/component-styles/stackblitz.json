@@ -1,0 +1,10 @@
+{
+  "description": "Component Styles",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.native.*",
+    "!**/*.[1].*"
+  ],
+  "tags": ["CSS"]
+}

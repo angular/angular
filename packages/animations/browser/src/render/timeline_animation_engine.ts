@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -13,6 +13,7 @@ import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -20,11 +21,13 @@ import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes,
 const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
 
 export class TimelineAnimationEngine {
-  private _animations: {[id: string]: Ast} = {};
+  private _animations: {[id: string]: Ast<AnimationMetadataType>} = {};
   private _playersById: {[id: string]: AnimationPlayer} = {};
   public players: AnimationPlayer[] = [];
 
-  constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      public bodyNode: any, private _driver: AnimationDriver,
+      private _normalizer: AnimationStyleNormalizer) {}
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
@@ -43,7 +46,7 @@ export class TimelineAnimationEngine {
     const element = i.element;
     const keyframes = normalizeKeyframes(
         this._driver, this._normalizer, element, i.keyframes, preStyles, postStyles);
-    return this._driver.animate(element, keyframes, i.duration, i.delay, i.easing, []);
+    return this._driver.animate(element, keyframes, i.duration, i.delay, i.easing, [], true);
   }
 
   create(id: string, element: any, options: AnimationOptions = {}): AnimationPlayer {
@@ -55,7 +58,8 @@ export class TimelineAnimationEngine {
 
     if (ast) {
       instructions = buildAnimationTimelines(
-          this._driver, element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP, errors);
+          this._driver, element, ast, ENTER_CLASSNAME, LEAVE_CLASSNAME, {}, {}, options,
+          EMPTY_INSTRUCTION_MAP, errors);
       instructions.forEach(inst => {
         const styles = getOrSetAsInMap(autoStylesMap, inst.element, {});
         inst.postStyleProps.forEach(prop => styles[prop] = null);

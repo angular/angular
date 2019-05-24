@@ -11,7 +11,7 @@ import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterab
 
 import {SpyIterableDifferFactory} from '../../spies';
 
-export function main() {
+{
   describe('IterableDiffers', function() {
     let factory1: any;
     let factory2: any;
@@ -61,8 +61,10 @@ export function main() {
         const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
         const childInjector = Injector.create([IterableDiffers.extend([factory2])], injector);
 
-        expect(injector.get(IterableDiffers).factories).toEqual([factory1]);
-        expect(childInjector.get(IterableDiffers).factories).toEqual([factory2, factory1]);
+        expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
+        expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
+          factory2, factory1
+        ]);
       });
     });
   });

@@ -1,10 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
-    name = "node_modules",
-    srcs = glob([
-        "node_modules/**/*.js",
-        "node_modules/**/*.d.ts",
-        "node_modules/**/*.json",
-    ])
+exports_files([
+    "protractor.conf.js",
+    "angular-metadata.tsconfig.json",
+])
+
+# ts_library and ng_module use the `//:tsconfig.json` target
+# by default. This alias allows omitting explicit tsconfig
+# attribute.
+alias(
+    name = "tsconfig.json",
+    actual = "//src:tsconfig.json",
 )

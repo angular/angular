@@ -3,29 +3,53 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
+import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {assertNotMissingOrEmpty} from '../common/utils';
+import {assertNotMissingOrEmpty, getPrInfoFromDownloadPath, Logger} from '../common/utils';
 
 // Classes
 export class BuildCleaner {
+
+  private logger = new Logger('BuildCleaner');
+
   // Constructor
-  constructor(protected buildsDir: string, protected repoSlug: string, protected githubToken: string) {
+  constructor(protected buildsDir: string, protected githubOrg: string, protected githubRepo: string,
+              protected githubToken: string, protected downloadsDir: string, protected artifactPath: string) {
     assertNotMissingOrEmpty('buildsDir', buildsDir);
-    assertNotMissingOrEmpty('repoSlug', repoSlug);
+    assertNotMissingOrEmpty('githubOrg', githubOrg);
+    assertNotMissingOrEmpty('githubRepo', githubRepo);
     assertNotMissingOrEmpty('githubToken', githubToken);
+    assertNotMissingOrEmpty('downloadsDir', downloadsDir);
+    assertNotMissingOrEmpty('artifactPath', artifactPath);
   }
 
   // Methods - Public
-  public cleanUp(): Promise<void> {
-    return Promise.all([
-      this.getExistingBuildNumbers(),
-      this.getOpenPrNumbers(),
-    ]).then(([existingBuilds, openPrs]) => this.removeUnnecessaryBuilds(existingBuilds, openPrs));
+  public async cleanUp(): Promise<void> {
+    try {
+      this.logger.log('Cleaning up builds and downloads');
+      const openPrs = await this.getOpenPrNumbers();
+      this.logger.log(`Open pull requests: ${openPrs.length}`);
+      await Promise.all([
+        this.cleanBuilds(openPrs),
+        this.cleanDownloads(openPrs),
+      ]);
+    } catch (error) {
+      this.logger.error('ERROR:', error);
+    }
   }
 
-  // Methods - Protected
-  protected getExistingBuildNumbers(): Promise<number[]> {
-    return new Promise((resolve, reject) => {
+  public async cleanBuilds(openPrs: number[]): Promise<void> {
+    const existingBuilds = await this.getExistingBuildNumbers();
+    await this.removeUnnecessaryBuilds(existingBuilds, openPrs);
+  }
+
+  public async cleanDownloads(openPrs: number[]): Promise<void> {
+    const existingDownloads = await this.getExistingDownloads();
+    await this.removeUnnecessaryDownloads(existingDownloads, openPrs);
+  }
+
+  public getExistingBuildNumbers(): Promise<number[]> {
+    return new Promise<number[]>((resolve, reject) => {
       fs.readdir(this.buildsDir, (err, files) => {
         if (err) {
           return reject(err);
@@ -41,32 +65,29 @@ export class BuildCleaner {
     });
   }
 
-  protected getOpenPrNumbers(): Promise<number[]> {
-    const githubPullRequests = new GithubPullRequests(this.githubToken, this.repoSlug);
-
-    return githubPullRequests.
-      fetchAll('open').
-      then(prs => prs.map(pr => pr.number));
+  public async getOpenPrNumbers(): Promise<number[]> {
+    const api = new GithubApi(this.githubToken);
+    const githubPullRequests = new GithubPullRequests(api, this.githubOrg, this.githubRepo);
+    const prs = await githubPullRequests.fetchAll('open');
+    return prs.map(pr => pr.number);
   }
 
-  protected removeDir(dir: string) {
+  public removeDir(dir: string): void {
     try {
       if (shell.test('-d', dir)) {
-        // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
-        (shell as any).chmod('-R', 'a+w', dir);
+        shell.chmod('-R', 'a+w', dir);
         shell.rm('-rf', dir);
       }
     } catch (err) {
-      console.error(`ERROR: Unable to remove '${dir}' due to:`, err);
+      this.logger.error(`ERROR: Unable to remove '${dir}' due to:`, err);
     }
   }
 
-  protected removeUnnecessaryBuilds(existingBuildNumbers: number[], openPrNumbers: number[]) {
+  public removeUnnecessaryBuilds(existingBuildNumbers: number[], openPrNumbers: number[]): void {
     const toRemove = existingBuildNumbers.filter(num => !openPrNumbers.includes(num));
 
-    console.log(`Existing builds: ${existingBuildNumbers.length}`);
-    console.log(`Open pull requests: ${openPrNumbers.length}`);
-    console.log(`Removing ${toRemove.length} build(s): ${toRemove.join(', ')}`);
+    this.logger.log(`Existing builds: ${existingBuildNumbers.length}`);
+    this.logger.log(`Removing ${toRemove.length} build(s): ${toRemove.join(', ')}`);
 
     // Try removing public dirs.
     toRemove.
@@ -77,5 +98,30 @@ export class BuildCleaner {
     toRemove.
       map(num => path.join(this.buildsDir, HIDDEN_DIR_PREFIX + String(num))).
       forEach(dir => this.removeDir(dir));
+  }
+
+  public getExistingDownloads(): Promise<string[]> {
+    const artifactFile = path.basename(this.artifactPath);
+    return new Promise<string[]>((resolve, reject) => {
+      fs.readdir(this.downloadsDir, (err, files) => {
+        if (err) {
+          return reject(err);
+        }
+        files = files.filter(file => file.endsWith(artifactFile));
+        resolve(files);
+      });
+    });
+  }
+
+  public removeUnnecessaryDownloads(existingDownloads: string[], openPrNumbers: number[]): void {
+    const toRemove = existingDownloads.filter(filePath => {
+      const {pr} = getPrInfoFromDownloadPath(filePath);
+      return !openPrNumbers.includes(pr);
+    });
+
+    this.logger.log(`Existing downloads: ${existingDownloads.length}`);
+    this.logger.log(`Removing ${toRemove.length} download(s): ${toRemove.join(', ')}`);
+
+    toRemove.forEach(filePath => shell.rm(path.join(this.downloadsDir, filePath)));
   }
 }

@@ -13,7 +13,8 @@ import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_even
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {el} from '../../../testing/src/browser_util';
 
-export function main() {
+(function() {
+  if (isNode) return;
   let domEventPlugin: DomEventsPlugin;
   let doc: any;
   let zone: NgZone;
@@ -23,7 +24,7 @@ export function main() {
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
-      domEventPlugin = new DomEventsPlugin(doc, zone);
+      domEventPlugin = new DomEventsPlugin(doc, zone, null);
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',
@@ -105,7 +106,7 @@ export function main() {
       };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      let remover = null;
+      let remover: any = null;
       Zone.root.run(() => { remover = manager.addEventListener(element, 'click', handler); });
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
@@ -135,8 +136,8 @@ export function main() {
       };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      let remover1 = null;
-      let remover2 = null;
+      let remover1: any = null;
+      let remover2: any = null;
       Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler1); });
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler2);
@@ -144,6 +145,42 @@ export function main() {
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name, 'test']);
+
+      receivedEvents = [];
+      remover1 && remover1();
+      remover2 && remover2();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([]);
+    });
+
+    it('should support event.stopImmediatePropagation', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvents: any[] /** TODO #9100 */ = [];
+      let receivedZones: any[] = [];
+      const handler1 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+        e.stopImmediatePropagation();
+      };
+      const handler2 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      let remover1: any = null;
+      let remover2: any = null;
+      Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler1); });
+      Zone.root.fork({name: 'test'}).run(() => {
+        remover2 = manager.addEventListener(element, 'click', handler2);
+      });
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([dispatchedEvent]);
+      expect(receivedZones).toEqual([Zone.root.name]);
 
       receivedEvents = [];
       remover1 && remover1();
@@ -202,8 +239,8 @@ export function main() {
       };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-      let remover1 = null;
-      let remover2 = null;
+      let remover1: any = null;
+      let remover2: any = null;
       Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler); });
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler);
@@ -219,7 +256,47 @@ export function main() {
       expect(receivedEvents).toEqual([]);
     });
 
-    it('should run blackListedEvents handler outside of ngZone', () => {
+    it('should be able to remove event listener which was added inside of ngZone', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvents: any[] /** TODO #9100 */ = [];
+      let receivedZones: any[] = [];
+      const handler1 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const handler2 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      let remover1: any = null;
+      let remover2: any = null;
+      // handler1 is added in root zone
+      Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler1); });
+      // handler2 is added in 'angular' zone
+      Zone.root.fork({name: 'fakeAngularZone', properties: {isAngularZone: true}}).run(() => {
+        remover2 = manager.addEventListener(element, 'click', handler2);
+      });
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
+      expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
+
+      receivedEvents = [];
+      remover1 && remover1();
+      remover2 && remover2();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      // handler1 and handler2 are added in different zone
+      // one is angular zone, the other is not
+      // should still be able to remove them correctly
+      expect(receivedEvents).toEqual([]);
+    });
+
+    it('should run blockListedEvents handler outside of ngZone', () => {
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
@@ -243,7 +320,7 @@ export function main() {
       expect(receivedEvent).toBe(null);
     });
   });
-}
+})();
 
 /** @internal */
 class FakeEventManagerPlugin extends EventManagerPlugin {

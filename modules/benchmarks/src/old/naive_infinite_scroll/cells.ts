@@ -62,7 +62,7 @@ export class Stage {
   directives: [NgFor],
   template: `
       <div [style.width.px]="cellWidth">
-          <button template="ngFor let stage of stages"
+          <button *ngFor="let stage of stages"
                   [disabled]="stage.isDisabled"
                   [style.background-color]="stage.backgroundColor"
                   on-click="setStage(stage)">

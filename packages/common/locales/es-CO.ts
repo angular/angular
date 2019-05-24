@@ -9,13 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'es-CO',
-  [
-    ['a. m.', 'p. m.'],
-    ,
-  ],
-  ,
+  'es-CO', [['a. m.', 'p. m.'], u, u], u,
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -27,7 +29,7 @@ export default [
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
   [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+    ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
       'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'
     ],
@@ -47,18 +49,37 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
   ['d/MM/yy', 'd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    ,
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '$', 'peso colombiano', function(n: number):
-                                                                            number {
-                                                                              if (n === 1) return 1;
-                                                                              return 5;
-                                                                            }
+  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '$', 'peso colombiano', {
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'COP': ['$'],
+    'ESP': ['₧'],
+    'EUR': [u, '€'],
+    'FKP': [u, 'FK£'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
+    'RON': [u, 'L'],
+    'SSP': [u, 'SD£'],
+    'SYP': [u, 'S£'],
+    'TWD': [u, 'NT$'],
+    'USD': ['US$', '$'],
+    'VEF': [u, 'BsF'],
+    'VND': [u, '₫'],
+    'XAF': [],
+    'XCD': [u, '$'],
+    'XOF': []
+  },
+  plural
 ];

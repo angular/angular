@@ -21,7 +21,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _location: LocationType = null !;
   private _channelSource: EventEmitter<Object>;
   public initialized: Promise<any>;
-  private initializedResolve: () => void;
+  // TODO(issue/24571): remove '!'.
+  private initializedResolve !: () => void;
 
   constructor(
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
@@ -73,7 +74,13 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
 
-  get pathname(): string { return this._location ? this._location.pathname ! : '<unknown>'; }
+  get href(): string { return this._location ? this._location.href ! : '<unknown>'; }
+
+  get hostname(): string { return this._location ? this._location.host ! : '<unknown>'; }
+
+  get port(): string { return this._location ? this._location.port ! : '<unknown>'; }
+
+  get protocol(): string { return this._location ? this._location.protocol ! : '<unknown>'; }
 
   get search(): string { return this._location ? this._location.search : '<unknown>'; }
 
@@ -120,4 +127,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     const args = new UiArguments('back');
     this._broker.runOnService(args, null);
   }
+
+  // History API isn't available on WebWorkers, therefore return undefined
+  getState(): unknown { return undefined; }
 }

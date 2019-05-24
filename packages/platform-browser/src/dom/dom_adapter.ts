@@ -50,7 +50,8 @@ export abstract class DomAdapter {
   get attrToPropMap(): {[key: string]: string} { return this._attrToPropMap; }
   set attrToPropMap(value: {[key: string]: string}) { this._attrToPropMap = value; }
   /** @internal */
-  _attrToPropMap: {[key: string]: string};
+  // TODO(issue/24571): remove '!'.
+  _attrToPropMap !: {[key: string]: string};
 
   abstract contains(nodeA: any, nodeB: any): boolean;
   abstract parse(templateHtml: string): any;
@@ -118,7 +119,7 @@ export abstract class DomAdapter {
   abstract hasAttribute(element: any, attribute: string): boolean;
   abstract hasAttributeNS(element: any, ns: string, attribute: string): boolean;
   abstract getAttribute(element: any, attribute: string): string|null;
-  abstract getAttributeNS(element: any, ns: string, attribute: string): string;
+  abstract getAttributeNS(element: any, ns: string, attribute: string): string|null;
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
   abstract removeAttribute(element: any, attribute: string): any;

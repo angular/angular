@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {AnimateApp} from './app/animate-app';
 
-@NgModule({declarations: [AnimateApp], bootstrap: [AnimateApp], imports: [BrowserModule]})
-class ExampleModule {
+@NgModule({declarations: [AnimateApp], bootstrap: [AnimateApp], imports: [BrowserAnimationsModule]})
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

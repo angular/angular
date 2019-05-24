@@ -18,16 +18,25 @@ export const RADIO_VALUE_ACCESSOR: any = {
 };
 
 /**
- * Internal class used by Angular to uncheck radio buttons with the matching name.
+ * @description
+ * Class used by Angular to track radio buttons. For internal use only.
  */
 @Injectable()
 export class RadioControlRegistry {
   private _accessors: any[] = [];
 
+  /**
+   * @description
+   * Adds a control to the internal registry. For internal use only.
+   */
   add(control: NgControl, accessor: RadioControlValueAccessor) {
     this._accessors.push([control, accessor]);
   }
 
+  /**
+   * @description
+   * Removes a control from the internal registry. For internal use only.
+   */
   remove(accessor: RadioControlValueAccessor) {
     for (let i = this._accessors.length - 1; i >= 0; --i) {
       if (this._accessors[i][1] === accessor) {
@@ -37,6 +46,10 @@ export class RadioControlRegistry {
     }
   }
 
+  /**
+   * @description
+   * Selects a radio button. For internal use only.
+   */
   select(accessor: RadioControlValueAccessor) {
     this._accessors.forEach((c) => {
       if (this._isSameGroup(c, accessor) && c[1] !== accessor) {
@@ -55,33 +68,24 @@ export class RadioControlRegistry {
 }
 
 /**
- * @whatItDoes  Writes radio control values and listens to radio control changes.
+ * @description
+ * The `ControlValueAccessor` for writing radio control values and listening to radio control
+ * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
  *
- * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
- * to keep the view synced with the {@link FormControl} model.
+ * @usageNotes
  *
- * @howToUse
+ * ### Using radio buttons with reactive form directives
  *
- * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
- * value accessor will be active on any radio control that has a form directive. You do
- * **not** need to add a special selector to activate it.
- *
- * ### How to use radio buttons with form directives
- *
- * To use radio buttons in a template-driven form, you'll want to ensure that radio buttons
- * in the same group have the same `name` attribute.  Radio buttons with different `name`
- * attributes do not affect each other.
- *
- * {@example forms/ts/radioButtons/radio_button_example.ts region='TemplateDriven'}
- *
- * When using radio buttons in a reactive form, radio buttons in the same group should have the
- * same `formControlName`. You can also add a `name` attribute, but it's optional.
+ * The follow example shows how to use radio buttons in a reactive form. When using radio buttons in
+ * a reactive form, radio buttons in the same group should have the same `formControlName`.
+ * Providing a `name` attribute is optional.
  *
  * {@example forms/ts/reactiveRadioButtons/reactive_radio_button_example.ts region='Reactive'}
  *
- *  * **npm package**: `@angular/forms`
- *
- *  @stable
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -92,35 +96,89 @@ export class RadioControlRegistry {
 export class RadioControlValueAccessor implements ControlValueAccessor,
     OnDestroy, OnInit {
   /** @internal */
-  _state: boolean;
+  // TODO(issue/24571): remove '!'.
+  _state !: boolean;
   /** @internal */
-  _control: NgControl;
+  // TODO(issue/24571): remove '!'.
+  _control !: NgControl;
   /** @internal */
-  _fn: Function;
+  // TODO(issue/24571): remove '!'.
+  _fn !: Function;
+
+  /**
+   * @description
+   * The registered callback function called when a change event occurs on the input element.
+   */
   onChange = () => {};
+
+  /**
+   * @description
+   * The registered callback function called when a blur event occurs on the input element.
+   */
   onTouched = () => {};
 
-  @Input() name: string;
-  @Input() formControlName: string;
+  /**
+   * @description
+   * Tracks the name of the radio input element.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input() name !: string;
+
+  /**
+   * @description
+   * Tracks the name of the `FormControl` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input() formControlName !: string;
+
+  /**
+   * @description
+   * Tracks the value of the radio input element
+   */
   @Input() value: any;
 
   constructor(
       private _renderer: Renderer2, private _elementRef: ElementRef,
       private _registry: RadioControlRegistry, private _injector: Injector) {}
 
+  /**
+   * @description
+   * A lifecycle method called when the directive is initialized. For internal use only.
+   *
+   * @param changes A object of key/value pairs for the set of changed inputs.
+   */
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);
     this._checkName();
     this._registry.add(this._control, this);
   }
 
+  /**
+   * @description
+   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
+   *
+   * @param changes A object of key/value pairs for the set of changed inputs.
+   */
   ngOnDestroy(): void { this._registry.remove(this); }
 
+  /**
+   * @description
+   * Sets the "checked" property value on the radio input element.
+   *
+   * @param value The checked value
+   */
   writeValue(value: any): void {
     this._state = value === this.value;
     this._renderer.setProperty(this._elementRef.nativeElement, 'checked', this._state);
   }
 
+  /**
+   * @description
+   * Registers a function called when the control value changes.
+   *
+   * @param fn The callback function
+   */
   registerOnChange(fn: (_: any) => {}): void {
     this._fn = fn;
     this.onChange = () => {
@@ -129,10 +187,26 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
     };
   }
 
+  /**
+   * Sets the "value" on the radio input element and unchecks it.
+   *
+   * @param value
+   */
   fireUncheck(value: any): void { this.writeValue(value); }
 
+  /**
+   * @description
+   * Registers a function called when the control is touched.
+   *
+   * @param fn The callback function
+   */
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 
+  /**
+   * Sets the "disabled" property on the input element.
+   *
+   * @param isDisabled The disabled value
+   */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }

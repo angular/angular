@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
-import {AnimationOptions} from '@angular/core/src/animation/dsl';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 
 import {Animation} from '../../src/dsl/animation';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
@@ -18,10 +17,10 @@ function createDiv() {
   return document.createElement('div');
 }
 
-export function main() {
+{
   describe('Animation', () => {
     // these tests are only mean't to be run within the DOM (for now)
-    if (typeof Element == 'undefined') return;
+    if (isNode) return;
 
     let rootElement: any;
     let subElement1: any;
@@ -119,6 +118,14 @@ export function main() {
            expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
          });
 
+      it('should not allow triggers to be defined with a prefixed `@` symbol', () => {
+        const steps = trigger('@foo', []);
+
+        expect(() => validateAndThrowAnimationSequence(steps))
+            .toThrowError(
+                /animation triggers cannot be prefixed with an `@` sign \(e\.g\. trigger\('@foo', \[...\]\)\)/);
+      });
+
       it('should throw an error if an animation time is invalid', () => {
         const steps = [animate('500xs', style({opacity: 1}))];
 
@@ -208,6 +215,26 @@ export function main() {
             .toThrowError(
                 /The provided animation property "abc" is not a supported CSS property for animations/);
       });
+
+      it('should allow a vendor-prefixed property to be used in an animation sequence without throwing an error',
+         () => {
+           const steps = [
+             style({webkitTransform: 'translateX(0px)'}),
+             animate(1000, style({webkitTransform: 'translateX(100px)'}))
+           ];
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
+
+      it('should allow for old CSS properties (like transform) to be auto-prefixed by webkit',
+         () => {
+           const steps = [
+             style({transform: 'translateX(-100px)'}),
+             animate(1000, style({transform: 'translateX(500px)'}))
+           ];
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
     });
 
     describe('keyframe building', () => {
@@ -352,10 +379,44 @@ export function main() {
           ]);
           expect(finalPlayer.delay).toEqual(1500);
         });
+
+        it('should allow a float-based delay value to be used', () => {
+          let steps: any[] = [
+            animate('.75s 0.75s', style({width: '300px'})),
+          ];
+
+          let players = invokeAnimationSequence(rootElement, steps);
+          expect(players.length).toEqual(1);
+
+          let p1 = players.pop() !;
+          expect(p1.duration).toEqual(1500);
+          expect(p1.keyframes).toEqual([
+            {width: '*', offset: 0},
+            {width: '*', offset: 0.5},
+            {width: '300px', offset: 1},
+          ]);
+
+
+          steps = [
+            style({width: '100px'}),
+            animate('.5s .5s', style({width: '200px'})),
+          ];
+
+          players = invokeAnimationSequence(rootElement, steps);
+          expect(players.length).toEqual(1);
+
+          p1 = players.pop() !;
+          expect(p1.duration).toEqual(1000);
+          expect(p1.keyframes).toEqual([
+            {width: '100px', offset: 0},
+            {width: '100px', offset: 0.5},
+            {width: '200px', offset: 1},
+          ]);
+        });
       });
 
-      describe('subtitutions', () => {
-        it('should allow params to be subtituted even if they are not defaulted in a reusable animation',
+      describe('substitutions', () => {
+        it('should allow params to be substituted even if they are not defaulted in a reusable animation',
            () => {
              const myAnimation = animation([
                style({left: '{{ start }}'}),

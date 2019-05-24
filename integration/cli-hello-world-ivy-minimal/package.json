@@ -1,0 +1,51 @@
+{
+  "name": "cli-hello-world-ivy-minimal",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "ng build --prod --progress=false",
+    "e2e": "ng e2e --webdriver-update=false",
+    "lint": "ng lint",
+    "ng": "ng",
+    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG && yarn ivy-ngcc",
+    "start": "ng serve",
+    "pretest": "ng version",
+    "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "core-js": "file:../../node_modules/core-js",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "^1.9.3",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "0.800.0-rc.2",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/language-service": "file:../../dist/packages-dist/language-service",
+    "@types/jasmine": "~2.8.8",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "~8.9.4",
+    "codelyzer": "~4.5.0",
+    "jasmine-core": "~2.99.1",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~3.1.1",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~1.1.2",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "ts-node": "~7.0.0",
+    "tslint": "~5.11.0",
+    "typescript": "file:../../node_modules/typescript"
+  }
+}

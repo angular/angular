@@ -12,6 +12,8 @@ import {ValueTransformer, visitValue} from '../util';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
 
+const TS = /^(?!.*\.d\.ts$).*\.ts$/;
+
 export class ResolvedStaticSymbol {
   constructor(public symbol: StaticSymbol, public metadata: any) {}
 }
@@ -39,16 +41,15 @@ export interface StaticSymbolResolverHost {
    * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
+
   /**
-   * Converts a file path to a module name that can be used as an `import.
-   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
-   *
-   * See ImportResolver.
+   * Get a file suitable for display to the user that should be relative to the project directory
+   * or the current directory.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
+  getOutputName(filePath: string): string;
 }
 
-const SUPPORTED_SCHEMA_VERSION = 3;
+const SUPPORTED_SCHEMA_VERSION = 4;
 
 /**
  * This class is responsible for loading metadata per symbol,
@@ -105,10 +106,10 @@ export class StaticSymbolResolver {
    *
    * @param staticSymbol the symbol for which to generate a import symbol
    */
-  getImportAs(staticSymbol: StaticSymbol): StaticSymbol|null {
+  getImportAs(staticSymbol: StaticSymbol, useSummaries: boolean = true): StaticSymbol|null {
     if (staticSymbol.members.length) {
       const baseSymbol = this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name);
-      const baseImportAs = this.getImportAs(baseSymbol);
+      const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
       return baseImportAs ?
           this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
           null;
@@ -118,14 +119,14 @@ export class StaticSymbolResolver {
       const summarizedName = stripSummaryForJitNameSuffix(staticSymbol.name);
       const baseSymbol =
           this.getStaticSymbol(summarizedFileName, summarizedName, staticSymbol.members);
-      const baseImportAs = this.getImportAs(baseSymbol);
+      const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
       return baseImportAs ?
           this.getStaticSymbol(
               summaryForJitFileName(baseImportAs.filePath), summaryForJitName(baseImportAs.name),
               baseSymbol.members) :
           null;
     }
-    let result = this.summaryResolver.getImportAs(staticSymbol);
+    let result = (useSummaries && this.summaryResolver.getImportAs(staticSymbol)) || null;
     if (!result) {
       result = this.importAs.get(staticSymbol) !;
     }
@@ -153,19 +154,15 @@ export class StaticSymbolResolver {
     if (isGeneratedFile(staticSymbol.filePath)) {
       return null;
     }
-    let resolvedSymbol = this.resolveSymbol(staticSymbol);
+    let resolvedSymbol = unwrapResolvedMetadata(this.resolveSymbol(staticSymbol));
     while (resolvedSymbol && resolvedSymbol.metadata instanceof StaticSymbol) {
-      resolvedSymbol = this.resolveSymbol(resolvedSymbol.metadata);
+      resolvedSymbol = unwrapResolvedMetadata(this.resolveSymbol(resolvedSymbol.metadata));
     }
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
   }
 
-  /**
-   * Converts a file path to a module name that can be used as an `import`.
-   */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
-    return this.knownFileNameToModuleNames.get(importedFilePath) ||
-        this.host.fileNameToModuleName(importedFilePath, containingFilePath);
+  getKnownModuleName(filePath: string): string|null {
+    return this.knownFileNameToModuleNames.get(filePath) || null;
   }
 
   recordImportAs(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol) {
@@ -197,7 +194,7 @@ export class StaticSymbolResolver {
     }
   }
 
-  /* @internal */
+  /** @internal */
   ignoreErrorsFor<T>(cb: () => T) {
     const recorder = this.errorRecorder;
     this.errorRecorder = () => {};
@@ -215,7 +212,7 @@ export class StaticSymbolResolver {
     if (!baseResolvedSymbol) {
       return null;
     }
-    const baseMetadata = baseResolvedSymbol.metadata;
+    let baseMetadata = unwrapResolvedMetadata(baseResolvedSymbol.metadata);
     if (baseMetadata instanceof StaticSymbol) {
       return new ResolvedStaticSymbol(
           staticSymbol, this.getStaticSymbol(baseMetadata.filePath, baseMetadata.name, members));
@@ -251,7 +248,7 @@ export class StaticSymbolResolver {
   }
 
   /**
-   * hasDecorators checks a file's metadata for the presense of decorators without evalutating the
+   * hasDecorators checks a file's metadata for the presence of decorators without evaluating the
    * metadata.
    *
    * @param filePath the absolute path to examine for decorators.
@@ -292,7 +289,11 @@ export class StaticSymbolResolver {
     this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
-
+    if (metadata['importAs']) {
+      // Index bundle indices should use the importAs module name defined
+      // in the bundle.
+      this.knownFileNameToModuleNames.set(filePath, metadata['importAs']);
+    }
     // handle the symbols in one of the re-export location
     if (metadata['exports']) {
       for (const moduleExport of metadata['exports']) {
@@ -332,7 +333,7 @@ export class StaticSymbolResolver {
     }
 
     // handle the actual metadata. Has to be after the exports
-    // as there migth be collisions in the names, and we want the symbols
+    // as there might be collisions in the names, and we want the symbols
     // of the current module to win ofter reexports.
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
@@ -352,8 +353,8 @@ export class StaticSymbolResolver {
           // correctly.
           const originFilePath = this.resolveModule(origin, filePath);
           if (!originFilePath) {
-            this.reportError(
-                new Error(`Couldn't resolve original symbol for ${origin} from ${filePath}`));
+            this.reportError(new Error(
+                `Couldn't resolve original symbol for ${origin} from ${this.host.getOutputName(filePath)}`));
           } else {
             this.symbolResourcePaths.set(symbol, originFilePath);
           }
@@ -375,11 +376,26 @@ export class StaticSymbolResolver {
     // (e.g. their constructor parameters).
     // We do this to prevent introducing deep imports
     // as we didn't generate .ngfactory.ts files with proper reexports.
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && metadata &&
+    const isTsFile = TS.test(sourceSymbol.filePath);
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && !isTsFile && metadata &&
         metadata['__symbolic'] === 'class') {
       const transformedMeta = {__symbolic: 'class', arity: metadata.arity};
       return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
     }
+
+    let _originalFileMemo: string|undefined;
+    const getOriginalName: () => string = () => {
+      if (!_originalFileMemo) {
+        // Guess what the original file name is from the reference. If it has a `.d.ts` extension
+        // replace it with `.ts`. If it already has `.ts` just leave it in place. If it doesn't have
+        // .ts or .d.ts, append `.ts'. Also, if it is in `node_modules`, trim the `node_module`
+        // location as it is not important to finding the file.
+        _originalFileMemo =
+            this.host.getOutputName(topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts')
+                                        .replace(/^.*node_modules[/\\]/, ''));
+      }
+      return _originalFileMemo;
+    };
 
     const self = this;
 
@@ -404,10 +420,20 @@ export class StaticSymbolResolver {
             if (!filePath) {
               return {
                 __symbolic: 'error',
-                message: `Could not resolve ${module} relative to ${sourceSymbol.filePath}.`
+                message: `Could not resolve ${module} relative to ${
+                    self.host.getMetadataFor(sourceSymbol.filePath)}.`,
+                line: map['line'],
+                character: map['character'],
+                fileName: getOriginalName()
               };
             }
-            return self.getStaticSymbol(filePath, name);
+            return {
+              __symbolic: 'resolved',
+              symbol: self.getStaticSymbol(filePath, name),
+              line: map['line'],
+              character: map['character'],
+              fileName: getOriginalName()
+            };
           } else if (functionParams.indexOf(name) >= 0) {
             // reference to a function parameter
             return {__symbolic: 'reference', name: name};
@@ -418,14 +444,17 @@ export class StaticSymbolResolver {
             // ambient value
             null;
           }
+        } else if (symbolic === 'error') {
+          return {...map, fileName: getOriginalName()};
         } else {
           return super.visitStringMap(map, functionParams);
         }
       }
     }
     const transformedMeta = visitValue(metadata, new ReferenceTransformer(), []);
-    if (transformedMeta instanceof StaticSymbol) {
-      return this.createExport(sourceSymbol, transformedMeta);
+    let unwrappedTransformedMeta = unwrapResolvedMetadata(transformedMeta);
+    if (unwrappedTransformedMeta instanceof StaticSymbol) {
+      return this.createExport(sourceSymbol, unwrappedTransformedMeta);
     }
     return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
   }
@@ -463,7 +492,7 @@ export class StaticSymbolResolver {
       if (moduleMetadatas) {
         let maxVersion = -1;
         moduleMetadatas.forEach((md) => {
-          if (md['version'] > maxVersion) {
+          if (md && md['version'] > maxVersion) {
             maxVersion = md['version'];
             moduleMetadata = md;
           }
@@ -476,7 +505,7 @@ export class StaticSymbolResolver {
       if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
         const errorMessage = moduleMetadata['version'] == 2 ?
             `Unsupported metadata version ${moduleMetadata['version']} for module ${module}. This module should be compiled with a newer version of ngc` :
-            `Metadata version mismatch for module ${module}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
+            `Metadata version mismatch for module ${this.host.getOutputName(module)}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
         this.reportError(new Error(errorMessage));
       }
       this.metadataCache.set(module, moduleMetadata);
@@ -489,9 +518,8 @@ export class StaticSymbolResolver {
     const filePath = this.resolveModule(module, containingFile);
     if (!filePath) {
       this.reportError(
-          new Error(`Could not resolve module ${module}${containingFile ? ` relative to $ {
-            containingFile
-          } `: ''}`));
+          new Error(`Could not resolve module ${module}${containingFile ? ' relative to ' +
+            this.host.getOutputName(containingFile) : ''}`));
       return this.getStaticSymbol(`ERROR:${module}`, symbolName);
     }
     return this.getStaticSymbol(filePath, symbolName);
@@ -512,4 +540,11 @@ export class StaticSymbolResolver {
 // See https://github.com/Microsoft/TypeScript/blob/master/src/compiler/utilities.ts
 export function unescapeIdentifier(identifier: string): string {
   return identifier.startsWith('___') ? identifier.substr(1) : identifier;
+}
+
+export function unwrapResolvedMetadata(metadata: any): any {
+  if (metadata && metadata.__symbolic === 'resolved') {
+    return metadata.symbol;
+  }
+  return metadata;
 }

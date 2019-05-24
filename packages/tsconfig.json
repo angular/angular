@@ -7,6 +7,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -18,17 +19,28 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable", "es2015.core"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angularjs"]
+    "types": ["angular"]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
   },
   "exclude": [
     "bazel",
+    "common/locales",
     "compiler-cli/integrationtest",
+    "core/schematics",
+    "elements/schematics",
+    // Do not build the example e2e spec files since those require custom typings and
+    // aren't required to build all packages.
+    "examples/**/e2e_test/*",
+    // Exclude the "main.ts" files for each example group because this file is used by
+    // Bazel to launch the devserver and uses AOT compilation.
+    "examples/**/main.ts",
     "platform-server/integrationtest",
-    "common/locales"
+    "router/test/aot_ngsummary_test",
   ]
-
 }

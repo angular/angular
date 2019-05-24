@@ -30,6 +30,11 @@
     border: 1px solid $blue-400;
     box-shadow: 0 2px 2px rgba($blue-400, 0.24), 0 0 2px rgba($blue-400, 0.12);
   }
+
+  &[disabled] {
+    color: lightgrey;
+    cursor: not-allowed;
+  }
 }
 
 .form-select-dropdown {

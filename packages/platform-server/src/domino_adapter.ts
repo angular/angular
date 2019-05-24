@@ -13,6 +13,12 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
 
+function setDomTypes() {
+  // Make all Domino types available as types in the global env.
+  Object.assign(global, domino.impl);
+  (global as any)['KeyboardEvent'] = domino.impl.Event;
+}
+
 /**
  * Parses a document string to a Document object.
  */
@@ -33,7 +39,10 @@ export function serializeDocument(doc: Document): string {
  * DOM Adapter for the server platform based on https://github.com/fgnass/domino.
  */
 export class DominoAdapter extends BrowserDomAdapter {
-  static makeCurrent() { setRootDomAdapter(new DominoAdapter()); }
+  static makeCurrent() {
+    setDomTypes();
+    setRootDomAdapter(new DominoAdapter());
+  }
 
   private static defaultDoc: Document;
 
@@ -91,7 +100,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getProperty(el: Element, name: string): any {
     if (name === 'href') {
       // Domino tries tp resolve href-s which we do not want. Just return the
-      // atribute value.
+      // attribute value.
       return this.getAttribute(el, 'href');
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.
@@ -102,8 +111,8 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   setProperty(el: Element, name: string, value: any) {
     if (name === 'href') {
-      // Eventhough the server renderer reflects any properties to attributes
-      // map 'href' to atribute just to handle when setProperty is directly called.
+      // Even though the server renderer reflects any properties to attributes
+      // map 'href' to attribute just to handle when setProperty is directly called.
       this.setAttribute(el, 'href', value);
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.
@@ -126,7 +135,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   getBaseHref(doc: Document): string {
-    const base = this.querySelector(doc.documentElement, 'base');
+    const base = this.querySelector(doc.documentElement !, 'base');
     let href = '';
     if (base) {
       href = this.getHref(base);
@@ -136,26 +145,27 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   /** @internal */
-  _readStyleAttribute(element: any) {
-    const styleMap = {};
+  _readStyleAttribute(element: any): {[name: string]: string} {
+    const styleMap: {[name: string]: string} = {};
     const styleAttribute = element.getAttribute('style');
     if (styleAttribute) {
       const styleList = styleAttribute.split(/;+/g);
       for (let i = 0; i < styleList.length; i++) {
-        if (styleList[i].length > 0) {
-          const style = styleList[i] as string;
-          const colon = style.indexOf(':');
-          if (colon === -1) {
+        const style = styleList[i].trim();
+        if (style.length > 0) {
+          const colonIndex = style.indexOf(':');
+          if (colonIndex === -1) {
             throw new Error(`Invalid CSS style: ${style}`);
           }
-          (styleMap as any)[style.substr(0, colon).trim()] = style.substr(colon + 1).trim();
+          const name = style.substr(0, colonIndex).trim();
+          styleMap[name] = style.substr(colonIndex + 1).trim();
         }
       }
     }
     return styleMap;
   }
   /** @internal */
-  _writeStyleAttribute(element: any, styleMap: any) {
+  _writeStyleAttribute(element: any, styleMap: {[name: string]: string}) {
     let styleAttrValue = '';
     for (const key in styleMap) {
       const newValue = styleMap[key];
@@ -166,17 +176,22 @@ export class DominoAdapter extends BrowserDomAdapter {
     element.setAttribute('style', styleAttrValue);
   }
   setStyle(element: any, styleName: string, styleValue?: string|null) {
+    styleName = styleName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     const styleMap = this._readStyleAttribute(element);
-    (styleMap as any)[styleName] = styleValue;
+    styleMap[styleName] = styleValue || '';
     this._writeStyleAttribute(element, styleMap);
   }
-  removeStyle(element: any, styleName: string) { this.setStyle(element, styleName, null); }
+  removeStyle(element: any, styleName: string) {
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    this.setStyle(element, styleName, '');
+  }
   getStyle(element: any, styleName: string): string {
     const styleMap = this._readStyleAttribute(element);
-    return styleMap.hasOwnProperty(styleName) ? (styleMap as any)[styleName] : '';
+    return styleMap[styleName] || '';
   }
   hasStyle(element: any, styleName: string, styleValue?: string): boolean {
-    const value = this.getStyle(element, styleName) || '';
+    const value = this.getStyle(element, styleName);
     return styleValue ? value == styleValue : value.length > 0;
   }
 

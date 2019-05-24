@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element, protractor} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {
@@ -23,7 +24,7 @@ describe('WebWorker Router', () => {
 
   const contentSelector = 'app main h1';
   const navSelector = 'app nav ul';
-  const baseUrl = 'all/playground/src/web_workers/router/index.html';
+  const baseUrl = '/';
 
   it('should route on click', () => {
     browser.get(baseUrl);

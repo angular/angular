@@ -16,9 +16,7 @@ import {SwitchView} from './ng_switch';
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Adds / removes DOM sub-trees based on a numeric value. Tailored for pluralization.
- *
- * @howToUse
+ * @usageNotes
  * ```
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">there is nothing</ng-template>
@@ -28,6 +26,8 @@ import {SwitchView} from './ng_switch';
  * ```
  *
  * @description
+ *
+ * Adds / removes DOM sub-trees based on a numeric value. Tailored for pluralization.
  *
  * Displays DOM sub-trees that match the switch expression value, or failing that, DOM sub-trees
  * that match the switch expression's pluralization category.
@@ -42,12 +42,14 @@ import {SwitchView} from './ng_switch';
  *
  * See http://cldr.unicode.org/index/cldr-spec/plural-rules
  *
- * @experimental
+ * @publicApi
  */
 @Directive({selector: '[ngPlural]'})
 export class NgPlural {
-  private _switchValue: number;
-  private _activeView: SwitchView;
+  // TODO(issue/24571): remove '!'.
+  private _switchValue !: number;
+  // TODO(issue/24571): remove '!'.
+  private _activeView !: SwitchView;
   private _caseViews: {[k: string]: SwitchView} = {};
 
   constructor(private _localization: NgLocalization) {}
@@ -83,10 +85,12 @@ export class NgPlural {
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Creates a view that will be added/removed from the parent {@link NgPlural} when the
- *             given expression matches the plural expression according to CLDR rules.
+ * @description
  *
- * @howToUse
+ * Creates a view that will be added/removed from the parent {@link NgPlural} when the
+ * given expression matches the plural expression according to CLDR rules.
+ *
+ * @usageNotes
  * ```
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">...</ng-template>
@@ -96,7 +100,7 @@ export class NgPlural {
  *
  * See {@link NgPlural} for more details and example.
  *
- * @experimental
+ * @publicApi
  */
 @Directive({selector: '[ngPluralCase]'})
 export class NgPluralCase {

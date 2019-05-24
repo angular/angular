@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, animate, keyframes, state, style, transition, trigger} from '@angular/core';
+import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {Component} from '@angular/core';
 
 @Component({
   host: {
@@ -15,7 +16,7 @@ import {Component, animate, keyframes, state, style, transition, trigger} from '
     '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")'
   },
   selector: 'animate-app',
-  styleUrls: ['css/animate-app.css'],
+  styleUrls: ['../css/animate-app.css'],
   template: `
     <button (click)="state='start'">Start State</button>
     <button (click)="state='active'">Active State</button>

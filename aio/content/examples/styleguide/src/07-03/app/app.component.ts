@@ -8,6 +8,5 @@ import { HeroService } from './heroes';
   template: `
       <toh-heroes></toh-heroes>
     `,
-  providers: [HeroService]
 })
 export class AppComponent {}

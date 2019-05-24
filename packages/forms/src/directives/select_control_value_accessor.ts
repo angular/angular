@@ -27,35 +27,27 @@ function _extractId(valueString: string): string {
 }
 
 /**
- * @whatItDoes Writes values and listens to changes on a select element.
+ * @description
+ * The `ControlValueAccessor` for writing select control values and listening to select control
+ * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
  *
- * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
- * to keep the view synced with the {@link FormControl} model.
+ * @usageNotes
  *
- * @howToUse
+ * ### Using select controls in a reactive form
  *
- * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
- * value accessor will be active on any select control that has a form directive. You do
- * **not** need to add a special selector to activate it.
+ * The following examples show how to use a select control in a reactive form.
  *
- * ### How to use select controls with form directives
+ * {@example forms/ts/reactiveSelectControl/reactive_select_control_example.ts region='Component'}
+ *
+ * ### Using select controls in a template-driven form
  *
  * To use a select in a template-driven form, simply add an `ngModel` and a `name`
  * attribute to the main `<select>` tag.
  *
- * If your option values are simple strings, you can bind to the normal `value` property
- * on the option.  If your option values happen to be objects (and you'd like to save the
- * selection in your form as an object), use `ngValue` instead:
- *
  * {@example forms/ts/selectControl/select_control_example.ts region='Component'}
  *
- * In reactive forms, you'll also want to add your form directive (`formControlName` or
- * `formControl`) on the main `<select>` tag. Like in the former example, you have the
- * choice of binding to the  `value` or `ngValue` property on the select's options.
- *
- * {@example forms/ts/reactiveSelectControl/reactive_select_control_example.ts region='Component'}
- *
- * ### Caveat: Option selection
+ * ### Customizing option selection
  *
  * Angular uses object identity to select option. It's possible for the identities of items
  * to change while the data does not. This can happen, for example, if the items are produced
@@ -66,10 +58,12 @@ function _extractId(valueString: string): string {
  * `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
  * If `compareWith` is given, Angular selects option by the return value of the function.
  *
- * #### Syntax
+ * ```ts
+ * const selectedCountriesControl = new FormControl();
+ * ```
  *
  * ```
- * <select [compareWith]="compareFn"  [(ngModel)]="selectedCountries">
+ * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
  *     <option *ngFor="let country of countries" [ngValue]="country">
  *         {{country.name}}
  *     </option>
@@ -80,14 +74,14 @@ function _extractId(valueString: string): string {
  * }
  * ```
  *
- * Note: We listen to the 'change' event because 'input' events aren't fired
+ * **Note:** We listen to the 'change' event because 'input' events aren't fired
  * for selects in Firefox and IE:
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
- * * **npm package**: `@angular/forms`
- *
- * @stable
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -102,9 +96,23 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   /** @internal */
   _idCounter: number = 0;
 
+  /**
+   * @description
+   * The registered callback function called when a change event occurs on the input element.
+   */
   onChange = (_: any) => {};
+
+  /**
+   * @description
+   * The registered callback function called when a blur event occurs on the input element.
+   */
   onTouched = () => {};
 
+  /**
+   * @description
+   * Tracks the option comparison algorithm for tracking identities when
+   * checking for changes.
+   */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
     if (typeof fn !== 'function') {
@@ -117,6 +125,12 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
+  /**
+   * Sets the "value" property on the input element. The "selectedIndex"
+   * property is also set if an ID is provided on the option element.
+   *
+   * @param value The checked value
+   */
   writeValue(value: any): void {
     this.value = value;
     const id: string|null = this._getOptionId(value);
@@ -127,14 +141,32 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
   }
 
+  /**
+   * @description
+   * Registers a function called when the control value changes.
+   *
+   * @param fn The callback function
+   */
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
       this.value = this._getOptionValue(valueString);
       fn(this.value);
     };
   }
+
+  /**
+   * @description
+   * Registers a function called when the control is touched.
+   *
+   * @param fn The callback function
+   */
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
+  /**
+   * Sets the "disabled" property on the select input element.
+   *
+   * @param isDisabled The disabled value
+   */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
@@ -158,17 +190,23 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 }
 
 /**
- * @whatItDoes Marks `<option>` as dynamic, so Angular can be notified when options change.
+ * @description
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * @howToUse
+ * @see `SelectControlValueAccessor`
  *
- * See docs for {@link SelectControlValueAccessor} for usage examples.
- *
- * @stable
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {
-  id: string;
+  /**
+   * @description
+   * ID of the option element
+   */
+  // TODO(issue/24571): remove '!'.
+  id !: string;
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,
@@ -176,6 +214,11 @@ export class NgSelectOption implements OnDestroy {
     if (this._select) this.id = this._select._registerOption();
   }
 
+  /**
+   * @description
+   * Tracks the value bound to the option element. Unlike the value binding,
+   * ngValue supports binding to objects.
+   */
   @Input('ngValue')
   set ngValue(value: any) {
     if (this._select == null) return;
@@ -184,6 +227,11 @@ export class NgSelectOption implements OnDestroy {
     this._select.writeValue(this._select.value);
   }
 
+  /**
+   * @description
+   * Tracks simple string values bound to the option element.
+   * For objects, use the `ngValue` input binding.
+   */
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
@@ -195,6 +243,10 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
+  /**
+   * @description
+   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
+   */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

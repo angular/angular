@@ -21,64 +21,63 @@ module.exports = function matchUpDirectiveDecorators() {
         if (doc.docType === 'directive') {
 
           doc.selector = stripQuotes(doc.directiveOptions.selector);
+          doc.selectorArray = doc.selector ? doc.selector.split(',') : [];
           doc.exportAs = stripQuotes(doc.directiveOptions.exportAs);
+          doc.exportAsArray = doc.exportAs ? doc.exportAs.split(',') : [];
 
-          doc.inputs = getBindingInfo(doc.directiveOptions.inputs, doc.members, 'Input');
-          doc.outputs = getBindingInfo(doc.directiveOptions.outputs, doc.members, 'Output');
+          attachBindingInfo(doc.directiveOptions.inputs, doc.members, 'Input');
+          attachBindingInfo(doc.directiveOptions.outputs, doc.members, 'Output');
         }
       });
     }
   };
 };
 
-function getBindingInfo(directiveBindings, members, bindingType) {
+function attachBindingInfo(directiveBindings, members, bindingType) {
   const bindings = {};
 
-  // Parse the bindings from the directive decorator
-  if (directiveBindings) {
-    directiveBindings.forEach(function(binding) {
-      const bindingInfo = parseBinding(binding);
-      bindings[bindingInfo.propertyName] = bindingInfo;
-    });
-  }
-
   if (members) {
+    // Parse the bindings from the directive decorator
+    if (directiveBindings) {
+      directiveBindings.forEach(function(binding) {
+        const bindingInfo = parseBinding(bindingType, binding);
+        bindings[bindingInfo.propertyName] = bindingInfo;
+      });
+    }
+
     members.forEach(function(member) {
       if (member.decorators) {
         // Search for members with binding decorators
         member.decorators.forEach(function(decorator) {
           if (decorator.name === bindingType) {
-            bindings[member.name] = createBindingInfo(member.name, decorator.arguments[0] || member.name);
+            bindings[member.name] = createBindingInfo(bindingType, member.name, decorator.arguments[0] || member.name);
           }
         });
       }
-
-      // Now ensure that any bindings have the associated member attached
-      // Note that this binding could have come from the directive decorator
+      // Attach binding info to the member
+      // Note: this may have come from the `@Directive` decorator or from a property decorator such as `@Input`.
       if (bindings[member.name]) {
-        bindings[member.name].memberDoc = member;
+        member.boundTo = bindings[member.name];
       }
     });
   }
-
-  // Convert the map back to an array
-  return Object.keys(bindings).map(function(key) { return bindings[key]; });
 }
 
 function stripQuotes(value) {
   return (typeof(value) === 'string') ? value.trim().replace(/^(['"])(.*)\1$/, '$2') : value;
 }
 
-function parseBinding(option) {
+function parseBinding(bindingType, option) {
   // Directive decorator bindings are of the form: "propName : bindingName" (bindingName is optional)
   const optionPair = option.split(':');
   const propertyName = optionPair[0].trim();
   const bindingName = (optionPair[1] || '').trim() || propertyName;
-  return createBindingInfo(propertyName, bindingName);
+  return createBindingInfo(bindingType, propertyName, bindingName);
 }
 
-function createBindingInfo(propertyName, bindingName) {
+function createBindingInfo(bindingType, propertyName, bindingName) {
   return {
+    type: bindingType,
     propertyName: stripQuotes(propertyName),
     bindingName: stripQuotes(bindingName)
   };

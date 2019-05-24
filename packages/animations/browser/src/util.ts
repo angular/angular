@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadata, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
+import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
+import {isNode} from './render/shared';
 
 export const ONE_SECOND = 1000;
 
@@ -62,7 +65,7 @@ function parseTimeExpression(
 
     const delayMatch = matches[3];
     if (delayMatch != null) {
-      delay = _convertTimeValueToMS(Math.floor(parseFloat(delayMatch)), matches[4]);
+      delay = _convertTimeValueToMS(parseFloat(delayMatch), matches[4]);
     }
 
     const easingVal = matches[5];
@@ -123,12 +126,50 @@ export function copyStyles(
   return destination;
 }
 
-export function setStyles(element: any, styles: ɵStyleData) {
+function getStyleAttributeString(element: any, key: string, value: string) {
+  // Return the key-value pair string to be added to the style attribute for the
+  // given CSS style key.
+  if (value) {
+    return key + ':' + value + ';';
+  } else {
+    return '';
+  }
+}
+
+function writeStyleAttribute(element: any) {
+  // Read the style property of the element and manually reflect it to the
+  // style attribute. This is needed because Domino on platform-server doesn't
+  // understand the full set of allowed CSS properties and doesn't reflect some
+  // of them automatically.
+  let styleAttrValue = '';
+  for (let i = 0; i < element.style.length; i++) {
+    const key = element.style.item(i);
+    styleAttrValue += getStyleAttributeString(element, key, element.style.getPropertyValue(key));
+  }
+  for (const key in element.style) {
+    // Skip internal Domino properties that don't need to be reflected.
+    if (!element.style.hasOwnProperty(key) || key.startsWith('_')) {
+      continue;
+    }
+    const dashKey = camelCaseToDashCase(key);
+    styleAttrValue += getStyleAttributeString(element, dashKey, element.style[key]);
+  }
+  element.setAttribute('style', styleAttrValue);
+}
+
+export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[key: string]: any}) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
       const camelProp = dashCaseToCamelCase(prop);
+      if (formerStyles && !formerStyles.hasOwnProperty(prop)) {
+        formerStyles[prop] = element.style[camelProp];
+      }
       element.style[camelProp] = styles[prop];
     });
+    // On the server set the 'style' attribute since it's not automatically reflected.
+    if (isNode()) {
+      writeStyleAttribute(element);
+    }
   }
 }
 
@@ -138,6 +179,10 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
       const camelProp = dashCaseToCamelCase(prop);
       element.style[camelProp] = '';
     });
+    // On the server set the 'style' attribute since it's not automatically reflected.
+    if (isNode()) {
+      writeStyleAttribute(element);
+    }
   }
 }
 
@@ -185,7 +230,7 @@ export function interpolateParams(
   const original = value.toString();
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
-    // this means that the value was never overidden by the data passed in by the user
+    // this means that the value was never overridden by the data passed in by the user
     if (!params.hasOwnProperty(varName)) {
       errors.push(`Please provide a value for the animation param ${varName}`);
       localVal = '';
@@ -229,6 +274,75 @@ export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
+function camelCaseToDashCase(input: string): string {
+  return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
 export function allowPreviousPlayerStylesMerge(duration: number, delay: number) {
   return duration === 0 || delay === 0;
+}
+
+export function balancePreviousStylesIntoKeyframes(
+    element: any, keyframes: {[key: string]: any}[], previousStyles: {[key: string]: any}) {
+  const previousStyleProps = Object.keys(previousStyles);
+  if (previousStyleProps.length && keyframes.length) {
+    let startingKeyframe = keyframes[0];
+    let missingStyleProps: string[] = [];
+    previousStyleProps.forEach(prop => {
+      if (!startingKeyframe.hasOwnProperty(prop)) {
+        missingStyleProps.push(prop);
+      }
+      startingKeyframe[prop] = previousStyles[prop];
+    });
+
+    if (missingStyleProps.length) {
+      // tslint:disable-next-line
+      for (var i = 1; i < keyframes.length; i++) {
+        let kf = keyframes[i];
+        missingStyleProps.forEach(function(prop) { kf[prop] = computeStyle(element, prop); });
+      }
+    }
+  }
+  return keyframes;
+}
+
+export function visitDslNode(
+    visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
+export function visitDslNode(
+    visitor: AnimationAstVisitor, node: AnimationAst<AnimationMetadataType>, context: any): any;
+export function visitDslNode(visitor: any, node: any, context: any): any {
+  switch (node.type) {
+    case AnimationMetadataType.Trigger:
+      return visitor.visitTrigger(node, context);
+    case AnimationMetadataType.State:
+      return visitor.visitState(node, context);
+    case AnimationMetadataType.Transition:
+      return visitor.visitTransition(node, context);
+    case AnimationMetadataType.Sequence:
+      return visitor.visitSequence(node, context);
+    case AnimationMetadataType.Group:
+      return visitor.visitGroup(node, context);
+    case AnimationMetadataType.Animate:
+      return visitor.visitAnimate(node, context);
+    case AnimationMetadataType.Keyframes:
+      return visitor.visitKeyframes(node, context);
+    case AnimationMetadataType.Style:
+      return visitor.visitStyle(node, context);
+    case AnimationMetadataType.Reference:
+      return visitor.visitReference(node, context);
+    case AnimationMetadataType.AnimateChild:
+      return visitor.visitAnimateChild(node, context);
+    case AnimationMetadataType.AnimateRef:
+      return visitor.visitAnimateRef(node, context);
+    case AnimationMetadataType.Query:
+      return visitor.visitQuery(node, context);
+    case AnimationMetadataType.Stagger:
+      return visitor.visitStagger(node, context);
+    default:
+      throw new Error(`Unable to resolve animation metadata node #${node.type}`);
+  }
+}
+
+export function computeStyle(element: any, prop: string): string {
+  return (<any>window.getComputedStyle(element))[prop];
 }

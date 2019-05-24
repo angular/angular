@@ -9,20 +9,26 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10) return 3;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
+  return 5;
+}
+
 export default [
-  'mt',
+  'mt', [['am', 'pm'], ['AM', 'PM'], u], u,
   [
-    ['am', 'pm'],
-    ['AM', 'PM'],
-  ],
-  ,
-  [
-    ['Ħd', 'T', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'], ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
+    ['Ħd', 'T', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'],
+    ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
     ['Il-Ħadd', 'It-Tnejn', 'It-Tlieta', 'L-Erbgħa', 'Il-Ħamis', 'Il-Ġimgħa', 'Is-Sibt'],
     ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib']
   ],
   [
-    ['Ħd', 'Tn', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'], ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
+    ['Ħd', 'Tn', 'Tl', 'Er', 'Ħm', 'Ġm', 'Sb'],
+    ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib'],
     ['Il-Ħadd', 'It-Tnejn', 'It-Tlieta', 'L-Erbgħa', 'Il-Ħamis', 'Il-Ġimgħa', 'Is-Sibt'],
     ['Ħad', 'Tne', 'Tli', 'Erb', 'Ħam', 'Ġim', 'Sib']
   ],
@@ -42,21 +48,10 @@ export default [
       'Ottubru', 'Novembru', 'Diċembru'
     ]
   ],
-  [['QK', 'WK'], , ['Qabel Kristu', 'Wara Kristu']], 0, [6, 0],
+  [['QK', 'WK'], u, ['Qabel Kristu', 'Wara Kristu']], 0, [6, 0],
   ['dd/MM/y', 'dd MMM y', 'd \'ta\'’ MMMM y', 'EEEE, d \'ta\'’ MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'ewro',
-  function(n: number):
-      number {
-        if (n === 1) return 1;
-        if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10) return 3;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
-        return 5;
-      }
+  {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

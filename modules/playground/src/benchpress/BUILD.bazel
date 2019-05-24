@@ -1,0 +1,9 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+)

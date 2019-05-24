@@ -11,41 +11,76 @@
 import 'reflect-metadata';
 
 import * as ts from 'typescript';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as tsickle from 'tsickle';
+
+import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
-import * as ngc from './transformers/entry_points';
 import {GENERATED_FILES} from './transformers/util';
 
-import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
+import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
-import {isSyntaxError} from '@angular/compiler';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
-    config?: NgcParsedConfiguration): number {
+    config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers, programReuse?: {
+      program: api.Program | undefined,
+    }): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
-    return reportErrorsAndExit(options, configErrors, consoleError);
+    return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
   if (watch) {
     const result = watchMode(project, options, consoleError);
-    return reportErrorsAndExit({}, result.firstCompileResult, consoleError);
+    return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
+  }
+
+  let oldProgram: api.Program|undefined;
+  if (programReuse !== undefined) {
+    oldProgram = programReuse.program;
+  }
+
+  const {diagnostics: compileDiags, program} = performCompilation({
+    rootNames,
+    options,
+    emitFlags,
+    oldProgram,
+    emitCallback: createEmitCallback(options), customTransformers
+  });
+  if (programReuse !== undefined) {
+    programReuse.program = program;
+  }
+  return reportErrorsAndExit(compileDiags, options, consoleError);
+}
+
+export function mainDiagnosticsForTest(
+    args: string[], config?: NgcParsedConfiguration): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+  let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
+      config || readNgcCommandLineAndConfiguration(args);
+  if (configErrors.length) {
+    return configErrors;
   }
   const {diagnostics: compileDiags} = performCompilation(
       {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
-  return reportErrorsAndExit(options, compileDiags, consoleError);
+  return compileDiags;
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators = options.annotationsAs !== 'decorators';
+  const transformDecorators = !options.enableIvy && options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;
   }
-  const tsickleHost: tsickle.TsickleHost = {
+  if (transformDecorators) {
+    // This is needed as a workaround for https://github.com/angular/tsickle/issues/635
+    // Otherwise tsickle might emit references to non imported values
+    // as TypeScript elided the import.
+    options.emitDecoratorMetadata = true;
+  }
+  const tsickleHost: Pick<
+      tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
+      'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
+      'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
     shouldSkipTsickleProcessing: (fileName) =>
                                      /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
     pathToModuleName: (context, importPath) => '',
@@ -53,30 +88,45 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: true, transformDecorators, transformTypesToClosure,
+    convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
   };
 
-  return ({
-           program,
-           targetSourceFile,
-           writeFile,
-           cancellationToken,
-           emitOnlyDtsFiles,
-           customTransformers = {},
-           host,
-           options
-         }) =>
-             tsickle.emitWithTsickle(
-                 program, tsickleHost, host, options, targetSourceFile, writeFile,
-                 cancellationToken, emitOnlyDtsFiles, {
-                   beforeTs: customTransformers.before,
-                   afterTs: customTransformers.after,
-                 });
+  if (options.annotateForClosureCompiler || options.annotationsAs === 'static fields') {
+    return ({
+             program,
+             targetSourceFile,
+             writeFile,
+             cancellationToken,
+             emitOnlyDtsFiles,
+             customTransformers = {},
+             host,
+             options
+           }) =>
+               // tslint:disable-next-line:no-require-imports only depend on tsickle if requested
+        require('tsickle').emitWithTsickle(
+            program, {...tsickleHost, options, host}, host, options, targetSourceFile, writeFile,
+            cancellationToken, emitOnlyDtsFiles, {
+              beforeTs: customTransformers.before,
+              afterTs: customTransformers.after,
+            });
+  } else {
+    return ({
+             program,
+             targetSourceFile,
+             writeFile,
+             cancellationToken,
+             emitOnlyDtsFiles,
+             customTransformers = {},
+           }) =>
+               program.emit(
+                   targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
+                   {after: customTransformers.after, before: customTransformers.before});
+  }
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
 
-function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
+export function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
   const options: api.CompilerOptions = {};
   const parsedArgs = require('minimist')(args);
   if (parsedArgs.i18nFile) options.i18nInFile = parsedArgs.i18nFile;
@@ -127,11 +177,41 @@ export function readCommandLineAndConfiguration(
   };
 }
 
+function getFormatDiagnosticsHost(options?: api.CompilerOptions): ts.FormatDiagnosticsHost {
+  const basePath = options ? options.basePath : undefined;
+  return {
+    getCurrentDirectory: () => basePath || ts.sys.getCurrentDirectory(),
+    // We need to normalize the path separators here because by default, TypeScript
+    // compiler hosts use posix canonical paths. In order to print consistent diagnostics,
+    // we also normalize the paths.
+    getCanonicalFileName: fileName => fileName.replace(/\\/g, '/'),
+    getNewLine: () => {
+      // Manually determine the proper new line string based on the passed compiler
+      // options. There is no public TypeScript function that returns the corresponding
+      // new line string. see: https://github.com/Microsoft/TypeScript/issues/29581
+      if (options && options.newLine !== undefined) {
+        return options.newLine === ts.NewLineKind.LineFeed ? '\n' : '\r\n';
+      }
+      return ts.sys.newLine;
+    },
+  };
+}
+
 function reportErrorsAndExit(
-    options: api.CompilerOptions, allDiagnostics: Diagnostics,
+    allDiagnostics: Diagnostics, options?: api.CompilerOptions,
     consoleError: (s: string) => void = console.error): number {
-  if (allDiagnostics.length) {
-    consoleError(formatDiagnostics(options, allDiagnostics));
+  const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
+  if (errorsAndWarnings.length) {
+    const formatHost = getFormatDiagnosticsHost(options);
+    if (options && options.enableIvy === true) {
+      const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
+      const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
+      consoleError(replaceTsWithNgInErrors(
+          ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
+      consoleError(formatDiagnostics(ngDiagnostics, formatHost));
+    } else {
+      consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
+    }
   }
   return exitCodeFromResult(allDiagnostics);
 }
@@ -139,7 +219,7 @@ function reportErrorsAndExit(
 export function watchMode(
     project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
-    consoleError(formatDiagnostics(options, diagnostics));
+    consoleError(formatDiagnostics(diagnostics, getFormatDiagnosticsHost(options)));
   }, options, options => createEmitCallback(options)));
 }
 

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }            from '@angular/router';
 
-import { Hero } from '../model/hero';
+import { Hero }        from '../model/hero';
 import { HeroService } from '../model/hero.service';
 
 @Component({
@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.heroService.getHeroes()
-      .then(heroes => this.heroes = heroes.slice(1, 5));
+      .subscribe(heroes => this.heroes = heroes.slice(1, 5));
   }
 
   // #docregion goto-detail

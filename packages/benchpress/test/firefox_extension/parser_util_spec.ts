@@ -19,7 +19,7 @@ function assertEventsEqual(actualEvents: any[], expectedEvents: any[]) {
   }
 }
 
-export function main() {
+{
   describe('convertPerfProfileToEvents', function() {
     it('should convert single instantaneous event', function() {
       const profileData = {

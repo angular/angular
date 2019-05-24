@@ -8,12 +8,11 @@
 
 import {NgModuleRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Observable} from 'rxjs/Observable';
-import {of } from 'rxjs/observable/of';
+import {Observable, of } from 'rxjs';
 
 import {applyRedirects} from '../src/apply_redirects';
-import {LoadedRouterConfig, Routes} from '../src/config';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {LoadedRouterConfig, Route, Routes} from '../src/config';
+import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
 
 describe('applyRedirects', () => {
   const serializer = new DefaultUrlSerializer();
@@ -178,7 +177,7 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
             expectTreeToBe(r, '/a/b');
-            expect(config[0]._loadedConfig).toBe(loadedConfig);
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
           });
     });
 
@@ -294,6 +293,62 @@ describe('applyRedirects', () => {
 
     });
 
+    it('should pass UrlSegments to functions implementing the canLoad guard interface', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      let passedUrlSegments: UrlSegment[];
+
+      const guard = (route: Route, urlSegments: UrlSegment[]) => {
+        passedUrlSegments = urlSegments;
+        return true;
+      };
+      const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
+
+      const config =
+          [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+                expect(passedUrlSegments.length).toBe(2);
+                expect(passedUrlSegments[0].path).toBe('a');
+                expect(passedUrlSegments[1].path).toBe('b');
+              },
+              (e) => { throw 'Should not reach'; });
+
+    });
+
+    it('should pass UrlSegments to objects implementing the canLoad guard interface', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {load: (injector: any, p: any) => of (loadedConfig)};
+
+      let passedUrlSegments: UrlSegment[];
+
+      const guard = {
+        canLoad: (route: Route, urlSegments: UrlSegment[]) => {
+          passedUrlSegments = urlSegments;
+          return true;
+        }
+      };
+      const injector = {get: (token: any) => token === 'guard' ? guard : {injector}};
+
+      const config =
+          [{path: 'a', component: ComponentA, canLoad: ['guard'], loadChildren: 'children'}];
+
+      applyRedirects(<any>injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+                expect(passedUrlSegments.length).toBe(2);
+                expect(passedUrlSegments[0].path).toBe('a');
+                expect(passedUrlSegments[1].path).toBe('b');
+              },
+              (e) => { throw 'Should not reach'; });
+
+    });
+
     it('should work with absolute redirects', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
@@ -304,7 +359,7 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         expectTreeToBe(r, 'a');
-        expect(config[1]._loadedConfig).toBe(loadedConfig);
+        expect((config[1] as any)._loadedConfig).toBe(loadedConfig);
       });
     });
 
@@ -329,7 +384,7 @@ describe('applyRedirects', () => {
           .subscribe(
               r => {
                 expectTreeToBe(r, 'a?k2');
-                expect(config[0]._loadedConfig).toBe(loadedConfig);
+                expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
               },
               (e) => { throw 'Should not reach'; });
     });
@@ -342,7 +397,7 @@ describe('applyRedirects', () => {
       const config: Routes = [{path: '**', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
@@ -354,7 +409,7 @@ describe('applyRedirects', () => {
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
@@ -366,7 +421,7 @@ describe('applyRedirects', () => {
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
   });
 

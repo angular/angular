@@ -7,15 +7,14 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {RequestOptions} from '@angular/http/src/base_request_options';
+import {ContentType} from '@angular/http/src/enums';
+import {Headers} from '@angular/http/src/headers';
+import {stringToArrayBuffer, stringToArrayBuffer8} from '@angular/http/src/http_utils';
+import {ArrayBuffer, Request} from '@angular/http/src/static_request';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
-import {RequestOptions} from '../src/base_request_options';
-import {ContentType} from '../src/enums';
-import {Headers} from '../src/headers';
-import {stringToArrayBuffer, stringToArrayBuffer8} from '../src/http_utils';
-import {ArrayBuffer, Request} from '../src/static_request';
-
-export function main() {
+{
   describe('Request', () => {
     describe('detectContentType', () => {
       it('should return ContentType.NONE', () => {

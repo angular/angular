@@ -5,31 +5,12 @@ Caretaker is responsible for merging PRs into the individual branches and intern
 ## Responsibilities
 
 - Draining the queue of PRs ready to be merged. (PRs with [`PR action: merge`](https://github.com/angular/angular/pulls?q=is%3Aopen+is%3Apr+label%3A%22PR+action%3A+merge%22) label)
-- Assigining [new issues](https://github.com/angular/angular/issues?q=is%3Aopen+is%3Aissue+no%3Alabel) to individual component authors.
-
-## Setup
-
-### Set `upstream` to fetch PRs into your local repo
-
-Use this conmmands to configure your `git` to fetch PRs into your local repo.
-
-```
-git remote add upstream git@github.com:angular/angular.git
-git config --add remote.upstream.fetch +refs/pull/*/head:refs/remotes/upstream/pr/*
-```
-
+- Assigning [new issues](https://github.com/angular/angular/issues?q=is%3Aopen+is%3Aissue+no%3Alabel) to individual component authors.
 
 ## Merging the PR
 
 A PR needs to have `PR action: merge` and `PR target: *` labels to be considered
 ready to merge. Merging is performed by running `merge-pr` with a PR number to merge.
-
-NOTE: before running `merge-pr` ensure that you have synced all of the PRs
-locally by running:
-
-```
-$ git fetch upstream
-```
 
 To merge a PR run:
 
@@ -38,11 +19,12 @@ $ ./scripts/github/merge-pr 1234
 ```
 
 The `merge-pr` script will:
-- Ensure that all approriate labels are on the PR.
-- That the current branch (`master` or `?.?.x` patch) mathches the `PR target: *` label.
-- It will `cherry-pick` all of the SHAs from the PR into the current branch.
+- Ensure that all appropriate labels are on the PR.
+- Fetches the latest PR code from the `angular/angular` repo.
+- It will `cherry-pick` all of the SHAs from the PR into the current corresponding branches `master` and or `?.?.x` (patch).
 - It will rewrite commit history by automatically adding `Close #1234` and `(#1234)` into the commit message.
 
+NOTE: The `merge-pr` will land the PR on `master` and or `?.?.x` (patch) as described by `PR target: *` label.
 
 ### Recovering from failed `merge-pr` due to conflicts
 
@@ -53,8 +35,8 @@ $ ./scripts/github/merge-pr 1234
 ======================
 GitHub Merge PR Steps
 ======================
-   git cherry-pick upstream/pr/1234~1..upstream/pr/1234
-   git filter-branch -f --msg-filter "/usr/local/google/home/misko/angular-pr/scripts/github/utils/github.closes 1234" HEAD~1..HEAD
+   git cherry-pick angular/pr/1234~1..angular/pr/1234
+   git filter-branch -f --msg-filter "/home/misko/angular/scripts/github/utils/github.closes 1234" HEAD~1..HEAD
 ```
 
 If the `cherry-pick` command fails than resolve conflicts and use `git cherry-pick --continue` once ready. After the `cherry-pick` is done cut&paste and run the `filter-branch` command to properly rewrite the messages
@@ -62,11 +44,11 @@ If the `cherry-pick` command fails than resolve conflicts and use `git cherry-pi
 ## Cherry-picking PRs into patch branch
 
 In addition to merging PRs into the master branch, many PRs need to be also merged into a patch branch.
-Follow these steps to get path brach up to date.
+Follow these steps to get patch branch up to date.
 
 1. Check out the most recent patch branch: `git checkout 4.3.x`
 2. Get a list of PRs merged into master: `git log master --oneline -n10`
-3. For each PR number in the commit message run: `././scripts/github/merge-pr 1234`
+3. For each PR number in the commit message run: `./scripts/github/merge-pr 1234`
    - The PR will only merge if the `PR target:` matches the branch.
 
 Once all of the PRs are in patch branch, push the all branches and tags to github using `push-upstream` script.

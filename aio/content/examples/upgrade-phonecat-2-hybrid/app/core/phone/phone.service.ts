@@ -1,14 +1,12 @@
 // #docregion
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 // #docregion downgrade-injectable
 declare var angular: angular.IAngularStatic;
 import { downgradeInjectable } from '@angular/upgrade/static';
 // #enddocregion downgrade-injectable
-
-import 'rxjs/add/operator/map';
 
 // #docregion phonedata-interface
 export interface PhoneData {
@@ -23,14 +21,12 @@ export interface PhoneData {
 @Injectable()
 export class Phone {
 // #enddocregion classdef, downgrade-injectable
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
   query(): Observable<PhoneData[]> {
-    return this.http.get(`phones/phones.json`)
-      .map((res: Response) => res.json());
+    return this.http.get<PhoneData[]>(`phones/phones.json`);
   }
   get(id: string): Observable<PhoneData> {
-    return this.http.get(`phones/${id}.json`)
-      .map((res: Response) => res.json());
+    return this.http.get<PhoneData>(`phones/${id}.json`);
   }
 // #docregion classdef, downgrade-injectable
 }

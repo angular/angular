@@ -8,11 +8,10 @@ import {
 // #docregion preload-v1
 } from '@angular/router';
 
-import { ComposeMessageComponent } from './compose-message.component';
-import { PageNotFoundComponent }   from './not-found.component';
+import { ComposeMessageComponent } from './compose-message/compose-message.component';
+import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
 
-import { CanDeactivateGuard }      from './can-deactivate-guard.service';
-import { AuthGuard }               from './auth-guard.service';
+import { AuthGuard }               from './auth/auth.guard';
 
 const appRoutes: Routes = [
   {
@@ -22,12 +21,12 @@ const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: 'app/admin/admin.module#AdminModule',
+    loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
     canLoad: [AuthGuard]
   },
   {
     path: 'crisis-center',
-    loadChildren: 'app/crisis-center/crisis-center.module#CrisisCenterModule'
+    loadChildren: () => import('./crisis-center/crisis-center.module').then(mod => mod.CrisisCenterModule)
   },
   { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
@@ -49,9 +48,6 @@ const appRoutes: Routes = [
   ],
   exports: [
     RouterModule
-  ],
-  providers: [
-    CanDeactivateGuard
   ]
 })
 export class AppRoutingModule {}

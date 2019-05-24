@@ -13,7 +13,7 @@ The final UI looks like this:
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
 </figure>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -31,8 +31,9 @@ The easiest way to display a component property
 is to bind the property name through interpolation.
 With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
 
-Follow the [setup](guide/setup) instructions for creating a new project
-named <code>displaying-data</code>.
+Use the CLI command [`ng new displaying-data`](cli/new) to create a workspace and app named `displaying-data`. 
+
+Delete the <code>app.component.html</code> file. It is not needed for this example.
 
 Then modify the <code>app.component.ts</code> file by
 changing the template and the body of the component.
@@ -40,7 +41,7 @@ changing the template and the body of the component.
 When you're done, it should look like this:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" title="src/app/app.component.ts">
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts">
 
 </code-example>
 
@@ -48,17 +49,17 @@ When you're done, it should look like this:
 
 You added two properties to the formerly empty component: `title` and `myHero`.
 
-The revised template displays the two component properties using double curly brace
+The template displays the two component properties using double curly brace
 interpolation:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -77,7 +78,7 @@ inserts those values into the browser. Angular updates the display
 when these properties change.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -92,19 +93,19 @@ the view, such as a keystroke, a timer completion, or a response to an HTTP requ
 Notice that you don't call **new** to create an instance of the `AppComponent` class.
 Angular is creating an instance for you. How?
 
-The CSS `selector` in the `@Component` decorator specifies an element named `<my-app>`.
+The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
 That element is a placeholder in the body of your `index.html` file:
 
 
-<code-example path="displaying-data/src/index.html" linenums="false" title="src/index.html (body)" region="body">
+<code-example path="displaying-data/src/index.html" linenums="false" header="src/index.html (body)" region="body">
 
 </code-example>
 
 
 
-When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<my-app>`
+When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<app-root>`
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
-inside the `<my-app>` tag.
+inside the `<app-root>` tag.
 
 Now run the app. It should display the title and hero name:
 
@@ -131,13 +132,23 @@ is simpler without the additional HTML file.
 
 In either style, the template data bindings have the same access to the component's properties.
 
+<div class="alert is-helpful">
+  
+  By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
+
+  <code-example hideCopy language="sh" class="code-shell">
+    ng generate component hero -it
+  </code-example>
+
+</div>
+
 
 ## Constructor or variable initialization?
 
-Although this example uses variable assignment to initialize the components, you can instead declare and initialize the properties using a constructor:
+Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.ts" linenums="false" title="src/app/app-ctor.component.ts (class)" region="class">
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
 
 </code-example>
 
@@ -152,7 +163,7 @@ This app uses more terse "variable assignment" style simply for brevity.
 To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (class)" region="class">
 
 </code-example>
 
@@ -162,7 +173,7 @@ Now use the Angular `ngFor` directive in the template to display
 each item in the `heroes` list.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
@@ -173,7 +184,7 @@ in the `<li>` element is the Angular "repeater" directive.
 It marks that `<li>` element (and its children) as the "repeater template":
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (li)" region="li">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (li)" region="li">
 
 </code-example>
 
@@ -201,7 +212,7 @@ to the item (the hero) in the current iteration. Angular uses that variable as t
 context for the interpolation in the double curly braces.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -231,12 +242,16 @@ At the moment, the binding is to an array of strings.
 In real applications, most bindings are to more specialized objects.
 
 To convert this binding to use specialized objects, turn the array
-of hero names into an array of `Hero` objects. For that you'll need a `Hero` class.
+of hero names into an array of `Hero` objects. For that you'll need a `Hero` class:
 
-Create a new file in the `app` folder called  `hero.ts` with the following code:
+<code-example language="sh" class="code-shell">
+  ng generate class hero
+</code-example>
+
+With the following code:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (excerpt)">
+<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts">
 
 </code-example>
 
@@ -250,7 +265,7 @@ The declaration of the constructor parameters takes advantage of a TypeScript sh
 Consider the first parameter:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (id)" region="id">
+<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts (id)" region="id">
 
 </code-example>
 
@@ -270,7 +285,7 @@ After importing the `Hero` class, the `AppComponent.heroes` property can return 
 of `Hero` objects:
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (heroes)" region="heroes">
+<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (heroes)" region="heroes">
 
 </code-example>
 
@@ -281,7 +296,7 @@ At the moment it displays the hero's `id` and `name`.
 Fix that to display only the hero's `name` property.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
@@ -301,7 +316,7 @@ The Angular `ngIf` directive inserts or removes an element based on a _truthy/fa
 To see it in action, add the following paragraph at the bottom of the template:
 
 
-<code-example path="displaying-data/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (message)" region="message">
+<code-example path="displaying-data/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts (message)" region="message">
 
 </code-example>
 
@@ -341,7 +356,7 @@ big chunks of HTML with many data bindings.
 
 
 Try it out. Because the array has four items, the message should appear.
-Go back into <code>app.component.ts"</code> and delete or comment out one of the elements from the hero array.
+Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the heroes array.
 The browser should refresh automatically and the message should disappear.
 
 
@@ -359,19 +374,19 @@ Here's the final code:
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="displaying-data/src/app/app.component.ts" region="final">
+  <code-pane header="src/app/app.component.ts" path="displaying-data/src/app/app.component.ts" region="final">
 
   </code-pane>
 
-  <code-pane title="src/app/hero.ts" path="displaying-data/src/app/hero.ts">
+  <code-pane header="src/app/hero.ts" path="displaying-data/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="displaying-data/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="displaying-data/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="main.ts" path="displaying-data/src/main.ts">
+  <code-pane header="main.ts" path="displaying-data/src/main.ts">
 
   </code-pane>
 

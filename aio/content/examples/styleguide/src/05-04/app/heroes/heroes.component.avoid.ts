@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable }        from 'rxjs/Observable';
+import { Observable }        from 'rxjs';
 
 import { Hero, HeroService } from './shared';
 
@@ -23,7 +23,10 @@ import { Hero, HeroService } from './shared';
   `,
   styles: [`
     .heroes {
-      margin: 0 0 2em 0; list-style-type: none; padding: 0; width: 15em;
+      margin: 0 0 2em 0;
+      list-style-type: none;
+      padding: 0;
+      width: 15em;
     }
     .heroes li {
       cursor: pointer;

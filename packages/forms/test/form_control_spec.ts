@@ -11,9 +11,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {FormArray} from '../src/model';
+import {FormArray} from '@angular/forms/src/model';
 
-export function main() {
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: FormControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -45,6 +45,15 @@ export function main() {
     it('should default the value to null', () => {
       const c = new FormControl();
       expect(c.value).toBe(null);
+    });
+
+    describe('markAllAsTouched', () => {
+      it('should mark only the control itself as touched', () => {
+        const control = new FormControl('');
+        expect(control.touched).toBe(false);
+        control.markAllAsTouched();
+        expect(control.touched).toBe(true);
+      });
     });
 
     describe('boxed values', () => {
@@ -991,6 +1000,37 @@ export function main() {
         expect(a.value).toEqual(['one']);
       });
 
+      it('should ignore disabled array controls when determining dirtiness', () => {
+        const c = new FormControl('one');
+        const c2 = new FormControl('two');
+        const a = new FormArray([c, c2]);
+        c.markAsDirty();
+        expect(a.dirty).toBe(true);
+
+        c.disable();
+        expect(c.dirty).toBe(true);
+        expect(a.dirty).toBe(false);
+
+        c.enable();
+        expect(a.dirty).toBe(true);
+      });
+
+      it('should not make a dirty array not dirty when disabling controls', () => {
+        const c = new FormControl('one');
+        const c2 = new FormControl('two');
+        const a = new FormArray([c, c2]);
+
+        a.markAsDirty();
+        expect(a.dirty).toBe(true);
+        expect(c.dirty).toBe(false);
+
+        c.disable();
+        expect(a.dirty).toBe(true);
+
+        c.enable();
+        expect(a.dirty).toBe(true);
+      });
+
       it('should ignore disabled controls in validation', () => {
         const c = new FormControl(null, Validators.required);
         const c2 = new FormControl(null);
@@ -1040,6 +1080,22 @@ export function main() {
         c.disable();
         expect(c.dirty).toBe(true);
         expect(g.dirty).toBe(false);
+
+        c.enable();
+        expect(g.dirty).toBe(true);
+      });
+
+      it('should not make a dirty group not dirty when disabling controls', () => {
+        const c = new FormControl('one');
+        const c2 = new FormControl('two');
+        const g = new FormGroup({one: c, two: c2});
+
+        g.markAsDirty();
+        expect(g.dirty).toBe(true);
+        expect(c.dirty).toBe(false);
+
+        c.disable();
+        expect(g.dirty).toBe(true);
 
         c.enable();
         expect(g.dirty).toBe(true);
@@ -1139,7 +1195,59 @@ export function main() {
           expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          g.valueChanges.subscribe(() => logger.push('group'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          g.statusChanges.subscribe(() => logger.push('form'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+      });
+    });
+    describe('pending', () => {
+      let c: FormControl;
+
+      beforeEach(() => { c = new FormControl('value'); });
+
+      it('should be false after creating a control', () => { expect(c.pending).toEqual(false); });
+
+      it('should be true after changing the value of the control', () => {
+        c.markAsPending();
+        expect(c.pending).toEqual(true);
+      });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          c.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
     });
   });
-}
+})();

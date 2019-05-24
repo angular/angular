@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaders, HttpRequest, HttpResponse} from '@angular/common/http';
-import {Observer} from 'rxjs/Observer';
+import {HttpErrorResponse, HttpEvent, HttpHeaders, HttpRequest, HttpResponse} from '@angular/common/http';
+import {Observer} from 'rxjs';
 
 /**
  * A mock requests that was received and is ready to be answered.
@@ -15,7 +15,7 @@ import {Observer} from 'rxjs/Observer';
  * This interface allows access to the underlying `HttpRequest`, and allows
  * responding with `HttpEvent`s or `HttpErrorResponse`s.
  *
- * @stable
+ * @publicApi
  */
 export class TestRequest {
   /**
@@ -33,6 +33,8 @@ export class TestRequest {
   /**
    * Resolve the request by returning a body plus additional HTTP information (such as response
    * headers) if provided.
+   * If the request specifies an expected body type, the body is converted into the requested type.
+   * Otherwise, the body is converted to `JSON` by default.
    *
    * Both successful and unsuccessful responses can be delivered via `flush()`.
    */
@@ -184,26 +186,17 @@ function _maybeConvertBody(
     responseType: string, body: ArrayBuffer | Blob | string | number | Object |
         (string | number | Object | null)[] | null): ArrayBuffer|Blob|string|number|Object|
     (string | number | Object | null)[]|null {
+  if (body === null) {
+    return null;
+  }
   switch (responseType) {
     case 'arraybuffer':
-      if (body === null) {
-        return null;
-      }
       return _toArrayBufferBody(body);
     case 'blob':
-      if (body === null) {
-        return null;
-      }
       return _toBlob(body);
     case 'json':
-      if (body === null) {
-        return 'null';
-      }
       return _toJsonBody(body);
     case 'text':
-      if (body === null) {
-        return null;
-      }
       return _toTextBody(body);
     default:
       throw new Error(`Unsupported responseType: ${responseType}`);

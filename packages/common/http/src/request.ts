@@ -73,7 +73,7 @@ function isFormData(value: any): value is FormData {
  * assumed to be immutable. To modify a `HttpRequest`, the `clone`
  * method should be used.
  *
- * @stable
+ * @publicApi
  */
 export class HttpRequest<T> {
   /**
@@ -88,7 +88,8 @@ export class HttpRequest<T> {
   /**
    * Outgoing headers for this request.
    */
-  readonly headers: HttpHeaders;
+  // TODO(issue/24571): remove '!'.
+  readonly headers !: HttpHeaders;
 
   /**
    * Whether this request should be made in a way that exposes progress events.
@@ -119,7 +120,8 @@ export class HttpRequest<T> {
   /**
    * Outgoing URL parameters.
    */
-  readonly params: HttpParams;
+  // TODO(issue/24571): remove '!'.
+  readonly params !: HttpParams;
 
   /**
    * The outgoing URL with all URL parameters set.
@@ -171,7 +173,7 @@ export class HttpRequest<T> {
     // the body argument is to use a known no-body method like GET.
     if (mightHaveBody(this.method) || !!fourth) {
       // Body is the third argument, options are the fourth.
-      this.body = third as T || null;
+      this.body = (third !== undefined) ? third as T : null;
       options = fourth;
     } else {
       // No body required, options are the third argument. The body stays null.

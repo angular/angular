@@ -8,7 +8,7 @@
 
 import {KeyRegistry} from '@angular/core/src/di/reflective_key';
 
-export function main() {
+{
   describe('key', function() {
     let registry: KeyRegistry;
 

@@ -9,13 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'es-PA',
-  [
-    ['a. m.', 'p. m.'],
-    ,
-  ],
-  ,
+  'es-PA', [['a. m.', 'p. m.'], u, u], u,
   [
     ['d', 'l', 'm', 'm', 'j', 'v', 's'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -36,19 +38,37 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  , [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  u, [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
   ['MM/dd/yy', 'MM/dd/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    '{1}, {0}',
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, '{1}, {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'B/.', 'balboa panameño', function(n: number):
-                                                                              number {
-                                                                                if (n === 1)
-                                                                                  return 1;
-                                                                                return 5;
-                                                                              }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'B/.', 'balboa panameño', {
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'ESP': ['₧'],
+    'EUR': [u, '€'],
+    'FKP': [u, 'FK£'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
+    'PAB': ['B/.'],
+    'RON': [u, 'L'],
+    'SSP': [u, 'SD£'],
+    'SYP': [u, 'S£'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VEF': [u, 'BsF'],
+    'VND': [u, '₫'],
+    'XAF': [],
+    'XCD': [u, '$'],
+    'XOF': []
+  },
+  plural
 ];

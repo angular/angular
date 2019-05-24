@@ -7,9 +7,9 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {DELEGATE_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {global} from '@angular/core/src/util';
+import {ReflectionCapabilities, isDelegateCtor} from '@angular/core/src/reflection/reflection_capabilities';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
+import {global} from '@angular/core/src/util/global';
 
 interface ClassDecoratorFactory {
   (data: ClassDecorator): any;
@@ -67,7 +67,7 @@ class TestObj {
   identity(arg: any) { return arg; }
 }
 
-export function main() {
+{
   describe('Reflector', () => {
     let reflector: Reflector;
 
@@ -165,8 +165,10 @@ export function main() {
       });
     });
 
-    describe('ctor inheritance detection', () => {
-      it('should use the right regex', () => {
+    describe('isDelegateCtor', () => {
+      it('should support ES5 compiled classes', () => {
+        // These classes will be compiled to ES5 code so their stringified form
+        // below will contain ES5 constructor functions rather than native classes.
         class Parent {}
 
         class ChildNoCtor extends Parent {}
@@ -177,10 +179,60 @@ export function main() {
           private x = 10;
         }
 
-        expect(DELEGATE_CTOR.exec(ChildNoCtor.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildNoCtorPrivateProps.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildWithCtor.toString())).toBeFalsy();
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
       });
+
+      it('should not throw when no prototype on type', () => {
+        // Cannot test arrow function here due to the compilation
+        const dummyArrowFn = function() {};
+        Object.defineProperty(dummyArrowFn, 'prototype', {value: undefined});
+        expect(() => reflector.annotations(dummyArrowFn as any)).not.toThrow();
+      });
+
+      it('should support native class', () => {
+        // These classes are defined as strings unlike the tests above because otherwise
+        // the compiler (of these tests) will convert them to ES5 constructor function
+        // style classes.
+        const ChildNoCtor = `class ChildNoCtor extends Parent {}\n`;
+        const ChildWithCtor = `class ChildWithCtor extends Parent {\n` +
+            `  constructor() { super(); }` +
+            `}\n`;
+        const ChildNoCtorComplexBase = `class ChildNoCtor extends Parent['foo'].bar(baz) {}\n`;
+        const ChildWithCtorComplexBase = `class ChildWithCtor extends Parent['foo'].bar(baz) {\n` +
+            `  constructor() { super(); }` +
+            `}\n`;
+        const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
+            `  constructor() {\n` +
+            // Note that the instance property causes a pass-through constructor to be synthesized
+            `    super(...arguments);\n` +
+            `    this.x = 10;\n` +
+            `  }\n` +
+            `}\n`;
+
+        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
+        expect(isDelegateCtor(ChildNoCtorComplexBase)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtorComplexBase)).toBe(false);
+      });
+
+      it('should properly handle all class forms', () => {
+        const ctor = (str: string) => expect(isDelegateCtor(str)).toBe(false);
+        const noCtor = (str: string) => expect(isDelegateCtor(str)).toBe(true);
+
+        ctor(`class Bar extends Foo {constructor(){}}`);
+        ctor(`class Bar extends Foo { constructor ( ) {} }`);
+        ctor(`class Bar extends Foo { other(){}; constructor(){} }`);
+
+        noCtor(`class extends Foo{}`);
+        noCtor(`class extends Foo {}`);
+        noCtor(`class Bar extends Foo {}`);
+        noCtor(`class $Bar1_ extends $Fo0_ {}`);
+        noCtor(`class Bar extends Foo { other(){} }`);
+      });
+
     });
 
     describe('inheritance with decorators', () => {
@@ -273,7 +325,7 @@ export function main() {
         // But we should still get an array of the right length based on function.length.
         expect(reflector.parameters(ChildWithCtorNoDecorator)).toEqual([
           undefined, undefined, undefined
-        ]);
+        ] as any[]);  // TODO: Review use of `any` here (#19904)
 
         expect(reflector.parameters(NoDecorators)).toEqual([]);
         expect(reflector.parameters(<any>{})).toEqual([]);
@@ -287,17 +339,21 @@ export function main() {
         class C {}
 
         class Parent {
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('a')
-          a: A;
+          a !: A;
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('b1')
-          b: B;
+          b !: B;
         }
 
         class Child extends Parent {
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('b2')
-          b: B;
+          b !: B;
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('c')
-          c: C;
+          c !: C;
         }
 
         class NoDecorators {}

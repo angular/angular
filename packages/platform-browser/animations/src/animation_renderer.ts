@@ -19,6 +19,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private _animationCallbacksBuffer: [(e: any) => any, any][] = [];
   private _rendererCache = new Map<Renderer2, BaseAnimationRenderer>();
   private _cdRecurDepth = 0;
+  private promise: Promise<any> = Promise.resolve(0);
 
   constructor(
       private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
@@ -69,10 +70,11 @@ export class AnimationRendererFactory implements RendererFactory2 {
   }
 
   private _scheduleCountTask() {
-    Zone.current.scheduleMicroTask('incremenet the animation microtask', () => this._microtaskId++);
+    // always use promise to schedule microtask instead of use Zone
+    this.promise.then(() => { this._microtaskId++; });
   }
 
-  /* @internal */
+  /** @internal */
   scheduleListenerCallback(count: number, fn: (e: any) => any, data: any) {
     if (count >= 0 && count < this._microtaskId) {
       this._zone.run(() => fn(data));
@@ -98,7 +100,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this._cdRecurDepth--;
 
     // this is to prevent animations from running twice when an inner
-    // component does CD when a parent component insted has inserted it
+    // component does CD when a parent component instead has inserted it
     if (this._cdRecurDepth == 0) {
       this._zone.runOutsideAngular(() => {
         this._scheduleCountTask();
@@ -146,11 +148,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onInsert(this.namespaceId, newChild, parent, true);
   }
 
-  removeChild(parent: any, oldChild: any): void {
-    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+  removeChild(parent: any, oldChild: any, isHostElement: boolean): void {
+    this.engine.onRemove(this.namespaceId, oldChild, this.delegate, isHostElement);
   }
 
-  selectRootElement(selectorOrNode: any) { return this.delegate.selectRootElement(selectorOrNode); }
+  selectRootElement(selectorOrNode: any, preserveContent?: boolean) {
+    return this.delegate.selectRootElement(selectorOrNode, preserveContent);
+  }
 
   parentNode(node: any) { return this.delegate.parentNode(node); }
 

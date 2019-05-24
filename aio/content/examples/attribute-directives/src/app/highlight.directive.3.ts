@@ -1,6 +1,7 @@
 /* tslint:disable:member-ordering */
-// #docregion
+// #docregion, imports
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+// #enddocregion imports
 
 @Directive({
   selector: '[appHighlight]'

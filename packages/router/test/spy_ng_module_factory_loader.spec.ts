@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {SpyNgModuleFactoryLoader} from '../testing/src/router_testing_module';
+import {SpyNgModuleFactoryLoader} from '@angular/router/testing';
 
 describe('SpyNgModuleFactoryLoader', () => {
   it('should invoke the compiler when the setter is called', () => {
@@ -23,7 +23,7 @@ describe('SpyNgModuleFactoryLoader', () => {
   });
 
   it('should return the created promise', () => {
-    const expected = Promise.resolve('returned');
+    const expected: any = Promise.resolve('returned');
     const compiler: any = {compileModuleAsync: () => expected};
 
     const r = new SpyNgModuleFactoryLoader(<any>compiler);
@@ -36,7 +36,7 @@ describe('SpyNgModuleFactoryLoader', () => {
        const r = new SpyNgModuleFactoryLoader(<any>null);
 
        let error: any = null;
-       r.load('two').catch(e => error = e);
+       r.load('two').catch((e: any) => error = e);
 
        tick();
 

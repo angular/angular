@@ -54,7 +54,7 @@ export class Declaration implements Node {
 
   constructor(unescapedAttrs: {[k: string]: string}) {
     Object.keys(unescapedAttrs).forEach((k: string) => {
-      this.attrs[k] = _escapeXml(unescapedAttrs[k]);
+      this.attrs[k] = escapeXml(unescapedAttrs[k]);
     });
   }
 
@@ -74,7 +74,7 @@ export class Tag implements Node {
       public name: string, unescapedAttrs: {[k: string]: string} = {},
       public children: Node[] = []) {
     Object.keys(unescapedAttrs).forEach((k: string) => {
-      this.attrs[k] = _escapeXml(unescapedAttrs[k]);
+      this.attrs[k] = escapeXml(unescapedAttrs[k]);
     });
   }
 
@@ -83,7 +83,7 @@ export class Tag implements Node {
 
 export class Text implements Node {
   value: string;
-  constructor(unescapedValue: string) { this.value = _escapeXml(unescapedValue); }
+  constructor(unescapedValue: string) { this.value = escapeXml(unescapedValue); }
 
   visit(visitor: IVisitor): any { return visitor.visitText(this); }
 }
@@ -100,7 +100,8 @@ const _ESCAPED_CHARS: [RegExp, string][] = [
   [/>/g, '&gt;'],
 ];
 
-function _escapeXml(text: string): string {
+// Escape `_ESCAPED_CHARS` characters in the given text with encoded entities
+export function escapeXml(text: string): string {
   return _ESCAPED_CHARS.reduce(
       (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]), text);
 }

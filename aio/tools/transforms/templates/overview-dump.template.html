@@ -1,74 +1,110 @@
-{% import "api/lib/githubLinks.html" as github -%}
-{% import "api/lib/paramList.html" as params -%}
+{% import "lib/githubLinks.html" as github -%}
+{% import "api/lib/memberHelpers.html" as members -%}
+{% macro goToCode(doc) %}<a href="{$ github.githubViewHref(doc, versionInfo) $}" class="go-to-code" title="Go to source code"><i class="material-icons" aria-hidden="true" role="img">code</i></a>{% endmacro %}
+{% macro label(test, class, text) %}{% if test %}<label class="{$ class $}">{$ text $}</label>{% endif %}{% endmacro %}
+{% macro renderLabels(doc) -%}
+  {$ label(doc.notYetDocumented, 'no-doc', 'UNDOCUMENTED') $}
+  {%- for tag in doc.tags.tags %}{$ label(tag.tagDef.deprecated, 'deprecated', '@' + tag.tagDef.name + ' deprecated') $}{% endfor %}
+{% endmacro %}
+{% macro renderMember(member) -%}
+  <div class="member">{$ goToCode(member) $}
+  <h4><code>{$ members.renderMemberSyntax(member, 1) $}</code></h4>
+    {$ renderLabels(member) $}
+  </div>
+{% endmacro -%}
+
 <!DOCTYPE html>
 <html>
 <head>
   <title></title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     body {
-      max-width: 1000px;
+      margin: 0 50px;
     }
-    h2 {
-      margin-top: 20px;
-      margin-bottom: 0;
-      border-bottom: solid 1px black;
+    details {
+      margin: 10px;
+      padding: 0 10px;
+      border: solid black 1px;
     }
-    h3 {
-      margin-top: 10px;
-      margin-bottom: 0;
-      padding-left: 20px;
-    }
-    h4 {
-      padding-left: 30px;
+    details details {
+      border: none;
       margin: 0;
     }
-    .not-documented::after {
-      content: "(not documented)";
-      font-size: small;
-      font-style: italic;
-      color: red;
+
+    .member:nth-child(odd) {
+      background-color: #eee;
     }
-    a {
+    h2, h3, h4 {
+      display: inline-block;
+      margin: 0;
+    }
+    h3 {
+      padding-left: 15px;
+    }
+    h4 {
+      padding: 10px 0 0 30px;
+    }
+    div {
+      position: relative;
+    }
+
+    label {
+      border-radius: 4px;
+      padding: 4px 8px;
+      display: inline-block;
+      font-size: 12px;
+      color: #fff;
+      margin: 0 8px;
+      font-weight: bold;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .no-doc {
+      background-color: red;
+    }
+
+    .deprecated {
+      background-color: orange;
       color: black;
-      text-decoration: none;
+    }
+
+    a.go-to-code {
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
   </style>
 </head>
 <body>
 
 
-<h1>Module Overview</h1>
+<h1>Documentation Status Report</h1>
 
 {% for module in doc.modules %}
-
-<h2>
-  <code>{$ module.id $}{%- if module.public %} (public){% endif %}</code>
-</h2>
+<details>
+  <summary><h2><code>{$ module.id $}{%- if module.public %} (public){% endif %}</code></h2></summary>
 
   {% for export in module.exports %}
-  <h3 {% if export.notYetDocumented %}class="not-documented"{% endif %}>
-    <a href="{$ github.githubHref(export, versionInfo) $}">
-    <code>{$ export.docType $} {$ export.name $}</code>
-    </a>
-  </h3>
-      {%- if export.constructorDoc %}
-      <h4  {% if export.constructorDoc.notYetDocumented %}class="not-documented"{% endif %}>
-        <a href="{$ github.githubHref(export.constructorDoc, versionInfo) $}">
-        <code>{$ export.constructorDoc.name $}{$ params.paramList(export.constructorDoc.params) $}</code>
-        </a>
-      </h4>
-    {% endif -%}
-    {%- for member in export.members %}
-      <h4 {% if member.notYetDocumented %}class="not-documented"{% endif %}>
-        <a href="{$ github.githubHref(member, versionInfo) $}">
-        <code>{$ member.name $}{$ params.paramList(member.params) $}</code>
-        </a>
-      </h4>
-    {% endfor %}
+  <div class="export">{$ goToCode(export) $}
+    <details>
+      <summary><h3><code>{$ export.docType $} {$ export.name $}</code></h3>{$ renderLabels(export) $}</summary>
 
+      {%- for member in export.staticProperties %}{% if not member.internal %}
+      {$ renderMember(member) $}</a>{% endif %}{% endfor -%}
+      {% for member in export.staticMethods %}{% if not member.internal %}
+      {$ renderMember(member) $}</a>{% endif %}{% endfor -%}
+      {% if export.constructorDoc and not export.constructorexport.internal %}
+      {$ renderMember(export.constructorDoc) $}</a>{% endif -%}
+      {% for member in export.properties %}{% if not member.internal %}
+      {$ renderMember(member) $}</a>{% endif %}{% endfor -%}
+      {% for member in export.methods %}{% if not member.internal %}
+      {$ renderMember(member) $}</a>{% endif %}{% endfor -%}
+
+    </details>
+  </div>
   {% endfor %}
-
+</details>
 {% endfor %}
-
 </body>
 </html>

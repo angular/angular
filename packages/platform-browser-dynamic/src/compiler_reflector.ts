@@ -7,15 +7,14 @@
  */
 
 import {CompileReflector, ExternalReference, Identifiers, getUrlScheme, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, Renderer2, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
 
 export class JitReflector implements CompileReflector {
-  private reflectionCapabilities: ReflectionCapabilities;
-  private builtinExternalReferences = new Map<ExternalReference, any>();
-  constructor() { this.reflectionCapabilities = new ReflectionCapabilities(); }
+  private reflectionCapabilities = new ReflectionCapabilities();
+
   componentModuleUrl(type: any, cmpMetadata: Component): string {
     const moduleId = cmpMetadata.moduleId;
 
@@ -33,8 +32,12 @@ export class JitReflector implements CompileReflector {
   parameters(typeOrFunc: /*Type*/ any): any[][] {
     return this.reflectionCapabilities.parameters(typeOrFunc);
   }
+  tryAnnotations(typeOrFunc: /*Type*/ any): any[] { return this.annotations(typeOrFunc); }
   annotations(typeOrFunc: /*Type*/ any): any[] {
     return this.reflectionCapabilities.annotations(typeOrFunc);
+  }
+  shallowAnnotations(typeOrFunc: /*Type*/ any): any[] {
+    throw new Error('Not supported in JIT mode');
   }
   propMetadata(typeOrFunc: /*Type*/ any): {[key: string]: any[]} {
     return this.reflectionCapabilities.propMetadata(typeOrFunc);
@@ -42,6 +45,7 @@ export class JitReflector implements CompileReflector {
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return this.reflectionCapabilities.hasLifecycleHook(type, lcProperty);
   }
+  guards(type: any): {[key: string]: any} { return this.reflectionCapabilities.guards(type); }
   resolveExternalReference(ref: ExternalReference): any {
     return builtinExternalReferences.get(ref) || ref.runtime;
   }
@@ -55,6 +59,7 @@ function createBuiltinExternalReferencesMap() {
   map.set(Identifiers.NgModuleRef, NgModuleRef);
   map.set(Identifiers.ViewContainerRef, ViewContainerRef);
   map.set(Identifiers.ChangeDetectorRef, ChangeDetectorRef);
+  map.set(Identifiers.Renderer2, Renderer2);
   map.set(Identifiers.QueryList, QueryList);
   map.set(Identifiers.TemplateRef, TemplateRef);
   map.set(Identifiers.CodegenComponentFactoryResolver, ɵCodegenComponentFactoryResolver);

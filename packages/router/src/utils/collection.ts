@@ -7,14 +7,9 @@
  */
 
 import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {of } from 'rxjs/observable/of';
-import {concatAll} from 'rxjs/operator/concatAll';
-import {every} from 'rxjs/operator/every';
-import * as l from 'rxjs/operator/last';
-import {map} from 'rxjs/operator/map';
-import {mergeAll} from 'rxjs/operator/mergeAll';
+import {Observable, from, of } from 'rxjs';
+import {concatAll, last as lastValue, map} from 'rxjs/operators';
+
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
@@ -26,9 +21,13 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
 }
 
 export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): boolean {
-  const k1 = Object.keys(a);
-  const k2 = Object.keys(b);
-  if (k1.length != k2.length) {
+  // Casting Object.keys return values to include `undefined` as there are some cases
+  // in IE 11 where this can happen. Cannot provide a test because the behavior only
+  // exists in certain circumstances in IE 11, therefore doing this cast ensures the
+  // logic is correct for when this edge case is hit.
+  const k1 = Object.keys(a) as string[] | undefined;
+  const k2 = Object.keys(b) as string[] | undefined;
+  if (!k1 || !k2 || k1.length != k2.length) {
     return false;
   }
   let key: string;
@@ -81,7 +80,7 @@ export function waitForMap<A, B>(
   const res: {[k: string]: B} = {};
 
   forEach(obj, (a: A, k: string) => {
-    const mapped = map.call(fn(k, a), (r: B) => res[k] = r);
+    const mapped = fn(k, a).pipe(map((r: B) => res[k] = r));
     if (k === PRIMARY_OUTLET) {
       waitHead.push(mapped);
     } else {
@@ -89,22 +88,11 @@ export function waitForMap<A, B>(
     }
   });
 
-  const concat$ = concatAll.call(of (...waitHead, ...waitTail));
-  const last$ = l.last.call(concat$);
-  return map.call(last$, () => res);
+  // Closure compiler has problem with using spread operator here. So just using Array.concat.
+  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
 }
 
-/**
- * ANDs Observables by merging all input observables, reducing to an Observable verifying all
- * input Observables return `true`.
- */
-export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
-  const merged$ = mergeAll.call(observables);
-  return every.call(merged$, (result: any) => result === true);
-}
-
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
-    Observable<T> {
+export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
   if (isObservable(value)) {
     return value;
   }
@@ -113,8 +101,8 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
     // Use `Promise.resolve()` to wrap promise-like instances.
     // Required ie when a Resolver returns a AngularJS `$q` promise to correctly trigger the
     // change detection.
-    return fromPromise(Promise.resolve(value));
+    return from(Promise.resolve(value));
   }
 
-  return of (value as T);
+  return of (value);
 }

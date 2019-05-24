@@ -9,13 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'es-MX',
-  [
-    ['a. m.', 'p. m.'],
-    ,
-  ],
-  ,
+  'es-MX', [['a. m.', 'p. m.'], u, u], u,
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
@@ -27,7 +29,7 @@ export default [
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
   [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+    ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
     [
       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
@@ -44,18 +46,33 @@ export default [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
-  ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    '{1}, {0}',
-  ],
+  [['a. C.', 'd. C.'], u, ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  ['dd/MM/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, '{1}, {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'peso mexicano', function(n: number):
-                                                                         number {
-                                                                           if (n === 1) return 1;
-                                                                           return 5;
-                                                                         }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'peso mexicano', {
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'BYN': [u, 'p.'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'ESP': ['₧'],
+    'EUR': [u, '€'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'MXN': ['$'],
+    'NZD': [u, '$'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VEF': [u, 'BsF'],
+    'VND': [u, '₫'],
+    'XAF': [],
+    'XCD': [u, '$'],
+    'XOF': []
+  },
+  plural
 ];

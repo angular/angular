@@ -71,9 +71,10 @@ describe('perform watch', () => {
       `,
     });
 
-    const mainTsPath = path.resolve(testSupport.basePath, 'src', 'main.ts');
-    const utilTsPath = path.resolve(testSupport.basePath, 'src', 'util.ts');
-    const mainNgFactory = path.resolve(outDir, 'src', 'main.ngfactory.js');
+    const mainTsPath = path.posix.join(testSupport.basePath, 'src', 'main.ts');
+    const utilTsPath = path.posix.join(testSupport.basePath, 'src', 'util.ts');
+    const mainNgFactory = path.posix.join(outDir, 'src', 'main.ngfactory.js');
+
     performWatchCompilation(host);
     expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);
@@ -86,10 +87,9 @@ describe('perform watch', () => {
 
     // trigger a single file change
     // -> all other files should be cached
-    fs.unlinkSync(mainNgFactory);
     host.triggerFileChange(FileChangeEvent.Change, utilTsPath);
+    expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).not.toHaveBeenCalledWith(mainTsPath);
     expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
     expect(getSourceFileSpy !).not.toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
@@ -97,15 +97,55 @@ describe('perform watch', () => {
 
     // trigger a folder change
     // -> nothing should be cached
-    fs.unlinkSync(mainNgFactory);
     host.triggerFileChange(
         FileChangeEvent.CreateDeleteDir, path.resolve(testSupport.basePath, 'src'));
+    expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);
     expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
     expect(getSourceFileSpy !).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
     expect(getSourceFileSpy !).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
+  });
+
+  it('should recover from static analysis errors', () => {
+    const config = createConfig();
+    const host = new MockWatchHost(config);
+
+    const okFileContent = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class MyModule {}
+    `;
+    const errorFileContent = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule((() => (1===1 ? null as any : null as any)) as any)
+      export class MyModule {}
+    `;
+    const indexTsPath = path.resolve(testSupport.basePath, 'src', 'index.ts');
+
+    testSupport.write(indexTsPath, okFileContent);
+
+    performWatchCompilation(host);
+    expectNoDiagnostics(config.options, host.diagnostics);
+
+    // Do it multiple times as the watch mode switches internal modes.
+    // E.g. from regular compile to using summaries, ...
+    for (let i = 0; i < 3; i++) {
+      host.diagnostics = [];
+      testSupport.write(indexTsPath, okFileContent);
+      host.triggerFileChange(FileChangeEvent.Change, indexTsPath);
+      expectNoDiagnostics(config.options, host.diagnostics);
+
+      host.diagnostics = [];
+      testSupport.write(indexTsPath, errorFileContent);
+      host.triggerFileChange(FileChangeEvent.Change, indexTsPath);
+
+      const errDiags = host.diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+      expect(errDiags.length).toBe(1);
+      expect(errDiags[0].messageText).toContain('Function expressions are not supported');
+    }
   });
 });
 
@@ -124,12 +164,13 @@ function createModuleAndCompSource(prefix: string, template: string = prefix + '
 }
 
 class MockWatchHost {
-  timeoutListeners: Array<(() => void)|null> = [];
+  nextTimeoutListenerId = 1;
+  timeoutListeners: {[id: string]: (() => void)} = {};
   fileChangeListeners: Array<((event: FileChangeEvent, fileName: string) => void)|null> = [];
-  diagnostics: ng.Diagnostics = [];
+  diagnostics: ng.Diagnostic[] = [];
   constructor(public config: ng.ParsedConfiguration) {}
 
-  reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...diags); }
+  reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...(diags as ng.Diagnostic[])); }
   readConfiguration() { return this.config; }
   createCompilerHost(options: ng.CompilerOptions) { return ng.createCompilerHost({options}); }
   createEmitCallback() { return undefined; }
@@ -143,16 +184,16 @@ class MockWatchHost {
       close: () => this.fileChangeListeners[id] = null,
     };
   }
-  setTimeout(callback: () => void, ms: number): any {
-    const id = this.timeoutListeners.length;
-    this.timeoutListeners.push(callback);
+  setTimeout(callback: () => void): any {
+    const id = this.nextTimeoutListenerId++;
+    this.timeoutListeners[id] = callback;
     return id;
   }
-  clearTimeout(timeoutId: any): void { this.timeoutListeners[timeoutId] = null; }
+  clearTimeout(timeoutId: any): void { delete this.timeoutListeners[timeoutId]; }
   flushTimeouts() {
-    this.timeoutListeners.forEach(cb => {
-      if (cb) cb();
-    });
+    const listeners = this.timeoutListeners;
+    this.timeoutListeners = {};
+    Object.keys(listeners).forEach(id => listeners[id]());
   }
   triggerFileChange(event: FileChangeEvent, fileName: string) {
     this.fileChangeListeners.forEach(listener => {

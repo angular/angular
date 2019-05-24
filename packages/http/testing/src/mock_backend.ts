@@ -8,19 +8,39 @@
 
 import {Injectable} from '@angular/core';
 import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
-import {take} from 'rxjs/operator/take';
+import {ReplaySubject, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
- * @deprecated use @angular/common/http instead
+ * @usageNotes
+ * ### Example of `mockRespond()`
+ *
+ * ```
+ * var connection;
+ * backend.connections.subscribe(c => connection = c);
+ * http.request('data.json').subscribe(res => console.log(res.text()));
+ * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
+ * 'fake response'
+ * ```
+ *
+ * ### Example of `mockError()`
+ *
+ * ```
+ * var connection;
+ * backend.connections.subscribe(c => connection = c);
+ * http.request('data.json').subscribe(res => res, err => console.log(err)));
+ * connection.mockError(new Error('error'));
+ * ```
+ *
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class MockConnection implements Connection {
-  // TODO Name `readyState` should change to be more generic, and states could be made to be more
+  // TODO: Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
@@ -40,7 +60,7 @@ export class MockConnection implements Connection {
   response: ReplaySubject<Response>;
 
   constructor(req: Request) {
-    this.response = <any>take.call(new ReplaySubject(1), 1);
+    this.response = <any>new ReplaySubject(1).pipe(take(1));
     this.readyState = ReadyState.Open;
     this.request = req;
   }
@@ -48,16 +68,6 @@ export class MockConnection implements Connection {
   /**
    * Sends a mock response to the connection. This response is the value that is emitted to the
    * {@link EventEmitter} returned by {@link Http}.
-   *
-   * ### Example
-   *
-   * ```
-   * var connection;
-   * backend.connections.subscribe(c => connection = c);
-   * http.request('data.json').subscribe(res => console.log(res.text()));
-   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
-   * 'fake response'
-   * ```
    *
    */
   mockRespond(res: Response) {
@@ -88,15 +98,6 @@ export class MockConnection implements Connection {
    * returned
    * from {@link Http}.
    *
-   * ### Example
-   *
-   * ```
-   * var connection;
-   * backend.connections.subscribe(c => connection = c);
-   * http.request('data.json').subscribe(res => res, err => console.log(err)));
-   * connection.mockError(new Error('error'));
-   * ```
-   *
    */
   mockError(err?: Error) {
     // Matches ResourceLoader semantics
@@ -111,6 +112,7 @@ export class MockConnection implements Connection {
  * This class can be injected in tests, and should be used to override providers
  * to other backends, such as {@link XHRBackend}.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -177,7 +179,7 @@ export class MockConnection implements Connection {
  *        this.heroService.getHeroes()
  *            .then((heroes: String[]) => result = heroes)
  *            .catch((error: any) => catchedError = error);
- *        this.lastConnection.mockRespond(new Response(new ResponseOptions({
+ *        this.lastConnection.mockError(new Response(new ResponseOptions({
  *          status: 404,
  *          statusText: 'URL not Found',
  *        })));
@@ -188,9 +190,8 @@ export class MockConnection implements Connection {
  * });
  * ```
  *
- * This method only exists in the mock implementation, not in real Backends.
- *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class MockBackend implements ConnectionBackend {
@@ -198,35 +199,6 @@ export class MockBackend implements ConnectionBackend {
    * {@link EventEmitter}
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
    * to in order to respond to connections.
-   *
-   * ### Example
-   *
-   * ```
-   * import {Injector} from '@angular/core';
-   * import {fakeAsync, tick} from '@angular/core/testing';
-   * import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
-   * import {Response, ResponseOptions} from '@angular/http';
-   * import {MockBackend, MockConnection} from '@angular/http/testing';
-   *
-   * it('should get a response', fakeAsync(() => {
-   *      let connection:
-   *          MockConnection;  // this will be set when a new connection is emitted from the
-   *                           // backend.
-   *      let text: string;    // this will be set from mock response
-   *      let injector = Injector.create([
-   *        {provide: ConnectionBackend, useClass: MockBackend},
-   *        {provide: RequestOptions, useClass: BaseRequestOptions},
-   *        Http,
-   *      ]);
-   *      let backend = injector.get(ConnectionBackend);
-   *      let http = injector.get(Http);
-   *      backend.connections.subscribe((c: MockConnection) => connection = c);
-   *      http.request('something.json').toPromise().then((res: any) => text = res.text());
-   *      connection.mockRespond(new Response(new ResponseOptions({body: 'Something'})));
-   *      tick();
-   *      expect(text).toBe('Something');
-   *    }));
-   * ```
    *
    * This property only exists in the mock implementation, not in real Backends.
    */

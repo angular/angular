@@ -42,9 +42,9 @@ describe('Symbols', () => {
   beforeEach(() => {
     host = new Host(FILES, ['consts.ts', 'expressions.ts', 'imports.ts']);
     service = ts.createLanguageService(host);
-    program = service.getProgram();
-    expressions = program.getSourceFile('expressions.ts');
-    imports = program.getSourceFile('imports.ts');
+    program = service.getProgram() !;
+    expressions = program.getSourceFile('expressions.ts') !;
+    imports = program.getSourceFile('imports.ts') !;
   });
 
   it('should not have syntax errors in the test sources', () => {
@@ -91,7 +91,8 @@ describe('Symbols', () => {
   });
 
   it('should be able to resolve any symbol in core global scope', () => {
-    const core = program.getSourceFiles().find(source => source.fileName.endsWith('lib.d.ts'));
+    const core = (program.getSourceFiles() as ts.SourceFile[])
+                     .find(source => source.fileName.endsWith('lib.d.ts'));
     expect(core).toBeDefined();
     const visit = (node: ts.Node): boolean => {
       switch (node.kind) {

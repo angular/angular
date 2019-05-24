@@ -55,33 +55,46 @@ enum _VisitorMode {
  * @internal
  */
 class _Visitor implements html.Visitor {
-  private _depth: number;
+  // TODO(issue/24571): remove '!'.
+  private _depth !: number;
 
   // <el i18n>...</el>
-  private _inI18nNode: boolean;
-  private _inImplicitNode: boolean;
+  // TODO(issue/24571): remove '!'.
+  private _inI18nNode !: boolean;
+  // TODO(issue/24571): remove '!'.
+  private _inImplicitNode !: boolean;
 
   // <!--i18n-->...<!--/i18n-->
-  private _inI18nBlock: boolean;
-  private _blockMeaningAndDesc: string;
-  private _blockChildren: html.Node[];
-  private _blockStartDepth: number;
+  // TODO(issue/24571): remove '!'.
+  private _inI18nBlock !: boolean;
+  // TODO(issue/24571): remove '!'.
+  private _blockMeaningAndDesc !: string;
+  // TODO(issue/24571): remove '!'.
+  private _blockChildren !: html.Node[];
+  // TODO(issue/24571): remove '!'.
+  private _blockStartDepth !: number;
 
   // {<icu message>}
-  private _inIcu: boolean;
+  // TODO(issue/24571): remove '!'.
+  private _inIcu !: boolean;
 
   // set to void 0 when not in a section
   private _msgCountAtSectionStart: number|undefined;
-  private _errors: I18nError[];
-  private _mode: _VisitorMode;
+  // TODO(issue/24571): remove '!'.
+  private _errors !: I18nError[];
+  // TODO(issue/24571): remove '!'.
+  private _mode !: _VisitorMode;
 
   // _VisitorMode.Extract only
-  private _messages: i18n.Message[];
+  // TODO(issue/24571): remove '!'.
+  private _messages !: i18n.Message[];
 
   // _VisitorMode.Merge only
-  private _translations: TranslationBundle;
-  private _createI18nMessage:
-      (msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
+  // TODO(issue/24571): remove '!'.
+  private _translations !: TranslationBundle;
+  // TODO(issue/24571): remove '!'.
+  private _createI18nMessage !: (
+      msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}

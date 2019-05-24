@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 // THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
 // This is to ensure that we catch env issues before we error while requiring other dependencies.
 const engines = require('./package.json').engines;
@@ -27,12 +26,25 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
+// Check source code for formatting errors in all source files.
 gulp.task('format:enforce', loadTask('format', 'enforce'));
-gulp.task('format', loadTask('format', 'format'));
-gulp.task('build.sh', loadTask('build', 'all'));
-gulp.task('build.sh:no-bundle', loadTask('build', 'no-bundle'));
-gulp.task('public-api:enforce', loadTask('public-api', 'enforce'));
-gulp.task('public-api:update', ['build.sh'], loadTask('public-api', 'update'));
+
+// Format all source files.
+gulp.task('format:all', loadTask('format', 'format'));
+
+// Format only untracked source code files.
+gulp.task('format:untracked', loadTask('format', 'format-untracked'));
+
+// Format only the changed, tracked source code files.
+gulp.task('format:diff', loadTask('format', 'format-diff'));
+
+// Format only changed lines based on the diff from the provided --branch
+// argument (or `master` by default).
+gulp.task('format:changed', ['format:untracked', 'format:diff']);
+
+// Alias for `format:changed` that formerly formatted all files.
+gulp.task('format', ['format:changed']);
+
 gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
 gulp.task('tslint', ['tools:build'], loadTask('lint'));
 gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
@@ -40,7 +52,6 @@ gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('tools:build', loadTask('tools-build'));
 gulp.task('check-cycle', loadTask('check-cycle'));
 gulp.task('serve', loadTask('serve', 'default'));
-gulp.task('serve-examples', loadTask('serve', 'examples'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));

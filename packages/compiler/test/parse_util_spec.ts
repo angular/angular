@@ -8,7 +8,7 @@
 
 import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../src/parse_util';
 
-export function main() {
+{
   describe('ParseError', () => {
     it('should reflect the level in the message', () => {
       const file = new ParseSourceFile(`foo\nbar\nfoo`, 'url');

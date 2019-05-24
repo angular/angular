@@ -1,43 +1,40 @@
-// Imports
+import {GithubApi} from '../../lib/common/github-api';
 import {GithubTeams} from '../../lib/common/github-teams';
 
 // Tests
 describe('GithubTeams', () => {
 
+  let githubApi: jasmine.SpyObj<GithubApi>;
+
+  beforeEach(() => {
+    githubApi = jasmine.createSpyObj('githubApi', ['post', 'get', 'getPaginated']);
+  });
+
   describe('constructor()', () => {
 
-    it('should throw if \'githubToken\' is missing or empty', () => {
-      expect(() => new GithubTeams('', 'org')).
-        toThrowError('Missing or empty required parameter \'githubToken\'!');
+    it('should throw if \'githubOrg\' is missing or empty', () => {
+      expect(() => new GithubTeams(githubApi, '')).
+        toThrowError('Missing or empty required parameter \'githubOrg\'!');
     });
-
-
-    it('should throw if \'organization\' is missing or empty', () => {
-      expect(() => new GithubTeams('12345', '')).
-        toThrowError('Missing or empty required parameter \'organization\'!');
-    });
-
   });
 
 
   describe('fetchAll()', () => {
     let teams: GithubTeams;
-    let teamsGetPaginatedSpy: jasmine.Spy;
 
     beforeEach(() => {
-      teams = new GithubTeams('12345', 'foo');
-      teamsGetPaginatedSpy = spyOn(teams as any, 'getPaginated');
+      teams = new GithubTeams(githubApi, 'foo');
     });
 
 
     it('should call \'getPaginated()\' with the correct pathname and params', () => {
       teams.fetchAll();
-      expect(teamsGetPaginatedSpy).toHaveBeenCalledWith('/orgs/foo/teams');
+      expect(githubApi.getPaginated).toHaveBeenCalledWith('/orgs/foo/teams');
     });
 
 
     it('should forward the value returned by \'getPaginated()\'', () => {
-      teamsGetPaginatedSpy.and.returnValue('Test');
+      githubApi.getPaginated.and.returnValue('Test');
       expect(teams.fetchAll() as any).toBe('Test');
     });
 
@@ -46,19 +43,15 @@ describe('GithubTeams', () => {
 
   describe('isMemberById()', () => {
     let teams: GithubTeams;
-    let teamsGetSpy: jasmine.Spy;
 
     beforeEach(() => {
-      teams = new GithubTeams('12345', 'foo');
-      teamsGetSpy = spyOn(teams, 'get').and.returnValue(Promise.resolve(null));
+      teams = new GithubTeams(githubApi, 'foo');
     });
 
 
-    it('should return a promise', done => {
+    it('should return a promise', () => {
+      githubApi.get.and.callFake(() => Promise.resolve());
       const promise = teams.isMemberById('user', [1]);
-      promise.then(done);   // Do not complete the test (and release the spies) synchronously
-                            // to avoid running the actual `get()`.
-
       expect(promise).toEqual(jasmine.any(Promise));
     });
 
@@ -66,42 +59,43 @@ describe('GithubTeams', () => {
     it('should resolve with false if called with an empty array', done => {
       teams.isMemberById('user', []).then(isMember => {
         expect(isMember).toBe(false);
-        expect(teamsGetSpy).not.toHaveBeenCalled();
+        expect(githubApi.get).not.toHaveBeenCalled();
         done();
       });
     });
 
 
     it('should call \'get()\' with the correct pathname', done => {
+      githubApi.get.and.callFake(() => Promise.resolve());
       teams.isMemberById('user', [1]).then(() => {
-        expect(teamsGetSpy).toHaveBeenCalledWith('/teams/1/memberships/user');
+        expect(githubApi.get).toHaveBeenCalledWith('/teams/1/memberships/user');
         done();
       });
     });
 
 
     it('should resolve with false if \'get()\' rejects', done => {
-      teamsGetSpy.and.returnValue(Promise.reject(null));
+      githubApi.get.and.callFake(() => Promise.reject(null));
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(false);
-        expect(teamsGetSpy).toHaveBeenCalled();
+        expect(githubApi.get).toHaveBeenCalled();
         done();
       });
     });
 
 
     it('should resolve with false if the membership is not active', done => {
-      teamsGetSpy.and.returnValue(Promise.resolve({state: 'pending'}));
+      githubApi.get.and.callFake(() => Promise.resolve({state: 'pending'}));
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(false);
-        expect(teamsGetSpy).toHaveBeenCalled();
+        expect(githubApi.get).toHaveBeenCalled();
         done();
       });
     });
 
 
     it('should resolve with true if the membership is active', done => {
-      teamsGetSpy.and.returnValue(Promise.resolve({state: 'active'}));
+      githubApi.get.and.callFake(() => Promise.resolve({state: 'active'}));
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(true);
         done();
@@ -115,15 +109,15 @@ describe('GithubTeams', () => {
         '/teams/2/memberships/user': Promise.reject(null),
         '/teams/3/memberships/user': Promise.resolve({state: 'active'}),
       };
-      teamsGetSpy.and.callFake((pathname: string) => trainedResponses[pathname]);
+      githubApi.get.and.callFake((pathname: string) => trainedResponses[pathname]);
 
       teams.isMemberById('user', [1, 2, 3, 4]).then(isMember => {
         expect(isMember).toBe(true);
 
-        expect(teamsGetSpy).toHaveBeenCalledTimes(3);
-        expect(teamsGetSpy.calls.argsFor(0)[0]).toBe('/teams/1/memberships/user');
-        expect(teamsGetSpy.calls.argsFor(1)[0]).toBe('/teams/2/memberships/user');
-        expect(teamsGetSpy.calls.argsFor(2)[0]).toBe('/teams/3/memberships/user');
+        expect(githubApi.get).toHaveBeenCalledTimes(3);
+        expect(githubApi.get.calls.argsFor(0)[0]).toBe('/teams/1/memberships/user');
+        expect(githubApi.get.calls.argsFor(1)[0]).toBe('/teams/2/memberships/user');
+        expect(githubApi.get.calls.argsFor(2)[0]).toBe('/teams/3/memberships/user');
 
         done();
       });
@@ -137,16 +131,16 @@ describe('GithubTeams', () => {
         '/teams/3/memberships/user': Promise.resolve({state: 'not active'}),
         '/teams/4/memberships/user':  Promise.reject(null),
       };
-      teamsGetSpy.and.callFake((pathname: string) => trainedResponses[pathname]);
+      githubApi.get.and.callFake((pathname: string) => trainedResponses[pathname]);
 
       teams.isMemberById('user', [1, 2, 3, 4]).then(isMember => {
         expect(isMember).toBe(false);
 
-        expect(teamsGetSpy).toHaveBeenCalledTimes(4);
-        expect(teamsGetSpy.calls.argsFor(0)[0]).toBe('/teams/1/memberships/user');
-        expect(teamsGetSpy.calls.argsFor(1)[0]).toBe('/teams/2/memberships/user');
-        expect(teamsGetSpy.calls.argsFor(2)[0]).toBe('/teams/3/memberships/user');
-        expect(teamsGetSpy.calls.argsFor(3)[0]).toBe('/teams/4/memberships/user');
+        expect(githubApi.get).toHaveBeenCalledTimes(4);
+        expect(githubApi.get.calls.argsFor(0)[0]).toBe('/teams/1/memberships/user');
+        expect(githubApi.get.calls.argsFor(1)[0]).toBe('/teams/2/memberships/user');
+        expect(githubApi.get.calls.argsFor(2)[0]).toBe('/teams/3/memberships/user');
+        expect(githubApi.get.calls.argsFor(3)[0]).toBe('/teams/4/memberships/user');
 
         done();
       });
@@ -161,7 +155,7 @@ describe('GithubTeams', () => {
     let teamsIsMemberByIdSpy: jasmine.Spy;
 
     beforeEach(() => {
-      teams = new GithubTeams('12345', 'foo');
+      teams = new GithubTeams(githubApi, 'foo');
 
       const mockResponse = Promise.resolve([{id: 1, slug: 'team1'}, {id: 2, slug: 'team2'}]);
       teamsFetchAllSpy = spyOn(teams, 'fetchAll').and.returnValue(mockResponse);
@@ -181,7 +175,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with false if \'fetchAll()\' rejects', done => {
-      teamsFetchAllSpy.and.returnValue(Promise.reject(null));
+      teamsFetchAllSpy.and.callFake(() => Promise.reject(null));
       teams.isMemberBySlug('user', ['team-slug']).then(isMember => {
         expect(isMember).toBe(false);
         done();
@@ -209,7 +203,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with false if \'isMemberById()\' rejects', done => {
-      teamsIsMemberByIdSpy.and.returnValue(Promise.reject(null));
+      teamsIsMemberByIdSpy.and.callFake(() => Promise.reject(null));
       teams.isMemberBySlug('user', ['team1']).then(isMember => {
         expect(isMember).toBe(false);
         expect(teamsIsMemberByIdSpy).toHaveBeenCalled();
@@ -218,16 +212,17 @@ describe('GithubTeams', () => {
     });
 
 
-    it('should resolve with the value \'isMemberById()\' resolves with', done => {
-      teamsIsMemberByIdSpy.and.returnValues(Promise.resolve(false), Promise.resolve(true));
+    it('should resolve with the value \'isMemberById()\' resolves with', async () => {
 
-      Promise.all([
-        teams.isMemberBySlug('user', ['team1']).then(isMember => expect(isMember).toBe(false)),
-        teams.isMemberBySlug('user', ['team1']).then(isMember => expect(isMember).toBe(true)),
-      ]).then(() => {
-        expect(teamsIsMemberByIdSpy).toHaveBeenCalledTimes(2);
-        done();
-      });
+      teamsIsMemberByIdSpy.and.callFake(() => Promise.resolve(true));
+      const isMember1 = await teams.isMemberBySlug('user', ['team1']);
+      expect(isMember1).toBe(true);
+      expect(teamsIsMemberByIdSpy).toHaveBeenCalledWith('user', [1]);
+
+      teamsIsMemberByIdSpy.and.callFake(() => Promise.resolve(false));
+      const isMember2 = await teams.isMemberBySlug('user', ['team1']);
+      expect(isMember2).toBe(false);
+      expect(teamsIsMemberByIdSpy).toHaveBeenCalledWith('user', [1]);
     });
 
   });

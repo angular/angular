@@ -17,14 +17,27 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
 };
 
 /**
- * The accessor for writing a value and listening to changes on a checkbox input element.
+ * @description
+ * A `ControlValueAccessor` for writing a value and listening to changes on a checkbox input
+ * element.
  *
- *  ### Example
- *  ```
- *  <input type="checkbox" name="rememberLogin" ngModel>
- *  ```
+ * @usageNotes
  *
- *  @stable
+ * ### Using a checkbox with a reactive form.
+ *
+ * The following example shows how to use a checkbox with a reactive form.
+ *
+ * ```ts
+ * const rememberLoginControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="checkbox" [formControl]="rememberLoginControl">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -33,17 +46,50 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
+  /**
+   * @description
+   * The registered callback function called when a change event occurs on the input element.
+   */
   onChange = (_: any) => {};
+
+  /**
+   * @description
+   * The registered callback function called when a blur event occurs on the input element.
+   */
   onTouched = () => {};
 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
+  /**
+   * Sets the "checked" property on the input element.
+   *
+   * @param value The checked value
+   */
   writeValue(value: any): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'checked', value);
   }
+
+  /**
+   * @description
+   * Registers a function called when the control value changes.
+   *
+   * @param fn The callback function
+   */
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
+
+  /**
+   * @description
+   * Registers a function called when the control is touched.
+   *
+   * @param fn The callback function
+   */
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 
+  /**
+   * Sets the "disabled" property on the input element.
+   *
+   * @param isDisabled The disabled value
+   */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }

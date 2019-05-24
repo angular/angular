@@ -7,11 +7,13 @@ export class User {
     public isAuthorized = false) { }
 }
 
-// Todo: get the user; don't 'new' it.
+// TODO: get the user; don't 'new' it.
 let alice = new User('Alice', true);
 let bob = new User('Bob', false);
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
   user = bob;  // initial user is Bob
 

@@ -9,7 +9,6 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from '../src/language_service';
-import {Completions, LanguageService} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
@@ -26,7 +25,7 @@ describe('service without angular', () => {
 
   it('should not crash a get template references',
      () => expect(() => ngService.getTemplateReferences()));
-  it('should not crash a get dianostics',
+  it('should not crash a get diagnostics',
      () => expect(() => ngService.getDiagnostics(fileName)).not.toThrow());
   it('should not crash a completion',
      () => expect(() => ngService.getCompletionsAt(fileName, position)).not.toThrow());

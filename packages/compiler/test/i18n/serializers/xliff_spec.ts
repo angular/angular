@@ -221,12 +221,26 @@ lignes</target>
           <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="mrk-test">
+        <source>First sentence.</source>
+        <seg-source>
+          <invalid-tag>Should not be parsed</invalid-tag>
+        </seg-source>
+        <target>Translated <mrk mtype="seg" mid="1">first sentence</mrk>.</target>
+      </trans-unit>
+      <trans-unit id="mrk-test2">
+        <source>First sentence. Second sentence.</source>
+        <seg-source>
+          <invalid-tag>Should not be parsed</invalid-tag>
+        </seg-source>
+        <target>Translated <mrk mtype="seg" mid="1"><mrk mtype="seg" mid="2">first</mrk> sentence</mrk>.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
 `;
 
-export function main(): void {
+(function() {
   const serializer = new Xliff();
 
   function toXliff(html: string, locale: string | null = null): string {
@@ -273,7 +287,9 @@ export function main(): void {
               '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
               ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
           'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
-lignes`
+lignes`,
+          'mrk-test': 'Translated first sentence.',
+          'mrk-test2': 'Translated first sentence.'
         });
       });
 
@@ -381,4 +397,4 @@ lignes`
       });
     });
   });
-}
+})();

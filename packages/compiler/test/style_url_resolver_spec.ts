@@ -9,7 +9,7 @@
 import {extractStyleUrls, isStyleUrlResolvable} from '@angular/compiler/src/style_url_resolver';
 import {UrlResolver} from '@angular/compiler/src/url_resolver';
 
-export function main() {
+{
   describe('extractStyleUrls', () => {
     let urlResolver: UrlResolver;
 

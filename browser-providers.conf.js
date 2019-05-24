@@ -10,11 +10,14 @@
 // and BrowserStack (BS).
 // If the target is set to null, then the browser is not run anywhere during CI.
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
-// out in Travis configuration.
+// out in the CI configuration.
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'ChromeBeta': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: false}},
+  // Disabled because using the "beta" channel of Chrome can cause non-deterministic CI results.
+  // e.g. a new chrome beta version has been released, but the Saucelabs selenium server does
+  // not provide a chromedriver version that is compatible with the new beta.
+  'ChromeBeta': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: false}},
   'ChromeDev': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   // FirefoxBeta and FirefoxDev should be target:'BS' or target:'SL', and required:true
   // Currently deactivated due to https://github.com/angular/angular/issues/7560
@@ -43,10 +46,10 @@ var customLaunchers = {
   'DartiumWithWebPlatform':
       {base: 'Dartium', flags: ['--enable-experimental-web-platform-features']},
   'ChromeNoSandbox': {base: 'Chrome', flags: ['--no-sandbox']},
-  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '60'},
+  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '73'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
-  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '54'},
+  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '65'},
   'SL_FIREFOXBETA':
       {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'beta'},
   'SL_FIREFOXDEV':

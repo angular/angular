@@ -9,13 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
-    ['gauerdia', 'goiz.', 'goizeko', 'eguerd.', 'arrats.', 'iluntz.', 'gau.'], ,
+    ['gauerdia', 'goizald.', 'goizeko', 'eguerd.', 'arrats.', 'iluntz.', 'gaueko'], u,
     ['gauerdia', 'goizaldeko', 'goizeko', 'eguerdiko', 'arratsaldeko', 'iluntzeko', 'gaueko']
   ],
   [
-    ['gauerdia', 'goiz.', 'goiza', 'eguerd.', 'arrats.', 'iluntz.', 'gaua'], ,
+    ['gauerdia', 'goizald.', 'goiza', 'eguerd.', 'arrats.', 'iluntz.', 'gaua'],
+    ['gauerdia', 'goiz.', 'goiza', 'eguerd.', 'arrats.', 'iluntz.', 'gaua'],
     ['gauerdia', 'goizaldea', 'goiza', 'eguerdia', 'arratsaldea', 'iluntzea', 'gaua']
   ],
   [

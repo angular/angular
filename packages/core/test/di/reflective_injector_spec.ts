@@ -11,7 +11,7 @@ import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 class Engine {}
 
@@ -66,9 +66,9 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-function factoryFn(a: any) {}
+function factoryFn(a: any){}
 
-export function main() {
+(function() {
   const dynamicProviders = [
     {provide: 'provider0', useValue: 1}, {provide: 'provider1', useValue: 1},
     {provide: 'provider2', useValue: 1}, {provide: 'provider3', useValue: 1},
@@ -526,4 +526,4 @@ export function main() {
           .toEqual('ReflectiveInjector(providers: [ "Engine" ,  "BrokenEngine" ])');
     });
   });
-}
+})();

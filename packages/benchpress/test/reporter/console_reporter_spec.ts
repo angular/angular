@@ -11,17 +11,17 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
 
-export function main() {
+{
   describe('console reporter', () => {
     let reporter: ConsoleReporter;
     let log: string[];
 
     function createReporter(
         {columnWidth = null, sampleId = null, descriptions = null, metrics = null}: {
-          columnWidth?: number,
-          sampleId?: string,
-          descriptions?: {[key: string]: any}[],
-          metrics?: {[key: string]: any}
+          columnWidth?: number | null,
+          sampleId?: string | null,
+          descriptions?: {[key: string]: any}[] | null,
+          metrics?: {[key: string]: any} | null
         }) {
       log = [];
       if (!descriptions) {

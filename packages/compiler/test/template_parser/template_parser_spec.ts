@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol, preserveWhitespacesDefault} from '@angular/compiler';
-import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
@@ -21,7 +21,7 @@ import {Identifiers, createTokenForExternalReference, createTokenForReference} f
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {noUndefined} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
-import {unparse} from '../expression_parser/unparser';
+import {unparse} from '../expression_parser/utils/unparser';
 import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
 
 const someModuleUrl = 'package:someModule';
@@ -38,28 +38,29 @@ function createTypeMeta({reference, diDeps}: {reference: any, diDeps?: any[]}):
   return {reference: reference, diDeps: diDeps || [], lifecycleHooks: []};
 }
 
-function compileDirectiveMetadataCreate({isHost, type, isComponent, selector, exportAs,
-                                         changeDetection, inputs, outputs, host, providers,
-                                         viewProviders, queries, viewQueries, entryComponents,
-                                         template, componentViewType, rendererType}: {
-  isHost?: boolean,
-  type?: CompileTypeMetadata,
-  isComponent?: boolean,
-  selector?: string | null,
-  exportAs?: string | null,
-  changeDetection?: ChangeDetectionStrategy | null,
-  inputs?: string[],
-  outputs?: string[],
-  host?: {[key: string]: string},
-  providers?: CompileProviderMetadata[] | null,
-  viewProviders?: CompileProviderMetadata[] | null,
-  queries?: CompileQueryMetadata[] | null,
-  viewQueries?: CompileQueryMetadata[],
-  entryComponents?: CompileEntryComponentMetadata[],
-  template?: CompileTemplateMetadata,
-  componentViewType?: StaticSymbol | ProxyClass | null,
-  rendererType?: StaticSymbol | RendererType2 | null,
-}) {
+function compileDirectiveMetadataCreate(
+    {isHost, type, isComponent, selector, exportAs, changeDetection, inputs, outputs, host,
+     providers, viewProviders, queries, guards, viewQueries, entryComponents, template,
+     componentViewType, rendererType}: {
+      isHost?: boolean,
+      type?: CompileTypeMetadata,
+      isComponent?: boolean,
+      selector?: string | null,
+      exportAs?: string | null,
+      changeDetection?: ChangeDetectionStrategy | null,
+      inputs?: string[],
+      outputs?: string[],
+      host?: {[key: string]: string},
+      providers?: CompileProviderMetadata[] | null,
+      viewProviders?: CompileProviderMetadata[] | null,
+      queries?: CompileQueryMetadata[] | null,
+      guards?: {[key: string]: any},
+      viewQueries?: CompileQueryMetadata[],
+      entryComponents?: CompileEntryComponentMetadata[],
+      template?: CompileTemplateMetadata,
+      componentViewType?: StaticSymbol | ProxyClass | null,
+      rendererType?: StaticSymbol | RendererType2 | null,
+    }) {
   return CompileDirectiveMetadata.create({
     isHost: !!isHost,
     type: noUndefined(type) !,
@@ -73,6 +74,7 @@ function compileDirectiveMetadataCreate({isHost, type, isComponent, selector, ex
     providers: providers || [],
     viewProviders: viewProviders || [],
     queries: queries || [],
+    guards: guards || {},
     viewQueries: viewQueries || [],
     entryComponents: entryComponents || [],
     template: noUndefined(template) !,
@@ -114,8 +116,214 @@ function compileTemplateMetadata({encapsulation, template, templateUrl, styles, 
 }
 
 
+function humanizeTplAst(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(false, interpolationConfig);
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
 
-export function main() {
+function humanizeTplAstSourceSpans(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(true, interpolationConfig);
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
+
+class TemplateHumanizer implements TemplateAstVisitor {
+  result: any[] = [];
+
+  constructor(
+      private includeSourceSpan: boolean,
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
+
+  visitNgContent(ast: NgContentAst, context: any): any {
+    const res = [NgContentAst];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    const res = [EmbeddedTemplateAst];
+    this.result.push(this._appendSourceSpan(ast, res));
+    templateVisitAll(this, ast.attrs);
+    templateVisitAll(this, ast.outputs);
+    templateVisitAll(this, ast.references);
+    templateVisitAll(this, ast.variables);
+    templateVisitAll(this, ast.directives);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitElement(ast: ElementAst, context: any): any {
+    const res = [ElementAst, ast.name];
+    this.result.push(this._appendSourceSpan(ast, res));
+    templateVisitAll(this, ast.attrs);
+    templateVisitAll(this, ast.inputs);
+    templateVisitAll(this, ast.outputs);
+    templateVisitAll(this, ast.references);
+    templateVisitAll(this, ast.directives);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitReference(ast: ReferenceAst, context: any): any {
+    const res = [ReferenceAst, ast.name, ast.value];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitVariable(ast: VariableAst, context: any): any {
+    const res = [VariableAst, ast.name, ast.value];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitEvent(ast: BoundEventAst, context: any): any {
+    const res =
+        [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
+    const res = [
+      BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
+      ast.unit
+    ];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitAttr(ast: AttrAst, context: any): any {
+    const res = [AttrAst, ast.name, ast.value];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitBoundText(ast: BoundTextAst, context: any): any {
+    const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitText(ast: TextAst, context: any): any {
+    const res = [TextAst, ast.value];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, context: any): any {
+    const res = [DirectiveAst, ast.directive];
+    this.result.push(this._appendSourceSpan(ast, res));
+    templateVisitAll(this, ast.inputs);
+    templateVisitAll(this, ast.hostProperties);
+    templateVisitAll(this, ast.hostEvents);
+    return null;
+  }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    const res = [
+      BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
+    ];
+    this.result.push(this._appendSourceSpan(ast, res));
+    return null;
+  }
+
+  private _appendSourceSpan(ast: TemplateAst, input: any[]): any[] {
+    if (!this.includeSourceSpan) return input;
+    input.push(ast.sourceSpan !.toString());
+    return input;
+  }
+}
+
+function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
+  const humanizer = new TemplateContentProjectionHumanizer();
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
+
+class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
+  result: any[] = [];
+  visitNgContent(ast: NgContentAst, context: any): any {
+    this.result.push(['ng-content', ast.ngContentIndex]);
+    return null;
+  }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    this.result.push(['template', ast.ngContentIndex]);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitElement(ast: ElementAst, context: any): any {
+    this.result.push([ast.name, ast.ngContentIndex]);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitReference(ast: ReferenceAst, context: any): any { return null; }
+  visitVariable(ast: VariableAst, context: any): any { return null; }
+  visitEvent(ast: BoundEventAst, context: any): any { return null; }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
+  visitAttr(ast: AttrAst, context: any): any { return null; }
+  visitBoundText(ast: BoundTextAst, context: any): any {
+    this.result.push([`#text(${unparse(ast.value)})`, ast.ngContentIndex]);
+    return null;
+  }
+  visitText(ast: TextAst, context: any): any {
+    this.result.push([`#text(${ast.value})`, ast.ngContentIndex]);
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, context: any): any { return null; }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
+}
+
+class ThrowingVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
+  visitElement(ast: ElementAst, context: any): any { throw 'not implemented'; }
+  visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
+  visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
+  visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { throw 'not implemented'; }
+  visitAttr(ast: AttrAst, context: any): any { throw 'not implemented'; }
+  visitBoundText(ast: BoundTextAst, context: any): any { throw 'not implemented'; }
+  visitText(ast: TextAst, context: any): any { throw 'not implemented'; }
+  visitDirective(ast: DirectiveAst, context: any): any { throw 'not implemented'; }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    throw 'not implemented';
+  }
+}
+
+class FooAstTransformer extends ThrowingVisitor {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'div') return ast;
+    return new ElementAst(
+        'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
+  }
+}
+
+class BarAstTransformer extends FooAstTransformer {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'foo') return ast;
+    return new ElementAst(
+        'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
+  }
+}
+
+class NullVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any {}
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {}
+  visitElement(ast: ElementAst, context: any): any {}
+  visitReference(ast: ReferenceAst, context: any): any {}
+  visitVariable(ast: VariableAst, context: any): any {}
+  visitEvent(ast: BoundEventAst, context: any): any {}
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {}
+  visitAttr(ast: AttrAst, context: any): any {}
+  visitBoundText(ast: BoundTextAst, context: any): any {}
+  visitText(ast: TextAst, context: any): any {}
+  visitDirective(ast: DirectiveAst, context: any): any {}
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {}
+}
+
+class ArrayConsole implements Console {
+  logs: string[] = [];
+  warnings: string[] = [];
+  log(msg: string) { this.logs.push(msg); }
+  warn(msg: string) { this.warnings.push(msg); }
+}
+
+
+(function() {
   let ngIf: CompileDirectiveSummary;
   let parse: (
       template: string, directives: CompileDirectiveSummary[], pipes?: CompilePipeSummary[],
@@ -128,7 +336,6 @@ export function main() {
       TestBed.configureCompiler({
         providers: [
           {provide: Console, useValue: console},
-          {provide: CompilerConfig, useValue: new CompilerConfig({enableLegacyTemplate: true})}
         ],
       });
     });
@@ -136,7 +343,7 @@ export function main() {
 
   function commonBeforeEach() {
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
-      const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
+      const someAnimation = ['someAnimation'];
       const someTemplate = compileTemplateMetadata({animations: [someAnimation]});
       const component = compileDirectiveMetadataCreate({
         isHost: false,
@@ -199,7 +406,7 @@ export function main() {
       expectVisitedNode(
           new class extends
           NullVisitor{visitReference(ast: ReferenceAst, context: any): any{return ast;}},
-          new ReferenceAst('foo', null !, null !));
+          new ReferenceAst('foo', null !, null !, null !));
     });
 
     it('should visit VariableAst', () => {
@@ -213,7 +420,7 @@ export function main() {
       expectVisitedNode(
           new class extends
           NullVisitor{visitEvent(ast: BoundEventAst, context: any): any{return ast;}},
-          new BoundEventAst('foo', 'bar', 'goo', null !, null !));
+          new BoundEventAst('foo', 'bar', 'goo', null !, null !, null !));
     });
 
     it('should visit BoundElementPropertyAst', () => {
@@ -266,8 +473,8 @@ export function main() {
         new NgContentAst(0, 0, null !),
         new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null !),
         new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null !, null !),
-        new ReferenceAst('foo', null !, null !), new VariableAst('foo', 'bar', null !),
-        new BoundEventAst('foo', 'bar', 'goo', null !, null !),
+        new ReferenceAst('foo', null !, 'bar', null !), new VariableAst('foo', 'bar', null !),
+        new BoundEventAst('foo', 'bar', 'goo', null !, null !, null !),
         new BoundElementPropertyAst('foo', null !, null !, null !, 'bar', null !),
         new AttrAst('foo', 'bar', null !), new BoundTextAst(null !, 0, null !),
         new TextAst('foo', 0, null !), new DirectiveAst(null !, [], [], [], 0, null !),
@@ -390,6 +597,7 @@ export function main() {
              providers: [],
              viewProviders: [],
              queries: [],
+             guards: {},
              viewQueries: [],
              entryComponents: [],
              componentViewType: null,
@@ -550,7 +758,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
-             const animationEntries = [new CompileAnimationEntryMetadata('prop', [])];
+             const animationEntries = ['prop'];
              const dirA = compileDirectiveMetadataCreate({
                             selector: 'div',
                             template: compileTemplateMetadata({animations: animationEntries}),
@@ -603,6 +811,35 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
             ]
           ]);
         });
+
+        it('should support * directives', () => {
+          expect(humanizeTplAst(parse('<div *ngIf>', [ngIf]))).toEqual([
+            [EmbeddedTemplateAst],
+            [DirectiveAst, ngIf],
+            [BoundDirectivePropertyAst, 'ngIf', 'null'],
+            [ElementAst, 'div'],
+          ]);
+        });
+
+        it('should support <ng-template>', () => {
+          expect(humanizeTplAst(parse('<ng-template>', []))).toEqual([
+            [EmbeddedTemplateAst],
+          ]);
+        });
+
+        it('should treat <template> as a regular tag', () => {
+          expect(humanizeTplAst(parse('<template>', []))).toEqual([
+            [ElementAst, 'template'],
+          ]);
+        });
+
+        it('should not special case the template attribute', () => {
+          expect(humanizeTplAst(parse('<p template="ngFor">', []))).toEqual([
+            [ElementAst, 'p'],
+            [AttrAst, 'template', 'ngFor'],
+          ]);
+        });
+
       });
 
       describe('events', () => {
@@ -643,16 +880,10 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
            () => {
              const dirA =
                  compileDirectiveMetadataCreate({
-                   selector: 'template,ng-template',
+                   selector: 'ng-template',
                    outputs: ['e'],
                    type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
                  }).toSummary();
-
-             expect(humanizeTplAst(parse('<template (e)="f"></template>', [dirA]))).toEqual([
-               [EmbeddedTemplateAst],
-               [BoundEventAst, 'e', null, 'f'],
-               [DirectiveAst, dirA],
-             ]);
 
              expect(humanizeTplAst(parse('<ng-template (e)="f"></ng-template>', [dirA]))).toEqual([
                [EmbeddedTemplateAst],
@@ -743,7 +974,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
         it('should locate directives in inline templates', () => {
           const dirTemplate =
               compileDirectiveMetadataCreate({
-                selector: 'template',
+                selector: 'ng-template',
                 type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'onTemplate'}})
               }).toSummary();
           expect(humanizeTplAst(parse('<div *ngIf="cond">', [ngIf, dirTemplate]))).toEqual([
@@ -906,8 +1137,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         function createDir(
             selector: string, {providers = null, viewProviders = null, deps = [], queries = []}: {
-              providers?: CompileProviderMetadata[],
-              viewProviders?: CompileProviderMetadata[],
+              providers?: CompileProviderMetadata[] | null,
+              viewProviders?: CompileProviderMetadata[] | null,
               deps?: string[],
               queries?: string[]
             } = {}): CompileDirectiveSummary {
@@ -1202,7 +1433,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
-        it('should report references with values that dont match a directive as errors', () => {
+        it('should report references with values that don\'t match a directive as errors', () => {
           expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5`);
         });
@@ -1224,7 +1455,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         });
 
-        it('should report duplicate reference names when using mutliple exportAs names', () => {
+        it('should report duplicate reference names when using multiple exportAs names', () => {
           const pizzaDirective =
               compileDirectiveMetadataCreate({
                 selector: '[dessert-pizza]',
@@ -1251,8 +1482,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         it('should not throw error when there is same reference name in different templates',
            () => {
-             expect(() => parse('<div #a><template #a><span>OK</span></template></div>', []))
-                 .not.toThrowError();
              expect(() => parse('<div #a><ng-template #a><span>OK</span></ng-template></div>', []))
                  .not.toThrowError();
            });
@@ -1291,20 +1520,12 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         beforeEach(() => { reflector = new JitReflector(); });
 
         it('should create embedded templates for <ng-template> elements', () => {
-          expect(humanizeTplAst(parse('<template></template>', [
-          ]))).toEqual([[EmbeddedTemplateAst]]);
-          expect(humanizeTplAst(parse('<TEMPLATE></TEMPLATE>', [
-          ]))).toEqual([[EmbeddedTemplateAst]]);
           expect(humanizeTplAst(parse('<ng-template></ng-template>', [
           ]))).toEqual([[EmbeddedTemplateAst]]);
         });
 
         it('should create embedded templates for <ng-template> elements regardless the namespace',
            () => {
-             expect(humanizeTplAst(parse('<svg><template></template></svg>', []))).toEqual([
-               [ElementAst, ':svg:svg'],
-               [EmbeddedTemplateAst],
-             ]);
              expect(humanizeTplAst(parse('<svg><ng-template></ng-template></svg>', []))).toEqual([
                [ElementAst, ':svg:svg'],
                [EmbeddedTemplateAst],
@@ -1312,12 +1533,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
            });
 
         it('should support references via #...', () => {
-          expect(humanizeTplAst(parse('<template #a>', []))).toEqual([
-            [EmbeddedTemplateAst],
-            [
-              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
-            ],
-          ]);
           expect(humanizeTplAst(parse('<ng-template #a>', []))).toEqual([
             [EmbeddedTemplateAst],
             [
@@ -1327,12 +1542,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         it('should support references via ref-...', () => {
-          expect(humanizeTplAst(parse('<template ref-a>', []))).toEqual([
-            [EmbeddedTemplateAst],
-            [
-              ReferenceAst, 'a', createTokenForExternalReference(reflector, Identifiers.TemplateRef)
-            ]
-          ]);
           expect(humanizeTplAst(parse('<ng-template ref-a>', []))).toEqual([
             [EmbeddedTemplateAst],
             [
@@ -1342,10 +1551,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         it('should parse variables via let-...', () => {
-          expect(humanizeTplAst(parse('<template let-a="b">', []))).toEqual([
-            [EmbeddedTemplateAst],
-            [VariableAst, 'a', 'b'],
-          ]);
           expect(humanizeTplAst(parse('<ng-template let-a="b">', []))).toEqual([
             [EmbeddedTemplateAst],
             [VariableAst, 'a', 'b'],
@@ -1358,10 +1563,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 selector: '[a]',
                 type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
               }).toSummary();
-          expect(humanizeTplAst(parse('<template let-a="b"></template>', [dirA]))).toEqual([
-            [EmbeddedTemplateAst],
-            [VariableAst, 'a', 'b'],
-          ]);
           expect(humanizeTplAst(parse('<ng-template let-a="b"></ng-template>', [dirA]))).toEqual([
             [EmbeddedTemplateAst],
             [VariableAst, 'a', 'b'],
@@ -1371,30 +1572,6 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
       });
 
       describe('inline templates', () => {
-        it('should wrap the element into an EmbeddedTemplateAST', () => {
-          expect(humanizeTplAst(parse('<div template>', []))).toEqual([
-            [EmbeddedTemplateAst],
-            [ElementAst, 'div'],
-          ]);
-        });
-
-        it('should wrap the element with data-template attribute into an EmbeddedTemplateAST ',
-           () => {
-             expect(humanizeTplAst(parse('<div data-template>', []))).toEqual([
-               [EmbeddedTemplateAst],
-               [ElementAst, 'div'],
-             ]);
-           });
-
-        it('should parse bound properties', () => {
-          expect(humanizeTplAst(parse('<div template="ngIf test">', [ngIf]))).toEqual([
-            [EmbeddedTemplateAst],
-            [DirectiveAst, ngIf],
-            [BoundDirectivePropertyAst, 'ngIf', 'test'],
-            [ElementAst, 'div'],
-          ]);
-        });
-
         it('should report an error on variables declared with #', () => {
           expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
               .toThrowError(/Parser Error: Unexpected token # at column 1/);
@@ -1437,7 +1614,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                   selector: '[b]',
                   type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirB'}})
                 }).toSummary();
-            expect(humanizeTplAst(parse('<div template="a b" b>', [dirA, dirB]))).toEqual([
+            expect(humanizeTplAst(parse('<div *a="b" b>', [dirA, dirB]))).toEqual([
               [EmbeddedTemplateAst], [DirectiveAst, dirA], [BoundDirectivePropertyAst, 'a', 'b'],
               [ElementAst, 'div'], [AttrAst, 'b', ''], [DirectiveAst, dirB]
             ]);
@@ -1449,9 +1626,13 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                   selector: '[a]',
                   type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}})
                 }).toSummary();
-            expect(humanizeTplAst(parse('<div template="let a=b">', [dirA]))).toEqual([
-              [EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']
-            ]);
+            expect(
+                humanizeTplAst(parse('<ng-template let-a="b"><div></div></ng-template>', [dirA])))
+                .toEqual([
+                  [EmbeddedTemplateAst],
+                  [VariableAst, 'a', 'b'],
+                  [ElementAst, 'div'],
+                ]);
           });
 
           it('should not locate directives in references', () => {
@@ -1551,12 +1732,10 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
       describe('embedded templates', () => {
         it('should project embedded templates with wildcard selector', () => {
-          expect(humanizeContentProjection(parse(
-                     '<div><template></template><ng-template></ng-template></div>',
-                     [createComp('div', ['*'])])))
+          expect(humanizeContentProjection(
+                     parse('<div><ng-template></ng-template></div>', [createComp('div', ['*'])])))
               .toEqual([
                 ['div', null],
-                ['template', 0],
                 ['template', 0],
               ]);
         });
@@ -1639,13 +1818,11 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
         });
 
         it('should override <ng-template>', () => {
-          expect(
-              humanizeContentProjection(parse(
-                  '<div><template ngProjectAs="b"></template><ng-template ngProjectAs="b"></ng-template></div>',
-                  [createComp('div', ['template', 'b'])])))
+          expect(humanizeContentProjection(parse(
+                     '<div><ng-template ngProjectAs="b"></ng-template></div>',
+                     [createComp('div', ['template', 'b'])])))
               .toEqual([
                 ['div', null],
-                ['template', 1],
                 ['template', 1],
               ]);
         });
@@ -1685,26 +1862,14 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
                 `<ng-content> element cannot have content. ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0`);
       });
 
-      it('should treat *attr on a template element as valid', () => {
-        expect(() => parse('<template *ngIf>', [])).not.toThrowError();
-        expect(() => parse('<ng-template *ngIf>', [])).not.toThrowError();
-      });
-
-      it('should treat template attribute on a template element as valid', () => {
-        expect(() => parse('<template template="ngIf">', [])).not.toThrowError();
-        expect(() => parse('<ng-template template="ngIf">', [])).not.toThrowError();
-      });
+      it('should treat *attr on a template element as valid',
+         () => { expect(() => parse('<ng-template *ngIf>', [])).not.toThrowError(); });
 
       it('should report when multiple *attrs are used on the same element', () => {
         expect(() => parse('<div *ngIf *ngFor>', [])).toThrowError(`Template parse errors:
-Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<div *ngIf [ERROR ->]*ngFor>"): TestComp@0:11`);
+Can't have multiple template bindings on one element. Use only one attribute prefixed with * ("<div *ngIf [ERROR ->]*ngFor>"): TestComp@0:11`);
       });
 
-      it('should report when mix of template and *attrs are used on the same element', () => {
-        expect(() => parse('<span template="ngIf" *ngFor>', []))
-            .toThrowError(`Template parse errors:
-Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with * ("<span template="ngIf" [ERROR ->]*ngFor>"): TestComp@0:22`);
-      });
 
       it('should report invalid property names', () => {
         expect(() => parse('<div [invalidProp]></div>', [])).toThrowError(`Template parse errors:
@@ -1768,12 +1933,6 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 ("<div [
                  template: compileTemplateMetadata({ngContentSelectors: []})
                }).toSummary();
 
-           expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
-               .toThrowError(`Template parse errors:
-Event binding e not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("<template [a]="b" [ERROR ->](e)="f"></template>"): TestComp@0:18
-Components on an embedded template: DirA ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0
-Property binding a not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("[ERROR ->]<template [a]="b" (e)="f"></template>"): TestComp@0:0`);
-
            expect(() => parse('<ng-template [a]="b" (e)="f"></ng-template>', [dirA]))
                .toThrowError(`Template parse errors:
 Event binding e not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations". ("<ng-template [a]="b" [ERROR ->](e)="f"></ng-template>"): TestComp@0:21
@@ -1806,14 +1965,13 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
       describe('<link rel="stylesheet">', () => {
 
-        it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
-           () => {
-             expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
-                 .toEqual([
-                   [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
-                   [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
-                 ]);
-           });
+        it('should keep <link rel="stylesheet"> elements if they have an absolute url', () => {
+          expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
+              .toEqual([
+                [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
+                [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
+              ]);
+        });
 
         it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
           expect(humanizeTplAst(parse('<link rel="stylesheet">a', [
@@ -1884,8 +2042,6 @@ Property binding a not used by any directive on an embedded template. Make sure 
       });
 
       it('should support embedded template', () => {
-        expect(humanizeTplAstSourceSpans(parse('<template></template>', [
-        ]))).toEqual([[EmbeddedTemplateAst, '<template>']]);
         expect(humanizeTplAstSourceSpans(parse('<ng-template></ng-template>', [
         ]))).toEqual([[EmbeddedTemplateAst, '<ng-template>']]);
       });
@@ -1903,10 +2059,6 @@ Property binding a not used by any directive on an embedded template. Make sure 
       });
 
       it('should support variables', () => {
-        expect(humanizeTplAstSourceSpans(parse('<template let-a="b"></template>', []))).toEqual([
-          [EmbeddedTemplateAst, '<template let-a="b">'],
-          [VariableAst, 'a', 'b', 'let-a="b"'],
-        ]);
         expect(humanizeTplAstSourceSpans(parse('<ng-template let-a="b"></ng-template>', [])))
             .toEqual([
               [EmbeddedTemplateAst, '<ng-template let-a="b">'],
@@ -2133,253 +2285,6 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
         ...humanizedExpandedForm, ...humanizedExpandedForm
       ]);
     });
-
   });
 
-  describe('Template Parser - `<template>` support disabled by default', () => {
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        providers: [
-          {provide: Console, useValue: console},
-          {provide: CompilerConfig, useValue: new CompilerConfig()}
-        ],
-      });
-    });
-
-    commonBeforeEach();
-
-    it('should support * directives', () => {
-      expect(humanizeTplAst(parse('<div *ngIf>', [ngIf]))).toEqual([
-        [EmbeddedTemplateAst],
-        [DirectiveAst, ngIf],
-        [BoundDirectivePropertyAst, 'ngIf', 'null'],
-        [ElementAst, 'div'],
-      ]);
-    });
-
-    it('should support <ng-template>', () => {
-      expect(humanizeTplAst(parse('<ng-template>', []))).toEqual([
-        [EmbeddedTemplateAst],
-      ]);
-    });
-
-    it('should treat <template> as a regular tag', () => {
-      expect(humanizeTplAst(parse('<template>', []))).toEqual([
-        [ElementAst, 'template'],
-      ]);
-    });
-
-    it('should not special case the template attribute', () => {
-      expect(humanizeTplAst(parse('<p template="ngFor">', []))).toEqual([
-        [ElementAst, 'p'],
-        [AttrAst, 'template', 'ngFor'],
-      ]);
-    });
-  });
-}
-
-function humanizeTplAst(
-    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
-  const humanizer = new TemplateHumanizer(false, interpolationConfig);
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-function humanizeTplAstSourceSpans(
-    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
-  const humanizer = new TemplateHumanizer(true, interpolationConfig);
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-class TemplateHumanizer implements TemplateAstVisitor {
-  result: any[] = [];
-
-  constructor(
-      private includeSourceSpan: boolean,
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
-
-  visitNgContent(ast: NgContentAst, context: any): any {
-    const res = [NgContentAst];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    const res = [EmbeddedTemplateAst];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.attrs);
-    templateVisitAll(this, ast.outputs);
-    templateVisitAll(this, ast.references);
-    templateVisitAll(this, ast.variables);
-    templateVisitAll(this, ast.directives);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitElement(ast: ElementAst, context: any): any {
-    const res = [ElementAst, ast.name];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.attrs);
-    templateVisitAll(this, ast.inputs);
-    templateVisitAll(this, ast.outputs);
-    templateVisitAll(this, ast.references);
-    templateVisitAll(this, ast.directives);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitReference(ast: ReferenceAst, context: any): any {
-    const res = [ReferenceAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitVariable(ast: VariableAst, context: any): any {
-    const res = [VariableAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitEvent(ast: BoundEventAst, context: any): any {
-    const res =
-        [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
-    const res = [
-      BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
-      ast.unit
-    ];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitAttr(ast: AttrAst, context: any): any {
-    const res = [AttrAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitBoundText(ast: BoundTextAst, context: any): any {
-    const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitText(ast: TextAst, context: any): any {
-    const res = [TextAst, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitDirective(ast: DirectiveAst, context: any): any {
-    const res = [DirectiveAst, ast.directive];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.inputs);
-    templateVisitAll(this, ast.hostProperties);
-    templateVisitAll(this, ast.hostEvents);
-    return null;
-  }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    const res = [
-      BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
-    ];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-
-  private _appendContext(ast: TemplateAst, input: any[]): any[] {
-    if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan !.toString());
-    return input;
-  }
-}
-
-function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
-  const humanizer = new TemplateContentProjectionHumanizer();
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
-  result: any[] = [];
-  visitNgContent(ast: NgContentAst, context: any): any {
-    this.result.push(['ng-content', ast.ngContentIndex]);
-    return null;
-  }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    this.result.push(['template', ast.ngContentIndex]);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitElement(ast: ElementAst, context: any): any {
-    this.result.push([ast.name, ast.ngContentIndex]);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitReference(ast: ReferenceAst, context: any): any { return null; }
-  visitVariable(ast: VariableAst, context: any): any { return null; }
-  visitEvent(ast: BoundEventAst, context: any): any { return null; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
-  visitAttr(ast: AttrAst, context: any): any { return null; }
-  visitBoundText(ast: BoundTextAst, context: any): any {
-    this.result.push([`#text(${unparse(ast.value)})`, ast.ngContentIndex]);
-    return null;
-  }
-  visitText(ast: TextAst, context: any): any {
-    this.result.push([`#text(${ast.value})`, ast.ngContentIndex]);
-    return null;
-  }
-  visitDirective(ast: DirectiveAst, context: any): any { return null; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
-}
-
-class ThrowingVisitor implements TemplateAstVisitor {
-  visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
-  visitElement(ast: ElementAst, context: any): any { throw 'not implemented'; }
-  visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
-  visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
-  visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { throw 'not implemented'; }
-  visitAttr(ast: AttrAst, context: any): any { throw 'not implemented'; }
-  visitBoundText(ast: BoundTextAst, context: any): any { throw 'not implemented'; }
-  visitText(ast: TextAst, context: any): any { throw 'not implemented'; }
-  visitDirective(ast: DirectiveAst, context: any): any { throw 'not implemented'; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    throw 'not implemented';
-  }
-}
-
-class FooAstTransformer extends ThrowingVisitor {
-  visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'div') return ast;
-    return new ElementAst(
-        'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
-        ast.endSourceSpan);
-  }
-}
-
-class BarAstTransformer extends FooAstTransformer {
-  visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'foo') return ast;
-    return new ElementAst(
-        'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
-        ast.endSourceSpan);
-  }
-}
-
-class NullVisitor implements TemplateAstVisitor {
-  visitNgContent(ast: NgContentAst, context: any): any {}
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {}
-  visitElement(ast: ElementAst, context: any): any {}
-  visitReference(ast: ReferenceAst, context: any): any {}
-  visitVariable(ast: VariableAst, context: any): any {}
-  visitEvent(ast: BoundEventAst, context: any): any {}
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {}
-  visitAttr(ast: AttrAst, context: any): any {}
-  visitBoundText(ast: BoundTextAst, context: any): any {}
-  visitText(ast: TextAst, context: any): any {}
-  visitDirective(ast: DirectiveAst, context: any): any {}
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {}
-}
-
-class ArrayConsole implements Console {
-  logs: string[] = [];
-  warnings: string[] = [];
-  log(msg: string) { this.logs.push(msg); }
-  warn(msg: string) { this.warnings.push(msg); }
-}
+})();

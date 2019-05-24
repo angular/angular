@@ -17,7 +17,7 @@ class SomePipe {
 
 class SimpleClass {}
 
-export function main() {
+{
   describe('PipeResolver', () => {
     let resolver: PipeResolver;
 

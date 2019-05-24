@@ -9,8 +9,9 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {ClassMetadata, FunctionMetadata, InterfaceMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSourceLocationInfo, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
 import {Symbols} from './symbols';
+
 
 
 // In TypeScript 2.1 the spread element kind was renamed.
@@ -36,6 +37,24 @@ function isCallOf(callExpression: ts.CallExpression, ident: string): boolean {
     return identifier.text === ident;
   }
   return false;
+}
+
+/* @internal */
+export function recordMapEntry<T extends MetadataEntry>(
+    entry: T, node: ts.Node,
+    nodeMap: Map<MetadataValue|ClassMetadata|InterfaceMetadata|FunctionMetadata, ts.Node>,
+    sourceFile?: ts.SourceFile) {
+  if (!nodeMap.has(entry)) {
+    nodeMap.set(entry, node);
+    if (node && (isMetadataImportedSymbolReferenceExpression(entry) ||
+                 isMetadataImportDefaultReference(entry)) &&
+        entry.line == null) {
+      const info = sourceInfo(node, sourceFile);
+      if (info.line != null) entry.line = info.line;
+      if (info.character != null) entry.character = info.character;
+    }
+  }
+  return entry;
 }
 
 /**
@@ -77,21 +96,22 @@ function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
 }
 
 /* @internal */
-export function errorSymbol(
-    message: string, node?: ts.Node, context?: {[name: string]: string},
-    sourceFile?: ts.SourceFile): MetadataError {
-  let result: MetadataError|undefined = undefined;
+export function sourceInfo(
+    node: ts.Node | undefined, sourceFile: ts.SourceFile | undefined): MetadataSourceLocationInfo {
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
-      const {line, character} =
-          ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
-      result = {__symbolic: 'error', message, line, character};
+      return ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile));
     }
   }
-  if (!result) {
-    result = {__symbolic: 'error', message};
-  }
+  return {};
+}
+
+/* @internal */
+export function errorSymbol(
+    message: string, node?: ts.Node, context?: {[name: string]: string},
+    sourceFile?: ts.SourceFile): MetadataError {
+  const result: MetadataError = {__symbolic: 'error', message, ...sourceInfo(node, sourceFile)};
   if (context) {
     result.context = context;
   }
@@ -242,8 +262,7 @@ export class Evaluator {
         }
         entry = newEntry;
       }
-      t.nodeMap.set(entry, node);
-      return entry;
+      return recordMapEntry(entry, node, t.nodeMap);
     }
 
     function isFoldableError(value: any): value is MetadataError {
@@ -255,6 +274,9 @@ export class Evaluator {
       if (reference === undefined) {
         // Encode as a global reference. StaticReflector will check the reference.
         return recordEntry({__symbolic: 'reference', name}, node);
+      }
+      if (reference && isMetadataSymbolicReferenceExpression(reference)) {
+        return recordEntry({...reference}, node);
       }
       return reference;
     };
@@ -334,9 +356,6 @@ export class Evaluator {
           }
         }
         const args = arrayOrEmpty(callExpression.arguments).map(arg => this.evaluateNode(arg));
-        if (!this.options.verboseInvalidExpression && args.some(isMetadataError)) {
-          return args.find(isMetadataError);
-        }
         if (this.isFoldable(callExpression)) {
           if (isMethodCallOf(callExpression, 'concat')) {
             const arrayValue = <MetadataValue[]>this.evaluateNode(
@@ -362,9 +381,6 @@ export class Evaluator {
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
         const newArgs = arrayOrEmpty(newExpression.arguments).map(arg => this.evaluateNode(arg));
-        if (!this.options.verboseInvalidExpression && newArgs.some(isMetadataError)) {
-          return recordEntry(newArgs.find(isMetadataError), node);
-        }
         const newTarget = this.evaluateNode(newExpression.expression);
         if (isMetadataError(newTarget)) {
           return recordEntry(newTarget, node);
@@ -452,7 +468,7 @@ export class Evaluator {
         if (!isMetadataModuleReferenceExpression(typeReference) &&
             typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
           const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
-          // TODO: Remove typecast when upgraded to 2.0 as it will be corretly inferred.
+          // TODO: Remove typecast when upgraded to 2.0 as it will be correctly inferred.
           // Some versions of 1.9 do not infer this correctly.
           (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }
@@ -628,7 +644,7 @@ export class Evaluator {
         return recordEntry({__symbolic: 'if', condition, thenExpression, elseExpression}, node);
       case ts.SyntaxKind.FunctionExpression:
       case ts.SyntaxKind.ArrowFunction:
-        return recordEntry(errorSymbol('Function call not supported', node), node);
+        return recordEntry(errorSymbol('Lambda not supported', node), node);
       case ts.SyntaxKind.TaggedTemplateExpression:
         return recordEntry(
             errorSymbol('Tagged template expressions are not supported in metadata', node), node);

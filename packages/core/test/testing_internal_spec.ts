@@ -15,12 +15,20 @@ class TestObj {
   someComplexFunc(a: any) { return a; }
 }
 
-class SpyTestObj extends SpyObject {
-  constructor() { super(TestObj); }
-}
-
-export function main() {
+{
   describe('testing', () => {
+    describe('should respect custom equality tester', () => {
+      beforeEach(() => {
+        const equalIfMarried =
+            (first: any, second: any) => { return first === 'kevin' && second === 'patricia'; };
+        jasmine.addCustomEqualityTester(equalIfMarried);
+      });
+
+      it('for positive test', () => { expect('kevin').toEqual('patricia'); });
+
+      it('for negative test', () => { expect('kevin').not.toEqual('kevin'); });
+    });
+
     describe('equality', () => {
       it('should structurally compare objects', () => {
         const expected = new TestObj(new TestObj({'one': [1, 2]}));
@@ -75,7 +83,7 @@ export function main() {
     describe('spy objects', () => {
       let spyObj: any;
 
-      beforeEach(() => { spyObj = new SpyTestObj(); });
+      beforeEach(() => { spyObj = new SpyObject(TestObj); });
 
       it('should return a new spy func with no calls',
          () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
@@ -88,6 +96,7 @@ export function main() {
       });
 
       it('should match multiple function calls', () => {
+        spyObj.spy('someFunc');
         spyObj.someFunc(1, 2);
         spyObj.someFunc(3, 4);
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(1, 2);
@@ -95,11 +104,13 @@ export function main() {
       });
 
       it('should match null arguments', () => {
+        spyObj.spy('someFunc');
         spyObj.someFunc(null, 'hello');
         expect(spyObj.spy('someFunc')).toHaveBeenCalledWith(null, 'hello');
       });
 
       it('should match using deep equality', () => {
+        spyObj.spy('someComplexFunc');
         spyObj.someComplexFunc([1]);
         expect(spyObj.spy('someComplexFunc')).toHaveBeenCalledWith([1]);
       });
@@ -110,8 +121,10 @@ export function main() {
         expect(s.b()).toEqual(2);
       });
 
-      it('should create spys for all methods',
-         () => { expect(() => spyObj.someFunc()).not.toThrow(); });
+      it('should create spys for all methods', () => {
+        spyObj.spy('someFunc');
+        expect(() => spyObj.someFunc()).not.toThrow();
+      });
     });
   });
 }

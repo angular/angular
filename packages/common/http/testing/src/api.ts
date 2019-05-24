@@ -13,7 +13,7 @@ import {TestRequest} from './request';
 /**
  * Defines a matcher for requests based on URL, method, or both.
  *
- * @stable
+ * @publicApi
  */
 export interface RequestMatch {
   method?: string;
@@ -24,7 +24,7 @@ export interface RequestMatch {
  * Controller to be injected into tests, that allows for mocking and flushing
  * of requests.
  *
- * @stable
+ * @publicApi
  */
 export abstract class HttpTestingController {
   /**

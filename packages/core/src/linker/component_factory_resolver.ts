@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {stringify} from '../util/stringify';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {NgModuleRef} from './ng_module_factory';
@@ -34,7 +34,7 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
 }
 
 /**
- * @stable
+ * @publicApi
  */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
@@ -66,13 +66,20 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
 }
 
 export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
-  constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) { super(); }
+  readonly selector: string;
+  readonly componentType: Type<any>;
+  readonly ngContentSelectors: string[];
+  readonly inputs: {propName: string, templateName: string}[];
+  readonly outputs: {propName: string, templateName: string}[];
 
-  get selector() { return this.factory.selector; }
-  get componentType() { return this.factory.componentType; }
-  get ngContentSelectors() { return this.factory.ngContentSelectors; }
-  get inputs() { return this.factory.inputs; }
-  get outputs() { return this.factory.outputs; }
+  constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) {
+    super();
+    this.selector = factory.selector;
+    this.componentType = factory.componentType;
+    this.ngContentSelectors = factory.ngContentSelectors;
+    this.inputs = factory.inputs;
+    this.outputs = factory.outputs;
+  }
 
   create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,

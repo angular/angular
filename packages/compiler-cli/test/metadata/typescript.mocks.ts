@@ -7,6 +7,7 @@
  */
 
 import * as fs from 'fs';
+import * as path from 'path';
 import * as ts from 'typescript';
 
 export interface Directory { [name: string]: (Directory|string); }
@@ -54,8 +55,10 @@ export class Host implements ts.LanguageServiceHost {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
-    if (fileName.endsWith('lib.d.ts')) {
-      return fs.readFileSync(ts.getDefaultLibFilePath(this.getCompilationSettings()), 'utf8');
+    if (/lib(.*)\.d\.ts/.test(fileName)) {
+      const libDirPath = path.dirname(ts.getDefaultLibFilePath(this.getCompilationSettings()));
+      const libPath = path.join(libDirPath, fileName);
+      return fs.readFileSync(libPath, 'utf8');
     }
     const current = open(this.directory, fileName);
     if (typeof current === 'string') return current;
@@ -76,6 +79,9 @@ export function open(directory: Directory, fileName: string): Directory|string|u
 }
 
 export class MockNode implements ts.Node {
+  decorators?: ts.NodeArray<ts.Decorator>;
+  modifiers?: ts.NodeArray<ts.Modifier>;
+  parent !: ts.Node;
   constructor(
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
@@ -101,8 +107,16 @@ export class MockNode implements ts.Node {
 }
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
+  originalKeywordKind?: ts.SyntaxKind;
+  isInJSDocNamespace?: boolean;
+  decorators?: ts.NodeArray<ts.Decorator>;
+  modifiers?: ts.NodeArray<ts.Modifier>;
+  parent !: ts.Node;
   public text: string;
+  // TODO(issue/24571): remove '!'.
+  public escapedText !: ts.__String;
   // tslint:disable
+  public _declarationBrand: any;
   public _primaryExpressionBrand: any;
   public _memberExpressionBrand: any;
   public _leftHandSideExpressionBrand: any;
@@ -121,6 +135,12 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
 }
 
 export class MockVariableDeclaration extends MockNode implements ts.VariableDeclaration {
+  parent !: ts.VariableDeclarationList | ts.CatchClause;
+  exclamationToken?: ts.Token<ts.SyntaxKind.ExclamationToken>;
+  type?: ts.TypeNode;
+  initializer?: ts.Expression;
+  decorators?: ts.NodeArray<ts.Decorator>;
+  modifiers?: ts.NodeArray<ts.Modifier>;
   // tslint:disable-next-line
   public _declarationBrand: any;
 
@@ -137,12 +157,20 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
 }
 
 export class MockSymbol implements ts.Symbol {
+  declarations !: ts.Declaration[];
+  valueDeclaration !: ts.Declaration;
+  members?: ts.UnderscoreEscapedMap<ts.Symbol>;
+  exports?: ts.UnderscoreEscapedMap<ts.Symbol>;
+  globalExports?: ts.UnderscoreEscapedMap<ts.Symbol>;
+  // TODO(issue/24571): remove '!'.
+  public escapedName !: ts.__String;
   constructor(
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
       public flags: ts.SymbolFlags = 0) {}
 
   getFlags(): ts.SymbolFlags { return this.flags; }
   getName(): string { return this.name; }
+  getEscapedName(): ts.__String { return this.escapedName; }
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
   // TODO(vicb): removed in TS 2.2
@@ -158,6 +186,9 @@ export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
       const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
       // tslint:disable-next-line:no-console
       console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    } else {
+      // tslint:disable-next-line:no-console
+      console.log(message);
     }
   }
   expect(diagnostics.length).toBe(0);

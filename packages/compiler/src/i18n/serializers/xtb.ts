@@ -74,9 +74,12 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
 
 // Extract messages as xml nodes from the xtb file
 class XtbParser implements ml.Visitor {
-  private _bundleDepth: number;
-  private _errors: I18nError[];
-  private _msgIdToHtml: {[msgId: string]: string};
+  // TODO(issue/24571): remove '!'.
+  private _bundleDepth !: number;
+  // TODO(issue/24571): remove '!'.
+  private _errors !: I18nError[];
+  // TODO(issue/24571): remove '!'.
+  private _msgIdToHtml !: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xtb: string, url: string) {
@@ -85,7 +88,7 @@ class XtbParser implements ml.Visitor {
 
     // We can not parse the ICU messages at this point as some messages might not originate
     // from Angular that could not be lex'd.
-    const xml = new XmlParser().parse(xtb, url, false);
+    const xml = new XmlParser().parse(xtb, url);
 
     this._errors = xml.errors;
     ml.visitAll(this, xml.rootNodes);
@@ -152,10 +155,11 @@ class XtbParser implements ml.Visitor {
 
 // Convert ml nodes (xtb syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
-  private _errors: I18nError[];
+  // TODO(issue/24571): remove '!'.
+  private _errors !: I18nError[];
 
   convert(message: string, url: string) {
-    const xmlIcu = new XmlParser().parse(message, url, true);
+    const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
     this._errors = xmlIcu.errors;
 
     const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?

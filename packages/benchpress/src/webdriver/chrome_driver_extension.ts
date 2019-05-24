@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, StaticProvider} from '@angular/core';
+import * as fs from 'fs';
 
 import {Options} from '../common_options';
 import {WebDriverAdapter} from '../web_driver_adapter';
@@ -23,15 +24,19 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 export class ChromeDriverExtension extends WebDriverExtension {
   static PROVIDERS = <StaticProvider>[{
     provide: ChromeDriverExtension,
-    deps: [WebDriverAdapter, Options.USER_AGENT]
+    deps: [WebDriverAdapter, Options.USER_AGENT, Options.RAW_PERFLOG_PATH]
   }];
 
   private _majorChromeVersion: number;
   private _firstRun = true;
+  private _rawPerflogPath: string|null;
 
-  constructor(private _driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string) {
+  constructor(
+      private driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string,
+      @Inject(Options.RAW_PERFLOG_PATH) rawPerflogPath: string|null) {
     super();
     this._majorChromeVersion = this._parseChromeVersion(userAgent);
+    this._rawPerflogPath = rawPerflogPath;
   }
 
   private _parseChromeVersion(userAgent: string): number {
@@ -49,24 +54,24 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() { return this._driver.executeScript('window.gc()'); }
+  gc() { return this.driver.executeScript('window.gc()'); }
 
-  timeBegin(name: string): Promise<any> {
+  async timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
       this._firstRun = false;
       // Before the first run, read out the existing performance logs
       // so that the chrome buffer does not fill up.
-      this._driver.logs('performance');
+      await this.driver.logs('performance');
     }
-    return this._driver.executeScript(`console.time('${name}');`);
+    return this.driver.executeScript(`performance.mark('${name}-bpstart');`);
   }
 
   timeEnd(name: string, restartName: string|null = null): Promise<any> {
-    let script = `console.timeEnd('${name}');`;
+    let script = `performance.mark('${name}-bpend');`;
     if (restartName) {
-      script += `console.time('${restartName}');`;
+      script += `performance.mark('${restartName}-bpstart');`;
     }
-    return this._driver.executeScript(script);
+    return this.driver.executeScript(script);
   }
 
   // See [Chrome Trace Event
@@ -74,8 +79,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
   readPerfLog(): Promise<PerfLogEvent[]> {
     // TODO(tbosch): Chromedriver bug https://code.google.com/p/chromedriver/issues/detail?id=1098
     // Need to execute at least one command so that the browser logs can be read out!
-    return this._driver.executeScript('1+1')
-        .then((_) => this._driver.logs('performance'))
+    return this.driver.executeScript('1+1')
+        .then((_) => this.driver.logs('performance'))
         .then((entries) => {
           const events: PerfLogEvent[] = [];
           entries.forEach((entry: any) => {
@@ -87,6 +92,10 @@ export class ChromeDriverExtension extends WebDriverExtension {
               throw new Error('The DevTools trace buffer filled during the test!');
             }
           });
+
+          if (this._rawPerflogPath && events.length) {
+            fs.appendFileSync(this._rawPerflogPath, JSON.stringify(events));
+          }
           return this._convertPerfRecordsToEvents(events);
         });
   }
@@ -108,6 +117,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
     const name = event['name'];
     const args = event['args'];
     if (this._isEvent(categories, name, ['blink.console'])) {
+      return normalizeEvent(event, {'name': name});
+    } else if (this._isEvent(categories, name, ['blink.user_timing'])) {
       return normalizeEvent(event, {'name': name});
     } else if (this._isEvent(
                    categories, name, ['benchmark'],
@@ -201,6 +212,15 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): 
   } else if (ph === 'R') {
     // mark events from navigation timing
     ph = 'I';
+    // Chrome 65+ doesn't allow user timing measurements across page loads.
+    // Instead, we use performance marks with special names.
+    if (chromeEvent['name'].match(/-bpstart/)) {
+      data['name'] = chromeEvent['name'].slice(0, -8);
+      ph = 'B';
+    } else if (chromeEvent['name'].match(/-bpend$/)) {
+      data['name'] = chromeEvent['name'].slice(0, -6);
+      ph = 'E';
+    }
   }
   const result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};

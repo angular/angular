@@ -9,8 +9,9 @@
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
-export function main() {
+{
   describe('KeyEventsPlugin', () => {
+    if (isNode) return;
 
     it('should ignore unrecognized events', () => {
       expect(KeyEventsPlugin.parseEventName('keydown')).toEqual(null);

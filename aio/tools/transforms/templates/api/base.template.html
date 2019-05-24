@@ -1,13 +1,35 @@
+{% import "../lib/githubLinks.html" as github -%}
+{% set comma = joiner(',') %}
+{% set breadcrumbDelimiter = joiner('&gt;') %}
 <article>
+  <div class="breadcrumb-container">
+    <div class="breadcrumb">
+      <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {%- for crumb in doc.breadCrumbs %}{$ comma() $}
+            { "@type": "ListItem", "position": {$ loop.index $}, "item": { "@id": "https://angular.io/{$ crumb.path $}", "name": "{$ crumb.text $}" } }{% endfor %}
+          ]
+        }
+      </script>
+      {% for crumb in doc.breadCrumbs %}{% if not loop.last %} {$ breadcrumbDelimiter() $} {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}</a>{% else %}{$ crumb.text $}{% endif %}{% endif %}{% endfor %}
+    </div>
+    {$ github.githubLinks(doc, versionInfo) $}
+  </div>
+  {% block header %}
   <header class="api-header">
-    <h1 class="no-toc">{$ doc.name $}</h1>
+    <h1>{$ doc.name $}</h1>
     <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
-    {% if doc.deprecated %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
-    {% if doc.experimental %}<label class="api-status-label experimental">experimental</label>{% endif %}
-    {% if doc.stable %}<label class="api-status-label stable">stable</label>{% endif %}
-    <span class="version">{$ version $}</span>
+    {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
+    {% if doc.security !== undefined %}<label class="api-status-label security">security</label>{% endif %}
+    {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}
   </header>
+  {% endblock %}
+  <aio-toc class="embedded"></aio-toc>
 
-  {% block body %}{% endblock %}
-
+  <div class="api-body">
+    {% block body %}{% endblock %}
+  </div>
 </article>

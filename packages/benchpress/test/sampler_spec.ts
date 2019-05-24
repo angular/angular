@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, MeasureValues, Metric, Options, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
 
-export function main() {
+{
   const EMPTY_EXECUTE = () => {};
 
   describe('sampler', () => {

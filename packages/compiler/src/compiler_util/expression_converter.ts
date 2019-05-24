@@ -6,18 +6,59 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import * as cdAst from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ParseSourceSpan} from '../parse_util';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
 export interface LocalResolver { getLocal(name: string): o.Expression|null; }
 
 export class ConvertActionBindingResult {
-  constructor(public stmts: o.Statement[], public allowDefault: o.ReadVarExpr) {}
+  /**
+   * Store statements which are render3 compatible.
+   */
+  render3Stmts: o.Statement[];
+  constructor(
+      /**
+       * Render2 compatible statements,
+       */
+      public stmts: o.Statement[],
+      /**
+       * Variable name used with render2 compatible statements.
+       */
+      public allowDefault: o.ReadVarExpr) {
+    /**
+     * This is bit of a hack. It converts statements which render2 expects to statements which are
+     * expected by render3.
+     *
+     * Example: `<div click="doSomething($event)">` will generate:
+     *
+     * Render3:
+     * ```
+     * const pd_b:any = ((<any>ctx.doSomething($event)) !== false);
+     * return pd_b;
+     * ```
+     *
+     * but render2 expects:
+     * ```
+     * return ctx.doSomething($event);
+     * ```
+     */
+    // TODO(misko): remove this hack once we no longer support ViewEngine.
+    this.render3Stmts = stmts.map((statement: o.Statement) => {
+      if (statement instanceof o.DeclareVarStmt && statement.name == allowDefault.name &&
+          statement.value instanceof o.BinaryOperatorExpr) {
+        const lhs = statement.value.lhs as o.CastExpr;
+        return new o.ReturnStatement(lhs.value);
+      }
+      return statement;
+    });
+  }
 }
+
+export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
 
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression is
@@ -25,7 +66,8 @@ export class ConvertActionBindingResult {
  */
 export function convertActionBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
-    bindingId: string): ConvertActionBindingResult {
+    bindingId: string, interpolationFunction?: InterpolationFunction,
+    baseSourceSpan?: ParseSourceSpan): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -52,7 +94,8 @@ export function convertActionBinding(
       },
       action);
 
-  const visitor = new _AstToIrVisitor(localResolver, implicitReceiver, bindingId);
+  const visitor = new _AstToIrVisitor(
+      localResolver, implicitReceiver, bindingId, interpolationFunction, baseSourceSpan);
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
@@ -90,6 +133,15 @@ export class ConvertPropertyBindingResult {
   constructor(public stmts: o.Statement[], public currValExpr: o.Expression) {}
 }
 
+export enum BindingForm {
+  // The general form of binding expression, supports all expressions.
+  General,
+
+  // Try to generate a simple binding (no temporaries or statements)
+  // otherwise generate a general binding
+  TrySimple,
+}
+
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -97,23 +149,75 @@ export class ConvertPropertyBindingResult {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string, form: BindingForm,
+    interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
   const currValExpr = createCurrValueExpr(bindingId);
-  const stmts: o.Statement[] = [];
-  const visitor = new _AstToIrVisitor(localResolver, implicitReceiver, bindingId);
+  const visitor =
+      new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
+  const stmts: o.Statement[] = getStatementsFromVisitor(visitor, bindingId);
 
-  if (visitor.temporaryCount) {
-    for (let i = 0; i < visitor.temporaryCount; i++) {
-      stmts.push(temporaryDeclaration(bindingId, i));
-    }
+  if (visitor.temporaryCount === 0 && form == BindingForm.TrySimple) {
+    return new ConvertPropertyBindingResult([], outputExpr);
   }
 
-  stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
+  stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
+}
+
+/**
+ * Given some expression, such as a binding or interpolation expression, and a context expression to
+ * look values up on, visit each facet of the given expression resolving values from the context
+ * expression such that a list of arguments can be derived from the found values that can be used as
+ * arguments to an external update instruction.
+ *
+ * @param localResolver The resolver to use to look up expressions by name appropriately
+ * @param contextVariableExpression The expression representing the context variable used to create
+ * the final argument expressions
+ * @param expressionWithArgumentsToExtract The expression to visit to figure out what values need to
+ * be resolved and what arguments list to build.
+ * @param bindingId A name prefix used to create temporary variable names if they're needed for the
+ * arguments generated
+ * @returns An array of expressions that can be passed as arguments to instruction expressions like
+ * `o.importExpr(R3.propertyInterpolate).callFn(result)`
+ */
+export function convertUpdateArguments(
+    localResolver: LocalResolver, contextVariableExpression: o.Expression,
+    expressionWithArgumentsToExtract: cdAst.AST, bindingId: string) {
+  const visitor =
+      new _AstToIrVisitor(localResolver, contextVariableExpression, bindingId, undefined);
+  const outputExpr: o.InvokeFunctionExpr =
+      expressionWithArgumentsToExtract.visit(visitor, _Mode.Expression);
+
+  const stmts = getStatementsFromVisitor(visitor, bindingId);
+
+  // Removing the first argument, because it was a length for ViewEngine, not Ivy.
+  let args = outputExpr.args.slice(1);
+  if (expressionWithArgumentsToExtract instanceof cdAst.Interpolation) {
+    // If we're dealing with an interpolation of 1 value with an empty prefix and suffix, reduce the
+    // args returned to just the value, because we're going to pass it to a special instruction.
+    const strings = expressionWithArgumentsToExtract.strings;
+    if (args.length === 3 && strings[0] === '' && strings[1] === '') {
+      // Single argument interpolate instructions.
+      args = [args[1]];
+    } else if (args.length >= 19) {
+      // 19 or more arguments must be passed to the `interpolateV`-style instructions, which accept
+      // an array of arguments
+      args = [o.literalArr(args)];
+    }
+  }
+  return {stmts, args};
+}
+
+function getStatementsFromVisitor(visitor: _AstToIrVisitor, bindingId: string) {
+  const stmts: o.Statement[] = [];
+  for (let i = 0; i < visitor.temporaryCount; i++) {
+    stmts.push(temporaryDeclaration(bindingId, i));
+  }
+  return stmts;
 }
 
 function convertBuiltins(converterFactory: BuiltinConverterFactory, ast: cdAst.AST): cdAst.AST {
@@ -189,7 +293,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
-      private bindingId: string) {}
+      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
+      private baseSourceSpan?: ParseSourceSpan) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
@@ -246,7 +351,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(
         mode,
         new o.BinaryOperatorExpr(
-            op, this._visit(ast.left, _Mode.Expression), this._visit(ast.right, _Mode.Expression)));
+            op, this._visit(ast.left, _Mode.Expression), this._visit(ast.right, _Mode.Expression),
+            undefined, this.convertSourceSpan(ast.span)));
   }
 
   visitChain(ast: cdAst.Chain, mode: _Mode): any {
@@ -259,7 +365,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(
         mode, value.conditional(
                   this._visit(ast.trueExp, _Mode.Expression),
-                  this._visit(ast.falseExp, _Mode.Expression)));
+                  this._visit(ast.falseExp, _Mode.Expression), this.convertSourceSpan(ast.span)));
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
@@ -273,7 +379,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (ast instanceof BuiltinFunctionCall) {
       fnResult = ast.converter(convertedArgs);
     } else {
-      fnResult = this._visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
+      fnResult = this._visit(ast.target !, _Mode.Expression)
+                     .callFn(convertedArgs, this.convertSourceSpan(ast.span));
     }
     return convertToStatementIfNeeded(mode, fnResult);
   }
@@ -292,9 +399,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
+    if (this.interpolationFunction) {
+      return this.interpolationFunction(args);
+    }
     return ast.expressions.length <= 9 ?
         o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
-        o.importExpr(Identifiers.interpolate).callFn([args[0], o.literalArr(args.slice(1))]);
+        o.importExpr(Identifiers.interpolate).callFn([
+          args[0], o.literalArr(args.slice(1), undefined, this.convertSourceSpan(ast.span))
+        ]);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
@@ -323,12 +435,28 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
-    return convertToStatementIfNeeded(mode, o.literal(ast.value));
+    // For literal values of null, undefined, true, or false allow type interference
+    // to infer the type.
+    const type =
+        ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
+        o.INFERRED_TYPE :
+        undefined;
+    return convertToStatementIfNeeded(
+        mode, o.literal(ast.value, type, this.convertSourceSpan(ast.span)));
   }
 
   private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
+    if (ast.receiver instanceof cdAst.ImplicitReceiver && ast.name == '$any') {
+      const args = this.visitAll(ast.args, _Mode.Expression) as any[];
+      if (args.length != 1) {
+        throw new Error(
+            `Invalid call to $any, expected 1 argument but received ${args.length || 'none'}`);
+      }
+      return (args[0] as o.Expression).cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span));
+    }
+
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
@@ -343,7 +471,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         }
       }
       if (result == null) {
-        result = receiver.callMethod(ast.name, args);
+        result = receiver.callMethod(ast.name, args, this.convertSourceSpan(ast.span));
       }
       return convertToStatementIfNeeded(mode, result);
     }
@@ -377,14 +505,28 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
     const receiver: o.Expression = this._visit(ast.receiver, _Mode.Expression);
+
+    let varExpr: o.ReadPropExpr|null = null;
     if (receiver === this._implicitReceiver) {
-      const varExpr = this._getLocal(ast.name);
-      if (varExpr) {
-        throw new Error('Cannot assign to a reference or variable!');
+      const localExpr = this._getLocal(ast.name);
+      if (localExpr) {
+        if (localExpr instanceof o.ReadPropExpr) {
+          // If the local variable is a property read expression, it's a reference
+          // to a 'context.property' value and will be used as the target of the
+          // write expression.
+          varExpr = localExpr;
+        } else {
+          // Otherwise it's an error.
+          throw new Error('Cannot assign to a reference or variable!');
+        }
       }
     }
-    return convertToStatementIfNeeded(
-        mode, receiver.prop(ast.name).set(this._visit(ast.value, _Mode.Expression)));
+    // If no local expression could be produced, use the original receiver's
+    // property as the target.
+    if (varExpr === null) {
+      varExpr = receiver.prop(ast.name);
+    }
+    return convertToStatementIfNeeded(mode, varExpr.set(this._visit(ast.value, _Mode.Expression)));
   }
 
   visitSafePropertyRead(ast: cdAst.SafePropertyRead, mode: _Mode): any {
@@ -579,6 +721,27 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       throw new Error(`Temporary ${temporary.name} released out of order`);
     }
   }
+
+  /**
+   * Creates an absolute `ParseSourceSpan` from the relative `ParseSpan`.
+   *
+   * `ParseSpan` objects are relative to the start of the expression.
+   * This method converts these to full `ParseSourceSpan` objects that
+   * show where the span is within the overall source file.
+   *
+   * @param span the relative span to convert.
+   * @returns a `ParseSourceSpan` for the the given span or null if no
+   * `baseSourceSpan` was provided to this class.
+   */
+  private convertSourceSpan(span: cdAst.ParseSpan) {
+    if (this.baseSourceSpan) {
+      const start = this.baseSourceSpan.start.moveBy(span.start);
+      const end = this.baseSourceSpan.start.moveBy(span.end);
+      return new ParseSourceSpan(start, end);
+    } else {
+      return null;
+    }
+  }
 }
 
 function flattenStatements(arg: any, output: o.Statement[]) {
@@ -615,7 +778,7 @@ function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
   return null;
 }
 
-class BuiltinFunctionCall extends cdAst.FunctionCall {
+export class BuiltinFunctionCall extends cdAst.FunctionCall {
   constructor(span: cdAst.ParseSpan, public args: cdAst.AST[], public converter: BuiltinConverter) {
     super(span, null, args);
   }

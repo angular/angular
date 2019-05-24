@@ -9,6 +9,8 @@
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
+import {InjectFlags} from '../di/interface/injector';
+import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
@@ -17,8 +19,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
@@ -88,7 +89,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
       throw new Error('ngModule should be provided');
     }
     const viewDef = resolveDefinition(this.viewDefFactory);
-    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.index;
+    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.nodeIndex;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -114,7 +115,7 @@ class ComponentRef_ extends ComponentRef<any> {
     this.instance = _component;
   }
   get location(): ElementRef {
-    return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
+    return new ElementRef(asElementData(this._view, this._elDef.nodeIndex).renderElement);
   }
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
   get componentType(): Type<any> { return <any>this._component.constructor; }
@@ -139,6 +140,7 @@ class ViewContainerRef_ implements ViewContainerData {
 
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
 
+  /** @deprecated No replacement */
   get parentInjector(): Injector {
     let view = this._view;
     let elDef = this._elDef.parent;
@@ -256,9 +258,12 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     if (fs.begin) {
       fs.begin();
     }
-    Services.checkAndUpdateView(this._view);
-    if (fs.end) {
-      fs.end();
+    try {
+      Services.checkAndUpdateView(this._view);
+    } finally {
+      if (fs.end) {
+        fs.end();
+      }
     }
   }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
@@ -309,7 +314,8 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   /**
    * @internal
    */
-  _projectedViews: ViewData[];
+  // TODO(issue/24571): remove '!'.
+  _projectedViews !: ViewData[];
 
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
@@ -319,7 +325,7 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   }
 
   get elementRef(): ElementRef {
-    return new ElementRef(asElementData(this._parentView, this._def.index).renderElement);
+    return new ElementRef(asElementData(this._parentView, this._def.nodeIndex).renderElement);
   }
 }
 
@@ -341,12 +347,12 @@ class Injector_ implements Injector {
 export function nodeValue(view: ViewData, index: number): any {
   const def = view.def.nodes[index];
   if (def.flags & NodeFlags.TypeElement) {
-    const elData = asElementData(view, def.index);
+    const elData = asElementData(view, def.nodeIndex);
     return def.element !.template ? elData.template : elData.renderElement;
   } else if (def.flags & NodeFlags.TypeText) {
-    return asTextData(view, def.index).renderText;
+    return asTextData(view, def.nodeIndex).renderText;
   } else if (def.flags & (NodeFlags.CatProvider | NodeFlags.TypePipe)) {
-    return asProviderData(view, def.index).instance;
+    return asProviderData(view, def.nodeIndex).instance;
   }
   throw new Error(`Illegal state: read nodeValue for node index ${index}`);
 }
@@ -429,7 +435,7 @@ class RendererAdapter implements RendererV1 {
     this.delegate.setProperty(renderElement, propertyName, propertyValue);
   }
 
-  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue: string):
+  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue?: string):
       void {
     const [ns, name] = splitNamespace(namespaceAndName);
     if (attributeValue != null) {
@@ -449,7 +455,7 @@ class RendererAdapter implements RendererV1 {
     }
   }
 
-  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
+  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue?: string): void {
     if (styleValue != null) {
       this.delegate.setStyle(renderElement, styleName, styleValue);
     } else {
@@ -477,7 +483,13 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
   /** @internal */
-  _providers: any[];
+  // TODO(issue/24571): remove '!'.
+  _providers !: any[];
+  /** @internal */
+  // TODO(issue/24571): remove '!'.
+  _modules !: any[];
+
+  readonly injector: Injector = this;
 
   constructor(
       private _moduleType: Type<any>, public _parent: Injector,
@@ -485,16 +497,21 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     initNgModule(this);
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      injectFlags: InjectFlags = InjectFlags.Default): any {
+    let flags = DepFlags.None;
+    if (injectFlags & InjectFlags.SkipSelf) {
+      flags |= DepFlags.SkipSelf;
+    } else if (injectFlags & InjectFlags.Self) {
+      flags |= DepFlags.Self;
+    }
     return resolveNgModuleDep(
-        this, {token: token, tokenKey: tokenKey(token), flags: DepFlags.None}, notFoundValue);
+        this, {token: token, tokenKey: tokenKey(token), flags: flags}, notFoundValue);
   }
 
   get instance() { return this.get(this._moduleType); }
 
   get componentFactoryResolver() { return this.get(ComponentFactoryResolver); }
-
-  get injector(): Injector { return this; }
 
   destroy(): void {
     if (this._destroyed) {

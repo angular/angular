@@ -7,46 +7,77 @@
  */
 
 import {Injectable} from '../di';
-import {scheduleMicroTask} from '../util';
+import {scheduleMicroTask} from '../util/microtask';
 import {NgZone} from '../zone/ng_zone';
 
 /**
  * Testability API.
  * `declare` keyword causes tsickle to generate externs, so these methods are
  * not renamed by Closure Compiler.
- * @experimental
+ * @publicApi
  */
 export declare interface PublicTestability {
   isStable(): boolean;
-  whenStable(callback: Function): void;
+  whenStable(callback: Function, timeout?: number, updateCallback?: Function): void;
   findProviders(using: any, provider: string, exactMatch: boolean): any[];
+}
+
+// Angular internal, not intended for public API.
+export interface PendingMacrotask {
+  source: string;
+  creationLocation: Error;
+  runCount?: number;
+  data?: TaskData;
+}
+
+export interface TaskData {
+  target?: XMLHttpRequest;
+  delay?: number;
+  isPeriodic?: boolean;
+}
+
+// Angular internal, not intended for public API.
+export type DoneCallback = (didWork: boolean, tasks?: PendingMacrotask[]) => void;
+export type UpdateCallback = (tasks: PendingMacrotask[]) => boolean;
+
+interface WaitCallback {
+  // Needs to be 'any' - setTimeout returns a number according to ES6, but
+  // on NodeJS it returns a Timer.
+  timeoutId: any;
+  doneCb: DoneCallback;
+  updateCb?: UpdateCallback;
 }
 
 /**
  * The Testability service provides testing hooks that can be accessed from
  * the browser and by services such as Protractor. Each bootstrapped Angular
  * application on the page will have an instance of Testability.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class Testability implements PublicTestability {
-  /** @internal */
-  _pendingCount: number = 0;
-  /** @internal */
-  _isZoneStable: boolean = true;
+  private _pendingCount: number = 0;
+  private _isZoneStable: boolean = true;
   /**
    * Whether any work was done since the last 'whenStable' callback. This is
    * useful to detect if this could have potentially destabilized another
    * component while it is stabilizing.
    * @internal
    */
-  _didWork: boolean = false;
-  /** @internal */
-  _callbacks: Function[] = [];
-  constructor(private _ngZone: NgZone) { this._watchAngularEvents(); }
+  private _didWork: boolean = false;
+  private _callbacks: WaitCallback[] = [];
 
-  /** @internal */
-  _watchAngularEvents(): void {
+  private taskTrackingZone: {macroTasks: Task[]}|null = null;
+
+  constructor(private _ngZone: NgZone) {
+    this._watchAngularEvents();
+    _ngZone.run(() => {
+      this.taskTrackingZone =
+          typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
+    });
+  }
+
+  private _watchAngularEvents(): void {
     this._ngZone.onUnstable.subscribe({
       next: () => {
         this._didWork = true;
@@ -69,6 +100,7 @@ export class Testability implements PublicTestability {
 
   /**
    * Increases the number of pending request
+   * @deprecated pending requests are now tracked with zones.
    */
   increasePendingRequestCount(): number {
     this._pendingCount += 1;
@@ -78,6 +110,7 @@ export class Testability implements PublicTestability {
 
   /**
    * Decreases the number of pending request
+   * @deprecated pending requests are now tracked with zones
    */
   decreasePendingRequestCount(): number {
     this._pendingCount -= 1;
@@ -92,36 +125,90 @@ export class Testability implements PublicTestability {
    * Whether an associated application is stable
    */
   isStable(): boolean {
-    return this._isZoneStable && this._pendingCount == 0 && !this._ngZone.hasPendingMacrotasks;
+    return this._isZoneStable && this._pendingCount === 0 && !this._ngZone.hasPendingMacrotasks;
   }
 
-  /** @internal */
-  _runCallbacksIfReady(): void {
+  private _runCallbacksIfReady(): void {
     if (this.isStable()) {
       // Schedules the call backs in a new frame so that it is always async.
       scheduleMicroTask(() => {
         while (this._callbacks.length !== 0) {
-          (this._callbacks.pop() !)(this._didWork);
+          let cb = this._callbacks.pop() !;
+          clearTimeout(cb.timeoutId);
+          cb.doneCb(this._didWork);
         }
         this._didWork = false;
       });
     } else {
-      // Not Ready
+      // Still not stable, send updates.
+      let pending = this.getPendingTasks();
+      this._callbacks = this._callbacks.filter((cb) => {
+        if (cb.updateCb && cb.updateCb(pending)) {
+          clearTimeout(cb.timeoutId);
+          return false;
+        }
+
+        return true;
+      });
+
       this._didWork = true;
     }
   }
 
+  private getPendingTasks(): PendingMacrotask[] {
+    if (!this.taskTrackingZone) {
+      return [];
+    }
+
+    // Copy the tasks data so that we don't leak tasks.
+    return this.taskTrackingZone.macroTasks.map((t: Task) => {
+      return {
+        source: t.source,
+        // From TaskTrackingZone:
+        // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
+        creationLocation: (t as any).creationLocation as Error,
+        data: t.data
+      };
+    });
+  }
+
+  private addCallback(cb: DoneCallback, timeout?: number, updateCb?: UpdateCallback) {
+    let timeoutId: any = -1;
+    if (timeout && timeout > 0) {
+      timeoutId = setTimeout(() => {
+        this._callbacks = this._callbacks.filter((cb) => cb.timeoutId !== timeoutId);
+        cb(this._didWork, this.getPendingTasks());
+      }, timeout);
+    }
+    this._callbacks.push(<WaitCallback>{doneCb: cb, timeoutId: timeoutId, updateCb: updateCb});
+  }
+
   /**
-   * Run callback when the application is stable
-   * @param callback function to be called after the application is stable
+   * Wait for the application to be stable with a timeout. If the timeout is reached before that
+   * happens, the callback receives a list of the macro tasks that were pending, otherwise null.
+   *
+   * @param doneCb The callback to invoke when Angular is stable or the timeout expires
+   *    whichever comes first.
+   * @param timeout Optional. The maximum time to wait for Angular to become stable. If not
+   *    specified, whenStable() will wait forever.
+   * @param updateCb Optional. If specified, this callback will be invoked whenever the set of
+   *    pending macrotasks changes. If this callback returns true doneCb will not be invoked
+   *    and no further updates will be issued.
    */
-  whenStable(callback: Function): void {
-    this._callbacks.push(callback);
+  whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void {
+    if (updateCb && !this.taskTrackingZone) {
+      throw new Error(
+          'Task tracking zone is required when passing an update callback to ' +
+          'whenStable(). Is "zone.js/dist/task-tracking.js" loaded?');
+    }
+    // These arguments are 'Function' above to keep the public API simple.
+    this.addCallback(doneCb as DoneCallback, timeout, updateCb as UpdateCallback);
     this._runCallbacksIfReady();
   }
 
   /**
    * Get the number of pending requests
+   * @deprecated pending requests are now tracked with zones
    */
   getPendingRequestCount(): number { return this._pendingCount; }
 
@@ -139,7 +226,7 @@ export class Testability implements PublicTestability {
 
 /**
  * A global registry of {@link Testability} instances for specific elements.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class TestabilityRegistry {
@@ -199,8 +286,7 @@ export class TestabilityRegistry {
  * Adapter interface for retrieving the `Testability` service associated for a
  * particular context.
  *
- * @experimental Testability apis are primarily intended to be used by e2e test tool vendors like
- * the Protractor team.
+ * @publicApi
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
@@ -218,7 +304,7 @@ class _NoopGetTestability implements GetTestability {
 
 /**
  * Set the {@link GetTestability} implementation used by the Angular testing framework.
- * @experimental
+ * @publicApi
  */
 export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;

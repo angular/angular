@@ -9,19 +9,21 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'cgg',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'cgg', [['AM', 'PM'], u, u], u,
   [
     ['S', 'K', 'R', 'S', 'N', 'T', 'M'], ['SAN', 'ORK', 'OKB', 'OKS', 'OKN', 'OKT', 'OMK'],
     ['Sande', 'Orwokubanza', 'Orwakabiri', 'Orwakashatu', 'Orwakana', 'Orwakataano', 'Orwamukaaga'],
     ['SAN', 'ORK', 'OKB', 'OKS', 'OKN', 'OKT', 'OMK']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['KBZ', 'KBR', 'KST', 'KKN', 'KTN', 'KMK', 'KMS', 'KMN', 'KMW', 'KKM', 'KNK', 'KNB'],
@@ -31,19 +33,10 @@ export default [
       'Okwaikumi na ibiri'
     ]
   ],
-  , [['BC', 'AD'], , ['Kurisito Atakaijire', 'Kurisito Yaijire']], 1, [6, 0],
+  u, [['BC', 'AD'], u, ['Kurisito Atakaijire', 'Kurisito Yaijire']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Eshiringi ya Uganda', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Eshiringi ya Uganda',
+  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']}, plural
 ];

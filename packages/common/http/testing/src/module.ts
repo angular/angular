@@ -18,7 +18,7 @@ import {HttpClientTestingBackend} from './backend';
  *
  * Inject `HttpTestingController` to expect and flush requests in your tests.
  *
- * @stable
+ * @publicApi
  */
 @NgModule({
   imports: [

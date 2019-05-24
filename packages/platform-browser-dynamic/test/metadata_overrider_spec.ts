@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MetadataOverrider} from '@angular/platform-browser-dynamic/testing/src/metadata_overrider';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {MetadataOverrider} from '../testing/src/metadata_overrider';
 
 interface SomeMetadataType {
   plainProp?: string;
@@ -22,13 +22,16 @@ interface OtherMetadataType extends SomeMetadataType {
 class SomeMetadata implements SomeMetadataType {
   plainProp: string;
   private _getterProp: string;
-  get getterProp(): string { return this._getterProp; }
   arrayProp: any[];
 
   constructor(options: SomeMetadataType) {
     this.plainProp = options.plainProp !;
     this._getterProp = options.getterProp !;
     this.arrayProp = options.arrayProp !;
+    Object.defineProperty(this, 'getterProp', {
+      enumerable: true,  // getters are non-enumerable by default in es2015
+      get: () => this._getterProp,
+    });
   }
 }
 
@@ -46,7 +49,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
   }
 }
 
-export function main() {
+{
   describe('metadata overrider', () => {
     let overrider: MetadataOverrider;
 

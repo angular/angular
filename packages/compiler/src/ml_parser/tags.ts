@@ -14,15 +14,11 @@ export enum TagContentType {
 
 export interface TagDefinition {
   closedByParent: boolean;
-  requiredParents: {[key: string]: boolean};
-  parentToAdd: string;
   implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
-
-  requireExtraParent(currentParent: string): boolean;
 
   isClosedByChild(name: string): boolean;
 }
@@ -71,7 +67,6 @@ export function mergeNsAndName(prefix: string, localName: string): string {
 // This list is not exhaustive to keep the compiler footprint low.
 // The `&#123;` / `&#x1ab;` syntax should be used when the named character reference does not
 // exist.
-
 export const NAMED_ENTITIES: {[k: string]: string} = {
   'Aacute': '\u00C1',
   'aacute': '\u00E1',

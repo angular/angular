@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpParams} from '../src/params';
+import {HttpParams} from '@angular/common/http/src/params';
 
-export function main() {
+{
   describe('HttpUrlEncodedParams', () => {
     describe('initialization', () => {
       it('should be empty at construction', () => {
@@ -52,6 +52,15 @@ export function main() {
         const body = new HttpParams({fromString: 'a=1&a=2&a=3&a=4&a=5'});
         const mutated = body.delete('a', '2').delete('a', '4');
         expect(mutated.getAll('a')).toEqual(['1', '3', '5']);
+      });
+
+      it('should not repeat mutations that have already been materialized', () => {
+        const body = new HttpParams({fromString: 'a=b'});
+        const mutated = body.append('a', 'c');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        const mutated2 = mutated.append('c', 'd');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        expect(mutated2.toString()).toEqual('a=b&a=c&c=d');
       });
     });
 

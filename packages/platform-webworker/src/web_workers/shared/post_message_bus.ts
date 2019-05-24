@@ -12,13 +12,14 @@ import {MessageBus, MessageBusSink, MessageBusSource} from './message_bus';
 
 
 
-// TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)
+// TODO(jteplitz602): Replace this with the definition in lib.webworker.d.ts(#3492)
 export interface PostMessageTarget {
   postMessage: (message: any, transfer?: [ArrayBuffer]) => void;
 }
 
 export class PostMessageBusSink implements MessageBusSink {
-  private _zone: NgZone;
+  // TODO(issue/24571): remove '!'.
+  private _zone !: NgZone;
   private _channels: {[key: string]: _Channel} = {};
   private _messageBuffer: Array<Object> = [];
 
@@ -67,7 +68,8 @@ export class PostMessageBusSink implements MessageBusSink {
 }
 
 export class PostMessageBusSource implements MessageBusSource {
-  private _zone: NgZone;
+  // TODO(issue/24571): remove '!'.
+  private _zone !: NgZone;
   private _channels: {[key: string]: _Channel} = {};
 
   constructor(eventTarget?: EventTarget) {

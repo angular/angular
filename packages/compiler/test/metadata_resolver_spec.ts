@@ -10,7 +10,7 @@ import {LIFECYCLE_HOOKS_VALUES, LifecycleHooks} from '@angular/compiler/src/life
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, Directive, DoCheck, Injectable, NgModule, OnChanges, OnDestroy, OnInit, Pipe, SimpleChanges, ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 
-import {identifierName} from '../src/compile_metadata';
+import {CompileDiDependencyMetadata, identifierName} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/src/resource_loader_mock';
@@ -18,7 +18,7 @@ import {MockResourceLoader} from '../testing/src/resource_loader_mock';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
-export function main() {
+{
   describe('CompileMetadataResolver', () => {
     beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 
@@ -371,6 +371,38 @@ export function main() {
              .toThrowError(`SimpleService cannot be used as an entry component.`);
        }));
 
+    it('should generate an error when a dependency could not be resolved',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+
+         // Override the errorCollector so that error gets collected instead of
+         // being thrown.
+         (resolver as any)._errorCollector = (error: Error, type?: any) => {
+           expect(error.message).toBe(`Can't resolve all parameters for MyComponent: (?).`);
+         };
+
+         @Component({template: ''})
+         class MyComponent {
+           // @ts-ignore UserService is a non-existent class.
+           constructor(service: UserService) {}
+         }
+
+         @NgModule({declarations: [MyComponent]})
+         class AppModule {
+         }
+
+         const moduleMetadata = resolver.getNgModuleMetadata(AppModule) !;
+         expect(moduleMetadata).toBeTruthy();
+         expect(moduleMetadata.declaredDirectives.length).toBe(1);
+         const directive = moduleMetadata.declaredDirectives[0];
+         const directiveMetadata =
+             resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+         expect(directiveMetadata).toBeTruthy();
+         const {metadata} = directiveMetadata;
+         const diDeps: CompileDiDependencyMetadata[] = metadata.type.diDeps;
+         // 'null' does not conform to the shape of `CompileDiDependencyMetadata`
+         expect(diDeps.every(d => d !== null)).toBe(true);
+       }));
+
     it(`should throw an error when a Directive is added to module's bootstrap list`,
        inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
 
@@ -398,6 +430,18 @@ export function main() {
          }
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithComponentInBootstrap)).not.toThrow();
+       }));
+
+    // #20049
+    it('should throw a reasonable message when an invalid import is given',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({imports: [{ngModule: true as any}]})
+         class InvalidModule {
+         }
+
+         expect(() => { resolver.getNgModuleMetadata(InvalidModule); })
+             .toThrowError(
+                 `Unexpected value '[object Object]' imported by the module 'InvalidModule'. Please add a @NgModule annotation.`);
        }));
   });
 

@@ -1,27 +1,36 @@
+
 // #docregion
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
 import { Injectable }             from '@angular/core';
-import { Observable }             from 'rxjs/Observable';
-import { Router, Resolve, RouterStateSnapshot,
-         ActivatedRouteSnapshot } from '@angular/router';
+import {
+  Router, Resolve,
+  RouterStateSnapshot,
+  ActivatedRouteSnapshot
+}                                 from '@angular/router';
+import { Observable, of, EMPTY }  from 'rxjs';
+import { mergeMap, take }         from 'rxjs/operators';
 
-import { Crisis, CrisisService }  from './crisis.service';
+import { CrisisService }  from './crisis.service';
+import { Crisis } from './crisis';
 
-@Injectable()
-export class CrisisDetailResolver implements Resolve<Crisis> {
+@Injectable({
+  providedIn: 'root',
+})
+export class CrisisDetailResolverService implements Resolve<Crisis> {
   constructor(private cs: CrisisService, private router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> | Observable<never> {
     let id = route.paramMap.get('id');
 
-    return this.cs.getCrisis(id).take(1).map(crisis => {
-      if (crisis) {
-        return crisis;
-      } else { // id not found
-        this.router.navigate(['/crisis-center']);
-        return null;
-      }
-    });
+    return this.cs.getCrisis(id).pipe(
+      take(1),
+      mergeMap(crisis => {
+        if (crisis) {
+          return of(crisis);
+        } else { // id not found
+          this.router.navigate(['/crisis-center']);
+          return EMPTY;
+        }
+      })
+    );
   }
 }

@@ -9,13 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'kde',
-  [
-    ['Muhi', 'Chilo'],
-    ,
-  ],
-  ,
+  'kde', [['Muhi', 'Chilo'], u, u], u,
   [
     ['2', '3', '4', '5', '6', '7', '1'], ['Ll2', 'Ll3', 'Ll4', 'Ll5', 'Ll6', 'Ll7', 'Ll1'],
     [
@@ -24,7 +25,7 @@ export default [
     ],
     ['Ll2', 'Ll3', 'Ll4', 'Ll5', 'Ll6', 'Ll7', 'Ll1']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'],
@@ -35,15 +36,10 @@ export default [
       'Mwedi wa Nnyano na Nnyano na M'
     ]
   ],
-  , [['AY', 'NY'], , ['Akanapawa Yesu', 'Nankuida Yesu']], 1, [6, 0],
+  u, [['AY', 'NY'], u, ['Akanapawa Yesu', 'Nankuida Yesu']], 1, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania',
-  function(n: number): number { return 5;}
+  {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']}, plural
 ];

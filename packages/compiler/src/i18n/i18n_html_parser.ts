@@ -8,7 +8,8 @@
 
 import {MissingTranslationStrategy} from '../core';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
+import {TokenizeOptions} from '../ml_parser/lexer';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {Console} from '../util';
 
@@ -41,11 +42,9 @@ export class I18NHtmlParser implements HtmlParser {
     }
   }
 
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    const parseResult =
-        this._htmlParser.parse(source, url, parseExpansionForms, interpolationConfig);
+  parse(source: string, url: string, options: TokenizeOptions = {}): ParseTreeResult {
+    const interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
+    const parseResult = this._htmlParser.parse(source, url, {interpolationConfig, ...options});
 
     if (parseResult.errors.length) {
       return new ParseTreeResult(parseResult.rootNodes, parseResult.errors);

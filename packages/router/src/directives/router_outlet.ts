@@ -8,15 +8,15 @@
 
 import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
 
+import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
 /**
- * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
- * state.
+ * @description
  *
- * @howToUse
+ * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
  * ```
  * <router-outlet></router-outlet>
@@ -34,7 +34,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * ```
  * @ngModule RouterModule
  *
- * @stable
+ * @publicApi
  */
 @Directive({selector: 'router-outlet', exportAs: 'outlet'})
 export class RouterOutlet implements OnDestroy, OnInit {
@@ -84,7 +84,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     return this._activatedRoute as ActivatedRoute;
   }
 
-  get activatedRouteData() {
+  get activatedRouteData(): Data {
     if (this._activatedRoute) {
       return this._activatedRoute.snapshot.data;
     }

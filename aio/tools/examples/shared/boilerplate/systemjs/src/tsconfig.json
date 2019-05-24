@@ -8,14 +8,13 @@
     "experimentalDecorators": true,
     "lib": [ "es2015", "dom" ],
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "typeRoots": [
-      "../node_modules/@types/"
-    ]
+    "skipLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true
   },
   "compileOnSave": true,
   "exclude": [
     "node_modules/*",
-    "**/*-aot.ts"
+    "**/*-aot.ts",
+    "universal/*"
   ]
 }

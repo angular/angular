@@ -8,7 +8,7 @@
 
 import {escapeIdentifier} from '@angular/compiler/src/output/abstract_emitter';
 
-export function main() {
+{
   describe('AbstractEmitter', () => {
     describe('escapeIdentifier', () => {
       it('should escape single quotes',

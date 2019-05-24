@@ -14,45 +14,68 @@ import {NgControl} from './ng_control';
 
 
 /**
- * An interface that {@link FormGroupDirective} and {@link NgForm} implement.
+ * @description
+ * An interface implemented by `FormGroupDirective` and `NgForm` directives.
  *
- * Only used by the forms module.
+ * Only used by the `ReactiveFormsModule` and `FormsModule`.
  *
- * @stable
+ * @publicApi
  */
 export interface Form {
   /**
+   * @description
    * Add a control to this form.
+   *
+   * @param dir The control directive to add to the form.
    */
   addControl(dir: NgControl): void;
 
   /**
+   * @description
    * Remove a control from this form.
+   *
+   * @param dir: The control directive to remove from the form.
    */
   removeControl(dir: NgControl): void;
 
   /**
-   * Look up the {@link FormControl} associated with a particular {@link NgControl}.
+   * @description
+   * The control directive from which to get the `FormControl`.
+   *
+   * @param dir: The control directive.
    */
   getControl(dir: NgControl): FormControl;
 
   /**
+   * @description
    * Add a group of controls to this form.
+   *
+   * @param dir: The control group directive to add.
    */
   addFormGroup(dir: AbstractFormGroupDirective): void;
 
   /**
-   * Remove a group of controls from this form.
+   * @description
+   * Remove a group of controls to this form.
+   *
+   * @param dir: The control group directive to remove.
    */
   removeFormGroup(dir: AbstractFormGroupDirective): void;
 
   /**
-   * Look up the {@link FormGroup} associated with a particular {@link AbstractFormGroupDirective}.
+   * @description
+   * The `FormGroup` associated with a particular `AbstractFormGroupDirective`.
+   *
+   * @param dir: The form group directive from which to get the `FormGroup`.
    */
   getFormGroup(dir: AbstractFormGroupDirective): FormGroup;
 
   /**
+   * @description
    * Update the model for a particular control with a new value.
+   *
+   * @param dir: The control directive to update.
+   * @param value: The new value for the control.
    */
   updateModel(dir: NgControl, value: any): void;
 }

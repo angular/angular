@@ -27,9 +27,9 @@ export {
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
  * a template and the language context the template is in.
  *
- * A host interface; see `LanguageSeriviceHost`.
+ * A host interface; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface TemplateSource {
   /**
@@ -39,7 +39,7 @@ export interface TemplateSource {
 
   /**
    * The version of the source. As files are modified the version should change. That is, if the
-   * `LanguageService` requesting template infomration for a source file and that file has changed
+   * `LanguageService` requesting template information for a source file and that file has changed
    * since the last time the host was asked for the file then this version string should be
    * different. No assumptions are made about the format of this string.
    *
@@ -71,9 +71,9 @@ export interface TemplateSource {
 /**
  * A sequence of template sources.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export type TemplateSources = TemplateSource[] | undefined;
 
@@ -81,9 +81,9 @@ export type TemplateSources = TemplateSource[] | undefined;
 /**
  * Error information found getting declaration information
  *
- * A host type; see `LanagueServiceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface DeclarationError {
   /**
@@ -92,23 +92,24 @@ export interface DeclarationError {
   readonly span: Span;
 
   /**
-   * The message to display describing the error.
+   * The message to display describing the error or a chain
+   * of messages.
    */
-  readonly message: string;
+  readonly message: string|DiagnosticMessageChain;
 }
 
 /**
  * Information about the component declarations.
  *
  * A file might contain a declaration without a template because the file contains only
- * templateUrl references. However, the compoennt declaration might contain errors that
+ * templateUrl references. However, the component declaration might contain errors that
  * need to be reported such as the template string is missing or the component is not
  * declared in a module. These error should be reported on the declaration, not the
  * template.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface Declaration {
   /**
@@ -136,16 +137,15 @@ export interface Declaration {
 /**
  * A sequence of declarations.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export type Declarations = Declaration[];
 
 /**
  * The host for a `LanguageService`. This provides all the `LanguageService` requires to respond
- * to
- * the `LanguageService` requests.
+ * to the `LanguageService` requests.
  *
  * This interface describes the requirements of the `LanguageService` on its host.
  *
@@ -162,13 +162,13 @@ export type Declarations = Declaration[];
  * Adding a required member or changing a method's parameters, is considered a breaking change and
  * will only be done when breaking changes are allowed. When possible, a new optional member will
  * be added and the old member will be deprecated. The new member will then be made required in
- * and the old member will be removed only when breaking chnages are allowed.
+ * and the old member will be removed only when breaking changes are allowed.
  *
  * While an interface is marked as experimental breaking-changes will be allowed between minor
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
  *
- * @experimental
+ * @publicApi
  */
 export interface LanguageServiceHost {
   /**
@@ -185,8 +185,7 @@ export interface LanguageServiceHost {
 
   /**
    * Return the template source information for all templates in `fileName` or for `fileName` if
-   * it
-   * is a template file.
+   * it is a template file.
    */
   getTemplates(fileName: string): TemplateSources;
 
@@ -211,11 +210,11 @@ export interface LanguageServiceHost {
  *
  * A `LanguageService` interface.
  *
- * @experimental
+ * @publicApi
  */
 export interface Completion {
   /**
-   * The kind of comletion.
+   * The kind of completion.
    */
   kind: DeclarationKind;
 
@@ -233,7 +232,7 @@ export interface Completion {
 /**
  * A sequence of completions.
  *
- * @experimental
+ * @publicApi
  */
 export type Completions = Completion[] | undefined;
 
@@ -248,7 +247,7 @@ export interface Location {
 /**
  * The kind of diagnostic message.
  *
- * @experimental
+ * @publicApi
  */
 export enum DiagnosticKind {
   Error,
@@ -256,9 +255,31 @@ export enum DiagnosticKind {
 }
 
 /**
+ * A template diagnostics message chain. This is similar to the TypeScript
+ * DiagnosticMessageChain. The messages are intended to be formatted as separate
+ * sentence fragments and indented.
+ *
+ * For compatibility previous implementation, the values are expected to override
+ * toString() to return a formatted message.
+ *
+ * @publicApi
+ */
+export interface DiagnosticMessageChain {
+  /**
+   * The text of the diagnostic message to display.
+   */
+  message: string;
+
+  /**
+   * The next message in the chain.
+   */
+  next?: DiagnosticMessageChain;
+}
+
+/**
  * An template diagnostic message to display.
  *
- * @experimental
+ * @publicApi
  */
 export interface Diagnostic {
   /**
@@ -272,20 +293,20 @@ export interface Diagnostic {
   span: Span;
 
   /**
-   * The text of the diagnostic message to display.
+   * The text of the diagnostic message to display or a chain of messages.
    */
-  message: string;
+  message: string|DiagnosticMessageChain;
 }
 
 /**
  * A sequence of diagnostic message.
  *
- * @experimental
+ * @publicApi
  */
 export type Diagnostics = Diagnostic[];
 
 /**
- * A section of hover text. If the text is code then langauge should be provided.
+ * A section of hover text. If the text is code then language should be provided.
  * Otherwise the text is assumed to be Markdown text that will be sanitized.
  */
 export interface HoverTextSection {
@@ -295,18 +316,18 @@ export interface HoverTextSection {
   readonly text: string;
 
   /**
-   * The langauge of the source if `text` is a souce code fragment.
+   * The language of the source if `text` is a source code fragment.
    */
   readonly language?: string;
 }
 
 /**
- * Hover infomration for a symbol at the hover location.
+ * Hover information for a symbol at the hover location.
  */
 export interface Hover {
   /**
    * The hover text to display for the symbol at the hover location. If the text includes
-   * source code, the section will specify which langauge it should be interpreted as.
+   * source code, the section will specify which language it should be interpreted as.
    */
   readonly text: HoverTextSection[];
 
@@ -330,7 +351,7 @@ export interface Hover {
  * beginning of the file reference by `fileName`.
  *
  * This interface and all interfaces and types marked as `LanguageService` types, describe  a
- * particlar implementation of the Angular language service and is not intented to be
+ * particular implementation of the Angular language service and is not intended to be
  * implemented. Adding members to the interface will not be considered a breaking change as
  * defined by SemVer.
  *
@@ -341,7 +362,7 @@ export interface Hover {
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
  *
- * @experimental
+ * @publicApi
  */
 export interface LanguageService {
   /**

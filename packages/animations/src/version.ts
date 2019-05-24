@@ -13,9 +13,9 @@
  */
 
 /**
- * @whatItDoes Represents the version of angular/animations
+ * @description
  *
- * @stable
+ * Represents the version of angular/animations
  */
 export class Version {
   public readonly major: string;
@@ -30,7 +30,4 @@ export class Version {
   }
 }
 
-/**
- * @stable
- */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

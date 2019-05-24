@@ -1,0 +1,9 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Adds the document-register-element polyfill.",
+      "factory": "./ng-add"
+    }
+  }
+}

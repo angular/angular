@@ -1,6 +1,7 @@
-import { ReflectiveInjector, SecurityContext } from '@angular/core';
-import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subject } from 'rxjs/Subject';
+import { DOCUMENT } from '@angular/common';
+import { ReflectiveInjector } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
 
 import { ScrollItem, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { TocItem, TocService } from './toc.service';
@@ -33,10 +34,10 @@ describe('TocService', () => {
 
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
-      let value1: TocItem[];
-      let value2: TocItem[];
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
+      let value1: TocItem[]|undefined;
+      let value2: TocItem[]|undefined;
 
       tocService.tocList.next([]);
       tocService.tocList.subscribe(v => value1 = v);
@@ -48,8 +49,8 @@ describe('TocService', () => {
     });
 
     it('should emit the same values to all subscribers', () => {
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
       const emittedValues: TocItem[][] = [];
 
       tocService.tocList.subscribe(v => emittedValues.push(v));
@@ -149,8 +150,8 @@ describe('TocService', () => {
   describe('should clear tocList', () => {
     beforeEach(() => {
       // Start w/ dummy data from previous usage
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
       tocService.tocList.next([expectedValue1, expectedValue2]);
       expect(lastTocList).not.toEqual([]);
     });
@@ -235,22 +236,22 @@ describe('TocService', () => {
     });
 
     it('should have href with docId and heading\'s id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
     it('should have level "h1" for an <h1>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC');
+      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC')!;
       expect(tocItem.level).toEqual('h1');
     });
 
     it('should have level "h2" for an <h2>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
       expect(tocItem.level).toEqual('h2');
     });
 
     it('should have level "h3" for an <h3>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H3 3a');
+      const tocItem = lastTocList.find(item => item.title === 'H3 3a')!;
       expect(tocItem.level).toEqual('h3');
     });
 
@@ -263,18 +264,17 @@ describe('TocService', () => {
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {
       const heading = headings[3];
       const content = lastTocList[3].content;
-      expect((<TestSafeHtml>content).changingThisBreaksApplicationSecurity)
+      expect((content as TestSafeHtml).changingThisBreaksApplicationSecurity)
         .toEqual(heading.innerHTML);
     });
 
     it('should calculate and set id of heading without an id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
       const id = headings[2].getAttribute('id');
       expect(id).toEqual('h2-two');
     });
 
     it('should have href with docId and calculated heading id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
+      const tocItem = lastTocList.find(item => item.title === 'H2 Two')!;
       expect(tocItem.href).toEqual(`${docId}#h2-two`);
     });
 
@@ -292,23 +292,20 @@ describe('TocService', () => {
     });
   });
 
-  describe('TocItem for an h2 with anchor link and extra whitespace', () => {
+  describe('TocItem for an h2 with links and extra whitespace', () => {
     let docId: string;
-    let docEl: HTMLDivElement;
     let tocItem: TocItem;
-    let expectedTocContent: string;
 
     beforeEach(() => {
       docId = 'fizz/buzz/';
-      expectedTocContent = 'Setup to develop <i>locally</i>.';
 
       // An almost-actual <h2> ... with extra whitespace
-      docEl = callGenToc(`
+      callGenToc(`
         <h2 id="setup-to-develop-locally">
-          <a href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
+          Setup to <a href="moo">develop</a> <i>locally</i>.
+          <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
             <span class="icon icon-link"></span>
           </a>
-          ${expectedTocContent}
         </h2>
       `, docId);
 
@@ -324,7 +321,7 @@ describe('TocService', () => {
     });
 
     it('should have removed anchor link from tocItem html content', () => {
-      expect((<TestSafeHtml>tocItem.content)
+      expect((tocItem.content as TestSafeHtml)
         .changingThisBreaksApplicationSecurity)
         .toEqual('Setup to develop <i>locally</i>.');
     });
@@ -332,7 +329,7 @@ describe('TocService', () => {
     it('should have bypassed HTML sanitizing of heading\'s innerHTML ', () => {
       const domSanitizer: TestDomSanitizer = injector.get(DomSanitizer);
       expect(domSanitizer.bypassSecurityTrustHtml)
-        .toHaveBeenCalledWith(expectedTocContent);
+        .toHaveBeenCalledWith('Setup to develop <i>locally</i>.');
     });
   });
 });
@@ -344,7 +341,7 @@ interface TestSafeHtml extends SafeHtml {
 
 class TestDomSanitizer {
   bypassSecurityTrustHtml = jasmine.createSpy('bypassSecurityTrustHtml')
-    .and.callFake(html => {
+    .and.callFake((html: string) => {
       return {
         changingThisBreaksApplicationSecurity: html,
         getTypeName: () => 'HTML',
@@ -353,20 +350,27 @@ class TestDomSanitizer {
 }
 
 class MockScrollSpyService {
-  $lastInfo: {
+  private $$lastInfo: {
     active: Subject<ScrollItem | null>,
-    unspy: jasmine.Spy
-  };
+    unspy: jasmine.Spy,
+  } | undefined;
+
+  get $lastInfo() {
+    if (!this.$$lastInfo) {
+      throw new Error('$lastInfo is not yet defined. You must call `spyOn` first.');
+    }
+    return this.$$lastInfo;
+  }
 
   spyOn(headings: HTMLHeadingElement[]): ScrollSpyInfo {
-    return this.$lastInfo = {
+    return this.$$lastInfo = {
       active: new Subject<ScrollItem | null>(),
       unspy: jasmine.createSpy('unspy'),
     };
   }
 }
 
-function tocItem(title: string, level = 'h2', href = '', content = title) {
+function createTocItem(title: string, level = 'h2', href = '', content = title) {
   return { title, href, level, content };
 }
 

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, looseIdentical} from '../util';
+import {looseIdentical} from '../util/comparison';
+import {getSymbolIterator} from '../util/symbol';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);
@@ -26,10 +27,10 @@ export function devModeEqual(a: any, b: any): boolean {
 
 /**
  * Indicates that the result of a {@link Pipe} transformation has changed even though the
- * reference
- * has not changed.
+ * reference has not changed.
  *
- * The wrapped value will be unwrapped by change detection, and the unwrapped value will be stored.
+ * Wrapped values are unwrapped automatically during the change detection, and the unwrapped value
+ * is stored.
  *
  * Example:
  *
@@ -41,42 +42,26 @@ export function devModeEqual(a: any, b: any): boolean {
  *    return WrappedValue.wrap(this._latestValue); // this will force update
  *  }
  * ```
- * @stable
+ *
+ * @publicApi
  */
 export class WrappedValue {
-  constructor(public wrapped: any) {}
+  /** @deprecated from 5.3, use `unwrap()` instead - will switch to protected */
+  wrapped: any;
 
+  constructor(value: any) { this.wrapped = value; }
+
+  /** Creates a wrapped value. */
   static wrap(value: any): WrappedValue { return new WrappedValue(value); }
-}
-
-/**
- * Helper class for unwrapping WrappedValue s
- */
-export class ValueUnwrapper {
-  public hasWrappedValue = false;
-
-  unwrap(value: any): any {
-    if (value instanceof WrappedValue) {
-      this.hasWrappedValue = true;
-      return value.wrapped;
-    }
-    return value;
-  }
-
-  reset() { this.hasWrappedValue = false; }
-}
-
-/**
- * Represents a basic change from a previous to a new value.
- * @stable
- */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
 
   /**
-   * Check whether the new value is the first value assigned.
-   */
-  isFirstChange(): boolean { return this.firstChange; }
+   * Returns the underlying value of a wrapped value.
+   * Returns the given `value` when it is not wrapped.
+   **/
+  static unwrap(value: any): any { return WrappedValue.isWrapped(value) ? value.wrapped : value; }
+
+  /** Returns true if `value` is a wrapped value. */
+  static isWrapped(value: any): value is WrappedValue { return value instanceof WrappedValue; }
 }
 
 export function isListLikeIterable(obj: any): boolean {

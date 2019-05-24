@@ -12,7 +12,7 @@ import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, NgZone, Rende
 /**
  * Fixture for debugging and testing a component.
  *
- * @stable
+ * @publicApi
  */
 export class ComponentFixture<T> {
   /**

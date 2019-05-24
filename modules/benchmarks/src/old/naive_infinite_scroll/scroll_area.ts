@@ -25,7 +25,7 @@ import {ScrollItemComponent} from './scroll_item';
             <div id="padding"></div>
             <div id="inner">
                 <scroll-item
-                    template="ngFor let item of visibleItems"
+                    *ngFor="let item of visibleItems"
                     [offering]="item">
                 </scroll-item>
             </div>

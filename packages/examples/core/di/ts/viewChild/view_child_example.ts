@@ -11,7 +11,8 @@ import {Component, Directive, Input, ViewChild} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  @Input() id: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() id !: string;
 }
 
 @Component({
@@ -26,7 +27,7 @@ export class Pane {
   `,
 })
 export class ViewChildComp {
-  @ViewChild(Pane)
+  @ViewChild(Pane, {static: false})
   set pane(v: Pane) {
     setTimeout(() => { this.selectedPane = v.id; }, 0);
   }

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "outDir": "../../../dist/all/@angular/service-worker/worker-es2017",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es2015", "dom"],
+    "target": "es2017",
+    "typeRoots": [],
+    "types": []
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
+  "files": [
+    "main.ts",
+    "src/service-worker.d.ts"
+  ]
+}

@@ -44,6 +44,9 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>List of dependency injection providers visible both to the contents of this module and to importers of this module.</p>
 </td>
 </tr><tr>
+<td><code><b>entryComponents:</b> [SomeComponent, OtherComponent]</code></td>
+<td><p>List of components not referenced in any reachable template, for example dynamically created from code.</p></td>
+</tr><tr>
 <td><code><b>bootstrap:</b> [MyAppComponent]</code></td>
 <td><p>List of components to bootstrap when this module is bootstrapped.</p>
 </td>
@@ -138,6 +141,11 @@ is available to <code>declarations</code> of this module.</p>
 </tr><tr>
 <td><code>&lt;div <b>[ngClass]</b>="{'active': isActive, 'disabled': isDisabled}"&gt;</code></td>
 <td><p>Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand expression should return {class-name: true/false} map.</p>
+</td>
+</tr>
+<tr>
+<td><code>&lt;div <b>[ngStyle]</b>="{'property': 'value'}"&gt;</code><br><code>&lt;div <b>[ngStyle]</b>="dynamicStyles()"&gt;</code></td>
+<td><p>Allows you to assign styles to an HTML element using CSS. You can use CSS directly, as in the first example, or you can call a method from the component.</p>
 </td>
 </tr>
 </tbody></table>
@@ -306,11 +314,11 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewInit()</b> { ... }</code></td>
-<td><p>Called after <code>ngAfterContentInit</code> when the component's view has been initialized. Applies to components only.</p>
+<td><p>Called after <code>ngAfterContentInit</code> when the component's views and child views / the view that a directive is in has been initialized.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewChecked()</b> { ... }</code></td>
-<td><p>Called after every check of the component's view. Applies to components only.</p>
+<td><p>Called after every check of the component's views and child views / the view that a directive is in.</p>
 </td>
 </tr><tr>
 <td><code><b>ngOnDestroy()</b> { ... }</code></td>

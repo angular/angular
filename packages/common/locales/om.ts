@@ -9,19 +9,21 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'om',
-  [
-    ['WD', 'WB'],
-    ,
-  ],
-  ,
+  'om', [['WD', 'WB'], u, u], u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Jim', 'San'],
     ['Dilbata', 'Wiixata', 'Qibxata', 'Roobii', 'Kamiisa', 'Jimaata', 'Sanbata'],
     ['Dil', 'Wix', 'Qib', 'Rob', 'Kam', 'Jim', 'San']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Ama', 'Gur', 'Bit', 'Elb', 'Cam', 'Wax', 'Ado', 'Hag', 'Ful', 'Onk', 'Sad', 'Mud'],
@@ -30,19 +32,10 @@ export default [
       'Hagayya', 'Fuulbana', 'Onkololeessa', 'Sadaasa', 'Muddee'
     ]
   ],
-  , [['BCE', 'CE'], , ['Dheengadda Jeesu', 'CE']], 0, [6, 0],
+  u, [['BCE', 'CE'], u, ['Dheengadda Jeesu', 'CE']], 0, [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Br', 'Itoophiyaa Birrii', function(n: number):
-                                                                              number {
-                                                                                if (n === 1)
-                                                                                  return 1;
-                                                                                return 5;
-                                                                              }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Br', 'Itoophiyaa Birrii',
+  {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

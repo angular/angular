@@ -34,12 +34,12 @@
       'typescript': 'npm:typescript/lib/typescript.js',
     },
     packages: {
-      app: {
-        defaultExtension: 'ts'
-      },
-      rxjs: {
-        defaultExtension: 'js'
-      }
+      'app': { defaultExtension: 'ts' },
+      'rxjs/ajax': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs': { main: 'index.js', defaultExtension: 'js' },
     }
   });
 })(this);

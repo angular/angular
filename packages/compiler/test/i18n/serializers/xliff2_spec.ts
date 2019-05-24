@@ -238,11 +238,29 @@ lines</source>
 lignes</target>
       </segment>
     </unit>
+    <unit id="mrk-test">
+     <notes>
+      <note id="n1" appliesTo="target">Please check the translation for 'namespace'. On also can use 'espace de nom',but I think most technical manuals use the English term.</note>
+     </notes>
+     <segment>
+      <source>You use your own namespace.</source>
+      <target>Vous pouvez utiliser votre propre <mrk id="m1" type="comment" ref="#n1">namespace</mrk>.</target>
+     </segment>
+    </unit>
+    <unit id="mrk-test2">
+     <notes>
+      <note id="n1" appliesTo="target">Please check the translation for 'namespace'. On also can use 'espace de nom',but I think most technical manuals use the English term.</note>
+     </notes>
+     <segment>
+      <source>You use your own namespace.</source>
+      <target>Vous pouvez utiliser <mrk id="m1" type="comment" ref="#n1">votre propre <mrk id="m2" type="comment" ref="#n1">namespace</mrk></mrk>.</target>
+     </segment>
+    </unit>
   </file>
 </xliff>
 `;
 
-export function main(): void {
+(function() {
   const serializer = new Xliff2();
 
   function toXliff(html: string, locale: string | null = null): string {
@@ -289,7 +307,9 @@ export function main(): void {
           '5229984852258993423': '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
               ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
           '2340165783990709777': `multi
-lignes`
+lignes`,
+          'mrk-test': 'Vous pouvez utiliser votre propre namespace.',
+          'mrk-test2': 'Vous pouvez utiliser votre propre namespace.'
         });
       });
 
@@ -413,4 +433,4 @@ lignes`
       });
     });
   });
-}
+})();

@@ -1,17 +1,19 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { LocationService } from './location.service';
+import { ScrollService } from './scroll.service';
 
 describe('LocationService', () => {
   let injector: ReflectiveInjector;
   let location: MockLocationStrategy;
   let service: LocationService;
   let swUpdates: MockSwUpdatesService;
+  let scrollService: MockScrollService;
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -20,12 +22,14 @@ describe('LocationService', () => {
         { provide: GaService, useClass: TestGaService },
         { provide: LocationStrategy, useClass: MockLocationStrategy },
         { provide: PlatformLocation, useClass: MockPlatformLocation },
-        { provide: SwUpdatesService, useClass: MockSwUpdatesService }
+        { provide: SwUpdatesService, useClass: MockSwUpdatesService },
+        { provide: ScrollService, useClass: MockScrollService }
     ]);
 
     location  = injector.get(LocationStrategy);
     service  = injector.get(LocationService);
     swUpdates  = injector.get(SwUpdatesService);
+    scrollService = injector.get(ScrollService);
   });
 
   describe('currentUrl', () => {
@@ -39,7 +43,7 @@ describe('LocationService', () => {
       location.simulatePopState('/next-url2');
       location.simulatePopState('/next-url3');
 
-      let initialUrl;
+      let initialUrl: string|undefined;
       service.currentUrl.subscribe(url => initialUrl = url);
       expect(initialUrl).toEqual('next-url3');
     });
@@ -49,7 +53,7 @@ describe('LocationService', () => {
       location.simulatePopState('/initial-url2');
       location.simulatePopState('/initial-url3');
 
-      const urls = [];
+      const urls: string[] = [];
       service.currentUrl.subscribe(url => urls.push(url));
 
       location.simulatePopState('/next-url1');
@@ -69,13 +73,13 @@ describe('LocationService', () => {
       location.simulatePopState('/initial-url2');
       location.simulatePopState('/initial-url3');
 
-      const urls1 = [];
+      const urls1: string[] = [];
       service.currentUrl.subscribe(url => urls1.push(url));
 
       location.simulatePopState('/next-url1');
       location.simulatePopState('/next-url2');
 
-      const urls2 = [];
+      const urls2: string[] = [];
       service.currentUrl.subscribe(url => urls2.push(url));
 
       location.simulatePopState('/next-url3');
@@ -150,7 +154,7 @@ describe('LocationService', () => {
     });
 
     it('should strip the query off the url', () => {
-      let path: string;
+      let path: string|undefined;
 
       service.currentPath.subscribe(p => path = p);
 
@@ -182,7 +186,7 @@ describe('LocationService', () => {
       location.simulatePopState('/next/url2');
       location.simulatePopState('/next/url3');
 
-      let initialPath: string;
+      let initialPath: string|undefined;
       service.currentPath.subscribe(path => initialPath = path);
 
       expect(initialPath).toEqual('next/url3');
@@ -247,7 +251,7 @@ describe('LocationService', () => {
     });
 
     it('should emit the new url', () => {
-      const urls = [];
+      const urls: string[] = [];
       service.go('some-initial-url');
 
       service.currentUrl.subscribe(url => urls.push(url));
@@ -259,7 +263,7 @@ describe('LocationService', () => {
     });
 
     it('should strip leading and trailing slashes', () => {
-      let url: string;
+      let url: string|undefined;
 
       service.currentUrl.subscribe(u => url = u);
       service.go('/some/url/');
@@ -269,23 +273,18 @@ describe('LocationService', () => {
       expect(url).toBe('some/url');
     });
 
-    it('should ignore undefined URL string', noUrlTest(undefined));
-    it('should ignore null URL string', noUrlTest(null));
-    it('should ignore empty URL string', noUrlTest(''));
-    function noUrlTest(testUrl: string) {
-      return function() {
+    it('should ignore empty URL string', () => {
         const initialUrl = 'some/url';
         const goExternalSpy = spyOn(service, 'goExternal');
-        let url: string;
+        let url: string|undefined;
 
         service.go(initialUrl);
         service.currentUrl.subscribe(u => url = u);
 
-        service.go(testUrl);
+        service.go('');
         expect(url).toEqual(initialUrl, 'should not have re-navigated locally');
         expect(goExternalSpy).not.toHaveBeenCalled();
-      };
-    }
+    });
 
     it('should leave the site for external url that starts with "http"', () => {
       const goExternalSpy = spyOn(service, 'goExternal');
@@ -294,11 +293,14 @@ describe('LocationService', () => {
       expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
     });
 
-    it('should do a "full page navigation" if a ServiceWorker update has been activated', () => {
+    it('should do a "full page navigation" and remove the stored scroll position when navigating to ' +
+      'internal URLs only if a ServiceWorker update has been activated', () => {
       const goExternalSpy = spyOn(service, 'goExternal');
+      const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
 
       // Internal URL - No ServiceWorker update
       service.go('some-internal-url');
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
       expect(goExternalSpy).not.toHaveBeenCalled();
       expect(location.path(true)).toEqual('some-internal-url');
 
@@ -306,11 +308,29 @@ describe('LocationService', () => {
       swUpdates.updateActivated.next('foo');
       service.go('other-internal-url');
       expect(goExternalSpy).toHaveBeenCalledWith('other-internal-url');
-      expect(location.path(true)).toEqual('some-internal-url');
+      expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
+    });
+
+    it('should not remove the stored scroll position when navigating to external URLs', () => {
+      const removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
+      const goExternalSpy = spyOn(service, 'goExternal');
+      const externalUrl = 'http://some/far/away/land';
+      const otherExternalUrl = 'http://some/far/far/away/land';
+
+      // External URL - No ServiceWorker update
+      service.go(externalUrl);
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
+      expect(goExternalSpy).toHaveBeenCalledWith(externalUrl);
+
+      // External URL - ServiceWorker update
+      swUpdates.updateActivated.next('foo');
+      service.go(otherExternalUrl);
+      expect(removeStoredScrollPositionSpy).not.toHaveBeenCalled();
+      expect(goExternalSpy).toHaveBeenCalledWith(otherExternalUrl);
     });
 
     it('should not update currentUrl for external url that starts with "http"', () => {
-      let localUrl: string;
+      let localUrl: string|undefined;
       spyOn(service, 'goExternal');
       service.currentUrl.subscribe(url => localUrl = url);
       service.go('https://some/far/away/land');
@@ -610,6 +630,10 @@ class MockPlatformLocation {
 
 class MockSwUpdatesService {
   updateActivated = new Subject<string>();
+}
+
+class MockScrollService {
+  removeStoredScrollPosition() { }
 }
 
 class TestGaService {

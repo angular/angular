@@ -11,7 +11,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from '@angular
 
 
 /*
- * Returns a PostMessageBus thats sink is connected to its own source.
+ * Returns a PostMessageBus that's sink is connected to its own source.
  * Useful for testing the sink and source.
  */
 export function createConnectedMessageBus(): MessageBus {
@@ -23,7 +23,8 @@ export function createConnectedMessageBus(): MessageBus {
 }
 
 class MockPostMessage {
-  private _listener: EventListener;
+  // TODO(issue/24571): remove '!'.
+  private _listener !: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {
     if (type === 'message') {

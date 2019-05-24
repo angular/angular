@@ -10,7 +10,7 @@ import {DeprecatedCurrencyPipe, DeprecatedDecimalPipe, DeprecatedPercentPipe} fr
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+(function() {
   function isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
 
   // Between the symbol and the number, Edge adds a no breaking space and IE11 adds a standard space
@@ -106,4 +106,4 @@ export function main() {
          () => { expect(isNumeric('2a')).toBe(false); });
     });
   });
-}
+})();

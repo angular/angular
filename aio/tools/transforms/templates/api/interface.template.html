@@ -6,7 +6,6 @@
 {% block overview %}{% include "includes/interface-overview.html" %}{% endblock %}
 {% block details %}
   {% include "includes/description.html" %}
-  {$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
-  {$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
-  {$ memberHelper.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
+  {$ memberHelper.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
+  {$ memberHelper.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
 {% endblock %}

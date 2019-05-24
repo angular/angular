@@ -1,7 +1,6 @@
 // #docregion
 // #docregion imports
-import { Component }         from '@angular/core';
-import { Inject }   from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
 import { APP_CONFIG, AppConfig }    from './app.config';
 // #enddocregion imports
@@ -23,3 +22,5 @@ export class AppComponent {
   }
   // #enddocregion ctor
 }
+// #enddocregion
+

@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
+import {Injectable} from '@angular/core';
 
 import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
 /**
- * @experimental
+ * @publicApi
  */
+@Injectable()
 export class NoopAnimationDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
 
@@ -31,13 +33,14 @@ export class NoopAnimationDriver implements AnimationDriver {
 
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing: string, previousPlayers: any[] = []): AnimationPlayer {
-    return new NoopAnimationPlayer();
+      easing: string, previousPlayers: any[] = [],
+      scrubberAccessRequested?: boolean): AnimationPlayer {
+    return new NoopAnimationPlayer(duration, delay);
   }
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export abstract class AnimationDriver {
   static NOOP: AnimationDriver = new NoopAnimationDriver();
@@ -54,5 +57,5 @@ export abstract class AnimationDriver {
 
   abstract animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing?: string|null, previousPlayers?: any[]): any;
+      easing?: string|null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
 }

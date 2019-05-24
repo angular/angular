@@ -4,7 +4,6 @@
 import { Component, Inject } from '@angular/core';
 
 import { APP_CONFIG, AppConfig } from './app.config';
-import { Logger } from './logger.service';
 import { UserService } from './user.service';
 // #enddocregion imports
 
@@ -22,9 +21,9 @@ import { UserService } from './user.service';
     <p>
     <app-heroes id="authorized" *ngIf="isAuthorized"></app-heroes>
     <app-heroes id="unauthorized" *ngIf="!isAuthorized"></app-heroes>
+    <app-heroes-tsp id="tspAuthorized" *ngIf="isAuthorized"></app-heroes-tsp>
     <app-providers></app-providers>
-  `,
-  providers: [Logger]
+  `
 })
 export class AppComponent {
   title: string;

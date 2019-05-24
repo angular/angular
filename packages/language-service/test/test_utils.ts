@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setup} from '@angular/compiler-cli/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Diagnostic, Diagnostics, Span} from '../src/types';
+import {Diagnostic, DiagnosticMessageChain, Diagnostics, Span} from '../src/types';
 
 export type MockData = string | MockDirectory;
 
@@ -64,21 +65,20 @@ missingCache.set('/node_modules/@angular/forms/src/directives/form_interface.met
 
 export class MockTypescriptHost implements ts.LanguageServiceHost {
   private angularPath: string|undefined;
-  private nodeModulesPath: string;
+  // TODO(issue/24571): remove '!'.
+  private nodeModulesPath !: string;
   private scriptVersion = new Map<string, number>();
   private overrides = new Map<string, string>();
   private projectVersion = 0;
   private options: ts.CompilerOptions;
   private overrideDirectory = new Set<string>();
 
-  constructor(private scriptNames: string[], private data: MockData) {
-    const moduleFilename = module.filename.replace(/\\/g, '/');
-    let angularIndex = moduleFilename.indexOf('@angular');
-    if (angularIndex >= 0)
-      this.angularPath = moduleFilename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
-    let distIndex = moduleFilename.indexOf('/dist/all');
-    if (distIndex >= 0)
-      this.nodeModulesPath = path.join(moduleFilename.substr(0, distIndex), 'node_modules');
+  constructor(
+      private scriptNames: string[], private data: MockData,
+      private node_modules: string = 'node_modules', private myPath: typeof path = path) {
+    const support = setup();
+    this.nodeModulesPath = path.join(support.basePath, 'node_modules');
+    this.angularPath = path.join(this.nodeModulesPath, '@angular');
     this.options = {
       target: ts.ScriptTarget.ES5,
       module: ts.ModuleKind.CommonJS,
@@ -141,13 +141,18 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   directoryExists(directoryName: string): boolean {
     if (this.overrideDirectory.has(directoryName)) return true;
     let effectiveName = this.getEffectiveName(directoryName);
-    if (effectiveName === directoryName)
+    if (effectiveName === directoryName) {
       return directoryExists(directoryName, this.data);
-    else
+    } else if (effectiveName == '/' + this.node_modules) {
+      return true;
+    } else {
       return fs.existsSync(effectiveName);
+    }
   }
 
   fileExists(fileName: string): boolean { return this.getRawFileContent(fileName) != null; }
+
+  readFile(path: string): string|undefined { return this.getRawFileContent(path); }
 
   getMarkerLocations(fileName: string): {[name: string]: number}|undefined {
     let content = this.getRawFileContent(fileName);
@@ -175,7 +180,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     let basename = path.basename(fileName);
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = ts.getDefaultLibFilePath(this.getCompilationSettings());
-      return fs.readFileSync(path.join(path.dirname(libPath), basename), 'utf8');
+      return fs.readFileSync(this.myPath.join(path.dirname(libPath), basename), 'utf8');
     } else {
       if (missingCache.has(fileName)) {
         cacheUsed.add(fileName);
@@ -199,18 +204,18 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   }
 
   private getEffectiveName(name: string): string {
-    const node_modules = 'node_modules';
+    const node_modules = this.node_modules;
     const at_angular = '/@angular';
     if (name.startsWith('/' + node_modules)) {
       if (this.nodeModulesPath && !name.startsWith('/' + node_modules + at_angular)) {
-        let result = path.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
+        let result = this.myPath.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
         if (!name.match(rxjsts))
           if (fs.existsSync(result)) {
             return result;
           }
       }
       if (this.angularPath && name.startsWith('/' + node_modules + at_angular)) {
-        return path.join(
+        return this.myPath.join(
             this.angularPath, name.substr(node_modules.length + at_angular.length + 1));
       }
     }
@@ -273,7 +278,7 @@ function getLocationMarkers(value: string): {[name: string]: number} {
   return result;
 }
 
-const referenceMarker = /«(((\w|\-)+)|([^∆]*∆(\w+)∆.[^»]*))»/g;
+const referenceMarker = /«(((\w|\-)+)|([^ᐱ]*ᐱ(\w+)ᐱ.[^»]*))»/g;
 const definitionMarkerGroup = 1;
 const nameMarkerGroup = 2;
 
@@ -295,7 +300,7 @@ function getReferenceMarkers(value: string): ReferenceResult {
   const text = value.replace(
       referenceMarker, (match: string, text: string, reference: string, _: string,
                         definition: string, definitionName: string, index: number): string => {
-        const result = reference ? text : text.replace(/∆/g, '');
+        const result = reference ? text : text.replace(/ᐱ/g, '');
         const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
         const markers = reference ? references : definitions;
         const name = reference || definitionName;
@@ -308,13 +313,32 @@ function getReferenceMarkers(value: string): ReferenceResult {
 }
 
 function removeReferenceMarkers(value: string): string {
-  return value.replace(referenceMarker, (match, text) => text.replace(/∆/g, ''));
+  return value.replace(referenceMarker, (match, text) => text.replace(/ᐱ/g, ''));
 }
 
 export function noDiagnostics(diagnostics: Diagnostics) {
   if (diagnostics && diagnostics.length) {
     throw new Error(`Unexpected diagnostics: \n  ${diagnostics.map(d => d.message).join('\n  ')}`);
   }
+}
+
+export function diagnosticMessageContains(
+    message: string | DiagnosticMessageChain, messageFragment: string): boolean {
+  if (typeof message == 'string') {
+    return message.indexOf(messageFragment) >= 0;
+  }
+  if (message.message.indexOf(messageFragment) >= 0) {
+    return true;
+  }
+  if (message.next) {
+    return diagnosticMessageContains(message.next, messageFragment);
+  }
+  return false;
+}
+
+export function findDiagnostic(diagnostics: Diagnostic[], messageFragment: string): Diagnostic|
+    undefined {
+  return diagnostics.find(d => diagnosticMessageContains(d.message, messageFragment));
 }
 
 export function includeDiagnostic(
@@ -324,14 +348,18 @@ export function includeDiagnostic(
 export function includeDiagnostic(diagnostics: Diagnostics, message: string, p1?: any, p2?: any) {
   expect(diagnostics).toBeDefined();
   if (diagnostics) {
-    const diagnostic = diagnostics.find(d => d.message.indexOf(message) >= 0) as Diagnostic;
-    expect(diagnostic).toBeDefined();
+    const diagnostic = findDiagnostic(diagnostics, message);
+    expect(diagnostic).toBeDefined(`no diagnostic contains '${message}`);
     if (diagnostic && p1 != null) {
       const at = typeof p1 === 'number' ? p1 : p2.indexOf(p1);
       const len = typeof p2 === 'number' ? p2 : p1.length;
-      expect(diagnostic.span.start).toEqual(at);
+      expect(diagnostic.span.start)
+          .toEqual(
+              at,
+              `expected message '${message}' was reported at ${diagnostic.span.start} but should be ${at}`);
       if (len != null) {
-        expect(diagnostic.span.end - diagnostic.span.start).toEqual(len);
+        expect(diagnostic.span.end - diagnostic.span.start)
+            .toEqual(len, `expected '${message}'s span length to be ${len}`);
       }
     }
   }

@@ -1,7 +1,7 @@
 # Building and Testing Angular
 
 This document describes how to set up your development environment to build and test Angular.
-It also explains the basic mechanics of using `git`, `node`, and `npm`.
+It also explains the basic mechanics of using `git`, `node`, and `yarn`.
 
 * [Prerequisite Software](#prerequisite-software)
 * [Getting the Sources](#getting-the-sources)
@@ -21,12 +21,10 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=6.9.5 <7.0.0`) which is used to run a development web server,
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=3.10.7 <4.0.0`), which comes with Node. Depending on your system, you can install Node either from
-  source or as a pre-packaged bundle.
+* [Node.js](http://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
+  run tests, and generate distributable files.
 
-* [Yarn](https://yarnpkg.com) (version `>=1.0.2 <2.0.0`) which is used to install dependencies.
+* [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
@@ -61,118 +59,96 @@ Next, install the JavaScript modules needed to build and test Angular:
 yarn install
 ```
 
-**Optional**: In this document, we make use of project local `npm` package scripts and binaries
-(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
-particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
-
-
-## Installing Bower Modules
-
-Now run `bower` to install additional dependencies:
-
-```shell
-# Install other Angular project dependencies (bower.json)
-bower install
-```
-
-## Windows only
-
-In order to create the right symlinks, run **as administrator**:
-```shell
-./scripts/windows/create-symlinks.sh
-```
-
-Before submitting a PR, do not forget to remove them:
-```shell
- ./scripts/windows/remove-symlinks.sh
- ```
-
 ## Building
 
 To build Angular run:
 
 ```shell
-./build.sh
+./scripts/build-packages-dist.sh
 ```
 
-* Results are put in the dist folder.
+* Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
-To run tests:
+Bazel is used as the primary tool for building and testing Angular. Building and testing is
+incremental with Bazel, and it's possible to only run tests for an individual package instead
+of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document. 
 
-```shell
-$ ./test.sh node             # Run all angular tests on node
+You should execute all test suites before submitting a PR to GitHub:
+- `yarn bazel test packages/...`
 
-$ ./test.sh browser          # Run all angular tests in browser
-$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
+**Note**: The first test run will be much slower than future runs. This is because future runs will
+benefit from Bazel's capability to do incremental builds. 
 
-$ ./test.sh tools            # Run angular tooling (not framework) tests
-```
-
-You should execute the 3 test suites before submitting a PR to github.
-
-See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
-
-All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
-
-- CircleCI fails if your code is not formatted properly,
-- Travis CI fails if any of the test suites described above fails.
-
-## Update the public API tests
-
-If you happen to modify the public API of Angular, API golden files must be updated using:
-
-``` shell
-$ gulp public-api:update
-```
-
-Note: The command `gulp public-api:enforce` fails when the API doesn't match the golden files. Make sure to rebuild
-the project before trying to verify after an API change.
+All the tests are executed on our Continuous Integration infrastructure. PRs can only be
+merged if the code is formatted properly and all tests are passing.
 
 ## <a name="clang-format"></a> Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
-is not properly formatted, the CI will fail and the PR can not be merged.
+Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
+- `yarn gulp format`: re-format only edited source code.
+- `yarn gulp format:all`: format _all_ source code
 
-``` shell
-$ gulp format
-```
+A better way is to set up your IDE to format the changed file on each file save.
+
+### VS Code
+1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
+
+It will automatically pick up the settings from Angular's [settings.json](../.vscode/settings.json).
+
+### WebStorm / IntelliJ
+1. Install the [ClangFormatIJ](https://plugins.jetbrains.com/plugin/8396-clangformatij) plugin
+1. Open `Preferences->Tools->clang-format`
+1. Find the field named "PATH"
+1. Add `<PATH_TO_YOUR_WORKSPACE>/angular/node_modules/clang-format/bin/<OS>/`
+  where the OS options are: `darwin_x64`, `linux_x64`, and `win32`.
 
 ## Linting/verifying your source code
 
 You can check that your code is properly formatted and adheres to coding style by running:
 
 ``` shell
-$ gulp lint
+$ yarn gulp lint
 ```
 
 ## Publishing snapshot builds
 
-When the `master` branch successfully builds on Travis, it automatically publishes build artifacts
+When a build of any branch on the upstream fork angular/angular is green on CircleCI,
+it automatically publishes build artifacts
 to repositories in the Angular org, eg. the `@angular/core` package is published to
 http://github.com/angular/core-builds.
-The ES2015 version of Angular is published to a different branch in these repos, for example
-http://github.com/angular/core-builds#master-es2015
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can
-publish the `*-builds` snapshots just like our Travis build does.
+publish the `*-builds` snapshots just like our CircleCI build does.
 
-First time, you need to create the github repositories:
+First time, you need to create the GitHub repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 ```
 
 For subsequent snapshots, just run
 
 ``` shell
-$ ./scripts/publish/publish-build-artifacts.sh [github username]
+$ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 ```
 
 The script will publish the build snapshot to a branch with the same name as your current branch,
 and create it if it doesn't exist.
+
+## Bazel support
+### VS Code
+
+1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
+
+### WebStorm / IntelliJ
+1. Install the [Bazel](https://plugins.jetbrains.com/plugin/8609-bazel) plugin
+1. You can find the settings under `Preferences->Other Settings->Bazel Settings`
+
+It will automatically recognize `*.bazel` and `*.bzl` files.

@@ -18,9 +18,7 @@ export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 export interface OutputEmitter {
-  emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
-      preamble?: string|null): string;
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
 }
 
 class _EmittedLine {
@@ -96,8 +94,7 @@ export class EmitterVisitorContext {
         .join('\n');
   }
 
-  toSourceMapGenerator(sourceFilePath: string, genFilePath: string, startsAtLine: number = 0):
-      SourceMapGenerator {
+  toSourceMapGenerator(genFilePath: string, startsAtLine: number = 0): SourceMapGenerator {
     const map = new SourceMapGenerator(genFilePath);
 
     let firstOffsetMapped = false;
@@ -106,7 +103,7 @@ export class EmitterVisitorContext {
         // Add a single space so that tools won't try to load the file from disk.
         // Note: We are using virtual urls like `ng:///`, so we have to
         // provide a content here.
-        map.addSource(sourceFilePath, ' ').addMapping(0, sourceFilePath, 0, 0);
+        map.addSource(genFilePath, ' ').addMapping(0, genFilePath, 0, 0);
         firstOffsetMapped = true;
       }
     };
@@ -161,7 +158,7 @@ export class EmitterVisitorContext {
   spanOf(line: number, column: number): ParseSourceSpan|null {
     const emittedLine = this._lines[line - this._preambleLineCount];
     if (emittedLine) {
-      let columnsLeft = column - emittedLine.indent;
+      let columnsLeft = column - _createIndent(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
         const part = emittedLine.parts[partIndex];
         if (part.length > columnsLeft) {
@@ -236,10 +233,18 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitCommentStmt(stmt: o.CommentStmt, ctx: EmitterVisitorContext): any {
-    const lines = stmt.comment.split('\n');
-    lines.forEach((line) => { ctx.println(stmt, `// ${line}`); });
+    if (stmt.multiline) {
+      ctx.println(stmt, `/* ${stmt.comment} */`);
+    } else {
+      stmt.comment.split('\n').forEach((line) => { ctx.println(stmt, `// ${line}`); });
+    }
     return null;
   }
+  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, ctx: EmitterVisitorContext) {
+    ctx.println(stmt, `/*${stmt.toString()}*/`);
+    return null;
+  }
+
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
 
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
@@ -306,6 +311,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     this.visitAllExpressions(expr.args, ctx, ',');
     ctx.print(expr, `)`);
     return null;
+  }
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+    throw new Error('Abstract emitter cannot visit WrappedNodeExpr.');
+  }
+  visitTypeofExpr(expr: o.TypeofExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(expr, 'typeof ');
+    expr.expr.visitExpression(this, ctx);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
     let varName = ast.name !;
@@ -391,6 +403,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.And:
         opStr = '&&';
         break;
+      case o.BinaryOperator.BitwiseAnd:
+        opStr = '&';
+        break;
       case o.BinaryOperator.Or:
         opStr = '||';
         break;
@@ -424,11 +439,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
-    ctx.print(ast, `(`);
+    if (ast.parens) ctx.print(ast, `(`);
     ast.lhs.visitExpression(this, ctx);
     ctx.print(ast, ` ${opStr} `);
     ast.rhs.visitExpression(this, ctx);
-    ctx.print(ast, `)`);
+    if (ast.parens) ctx.print(ast, `)`);
     return null;
   }
 

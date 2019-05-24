@@ -26,6 +26,7 @@ export class Options {
   static RECEIVED_DATA = new InjectionToken('Options.receivedData');
   static REQUEST_COUNT = new InjectionToken('Options.requestCount');
   static CAPTURE_FRAMES = new InjectionToken('Options.frameCapture');
+  static RAW_PERFLOG_PATH = new InjectionToken('Options.rawPerflogPath');
   static DEFAULT_PROVIDERS = [
     {provide: Options.DEFAULT_DESCRIPTION, useValue: {}},
     {provide: Options.SAMPLE_DESCRIPTION, useValue: {}},
@@ -36,7 +37,8 @@ export class Options {
     {provide: Options.RECEIVED_DATA, useValue: false},
     {provide: Options.REQUEST_COUNT, useValue: false},
     {provide: Options.CAPTURE_FRAMES, useValue: false},
-    {provide: Options.WRITE_FILE, useValue: writeFile}
+    {provide: Options.WRITE_FILE, useValue: writeFile},
+    {provide: Options.RAW_PERFLOG_PATH, useValue: null}
   ];
 }
 

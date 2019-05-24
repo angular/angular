@@ -6,27 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DomElementSchemaRegistry, ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
-import {MockResourceLoader, MockSchemaRegistry} from '@angular/compiler/testing';
+import {ResourceLoader, UrlResolver} from '@angular/compiler';
+import {MockResourceLoader} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
 }
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
-  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
   {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
 ];
 
 
-export function main() {
-  let elSchema: MockSchemaRegistry;
+(function() {
   let renderLog: RenderLog;
   let directiveLog: DirectiveLog;
 
@@ -42,10 +41,8 @@ export function main() {
   }
 
   function initHelpers(): void {
-    elSchema = TestBed.get(ElementSchemaRegistry);
     renderLog = TestBed.get(RenderLog);
     directiveLog = TestBed.get(DirectiveLog);
-    elSchema.existingProperties['someProp'] = true;
     patchLoggingRenderer2(TestBed.get(RendererFactory2), renderLog);
   }
 
@@ -66,7 +63,7 @@ export function main() {
   function _bindSimpleValue<T>(expression: any, compType: Type<T>): ComponentFixture<T>;
   function _bindSimpleValue<T>(
       expression: any, compType: Type<T> = <any>TestComponent): ComponentFixture<T> {
-    return _bindSimpleProp(`[someProp]='${expression}'`, compType);
+    return _bindSimpleProp(`[id]='${expression}'`, compType);
   }
 
   function _bindAndCheckSimpleValue(
@@ -77,8 +74,6 @@ export function main() {
   }
 
   describe(`ChangeDetection`, () => {
-    // On CJS fakeAsync is not supported...
-    if (!getDOM().supportsDOMEvents()) return;
 
     beforeEach(() => {
       TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
@@ -118,145 +113,125 @@ export function main() {
 
     describe('expressions', () => {
       it('should support literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['someProp=10']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['id=10']); }));
 
       it('should strip quotes from literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"str"')).toEqual(['someProp=str']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"str"')).toEqual(['id=str']); }));
 
-      it('should support newlines in literals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('"a\n\nb"')).toEqual(['someProp=a\n\nb']);
-         }));
+      it('should support newlines in literals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"a\n\nb"')).toEqual(['id=a\n\nb']); }));
 
       it('should support + operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['someProp=12']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['id=12']); }));
 
       it('should support - operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['someProp=8']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['id=8']); }));
 
       it('should support * operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['someProp=20']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['id=20']); }));
 
       it('should support / operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`someProp=${5.0}`]);
+           expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`id=${5.0}`]);
          }));  // dart exp=5.0, js exp=5
 
       it('should support % operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['someProp=1']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['id=1']); }));
 
-      it('should support == operations on identical', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 == 1')).toEqual(['someProp=true']);
-         }));
+      it('should support == operations on identical',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 == 1')).toEqual(['id=true']); }));
 
-      it('should support != operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 != 1')).toEqual(['someProp=false']);
-         }));
+      it('should support != operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 != 1')).toEqual(['id=false']); }));
 
-      it('should support == operations on coerceible', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`someProp=true`]);
-         }));
+      it('should support == operations on coerceible',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 == true')).toEqual([`id=true`]); }));
 
-      it('should support === operations on identical', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 === 1')).toEqual(['someProp=true']);
-         }));
+      it('should support === operations on identical',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 === 1')).toEqual(['id=true']); }));
 
-      it('should support !== operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 !== 1')).toEqual(['someProp=false']);
-         }));
+      it('should support !== operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 !== 1')).toEqual(['id=false']); }));
 
       it('should support === operations on coerceible', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 === true')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('1 === true')).toEqual(['id=false']);
          }));
 
-      it('should support true < operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 < 2')).toEqual(['someProp=true']);
-         }));
+      it('should support true < operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 < 2')).toEqual(['id=true']); }));
 
-      it('should support false < operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 < 1')).toEqual(['someProp=false']);
-         }));
+      it('should support false < operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 < 1')).toEqual(['id=false']); }));
 
-      it('should support false > operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 > 2')).toEqual(['someProp=false']);
-         }));
+      it('should support false > operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 > 2')).toEqual(['id=false']); }));
 
-      it('should support true > operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 > 1')).toEqual(['someProp=true']);
-         }));
+      it('should support true > operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 > 1')).toEqual(['id=true']); }));
 
-      it('should support true <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 <= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support true <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 <= 2')).toEqual(['id=true']); }));
 
-      it('should support equal <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 <= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support equal <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 <= 2')).toEqual(['id=true']); }));
 
-      it('should support false <= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 <= 1')).toEqual(['someProp=false']);
-         }));
+      it('should support false <= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 <= 1')).toEqual(['id=false']); }));
 
-      it('should support true >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 >= 1')).toEqual(['someProp=true']);
-         }));
+      it('should support true >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 >= 1')).toEqual(['id=true']); }));
 
-      it('should support equal >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('2 >= 2')).toEqual(['someProp=true']);
-         }));
+      it('should support equal >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('2 >= 2')).toEqual(['id=true']); }));
 
-      it('should support false >= operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 >= 2')).toEqual(['someProp=false']);
-         }));
+      it('should support false >= operations',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 >= 2')).toEqual(['id=false']); }));
 
       it('should support true && operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true && true')).toEqual(['someProp=true']);
+           expect(_bindAndCheckSimpleValue('true && true')).toEqual(['id=true']);
          }));
 
       it('should support false && operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true && false')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('true && false')).toEqual(['id=false']);
          }));
 
       it('should support true || operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('true || false')).toEqual(['someProp=true']);
+           expect(_bindAndCheckSimpleValue('true || false')).toEqual(['id=true']);
          }));
 
       it('should support false || operations', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('false || false')).toEqual(['someProp=false']);
+           expect(_bindAndCheckSimpleValue('false || false')).toEqual(['id=false']);
          }));
 
-      it('should support negate', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('!true')).toEqual(['someProp=false']);
-         }));
+      it('should support negate',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('!true')).toEqual(['id=false']); }));
 
-      it('should support double negate', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('!!true')).toEqual(['someProp=true']);
-         }));
+      it('should support double negate',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('!!true')).toEqual(['id=true']); }));
 
-      it('should support true conditionals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 < 2 ? 1 : 2')).toEqual(['someProp=1']);
-         }));
+      it('should support true conditionals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 < 2 ? 1 : 2')).toEqual(['id=1']); }));
 
-      it('should support false conditionals', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('1 > 2 ? 1 : 2')).toEqual(['someProp=2']);
-         }));
+      it('should support false conditionals',
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('1 > 2 ? 1 : 2')).toEqual(['id=2']); }));
 
       it('should support keyed access to a list item', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('["foo", "bar"][0]')).toEqual(['someProp=foo']);
+           expect(_bindAndCheckSimpleValue('["foo", "bar"][0]')).toEqual(['id=foo']);
          }));
 
       it('should support keyed access to a map item', fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('{"foo": "bar"}["foo"]')).toEqual(['someProp=bar']);
+           expect(_bindAndCheckSimpleValue('{"foo": "bar"}["foo"]')).toEqual(['id=bar']);
          }));
 
       it('should report all changes on the first run including uninitialized values',
          fakeAsync(() => {
-           expect(_bindAndCheckSimpleValue('value', Uninitialized)).toEqual(['someProp=null']);
+           expect(_bindAndCheckSimpleValue('value', Uninitialized)).toEqual(['id=null']);
          }));
 
       it('should report all changes on the first run including null values', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=null']);
+           expect(renderLog.log).toEqual(['id=null']);
          }));
 
       it('should support simple chained property access', fakeAsync(() => {
@@ -264,7 +239,7 @@ export function main() {
            ctx.componentInstance.name = 'Victor';
            ctx.componentInstance.address = new Address('Grenoble');
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Grenoble']);
+           expect(renderLog.log).toEqual(['id=Grenoble']);
          }));
 
       describe('safe navigation operator', () => {
@@ -272,54 +247,54 @@ export function main() {
              const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support reading properties on non nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.city', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=MTV']);
+             expect(renderLog.log).toEqual(['id=MTV']);
            }));
 
         it('should support calling methods on non nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
              ctx.componentInstance.address = new Address('MTV');
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=MTV']);
+             expect(renderLog.log).toEqual(['id=MTV']);
            }));
 
         it('should support short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
              ctx.componentInstance.value = null !;
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support nested short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
              ctx.componentInstance.value = new PersonHolder();
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support chained short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should support short-circuting array index operations', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
              ctx.detectChanges(false);
-             expect(renderLog.log).toEqual(['someProp=null']);
+             expect(renderLog.log).toEqual(['id=null']);
            }));
 
         it('should still throw if right-side would throw', fakeAsync(() => {
@@ -336,21 +311,21 @@ export function main() {
       it('should support method calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('sayHi("Jim")', Person);
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Hi, Jim']);
+           expect(renderLog.log).toEqual(['id=Hi, Jim']);
          }));
 
       it('should support function calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('a()(99)', TestData);
            ctx.componentInstance.a = () => (a: any) => a;
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=99']);
+           expect(renderLog.log).toEqual(['id=99']);
          }));
 
       it('should support chained method calls', fakeAsync(() => {
            const ctx = _bindSimpleValue('address.toString()', Person);
            ctx.componentInstance.address = new Address('MTV');
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=MTV']);
+           expect(renderLog.log).toEqual(['id=MTV']);
          }));
 
       it('should support NaN', fakeAsync(() => {
@@ -358,7 +333,7 @@ export function main() {
            ctx.componentInstance.age = NaN;
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=NaN']);
+           expect(renderLog.log).toEqual(['id=NaN']);
            renderLog.clear();
 
            ctx.detectChanges(false);
@@ -370,7 +345,7 @@ export function main() {
            ctx.componentInstance.name = 'misko';
 
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=misko']);
+           expect(renderLog.log).toEqual(['id=misko']);
            renderLog.clear();
 
            ctx.detectChanges(false);
@@ -379,7 +354,7 @@ export function main() {
 
            ctx.componentInstance.name = 'Misko';
            ctx.detectChanges(false);
-           expect(renderLog.log).toEqual(['someProp=Misko']);
+           expect(renderLog.log).toEqual(['id=Misko']);
          }));
 
       it('should support literal array made of literals', fakeAsync(() => {
@@ -446,7 +421,7 @@ export function main() {
 
 
       it('should ignore empty bindings', fakeAsync(() => {
-           const ctx = _bindSimpleProp('[someProp]', TestData);
+           const ctx = _bindSimpleProp('[id]', TestData);
            ctx.componentInstance.a = 'value';
            ctx.detectChanges(false);
 
@@ -454,23 +429,23 @@ export function main() {
          }));
 
       it('should support interpolation', fakeAsync(() => {
-           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('id="B{{a}}A"', TestData);
            ctx.componentInstance.a = 'value';
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=BvalueA']);
+           expect(renderLog.log).toEqual(['id=BvalueA']);
          }));
 
       it('should output empty strings for null values in interpolation', fakeAsync(() => {
-           const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
+           const ctx = _bindSimpleProp('id="B{{a}}A"', TestData);
            ctx.componentInstance.a = null;
            ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual(['someProp=BA']);
+           expect(renderLog.log).toEqual(['id=BA']);
          }));
 
       it('should escape values in literals that indicate interpolation',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']); }));
+         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['id=$']); }));
 
       it('should read locals', fakeAsync(() => {
            const ctx = createCompFixture(
@@ -516,7 +491,7 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
 
              renderLog.clear();
              ctx.detectChanges(false);
@@ -529,12 +504,12 @@ export function main() {
 
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
 
              renderLog.clear();
              ctx.detectChanges(false);
 
-             expect(renderLog.log).toEqual(['someProp=Megatron']);
+             expect(renderLog.log).toEqual(['id=Megatron']);
            }));
 
         it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
@@ -545,7 +520,7 @@ export function main() {
              dir.changes = {};
              ctx.detectChanges(false);
 
-             // Note: the binding for `b` did not change and has no ValueWrapper,
+             // Note: the binding for `a` did not change and has no ValueWrapper,
              // and should therefore stay unchanged.
              expect(dir.changes).toEqual({
                'name': new SimpleChange('aName', 'aName', false),
@@ -588,29 +563,57 @@ export function main() {
 
            }));
 
-        it('should call pure pipes that are used multiple times only when the arguments change',
-           fakeAsync(() => {
-             const ctx = createCompFixture(
-                 `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
-                     '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
-                 Person);
-             ctx.componentInstance.name = 'a';
-             ctx.componentInstance.age = 10;
-             ctx.componentInstance.address = new Address('mtv');
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-             ]);
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-             ]);
-             ctx.componentInstance.age = 11;
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
-             ]);
-           }));
+        modifiedInIvy('Pure pipes are instantiated differently in view engine and ivy')
+            .it('should call pure pipes that are used multiple times only when the arguments change and share state between pipe instances',
+                fakeAsync(() => {
+                  const ctx = createCompFixture(
+                      `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
+                          '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
+                      Person);
+                  ctx.componentInstance.name = 'a';
+                  ctx.componentInstance.age = 10;
+                  ctx.componentInstance.address = new Address('mtv');
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+                  ]);
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+                  ]);
+                  ctx.componentInstance.age = 11;
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
+                  ]);
+                }));
+
+        // this is the ivy version of the above tests - the difference is in pure pipe instantiation
+        // logic and binding execution order
+        ivyEnabled &&
+            it('should call pure pipes that are used multiple times only when the arguments change',
+               fakeAsync(() => {
+                 const ctx = createCompFixture(
+                     `<div [id]="name | countingPipe"></div><div [id]="age | countingPipe"></div>` +
+                         '<div *ngFor="let x of [1,2]" [id]="address.city | countingPipe"></div>',
+                     Person);
+                 ctx.componentInstance.name = 'a';
+                 ctx.componentInstance.age = 10;
+                 ctx.componentInstance.address = new Address('mtv');
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+                 ]);
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+                 ]);
+                 ctx.componentInstance.age = 11;
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0', '11 state:1'
+                 ]);
+               }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
@@ -704,7 +707,7 @@ export function main() {
       describe('reading directives', () => {
         it('should read directive properties', fakeAsync(() => {
              const ctx = createCompFixture(
-                 '<div testDirective [a]="42" ref-dir="testDirective" [someProp]="dir.a"></div>');
+                 '<div testDirective [a]="42" ref-dir="testDirective" [id]="dir.a"></div>');
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual([42]);
            }));
@@ -1124,6 +1127,7 @@ export function main() {
              expect(ctx.componentInstance.a).toEqual('destroyed');
            }));
 
+
         it('should call ngOnDestroy on pipes', fakeAsync(() => {
              const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
@@ -1152,16 +1156,46 @@ export function main() {
              ]);
            }));
       });
-
     });
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           const ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
-           ctx.componentInstance.a = 1;
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
 
-           expect(() => ctx.checkNoChanges())
-               .toThrowError(/Expression has changed after it was checked./g);
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
+
+           const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
+
+           ctx.componentInstance.b = 1;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: 'undefined'\. Current value: '1'/g :
+               /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
+         }));
+
+
+      it('should throw when a record gets changed after the first change detection pass',
+         fakeAsync(() => {
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
+
+           const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
+
+           ctx.componentInstance.b = 1;
+           ctx.detectChanges();
+
+           ctx.componentInstance.b = 2;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: '1'\. Current value: '2'/g :
+               /Previous value: 'changed: 1'\. Current value: 'changed: 2'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
          }));
 
       it('should warn when the view has been created in a cd hook', fakeAsync(() => {
@@ -1170,6 +1204,9 @@ export function main() {
            expect(() => ctx.detectChanges())
                .toThrowError(
                    /It seems like the view has been created after its parent and its children have been dirty checked/);
+
+           // subsequent change detection should run without issues
+           ctx.detectChanges();
          }));
 
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
@@ -1182,6 +1219,19 @@ export function main() {
 
       it('should not break the next run', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
+           ctx.componentInstance.a = 'value';
+           expect(() => ctx.checkNoChanges()).toThrow();
+
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['value']);
+         }));
+
+      it('should not break the next run (view engine and ivy)', fakeAsync(() => {
+           const ctx = _bindSimpleValue('a', TestData);
+
+           ctx.detectChanges();
+           renderLog.clear();
+
            ctx.componentInstance.a = 'value';
            expect(() => ctx.checkNoChanges()).toThrow();
 
@@ -1259,7 +1309,8 @@ export function main() {
            cmp.changeDetectorRef.detach();
            cmp.changeDetectorRef.reattach();
 
-           // renderCount should NOT be incremented with each CD as CD mode should be resetted to
+           // renderCount should NOT be incremented with each CD as CD mode
+           // should be resetted to
            // on-push
            ctx.detectChanges();
            expect(cmp.renderCount).toBeGreaterThan(0);
@@ -1272,15 +1323,16 @@ export function main() {
     });
 
     describe('multi directive order', () => {
-      it('should follow the DI order for the same element', fakeAsync(() => {
-           const ctx =
-               createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
+      modifiedInIvy('order of bindings to directive inputs is different in ivy')
+          .it('should follow the DI order for the same element', fakeAsync(() => {
+                const ctx = createCompFixture(
+                    '<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
 
-           ctx.detectChanges(false);
-           ctx.destroy();
+                ctx.detectChanges(false);
+                ctx.destroy();
 
-           expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
-         }));
+                expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
+              }));
     });
 
     describe('nested view recursion', () => {
@@ -1303,8 +1355,10 @@ export function main() {
            @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
            class Comp {
              name = 'Tom';
-             @ViewChild('vc', {read: ViewContainerRef}) vc: ViewContainerRef;
-             @ViewChild(TemplateRef) template: TemplateRef<any>;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild('vc', {read: ViewContainerRef, static: true}) vc !: ViewContainerRef;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
            }
 
            TestBed.configureTestingModule({declarations: [Comp]});
@@ -1344,8 +1398,9 @@ export function main() {
               `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
         })
         class OuterComp {
-          @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          // TODO(issue/24571): remove '!'.
+          @ContentChild(TemplateRef, {static: true})
+          tpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`outer-${id}`); }
@@ -1357,11 +1412,13 @@ export function main() {
               `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
         })
         class InnerComp {
-          @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          // TODO(issue/24571): remove '!'.
+          @ContentChild(TemplateRef, {static: true})
+          tpl !: TemplateRef<any>;
 
+          // TODO(issue/24571): remove '!'.
           @Input()
-          outerTpl: TemplateRef<any>;
+          outerTpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`inner-${id}`); }
@@ -1412,25 +1469,49 @@ export function main() {
           expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
         });
 
-        it('should dirty check projected views if the declaration place is dirty checked', () => {
-          ctx.detectChanges(false);
-          log = [];
-          innerComp.cdRef.detach();
-          mainComp.cdRef.detectChanges();
+        modifiedInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
+            .it('should dirty check projected views if the declaration place is dirty checked',
+                () => {
+                  ctx.detectChanges(false);
+                  log = [];
+                  innerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
+                  expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
 
-          log = [];
-          outerComp.cdRef.detectChanges();
+                  log = [];
+                  outerComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['outer-start', 'outer-tpl']);
+                  expect(log).toEqual(['outer-start', 'outer-tpl']);
 
-          log = [];
-          outerComp.cdRef.detach();
-          mainComp.cdRef.detectChanges();
+                  log = [];
+                  outerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['main-start', 'main-tpl']);
-        });
+                  expect(log).toEqual(['main-start', 'main-tpl']);
+                });
+
+        onlyInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
+            .it('should not dirty check views that are inserted into a detached tree, even if the declaration place is dirty checked',
+                () => {
+                  ctx.detectChanges(false);
+                  log = [];
+                  innerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start', 'outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start']);
+                });
       });
     });
 
@@ -1448,13 +1529,7 @@ export function main() {
         }
 
         const ctx =
-            TestBed
-                .configureCompiler({
-                  providers:
-                      [{provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry}]
-                })
-                .configureTestingModule({declarations: [Comp, SomeDir]})
-                .createComponent(Comp);
+            TestBed.configureTestingModule({declarations: [Comp, SomeDir]}).createComponent(Comp);
 
         ctx.detectChanges();
 
@@ -1463,8 +1538,154 @@ export function main() {
         expect(divEl.nativeElement).toHaveCssClass('foo');
       });
     });
+
+    describe('lifecycle asserts', () => {
+      let logged: string[];
+
+      function log(value: string) { logged.push(value); }
+      function clearLog() { logged = []; }
+
+      function expectOnceAndOnlyOnce(log: string) {
+        expect(logged.indexOf(log) >= 0)
+            .toBeTruthy(`'${log}' not logged. Log was ${JSON.stringify(logged)}`);
+        expect(logged.lastIndexOf(log) === logged.indexOf(log))
+            .toBeTruthy(`'${log}' logged more than once. Log was ${JSON.stringify(logged)}`);
+      }
+
+      beforeEach(() => { clearLog(); });
+
+      enum LifetimeMethods {
+        None = 0,
+        ngOnInit = 1 << 0,
+        ngOnChanges = 1 << 1,
+        ngAfterViewInit = 1 << 2,
+        ngAfterContentInit = 1 << 3,
+        ngDoCheck = 1 << 4,
+        InitMethods = ngOnInit | ngAfterViewInit | ngAfterContentInit,
+        InitMethodsAndChanges = InitMethods | ngOnChanges,
+        All = InitMethodsAndChanges | ngDoCheck,
+      }
+
+      function forEachMethod(methods: LifetimeMethods, cb: (method: LifetimeMethods) => void) {
+        if (methods & LifetimeMethods.ngOnInit) cb(LifetimeMethods.ngOnInit);
+        if (methods & LifetimeMethods.ngOnChanges) cb(LifetimeMethods.ngOnChanges);
+        if (methods & LifetimeMethods.ngAfterContentInit) cb(LifetimeMethods.ngAfterContentInit);
+        if (methods & LifetimeMethods.ngAfterViewInit) cb(LifetimeMethods.ngAfterViewInit);
+        if (methods & LifetimeMethods.ngDoCheck) cb(LifetimeMethods.ngDoCheck);
+      }
+
+      interface Options {
+        childRecursion: LifetimeMethods;
+        childThrows: LifetimeMethods;
+      }
+
+      describe('calling init', () => {
+        function initialize(options: Options) {
+          @Component({selector: 'my-child', template: ''})
+          class MyChild {
+            private thrown = LifetimeMethods.None;
+
+            // TODO(issue/24571): remove '!'.
+            @Input() inp !: boolean;
+            @Output() outp = new EventEmitter<any>();
+
+            constructor() {}
+
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngOnChanges() { this.check(LifetimeMethods.ngOnChanges); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+
+            private check(method: LifetimeMethods) {
+              log(`MyChild::${LifetimeMethods[method]}()`);
+
+              if ((options.childRecursion & method) !== 0) {
+                if (logged.length < 20) {
+                  this.outp.emit(null);
+                } else {
+                  fail(`Unexpected MyChild::${LifetimeMethods[method]} recursion`);
+                }
+              }
+              if ((options.childThrows & method) !== 0) {
+                if ((this.thrown & method) === 0) {
+                  this.thrown |= method;
+                  log(`<THROW from MyChild::${LifetimeMethods[method]}>()`);
+                  throw new Error(`Throw from MyChild::${LifetimeMethods[method]}`);
+                }
+              }
+            }
+          }
+
+          @Component({
+            selector: 'my-component',
+            template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`
+          })
+          class MyComponent {
+            constructor(private changeDetectionRef: ChangeDetectorRef) {}
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+            onOutp() {
+              log('<RECURSION START>');
+              this.changeDetectionRef.detectChanges();
+              log('<RECURSION DONE>');
+            }
+
+            private check(method: LifetimeMethods) {
+              log(`MyComponent::${LifetimeMethods[method]}()`);
+            }
+          }
+
+          TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
+
+          return createCompFixture(`<my-component></my-component>`);
+        }
+
+        function ensureOneInit(options: Options) {
+          const ctx = initialize(options);
+
+
+          const throws = options.childThrows != LifetimeMethods.None;
+          if (throws) {
+            log(`<CYCLE 0 START>`);
+            expect(() => {
+              // Expect child to throw.
+              ctx.detectChanges();
+            }).toThrow();
+            log(`<CYCLE 0 END>`);
+            log(`<CYCLE 1 START>`);
+          }
+          ctx.detectChanges();
+          if (throws) log(`<CYCLE 1 DONE>`);
+          expectOnceAndOnlyOnce('MyComponent::ngOnInit()');
+          expectOnceAndOnlyOnce('MyChild::ngOnInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterContentInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterContentInit()');
+        }
+
+        forEachMethod(LifetimeMethods.InitMethodsAndChanges, method => {
+          it(`should ensure that init hooks are called once an only once with recursion in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               ensureOneInit({childRecursion: method, childThrows: LifetimeMethods.None});
+             });
+        });
+        forEachMethod(LifetimeMethods.All, method => {
+          it(`should ensure that init hooks are called once an only once with a throw in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               // the first cycle throws but the next cycle should complete the inits.
+               ensureOneInit({childRecursion: LifetimeMethods.None, childThrows: method});
+             });
+        });
+      });
+    });
   });
-}
+})();
 
 @Injectable()
 class RenderLog {
@@ -1641,13 +1862,16 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  changes: SimpleChanges;
+  // TODO(issue/24571): remove '!'.
+  changes !: SimpleChanges;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
-  @Input('testDirective') name: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('testDirective') name !: string;
 
-  @Input() throwOn: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() throwOn !: string;
 
   constructor(public log: DirectiveLog) {}
 
@@ -1723,7 +1947,8 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({selector: '[orderCheck0]'})
 class OrderCheckDirective0 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck0')
   set name(value: string) {
@@ -1736,7 +1961,8 @@ class OrderCheckDirective0 {
 
 @Directive({selector: '[orderCheck1]'})
 class OrderCheckDirective1 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck1')
   set name(value: string) {
@@ -1749,7 +1975,8 @@ class OrderCheckDirective1 {
 
 @Directive({selector: '[orderCheck2]'})
 class OrderCheckDirective2 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck2')
   set name(value: string) {
@@ -1771,12 +1998,15 @@ class TestLocals {
   }
 }
 
-@Component({selector: 'root', template: 'emtpy'})
+@Component({selector: 'root', template: 'empty'})
 class Person {
-  age: number;
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  age !: number;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   address: Address|null = null;
-  phones: number[];
+  // TODO(issue/24571): remove '!'.
+  phones !: number[];
 
   init(name: string, address: Address|null = null) {
     this.name = name;
@@ -1824,18 +2054,21 @@ class Uninitialized {
 
 @Component({selector: 'root', template: 'empty'})
 class TestData {
-  public a: any;
+  a: any;
+  b: any;
 }
 
 @Component({selector: 'root', template: 'empty'})
 class TestDataWithGetter {
-  public fn: Function;
+  // TODO(issue/24571): remove '!'.
+  public fn !: Function;
 
   get a() { return this.fn(); }
 }
 
 class Holder<T> {
-  value: T;
+  // TODO(issue/24571): remove '!'.
+  value !: T;
 }
 
 @Component({selector: 'root', template: 'empty'})

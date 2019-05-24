@@ -8,14 +8,14 @@ import { Component }      from '@angular/core';
     <h3>Agree: {{agreed}}, Disagree: {{disagreed}}</h3>
     <app-voter *ngFor="let voter of voters"
       [name]="voter"
-      (onVoted)="onVoted($event)">
+      (voted)="onVoted($event)">
     </app-voter>
   `
 })
 export class VoteTakerComponent {
   agreed = 0;
   disagreed = 0;
-  voters = ['Mr. IQ', 'Ms. Universe', 'Bombasto'];
+  voters = ['Narco', 'Celeritas', 'Bombasto'];
 
   onVoted(agreed: boolean) {
     agreed ? this.agreed++ : this.disagreed++;

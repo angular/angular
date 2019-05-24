@@ -9,7 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-export function main() {
+(function() {
   describe('lifecycle hooks examples', () => {
     it('should work with ngOnInit', () => {
       // #docregion OnInit
@@ -106,8 +106,9 @@ export function main() {
       // #docregion OnChanges
       @Component({selector: 'my-cmp', template: `...`})
       class MyComponent implements OnChanges {
+        // TODO(issue/24571): remove '!'.
         @Input()
-        prop: number;
+        prop !: number;
 
         ngOnChanges(changes: SimpleChanges) {
           // changes.prop contains the old and the new value...
@@ -147,4 +148,4 @@ export function main() {
       proto[method] = (...args: any[]) => { log.push([method, args]); };
     });
   }
-}
+})();

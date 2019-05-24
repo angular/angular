@@ -7,54 +7,51 @@
 */
 
 import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, OnDestroy} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
-import {from} from 'rxjs/observable/from';
-import {of } from 'rxjs/observable/of';
-import {_catch} from 'rxjs/operator/catch';
-import {concatMap} from 'rxjs/operator/concatMap';
-import {filter} from 'rxjs/operator/filter';
-import {mergeAll} from 'rxjs/operator/mergeAll';
-import {mergeMap} from 'rxjs/operator/mergeMap';
+import {Observable, Subscription, from, of } from 'rxjs';
+import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
+
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 
+
 /**
- * @whatItDoes Provides a preloading strategy.
+ * @description
  *
- * @experimental
+ * Provides a preloading strategy.
+ *
+ * @publicApi
  */
 export abstract class PreloadingStrategy {
   abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
 
 /**
- * @whatItDoes Provides a preloading strategy that preloads all modules as quickly as possible.
+ * @description
  *
- * @howToUse
+ * Provides a preloading strategy that preloads all modules as quickly as possible.
  *
  * ```
  * RouteModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
-    return _catch.call(fn(), () => of (null));
+    return fn().pipe(catchError(() => of (null)));
   }
 }
 
 /**
- * @whatItDoes Provides a preloading strategy that does not preload any modules.
- *
  * @description
+ *
+ * Provides a preloading strategy that does not preload any modules.
  *
  * This strategy is enabled by default.
  *
- * @experimental
+ * @publicApi
  */
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
@@ -70,12 +67,13 @@ export class NoPreloading implements PreloadingStrategy {
  *
  * If a route is protected by `canLoad` guards, the preloaded will not load it.
  *
- * @stable
+ * @publicApi
  */
 @Injectable()
 export class RouterPreloader implements OnDestroy {
   private loader: RouterConfigLoader;
-  private subscription: Subscription;
+  // TODO(issue/24571): remove '!'.
+  private subscription !: Subscription;
 
   constructor(
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
@@ -87,8 +85,10 @@ export class RouterPreloader implements OnDestroy {
   }
 
   setUpPreloading(): void {
-    const navigations$ = filter.call(this.router.events, (e: Event) => e instanceof NavigationEnd);
-    this.subscription = concatMap.call(navigations$, () => this.preload()).subscribe(() => {});
+    this.subscription =
+        this.router.events
+            .pipe(filter((e: Event) => e instanceof NavigationEnd), concatMap(() => this.preload()))
+            .subscribe(() => {});
   }
 
   preload(): Observable<any> {
@@ -118,16 +118,16 @@ export class RouterPreloader implements OnDestroy {
         res.push(this.processRoutes(ngModule, route.children));
       }
     }
-    return mergeAll.call(from(res));
+    return from(res).pipe(mergeAll(), map((_) => void 0));
   }
 
   private preloadConfig(ngModule: NgModuleRef<any>, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
       const loaded$ = this.loader.load(ngModule.injector, route);
-      return mergeMap.call(loaded$, (config: LoadedRouterConfig) => {
+      return loaded$.pipe(mergeMap((config: LoadedRouterConfig) => {
         route._loadedConfig = config;
         return this.processRoutes(config.module, config.routes);
-      });
+      }));
     });
   }
 }

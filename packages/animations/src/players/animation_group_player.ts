@@ -9,6 +9,14 @@
 import {scheduleMicroTask} from '../util';
 import {AnimationPlayer} from './animation_player';
 
+/**
+ * A programmatic controller for a group of reusable animations.
+ * Used internally to control animations.
+ *
+ * @see `AnimationPlayer`
+ * @see `{@link animations/group group()}`
+ *
+ */
 export class AnimationGroupPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
@@ -32,19 +40,18 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       scheduleMicroTask(() => this._onFinish());
     } else {
       this.players.forEach(player => {
-        player.parentPlayer = this;
         player.onDone(() => {
-          if (++doneCount >= total) {
+          if (++doneCount == total) {
             this._onFinish();
           }
         });
         player.onDestroy(() => {
-          if (++destroyCount >= total) {
+          if (++destroyCount == total) {
             this._onDestroy();
           }
         });
         player.onStart(() => {
-          if (++startCount >= total) {
+          if (++startCount == total) {
             this._onStart();
           }
         });
@@ -68,9 +75,9 @@ export class AnimationGroupPlayer implements AnimationPlayer {
 
   private _onStart() {
     if (!this.hasStarted()) {
+      this._started = true;
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
-      this._started = true;
     }
   }
 
@@ -139,5 +146,12 @@ export class AnimationGroupPlayer implements AnimationPlayer {
         player.beforeDestroy();
       }
     });
+  }
+
+  /** @internal */
+  triggerCallback(phaseName: string): void {
+    const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
+    methods.forEach(fn => fn());
+    methods.length = 0;
   }
 }

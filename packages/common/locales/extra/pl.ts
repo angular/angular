@@ -9,14 +9,20 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['o półn.', 'w poł.', 'rano', 'przed poł.', 'po poł.', 'wiecz.', 'w nocy'],
-    ['o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem', 'w nocy'],
+    [
+      'o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem',
+      'w nocy'
+    ],
+    u
   ],
   [
     ['półn.', 'poł.', 'rano', 'przedpoł.', 'popoł.', 'wiecz.', 'noc'],
-    ['północ', 'południe', 'rano', 'przedpołudnie', 'popołudnie', 'wieczór', 'noc'],
+    ['północ', 'południe', 'rano', 'przedpołudnie', 'popołudnie', 'wieczór', 'noc'], u
   ],
   [
     '00:00', '12:00', ['06:00', '10:00'], ['10:00', '12:00'], ['12:00', '18:00'],

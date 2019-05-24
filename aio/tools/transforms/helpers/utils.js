@@ -96,5 +96,19 @@ module.exports = {
       attrMap[key] === false ? '' :
       attrMap[key] === true ? ` ${key}` :
       ` ${key}="${attrMap[key].replace(/"/g, '&quot;')}"`).join('');
-  }
+  },
+
+  /**
+   * Merge the specified properties from the source to the target document
+   * @param {Document} target The document to receive the properties from the source
+   * @param {Document} source The document from which to get the properties to merge
+   * @param {string[]} properties A collection of the names of the properties to merge
+   */
+  mergeProperties(target, source, properties) {
+    properties.forEach(property => {
+      if (source.hasOwnProperty(property)) {
+        target[property] = source[property];
+      }
+    });
+  },
 };

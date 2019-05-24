@@ -1,23 +1,12 @@
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
-
-import {NgZone, Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-
-export interface WebWorkerMessage {
-  type: string;
-  payload: any;
-  id?: number;
-}
+import {NgZone} from '@angular/core';
+import {Observable} from 'rxjs';
+import {WebWorkerMessage} from './web-worker-message';
 
 export class WebWorkerClient {
   private nextId = 0;
 
-  static create(workerUrl: string, zone: NgZone) {
-    return new WebWorkerClient(new Worker(workerUrl), zone);
+  static create(worker: Worker, zone: NgZone) {
+    return new WebWorkerClient(worker, zone);
   }
 
   private constructor(private worker: Worker, private zone: NgZone) {

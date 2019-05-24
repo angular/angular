@@ -9,18 +9,18 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
-  'lb',
+  'lb', [['mo.', 'nomë.'], ['moies', 'nomëttes'], u], [['moies', 'nomëttes'], u, u],
   [
-    ['mo.', 'nomë.'],
-    ['moies', 'nomëttes'],
-  ],
-  [
-    ['moies', 'nomëttes'],
-    ,
-  ],
-  [
-    ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['Son.', 'Méi.', 'Dën.', 'Mët.', 'Don.', 'Fre.', 'Sam.'],
+    ['S', 'M', 'D', 'M', 'D', 'F', 'S'],
+    ['Son.', 'Méi.', 'Dën.', 'Mët.', 'Don.', 'Fre.', 'Sam.'],
     ['Sonndeg', 'Méindeg', 'Dënschdeg', 'Mëttwoch', 'Donneschdeg', 'Freideg', 'Samschdeg'],
     ['So.', 'Mé.', 'Dë.', 'Më.', 'Do.', 'Fr.', 'Sa.']
   ],
@@ -31,7 +31,9 @@ export default [
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-    ['Jan.', 'Feb.', 'Mäe.', 'Abr.', 'Mee', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'],
+    [
+      'Jan.', 'Feb.', 'Mäe.', 'Abr.', 'Mee', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'
+    ],
     [
       'Januar', 'Februar', 'Mäerz', 'Abrëll', 'Mee', 'Juni', 'Juli', 'August', 'September',
       'Oktober', 'November', 'Dezember'
@@ -45,21 +47,10 @@ export default [
       'Oktober', 'November', 'Dezember'
     ]
   ],
-  [
-    ['v. Chr.', 'n. Chr.'],
-    ,
-  ],
-  1, [6, 0], ['dd.MM.yy', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
+  ['dd.MM.yy', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
+  {'ATS': ['öS'], 'AUD': ['AU$', '$'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
 ];

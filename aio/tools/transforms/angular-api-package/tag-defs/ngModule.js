@@ -1,3 +1,7 @@
 module.exports = function() {
-  return {name: 'ngModule'};
+  return {
+    name: 'ngModule',
+    docProperty: 'ngModules',
+    multi: true,
+  };
 };

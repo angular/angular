@@ -14,6 +14,7 @@ import {Console} from '../util';
 import * as i18n from './i18n_ast';
 import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
+import {escapeXml} from './serializers/xml_helper';
 
 
 /**
@@ -59,10 +60,12 @@ export class TranslationBundle {
 }
 
 class I18nToHtmlVisitor implements i18n.Visitor {
-  private _srcMsg: i18n.Message;
+  // TODO(issue/24571): remove '!'.
+  private _srcMsg !: i18n.Message;
   private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
   private _errors: I18nError[] = [];
-  private _mapper: (name: string) => string;
+  // TODO(issue/24571): remove '!'.
+  private _mapper !: (name: string) => string;
 
   constructor(
       private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, private _locale: string|null,
@@ -80,7 +83,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
 
     // text to html
     const url = srcMsg.nodes[0].sourceSpan.start.file.url;
-    const html = new HtmlParser().parse(text, url, true);
+    const html = new HtmlParser().parse(text, url, {tokenizeExpansionForms: true});
 
     return {
       nodes: html.rootNodes,
@@ -88,7 +91,11 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     };
   }
 
-  visitText(text: i18n.Text, context?: any): string { return text.value; }
+  visitText(text: i18n.Text, context?: any): string {
+    // `convert()` uses an `HtmlParser` to return `html.Node`s
+    // we should then make sure that any special characters are escaped
+    return escapeXml(text.value);
+  }
 
   visitContainer(container: i18n.Container, context?: any): any {
     return container.children.map(n => n.visit(this)).join('');

@@ -8,7 +8,7 @@
 
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
 
-export function main() {
+{
   describe('RenderStoreSpec', () => {
     let store: RenderStore;
     beforeEach(() => { store = new RenderStore(); });

@@ -8,7 +8,7 @@
 
 import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from '@angular/core';
 
-export function main() {
+{
   describe('Provider examples', () => {
     describe('TypeProvider', () => {
       it('works', () => {
@@ -55,7 +55,9 @@ export function main() {
     describe('ClassProvider', () => {
       it('works', () => {
         // #docregion ClassProvider
-        abstract class Shape { name: string; }
+        abstract class Shape {  // TODO(issue/24571): remove '!'.
+          name !: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -92,7 +94,9 @@ export function main() {
     describe('StaticClassProvider', () => {
       it('works', () => {
         // #docregion StaticClassProvider
-        abstract class Shape { name: string; }
+        abstract class Shape {  // TODO(issue/24571): remove '!'.
+          name !: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -135,7 +139,7 @@ export function main() {
           name = 'square';
         }
 
-        const injector = Injector.create([{provide: Square, deps: []}]);
+        const injector = Injector.create({providers: [{provide: Square, deps: []}]});
 
         const shape: Square = injector.get(Square);
         expect(shape.name).toEqual('square');

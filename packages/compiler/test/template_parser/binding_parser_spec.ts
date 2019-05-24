@@ -12,7 +12,7 @@ import {inject} from '@angular/core/testing';
 import {ElementSchemaRegistry} from '../../src/schema/element_schema_registry';
 import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_parser';
 
-export function main() {
+{
   describe('BindingParser', () => {
     let registry: ElementSchemaRegistry;
 

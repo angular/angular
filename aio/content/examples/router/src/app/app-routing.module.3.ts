@@ -3,8 +3,10 @@
 import { NgModule }                from '@angular/core';
 import { RouterModule, Routes }    from '@angular/router';
 
-import { ComposeMessageComponent } from './compose-message.component';
-import { PageNotFoundComponent }   from './not-found.component';
+// #enddocregion v3
+import { ComposeMessageComponent } from './compose-message/compose-message.component';
+// #docregion v3
+import { PageNotFoundComponent }  from './page-not-found/page-not-found.component';
 
 const appRoutes: Routes = [
 // #enddocregion v3

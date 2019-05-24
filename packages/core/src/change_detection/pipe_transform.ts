@@ -12,11 +12,8 @@
  * Angular invokes the `transform` method with the value of a binding
  * as the first argument, and any parameters as the second argument in list form.
  *
- * ## Syntax
- *
- * `value | pipeName[:arg0[:arg1...]]`
- *
- * ### Example ([live demo](http://plnkr.co/edit/f5oyIked9M2cKzvZNKHV?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * The `RepeatPipe` below repeats the value as many times as indicated by the first argument:
  *
@@ -33,6 +30,6 @@
  *
  * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
  *
- * @stable
+ * @publicApi
  */
 export interface PipeTransform { transform(value: any, ...args: any[]): any; }

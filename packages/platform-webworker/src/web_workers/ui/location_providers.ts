@@ -21,7 +21,8 @@ import {MessageBasedPlatformLocation} from './platform_location';
 /**
  * A list of {@link Provider}s. To use the router in a Worker enabled application you must
  * include these providers when setting up the render thread.
- * @experimental
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_UI_LOCATION_PROVIDERS = <StaticProvider[]>[
   {provide: MessageBasedPlatformLocation, deps: [ServiceMessageBrokerFactory,
@@ -32,7 +33,7 @@ export const WORKER_UI_LOCATION_PROVIDERS = <StaticProvider[]>[
 
 function initUiLocation(injector: Injector): () => void {
   return () => {
-    const zone = injector.get(NgZone);
+    const zone = injector.get<NgZone>(NgZone);
 
     zone.runGuarded(() => injector.get(MessageBasedPlatformLocation).start());
   };

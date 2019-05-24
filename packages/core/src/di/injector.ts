@@ -6,58 +6,56 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
+import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, ɵɵinject} from './injector_compatibility';
+import {ɵɵdefineInjectable} from './interface/defs';
+import {InjectFlags} from './interface/injector';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
+import {createInjector} from './r3_injector';
 
-const _THROW_IF_NOT_FOUND = new Object();
-export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-
-class _NullInjector implements Injector {
-  get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
-    if (notFoundValue === _THROW_IF_NOT_FOUND) {
-      throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
-    }
-    return notFoundValue;
-  }
+export function INJECTOR_IMPL__PRE_R3__(
+    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  return new StaticInjector(providers, parent, name);
 }
 
+export function INJECTOR_IMPL__POST_R3__(
+    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  return createInjector({name: name}, parent, providers, name);
+}
+
+export const INJECTOR_IMPL = INJECTOR_IMPL__PRE_R3__;
+
 /**
- * @whatItDoes Injector interface
- * @howToUse
- * ```
- * const injector: Injector = ...;
- * injector.get(...);
- * ```
+ * Concrete injectors implement this interface.
  *
- * @description
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
+ * @usageNotes
  * ### Example
  *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
  * `Injector` returns itself when given `Injector` as a token:
+ *
  * {@example core/di/ts/injector_spec.ts region='injectInjector'}
  *
- * @stable
+ * @publicApi
  */
 export abstract class Injector {
-  static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-  static NULL: Injector = new _NullInjector();
+  static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
+  static NULL: Injector = new NullInjector();
 
   /**
    * Retrieves an instance from the injector based on the provided token.
-   * If not found:
-   * - Throws an error if no `notFoundValue` that is not equal to
-   * Injector.THROW_IF_NOT_FOUND is given
-   * - Returns the `notFoundValue` otherwise
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
@@ -65,15 +63,41 @@ export abstract class Injector {
   abstract get(token: any, notFoundValue?: any): any;
 
   /**
+   * @deprecated from v5 use the new signature Injector.create(options)
+   */
+  static create(providers: StaticProvider[], parent?: Injector): Injector;
+
+  static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
+
+  /**
    * Create a new Injector which is configure using `StaticProvider`s.
    *
+   * @usageNotes
    * ### Example
    *
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
    */
-  static create(providers: StaticProvider[], parent?: Injector): Injector {
-    return new StaticInjector(providers, parent);
+  static create(
+      options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
+      parent?: Injector): Injector {
+    if (Array.isArray(options)) {
+      return INJECTOR_IMPL(options, parent, '');
+    } else {
+      return INJECTOR_IMPL(options.providers, options.parent, options.name || '');
+    }
   }
+
+  /** @nocollapse */
+  static ngInjectableDef = ɵɵdefineInjectable({
+    providedIn: 'any' as any,
+    factory: () => ɵɵinject(INJECTOR),
+  });
+
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__ = -1;
 }
 
 
@@ -86,46 +110,41 @@ const CIRCULAR = IDENT;
 const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
-const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: GET_PROPERTY_NAME});
-const NG_TOKEN_PATH = 'ngTokenPath';
-const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
+
 const enum OptionFlags {
   Optional = 1 << 0,
   CheckSelf = 1 << 1,
   CheckParent = 1 << 2,
   Default = CheckSelf | CheckParent
 }
-const NULL_INJECTOR = Injector.NULL;
-const NEW_LINE = /\n/gm;
 const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
   readonly parent: Injector;
+  readonly source: string|null;
 
   private _records: Map<any, Record>;
 
-  constructor(providers: StaticProvider[], parent: Injector = NULL_INJECTOR) {
+  constructor(
+      providers: StaticProvider[], parent: Injector = Injector.NULL, source: string|null = null) {
     this.parent = parent;
+    this.source = source;
     const records = this._records = new Map<any, Record>();
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
+    records.set(
+        INJECTOR, <Record>{token: INJECTOR, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
-  get(token: any, notFoundValue?: any): any {
+  get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const record = this._records.get(token);
     try {
-      return tryResolveToken(token, record, this._records, this.parent, notFoundValue);
+      return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);
     } catch (e) {
-      const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-      e.message = formatError('\n' + e.message, tokenPath);
-      e[NG_TOKEN_PATH] = tokenPath;
-      e[NG_TEMP_TOKEN_PATH] = null;
-      throw e;
+      return catchInjectorError(e, token, 'StaticInjectorError', this.source);
     }
   }
 
@@ -150,8 +169,6 @@ interface DependencyRecord {
   token: any;
   options: number;
 }
-
-type TokenPath = Array<any>;
 
 function resolveProvider(provider: SupportedProvider): Record {
   const deps = computeDeps(provider);
@@ -234,9 +251,9 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 
 function tryResolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, flags: InjectFlags): any {
   try {
-    return resolveToken(token, record, records, parent, notFoundValue);
+    return resolveToken(token, record, records, parent, notFoundValue, flags);
   } catch (e) {
     // ensure that 'e' is of type Error.
     if (!(e instanceof Error)) {
@@ -254,9 +271,9 @@ function tryResolveToken(
 
 function resolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, flags: InjectFlags): any {
   let value;
-  if (record) {
+  if (record && !(flags & InjectFlags.SkipSelf)) {
     // If we don't have a record, this implies that we don't own the provider hence don't know how
     // to resolve it.
     value = record.value;
@@ -286,18 +303,18 @@ function resolveToken(
               records,
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
-              !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
-              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND));
+              !childRecord && !(options & OptionFlags.CheckParent) ? Injector.NULL : parent,
+              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
+              InjectFlags.Default));
         }
       }
       record.value = value = useNew ? new (fn as any)(...deps) : fn.apply(obj, deps);
     }
-  } else {
-    value = parent.get(token, notFoundValue);
+  } else if (!(flags & InjectFlags.Self)) {
+    value = parent.get(token, notFoundValue, InjectFlags.Default);
   }
   return value;
 }
-
 
 function computeDeps(provider: StaticProvider): DependencyRecord[] {
   let deps: DependencyRecord[] = EMPTY;
@@ -336,34 +353,6 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
   return deps;
 }
 
-function formatError(text: string, obj: any): string {
-  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
-  let context = stringify(obj);
-  if (obj instanceof Array) {
-    context = obj.map(stringify).join(' -> ');
-  } else if (typeof obj === 'object') {
-    let parts = <string[]>[];
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        let value = obj[key];
-        parts.push(
-            key + ':' + (typeof value === 'string' ? JSON.stringify(value) : stringify(value)));
-      }
-    }
-    context = `{${parts.join(', ')}}`;
-  }
-  return `StaticInjectorError[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
-}
-
 function staticError(text: string, obj: any): Error {
-  return new Error(formatError(text, obj));
-}
-
-function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
-  for (let key in objWithPropertyToExtract) {
-    if (objWithPropertyToExtract[key] === GET_PROPERTY_NAME) {
-      return key;
-    }
-  }
-  throw Error('!prop');
+  return new Error(formatError(text, obj, 'StaticInjectorError'));
 }

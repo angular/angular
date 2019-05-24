@@ -9,7 +9,7 @@
 import {AstPath} from '../ast_path';
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {AST} from '../expression_parser/ast';
+import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedVariable} from '../expression_parser/ast';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -58,12 +58,33 @@ export class AttrAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
+export const enum PropertyBindingType {
+  // A normal binding to a property (e.g. `[property]="expression"`).
+  Property,
+  // A binding to an element attribute (e.g. `[attr.name]="expression"`).
+  Attribute,
+  // A binding to a CSS class (e.g. `[class.name]="condition"`).
+  Class,
+  // A binding to a style rule (e.g. `[style.rule]="expression"`).
+  Style,
+  // A binding to an animation reference (e.g. `[animate.key]="expression"`).
+  Animation,
+}
+
+const BoundPropertyMapping = {
+  [BindingType.Animation]: PropertyBindingType.Animation,
+  [BindingType.Attribute]: PropertyBindingType.Attribute,
+  [BindingType.Class]: PropertyBindingType.Class,
+  [BindingType.Property]: PropertyBindingType.Property,
+  [BindingType.Style]: PropertyBindingType.Style,
+};
+
 /**
  * A binding for an element property (e.g. `[property]="expression"`) or an animation trigger (e.g.
  * `[@trigger]="stateExp"`)
  */
 export class BoundElementPropertyAst implements TemplateAst {
-  public readonly isAnimation: boolean;
+  readonly isAnimation: boolean;
 
   constructor(
       public name: string, public type: PropertyBindingType,
@@ -71,6 +92,13 @@ export class BoundElementPropertyAst implements TemplateAst {
       public sourceSpan: ParseSourceSpan) {
     this.isAnimation = this.type === PropertyBindingType.Animation;
   }
+
+  static fromBoundProperty(prop: BoundElementProperty) {
+    const type = BoundPropertyMapping[prop.type];
+    return new BoundElementPropertyAst(
+        prop.name, type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan);
+  }
+
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }
@@ -81,25 +109,36 @@ export class BoundElementPropertyAst implements TemplateAst {
  * `(@trigger.phase)="callback($event)"`).
  */
 export class BoundEventAst implements TemplateAst {
-  static calcFullName(name: string, target: string|null, phase: string|null): string {
-    if (target) {
-      return `${target}:${name}`;
-    } else if (phase) {
-      return `@${name}.${phase}`;
-    } else {
-      return name;
-    }
-  }
-
-  public readonly fullName: string;
-  public readonly isAnimation: boolean;
+  readonly fullName: string;
+  readonly isAnimation: boolean;
 
   constructor(
       public name: string, public target: string|null, public phase: string|null,
-      public handler: AST, public sourceSpan: ParseSourceSpan) {
+      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {
     this.fullName = BoundEventAst.calcFullName(this.name, this.target, this.phase);
     this.isAnimation = !!this.phase;
   }
+
+  static calcFullName(name: string, target: string|null, phase: string|null): string {
+    if (target) {
+      return `${target}:${name}`;
+    }
+    if (phase) {
+      return `@${name}.${phase}`;
+    }
+
+    return name;
+  }
+
+  static fromParsedEvent(event: ParsedEvent) {
+    const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
+    const phase: string|null =
+        event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+    return new BoundEventAst(
+        event.name, target, phase, event.handler, event.sourceSpan, event.handlerSpan);
+  }
+
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
@@ -110,8 +149,8 @@ export class BoundEventAst implements TemplateAst {
  */
 export class ReferenceAst implements TemplateAst {
   constructor(
-      public name: string, public value: CompileTokenMetadata, public sourceSpan: ParseSourceSpan) {
-  }
+      public name: string, public value: CompileTokenMetadata, public originalValue: string,
+      public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitReference(this, context);
   }
@@ -122,6 +161,11 @@ export class ReferenceAst implements TemplateAst {
  */
 export class VariableAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+
+  static fromParsedVariable(v: ParsedVariable) {
+    return new VariableAst(v.name, v.value, v.sourceSpan);
+  }
+
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitVariable(this, context);
   }
@@ -192,7 +236,8 @@ export class ProviderAst implements TemplateAst {
   constructor(
       public token: CompileTokenMetadata, public multiProvider: boolean, public eager: boolean,
       public providers: CompileProviderMetadata[], public providerType: ProviderAstType,
-      public lifecycleHooks: LifecycleHooks[], public sourceSpan: ParseSourceSpan) {}
+      public lifecycleHooks: LifecycleHooks[], public sourceSpan: ParseSourceSpan,
+      readonly isModule: boolean) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     // No visit method in the visitor for now...
@@ -217,37 +262,6 @@ export class NgContentAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }
-}
-
-/**
- * Enumeration of types of property bindings.
- */
-export enum PropertyBindingType {
-
-  /**
-   * A normal binding to a property (e.g. `[property]="expression"`).
-   */
-  Property,
-
-  /**
-   * A binding to an element attribute (e.g. `[attr.name]="expression"`).
-   */
-  Attribute,
-
-  /**
-   * A binding to a CSS class (e.g. `[class.name]="condition"`).
-   */
-  Class,
-
-  /**
-   * A binding to a style rule (e.g. `[style.rule]="expression"`).
-   */
-  Style,
-
-  /**
-   * A binding to an animation reference (e.g. `[animate.key]="expression"`).
-   */
-  Animation
 }
 
 export interface QueryMatch {

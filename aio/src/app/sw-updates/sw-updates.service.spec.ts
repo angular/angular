@@ -1,38 +1,41 @@
-import { ReflectiveInjector } from '@angular/core';
-import { fakeAsync, tick } from '@angular/core/testing';
-import { NgServiceWorker } from '@angular/service-worker';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/take';
+import { ApplicationRef, ReflectiveInjector } from '@angular/core';
+import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
+import { SwUpdate } from '@angular/service-worker';
+import { Subject } from 'rxjs';
 
 import { Logger } from 'app/shared/logger.service';
 import { SwUpdatesService } from './sw-updates.service';
 
+
 describe('SwUpdatesService', () => {
   let injector: ReflectiveInjector;
+  let appRef: MockApplicationRef;
   let service: SwUpdatesService;
-  let sw: MockNgServiceWorker;
+  let swu: MockSwUpdate;
   let checkInterval: number;
 
   // Helpers
   // NOTE:
-  //   Because `SwUpdatesService` uses the `debounceTime` operator, it needs to be instantiated
-  //   inside the `fakeAsync` zone (when `fakeAsync` is used for the test). Thus, we can't run
-  //   `setup()` in a `beforeEach()` block. We use the `run()` helper to call `setup()` inside each
-  //   test's zone.
-  const setup = () => {
+  //   Because `SwUpdatesService` uses the `interval` operator, it needs to be instantiated and
+  //   destroyed inside the `fakeAsync` zone (when `fakeAsync` is used for the test). Thus, we can't
+  //   run `setup()`/`tearDown()` in `beforeEach()`/`afterEach()` blocks. We use the `run()` helper
+  //   to call them inside each test's zone.
+  const setup = (isSwUpdateEnabled: boolean) => {
     injector = ReflectiveInjector.resolveAndCreate([
+      { provide: ApplicationRef, useClass: MockApplicationRef },
       { provide: Logger, useClass: MockLogger },
-      { provide: NgServiceWorker, useClass: MockNgServiceWorker },
+      { provide: SwUpdate, useFactory: () => new MockSwUpdate(isSwUpdateEnabled) },
       SwUpdatesService
     ]);
 
+    appRef = injector.get(ApplicationRef);
     service = injector.get(SwUpdatesService);
-    sw = injector.get(NgServiceWorker);
+    swu = injector.get(SwUpdate);
     checkInterval = (service as any).checkInterval;
   };
   const tearDown = () => service.ngOnDestroy();
-  const run = specFn => () => {
-    setup();
+  const run = (specFn: VoidFunction, isSwUpdateEnabled = true) => () => {
+    setup(isSwUpdateEnabled);
     specFn();
     tearDown();
   };
@@ -42,98 +45,154 @@ describe('SwUpdatesService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should immediately check for updates when instantiated', run(() => {
-    expect(sw.checkForUpdate).toHaveBeenCalled();
+  it('should start checking for updates when instantiated (once the app stabilizes)', run(() => {
+    expect(swu.checkForUpdate).not.toHaveBeenCalled();
+
+    appRef.isStable.next(false);
+    expect(swu.checkForUpdate).not.toHaveBeenCalled();
+
+    appRef.isStable.next(true);
+    expect(swu.checkForUpdate).toHaveBeenCalled();
   }));
 
-  it('should schedule a new check if there is no update available', fakeAsync(run(() => {
-    sw.checkForUpdate.calls.reset();
-
-    sw.$$checkForUpdateSubj.next(false);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+  it('should periodically check for updates', fakeAsync(run(() => {
+    appRef.isStable.next(true);
+    swu.checkForUpdate.calls.reset();
 
     tick(checkInterval);
-    expect(sw.checkForUpdate).toHaveBeenCalled();
-    expect(sw.activateUpdate).not.toHaveBeenCalled();
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
+
+    tick(checkInterval);
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
+
+    appRef.isStable.next(false);
+
+    tick(checkInterval);
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
+
+    discardPeriodicTasks();
   })));
 
-  it('should activate new updates immediately', fakeAsync(run(() => {
-    sw.checkForUpdate.calls.reset();
+  it('should activate available updates immediately', fakeAsync(run(() => {
+    appRef.isStable.next(true);
+    expect(swu.activateUpdate).not.toHaveBeenCalled();
 
-    sw.$$checkForUpdateSubj.next(true);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
-
-    tick(checkInterval);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
-    expect(sw.activateUpdate).toHaveBeenCalled();
+    swu.$$availableSubj.next({available: {hash: 'foo'}});
+    expect(swu.activateUpdate).toHaveBeenCalled();
   })));
 
-  it('should not pass a specific version to `NgServiceWorker.activateUpdate()`', fakeAsync(run(() => {
-    sw.$$checkForUpdateSubj.next(true);
-    tick(checkInterval);
-
-    expect(sw.activateUpdate).toHaveBeenCalledWith(null);
-  })));
-
-  it('should schedule a new check after activating the update', fakeAsync(run(() => {
-    sw.checkForUpdate.calls.reset();
-    sw.$$checkForUpdateSubj.next(true);
+  it('should keep periodically checking for updates even after one is available/activated', fakeAsync(run(() => {
+    appRef.isStable.next(true);
+    swu.checkForUpdate.calls.reset();
 
     tick(checkInterval);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(1);
 
-    sw.$$activateUpdateSubj.next();
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+    swu.$$availableSubj.next({available: {hash: 'foo'}});
 
     tick(checkInterval);
-    expect(sw.checkForUpdate).toHaveBeenCalled();
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(2);
+
+    tick(checkInterval);
+    expect(swu.checkForUpdate).toHaveBeenCalledTimes(3);
+
+    discardPeriodicTasks();
   })));
 
   it('should emit on `updateActivated` when an update has been activated', run(() => {
-    const activatedVersions: string[] = [];
+    const activatedVersions: (string|undefined)[] = [];
     service.updateActivated.subscribe(v => activatedVersions.push(v));
 
-    sw.$$updatesSubj.next({type: 'pending', version: 'foo'});
-    sw.$$updatesSubj.next({type: 'activation', version: 'bar'});
-    sw.$$updatesSubj.next({type: 'pending', version: 'baz'});
-    sw.$$updatesSubj.next({type: 'activation', version: 'qux'});
+    swu.$$availableSubj.next({available: {hash: 'foo'}});
+    swu.$$activatedSubj.next({current: {hash: 'bar'}});
+    swu.$$availableSubj.next({available: {hash: 'baz'}});
+    swu.$$activatedSubj.next({current: {hash: 'qux'}});
 
     expect(activatedVersions).toEqual(['bar', 'qux']);
   }));
 
-  describe('when destroyed', () => {
-    it('should not schedule a new check for update (after current check)', fakeAsync(run(() => {
-      sw.checkForUpdate.calls.reset();
+  describe('when `SwUpdate` is not enabled', () => {
+    const runDeactivated = (specFn: VoidFunction) => run(specFn, false);
 
-      service.ngOnDestroy();
-      sw.$$checkForUpdateSubj.next(false);
+    it('should not check for updates', fakeAsync(runDeactivated(() => {
+      appRef.isStable.next(true);
+
+      tick(checkInterval);
       tick(checkInterval);
 
-      expect(sw.checkForUpdate).not.toHaveBeenCalled();
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      swu.$$activatedSubj.next({current: {hash: 'bar'}});
+
+      tick(checkInterval);
+      tick(checkInterval);
+
+      expect(swu.checkForUpdate).not.toHaveBeenCalled();
+    })));
+
+    it('should not activate available updates', fakeAsync(runDeactivated(() => {
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      expect(swu.activateUpdate).not.toHaveBeenCalled();
+    })));
+
+    it('should never emit on `updateActivated`', runDeactivated(() => {
+      const activatedVersions: (string|undefined)[] = [];
+      service.updateActivated.subscribe(v => activatedVersions.push(v));
+
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      swu.$$activatedSubj.next({current: {hash: 'bar'}});
+      swu.$$availableSubj.next({available: {hash: 'baz'}});
+      swu.$$activatedSubj.next({current: {hash: 'qux'}});
+
+      expect(activatedVersions).toEqual([]);
+    }));
+  });
+
+  describe('when destroyed', () => {
+    it('should not schedule a new check for update (after current check)', fakeAsync(run(() => {
+      appRef.isStable.next(true);
+      expect(swu.checkForUpdate).toHaveBeenCalled();
+
+      service.ngOnDestroy();
+      swu.checkForUpdate.calls.reset();
+
+      tick(checkInterval);
+      tick(checkInterval);
+
+      expect(swu.checkForUpdate).not.toHaveBeenCalled();
     })));
 
     it('should not schedule a new check for update (after activating an update)', fakeAsync(run(() => {
-      sw.checkForUpdate.calls.reset();
-
-      sw.$$checkForUpdateSubj.next(true);
-      expect(sw.activateUpdate).toHaveBeenCalled();
+      appRef.isStable.next(true);
+      expect(swu.checkForUpdate).toHaveBeenCalled();
 
       service.ngOnDestroy();
-      sw.$$activateUpdateSubj.next();
+      swu.checkForUpdate.calls.reset();
+
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      swu.$$activatedSubj.next({current: {hash: 'baz'}});
+
+      tick(checkInterval);
       tick(checkInterval);
 
-      expect(sw.checkForUpdate).not.toHaveBeenCalled();
+      expect(swu.checkForUpdate).not.toHaveBeenCalled();
+    })));
+
+    it('should not activate available updates', fakeAsync(run(() => {
+      service.ngOnDestroy();
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+
+      expect(swu.activateUpdate).not.toHaveBeenCalled();
     })));
 
     it('should stop emitting on `updateActivated`', run(() => {
-      const activatedVersions: string[] = [];
+      const activatedVersions: (string|undefined)[] = [];
       service.updateActivated.subscribe(v => activatedVersions.push(v));
 
-      sw.$$updatesSubj.next({type: 'pending', version: 'foo'});
-      sw.$$updatesSubj.next({type: 'activation', version: 'bar'});
+      swu.$$availableSubj.next({available: {hash: 'foo'}});
+      swu.$$activatedSubj.next({current: {hash: 'bar'}});
       service.ngOnDestroy();
-      sw.$$updatesSubj.next({type: 'pending', version: 'baz'});
-      sw.$$updatesSubj.next({type: 'activation', version: 'qux'});
+      swu.$$availableSubj.next({available: {hash: 'baz'}});
+      swu.$$activatedSubj.next({current: {hash: 'qux'}});
 
       expect(activatedVersions).toEqual(['bar']);
     }));
@@ -141,20 +200,26 @@ describe('SwUpdatesService', () => {
 });
 
 // Mocks
+class MockApplicationRef {
+  isStable = new Subject<boolean>();
+}
+
 class MockLogger {
   log = jasmine.createSpy('MockLogger.log');
 }
 
-class MockNgServiceWorker {
-  $$activateUpdateSubj = new Subject<boolean>();
-  $$checkForUpdateSubj = new Subject<boolean>();
-  $$updatesSubj = new Subject<{type: string, version: string}>();
+class MockSwUpdate {
+  $$availableSubj = new Subject<{available: {hash: string}}>();
+  $$activatedSubj = new Subject<{current: {hash: string}}>();
 
-  updates = this.$$updatesSubj.asObservable();
+  available = this.$$availableSubj.asObservable();
+  activated = this.$$activatedSubj.asObservable();
 
-  activateUpdate = jasmine.createSpy('MockNgServiceWorker.activateUpdate')
-                          .and.callFake(() => this.$$activateUpdateSubj.take(1));
+  activateUpdate = jasmine.createSpy('MockSwUpdate.activateUpdate')
+                          .and.callFake(() => Promise.resolve());
 
-  checkForUpdate = jasmine.createSpy('MockNgServiceWorker.checkForUpdate')
-                          .and.callFake(() => this.$$checkForUpdateSubj.take(1));
+  checkForUpdate = jasmine.createSpy('MockSwUpdate.checkForUpdate')
+                          .and.callFake(() => Promise.resolve());
+
+  constructor(public isEnabled: boolean) {}
 }

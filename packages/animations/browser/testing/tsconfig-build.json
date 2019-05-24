@@ -6,6 +6,7 @@
     "rootDir": "../../",
     "paths": {
       "@angular/animations": ["../../../../dist/packages/animations"],
+      "@angular/animations/browser": ["../../../../dist/packages/animations/browser"],
       "@angular/core": ["../../../../dist/packages/core"]
     },
     "outDir": "../../../../dist/packages/animations"

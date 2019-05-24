@@ -1,24 +1,24 @@
 import { Router } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
-import { Hero }               from '../model';
+import { Hero }               from '../model/hero';
 
 import { addMatchers }     from '../../testing';
-import { FakeHeroService } from '../model/testing';
+import { TestHeroService, HeroService } from '../model/testing/test-hero.service';
 
 class FakeRouter {
   navigateByUrl(url: string) { return url;  }
 }
 
-describe('DashboardComponent: w/o Angular TestBed', () => {
+describe('DashboardComponent class only', () => {
   let comp: DashboardComponent;
-  let heroService: FakeHeroService;
+  let heroService: TestHeroService;
   let router: Router;
 
   beforeEach(() => {
     addMatchers();
     router = new FakeRouter() as any as Router;
-    heroService = new FakeHeroService();
+    heroService = new TestHeroService();
     comp = new DashboardComponent(router, heroService);
   });
 
@@ -35,17 +35,19 @@ describe('DashboardComponent: w/o Angular TestBed', () => {
 
   it('should HAVE heroes after HeroService gets them', (done: DoneFn) => {
     comp.ngOnInit(); // ngOnInit -> getHeroes
-    heroService.lastPromise // the one from getHeroes
-      .then(() => {
+    heroService.lastResult // the one from getHeroes
+      .subscribe(
+        () => {
         // throw new Error('deliberate error'); // see it fail gracefully
         expect(comp.heroes.length).toBeGreaterThan(0,
           'should have heroes after service promise resolves');
-      })
-      .then(done, done.fail);
+        done();
+      },
+      done.fail);
   });
 
   it('should tell ROUTER to navigate by hero id', () => {
-    const hero = new Hero(42, 'Abbracadabra');
+    const hero: Hero = {id: 42, name: 'Abbracadabra' };
     const spy = spyOn(router, 'navigateByUrl');
 
     comp.gotoDetail(hero);

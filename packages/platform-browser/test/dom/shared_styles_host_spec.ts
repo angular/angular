@@ -11,7 +11,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('DomSharedStylesHost', () => {
     let doc: Document;
     let ssh: DomSharedStylesHost;

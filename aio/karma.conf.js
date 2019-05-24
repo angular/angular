@@ -1,29 +1,24 @@
 // Karma configuration file, see link for more information
-// https://karma-runner.github.io/0.13/config/configuration-file.html
+// https://karma-runner.github.io/1.0/config/configuration-file.html
 
 module.exports = function (config) {
   config.set({
     basePath: '',
-    frameworks: ['jasmine', '@angular/cli'],
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
-      require('@angular/cli/plugins/karma')
+      require('@angular-devkit/build-angular/plugins/karma')
     ],
-    client:{
+    client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
-    files: [
-      { pattern: './node_modules/@angular/material/prebuilt-themes/indigo-pink.css', included: true }
-    ],
     coverageIstanbulReporter: {
-      reports: [ 'html', 'lcovonly' ],
+      dir: require('path').join(__dirname, './coverage/site'),
+      reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
-    },
-    angularCli: {
-      environment: 'dev'
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
@@ -32,6 +27,7 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome'],
     browserNoActivityTimeout: 60000,
-    singleRun: false
+    singleRun: false,
+    restartOnFileChange: true
   });
 };

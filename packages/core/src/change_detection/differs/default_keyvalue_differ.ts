@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical, stringify} from '../../util';
+import {looseIdentical} from '../../util/comparison';
+import {stringify} from '../../util/stringify';
 import {isJsObject} from '../change_detection_util';
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
@@ -259,10 +260,6 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
   }
 }
 
-
-/**
- * @stable
- */
 class KeyValueChangeRecord_<K, V> implements KeyValueChangeRecord<K, V> {
   previousValue: V|null = null;
   currentValue: V|null = null;

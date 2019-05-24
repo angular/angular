@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Component, ComponentFactory, Directive, Injector, NgModule, Pipe, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Component, ComponentFactory, Directive, Injectable, Injector, NgModule, Pipe, Type} from '@angular/core';
 
 import {MetadataOverride} from './metadata_override';
 
@@ -17,8 +17,9 @@ function unimplemented(): any {
 /**
  * Special interface to the compiler only used by testing
  *
- * @experimental
+ * @publicApi
  */
+@Injectable()
 export class TestingCompiler extends Compiler {
   get injector(): Injector { throw unimplemented(); }
   overrideModule(module: Type<any>, overrides: MetadataOverride<NgModule>): void {
@@ -56,7 +57,7 @@ export class TestingCompiler extends Compiler {
 /**
  * A factory for creating a Compiler
  *
- * @experimental
+ * @publicApi
  */
 export abstract class TestingCompilerFactory {
   abstract createTestingCompiler(options?: CompilerOptions[]): TestingCompiler;

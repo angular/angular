@@ -9,7 +9,7 @@
 import {describe, expect, it} from '../../../core/testing/src/testing_internal';
 import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
 
-export function main() {
+(function() {
   function tokenize(
       code: string, trackComments: boolean = false,
       mode: CssLexerMode = CssLexerMode.ALL): CssToken[] {
@@ -274,7 +274,7 @@ export function main() {
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         const cssCode = '.class > tag';
 
-        let capturedMessage: string = undefined !;
+        let capturedMessage: string|null = null;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -282,8 +282,8 @@ export function main() {
         }
 
         expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
-        capturedMessage = null !;
 
+        capturedMessage = null;
         try {
           tokenize(cssCode, false, CssLexerMode.SELECTOR);
         } catch (e) {
@@ -373,4 +373,4 @@ export function main() {
              });
         });
   });
-}
+})();

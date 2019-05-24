@@ -11,7 +11,7 @@ import {TranslationBundle} from '@angular/compiler/src/i18n/translation_bundle';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {ParseTreeResult} from '@angular/compiler/src/ml_parser/parser';
 
-export function main() {
+{
   describe('I18N html parser', () => {
     // https://github.com/angular/angular/issues/14322
     it('should parse the translations only once', () => {

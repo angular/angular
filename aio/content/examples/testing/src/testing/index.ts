@@ -1,8 +1,10 @@
 import { DebugElement }           from '@angular/core';
 import { tick, ComponentFixture } from '@angular/core/testing';
 
+export * from './async-observable-helpers';
+export * from './activated-route-stub';
 export * from './jasmine-matchers';
-export * from './router-stubs';
+export * from './router-link-directive-stub';
 
 ///// Short utilities /////
 

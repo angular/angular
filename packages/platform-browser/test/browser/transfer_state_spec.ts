@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
+import {DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
 import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
-export function main() {
+(function() {
   function removeScriptTag(doc: Document, id: string) {
     const existing = doc.getElementById(id);
     if (existing) {
@@ -70,6 +69,27 @@ export function main() {
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
+    it('supports setting and accessing value \'0\' via get', () => {
+      const transferState: TransferState = TestBed.get(TransferState);
+      transferState.set(TEST_KEY, 0);
+      expect(transferState.get(TEST_KEY, 20)).toBe(0);
+      expect(transferState.hasKey(TEST_KEY)).toBe(true);
+    });
+
+    it('supports setting and accessing value \'false\' via get', () => {
+      const transferState: TransferState = TestBed.get(TransferState);
+      transferState.set(TEST_KEY, false);
+      expect(transferState.get(TEST_KEY, true)).toBe(false);
+      expect(transferState.hasKey(TEST_KEY)).toBe(true);
+    });
+
+    it('supports setting and accessing value \'null\' via get', () => {
+      const transferState: TransferState = TestBed.get(TransferState);
+      transferState.set(TEST_KEY, null);
+      expect(transferState.get(TEST_KEY, 20 as any)).toBe(null);
+      expect(transferState.hasKey(TEST_KEY)).toBe(true);
+    });
+
     it('supports removing keys', () => {
       const transferState: TransferState = TestBed.get(TransferState);
       transferState.set(TEST_KEY, 20);
@@ -109,4 +129,4 @@ export function main() {
       expect(unescapedObj['testString']).toBe(testString);
     });
   });
-}
+})();

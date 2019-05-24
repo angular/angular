@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost} from '@angular/compiler';
-import {CompilerHost, CompilerOptions, ModuleResolutionHostAdapter} from '@angular/compiler-cli/src/language_services';
+import {StaticSymbolResolverHost} from '@angular/compiler';
+import {CompilerOptions, MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import * as path from 'path';
 import * as ts from 'typescript';
 
-class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
-  constructor(private host: ts.LanguageServiceHost) {
+class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, MetadataReaderHost {
+  // Note: verboseInvalidExpressions is important so that
+  // the collector will collect errors instead of throwing
+  private metadataCollector = new MetadataCollector({verboseInvalidExpression: true});
+
+  constructor(private host: ts.LanguageServiceHost, private getProgram: () => ts.Program) {
     if (host.directoryExists)
       this.directoryExists = directoryName => this.host.directoryExists !(directoryName);
   }
@@ -28,25 +33,47 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
     return undefined !;
   }
 
-  directoryExists: (directoryName: string) => boolean;
+  // TODO(issue/24571): remove '!'.
+  directoryExists !: (directoryName: string) => boolean;
+
+  getSourceFileMetadata(fileName: string) {
+    const sf = this.getProgram().getSourceFile(fileName);
+    return sf ? this.metadataCollector.getMetadata(sf) : undefined;
+  }
+
+  cacheMetadata(fileName: string) {
+    // Don't cache the metadata for .ts files as they might change in the editor!
+    return fileName.endsWith('.d.ts');
+  }
 }
 
-// This reflector host's purpose is to first set verboseInvalidExpressions to true so the
-// reflector will collect errors instead of throwing, and second to all deferring the creation
-// of the program until it is actually needed.
-export class ReflectorHost extends CompilerHost {
+export class ReflectorHost implements StaticSymbolResolverHost {
+  private hostAdapter: ReflectorModuleModuleResolutionHost;
+  private metadataReaderCache = createMetadataReaderCache();
+
   constructor(
-      private getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      options: CompilerOptions) {
-    super(
-        // The ancestor value for program is overridden below so passing null here is safe.
-        /* program */ null !, options,
-        new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)),
-        {verboseInvalidExpression: true});
+      getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
+      private options: CompilerOptions) {
+    this.hostAdapter = new ReflectorModuleModuleResolutionHost(serviceHost, getProgram);
   }
 
-  protected get program() { return this.getProgram(); }
-  protected set program(value: ts.Program) {
-    // Discard the result set by ancestor constructor
+  getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined {
+    return readMetadata(modulePath, this.hostAdapter, this.metadataReaderCache);
   }
+
+  moduleNameToFileName(moduleName: string, containingFile?: string): string|null {
+    if (!containingFile) {
+      if (moduleName.indexOf('.') === 0) {
+        throw new Error('Resolution of relative paths requires a containing file.');
+      }
+      // Any containing file gives the same result for absolute imports
+      containingFile = path.join(this.options.basePath !, 'index.ts').replace(/\\/g, '/');
+    }
+    const resolved =
+        ts.resolveModuleName(moduleName, containingFile !, this.options, this.hostAdapter)
+            .resolvedModule;
+    return resolved ? resolved.resolvedFileName : null;
+  }
+
+  getOutputName(filePath: string) { return filePath; }
 }

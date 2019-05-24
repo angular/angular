@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/publishLast';
-import 'rxjs/add/operator/publishReplay';
+import { combineLatest, ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast, publishReplay } from 'rxjs/operators';
 
 import { LocationService } from 'app/shared/location.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -15,7 +11,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
-const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
+export const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -58,30 +54,32 @@ export class NavigationService {
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
     const navigationInfo = this.http.get<NavigationResponse>(navigationPath)
-      .publishLast();
-    navigationInfo.connect();
+      .pipe(publishLast());
+    (navigationInfo as ConnectableObservable<NavigationResponse>).connect();
     return navigationInfo;
   }
 
   private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
-    const versionInfo = navigationInfo
-      .map(response => response.__versionInfo)
-      .publishLast();
-    versionInfo.connect();
+    const versionInfo = navigationInfo.pipe(
+      map(response => response.__versionInfo),
+      publishLast(),
+    );
+    (versionInfo as ConnectableObservable<VersionInfo>).connect();
     return versionInfo;
   }
 
   private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
-    const navigationViews = navigationInfo
-      .map(response => {
+    const navigationViews = navigationInfo.pipe(
+      map(response => {
         const views = Object.assign({}, response);
         Object.keys(views).forEach(key => {
           if (key[0] === '_') { delete views[key]; }
         });
         return views as NavigationViews;
-      })
-      .publishLast();
-    navigationViews.connect();
+      }),
+      publishLast(),
+    );
+    (navigationViews as ConnectableObservable<NavigationViews>).connect();
     return navigationViews;
   }
 
@@ -93,15 +91,20 @@ export class NavigationService {
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
     const currentNodes = combineLatest(
-      navigationViews.map(views => this.computeUrlToNavNodesMap(views)),
-      this.location.currentPath,
-
-      (navMap, url) => {
-        const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
-      })
-      .publishReplay(1);
-    currentNodes.connect();
+      navigationViews.pipe(
+          map(views => this.computeUrlToNavNodesMap(views))),
+          this.location.currentPath,
+      ).pipe(
+        map((result) => ({navMap: result[0] , url: result[1]})),
+        map((result) => {
+        const matchSpecialUrls = /^api/.exec(result.url);
+        if (matchSpecialUrls) {
+            result.url = matchSpecialUrls[0];
+        }
+        return result.navMap.get(result.url) || { '' : { view: '', url: result.url, nodes: [] }};
+        }),
+        publishReplay(1));
+    (currentNodes as ConnectableObservable<CurrentNodes>).connect();
     return currentNodes;
   }
 
@@ -146,7 +149,10 @@ export class NavigationService {
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
         const cleanedUrl = url.replace(/\/$/, '');
-        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        if (!navMap.has(cleanedUrl)) {
+          navMap.set(cleanedUrl, {});
+        }
+        const navMapItem = navMap.get(cleanedUrl)!;
         navMapItem[view] = { url, view, nodes };
       }
 

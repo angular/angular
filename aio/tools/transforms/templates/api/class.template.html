@@ -1,16 +1,9 @@
-{% import "lib/memberHelpers.html" as memberHelpers -%}
-{% import "lib/descendants.html" as descendants -%}
-{% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' -%}
 
-{% block overview %}{% include "includes/class-overview.html" %}{% endblock %}
+{% block overview %}
+  {% include "includes/class-overview.html" %}
+{% endblock %}
 {% block details %}
-{% block additional %}{% endblock %}
-{% include "includes/description.html" %}
-{$ descendants.renderDescendants(doc, 'class', 'Subclasses') $}
-{$ memberHelpers.renderMemberDetails(doc.statics, 'static-members', 'static-member', 'Static Members') $}
-{% if doc.constructorDoc %}{$ memberHelpers.renderMemberDetails([doc.constructorDoc], 'constructors', 'constructor', 'Constructor') $}{% endif %}
-{$ memberHelpers.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
-{% block annotations %}{% include "includes/annotations.html" %}{% endblock %}
-
+  {% include "includes/description.html" %}
+  {% include "includes/class-members.html" %}
 {% endblock %}

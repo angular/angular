@@ -11,16 +11,17 @@ import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {getBodyNode} from '../../src/render/shared';
 import {TransitionAnimationEngine} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 
-export function main() {
+(function() {
   const driver = new MockAnimationDriver();
 
   // these tests are only mean't to be run within the DOM
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('TransitionAnimationEngine', () => {
     let element: any;
@@ -34,8 +35,8 @@ export function main() {
     afterEach(() => { document.body.removeChild(element); });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
-      const engine =
-          new TransitionAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      const engine = new TransitionAnimationEngine(
+          getBodyNode(), driver, normalizer || new NoopAnimationStyleNormalizer());
       engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
       return engine;
     }
@@ -110,7 +111,7 @@ export function main() {
 
         expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
 
-        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
         engine.flush();
 
         expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
@@ -299,7 +300,8 @@ export function main() {
           phaseName: 'start',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
 
         capture = null !;
@@ -313,7 +315,8 @@ export function main() {
           phaseName: 'done',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
       });
     });
@@ -614,9 +617,33 @@ export function main() {
         expect(element.contains(child1)).toBe(true);
         expect(element.contains(child2)).toBe(true);
       });
+
+      it('should not throw an error if a missing namespace is used', () => {
+        const engine = makeEngine();
+        const ID = 'foo';
+        const TRIGGER = 'fooTrigger';
+        expect(() => { engine.trigger(ID, element, TRIGGER, 'something'); }).not.toThrow();
+      });
+
+      it('should still apply state-styling to an element even if it is not yet inserted into the DOM',
+         () => {
+           const engine = makeEngine();
+           const orphanElement = document.createElement('div');
+           orphanElement.classList.add('orphan');
+
+           registerTrigger(
+               orphanElement, engine, trigger('trig', [
+                 state('go', style({opacity: 0.5})), transition('* => go', animate(1000))
+               ]));
+
+           setProperty(orphanElement, engine, 'trig', 'go');
+           engine.flush();
+           expect(engine.players.length).toEqual(0);
+           expect(orphanElement.style.opacity).toEqual('0.5');
+         });
     });
   });
-}
+})();
 
 class SuffixNormalizer extends AnimationStyleNormalizer {
   constructor(private _suffix: string) { super(); }

@@ -8,17 +8,16 @@
 
 import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {merge} from 'rxjs/observable/merge';
-import {timer} from 'rxjs/observable/timer';
-import {_do} from 'rxjs/operator/do';
+import {merge, timer} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
-export function main() {
+{
   describe('reactive forms integration tests', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
@@ -208,7 +207,7 @@ export function main() {
         fixture.detectChanges();
 
         emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput).toBe(null);
+        expect(emailInput as any).toBe(null);  // TODO: Review use of `any` here (#19904)
       });
 
       it('should strip array controls that are not found', () => {
@@ -319,6 +318,108 @@ export function main() {
           form.setValue({cities: ['LA']});
           fixture.detectChanges();
           expect(input.nativeElement.value).toEqual('LA');
+        });
+
+        it('should remove controls correctly after re-binding a form array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          let inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.value).toEqual('NY');
+          expect(inputs[1].nativeElement.value).toEqual('LA');
+
+          let firstInput = inputs[0].nativeElement;
+          firstInput.value = 'new value';
+          dispatchEvent(firstInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['new value', 'LA']);
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput.value = 'last one';
+          dispatchEvent(firstInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['last one']);
+
+          newArr.get([0]) !.setValue('set value');
+          fixture.detectChanges();
+
+          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          expect(firstInput.value).toEqual('set value');
+        });
+
+        it('should submit properly after removing controls on a re-bound array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          const formEl = fixture.debugElement.query(By.css('form'));
+          expect(() => dispatchEvent(formEl.nativeElement, 'submit')).not.toThrowError();
+        });
+
+        it('should insert controls properly on a re-bound array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.insert(1, new FormControl('LA'));
+          fixture.detectChanges();
+
+          let inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.value).toEqual('SF');
+          expect(inputs[1].nativeElement.value).toEqual('LA');
+          expect(inputs[2].nativeElement.value).toEqual('NY');
+
+          const lastInput = inputs[2].nativeElement;
+          lastInput.value = 'Tulsa';
+          dispatchEvent(lastInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['SF', 'LA', 'Tulsa']);
+
+          newArr.get([2]) !.setValue('NY');
+          fixture.detectChanges();
+
+          expect(lastInput.value).toEqual('NY');
         });
 
       });
@@ -947,6 +1048,55 @@ export function main() {
           sub.unsubscribe();
         });
 
+        it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+          const values: string[] = [];
+
+          const sub =
+              merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              [], 'Expected no valueChanges or statusChanges if value unchanged.');
+
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges on blur if value changed.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges not to fire again on blur unless value changed.');
+
+          input.value = 'Bess';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges not to fire on input after blur.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', 'Bess', 'VALID'],
+              'Expected valueChanges and statusChanges to fire again on blur if value changed.');
+
+          sub.unsubscribe();
+        });
+
         it('should mark as pristine properly if pending dirty', () => {
           const fixture = initTest(FormControlComp);
           const control = new FormControl('', {updateOn: 'blur'});
@@ -1243,7 +1393,7 @@ export function main() {
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: string[] = [];
+          const values: any[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -1268,6 +1418,65 @@ export function main() {
           expect(values).toEqual(
               ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
               'Expected valueChanges and statusChanges to update on submit.');
+
+          sub.unsubscribe();
+        });
+
+        it('should not emit valueChanges or statusChanges on submit if value unchanged', () => {
+          const fixture = initTest(FormGroupComp);
+          const control =
+              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+          const formGroup = new FormGroup({login: control});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const values: (string | {[key: string]: string})[] = [];
+          const streams = merge(
+              control.valueChanges, control.statusChanges, formGroup.valueChanges,
+              formGroup.statusChanges);
+          const sub = streams.subscribe(val => values.push(val));
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              [], 'Expected no valueChanges or statusChanges if value unchanged.');
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges on submit if value changed.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges not to fire again if value unchanged.');
+
+          input.value = 'Bess';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges not to fire on input after submit.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              [
+                'Nancy', 'VALID', {login: 'Nancy'}, 'VALID', 'Bess', 'VALID', {login: 'Bess'},
+                'VALID'
+              ],
+              'Expected valueChanges and statusChanges to fire again on submit if value changed.');
 
           sub.unsubscribe();
         });
@@ -1416,10 +1625,98 @@ export function main() {
     });
 
     describe('ngModel interactions', () => {
+      let warnSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        // Reset `_ngModelWarningSentOnce` on `FormControlDirective` and `FormControlName` types.
+        (FormControlDirective as any)._ngModelWarningSentOnce = false;
+        (FormControlName as any)._ngModelWarningSentOnce = false;
+
+        warnSpy = spyOn(console, 'warn');
+      });
+
+      describe('deprecation warnings', () => {
+
+        it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
+             const fixture = initTest(FormGroupNgModel);
+             fixture.componentInstance.form =
+                 new FormGroup({'login': new FormControl(''), 'password': new FormControl('')});
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControlName/gi);
+
+             fixture.componentInstance.login = 'some value';
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+           }));
+
+        it('should warn once by default when using ngModel with formControl', fakeAsync(() => {
+             const fixture = initTest(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControl/gi);
+
+             fixture.componentInstance.login = 'some value';
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+           }));
+
+        it('should warn once for each instance when global provider is provided with "always"',
+           fakeAsync(() => {
+             TestBed.configureTestingModule({
+               declarations: [FormControlNgModel],
+               imports:
+                   [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})]
+             });
+
+             const fixture = TestBed.createComponent(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(2);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControl/gi);
+           }));
+
+        it('should silence warnings when global provider is provided with "never"',
+           fakeAsync(() => {
+             TestBed.configureTestingModule({
+               declarations: [FormControlNgModel],
+               imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})]
+             });
+
+             const fixture = TestBed.createComponent(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy).not.toHaveBeenCalled();
+           }));
+
+      });
 
       it('should support ngModel for complex forms', fakeAsync(() => {
            const fixture = initTest(FormGroupNgModel);
-           fixture.componentInstance.form = new FormGroup({'login': new FormControl('')});
+           fixture.componentInstance.form =
+               new FormGroup({'login': new FormControl(''), 'password': new FormControl('')});
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
            tick();
@@ -1437,6 +1734,7 @@ export function main() {
       it('should support ngModel for single fields', fakeAsync(() => {
            const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
+           fixture.componentInstance.passwordControl = new FormControl('');
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
            tick();
@@ -1452,8 +1750,10 @@ export function main() {
          }));
 
       it('should not update the view when the value initially came from the view', fakeAsync(() => {
+           if (isNode) return;
            const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
+           fixture.componentInstance.passwordControl = new FormControl('');
            fixture.detectChanges();
            tick();
 
@@ -1471,7 +1771,8 @@ export function main() {
 
       it('should work with updateOn submit', fakeAsync(() => {
            const fixture = initTest(FormGroupNgModel);
-           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+           const formGroup = new FormGroup(
+               {login: new FormControl('', {updateOn: 'submit'}), password: new FormControl('')});
            fixture.componentInstance.form = formGroup;
            fixture.componentInstance.login = 'initial';
            fixture.detectChanges();
@@ -2134,7 +2435,7 @@ function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
 
 function observableValidator(resultArr: number[]): AsyncValidatorFn {
   return (c: AbstractControl) => {
-    return _do.call(timer(100), (resp: any) => resultArr.push(resp));
+    return timer(100).pipe(tap((resp: any) => resultArr.push(resp)));
   };
 }
 
@@ -2169,7 +2470,8 @@ function sortedClassList(el: HTMLElement) {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2180,9 +2482,12 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
-  control: FormControl;
-  form: FormGroup;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
 }
 
 @Component({
@@ -2197,7 +2502,8 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupComp {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2212,8 +2518,10 @@ class NestedFormGroupComp {
      </form>`
 })
 class FormArrayComp {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2229,8 +2537,10 @@ class FormArrayComp {
      </div>`
 })
 class FormArrayNestedGroup {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2238,20 +2548,34 @@ class FormArrayNestedGroup {
   template: `
   <form [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login">
+    <input type="text" formControlName="password" [(ngModel)]="password">
    </form>`
 })
 class FormGroupNgModel {
-  form: FormGroup;
-  login: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
   selector: 'form-control-ng-model',
-  template: `<input type="text" [formControl]="control" [(ngModel)]="login">`
+  template: `
+    <input type="text" [formControl]="control" [(ngModel)]="login">
+    <input type="text" [formControl]="passwordControl" [(ngModel)]="password">
+  `
 })
 class FormControlNgModel {
-  control: FormControl;
-  login: string;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  passwordControl !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
@@ -2265,7 +2589,8 @@ class FormControlNgModel {
    </div>`
 })
 class LoginIsEmptyWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2279,11 +2604,16 @@ class LoginIsEmptyWrapper {
    </div>`
 })
 class ValidationBindingsForm {
-  form: FormGroup;
-  required: boolean;
-  minLen: number;
-  maxLen: number;
-  pattern: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  required !: boolean;
+  // TODO(issue/24571): remove '!'.
+  minLen !: number;
+  // TODO(issue/24571): remove '!'.
+  maxLen !: number;
+  // TODO(issue/24571): remove '!'.
+  pattern !: string;
 }
 
 @Component({
@@ -2291,7 +2621,8 @@ class ValidationBindingsForm {
   template: `<input type="checkbox" [formControl]="control">`
 })
 class FormControlCheckboxRequiredValidator {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2302,5 +2633,6 @@ class FormControlCheckboxRequiredValidator {
   </div>`
 })
 class UniqLoginWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }

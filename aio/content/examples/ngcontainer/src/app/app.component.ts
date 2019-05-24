@@ -6,14 +6,15 @@ import { heroes } from './hero';
 @Component({
   selector: 'my-app',
   templateUrl: './app.component.html',
-  styleUrls: [ './app.component.css' ]
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   heroes = heroes;
   hero = this.heroes[0];
-  heroTraits = [ 'honest', 'brave', 'considerate' ];
+  heroTraits = ['honest', 'brave', 'considerate'];
 
   // flags for the table
+
   attrDirs = true;
   strucDirs = true;
   divNgIf = false;

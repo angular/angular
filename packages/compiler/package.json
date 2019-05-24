@@ -3,16 +3,24 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the compiler library",
   "main": "./bundles/compiler.umd.js",
-  "module": "./esm5/compiler.js",
-  "es2015": "./esm2015/compiler.js",
+  "module": "./fesm5/compiler.js",
+  "es2015": "./fesm2015/compiler.js",
+  "esm5": "./esm5/compiler.js",
+  "esm2015": "./esm2015/compiler.js",
+  "fesm5": "./fesm5/compiler.js",
+  "fesm2015": "./fesm2015/compiler.js",
   "typings": "./compiler.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "^1.9.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
-  }
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": true
 }

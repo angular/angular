@@ -9,22 +9,22 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
+
 export default [
-  'en-BI',
-  [
-    ['a', 'p'],
-    ['AM', 'PM'],
-  ],
-  [
-    ['AM', 'PM'],
-    ,
-  ],
+  'en-BI', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -33,20 +33,9 @@ export default [
       'October', 'November', 'December'
     ]
   ],
-  , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 1, [6, 0],
+  u, [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 1, [6, 0],
   ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} \'at\' {0}',
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} \'at\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'FBu', 'Burundian Franc',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'FBu', 'Burundian Franc', {'BIF': ['FBu']}, plural
 ];

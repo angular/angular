@@ -3,7 +3,12 @@ module.exports = function filterBy() {
     name: 'filterByPropertyValue',
     process: function(list, property, value) {
       if (!list) return list;
-      return list.filter(item => item[property] === value);
+      const values = Array.isArray(value) ? value : [value];
+      return list.filter(item => values.some(value => compare(item[property], value)));
     }
   };
 };
+
+function compare(actual, expected) {
+  return expected instanceof(RegExp) ? expected.test(actual) : actual === expected;
+}

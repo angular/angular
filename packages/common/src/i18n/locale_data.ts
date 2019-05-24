@@ -7,19 +7,27 @@
  */
 
 /**
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const LOCALE_DATA: {[localeId: string]: any} = {};
 
 /**
  * Register global data to be used internally by Angular. See the
- * {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import additional locale data.
+ * ["I18n guide"](guide/i18n#i18n-pipes) to know how to import additional locale data.
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
-export function registerLocaleData(data: any, extraData?: any) {
-  const localeId = data[LocaleDataIndex.LocaleId].toLowerCase().replace(/_/g, '-');
+// The signature registerLocaleData(data: any, extraData?: any) is deprecated since v5.1
+export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
+  if (typeof localeId !== 'string') {
+    extraData = localeId;
+    localeId = data[LocaleDataIndex.LocaleId];
+  }
+
+  localeId = localeId.toLowerCase().replace(/_/g, '-');
+
   LOCALE_DATA[localeId] = data;
+
   if (extraData) {
     LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
   }
@@ -46,6 +54,7 @@ export const enum LocaleDataIndex {
   NumberFormats,
   CurrencySymbol,
   CurrencyName,
+  Currencies,
   PluralCase,
   ExtraData
 }
@@ -58,3 +67,8 @@ export const enum ExtraLocaleDataIndex {
   ExtraDayPeriodStandalone,
   ExtraDayPeriodsRules
 }
+
+/**
+ * Index of each value in currency data (used to describe CURRENCIES_EN in currencies.ts)
+ */
+export const enum CurrencyIndex {Symbol = 0, SymbolNarrow, NbOfDigits}

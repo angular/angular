@@ -1,0 +1,10 @@
+{
+  "description": "<ng-container>",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags": [
+    "ngcontainer", "structural", "directives"
+  ]
+}

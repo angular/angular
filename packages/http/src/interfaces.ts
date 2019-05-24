@@ -17,25 +17,30 @@ import {URLSearchParams} from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
 
 /**
  * Abstract class from which real connections are derived.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class Connection {
-  readyState: ReadyState;
-  request: Request;
+  // TODO(issue/24571): remove '!'.
+  readyState !: ReadyState;
+  // TODO(issue/24571): remove '!'.
+  request !: Request;
   response: any;  // TODO: generic of <Response>;
 }
 
 /**
  * An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
 
@@ -43,7 +48,8 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * Interface for options to construct a RequestOptions, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export interface RequestOptionsArgs {
   url?: string|null;
@@ -66,7 +72,8 @@ export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export interface ResponseOptionsArgs {
   body?: string|Object|FormData|ArrayBuffer|Blob|null;

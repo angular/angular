@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf, forwardRef} from '@angular/core';
-import {getOriginalError} from '@angular/core/src/errors';
+import {Inject, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 class Engine {
   static PROVIDER = {provide: Engine, useClass: Engine, deps: []};
@@ -75,9 +75,9 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-function factoryFn(a: any) {}
+function factoryFn(a: any){}
 
-export function main() {
+{
   const dynamicProviders = [
     {provide: 'provider0', useValue: 1}, {provide: 'provider1', useValue: 1},
     {provide: 'provider2', useValue: 1}, {provide: 'provider3', useValue: 1},
@@ -87,7 +87,7 @@ export function main() {
     {provide: 'provider10', useValue: 1}
   ];
 
-  describe(`StaticInjector`, () => {
+  modifiedInIvy('Ivy uses R3Injector').describe(`StaticInjector`, () => {
 
     it('should instantiate a class without dependencies', () => {
       const injector = Injector.create([Engine.PROVIDER]);
@@ -98,7 +98,7 @@ export function main() {
 
     it('should resolve dependencies based on type information', () => {
       const injector = Injector.create([Engine.PROVIDER, Car.PROVIDER]);
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
 
       expect(car).toBeAnInstanceOf(Car);
       expect(car.engine).toBeAnInstanceOf(Engine);
@@ -138,7 +138,7 @@ export function main() {
       const injector = Injector.create(
           [Engine.PROVIDER, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
 
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
@@ -208,7 +208,7 @@ export function main() {
         {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}
       ]);
 
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
@@ -216,8 +216,8 @@ export function main() {
     it('should support optional dependencies', () => {
       const injector = Injector.create([CarWithOptionalEngine.PROVIDER]);
 
-      const car = injector.get(CarWithOptionalEngine);
-      expect(car.engine).toEqual(null);
+      const car = injector.get<CarWithOptionalEngine>(CarWithOptionalEngine);
+      expect(car.engine).toBeNull();
     });
 
     it('should flatten passed-in providers', () => {
@@ -288,8 +288,8 @@ export function main() {
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
-  NullInjectorError: No provider for DashboardSoftware!`);
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: \n` +
+              '  NullInjectorError: No provider for DashboardSoftware!');
     });
 
     it('should throw when trying to instantiate a cyclic dependency', () => {
@@ -364,7 +364,7 @@ export function main() {
          const parent = Injector.create([Car.PROVIDER, Engine.PROVIDER]);
          const child = Injector.create([TurboEngine.PROVIDER], parent);
 
-         const carFromChild = child.get(Car);
+         const carFromChild = child.get<Car>(Car);
          expect(carFromChild.engine).toBeAnInstanceOf(Engine);
        });
 
@@ -391,13 +391,13 @@ export function main() {
     it('should instantiate an object in the context of the injector', () => {
       const inj = Injector.create([Engine.PROVIDER]);
       const childInj = Injector.create([Car.PROVIDER], inj);
-      const car = childInj.get(Car);
+      const car = childInj.get<Car>(Car);
       expect(car).toBeAnInstanceOf(Car);
       expect(car.engine).toBe(inj.get(Engine));
     });
   });
 
-  describe('depedency resolution', () => {
+  describe('dependency resolution', () => {
     describe('@Self()', () => {
       it('should return a dependency from self', () => {
         const inj = Injector.create([
@@ -414,9 +414,12 @@ export function main() {
             [{provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}],
             parent);
 
+        const injectorName = ivyEnabled ? `R3Injector` : `StaticInjector`;
+
         expect(() => child.get(Car))
-            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: 
-  NullInjectorError: No provider for Engine!`);
+            .toThrowError(
+                `${injectorName}Error[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
+                '  NullInjectorError: No provider for Engine!');
       });
     });
 
@@ -430,7 +433,7 @@ export function main() {
             ],
             parent);
 
-        expect(child.get(Car).engine).toBeAnInstanceOf(Engine);
+        expect(child.get<Car>(Car).engine).toBeAnInstanceOf(Engine);
       });
     });
   });
@@ -472,8 +475,11 @@ export function main() {
 
   describe('displayName', () => {
     it('should work', () => {
+      const ivyError = `R3Injector[Engine, BrokenEngine, InjectionToken INJECTOR]`;
+      const viewEngineError =
+          `StaticInjector[Injector, InjectionToken INJECTOR, Engine, BrokenEngine]`;
       expect(Injector.create([Engine.PROVIDER, {provide: BrokenEngine, useValue: null}]).toString())
-          .toEqual('StaticInjector[Injector, Engine, BrokenEngine]');
+          .toEqual(ivyEnabled ? ivyError : viewEngineError);
     });
   });
 }

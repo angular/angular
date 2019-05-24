@@ -6,33 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 const xhr2: any = require('xhr2');
 
-import {Injectable, Optional, Provider} from '@angular/core';
-import {BrowserXhr, Connection, ConnectionBackend, Http, ReadyState, Request, RequestOptions, Response, XHRBackend, XSRFStrategy} from '@angular/http';
+import {Injectable, Injector, Provider} from '@angular/core';
 
-import {HttpClient, HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HttpResponse, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵinterceptingHandler as interceptingHandler} from '@angular/common/http';
+import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
 
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {Subscription} from 'rxjs/Subscription';
-
-const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
-
-function validateRequestUrl(url: string): void {
-  if (!isAbsoluteUrl.test(url)) {
-    throw new Error(`URLs requested via Http on the server must be absolute. URL: ${url}`);
-  }
-}
+import {Observable, Observer, Subscription} from 'rxjs';
 
 @Injectable()
-export class ServerXhr implements BrowserXhr {
+export class ServerXhr implements XhrFactory {
   build(): XMLHttpRequest { return new xhr2.XMLHttpRequest(); }
-}
-
-@Injectable()
-export class ServerXsrfStrategy implements XSRFStrategy {
-  configureRequest(req: Request): void {}
 }
 
 export abstract class ZoneMacroTaskWrapper<S, R> {
@@ -113,35 +98,6 @@ export abstract class ZoneMacroTaskWrapper<S, R> {
   protected abstract delegate(request: S): Observable<R>;
 }
 
-export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Response> implements
-    Connection {
-  response: Observable<Response>;
-  lastConnection: Connection;
-
-  constructor(public request: Request, private backend: XHRBackend) {
-    super();
-    validateRequestUrl(request.url);
-    this.response = this.wrap(request);
-  }
-
-  delegate(request: Request): Observable<Response> {
-    this.lastConnection = this.backend.createConnection(request);
-    return this.lastConnection.response as Observable<Response>;
-  }
-
-  get readyState(): ReadyState {
-    return !!this.lastConnection ? this.lastConnection.readyState : ReadyState.Unsent;
-  }
-}
-
-export class ZoneMacroTaskBackend implements ConnectionBackend {
-  constructor(private backend: XHRBackend) {}
-
-  createConnection(request: any): ZoneMacroTaskConnection {
-    return new ZoneMacroTaskConnection(request, this.backend);
-  }
-}
-
 export class ZoneClientBackend extends
     ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
   constructor(private backend: HttpBackend) { super(); }
@@ -153,23 +109,15 @@ export class ZoneClientBackend extends
   }
 }
 
-export function httpFactory(xhrBackend: XHRBackend, options: RequestOptions) {
-  const macroBackend = new ZoneMacroTaskBackend(xhrBackend);
-  return new Http(macroBackend, options);
-}
-
-export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null) {
-  const realBackend: HttpBackend = interceptingHandler(backend, interceptors);
+export function zoneWrappedInterceptingHandler(backend: HttpBackend, injector: Injector) {
+  const realBackend: HttpBackend = new HttpInterceptingHandler(backend, injector);
   return new ZoneClientBackend(realBackend);
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
-  {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
-  {provide: BrowserXhr, useClass: ServerXhr}, {provide: XSRFStrategy, useClass: ServerXsrfStrategy},
   {provide: XhrFactory, useClass: ServerXhr}, {
     provide: HttpHandler,
     useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS]]
+    deps: [HttpBackend, Injector]
   }
 ];

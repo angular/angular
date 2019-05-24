@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵStyleData} from '@angular/animations';
+import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, interpolateParams} from '../util';
 
@@ -13,15 +13,16 @@ import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast'
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
 
 
+
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
   return new AnimationTrigger(name, ast);
 }
 
 /**
-* @experimental Animation support is experimental.
+* @publicApi
 */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
@@ -46,8 +47,10 @@ export class AnimationTrigger {
 
   get containsQueries() { return this.ast.queryCount > 0; }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionFactory|null {
-    const entry = this.transitionFactories.find(f => f.match(currentState, nextState));
+  matchTransition(currentState: any, nextState: any, element: any, params: {[key: string]: any}):
+      AnimationTransitionFactory|null {
+    const entry =
+        this.transitionFactories.find(f => f.match(currentState, nextState, element, params));
     return entry || null;
   }
 
@@ -60,8 +63,15 @@ function createFallbackTransition(
     triggerName: string,
     states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
-  const animation = new SequenceAst([]);
-  const transition = new TransitionAst(matchers, animation);
+  const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
+  const transition: TransitionAst = {
+    type: AnimationMetadataType.Transition,
+    animation,
+    matchers,
+    options: null,
+    queryCount: 0,
+    depCount: 0
+  };
   return new AnimationTransitionFactory(triggerName, transition, states);
 }
 

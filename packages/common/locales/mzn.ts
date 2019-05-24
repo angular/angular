@@ -9,35 +9,27 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'mzn',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
-  [
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    ,
-  ],
-  ,
+  'mzn', [['AM', 'PM'], u, u], u,
+  [['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], u, u], u,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     [
-      'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر',
-      'نوامبر', 'دسامبر'
+      'ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه',
+      'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'
     ],
+    u
   ],
-  , [['پ.م', 'م.'], , ['قبل میلاد', 'بعد میلاد']], 6, [5, 5],
+  u, [['پ.م', 'م.'], u, ['قبل میلاد', 'بعد میلاد']], 6, [5, 5],
   ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'IRR', 'ایران ریال',
-  function(n: number): number { return 5;}
+  {'JPY': ['JP¥', '¥']}, plural
 ];

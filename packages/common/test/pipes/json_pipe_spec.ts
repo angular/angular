@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('JsonPipe', () => {
     const regNewLine = '\n';
     let inceptionObj: any;

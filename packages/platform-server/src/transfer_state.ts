@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {APP_ID, NgModule} from '@angular/core';
-import {DOCUMENT, TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-browser';
+import {TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-browser';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
@@ -26,7 +27,7 @@ export function serializeTransferStateFactory(
  * NgModule to install on the server side while using the `TransferState` to transfer state from
  * server to client.
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({
   providers: [

@@ -1,0 +1,9 @@
+<div class="detail">
+  <p>This is the ItemDetailComponent</p>
+  <!-- #docregion line-through -->
+  <img src="{{itemImageUrl}}" [style.display]="displayNone">
+  <span [style.text-decoration]="lineThrough">{{ item.name }}
+  </span>
+  <button (click)="delete()">Delete</button>
+  <!-- #enddocregion line-through -->
+</div>

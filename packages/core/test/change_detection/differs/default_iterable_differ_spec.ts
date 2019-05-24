@@ -23,8 +23,8 @@ class ComplexItem {
   toString() { return `{id: ${this.id}, color: ${this.color}}`; }
 }
 
-// todo(vicb): UnmodifiableListView / frozen object when implemented
-export function main() {
+// TODO(vicb): UnmodifiableListView / frozen object when implemented
+{
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
       let differ: DefaultIterableDiffer<any>;

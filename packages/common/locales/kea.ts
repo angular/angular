@@ -9,16 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'kea',
-  [
-    ['a', 'p'],
-    ['am', 'pm'],
-  ],
-  [
-    ['am', 'pm'],
-    ,
-  ],
+  'kea', [['a', 'p'], ['am', 'pm'], u], [['am', 'pm'], u, u],
   [
     ['D', 'S', 'T', 'K', 'K', 'S', 'S'], ['dum', 'sig', 'ter', 'kua', 'kin', 'ses', 'sab'],
     ['dumingu', 'sigunda-fera', 'tersa-fera', 'kuarta-fera', 'kinta-fera', 'sesta-fera', 'sabadu'],
@@ -37,15 +35,11 @@ export default [
       'Otubru', 'Nuvenbru', 'Dizenbru'
     ]
   ],
-  , [['AK', 'DK'], , ['Antis di Kristu', 'Dispos di Kristu']], 1, [6, 0],
+  u, [['AK', 'DK'], u, ['Antis di Kristu', 'Dispos di Kristu']], 1, [6, 0],
   ['d/M/y', 'd MMM y', 'd \'di\' MMMM \'di\' y', 'EEEE, d \'di\' MMMM \'di\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '​', 'Skudu Kabuverdianu',
-  function(n: number): number { return 5;}
+  {'AUD': ['AU$', '$'], 'CVE': ['​'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'USD': ['US$', '$']},
+  plural
 ];

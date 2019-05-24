@@ -1,3 +1,9 @@
+/*
+Copyright Google LLC. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/
+
 /**
  * WEB ANGULAR VERSION
  * (based on systemjs.config.js in angular.io)
@@ -44,7 +50,6 @@
       '@angular/platform-browser': 'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
       '@angular/platform-browser/animations': 'npm:@angular/platform-browser/bundles/platform-browser-animations.umd.js',
       '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
-      '@angular/http': 'npm:@angular/http/bundles/http.umd.js',
       '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
       '@angular/router/upgrade': 'npm:@angular/router/bundles/router-upgrade.umd.js',
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
@@ -52,11 +57,12 @@
       '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
 
       // other libraries
-      'rxjs':                      'npm:rxjs@5.0.1',
+      'rxjs':                      'npm:rxjs@5.5.2',
+      'rxjs/operators':            'npm:rxjs@5.5.2/operators/index.js',
       'tslib':                     'npm:tslib/tslib.js',
-      'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
+      'angular-in-memory-web-api': 'npm:angular-in-memory-web-api@0.4/bundles/in-memory-web-api.umd.js',
       'ts':                        'npm:plugin-typescript@5.2.7/lib/plugin.js',
-      'typescript':                'npm:typescript@2.3.2/lib/typescript.js',
+      'typescript':                'npm:typescript@2.4.2/lib/typescript.js',
 
     },
     // packages tells the System loader how to load when no filename and/or no extension
@@ -70,16 +76,12 @@
           }
         }
       },
-      rxjs: {
-        defaultExtension: 'js'
-      }
+      'rxjs/ajax': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs': { main: 'index.js', defaultExtension: 'js' },
     }
   });
 
 })(this);
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {ResourceLoader} from '@angular/compiler';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, InjectionToken, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ServerModule} from '@angular/platform-server';
+
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
@@ -23,7 +24,7 @@ import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../t
 class SomeComponent {
 }
 
-export function main() {
+{
   describe('bootstrap', () => {
     let mockConsole: MockConsole;
 
@@ -40,7 +41,8 @@ export function main() {
       getDOM().appendChild(doc.body, rootEl);
     }
 
-    type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
+    type CreateModuleOptions =
+        {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[], component?: Type<any>};
 
     function createModule(providers?: any[]): Type<any>;
     function createModule(options: CreateModuleOptions): Type<any>;
@@ -52,15 +54,17 @@ export function main() {
         options = providersOrOptions || {};
       }
       const errorHandler = new ErrorHandler();
-      errorHandler._console = mockConsole as any;
+      (errorHandler as any)._console = mockConsole as any;
 
-      const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
+      const platformModule = getDOM().supportsDOMEvents() ?
+          BrowserModule :
+          require('@angular/platform-server').ServerModule;
 
       @NgModule({
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
         imports: [platformModule],
-        declarations: [SomeComponent],
-        entryComponents: [SomeComponent],
+        declarations: [options.component || SomeComponent],
+        entryComponents: [options.component || SomeComponent],
         bootstrap: options.bootstrap || []
       })
       class MyModule {
@@ -80,8 +84,10 @@ export function main() {
          class SomeComponent {
          }
 
+         const helloToken = new InjectionToken<string>('hello');
+
          @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
+           providers: [{provide: helloToken, useValue: 'component'}],
            declarations: [SomeComponent],
            entryComponents: [SomeComponent],
          })
@@ -96,7 +102,7 @@ export function main() {
          const component = app.bootstrap(cmpFactory);
 
          // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
+         expect(component.injector.get(helloToken)).toEqual('component');
        })));
 
     it('should bootstrap a component with a custom selector',
@@ -108,8 +114,10 @@ export function main() {
          class SomeComponent {
          }
 
+         const helloToken = new InjectionToken<string>('hello');
+
          @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
+           providers: [{provide: helloToken, useValue: 'component'}],
            declarations: [SomeComponent],
            entryComponents: [SomeComponent],
          })
@@ -124,7 +132,7 @@ export function main() {
          const component = app.bootstrap(cmpFactory, 'custom-selector');
 
          // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
+         expect(component.injector.get(helloToken)).toEqual('component');
        })));
 
     describe('ApplicationRef', () => {
@@ -296,6 +304,27 @@ export function main() {
                  expect(ngZone instanceof NoopNgZone).toBe(true);
                });
          }));
+
+      it('should resolve component resources when creating module factory', async() => {
+        @Component({
+          selector: 'with-templates-app',
+          templateUrl: '/test-template.html',
+        })
+        class WithTemplateUrlComponent {
+        }
+
+        const loadResourceSpy = jasmine.createSpy('load resource').and.returnValue('fakeContent');
+        const testModule = createModule({component: WithTemplateUrlComponent});
+
+        await defaultPlatform.bootstrapModule(testModule, {
+          providers: [
+            {provide: ResourceLoader, useValue: {get: loadResourceSpy}},
+          ]
+        });
+
+        expect(loadResourceSpy).toHaveBeenCalledTimes(1);
+        expect(loadResourceSpy).toHaveBeenCalledWith('/test-template.html');
+      });
     });
 
     describe('bootstrapModuleFactory', () => {
@@ -355,14 +384,16 @@ export function main() {
 
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
-        @ViewChild('vc', {read: ViewContainerRef})
-        vc: ViewContainerRef;
+        // TODO(issue/24571): remove '!'.
+        @ViewChild('vc', {read: ViewContainerRef, static: false})
+        vc !: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
-        @ViewChild(TemplateRef)
-        tplRef: TemplateRef<Object>;
+        // TODO(issue/24571): remove '!'.
+        @ViewChild(TemplateRef, {static: true})
+        tplRef !: TemplateRef<Object>;
       }
 
       beforeEach(() => {
@@ -414,6 +445,7 @@ export function main() {
       it('should detach attached embedded views if they are destroyed', () => {
         const comp = TestBed.createComponent(EmbeddedViewComp);
         const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
         const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
 
         appRef.attachView(embeddedViewRef);
@@ -421,6 +453,7 @@ export function main() {
 
         expect(appRef.viewCount).toBe(0);
       });
+
 
       it('should not allow to attach a view to both, a view container and the ApplicationRef',
          () => {

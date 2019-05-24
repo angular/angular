@@ -55,10 +55,11 @@ export class NgModuleCompiler {
         ]));
 
     if (ngModuleMeta.id) {
-      const registerFactoryStmt =
-          o.importExpr(Identifiers.RegisterModuleFactoryFn)
-              .callFn([o.literal(ngModuleMeta.id), o.variable(ngModuleFactoryVar)])
-              .toStmt();
+      const id = typeof ngModuleMeta.id === 'string' ? o.literal(ngModuleMeta.id) :
+                                                       ctx.importExpr(ngModuleMeta.id);
+      const registerFactoryStmt = o.importExpr(Identifiers.RegisterModuleFactoryFn)
+                                      .callFn([id, o.variable(ngModuleFactoryVar)])
+                                      .toStmt();
       ctx.statements.push(registerFactoryStmt);
     }
 

@@ -7,9 +7,9 @@
  */
 
 /**
- * @whatItDoes Represents the version of Angular
+ * @description Represents the version of Angular
  *
- * @stable
+ * @publicApi
  */
 export class Version {
   public readonly major: string;
@@ -24,6 +24,6 @@ export class Version {
 }
 
 /**
- * @stable
+ * @publicApi
  */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

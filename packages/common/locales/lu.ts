@@ -9,36 +9,32 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
-  'lu',
-  [
-    ['Dinda', 'Dilolo'],
-    ,
-  ],
-  ,
+  'lu', [['Dinda', 'Dilolo'], u, u], u,
   [
     ['L', 'N', 'N', 'N', 'N', 'N', 'L'], ['Lum', 'Nko', 'Ndy', 'Ndg', 'Njw', 'Ngv', 'Lub'],
     ['Lumingu', 'Nkodya', 'Ndàayà', 'Ndangù', 'Njòwa', 'Ngòvya', 'Lubingu'],
     ['Lum', 'Nko', 'Ndy', 'Ndg', 'Njw', 'Ngv', 'Lub']
   ],
-  ,
+  u,
   [
     ['C', 'L', 'L', 'M', 'L', 'L', 'K', 'L', 'L', 'L', 'K', 'C'],
     ['Cio', 'Lui', 'Lus', 'Muu', 'Lum', 'Luf', 'Kab', 'Lush', 'Lut', 'Lun', 'Kas', 'Cis'],
     [
-      'Ciongo', 'Lùishi', 'Lusòlo', 'Mùuyà', 'Lumùngùlù', 'Lufuimi', 'Kabàlàshìpù', 'Lùshìkà',
-      'Lutongolo', 'Lungùdi', 'Kaswèkèsè', 'Ciswà'
+      'Ciongo', 'Lùishi', 'Lusòlo', 'Mùuyà', 'Lumùngùlù', 'Lufuimi', 'Kabàlàshìpù',
+      'Lùshìkà', 'Lutongolo', 'Lungùdi', 'Kaswèkèsè', 'Ciswà'
     ]
   ],
-  , [['kmp. Y.K.', 'kny. Y. K.'], , ['Kumpala kwa Yezu Kli', 'Kunyima kwa Yezu Kli']], 1, [6, 0],
+  u, [['kmp. Y.K.', 'kny. Y. K.'], u, ['Kumpala kwa Yezu Kli', 'Kunyima kwa Yezu Kli']], 1, [6, 0],
   ['d/M/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'FC', 'Nfalanga wa Kongu',
-  function(n: number): number { return 5;}
+  {'CDF': ['FC'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

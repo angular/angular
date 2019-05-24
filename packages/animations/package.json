@@ -1,15 +1,19 @@
 {
   "name": "@angular/animations",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Angular - animations integration with web-animationss",
+  "description": "Angular - animations integration with web-animations",
   "main": "./bundles/animations.umd.js",
-  "module": "./esm5/animations.js",
-  "es2015": "./esm2015/animations.js",
+  "module": "./fesm5/animations.js",
+  "es2015": "./fesm2015/animations.js",
+  "esm5": "./esm5/animations.js",
+  "esm2015": "./esm2015/animations.js",
+  "fesm5": "./fesm5/animations.js",
+  "fesm2015": "./fesm2015/animations.js",
   "typings": "./animations.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "^1.9.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER"
@@ -17,5 +21,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
-  }
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
 }

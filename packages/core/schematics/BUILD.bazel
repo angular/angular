@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "npm_package")
+
+exports_files([
+    "tsconfig.json",
+    "migrations.json",
+])
+
+npm_package(
+    name = "npm_package",
+    srcs = ["migrations.json"],
+    visibility = ["//packages/core:__pkg__"],
+    deps = [
+        "//packages/core/schematics/migrations/injectable-pipe",
+        "//packages/core/schematics/migrations/move-document",
+        "//packages/core/schematics/migrations/static-queries",
+        "//packages/core/schematics/migrations/template-var-assignment",
+    ],
+)

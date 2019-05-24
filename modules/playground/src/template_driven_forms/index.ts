@@ -33,7 +33,7 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
-function creditCardValidator(c: FormControl): {[key: string]: boolean} {
+export function creditCardValidator(c: FormControl): {[key: string]: boolean} {
   if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
@@ -41,14 +41,14 @@ function creditCardValidator(c: FormControl): {[key: string]: boolean} {
   }
 }
 
-const creditCardValidatorBinding = {
+export const creditCardValidatorBinding = {
   provide: NG_VALIDATORS,
   useValue: creditCardValidator,
   multi: true
 };
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
-class CreditCardValidator {
+export class CreditCardValidator {
 }
 
 /**
@@ -73,7 +73,7 @@ class CreditCardValidator {
     <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
   `
 })
-class ShowError {
+export class ShowError {
   formDir: NgForm;
   controlPath: string;
   errorTypes: string[];
@@ -161,7 +161,7 @@ class ShowError {
     </form>
   `
 })
-class TemplateDrivenForms {
+export class TemplateDrivenForms {
   model = new CheckoutModel();
   countries = ['US', 'Canada'];
 
@@ -175,9 +175,7 @@ class TemplateDrivenForms {
   bootstrap: [TemplateDrivenForms],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

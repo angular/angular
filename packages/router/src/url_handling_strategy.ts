@@ -9,9 +9,11 @@
 import {UrlTree} from './url_tree';
 
 /**
- * @whatItDoes Provides a way to migrate AngularJS applications to Angular.
+ * @description
  *
- * @experimental
+ * Provides a way to migrate AngularJS applications to Angular.
+ *
+ * @publicApi
  */
 export abstract class UrlHandlingStrategy {
   /**
@@ -37,7 +39,7 @@ export abstract class UrlHandlingStrategy {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export class DefaultUrlHandlingStrategy implements UrlHandlingStrategy {
   shouldProcessUrl(url: UrlTree): boolean { return true; }

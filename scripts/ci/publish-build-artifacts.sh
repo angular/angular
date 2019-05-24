@@ -4,8 +4,6 @@ set -x -u -e -o pipefail
 
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
-source ${thisDir}/_travis-fold.sh
-
 
 # Find the most recent tag that is reachable from the current commit.
 # This is shallow clone of the repo, so we might need to fetch more commits to
@@ -63,22 +61,11 @@ function publishRepo {
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
 
-  # Replace $$ANGULAR_VERSION$$ with the build version.
-  BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
-  if [[ ${TRAVIS} ]]; then
-    find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
-
-    # Find umd.js and umd.min.js
-    UMD_FILES=$(find $REPO_DIR/ -type f -name "*.umd*.js" -print)
-    for UMD_FILE in ${UMD_FILES}; do
-      sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g" ${UMD_FILE}
-    done
-
+  if [[ ${CI} ]]; then
     (
+      # The file ~/.git_credentials is created in /.circleci/config.yml
       cd $REPO_DIR && \
-      git config credential.helper "store --file=.git/credentials" && \
-      # SECURITY CRITICAL: DO NOT use shell to expand vars since it could be logged and leaked.
-      node -e "console.log('https://'+process.env.GITHUB_TOKEN_ANGULAR+':@github.com')" > .git/credentials
+      git config credential.helper "store --file=$HOME/.git_credentials"
     )
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
@@ -100,6 +87,7 @@ function publishPackages {
   GIT_SCHEME=$1
   PKGS_DIST=$2
   BRANCH=$3
+  BUILD_VER=$4
 
   for dir in $PKGS_DIST/*/
   do
@@ -116,12 +104,6 @@ function publishPackages {
     else
       die "Don't have a way to publish to scheme $GIT_SCHEME"
     fi
-    SHA=`git rev-parse HEAD`
-    SHORT_SHA=`git rev-parse --short HEAD`
-    COMMIT_MSG=`git log --oneline -1`
-    COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
-    COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
-    LATEST_TAG=`getLatestTag`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
@@ -129,25 +111,31 @@ function publishPackages {
   echo "Finished publishing build artifacts"
 }
 
+function publishAllBuilds() {
+  GIT_SCHEME="$1"
+
+  SHA=`git rev-parse HEAD`
+  COMMIT_MSG=`git log --oneline -1`
+  COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+  COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+
+  local shortSha=`git rev-parse --short HEAD`
+  local latestTag=`getLatestTag`
+
+  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
+
+  # don't publish ivy builds on non-master branch
+  if [[ "${CI_BRANCH-}" == "master" ]]; then
+    publishPackages $GIT_SCHEME dist/packages-dist-ivy-aot "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
+  fi
+}
+
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${CI_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
-  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
-  if [[ -e dist/packages-dist-es2015 ]]; then
-    publishPackages "ssh" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
-  fi
-
-elif [[ \
-    "$TRAVIS_REPO_SLUG" == "angular/angular" && \
-    "$TRAVIS_PULL_REQUEST" == "false" && \
-    "$CI_MODE" == "e2e" ]]; then
-  ORG="angular"
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
-  if [[ -e dist/packages-dist-es2015 ]]; then
-    publishPackages "http" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
-  fi
-
+  publishAllBuilds "ssh"
 else
-  echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
+  ORG="angular"
+  publishAllBuilds "http"
 fi

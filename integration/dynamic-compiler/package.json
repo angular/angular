@@ -1,0 +1,46 @@
+{
+  "name": "dynamic-compiler",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && npm run ngc && npm run rollup && npm run rollup:lazy && npm run es5 && npm run es5:lazy",
+    "clean": "rm -rf dist",
+    "//es5-note": "`--typeRoots ./dummy_folder_name/@types` is a workaround for https://github.com/Microsoft/TypeScript/issues/30845",
+    "es5": "tsc --target es5 --skipLibCheck --allowJs dist/bundle.es2015.js --out dist/bundle.js --typeRoots ./dummy_folder_name/@types",
+    "es5:lazy": "tsc --target es5 --skipLibCheck --allowJs dist/lazy.bundle.es2015.js --out dist/lazy.bundle.js",
+    "ngc": "ngc -p tsconfig.json",
+    "rollup": "rollup -f iife -c rollup.config.js -o dist/bundle.es2015.js",
+    "rollup:lazy": "rollup -f cjs -c rollup.lazy.config.js -o dist/lazy.bundle.es2015.js",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "test": "npm run build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "file:../../node_modules/rollup",
+    "rollup-plugin-commonjs": "file:../../node_modules/rollup-plugin-commonjs",
+    "rollup-plugin-node-resolve": "file:../../node_modules/rollup-plugin-node-resolve",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "core-js": "file:../../node_modules/core-js",
+    "rxjs": "file:../../node_modules/rxjs",
+    "systemjs": "file:../../node_modules/systemjs",
+    "zone.js": "file:../../node_modules/zone.js"
+  }
+}

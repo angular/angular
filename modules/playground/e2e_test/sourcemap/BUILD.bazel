@@ -1,0 +1,11 @@
+load("//modules/playground/e2e_test:example_test.bzl", "example_test")
+
+example_test(
+    name = "sourcemap",
+    srcs = glob(["**/*.ts"]),
+    data = [
+        "//modules/playground/src/sourcemap",
+        "//modules/playground/src/sourcemap:index.ts",
+    ],
+    server = "//modules/playground/src/sourcemap:devserver",
+)

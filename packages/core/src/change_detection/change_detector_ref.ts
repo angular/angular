@@ -6,189 +6,117 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../render3/view_engine_compatibility';
+
 /**
- * @stable
+ * Base class for Angular Views, provides change detection functionality.
+ * A change-detection tree collects all views that are to be checked for changes.
+ * Use the methods to add and remove views from the tree, initiate change-detection,
+ * and explicitly mark views as _dirty_, meaning that they have changed and need to be rerendered.
+ *
+ * @usageNotes
+ *
+ * The following examples demonstrate how to modify default change-detection behavior
+ * to perform explicit detection when needed.
+ *
+ * ### Use `markForCheck()` with `CheckOnce` strategy
+ *
+ * The following example sets the `OnPush` change-detection strategy for a component
+ * (`CheckOnce`, rather than the default `CheckAlways`), then forces a second check
+ * after an interval. See [live demo](http://plnkr.co/edit/GC512b?p=preview).
+ *
+ * <code-example path="core/ts/change_detect/change-detection.ts"
+ * region="mark-for-check"></code-example>
+ *
+ * ### Detach change detector to limit how often check occurs
+ *
+ * The following example defines a component with a large list of read-only data
+ * that is expected to change constantly, many times per second.
+ * To improve performance, we want to check and update the list
+ * less often than the changes actually occur. To do that, we detach
+ * the component's change detector and perform an explicit local check every five seconds.
+ *
+ * <code-example path="core/ts/change_detect/change-detection.ts" region="detach"></code-example>
+ *
+ *
+ * ### Reattaching a detached component
+ *
+ * The following example creates a component displaying live data.
+ * The component detaches its change detector from the main change detector tree
+ * when the `live` property is set to false, and reattaches it when the property
+ * becomes true.
+ *
+ * <code-example path="core/ts/change_detect/change-detection.ts" region="reattach"></code-example>
+ *
+ * @publicApi
  */
 export abstract class ChangeDetectorRef {
   /**
-   * Marks all {@link ChangeDetectionStrategy#OnPush} ancestors as to be checked.
+   * When a view uses the {@link ChangeDetectionStrategy#OnPush OnPush} (checkOnce)
+   * change detection strategy, explicitly marks the view as changed so that
+   * it can be checked again.
+   *
+   * Components are normally marked as dirty (in need of rerendering) when inputs
+   * have changed or events have fired in the view. Call this method to ensure that
+   * a component is checked even if these triggers have not occured.
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/GC512b?p=preview))
-   *
-   * ```typescript
-   * @Component({
-   *   selector: 'cmp',
-   *   changeDetection: ChangeDetectionStrategy.OnPush,
-   *   template: `Number of ticks: {{numberOfTicks}}`
-   * })
-   * class Cmp {
-   *   numberOfTicks = 0;
-   *
-   *   constructor(private ref: ChangeDetectorRef) {
-   *     setInterval(() => {
-   *       this.numberOfTicks++;
-   *       // the following is required, otherwise the view will not be updated
-   *       this.ref.markForCheck();
-   *     }, 1000);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   changeDetection: ChangeDetectionStrategy.OnPush,
-   *   template: `
-   *     <cmp><cmp>
-   *   `,
-   * })
-   * class App {
-   * }
-   * ```
    */
   abstract markForCheck(): void;
 
   /**
-   * Detaches the change detector from the change detector tree.
+   * Detaches this view from the change-detection tree.
+   * A detached view is  not checked until it is reattached.
+   * Use in combination with `detectChanges()` to implement local change detection checks.
    *
-   * The detached change detector will not be checked until it is reattached.
-   *
-   * This can also be used in combination with {@link ChangeDetectorRef#detectChanges} to implement
-   * local change
-   * detection checks.
+   * Detached views are not checked during change detection runs until they are
+   * re-attached, even if they are marked as dirty.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
-   * ### Example
-   *
-   * The following example defines a component with a large list of readonly data.
-   * Imagine the data changes constantly, many times per second. For performance reasons,
-   * we want to check and update the list every five seconds. We can do that by detaching
-   * the component's change detector and doing a local check every five seconds.
-   *
-   * ```typescript
-   * class DataProvider {
-   *   // in a real application the returned data will be different every time
-   *   get data() {
-   *     return [1,2,3,4,5];
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'giant-list',
-   *   template: `
-   *     <li *ngFor="let d of dataProvider.data">Data {{d}}</li>
-   *   `,
-   * })
-   * class GiantList {
-   *   constructor(private ref: ChangeDetectorRef, private dataProvider: DataProvider) {
-   *     ref.detach();
-   *     setInterval(() => {
-   *       this.ref.detectChanges();
-   *     }, 5000);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   providers: [DataProvider],
-   *   template: `
-   *     <giant-list><giant-list>
-   *   `,
-   * })
-   * class App {
-   * }
-   * ```
    */
   abstract detach(): void;
 
   /**
-   * Checks the change detector and its children.
-   *
-   * This can also be used in combination with {@link ChangeDetectorRef#detach} to implement local
-   * change detection
-   * checks.
+   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach
+   * detach}
+   * to implement local change detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
-   * ### Example
-   *
-   * The following example defines a component with a large list of readonly data.
-   * Imagine, the data changes constantly, many times per second. For performance reasons,
-   * we want to check and update the list every five seconds.
-   *
-   * We can do that by detaching the component's change detector and doing a local change detection
-   * check
-   * every five seconds.
-   *
-   * See {@link ChangeDetectorRef#detach} for more information.
    */
   abstract detectChanges(): void;
 
   /**
    * Checks the change detector and its children, and throws if any changes are detected.
    *
-   * This is used in development mode to verify that running change detection doesn't introduce
+   * Use in development mode to verify that running change detection doesn't introduce
    * other changes.
    */
   abstract checkNoChanges(): void;
 
   /**
-   * Reattach the change detector to the change detector tree.
-   *
-   * This also marks OnPush ancestors as to be checked. This reattached change detector will be
-   * checked during the next change detection run.
+   * Re-attaches the previously detached view to the change detection tree.
+   * Views are attached to the tree by default.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/aUhZha?p=preview))
-   *
-   * The following example creates a component displaying `live` data. The component will detach
-   * its change detector from the main change detector tree when the component's live property
-   * is set to false.
-   *
-   * ```typescript
-   * class DataProvider {
-   *   data = 1;
-   *
-   *   constructor() {
-   *     setInterval(() => {
-   *       this.data = this.data * 2;
-   *     }, 500);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'live-data',
-   *   inputs: ['live'],
-   *   template: 'Data: {{dataProvider.data}}'
-   * })
-   * class LiveData {
-   *   constructor(private ref: ChangeDetectorRef, private dataProvider: DataProvider) {}
-   *
-   *   set live(value) {
-   *     if (value) {
-   *       this.ref.reattach();
-   *     } else {
-   *       this.ref.detach();
-   *     }
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   providers: [DataProvider],
-   *   template: `
-   *     Live Update: <input type="checkbox" [(ngModel)]="live">
-   *     <live-data [live]="live"><live-data>
-   *   `,
-   * })
-   * class App {
-   *   live = true;
-   * }
-   * ```
    */
   abstract reattach(): void;
+
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => SWITCH_CHANGE_DETECTOR_REF_FACTORY();
 }
+
+
+
+export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = render3InjectChangeDetectorRef;
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = (...args: any[]): any => {};
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef =
+    SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;

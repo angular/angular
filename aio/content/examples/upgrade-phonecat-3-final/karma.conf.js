@@ -23,15 +23,6 @@ module.exports = function(config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
 
-    customLaunchers: {
-      // From the CLI. Not used here but interesting
-      // chrome setup for travis CI using chromium
-      Chrome_travis_ci: {
-        base: 'Chrome',
-        flags: ['--no-sandbox']
-      }
-    },
-
     files: [
       // System.js for module loading
       'node_modules/systemjs/dist/system.src.js',
@@ -41,12 +32,7 @@ module.exports = function(config) {
 
       // zone.js
       'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/long-stack-trace-zone.js',
-      'node_modules/zone.js/dist/proxy.js',
-      'node_modules/zone.js/dist/sync-test.js',
-      'node_modules/zone.js/dist/jasmine-patch.js',
-      'node_modules/zone.js/dist/async-test.js',
-      'node_modules/zone.js/dist/fake-async-test.js',
+      'node_modules/zone.js/dist/zone-testing.js',
 
       // RxJs
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },

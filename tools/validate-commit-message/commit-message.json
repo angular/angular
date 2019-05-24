@@ -1,5 +1,5 @@
 {
-  "maxLength": 100,
+  "maxLength": 120,
   "types": [
     "build",
     "ci",
@@ -8,19 +8,24 @@
     "fix",
     "perf",
     "refactor",
+    "release",
     "style",
     "test"
   ],
   "scopes": [
     "aio",
     "animations",
+    "bazel",
     "benchpress",
     "common",
     "compiler",
     "compiler-cli",
     "core",
+    "docs-infra",
+    "elements",
     "forms",
     "http",
+    "ivy",
     "language-service",
     "platform-browser",
     "platform-browser-dynamic",
@@ -28,8 +33,8 @@
     "platform-webworker",
     "platform-webworker-dynamic",
     "router",
+    "service-worker",
     "upgrade",
-
     "packaging",
     "changelog"
   ]

@@ -19,20 +19,20 @@ const DifferentParent = Parent;
 // #enddocregion provide-the-parent
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
-const provideParent =
+export function provideParent
 // #enddocregion provide-parent, provide-the-parent
 // #docregion provide-parent
-  (component: any, parentType?: any) => {
+  (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
-  };
+  }
 // #enddocregion provide-parent
 
 // Simpler syntax version that always provides the component in the name of `Parent`.
-const provideTheParent =
+export function provideTheParent
 // #docregion provide-the-parent
-  (component: any) => {
+  (component: any) {
     return { provide: Parent, useExisting: forwardRef(() => component) };
-  };
+  }
 // #enddocregion provide-the-parent
 
 
@@ -50,7 +50,7 @@ const templateC = `
 })
 // #docregion carol-class
 export class CarolComponent {
-  name= 'Carol';
+  name = 'Carol';
   // #docregion carol-ctor
   constructor( @Optional() public parent: Parent ) { }
   // #enddocregion carol-ctor
@@ -63,7 +63,7 @@ export class CarolComponent {
   template: templateC
 })
 export class ChrisComponent {
-  name= 'Chris';
+  name = 'Chris';
   constructor( @Optional() public parent: Parent ) { }
 }
 
@@ -116,7 +116,7 @@ export class BarryComponent implements Parent {
   providers:  [ provideParent(BobComponent) ]
 })
 export class BobComponent implements Parent {
-  name= 'Bob';
+  name = 'Bob';
   constructor( @SkipSelf() @Optional() public parent: Parent ) { }
 }
 
@@ -128,7 +128,7 @@ export class BobComponent implements Parent {
 // #enddocregion beth-providers
 })
 export class BethComponent implements Parent {
-  name= 'Beth';
+  name = 'Beth';
   constructor( @SkipSelf() @Optional() public parent: Parent ) { }
 }
 
@@ -151,13 +151,13 @@ export class BethComponent implements Parent {
 // #docregion alex-1
 })
 // #enddocregion alex-1
-// Todo: Add `... implements Parent` to class signature
+// TODO: Add `... implements Parent` to class signature
 // #docregion alex-1
 // #docregion alex-class-signature
 export class AlexComponent extends Base
 // #enddocregion alex-class-signature
 {
-  name= 'Alex';
+  name = 'Alex';
 }
 // #enddocregion alex, alex-1
 
@@ -182,7 +182,7 @@ export class AlexComponent extends Base
 export class AliceComponent implements Parent
 // #enddocregion alice-class-signature
 {
-  name= 'Alice';
+  name = 'Alice';
 }
 // #enddocregion alice
 

@@ -39,4 +39,27 @@ describe('completions', () => {
     ngHost = new TypeScriptServiceHost(host, service);
     expect(ngHost.getAnalyzedModules()).toBeDefined();
   });
+
+  it('should not throw if there is no script names', () => {
+    host = new MockTypescriptHost([], toh);
+    service = ts.createLanguageService(host);
+    ngHost = new TypeScriptServiceHost(host, service);
+    expect(() => ngHost.getAnalyzedModules()).not.toThrow();
+  });
+
+  it('should clear the caches if program changes', () => {
+    // First create a TypescriptHost with empty script names
+    host = new MockTypescriptHost([], toh);
+    service = ts.createLanguageService(host);
+    ngHost = new TypeScriptServiceHost(host, service);
+    expect(ngHost.getAnalyzedModules().ngModules).toEqual([]);
+    // Now add a script, this would change the program
+    const fileName = '/app/main.ts';
+    const content = (host as MockTypescriptHost).getFileContent(fileName) !;
+    (host as MockTypescriptHost).addScript(fileName, content);
+    // If the caches are not cleared, we would get back an empty array.
+    // But if the caches are cleared then the analyzed modules will be non-empty.
+    expect(ngHost.getAnalyzedModules().ngModules.length).not.toEqual(0);
+  });
+
 });

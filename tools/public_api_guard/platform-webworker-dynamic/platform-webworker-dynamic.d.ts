@@ -1,5 +1,5 @@
-/** @experimental */
+/** @deprecated */
 export declare const platformWorkerAppDynamic: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
-/** @stable */
+/** @deprecated */
 export declare const VERSION: Version;

@@ -7,8 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subscriber} from 'rxjs/Subscriber';
+import {Observable, Observer} from 'rxjs';
 
 // #docregion AsyncPipePromise
 @Component({
@@ -49,7 +48,7 @@ export class AsyncPromisePipeComponent {
   template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>'
 })
 export class AsyncObservablePipeComponent {
-  time = new Observable<string>((observer: Subscriber<string>) => {
+  time = new Observable<string>((observer: Observer<string>) => {
     setInterval(() => observer.next(new Date().toString()), 1000);
   });
 }
@@ -59,7 +58,7 @@ export class AsyncObservablePipeComponent {
 // protractor will not see us. Also we want to have this outside the docregion so as not to confuse
 // the reader.
 function setInterval(fn: Function, delay: number) {
-  const zone = Zone.current;
+  const zone = (window as any)['Zone'].current;
   let rootZone = zone;
   while (rootZone.parent) {
     rootZone = rootZone.parent;

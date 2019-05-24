@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerFactory, ComponentFactory, CompilerOptions, ModuleWithComponentFactories, Inject, InjectionToken, Optional, PACKAGE_ROOT_URL, PlatformRef, StaticProvider, TRANSLATIONS, Type, isDevMode, platformCore, ɵConsole as Console, ViewEncapsulation, Injector, NgModuleFactory, TRANSLATIONS_FORMAT, MissingTranslationStrategy,} from '@angular/core';
+import {Compiler, CompilerFactory, ComponentFactory, CompilerOptions, ModuleWithComponentFactories, Inject, InjectionToken, Optional, PACKAGE_ROOT_URL, StaticProvider, TRANSLATIONS, Type, isDevMode, ɵConsole as Console, ViewEncapsulation, Injector, NgModuleFactory, TRANSLATIONS_FORMAT, MissingTranslationStrategy,} from '@angular/core';
 
-import {StaticSymbolCache, JitCompiler, ProviderMeta, ExternalReference, I18NHtmlParser, Identifiers, ViewCompiler, CompileMetadataResolver, UrlResolver, TemplateParser, NgModuleCompiler, JitSummaryResolver, SummaryResolver, StyleCompiler, PipeResolver, ElementSchemaRegistry, DomElementSchemaRegistry, ResourceLoader, NgModuleResolver, HtmlParser, CompileReflector, CompilerConfig, DirectiveNormalizer, DirectiveResolver, Lexer, Parser} from '@angular/compiler';
+import {StaticSymbolCache, JitCompiler, ProviderMeta, I18NHtmlParser, ViewCompiler, CompileMetadataResolver, UrlResolver, TemplateParser, NgModuleCompiler, JitEvaluator, JitSummaryResolver, SummaryResolver, StyleCompiler, PipeResolver, ElementSchemaRegistry, DomElementSchemaRegistry, ResourceLoader, NgModuleResolver, HtmlParser, CompileReflector, CompilerConfig, DirectiveNormalizer, DirectiveResolver, Lexer, Parser} from '@angular/compiler';
 
 import {JitReflector} from './compiler_reflector';
 
@@ -37,10 +37,11 @@ export class CompilerImpl implements Compiler {
       injector: Injector, private _metadataResolver: CompileMetadataResolver,
       templateParser: TemplateParser, styleCompiler: StyleCompiler, viewCompiler: ViewCompiler,
       ngModuleCompiler: NgModuleCompiler, summaryResolver: SummaryResolver<Type<any>>,
-      compileReflector: CompileReflector, compilerConfig: CompilerConfig, console: Console) {
+      compileReflector: CompileReflector, jitEvaluator: JitEvaluator,
+      compilerConfig: CompilerConfig, console: Console) {
     this._delegate = new JitCompiler(
         _metadataResolver, templateParser, styleCompiler, viewCompiler, ngModuleCompiler,
-        summaryResolver, compileReflector, compilerConfig, console,
+        summaryResolver, compileReflector, jitEvaluator, compilerConfig, console,
         this.getExtraNgModuleProviders.bind(this));
     this.injector = injector;
   }
@@ -71,9 +72,6 @@ export class CompilerImpl implements Compiler {
                 componentFactories: result.componentFactories as ComponentFactory<any>[],
               }));
   }
-  getNgContentSelectors(component: Type<any>): string[] {
-    return this._delegate.getNgContentSelectors(component);
-  }
   loadAotSummaries(summaries: () => any[]) { this._delegate.loadAotSummaries(summaries); }
   hasAotSummary(ref: Type<any>): boolean { return this._delegate.hasAotSummary(ref); }
   getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
@@ -81,6 +79,10 @@ export class CompilerImpl implements Compiler {
   }
   clearCache(): void { this._delegate.clearCache(); }
   clearCacheFor(type: Type<any>) { this._delegate.clearCacheFor(type); }
+  getModuleId(moduleType: Type<any>): string|undefined {
+    const meta = this._metadataResolver.getNgModuleMetadata(moduleType);
+    return meta && meta.id || undefined;
+  }
 }
 
 /**
@@ -126,6 +128,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
     Parser, ElementSchemaRegistry,
     I18NHtmlParser, Console]
   },
+  { provide: JitEvaluator, useClass: JitEvaluator, deps: [] },
   { provide: DirectiveNormalizer, deps: [ResourceLoader, UrlResolver, HtmlParser, CompilerConfig]},
   { provide: CompileMetadataResolver, deps: [CompilerConfig, HtmlParser, NgModuleResolver,
                       DirectiveResolver, PipeResolver,
@@ -143,7 +146,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: Compiler, useClass: CompilerImpl, deps: [Injector, CompileMetadataResolver,
                                 TemplateParser, StyleCompiler,
                                 ViewCompiler, NgModuleCompiler,
-                                SummaryResolver, CompileReflector, CompilerConfig,
+                                SummaryResolver, CompileReflector, JitEvaluator, CompilerConfig,
                                 Console]},
   { provide: DomElementSchemaRegistry, deps: []},
   { provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
@@ -153,14 +156,18 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
+/**
+ * @publicApi
+ */
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
+
+  /* @internal */
   constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
       useJit: true,
       defaultEncapsulation: ViewEncapsulation.Emulated,
       missingTranslation: MissingTranslationStrategy.Warning,
-      enableLegacyTemplate: false,
     };
 
     this._defaultOptions = [compilerOptions, ...defaultOptions];
@@ -180,7 +187,6 @@ export class JitCompilerFactory implements CompilerFactory {
             // from the app providers
             defaultEncapsulation: opts.defaultEncapsulation,
             missingTranslation: opts.missingTranslation,
-            enableLegacyTemplate: opts.enableLegacyTemplate,
             preserveWhitespaces: opts.preserveWhitespaces,
           });
         },
@@ -198,7 +204,6 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
     providers: _mergeArrays(optionsArr.map(options => options.providers !)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
-    enableLegacyTemplate: _lastDefined(optionsArr.map(options => options.enableLegacyTemplate)),
     preserveWhitespaces: _lastDefined(optionsArr.map(options => options.preserveWhitespaces)),
   };
 }

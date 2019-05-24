@@ -1,0 +1,20 @@
+<!-- #docplaster -->
+<!-- #docregion ngfor, interpolation -->
+<h2>Products</h2>
+
+<div *ngFor="let product of products">
+<!-- #enddocregion ngfor -->
+
+  <h3>
+<!-- #enddocregion interpolation -->
+    <a [title]="product.name + ' details'">
+<!-- #docregion interpolation -->
+      {{ product.name }}
+<!-- #enddocregion interpolation -->
+    </a>
+<!-- #docregion interpolation -->
+  </h3>
+
+<!-- #docregion ngfor -->
+</div>
+<!-- #enddocregion ngfor, interpolation -->

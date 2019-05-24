@@ -12,16 +12,10 @@ h1 {
   font-size: 24px;
   font-weight: 500;
   margin: 8px 0px;
-}
 
-h1:after {
-  content: "";
-  display: block;
-  height: 1px;
-  width: 40%;
-  margin: 24px 0px 10px;
-  background: $lightgray;
-  clear: both;
+  @media screen and (max-width: 600px) {
+    margin-top: 0;
+  }
 }
 
 h2 {
@@ -34,7 +28,7 @@ h2 {
 h3 {
   font-size: 20px;
   font-weight: 400;
-  margin: 24px 0px;
+  margin: 24px 0px 12px;
   clear: both;
 }
 
@@ -60,13 +54,11 @@ h6 {
   clear: both;
 }
 
-h1 {
-  @media screen and (max-width: 600px) {
-    margin: 0;
+h2, h3, h4, h5, h6 {
+  a {
+    font-size: inherit;
   }
-}
 
-h1:after, h2, h3, h4, h5, h6 {
   @media screen and (max-width: 600px) {
     margin: 8px 0;
   }
@@ -86,6 +78,14 @@ p, ol, ul, ol, li, input, a  {
   }
 }
 
+p {
+  margin: 14px 0 0;
+}
+
+p + ul {
+  margin-top: 4px;
+}
+
 ol {
   li, p {
     margin: 4px 0;
@@ -100,7 +100,7 @@ a {
   text-decoration: none;
 }
 
-.mat-toolbar-row a {
+.app-toolbar a {
   font-size: 16px;
   font-weight: 400;
   color: white;
@@ -117,7 +117,7 @@ table {
   border-collapse: collapse;
   border-radius: 2px;
   border-spacing: 0;
-  margin: 0 0 32px 0;
+  margin: 12px 0 32px;
 }
 
 table tbody th {
@@ -131,8 +131,13 @@ td {
   padding: 8px 30px;
   letter-spacing: 0.30px;
 
-  p {
-    margin: 0;
+  > p, ul {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -141,17 +146,6 @@ th {
   font-weight: 500;
   padding: 13px 32px;
   text-align: left;
-}
-
-p > code, li > code, table code {
-  font-family: $code-font;
-  font-size: 85%;
-  color: $darkgray;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 2px 6px;
-  background-color: $backgroundgray;
-  border-radius: 4px;
 }
 
 code {

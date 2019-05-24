@@ -6,48 +6,50 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/* tslint:disable:no-var-keyword */
-
 'use strict';
 
-var glob = require('glob');
+const glob = require('glob');
 require('zone.js/dist/zone-node.js');
-var JasmineRunner = require('jasmine');
-var path = require('path');
+const JasmineRunner = require('jasmine');
+const path = require('path');
 require('zone.js/dist/long-stack-trace-zone.js');
+require('zone.js/dist/task-tracking.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');
 require('zone.js/dist/fake-async-test.js');
+const {generateSeed} = require('../../../tools/jasmine-seed-generator');
 
-var jrunner = new JasmineRunner();
+// Let TypeScript know this is a module
+export {};
+
+const jrunner = new JasmineRunner({projectBaseDir: path.resolve(__dirname, '../../')});
 (global as any)['jasmine'] = jrunner.jasmine;
 require('zone.js/dist/jasmine-patch.js');
-var rootDir = process.cwd();
-function rootDirRequire(moduleId: string) {
-  return require(path.join(rootDir, moduleId));
-}
 
-// Tun on full stack traces in errors to help debugging
+// Turn on full stack traces in errors to help debugging
 (<any>Error)['stackTraceLimit'] = Infinity;
 
-// Support passing multiple globs
-var globsIndex = process.argv.indexOf('--');
-var args: string[];
-if (globsIndex < 0) {
-  args = [process.argv[2]];
-} else {
-  args = process.argv.slice(globsIndex + 1);
-}
-
-var specFiles = args.map(function(globstr: string) { return glob.sync(globstr, {cwd: rootDir}); })
-                    .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), []);
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
-
+// Config the test runner
+jrunner.jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
+jrunner.loadConfig({
+  random: true,
+  spec_dir: '',
+});
+jrunner.seed(generateSeed('cjs-jasmine/index-tools'));
 jrunner.configureDefaultReporter({showColors: process.argv.indexOf('--no-color') === -1});
+jrunner.onComplete((passed: boolean) => process.exit(passed ? 0 : 1));
 
-jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
-jrunner.projectBaseDir = path.resolve(__dirname, '../../');
-jrunner.specDir = '';
-specFiles.forEach((file: string) => { rootDirRequire(file); });
+// Support passing multiple globs
+const rootDir = process.cwd();
+const globsIndex = process.argv.indexOf('--');
+const globs = (globsIndex === -1) ? [process.argv[2]] : process.argv.slice(globsIndex + 1);
+const specFiles = globs.map(globstr => glob.sync(globstr, {cwd: rootDir}) as string[])
+                      .reduce((allPaths, paths) => allPaths.concat(paths), []);
+
+// Load helpers and spec files
+const rootDirRequire = (relativePath: string) => require(path.join(rootDir, relativePath));
+specFiles.forEach(rootDirRequire);
+
+// Run the tests
 jrunner.execute();

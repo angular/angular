@@ -1,11 +1,14 @@
 {% extends 'base.template.html' -%}
 
 {% block body %}
-  {% include "includes/info-bar.html" %}
-  {% include "includes/what-it-does.html" %}
+  <section class="short-description">
+    {$ doc.shortDescription | marked $}
+    {% if doc.description %}<p><a href="#description">See more...</a></p>{% endif %}
+  </section>
   {% include "includes/security-notes.html" %}
   {% include "includes/deprecation.html" %}
   {% block overview %}{% endblock %}
-  {% include "includes/how-to-use.html" %}
+  {% include "includes/see-also.html" %}
   {% block details %}{% endblock %}
+  {% block endNotes %}{% include "includes/usageNotes.html" %}{% endblock %}
 {% endblock %}

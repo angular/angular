@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} from '../../index';
 
-export function main() {
+{
   describe('file reporter', () => {
     let loggedFile: any;
 
@@ -34,7 +34,7 @@ export function main() {
           }
         }
       ];
-      return Injector.create(providers).get(JsonFileReporter);
+      return Injector.create(providers).get<JsonFileReporter>(JsonFileReporter);
     }
 
     it('should write all data into a file',

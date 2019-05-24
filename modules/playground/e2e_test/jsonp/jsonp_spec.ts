@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('jsonp', function() {
 
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
-    const URL = 'all/playground/src/jsonp/index.html';
+    const URL = '/';
 
     it('should fetch and display people', function() {
       browser.get(URL);

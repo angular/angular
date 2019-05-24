@@ -11,7 +11,7 @@ import {HttpHeaders} from './headers';
 /**
  * Type enumeration for the different kinds of `HttpEvent`.
  *
- * @stable
+ * @publicApi
  */
 export enum HttpEventType {
   /**
@@ -48,7 +48,7 @@ export enum HttpEventType {
 /**
  * Base interface for progress events.
  *
- * @stable
+ * @publicApi
  */
 export interface HttpProgressEvent {
   /**
@@ -71,7 +71,7 @@ export interface HttpProgressEvent {
 /**
  * A download progress event.
  *
- * @stable
+ * @publicApi
  */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
   type: HttpEventType.DownloadProgress;
@@ -87,7 +87,7 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
 /**
  * An upload progress event.
  *
- * @stable
+ *
  */
 export interface HttpUploadProgressEvent extends HttpProgressEvent {
   type: HttpEventType.UploadProgress;
@@ -98,7 +98,7 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
  * when a request may be retried multiple times, to distinguish between
  * retries on the final event stream.
  *
- * @stable
+ * @publicApi
  */
 export interface HttpSentEvent { type: HttpEventType.Sent; }
 
@@ -108,7 +108,7 @@ export interface HttpSentEvent { type: HttpEventType.Sent; }
  * Grouping all custom events under this type ensures they will be handled
  * and forwarded by all implementations of interceptors.
  *
- * @stable
+ * @publicApi
  */
 export interface HttpUserEvent<T> { type: HttpEventType.User; }
 
@@ -118,7 +118,7 @@ export interface HttpUserEvent<T> { type: HttpEventType.User; }
  *
  * It bundles the Error object with the actual response body that failed to parse.
  *
- * @stable
+ *
  */
 export interface HttpJsonParseError {
   error: Error;
@@ -130,7 +130,7 @@ export interface HttpJsonParseError {
  *
  * Typed according to the expected type of the response.
  *
- * @stable
+ * @publicApi
  */
 export type HttpEvent<T> =
     HttpSentEvent | HttpHeaderResponse | HttpResponse<T>| HttpProgressEvent | HttpUserEvent<T>;
@@ -138,7 +138,7 @@ export type HttpEvent<T> =
 /**
  * Base class for both `HttpResponse` and `HttpHeaderResponse`.
  *
- * @stable
+ * @publicApi
  */
 export abstract class HttpResponseBase {
   /**
@@ -171,7 +171,8 @@ export abstract class HttpResponseBase {
   /**
    * Type of the response, narrowed to either the full response or the header.
    */
-  readonly type: HttpEventType.Response|HttpEventType.ResponseHeader;
+  // TODO(issue/24571): remove '!'.
+  readonly type !: HttpEventType.Response | HttpEventType.ResponseHeader;
 
   /**
    * Super-constructor for all responses.
@@ -206,7 +207,7 @@ export abstract class HttpResponseBase {
  * `HttpHeaderResponse` is a `HttpEvent` available on the response
  * event stream, only when progress events are requested.
  *
- * @stable
+ * @publicApi
  */
 export class HttpHeaderResponse extends HttpResponseBase {
   /**
@@ -247,7 +248,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
  * `HttpResponse` is a `HttpEvent` available on the response event
  * stream.
  *
- * @stable
+ * @publicApi
  */
 export class HttpResponse<T> extends HttpResponseBase {
   /**
@@ -262,7 +263,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     body?: T | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
   } = {}) {
     super(init);
-    this.body = init.body || null;
+    this.body = init.body !== undefined ? init.body : null;
   }
 
   readonly type: HttpEventType.Response = HttpEventType.Response;
@@ -297,7 +298,7 @@ export class HttpResponse<T> extends HttpResponseBase {
  * will contain either a wrapped Error object or the error response returned
  * from the server.
  *
- * @stable
+ * @publicApi
  */
 export class HttpErrorResponse extends HttpResponseBase implements Error {
   readonly name = 'HttpErrorResponse';

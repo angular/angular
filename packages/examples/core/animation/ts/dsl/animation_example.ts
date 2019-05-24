@@ -43,7 +43,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   `
 })
 export class MyExpandoCmp {
-  stateExpression: string;
+  // TODO(issue/24571): remove '!'.
+  stateExpression !: string;
   constructor() { this.collapse(); }
   expand() { this.stateExpression = 'expanded'; }
   collapse() { this.stateExpression = 'collapsed'; }
