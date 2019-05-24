@@ -58,35 +58,35 @@ export interface QueryPredicate<T> {
  * - values collected based on a predicate
  * - `QueryList` to which collected values should be reported
  */
-export interface LQuery<T> {
-  /**
-   * Next query. Used when queries are stored as a linked list in `LQueries`.
-   */
-  next: LQuery<any>|null;
+class LQuery<T> {
+  constructor(
+      /**
+       * Next query. Used when queries are stored as a linked list in `LQueries`.
+       */
+      public next: LQuery<any>|null,
 
-  /**
-   * Destination to which the value should be added.
-   */
-  list: QueryList<T>;
+      /**
+       * Destination to which the value should be added.
+       */
+      public list: QueryList<T>,
 
-  /**
-   * A predicate which determines if a given element/directive should be included in the query
-   * results.
-   */
-  predicate: QueryPredicate<T>;
+      /**
+       * A predicate which determines if a given element/directive should be included in the query
+       * results.
+       */
+      public predicate: QueryPredicate<T>,
 
-  /**
-   * Values which have been located.
-   *
-   * This is what builds up the `QueryList._valuesTree`.
-   */
-  values: any[];
+      /**
+       * Values which have been located.
+       * This is what builds up the `QueryList._valuesTree`.
+       */
+      public values: any[],
 
-  /**
-   * A pointer to an array that stores collected values from views. This is necessary so we know a
-   * container into which to insert nodes collected from views.
-   */
-  containerValues: any[]|null;
+      /**
+       * A pointer to an array that stores collected values from views. This is necessary so we
+       * know a container into which to insert nodes collected from views.
+       */
+      public containerValues: any[]|null) {}
 }
 
 export class LQueries_ implements LQueries {
@@ -145,14 +145,7 @@ function copyQueriesToContainer(query: LQuery<any>| null): LQuery<any>|null {
   while (query) {
     const containerValues: any[] = [];  // prepare room for views
     query.values.push(containerValues);
-    const clonedQuery: LQuery<any> = {
-      next: result,
-      list: query.list,
-      predicate: query.predicate,
-      values: containerValues,
-      containerValues: null
-    };
-    result = clonedQuery;
+    result = new LQuery<any>(result, query.list, query.predicate, containerValues, null);
     query = query.next;
   }
 
@@ -163,14 +156,7 @@ function copyQueriesToView(query: LQuery<any>| null): LQuery<any>|null {
   let result: LQuery<any>|null = null;
 
   while (query) {
-    const clonedQuery: LQuery<any> = {
-      next: result,
-      list: query.list,
-      predicate: query.predicate,
-      values: [],
-      containerValues: query.values
-    };
-    result = clonedQuery;
+    result = new LQuery<any>(result, query.list, query.predicate, [], query.values);
     query = query.next;
   }
 
@@ -349,13 +335,9 @@ function createPredicate<T>(predicate: Type<T>| string[], read: Type<T>| null): 
 function createLQuery<T>(
     previous: LQuery<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
     read: Type<T>| null): LQuery<T> {
-  return {
-    next: previous,
-    list: queryList,
-    predicate: createPredicate(predicate, read),
-    values: (queryList as any as QueryList_<T>)._valuesTree,
-    containerValues: null
-  };
+  return new LQuery(
+      previous, queryList, createPredicate(predicate, read),
+      (queryList as any as QueryList_<T>)._valuesTree, null);
 }
 
 type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
