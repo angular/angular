@@ -125,7 +125,7 @@ export function ɵɵelementStart(
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
     currentQueries.addNode(tNode);
-    lView[QUERIES] = currentQueries.clone();
+    lView[QUERIES] = currentQueries.clone(tNode);
   }
   executeContentQueries(tView, tNode, lView);
 }
@@ -153,7 +153,8 @@ export function ɵɵelementEnd(): void {
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
   const lView = getLView();
   const currentQueries = lView[QUERIES];
-  if (currentQueries) {
+  // Go back up to parent queries only if queries have been cloned on this element.
+  if (currentQueries && previousOrParentTNode.index === currentQueries.nodeIndex) {
     lView[QUERIES] = currentQueries.parent;
   }
 

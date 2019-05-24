@@ -25,8 +25,8 @@ import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW, TView} from './interfaces/view';
-import {getCurrentQueryIndex, getIsParent, getLView, isCreationMode, setCurrentQueryIndex} from './state';
-import {loadInternal} from './util/view_utils';
+import {getCurrentQueryIndex, getIsParent, getLView, getPreviousOrParentTNode, isCreationMode, setCurrentQueryIndex} from './state';
+import {isContentQueryHost, loadInternal} from './util/view_utils';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -92,7 +92,7 @@ class LQuery<T> {
 export class LQueries_ implements LQueries {
   constructor(
       public parent: LQueries_|null, private shallow: LQuery<any>|null,
-      private deep: LQuery<any>|null) {}
+      private deep: LQuery<any>|null, public nodeIndex: number = -1) {}
 
   track<T>(queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean, read?: Type<T>):
       void {
@@ -103,7 +103,11 @@ export class LQueries_ implements LQueries {
     }
   }
 
-  clone(): LQueries { return new LQueries_(this, null, this.deep); }
+  clone(tNode: TNode): LQueries {
+    return this.shallow !== null || isContentQueryHost(tNode) ?
+        new LQueries_(this, null, this.deep, tNode.index) :
+        this;
+  }
 
   container(): LQueries|null {
     const shallowResults = copyQueriesToContainer(this.shallow);
@@ -352,11 +356,11 @@ type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
  */
 function createQueryListInLView<T>(
     // TODO: "read" should be an AbstractType (FW-486)
-    lView: LView, predicate: Type<any>| string[], descend: boolean, read: any,
-    isStatic: boolean): QueryList<T> {
+    lView: LView, predicate: Type<any>| string[], descend: boolean, read: any, isStatic: boolean,
+    nodeIndex: number): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
   const queryList = new QueryList<T>() as QueryList_<T>;
-  const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null));
+  const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null, nodeIndex));
   queryList._valuesTree = [];
   queryList._static = isStatic;
   queries.track(queryList, predicate, descend, read);
@@ -430,7 +434,7 @@ function viewQueryInternal<T>(
   }
   const index = getCurrentQueryIndex();
   const queryList: QueryList<T> =
-      createQueryListInLView<T>(lView, predicate, descend, read, isStatic);
+      createQueryListInLView<T>(lView, predicate, descend, read, isStatic, -1);
   store(index - HEADER_OFFSET, queryList);
   setCurrentQueryIndex(index + 1);
   return queryList;
@@ -465,16 +469,18 @@ export function ɵɵcontentQuery<T>(
     read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];
-  return contentQueryInternal(lView, tView, directiveIndex, predicate, descend, read, false);
+  const tNode = getPreviousOrParentTNode();
+  return contentQueryInternal(
+      lView, tView, directiveIndex, predicate, descend, read, false, tNode.index);
 }
 
 function contentQueryInternal<T>(
     lView: LView, tView: TView, directiveIndex: number, predicate: Type<any>| string[],
     descend: boolean,
     // TODO(FW-486): "read" should be an AbstractType
-    read: any, isStatic: boolean): QueryList<T> {
+    read: any, isStatic: boolean, nodeIndex: number): QueryList<T> {
   const contentQuery: QueryList<T> =
-      createQueryListInLView<T>(lView, predicate, descend, read, isStatic);
+      createQueryListInLView<T>(lView, predicate, descend, read, isStatic, nodeIndex);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
@@ -505,7 +511,8 @@ export function ɵɵstaticContentQuery<T>(
     read: any): void {
   const lView = getLView();
   const tView = lView[TVIEW];
-  contentQueryInternal(lView, tView, directiveIndex, predicate, descend, read, true);
+  const tNode = getPreviousOrParentTNode();
+  contentQueryInternal(lView, tView, directiveIndex, predicate, descend, read, true, tNode.index);
   tView.staticContentQueries = true;
 }
 
