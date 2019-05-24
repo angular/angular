@@ -9,3 +9,6 @@ import {/* comment */ a as a3} from '@angular/material';
 
 // primary entry-point export
 import {VERSION} from '@angular/material';
+
+// type import
+import {SomeInterface} from '@angular/material';
