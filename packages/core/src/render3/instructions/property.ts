@@ -62,32 +62,6 @@ export function ɵɵbind<T>(value: T): T|NO_CHANGE {
 }
 
 /**
-* **TODO: Remove this function after `property` is in use**
-* Update a property on an element.
-*
-* If the property name also exists as an input property on one of the element's directives,
-* the component property will be set instead of the element property. This check must
-* be conducted at runtime so child components that add new @Inputs don't have to be re-compiled.
-*
-* @param index The index of the element to update in the data array
-* @param propName Name of property. Because it is going to DOM, this is not subject to
-*        renaming as part of minification.
-* @param value New value to write.
-* @param sanitizer An optional function used to sanitize the value.
-* @param nativeOnly Whether or not we should only set native properties and skip input check
-* (this is necessary for host property bindings)
- *
- * @codeGenApi
-*/
-export function ɵɵelementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean): void {
-  if (value !== NO_CHANGE) {
-    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
-  }
-}
-
-/**
  * Updates a synthetic host binding (e.g. `[@foo]`) on a component.
  *
  * This instruction is for compatibility purposes and is designed to ensure that a

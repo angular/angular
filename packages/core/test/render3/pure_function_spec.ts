@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart} from '../../src/render3/instructions/all';
+import {ɵɵdefineComponent, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpureFunction2} from '../../src/render3/pure_function';
 import {getDirectiveOnNode, renderToHtml} from '../../test/render3/render_util';
@@ -58,9 +58,10 @@ describe('object literals', () => {
               ɵɵelementEnd();
             }
             if (rf1 & RenderFlags.Update) {
-              ɵɵelementProperty(
-                  0, 'config', ɵɵbind(ɵɵpureFunction2(
-                                   1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+              ɵɵselect(0);
+              ɵɵproperty(
+                  'config',
+                  ɵɵpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration));
             }
             ɵɵembeddedViewEnd();
           }

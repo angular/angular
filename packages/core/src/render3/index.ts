@@ -54,7 +54,6 @@ export {
   ɵɵelementEnd,
 
   ɵɵelementHostAttrs,
-  ɵɵelementProperty,
   ɵɵelementStart,
   ɵɵembeddedViewEnd,
 

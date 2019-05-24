@@ -138,7 +138,7 @@ describe('compiler compliance: bindings', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source).not.toContain('i0.ɵɵelementProperty');
+      expect(result.source).not.toContain('i0.ɵɵproperty');
     });
 
     it('should not remap property names whose names do not correspond to their attribute names',
