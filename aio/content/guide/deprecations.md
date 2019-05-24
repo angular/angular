@@ -369,33 +369,27 @@ These two properties have subtle differences, so switching to `textContent` unde
 
 All of the `wtf*` APIs are deprecated and will be removed in a future version.
 
-{@a platform-webworker}
-### `platform-webworker`
-
-The `@angular/platform-*` packages enable Angular to be run in different contexts. Some examples are running Angular on the server (`@angular/platform-server`), in the browser (`@angular/platform-browser`), or in a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) (`@angular/platform-webworker`).
-
-Though web worker is useful to offload things requiring lots of processing, pushing whole apps to run in the web worker isn't a winning strategy due to many unresolved issues.
-
-Angular CLI doesn't allow use of these APIs because the build system and bundling doesn't support them. This whole package is deprecated in Angular version 8 and will be removed in the future. If you're currently using the `@angular/platform-webworker` APIs in production, please reach out to devrel@angular.io and let us know - we're interested in hearing your use cases.
-
-Instead, use web workers primarily for offloading CPU intensive, but functionally not critical, work needed for initial rendering (for example, in memory search, image processing, and so on).
-
-
-
 {@a webworker-apps}
-### platform-webworker Angular applications
+### Running Angular applications in platform-webworker 
 
+The `@angular/platform-*` packages enable Angular to be run in different contexts. For examples,
+`@angular/platform-server` enables Angular to be run on the server, and `@angular/platform-browser`
+enables Angular to be run in a web browser.
 
-platform-webworker has been around since the initial release of Angular version 2. It began as an experiment to leverage Angular's rendering architecture and try something different: to run an entire web application in a web worker.
+`@angular/platform-webworker` was introduced in Angular version 2 as an experiment in leveraging
+Angular's rendering architecture to run an entire web application in a
+[web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API). We've learned a lot
+from this experiment and have come to the conclusion that running the entire application in a web
+worker is not the best strategy for most applications.
 
-We've learned a lot from this experiment, and have come to the conclusion that pushing entire applications to run in a web worker is not a recipe for success for most applications. This is due to a number of unresolved issues, including:
+Going forward, we will focus our efforts related to web workers around their primary use case of
+offloading CPU-intensive, non-critical work needed for initial rendering (such as in-memory search
+and image processing). Learn more in the 
+[guide to Using Web Workers with the Angular CLI](guide/web-worker).
 
-* Poor or non-existent support for web worker APIs in web crawlers/indexers.
-* Poor support in build and bundling tooling.
-
-As a result, as of Angular version 8, we are deprecating the `platform-webworker` APIs in Angular. This consists of both NPM packages, `@angular/platform-webworker` and `@angular/platform-webworker-dynamic`.
-
-Going forward, we will focus our efforts related to web workers around their primary use case of offloading CPU-intensive but not critical work.
+As of Angular version 8, all  `platform-webworker` APIs are deprecated.
+This includes both packages: `@angular/platform-webworker` and
+`@angular/platform-webworker-dynamic`.
 
 {@a removed}
 ## Removed APIs
