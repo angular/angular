@@ -33,6 +33,7 @@ ng_test_library(
     "//src/cdk/collections",
     "//src/cdk/keycodes",
     "//src/cdk/testing",
+    "//src/cdk/overlay",
     "//src/cdk-experimental/popover-edit",
     "//src/material/table",
   ],

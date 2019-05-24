@@ -4,8 +4,9 @@ import {MatTableModule} from '@angular/material/table';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {CommonModule} from '@angular/common';
 import {Component, ElementRef, Type, ViewChild} from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
+import {OverlayContainer} from '@angular/cdk/overlay';
 import {BehaviorSubject} from 'rxjs';
 
 import {
@@ -263,15 +264,26 @@ describe('Material Popover Edit', () => {
     describe(label, () => {
       let component: BaseTestComponent;
       let fixture: ComponentFixture<BaseTestComponent>;
+      let overlayContainer: OverlayContainer;
 
       beforeEach(() => {
         TestBed.configureTestingModule({
           imports: [MatTableModule, MatPopoverEditModule, CommonModule, FormsModule],
           declarations: [componentClass],
         }).compileComponents();
+        inject([OverlayContainer], (oc: OverlayContainer) => {
+          overlayContainer = oc;
+        })();
         fixture = TestBed.createComponent(componentClass);
         component = fixture.componentInstance;
         fixture.detectChanges();
+      });
+
+      afterEach(() => {
+        // The overlay container's `ngOnDestroy` won't be called between test runs so we need
+        // to call it ourselves, in order to avoid leaking containers between tests and potentially
+        // throwing `querySelector` calls.
+        overlayContainer.ngOnDestroy();
       });
 
       describe('triggering edit', () => {
