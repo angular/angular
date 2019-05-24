@@ -370,7 +370,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(testDirs[2].tpl).toBeDefined();
     });
 
-    it('should not add ng-version for dynamically created components', () => {
+    it('should not add data-ng-version for dynamically created components', () => {
       @Component({template: ''})
       class App {
       }
