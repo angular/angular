@@ -32,7 +32,7 @@ queries have a 'static' flag specifying whether the query is 'static' or
 'dynamic'. The compiler previously sorted queries automatically, but in
 8.0 developers are required to explicitly specify which behavior is wanted.
 This is a temporary requirement as part of a migration; see
-https://angular.io/guide/static-query-migration for more details.
+https://v8.angular.io/guide/static-query-migration for more details.
 
 @ViewChildren and @ContentChildren queries are always dynamic, and so are
 unaffected.
