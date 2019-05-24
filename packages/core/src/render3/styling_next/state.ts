@@ -7,6 +7,19 @@
 */
 
 /**
+ * --------
+ *
+ * This file contains temporary code to incorporate the new styling refactor
+ * code to work alongside the existing instruction set.
+ *
+ * This file will be removed once `select(n)` is fully functional (once
+ * it is able to evaluate host bindings in sync element-by-element
+ * with template code).
+ *
+ * --------
+ */
+
+/**
  * A temporary enum of states that inform the core whether or not
  * to defer all styling instruction calls to the old or new
  * styling implementation.

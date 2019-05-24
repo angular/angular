@@ -13,7 +13,7 @@ import {renderStringify} from '../render3/util/misc_utils';
 import {BypassType, allowSanitizationBypass} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer, SecurityContext} from './security';
-import {StyleSanitizeFn, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
+import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -183,15 +183,22 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
  *
  * @publicApi
  */
-export const ɵɵdefaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
-  if (value === undefined) {
-    return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-        prop === 'filter' || prop === 'list-style' || prop === 'list-style-image' ||
-        prop === 'clip-path';
-  }
+export const ɵɵdefaultStyleSanitizer =
+    (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
+      mode = mode || StyleSanitizeMode.ValidateAndSanitize;
+      let doSanitizeValue = true;
+      if (mode & StyleSanitizeMode.ValidateProperty) {
+        doSanitizeValue = prop === 'background-image' || prop === 'background' ||
+            prop === 'border-image' || prop === 'filter' || prop === 'list-style' ||
+            prop === 'list-style-image' || prop === 'clip-path';
+      }
 
-  return ɵɵsanitizeStyle(value);
-} as StyleSanitizeFn);
+      if (mode & StyleSanitizeMode.SanitizeOnly) {
+        return doSanitizeValue ? ɵɵsanitizeStyle(value) : value;
+      } else {
+        return doSanitizeValue;
+      }
+    } as StyleSanitizeFn);
 
 export function validateAgainstEventProperties(name: string) {
   if (name.toLowerCase().startsWith('on')) {

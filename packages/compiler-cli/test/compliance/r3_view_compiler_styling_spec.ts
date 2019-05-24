@@ -7,7 +7,9 @@
  */
 
 import {AttributeMarker, ViewEncapsulation} from '@angular/compiler/src/core';
+import {CompilerStylingMode, compilerSetStylingMode} from '@angular/compiler/src/render3/view/styling_state';
 import {setup} from '@angular/compiler/test/aot/test_util';
+
 import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: styling', () => {
@@ -1462,5 +1464,48 @@ describe('compiler compliance: styling', () => {
 
     const result = compile(files, angularFiles);
     expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  describe('new styling refactor', () => {
+    beforeEach(() => { compilerSetStylingMode(CompilerStylingMode.UseNew); });
+
+    afterEach(() => { compilerSetStylingMode(CompilerStylingMode.UseOld); });
+
+    it('should generate a `styleSanitizer` instruction when one or more sanitizable style properties are statically detected',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              template: \`
+                <div [style.background-image]="bgExp"></div>
+              \`
+            })
+            export class MyAppComp {
+              bgExp = '';
+            }
+          `
+           }
+         };
+
+         const template = `
+        template: function MyAppComp_Template(rf, ctx) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
+            $r3$.ɵɵstyleProp(0, ctx.bgExp);
+            $r3$.ɵɵstylingApply();
+          }
+          …
+        }
+      `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
   });
 });

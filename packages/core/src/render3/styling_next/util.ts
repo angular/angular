@@ -8,7 +8,7 @@
 import {StylingContext} from '../interfaces/styling';
 import {getProp as getOldProp, getSinglePropIndexValue as getOldSinglePropIndexValue} from '../styling/class_and_style_bindings';
 
-import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex} from './interfaces';
+import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
 
@@ -19,7 +19,13 @@ const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
  * for map-based bindings.
  */
 export function allocStylingContext(): TStylingContext {
-  return [TStylingConfigFlags.Initial, 0, 0, 0, MAP_BASED_ENTRY_PROP_NAME];
+  // because map-based bindings deal with a dynamic set of values, there
+  // is no way to know ahead of time whether or not sanitization is required.
+  // For this reason the configuration will always mark sanitization as active
+  // (this means that when map-based values are applied then sanitization will
+  // be checked against each property).
+  const mapBasedConfig = TStylingContextPropConfigFlags.SanitizationRequired;
+  return [TStylingConfigFlags.Initial, 0, mapBasedConfig, 0, MAP_BASED_ENTRY_PROP_NAME];
 }
 
 /**
@@ -53,8 +59,24 @@ export function getProp(context: TStylingContext, index: number) {
   return context[index + TStylingContextIndex.PropOffset] as string;
 }
 
+function getPropConfig(context: TStylingContext, index: number): number {
+  return (context[index + TStylingContextIndex.ConfigAndGuardOffset] as number) &
+      TStylingContextPropConfigFlags.Mask;
+}
+
+export function isSanitizationRequired(context: TStylingContext, index: number) {
+  return (getPropConfig(context, index) & TStylingContextPropConfigFlags.SanitizationRequired) > 0;
+}
+
 export function getGuardMask(context: TStylingContext, index: number) {
-  return context[index + TStylingContextIndex.GuardOffset] as number;
+  const configGuardValue = context[index + TStylingContextIndex.ConfigAndGuardOffset] as number;
+  return configGuardValue >> TStylingContextPropConfigFlags.TotalBits;
+}
+
+export function setGuardMask(context: TStylingContext, index: number, maskValue: number) {
+  const config = getPropConfig(context, index);
+  const guardMask = maskValue << TStylingContextPropConfigFlags.TotalBits;
+  context[index + TStylingContextIndex.ConfigAndGuardOffset] = config | guardMask;
 }
 
 export function getValuesCount(context: TStylingContext, index: number) {

@@ -46,4 +46,5 @@ export * from './property_interpolation';
 export * from './select';
 export * from './styling';
 export * from './text';
+export {styleSanitizer as ɵɵstyleSanitizer} from '../styling_next/instructions';
 export * from './text_interpolation';
