@@ -17,7 +17,7 @@ import { FormArray } from '@angular/forms';
   styleUrls: ['./profile-editor.component.css']
 })
 export class ProfileEditorComponent {
-// #docregion required-validator, aliases
+  // #docregion required-validator, aliases
   profileForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: [''],
@@ -27,24 +27,24 @@ export class ProfileEditorComponent {
       state: [''],
       zip: ['']
     }),
-// #enddocregion form-builder, required-validator
+    // #enddocregion form-builder, required-validator
     aliases: this.fb.array([
       this.fb.control('')
     ])
-// #docregion form-builder, required-validator
+    // #docregion form-builder, required-validator
   });
-// #enddocregion form-builder, required-validator, aliases
-// #docregion aliases-getter
+  // #enddocregion form-builder, required-validator, aliases
+  // #docregion aliases-getter
 
   get aliases() {
     return this.profileForm.get('aliases') as FormArray;
   }
 
-// #enddocregion aliases-getter
-// #docregion inject-form-builder, form-builder
+  // #enddocregion aliases-getter
+  // #docregion inject-form-builder, form-builder
   constructor(private fb: FormBuilder) { }
 
-// #enddocregion inject-form-builder
+  // #enddocregion inject-form-builder
 
   updateProfile() {
     this.profileForm.patchValue({
@@ -54,20 +54,33 @@ export class ProfileEditorComponent {
       }
     });
   }
-// #enddocregion form-builder
-// #docregion add-alias
+  // #enddocregion form-builder
+  // #docregion add-alias
 
   addAlias() {
     this.aliases.push(this.fb.control(''));
   }
-// #enddocregion add-alias
-// #docregion on-submit
+  // #enddocregion add-alias
+  // #docregion on-submit
 
   onSubmit() {
     // TODO: Use EventEmitter with form value
     console.warn(this.profileForm.value);
   }
-// #enddocregion on-submit
-// #docregion form-builder
+  // #enddocregion on-submit
+  // #docregion remove-alias
+
+  removeAlias(i: number) {
+    this.aliases.removeAt(i);
+  }
+  // #enddocregion remove-alias
+
+  // #docregion clear-alias
+  // todo once example is updated to V8
+  // clearAll() {
+  //   this.aliases.clear();
+  // }
+  // #enddocregion clear-alias
+  // #docregion form-builder
 }
 // #enddocregion form-builder

@@ -26,7 +26,7 @@
       City:
       <input type="text" formControlName="city">
     </label>
-    
+
     <label>
       State:
       <input type="text" formControlName="state">
@@ -48,13 +48,17 @@
         Alias:
         <input type="text" [formControlName]="i">
       </label>
+      <button type="button" (click)="removeAlias(i)">Remove Alias</button>
     </div>
   </div>
+  <!-- to be uncommneted once portal is updated to v8 -->
+  <!-- <button type="button" (click)="clearAll()">Clear Alias</button> -->
   <!-- #enddocregion formarrayname -->
 
   <!-- #docregion submit-button -->
   <button type="submit" [disabled]="!profileForm.valid">Submit</button>
   <!-- #enddocregion submit-button -->
+
 </form>
 
 <hr>
