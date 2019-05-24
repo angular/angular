@@ -372,12 +372,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   private ingest(template: Template|Node[]): void {
     if (template instanceof Template) {
-      // For <ng-template>s, process inputs, outputs, template attributes,
-      // variables, and child nodes.
-      // References were processed in the scope of the containing template.
-      template.inputs.forEach(this.visitNode);
-      template.outputs.forEach(this.visitNode);
-      template.templateAttrs.forEach(this.visitNode);
+      // For <ng-template>s, process only variables and child nodes. Inputs, outputs, templateAttrs,
+      // and references were all processed in the scope of the containing template.
       template.variables.forEach(this.visitNode);
       template.children.forEach(this.visitNode);
 

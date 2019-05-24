@@ -270,6 +270,31 @@ describe('ngtsc type checking', () => {
     expect(diags[0].messageText).toContain('does_not_exist');
   });
 
+  it('should property type-check a microsyntax variable with the same name as the expression',
+     () => {
+       env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, Input, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngIf="foo as foo">{{foo}}</div>',
+    })
+    export class TestCmp<T extends {name: string}> {
+      foo: any;
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    export class Module {}
+    `);
+
+       const diags = env.driveDiagnostics();
+       expect(diags.length).toBe(0);
+     });
+
   it('should properly type-check inherited directives', () => {
     env.write('test.ts', `
     import {Component, Directive, Input, NgModule} from '@angular/core';
