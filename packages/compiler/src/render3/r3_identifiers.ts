@@ -80,6 +80,8 @@ export class Identifiers {
 
   static stylingApply: o.ExternalReference = {name: 'ɵɵstylingApply', moduleName: CORE};
 
+  static styleSanitizer: o.ExternalReference = {name: 'ɵɵstyleSanitizer', moduleName: CORE};
+
   static elementHostAttrs: o.ExternalReference = {name: 'ɵɵelementHostAttrs', moduleName: CORE};
 
   static containerCreate: o.ExternalReference = {name: 'ɵɵcontainer', moduleName: CORE};

@@ -5,10 +5,11 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 
-import {ApplyStylingFn, LStylingData, LStylingMap, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from './interfaces';
-import {allowStylingFlush, getBindingValue, getGuardMask, getProp, getPropValuesStartPosition, getValuesCount, hasValueChanged, isContextLocked, isStylingValueDefined, lockContext} from './util';
+import {ApplyStylingFn, LStylingData, LStylingMap, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
+import {allowStylingFlush, getBindingValue, getGuardMask, getProp, getPropValuesStartPosition, getValuesCount, hasValueChanged, isContextLocked, isSanitizationRequired, isStylingValueDefined, lockContext, setGuardMask} from './util';
 
 
 /**
@@ -49,7 +50,7 @@ let currentStyleIndex = STYLING_INDEX_START_VALUE;
 let currentClassIndex = STYLING_INDEX_START_VALUE;
 let stylesBitMask = 0;
 let classesBitMask = 0;
-let deferredBindingQueue: (TStylingContext | number | string | null)[] = [];
+let deferredBindingQueue: (TStylingContext | number | string | null | boolean)[] = [];
 
 /**
  * Visits a class-based binding and updates the new value (if changed).
@@ -64,11 +65,11 @@ let deferredBindingQueue: (TStylingContext | number | string | null)[] = [];
 export function updateClassBinding(
     context: TStylingContext, data: LStylingData, prop: string | null, bindingIndex: number,
     value: boolean | string | null | undefined | LStylingMap, deferRegistration: boolean,
-    forceUpdate?: boolean): void {
+    forceUpdate: boolean): void {
   const isMapBased = !prop;
   const index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : currentClassIndex++;
   const updated = updateBindingData(
-      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate);
+      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate, false);
   if (updated || forceUpdate) {
     classesBitMask |= 1 << index;
   }
@@ -86,12 +87,16 @@ export function updateClassBinding(
  */
 export function updateStyleBinding(
     context: TStylingContext, data: LStylingData, prop: string | null, bindingIndex: number,
-    value: String | string | number | null | undefined | LStylingMap, deferRegistration: boolean,
-    forceUpdate?: boolean): void {
+    value: String | string | number | null | undefined | LStylingMap,
+    sanitizer: StyleSanitizeFn | null, deferRegistration: boolean, forceUpdate: boolean): void {
   const isMapBased = !prop;
   const index = isMapBased ? STYLING_INDEX_FOR_MAP_BINDING : currentStyleIndex++;
+  const sanitizationRequired = isMapBased ?
+      true :
+      (sanitizer ? sanitizer(prop !, null, StyleSanitizeMode.ValidateProperty) : false);
   const updated = updateBindingData(
-      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate);
+      context, data, index, prop, bindingIndex, value, deferRegistration, forceUpdate,
+      sanitizationRequired);
   if (updated || forceUpdate) {
     stylesBitMask |= 1 << index;
   }
@@ -114,10 +119,10 @@ function updateBindingData(
     context: TStylingContext, data: LStylingData, counterIndex: number, prop: string | null,
     bindingIndex: number,
     value: string | String | number | boolean | null | undefined | LStylingMap,
-    deferRegistration?: boolean, forceUpdate?: boolean): boolean {
+    deferRegistration: boolean, forceUpdate: boolean, sanitizationRequired: boolean): boolean {
   if (!isContextLocked(context)) {
     if (deferRegistration) {
-      deferBindingRegistration(context, counterIndex, prop, bindingIndex);
+      deferBindingRegistration(context, counterIndex, prop, bindingIndex, sanitizationRequired);
     } else {
       deferredBindingQueue.length && flushDeferredBindings();
 
@@ -127,7 +132,7 @@ function updateBindingData(
       // update pass is executed (remember that all styling instructions
       // are run in the update phase, and, as a result, are no more
       // styling instructions that are run in the creation phase).
-      registerBinding(context, counterIndex, prop, bindingIndex);
+      registerBinding(context, counterIndex, prop, bindingIndex, sanitizationRequired);
     }
   }
 
@@ -150,8 +155,9 @@ function updateBindingData(
  * after the inheritance chain exits.
  */
 function deferBindingRegistration(
-    context: TStylingContext, counterIndex: number, prop: string | null, bindingIndex: number) {
-  deferredBindingQueue.splice(0, 0, context, counterIndex, prop, bindingIndex);
+    context: TStylingContext, counterIndex: number, prop: string | null, bindingIndex: number,
+    sanitizationRequired: boolean) {
+  deferredBindingQueue.unshift(context, counterIndex, prop, bindingIndex, sanitizationRequired);
 }
 
 /**
@@ -165,7 +171,8 @@ function flushDeferredBindings() {
     const count = deferredBindingQueue[i++] as number;
     const prop = deferredBindingQueue[i++] as string;
     const bindingIndex = deferredBindingQueue[i++] as number | null;
-    registerBinding(context, count, prop, bindingIndex);
+    const sanitizationRequired = deferredBindingQueue[i++] as boolean;
+    registerBinding(context, count, prop, bindingIndex, sanitizationRequired);
   }
   deferredBindingQueue.length = 0;
 }
@@ -208,7 +215,7 @@ function flushDeferredBindings() {
  */
 export function registerBinding(
     context: TStylingContext, countId: number, prop: string | null,
-    bindingValue: number | null | string | boolean) {
+    bindingValue: number | null | string | boolean, sanitizationRequired?: boolean) {
   // prop-based bindings (e.g `<div [style.width]="w" [class.foo]="f">`)
   if (prop) {
     let found = false;
@@ -220,7 +227,7 @@ export function registerBinding(
       if (found) {
         // all style/class bindings are sorted by property name
         if (prop < p) {
-          allocateNewContextEntry(context, i, prop);
+          allocateNewContextEntry(context, i, prop, sanitizationRequired);
         }
         addBindingIntoContext(context, false, i, bindingValue, countId);
         break;
@@ -229,7 +236,7 @@ export function registerBinding(
     }
 
     if (!found) {
-      allocateNewContextEntry(context, context.length, prop);
+      allocateNewContextEntry(context, context.length, prop, sanitizationRequired);
       addBindingIntoContext(context, false, i, bindingValue, countId);
     }
   } else {
@@ -241,15 +248,18 @@ export function registerBinding(
   }
 }
 
-function allocateNewContextEntry(context: TStylingContext, index: number, prop: string) {
+function allocateNewContextEntry(
+    context: TStylingContext, index: number, prop: string, sanitizationRequired?: boolean) {
   // 1,2: splice index locations
-  // 3: each entry gets a guard mask value that is used to check against updates
+  // 3: each entry gets a config value (guard mask + flags)
   // 4. each entry gets a size value (which is always one because there is always a default binding
   // value)
   // 5. the property that is getting allocated into the context
   // 6. the default binding value (usually `null`)
-  context.splice(
-      index, 0, DEFAULT_GUARD_MASK_VALUE, DEFAULT_SIZE_VALUE, prop, DEFAULT_BINDING_VALUE);
+  const config = sanitizationRequired ? TStylingContextPropConfigFlags.SanitizationRequired :
+                                        TStylingContextPropConfigFlags.Default;
+  context.splice(index, 0, config, DEFAULT_SIZE_VALUE, prop, DEFAULT_BINDING_VALUE);
+  setGuardMask(context, index, DEFAULT_GUARD_MASK_VALUE);
 }
 
 /**
@@ -285,7 +295,12 @@ function addBindingIntoContext(
   if (typeof bindingValue === 'number') {
     context.splice(lastValueIndex, 0, bindingValue);
     (context[index + TStylingContextIndex.ValuesCountOffset] as number)++;
-    (context[index + TStylingContextIndex.GuardOffset] as number) |= 1 << countId;
+
+    // now that a new binding index has been added to the property
+    // the guard mask bit value (at the `countId` position) needs
+    // to be included into the existing mask value.
+    const guardMask = getGuardMask(context, index) | (1 << countId);
+    setGuardMask(context, index, guardMask);
   } else if (typeof bindingValue === 'string' && context[lastValueIndex] == null) {
     context[lastValueIndex] = bindingValue;
   }
@@ -294,37 +309,49 @@ function addBindingIntoContext(
 /**
  * Applies all class entries in the provided context to the provided element and resets
  * any counter and/or bitMask values associated with class bindings.
+ *
+ * @returns whether or not the classes were flushed to the element.
  */
 export function applyClasses(
     renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData, context: TStylingContext,
-    element: RElement, directiveIndex: number) {
+    element: RElement, directiveIndex: number): boolean {
+  let classesFlushed = false;
   if (allowStylingFlush(context, directiveIndex)) {
     const isFirstPass = !isContextLocked(context);
     isFirstPass && lockContext(context);
     if (classesBitMask) {
-      applyStyling(context, renderer, element, data, classesBitMask, setClass);
+      // there is no way to sanitize a class value therefore `sanitizer=null`
+      applyStyling(context, renderer, element, data, classesBitMask, setClass, null);
       classesBitMask = 0;
+      classesFlushed = true;
     }
     currentClassIndex = STYLING_INDEX_START_VALUE;
   }
+  return classesFlushed;
 }
 
 /**
  * Applies all style entries in the provided context to the provided element and resets
  * any counter and/or bitMask values associated with style bindings.
+ *
+ * @returns whether or not the styles were flushed to the element.
  */
 export function applyStyles(
     renderer: Renderer3 | ProceduralRenderer3 | null, data: LStylingData, context: TStylingContext,
-    element: RElement, directiveIndex: number) {
+    element: RElement, directiveIndex: number, sanitizer: StyleSanitizeFn | null): boolean {
+  let stylesFlushed = false;
   if (allowStylingFlush(context, directiveIndex)) {
     const isFirstPass = !isContextLocked(context);
     isFirstPass && lockContext(context);
     if (stylesBitMask) {
-      applyStyling(context, renderer, element, data, stylesBitMask, setStyle);
+      applyStyling(context, renderer, element, data, stylesBitMask, setStyle, sanitizer);
       stylesBitMask = 0;
+      stylesFlushed = true;
     }
     currentStyleIndex = STYLING_INDEX_START_VALUE;
+    return true;
   }
+  return stylesFlushed;
 }
 
 /**
@@ -355,7 +382,8 @@ export function applyStyles(
  */
 export function applyStyling(
     context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-    bindingData: LStylingData, bitMaskValue: number | boolean, applyStylingFn: ApplyStylingFn) {
+    bindingData: LStylingData, bitMaskValue: number | boolean, applyStylingFn: ApplyStylingFn,
+    sanitizer: StyleSanitizeFn | null) {
   deferredBindingQueue.length && flushDeferredBindings();
 
   const bitMask = normalizeBitMaskValue(bitMaskValue);
@@ -380,9 +408,12 @@ export function applyStyling(
       // value gets set for the styling binding
       for (let j = 0; j < valuesCountUpToDefault; j++) {
         const bindingIndex = getBindingValue(context, i, j) as number;
-        const valueToApply = bindingData[bindingIndex];
-        if (isStylingValueDefined(valueToApply)) {
-          applyStylingFn(renderer, element, prop, valueToApply, bindingIndex);
+        const value = bindingData[bindingIndex];
+        if (isStylingValueDefined(value)) {
+          const finalValue = sanitizer && isSanitizationRequired(context, i) ?
+              sanitizer(prop, value, StyleSanitizeMode.SanitizeOnly) :
+              value;
+          applyStylingFn(renderer, element, prop, finalValue, bindingIndex);
           valueApplied = true;
           break;
         }
@@ -397,7 +428,8 @@ export function applyStyling(
         const mode = mapsMode | (valueApplied ? StylingMapsSyncMode.SkipTargetProp :
                                                 StylingMapsSyncMode.ApplyTargetProp);
         const valueAppliedWithinMap = stylingMapsSyncFn(
-            context, renderer, element, bindingData, applyStylingFn, mode, prop, defaultValue);
+            context, renderer, element, bindingData, applyStylingFn, sanitizer, mode, prop,
+            defaultValue);
         valueApplied = valueApplied || valueAppliedWithinMap;
       }
 
@@ -417,7 +449,7 @@ export function applyStyling(
   // values. For this reason, one more call to the sync function
   // needs to be issued at the end.
   if (stylingMapsSyncFn) {
-    stylingMapsSyncFn(context, renderer, element, bindingData, applyStylingFn, mapsMode);
+    stylingMapsSyncFn(context, renderer, element, bindingData, applyStylingFn, sanitizer, mapsMode);
   }
 }
 

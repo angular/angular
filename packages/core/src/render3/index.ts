@@ -102,6 +102,7 @@ export {
   ɵɵselect,
   ɵɵstyleMap,
   ɵɵstyleProp,
+  ɵɵstyleSanitizer,
   ɵɵstyling,
   ɵɵstylingApply,
   ɵɵtemplate,

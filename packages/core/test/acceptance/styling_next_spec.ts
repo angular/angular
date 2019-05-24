@@ -7,11 +7,15 @@
  */
 import {CompilerStylingMode, compilerSetStylingMode} from '@angular/compiler/src/render3/view/styling_state';
 import {Component, Directive, HostBinding, Input, ViewChild} from '@angular/core';
+import {SecurityContext} from '@angular/core/src/core';
+import {getLContext} from '@angular/core/src/render3/context_discovery';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/debug';
+import {SANITIZER} from '@angular/core/src/render3/interfaces/view';
 import {RuntimeStylingMode, runtimeSetStylingMode} from '@angular/core/src/render3/styling_next/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters as resetStylingCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
+import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
@@ -574,6 +578,161 @@ describe('new styling integration', () => {
             assertStyle(element, 'color', 'blue');
             assertStyle(element, 'opacity', '');
           });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should sanitize style values before writing them', () => {
+        @Component({
+          template: `
+                <div [style.width]="widthExp"
+                     [style.background-image]="bgImageExp"
+                     [style]="styleMapExp"></div>
+              `
+        })
+        class Cmp {
+          widthExp = '';
+          bgImageExp = '';
+          styleMapExp: any = {};
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        const lastSanitizedProps: any[] = [];
+        styles.overrideSanitizer((prop, value) => {
+          lastSanitizedProps.push(prop);
+          return value;
+        });
+
+        comp.bgImageExp = '123';
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'width': null,
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image']);
+        lastSanitizedProps.length = 0;
+
+        comp.styleMapExp = {'clip-path': '456'};
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'clip-path': '456',
+          'width': null,
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image', 'clip-path']);
+        lastSanitizedProps.length = 0;
+
+        comp.widthExp = '789px';
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'background-image': '123',
+          'clip-path': '456',
+          'width': '789px',
+        });
+
+        expect(lastSanitizedProps).toEqual(['background-image', 'clip-path']);
+        lastSanitizedProps.length = 0;
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should apply a unit to a style before writing it', () => {
+        @Component({
+          template: `
+            <div [style.width.px]="widthExp"
+                 [style.height.em]="heightExp"></div>
+          `
+        })
+        class Cmp {
+          widthExp: string|number|null = '';
+          heightExp: string|number|null = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+
+        comp.widthExp = '200';
+        comp.heightExp = 10;
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'width': '200px',
+          'height': '10em',
+        });
+
+        comp.widthExp = 0;
+        comp.heightExp = null;
+        fixture.detectChanges();
+
+        expect(styles.values).toEqual({
+          'width': '0px',
+          'height': null,
+        });
+      });
+
+  onlyInIvy('only ivy has style/class bindings debugging support')
+      .it('should pick up and use the sanitizer present in the lView', () => {
+        @Component({
+          template: `
+            <div [style.width]="w"></div>
+          `
+        })
+        class Cmp {
+          w = '100px';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+        const lView = getLContext(element) !.lView;
+        lView[SANITIZER] = new MockSanitizer(value => { return `${value}-safe`; });
+
+        comp.w = '200px';
+        fixture.detectChanges();
+
+        const node = getDebugNode(element) !;
+        const styles = node.styles !;
+        expect(styles.values['width']).toEqual('200px-safe');
+      });
+
+  it('should be able to bind a SafeValue to clip-path', () => {
+    @Component({template: '<div [style.clip-path]="path"></div>'})
+    class Cmp {
+      path !: SafeStyle;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    const sanitizer: DomSanitizer = TestBed.get(DomSanitizer);
+
+    fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
+    fixture.detectChanges();
+
+    const html = fixture.nativeElement.innerHTML;
+
+    // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
+    // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
+    expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
+  });
 });
 
 function assertStyleCounters(countForSet: number, countForRemove: number) {
@@ -596,4 +755,9 @@ function getDebugNode(element: Node): DebugNode|null {
     }
   }
   return null;
+}
+
+class MockSanitizer {
+  constructor(private _interceptorFn: ((value: any) => any)) {}
+  sanitize(context: SecurityContext, value: any): string|null { return this._interceptorFn(value); }
 }

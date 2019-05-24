@@ -7,8 +7,7 @@
  */
 import {DEFAULT_GUARD_MASK_VALUE, registerBinding} from '@angular/core/src/render3/styling_next/bindings';
 import {attachStylingDebugObject} from '@angular/core/src/render3/styling_next/styling_debug';
-
-import {allocStylingContext} from '../../../src/render3/styling_next/util';
+import {allocTStylingContext} from '../../../src/render3/styling_next/util';
 
 describe('styling context', () => {
   it('should register a series of entries into the context', () => {
@@ -20,6 +19,7 @@ describe('styling context', () => {
     expect(debug.entries['width']).toEqual({
       prop: 'width',
       valuesCount: 1,
+      sanitizationRequired: false,
       guardMask: buildGuardMask(),
       defaultValue: '100px',
       sources: ['100px'],
@@ -28,6 +28,7 @@ describe('styling context', () => {
     registerBinding(context, 2, 'width', 20);
     expect(debug.entries['width']).toEqual({
       prop: 'width',
+      sanitizationRequired: false,
       valuesCount: 2,
       guardMask: buildGuardMask(2),
       defaultValue: '100px',
@@ -39,6 +40,7 @@ describe('styling context', () => {
     expect(debug.entries['height']).toEqual({
       prop: 'height',
       valuesCount: 3,
+      sanitizationRequired: false,
       guardMask: buildGuardMask(3, 4),
       defaultValue: null,
       sources: [10, 15, null],
@@ -50,9 +52,11 @@ describe('styling context', () => {
     const context = debug.context;
 
     registerBinding(context, 1, 'width', null);
+    const x = debug.entries['width'];
     expect(debug.entries['width']).toEqual({
       prop: 'width',
       valuesCount: 1,
+      sanitizationRequired: false,
       guardMask: buildGuardMask(),
       defaultValue: null,
       sources: [null]
@@ -62,6 +66,7 @@ describe('styling context', () => {
     expect(debug.entries['width']).toEqual({
       prop: 'width',
       valuesCount: 1,
+      sanitizationRequired: false,
       guardMask: buildGuardMask(),
       defaultValue: '100px',
       sources: ['100px']
@@ -71,6 +76,7 @@ describe('styling context', () => {
     expect(debug.entries['width']).toEqual({
       prop: 'width',
       valuesCount: 1,
+      sanitizationRequired: false,
       guardMask: buildGuardMask(),
       defaultValue: '100px',
       sources: ['100px']
@@ -79,7 +85,7 @@ describe('styling context', () => {
 });
 
 function makeContextWithDebug() {
-  const ctx = allocStylingContext();
+  const ctx = allocTStylingContext();
   return attachStylingDebugObject(ctx);
 }
 

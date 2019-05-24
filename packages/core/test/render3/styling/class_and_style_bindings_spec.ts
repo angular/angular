@@ -23,7 +23,7 @@ import {registerHostDirective} from '../../../src/render3/styling/host_instructi
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
 import {allocStylingContext, createEmptyStylingContext} from '../../../src/render3/styling/util';
 import {ɵɵdefaultStyleSanitizer} from '../../../src/sanitization/sanitization';
-import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../../src/sanitization/style_sanitizer';
 import {ComponentFixture, renderToHtml} from '../render_util';
 
 import {MockPlayer} from './mock_player';
@@ -2991,11 +2991,16 @@ describe('style and class based bindings', () => {
     });
 
     it('should sanitize styles before they are passed into the player', () => {
-      const sanitizer = (function(prop: string, value?: string): string | boolean {
-        if (value === undefined) {
-          return prop === 'width' || prop === 'height';
+      const sanitizer = (function(prop: string, value: string, mode: StyleSanitizeMode): any {
+        let allow = true;
+        if (mode & StyleSanitizeMode.ValidateProperty) {
+          allow = prop === 'width' || prop === 'height';
+        }
+
+        if (mode & StyleSanitizeMode.SanitizeOnly) {
+          return allow ? `${value}-safe!` : value;
         } else {
-          return `${value}-safe!`;
+          return allow;
         }
       }) as StyleSanitizeFn;
 

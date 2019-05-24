@@ -195,8 +195,8 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
       let styles: DebugNewStyling|null = null;
       let classes: DebugNewStyling|null = null;
       if (runtimeIsNewStylingInUse()) {
-        styles = tNode.newStyles ? new NodeStylingDebug(tNode.newStyles, lView) : null;
-        classes = tNode.newClasses ? new NodeStylingDebug(tNode.newClasses, lView) : null;
+        styles = tNode.newStyles ? new NodeStylingDebug(tNode.newStyles, lView, false) : null;
+        classes = tNode.newClasses ? new NodeStylingDebug(tNode.newClasses, lView, true) : null;
       }
 
       debugNodes.push({

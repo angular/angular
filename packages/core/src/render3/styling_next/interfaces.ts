@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 import {LView} from '../interfaces/view';
 
@@ -200,16 +201,16 @@ import {LView} from '../interfaces/view';
  * In order to figure out which value to apply, the following
  * binding prioritization is adhered to:
  *
- * 1. First template-level styling bindings are applied (if present).
- *    This includes things like `[style.width]` and `[class.active]`.
+ *   1. First template-level styling bindings are applied (if present).
+ *      This includes things like `[style.width]` and `[class.active]`.
  *
- * 2. Second are styling-level host bindings present in directives.
- *    (if there are sub/super directives present then the sub directives
- *    are applied first).
+ *   2. Second are styling-level host bindings present in directives.
+ *      (if there are sub/super directives present then the sub directives
+ *      are applied first).
  *
- * 3. Third are styling-level host bindings present in components.
- *    (if there are sub/super components present then the sub directives
- *    are applied first).
+ *   3. Third are styling-level host bindings present in components.
+ *      (if there are sub/super components present then the sub directives
+ *      are applied first).
  *
  * This means that in the code above the styling binding present in the
  * template is applied first and, only if its falsy, then the directive
@@ -225,7 +226,39 @@ import {LView} from '../interfaces/view';
  * For the algorithm to apply styling values efficiently, the
  * styling map entries must be applied in sync (property by property)
  * with prop-based bindings. (The map-based algorithm is described
- * more inside of the `render3/stlying_next/map_based_bindings.ts` file.)
+ * more inside of the `render3/styling_next/map_based_bindings.ts` file.)
+ *
+ * ## Sanitization
+ * Sanitization is used to prevent invalid style values from being applied to
+ * the element.
+ *
+ * It is enabled in two cases:
+ *
+ *   1. The `styleSanitizer(sanitizerFn)` instruction was called (just before any other
+ *      styling instructions are run).
+ *
+ *   2. The component/directive `LView` instance has a sanitizer object attached to it
+ *      (this happens when `renderComponent` is executed with a `sanitizer` value or
+ *      if the ngModule contains a sanitizer provider attached to it).
+ *
+ * If and when sanitization is active then all property/value entries will be evaluated
+ * through the active sanitizer before they are applied to the element (or the styling
+ * debug handler).
+ *
+ * If a `Sanitizer` object is used (via the `LView[SANITIZER]` value) then that object
+ * will be used for every property.
+ *
+ * If a `StyleSanitizerFn` function is used (via the `styleSanitizer`) then it will be
+ * called in two ways:
+ *
+ *   1. property validation mode: this will be called early to mark whether a property
+ *      should be sanitized or not at during the flushing stage.
+ *
+ *   2. value sanitization mode: this will be called during the flushing stage and will
+ *      run the sanitizer function against the value before applying it to the element.
+ *
+ * If sanitization returns an empty value then that empty value will be applied
+ * to the element.
  */
 export interface TStylingContext extends Array<number|string|number|boolean|null|LStylingMap> {
   /** Configuration data for the context */
@@ -289,10 +322,20 @@ export const enum TStylingContextIndex {
 
   // each tuple entry in the context
   // (mask, count, prop, ...bindings||default-value)
-  GuardOffset = 0,
+  ConfigAndGuardOffset = 0,
   ValuesCountOffset = 1,
   PropOffset = 2,
   BindingsStartOffset = 3,
+}
+
+/**
+ * A series of flags used for each property entry within the `TStylingContext`.
+ */
+export const enum TStylingContextPropConfigFlags {
+  Default = 0b0,
+  SanitizationRequired = 0b1,
+  TotalBits = 1,
+  Mask = 0b1,
 }
 
 /**
@@ -370,8 +413,8 @@ export const enum LStylingMapIndex {
  */
 export interface SyncStylingMapsFn {
   (context: TStylingContext, renderer: Renderer3|ProceduralRenderer3|null, element: RElement,
-   data: LStylingData, applyStylingFn: ApplyStylingFn, mode: StylingMapsSyncMode,
-   targetProp?: string|null, defaultValue?: string|null): boolean;
+   data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn|null,
+   mode: StylingMapsSyncMode, targetProp?: string|null, defaultValue?: string|null): boolean;
 }
 
 /**
