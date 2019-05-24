@@ -44,13 +44,5 @@ sass_binary(
   ],
   deps = [
     "//src/material/core:all_themes",
-    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-    "//src/material-experimental/mdc-button:button_scss_lib",
-    "//src/material-experimental/mdc-card:card_scss_lib",
-    "//src/material-experimental/mdc-checkbox:checkbox_scss_lib",
-    "//src/material-experimental/mdc-chips:chips_scss_lib",
-    "//src/material-experimental/mdc-menu:menu_scss_lib",
-    "//src/material-experimental/mdc-radio:radio_scss_lib",
-    "//src/material-experimental/mdc-slide-toggle:slide_toggle_scss_lib",
   ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS
 )

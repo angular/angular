@@ -15,7 +15,7 @@
     "postinstall": "ngc -p angular-tsconfig.json",
     "build": "gulp build-release-packages",
     "dev-app": "gulp serve:devapp",
-    "test": "gulp test",
+    "test": "bazel test //src/...",
     "lint": "gulp lint",
     "e2e": "bazel test //e2e/...",
     "deploy": "gulp deploy:devapp",

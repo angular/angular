@@ -79,6 +79,14 @@ MATERIAL_SCSS_LIBS = [
 ]
 
 MATERIAL_EXPERIMENTAL_PACKAGES = [
+  "mdc-button",
+  "mdc-card",
+  "mdc-checkbox",
+  "mdc-chips",
+  "mdc-helpers",
+  "mdc-menu",
+  "mdc-radio",
+  "mdc-slide-toggle",
   "popover-edit",
 ]
 

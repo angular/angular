@@ -15,7 +15,7 @@ ng_module(
 )
 
 sass_library(
-  name = "card_scss_lib",
+  name = "mdc_card_scss_lib",
   srcs = glob(["**/_*.scss"]),
   deps = [
     "//src/material/core:core_scss_lib",

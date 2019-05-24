@@ -17,7 +17,7 @@ ng_module(
 )
 
 sass_library(
-    name = "button_scss_lib",
+    name = "mdc_button_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
         "//src/material/core:core_scss_lib",
