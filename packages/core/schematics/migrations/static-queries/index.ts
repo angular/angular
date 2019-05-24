@@ -58,7 +58,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
   logger.info('With Angular version 8, developers need to');
   logger.info('explicitly specify the timing of ViewChild and');
   logger.info('ContentChild queries. Read more about this here:');
-  logger.info('https://angular.io/guide/static-query-migration');
+  logger.info('https://v8.angular.io/guide/static-query-migration');
 
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
@@ -101,7 +101,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     logger.info('Some queries could not be migrated automatically. Please go');
     logger.info('through these manually and apply the appropriate timing.');
     logger.info('For more info on how to choose a flag, please see: ');
-    logger.info('https://angular.io/guide/static-query-migration');
+    logger.info('https://v8.angular.io/guide/static-query-migration');
     failures.forEach(failure => logger.warn(`⮑   ${failure}`));
   }
 
