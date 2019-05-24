@@ -5,20 +5,24 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer} from '../../sanitization/security';
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {LContainer} from '../interfaces/container';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {StylingContext as OldStylingContext, StylingIndex as OldStylingIndex} from '../interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, HOST, LView, RENDERER} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, HOST, LView, RENDERER, SANITIZER} from '../interfaces/view';
 import {getActiveDirectiveId, getActiveDirectiveSuperClassDepth, getActiveDirectiveSuperClassHeight, getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+import {renderStringify} from '../util/misc_utils';
 import {getTNode, isStylingContext as isOldStylingContext} from '../util/view_utils';
 
 import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateStyleBinding} from './bindings';
 import {TStylingContext} from './interfaces';
 import {activeStylingMapFeature, normalizeIntoStylingMap} from './map_based_bindings';
+import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
 import {attachStylingDebugObject} from './styling_debug';
-import {allocStylingContext, hasValueChanged, updateContextDirectiveIndex} from './util';
+import {allocTStylingContext, getCurrentOrLViewSanitizer, hasValueChanged, updateContextDirectiveIndex} from './util';
 
 
 
@@ -52,11 +56,31 @@ export function stylingInit() {
 }
 
 /**
+ * Sets the current style sanitizer function which will then be used
+ * within all follow-up prop and map-based style binding instructions
+ * for the given element.
+ *
+ * Note that once styling has been applied to the element (i.e. once
+ * `select(n)` is executed or the hostBindings/template function exits)
+ * then the active `sanitizerFn` will be set to `null`. This means that
+ * once styling is applied to another element then a another call to
+ * `styleSanitizer` will need to be made.
+ *
+ * @param sanitizerFn The sanitization function that will be used to
+ *       process style prop/value entries.
+ *
+ * @codeGenApi
+ */
+export function styleSanitizer(sanitizer: Sanitizer | StyleSanitizeFn | null): void {
+  setCurrentStyleSanitizer(sanitizer);
+}
+
+/**
  * Mirror implementation of the `styleProp()` instruction (found in `instructions/styling.ts`).
  */
 export function styleProp(
     prop: string, value: string | number | String | null, suffix?: string | null): void {
-  _stylingProp(prop, value, false);
+  _stylingProp(prop, resolveStylePropValue(value, suffix), false);
 }
 
 /**
@@ -79,10 +103,12 @@ function _stylingProp(
   if (isClassBased) {
     updateClassBinding(
         getClassesContext(tNode), lView, prop, bindingIndex, value as string | boolean | null,
-        defer);
+        defer, false);
   } else {
+    const sanitizer = getCurrentOrLViewSanitizer(lView);
     updateStyleBinding(
-        getStylesContext(tNode), lView, prop, bindingIndex, value as string | null, defer);
+        getStylesContext(tNode), lView, prop, bindingIndex, value as string | null, sanitizer,
+        defer, false);
   }
 }
 
@@ -122,8 +148,10 @@ function _stylingMap(value: {[key: string]: any} | string | null, isClassBased: 
       updateClassBinding(
           getClassesContext(tNode), lView, null, bindingIndex, lStylingMap, defer, valueHasChanged);
     } else {
+      const sanitizer = getCurrentOrLViewSanitizer(lView);
       updateStyleBinding(
-          getStylesContext(tNode), lView, null, bindingIndex, lStylingMap, defer, valueHasChanged);
+          getStylesContext(tNode), lView, null, bindingIndex, lStylingMap, sanitizer, defer,
+          valueHasChanged);
     }
   }
 }
@@ -151,7 +179,11 @@ export function stylingApply() {
   const native = getNativeFromLView(index, lView);
   const directiveIndex = getActiveDirectiveStylingIndex();
   applyClasses(renderer, lView, getClassesContext(tNode), native, directiveIndex);
-  applyStyles(renderer, lView, getStylesContext(tNode), native, directiveIndex);
+
+  const sanitizer = getCurrentOrLViewSanitizer(lView);
+  applyStyles(renderer, lView, getStylesContext(tNode), native, directiveIndex, sanitizer);
+
+  setCurrentStyleSanitizer(null);
 }
 
 /**
@@ -202,10 +234,10 @@ export function registerInitialStylingIntoContext(
       mode = attr;
     } else if (mode == AttributeMarker.Classes) {
       classesContext = classesContext || getClassesContext(tNode);
-      registerBinding(classesContext, -1, attr as string, true);
+      registerBinding(classesContext, -1, attr as string, true, false);
     } else if (mode == AttributeMarker.Styles) {
       stylesContext = stylesContext || getStylesContext(tNode);
-      registerBinding(stylesContext, -1, attr as string, attrs[++i] as string);
+      registerBinding(stylesContext, -1, attr as string, attrs[++i] as string, false);
     }
   }
 }
@@ -254,7 +286,7 @@ function getClassesContext(tNode: TNode): TStylingContext {
 function getContext(tNode: TNode, isClassBased: boolean) {
   let context = isClassBased ? tNode.newClasses : tNode.newStyles;
   if (!context) {
-    context = allocStylingContext();
+    context = allocTStylingContext();
     if (ngDevMode) {
       attachStylingDebugObject(context);
     }
@@ -265,4 +297,23 @@ function getContext(tNode: TNode, isClassBased: boolean) {
     }
   }
   return context;
+}
+
+function resolveStylePropValue(
+    value: string | number | String | null, suffix: string | null | undefined) {
+  let resolvedValue: string|null = null;
+  if (value !== null) {
+    if (suffix) {
+      // when a suffix is applied then it will bypass
+      // sanitization entirely (b/c a new string is created)
+      resolvedValue = renderStringify(value) + suffix;
+    } else {
+      // sanitization happens by dealing with a String value
+      // this means that the string value will be passed through
+      // into the style rendering later (which is where the value
+      // will be sanitized before it is applied)
+      resolvedValue = value as any as string;
+    }
+  }
+  return resolvedValue;
 }

@@ -5,13 +5,19 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer} from '../../sanitization/security';
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {RElement} from '../interfaces/renderer';
+import {LView, SANITIZER} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 
 import {applyStyling} from './bindings';
 import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex} from './interfaces';
 import {activeStylingMapFeature} from './map_based_bindings';
-import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked, isMapBased} from './util';
+import {getCurrentStyleSanitizer} from './state';
+import {getCurrentOrLViewSanitizer, getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked, isMapBased, isSanitizationRequired} from './util';
+
+
 
 /**
  * --------
@@ -59,6 +65,11 @@ export interface DebugStyling {
    * runtime values.
    */
   values: {[key: string]: string | number | null | boolean};
+
+  /**
+   * Overrides the sanitizer used to process styles.
+   */
+  overrideSanitizer(sanitizer: StyleSanitizeFn|null): void;
 }
 
 /**
@@ -76,6 +87,11 @@ export interface TStylingTupleSummary {
    * styling changes when and styling bindings update
    */
   guardMask: number;
+
+  /**
+   * Whether or not the entry requires sanitization
+   */
+  sanitizationRequired: boolean;
 
   /**
    * The default value that will be applied if any bindings are falsy.
@@ -127,6 +143,7 @@ class TStylingContextDebug {
         const prop = getProp(context, i);
         const guardMask = getGuardMask(context, i);
         const defaultValue = getDefaultValue(context, i);
+        const sanitizationRequired = isSanitizationRequired(context, i);
         const bindingsStartPosition = i + TStylingContextIndex.BindingsStartOffset;
 
         const sources: (number | string | null)[] = [];
@@ -134,7 +151,7 @@ class TStylingContextDebug {
           sources.push(context[bindingsStartPosition + j] as number | string | null);
         }
 
-        entries[prop] = {prop, guardMask, valuesCount, defaultValue, sources};
+        entries[prop] = {prop, guardMask, sanitizationRequired, valuesCount, defaultValue, sources};
       }
 
       i += TStylingContextIndex.BindingsStartOffset + valuesCount;
@@ -150,7 +167,16 @@ class TStylingContextDebug {
  * application has `ngDevMode` activated.
  */
 export class NodeStylingDebug implements DebugStyling {
-  constructor(public context: TStylingContext, private _data: LStylingData) {}
+  private _sanitizer: StyleSanitizeFn|null = null;
+
+  constructor(
+      public context: TStylingContext, private _data: LStylingData,
+      private _isClassBased?: boolean) {}
+
+  /**
+   * Overrides the sanitizer used to process styles.
+   */
+  overrideSanitizer(sanitizer: StyleSanitizeFn|null) { this._sanitizer = sanitizer; }
 
   /**
    * Returns a detailed summary of each styling entry in the context and
@@ -190,6 +216,8 @@ export class NodeStylingDebug implements DebugStyling {
           fn(prop, value, bindingIndex || null);
         };
 
-    applyStyling(this.context, null, mockElement, this._data, true, mapFn);
+    const sanitizer = this._isClassBased ? null : (this._sanitizer ||
+                                                   getCurrentOrLViewSanitizer(this._data as LView));
+    applyStyling(this.context, null, mockElement, this._data, true, mapFn, sanitizer);
   }
 }

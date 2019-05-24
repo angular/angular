@@ -5,10 +5,14 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer, SecurityContext} from '../../sanitization/security';
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {StylingContext} from '../interfaces/styling';
+import {LView, SANITIZER} from '../interfaces/view';
 import {getProp as getOldProp, getSinglePropIndexValue as getOldSinglePropIndexValue} from '../styling/class_and_style_bindings';
 
-import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex} from './interfaces';
+import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
+import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
 
@@ -18,8 +22,14 @@ const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
  * This function will also pre-fill the context with data
  * for map-based bindings.
  */
-export function allocStylingContext(): TStylingContext {
-  return [TStylingConfigFlags.Initial, 0, 0, 0, MAP_BASED_ENTRY_PROP_NAME];
+export function allocTStylingContext(): TStylingContext {
+  // because map-based bindings deal with a dynamic set of values, there
+  // is no way to know ahead of time whether or not sanitization is required.
+  // For this reason the configuration will always mark sanitization as active
+  // (this means that when map-based values are applied then sanitization will
+  // be checked against each property).
+  const mapBasedConfig = TStylingContextPropConfigFlags.SanitizationRequired;
+  return [TStylingConfigFlags.Initial, 0, mapBasedConfig, 0, MAP_BASED_ENTRY_PROP_NAME];
 }
 
 /**
@@ -53,8 +63,24 @@ export function getProp(context: TStylingContext, index: number) {
   return context[index + TStylingContextIndex.PropOffset] as string;
 }
 
+function getPropConfig(context: TStylingContext, index: number): number {
+  return (context[index + TStylingContextIndex.ConfigAndGuardOffset] as number) &
+      TStylingContextPropConfigFlags.Mask;
+}
+
+export function isSanitizationRequired(context: TStylingContext, index: number) {
+  return (getPropConfig(context, index) & TStylingContextPropConfigFlags.SanitizationRequired) > 0;
+}
+
 export function getGuardMask(context: TStylingContext, index: number) {
-  return context[index + TStylingContextIndex.GuardOffset] as number;
+  const configGuardValue = context[index + TStylingContextIndex.ConfigAndGuardOffset] as number;
+  return configGuardValue >> TStylingContextPropConfigFlags.TotalBits;
+}
+
+export function setGuardMask(context: TStylingContext, index: number, maskValue: number) {
+  const config = getPropConfig(context, index);
+  const guardMask = maskValue << TStylingContextPropConfigFlags.TotalBits;
+  context[index + TStylingContextIndex.ConfigAndGuardOffset] = config | guardMask;
 }
 
 export function getValuesCount(context: TStylingContext, index: number) {
@@ -115,3 +141,36 @@ export function isStylingValueDefined(value: any) {
   // set a value to an empty string to remove it.
   return value != null && value !== '';
 }
+
+/**
+ * Returns the current style sanitizer function for the given view.
+ *
+ * The default style sanitizer (which lives inside of `LView`) will
+ * be returned depending on whether the `styleSanitizer` instruction
+ * was called or not prior to any styling instructions running.
+ */
+export function getCurrentOrLViewSanitizer(lView: LView): StyleSanitizeFn|null {
+  const sanitizer: StyleSanitizeFn|null = (getCurrentStyleSanitizer() || lView[SANITIZER]) as any;
+  if (sanitizer && typeof sanitizer !== 'function') {
+    setCurrentStyleSanitizer(sanitizer);
+    return sanitizeUsingSanitizerObject;
+  }
+  return sanitizer;
+}
+
+/**
+ * Style sanitization function that internally uses a `Sanitizer` instance to handle style
+ * sanitization.
+ */
+const sanitizeUsingSanitizerObject: StyleSanitizeFn =
+    (prop: string, value: string, mode: StyleSanitizeMode) => {
+      const sanitizer = getCurrentStyleSanitizer() as Sanitizer;
+      if (sanitizer) {
+        if (mode & StyleSanitizeMode.SanitizeOnly) {
+          return sanitizer.sanitize(SecurityContext.STYLE, value);
+        } else {
+          return true;
+        }
+      }
+      return value;
+    };

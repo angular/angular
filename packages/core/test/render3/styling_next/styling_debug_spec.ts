@@ -7,7 +7,7 @@
  */
 import {registerBinding} from '@angular/core/src/render3/styling_next/bindings';
 import {NodeStylingDebug, attachStylingDebugObject} from '@angular/core/src/render3/styling_next/styling_debug';
-import {allocStylingContext} from '@angular/core/src/render3/styling_next/util';
+import {allocTStylingContext} from '@angular/core/src/render3/styling_next/util';
 
 describe('styling debugging tools', () => {
   describe('NodeStylingDebug', () => {
@@ -64,6 +64,6 @@ describe('styling debugging tools', () => {
 });
 
 function makeContextWithDebug() {
-  const ctx = allocStylingContext();
+  const ctx = allocTStylingContext();
   return attachStylingDebugObject(ctx);
 }

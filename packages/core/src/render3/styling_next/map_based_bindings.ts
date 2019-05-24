@@ -5,6 +5,7 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 
 import {setStylingMapsSyncFn} from './bindings';
@@ -103,8 +104,9 @@ import {getBindingValue, getValuesCount, isStylingValueDefined} from './util';
  */
 export const syncStylingMap: SyncStylingMapsFn =
     (context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-     data: LStylingData, applyStylingFn: ApplyStylingFn, mode: StylingMapsSyncMode,
-     targetProp?: string | null, defaultValue?: string | null): boolean => {
+     data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null,
+     mode: StylingMapsSyncMode, targetProp?: string | null,
+     defaultValue?: string | null): boolean => {
       let targetPropValueWasApplied = false;
 
       // once the map-based styling code is activate it is never deactivated. For this reason a
@@ -125,8 +127,8 @@ export const syncStylingMap: SyncStylingMapsFn =
 
         if (runTheSyncAlgorithm) {
           targetPropValueWasApplied = innerSyncStylingMap(
-              context, renderer, element, data, applyStylingFn, mode, targetProp || null, 0,
-              defaultValue || null);
+              context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp || null,
+              0, defaultValue || null);
         }
 
         if (loopUntilEnd) {
@@ -148,8 +150,9 @@ export const syncStylingMap: SyncStylingMapsFn =
  */
 function innerSyncStylingMap(
     context: TStylingContext, renderer: Renderer3 | ProceduralRenderer3 | null, element: RElement,
-    data: LStylingData, applyStylingFn: ApplyStylingFn, mode: StylingMapsSyncMode,
-    targetProp: string | null, currentMapIndex: number, defaultValue: string | null): boolean {
+    data: LStylingData, applyStylingFn: ApplyStylingFn, sanitizer: StyleSanitizeFn | null,
+    mode: StylingMapsSyncMode, targetProp: string | null, currentMapIndex: number,
+    defaultValue: string | null): boolean {
   let targetPropValueWasApplied = false;
 
   const totalMaps = getValuesCount(context, TStylingContextIndex.MapBindingsPosition);
@@ -176,7 +179,7 @@ function innerSyncStylingMap(
           iteratedTooFar ? mode : resolveInnerMapMode(mode, valueIsDefined, isTargetPropMatched);
       const innerProp = iteratedTooFar ? targetProp : prop;
       let valueApplied = innerSyncStylingMap(
-          context, renderer, element, data, applyStylingFn, innerMode, innerProp,
+          context, renderer, element, data, applyStylingFn, sanitizer, innerMode, innerProp,
           currentMapIndex + 1, defaultValue);
 
       if (iteratedTooFar) {
@@ -187,7 +190,10 @@ function innerSyncStylingMap(
         const useDefault = isTargetPropMatched && !valueIsDefined;
         const valueToApply = useDefault ? defaultValue : value;
         const bindingIndexToApply = useDefault ? bindingIndex : null;
-        applyStylingFn(renderer, element, prop, valueToApply, bindingIndexToApply);
+        const finalValue = sanitizer ?
+            sanitizer(prop, valueToApply, StyleSanitizeMode.ValidateAndSanitize) :
+            valueToApply;
+        applyStylingFn(renderer, element, prop, finalValue, bindingIndexToApply);
         valueApplied = true;
       }
 

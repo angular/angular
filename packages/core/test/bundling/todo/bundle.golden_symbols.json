@@ -231,6 +231,9 @@
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
+    "name": "SecurityContext"
+  },
+  {
     "name": "SkipSelf"
   },
   {
@@ -444,7 +447,7 @@
     "name": "allocStylingContext"
   },
   {
-    "name": "allocStylingContext"
+    "name": "allocTStylingContext"
   },
   {
     "name": "allocateNewContextEntry"
@@ -786,6 +789,12 @@
     "name": "getContextLView"
   },
   {
+    "name": "getCurrentOrLViewSanitizer"
+  },
+  {
+    "name": "getCurrentStyleSanitizer"
+  },
+  {
     "name": "getDebugContext"
   },
   {
@@ -934,6 +943,9 @@
   },
   {
     "name": "getProp"
+  },
+  {
+    "name": "getPropConfig"
   },
   {
     "name": "getPropValuesStartPosition"
@@ -1152,6 +1164,9 @@
     "name": "isRootView"
   },
   {
+    "name": "isSanitizationRequired"
+  },
+  {
     "name": "isStylingContext"
   },
   {
@@ -1344,6 +1359,9 @@
     "name": "runtimeIsNewStylingInUse"
   },
   {
+    "name": "sanitizeUsingSanitizerObject"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
@@ -1392,10 +1410,16 @@
     "name": "setCurrentQueryIndex"
   },
   {
+    "name": "setCurrentStyleSanitizer"
+  },
+  {
     "name": "setDirty"
   },
   {
     "name": "setFlag"
+  },
+  {
+    "name": "setGuardMask"
   },
   {
     "name": "setHostBindings"
