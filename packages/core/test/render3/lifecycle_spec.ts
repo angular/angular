@@ -7,8 +7,8 @@
  */
 
 import {OnDestroy} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
+import {AttributeMarker, ComponentTemplate, ɵɵNgOnChangesFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵproperty} from '../../src/render3/index';
+import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵselect, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -22,7 +22,8 @@ describe('lifecycles', () => {
         ɵɵelement(0, name);
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'val', ɵɵbind(ctx.val));
+        ɵɵselect(0);
+        ɵɵproperty('val', ctx.val);
       }
     };
   }

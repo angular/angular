@@ -98,8 +98,10 @@ class MyApp {
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
-        ɵɵelementProperty(0, 'title', ɵɵbind(ctx.name));
-        ɵɵtextBinding(1, ɵɵinterpolation1('Hello ', ctx.name, '!'));
+        ɵɵselect(0);
+        ɵɵproperty('title', ctx.name);
+        ɵɵselect(1);
+        ɵɵtextInterpolate1('Hello ', ctx.name, '!');
       }
       ...
     }
