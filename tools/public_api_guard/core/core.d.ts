@@ -828,8 +828,6 @@ export declare function ɵɵelementEnd(): void;
 
 export declare function ɵɵelementHostAttrs(attrs: TAttributes): void;
 
-export declare function ɵɵelementProperty<T>(index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): void;
-
 export declare function ɵɵelementStart(index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void;
 
 export declare function ɵɵembeddedViewEnd(): void;

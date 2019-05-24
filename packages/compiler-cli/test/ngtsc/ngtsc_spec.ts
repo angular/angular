@@ -2043,7 +2043,7 @@ describe('ngtsc behavioral tests', () => {
     `);
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).not.toContain('i0.ɵɵelementProperty');
+    expect(jsContents).not.toContain('i0.ɵɵproperty');
   });
 
   it('should correctly recognize local symbols', () => {
