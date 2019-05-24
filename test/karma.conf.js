@@ -29,8 +29,10 @@ module.exports = config => {
     ],
     files: [
       {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
+      {pattern: 'node_modules/core-js/client/core.min.js.map', included: false, watched: false},
       {pattern: 'node_modules/tslib/tslib.js', included: false, watched: false},
       {pattern: 'node_modules/systemjs/dist/system.js', included: true, watched: false},
+      {pattern: 'node_modules/systemjs/dist/system.js.map', included: false, watched: false},
       {pattern: 'node_modules/zone.js/dist/zone.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/proxy.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/sync-test.js', included: true, watched: false},
@@ -38,12 +40,13 @@ module.exports = config => {
       {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
       {pattern: 'node_modules/hammerjs/hammer.min.js', included: true, watched: false},
+      {pattern: 'node_modules/hammerjs/hammer.min.js.map', included: false, watched: false},
       {
         pattern: 'node_modules/moment/min/moment-with-locales.min.js',
         included: false,
         watched: false
       },
-      {pattern: 'node_modules/@material/*/dist/*.js', included: true, watched: false},
+      {pattern: 'node_modules/@material/*/dist/*', included: false, watched: false},
 
       // Include all Angular dependencies
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
