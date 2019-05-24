@@ -10,8 +10,8 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵbind, ɵɵelement, ɵɵelementEnd, ɵɵelementProperty, ɵɵelementStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵlistener, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
+import {LifecycleHooksFeature, getRenderedText, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
+import {detectChanges, markDirty, tick, ɵɵbind, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵinterpolation1, ɵɵinterpolation2, ɵɵlistener, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
@@ -186,7 +186,8 @@ describe('change detection', () => {
               ɵɵelement(0, 'manual-comp');
             }
             if (rf & RenderFlags.Update) {
-              ɵɵelementProperty(0, 'name', ɵɵbind(ctx.name));
+              ɵɵselect(0);
+              ɵɵproperty('name', ctx.name);
             }
 
           },
