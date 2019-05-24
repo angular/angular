@@ -25,11 +25,32 @@ export interface LQueries {
   parent: LQueries|null;
 
   /**
-   * Ask queries to prepare copy of itself. This assures that tracking new queries on content nodes
-   * doesn't mutate list of queries tracked on a parent node. We will clone LQueries before
-   * constructing content queries.
+   * The index of the node on which this LQueries instance was created / cloned in a given LView.
+   *
+   * This index is stored to minimize LQueries cloning: we can observe that LQueries can be mutated
+   * only under 2 conditions:
+   * - we are crossing an element that has directives with content queries (new queries are added);
+   * - we are descending into element hierarchy (creating a child element of an existing element)
+   * and the current LQueries object is tracking shallow queries (shallow queries are removed).
+   *
+   * Since LQueries are not cloned systematically we need to know exactly where (on each element)
+   * cloning occurred, so we can properly restore the set of tracked queries when going up the
+   * elements hierarchy.
+   *
+   * Always set to -1 for view queries as view queries are created before we process any node in a
+   * given view.
    */
-  clone(): LQueries;
+  nodeIndex: number;
+
+  /**
+   * Ask queries to prepare a copy of itself. This ensures that:
+   * - tracking new queries on content nodes doesn't mutate list of queries tracked on a parent
+   * node;
+   * - we don't track shallow queries when descending into elements hierarchy.
+   *
+   * We will clone LQueries before constructing content queries
+   */
+  clone(tNode: TNode): LQueries;
 
   /**
    * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
