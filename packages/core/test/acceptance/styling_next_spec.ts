@@ -383,7 +383,7 @@ describe('new styling integration', () => {
               map: any = {width: '111px', opacity: '0.5'};
               width: string|null = '555px';
 
-              @ViewChild('dir', {read: DirThatSetsStyling})
+              @ViewChild('dir', {read: DirThatSetsStyling, static: true})
               dir !: DirThatSetsStyling;
             }
 
@@ -458,7 +458,7 @@ describe('new styling integration', () => {
 
               map: any = {width: '555px', height: '555px'};
 
-              @ViewChild('dir', {read: DirThatSetsStyling})
+              @ViewChild('dir', {read: DirThatSetsStyling, static: true})
               dir !: DirThatSetsStyling;
             }
 
