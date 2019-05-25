@@ -330,7 +330,7 @@ runInEachFileSystem(() => {
         loadTestFiles(TEST_PROGRAM);
         loadTestFiles(TEST_DTS_PROGRAM);
         const bundle = makeTestEntryPointBundle(
-            'esm2015', 'esm2015', false, getRootFiles(TEST_PROGRAM),
+            'test-package', 'esm2015', 'esm2015', false, getRootFiles(TEST_PROGRAM),
             getRootFiles(TEST_DTS_PROGRAM));
         program = bundle.src.program;
         dtsProgram = bundle.dts;
