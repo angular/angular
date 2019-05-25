@@ -35,10 +35,8 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, false, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses = new DecorationAnalyzer(
-                                 fs, bundle.src.program, bundle.src.options, bundle.src.host,
-                                 typeChecker, host, referencesRegistry, [absoluteFrom('/')], false)
-                                 .analyzeProgram();
+  const decorationAnalyses =
+      new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);

@@ -155,10 +155,7 @@ exports.D = D;
       const host = new CommonJsReflectionHost(logger, false, bundle.src.program, bundle.src.host);
       const referencesRegistry = new NgccReferencesRegistry(host);
       const decorationAnalyses =
-          new DecorationAnalyzer(
-              fs, bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
-              referencesRegistry, [absoluteFrom('/')], false)
-              .analyzeProgram();
+          new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
       const switchMarkerAnalyses =
           new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
       const renderer = new CommonJsRenderingFormatter(host, false);

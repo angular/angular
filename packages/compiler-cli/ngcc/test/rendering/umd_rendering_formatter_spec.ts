@@ -27,13 +27,10 @@ function setup(file: TestFile) {
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('test-package', 'esm5', 'esm5', false, [file.name]);
   const src = bundle.src;
-  const typeChecker = src.program.getTypeChecker();
   const host = new UmdReflectionHost(logger, false, src.program, src.host);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses = new DecorationAnalyzer(
-                                 fs, src.program, src.options, src.host, typeChecker, host,
-                                 referencesRegistry, [absoluteFrom('/')], false)
-                                 .analyzeProgram();
+  const decorationAnalyses =
+      new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(src.program);
   const renderer = new UmdRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
