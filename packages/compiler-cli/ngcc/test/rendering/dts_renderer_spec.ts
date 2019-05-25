@@ -65,10 +65,8 @@ function createTestRenderer(
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, isCore, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses = new DecorationAnalyzer(
-                                 fs, bundle.src.program, bundle.src.options, bundle.src.host,
-                                 typeChecker, host, referencesRegistry, bundle.rootDirs, isCore)
-                                 .analyzeProgram();
+  const decorationAnalyses =
+      new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const moduleWithProvidersAnalyses =
       new ModuleWithProvidersAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
