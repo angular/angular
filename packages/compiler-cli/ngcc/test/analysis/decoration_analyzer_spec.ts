@@ -109,16 +109,18 @@ runInEachFileSystem(() => {
         beforeEach(() => {
           const TEST_PROGRAM = [
             {
-              name: _('/index.js'),
+              name: _('/node_modules/test-package/index.js'),
               contents: `
                 import * as test from './test';
                 import * as other from './other';
                 `,
             },
             {
-              name: _('/test.js'),
+              name: _('/node_modules/test-package/test.js'),
               contents: `
                   import {Component, Directive, Injectable} from '@angular/core';
+
+                  export class NoDecorators {}
 
                   export class MyComponent {}
                   MyComponent.decorators = [{type: Component}];
@@ -128,10 +130,11 @@ runInEachFileSystem(() => {
 
                   export class MyService {}
                   MyService.decorators = [{type: Injectable}];
+
                 `,
             },
             {
-              name: _('/other.js'),
+              name: _('/node_modules/test-package/other.js'),
               contents: `
                   import {Component} from '@angular/core';
 
@@ -144,22 +147,16 @@ runInEachFileSystem(() => {
         });
 
         it('should return an object containing a reference to the original source file', () => {
-          const testFile = getSourceFileOrError(program, _('/test.js'));
+          const testFile = getSourceFileOrError(program, _('/node_modules/test-package/test.js'));
           expect(result.get(testFile) !.sourceFile).toBe(testFile);
-          const otherFile = getSourceFileOrError(program, _('/other.js'));
+          const otherFile = getSourceFileOrError(program, _('/node_modules/test-package/other.js'));
           expect(result.get(otherFile) !.sourceFile).toBe(otherFile);
         });
 
         it('should call detect on the decorator handlers with each class from the parsed file',
            () => {
-             expect(testHandler.detect).toHaveBeenCalledTimes(11);
+             expect(testHandler.detect).toHaveBeenCalledTimes(5);
              expect(testHandler.detect.calls.allArgs().map(args => args[1])).toEqual([
-               null,
-               null,
-               null,
-               null,
-               null,
-               null,
                null,
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
                jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),
@@ -169,7 +166,7 @@ runInEachFileSystem(() => {
            });
 
         it('should return an object containing the classes that were analyzed', () => {
-          const file1 = getSourceFileOrError(program, _('/test.js'));
+          const file1 = getSourceFileOrError(program, _('/node_modules/test-package/test.js'));
           const compiledFile1 = result.get(file1) !;
           expect(compiledFile1.compiledClasses.length).toEqual(2);
           expect(compiledFile1.compiledClasses[0]).toEqual(jasmine.objectContaining({
@@ -179,7 +176,7 @@ runInEachFileSystem(() => {
             name: 'MyDirective', compilation: ['@Directive (compiled)'],
           } as unknown as CompiledClass));
 
-          const file2 = getSourceFileOrError(program, _('/other.js'));
+          const file2 = getSourceFileOrError(program, _('/node_modules/test-package/other.js'));
           const compiledFile2 = result.get(file2) !;
           expect(compiledFile2.compiledClasses.length).toEqual(1);
           expect(compiledFile2.compiledClasses[0]).toEqual(jasmine.objectContaining({
@@ -190,13 +187,7 @@ runInEachFileSystem(() => {
         it('should analyze, resolve and compile the classes that are detected', () => {
           expect(logs).toEqual([
             // Classes without decorators should also be detected.
-            'detect: ChangeDetectorRef (no decorators)',
-            'detect: ElementRef (no decorators)',
-            'detect: Injector (no decorators)',
-            'detect: TemplateRef (no decorators)',
-            'detect: ViewContainerRef (no decorators)',
-            'detect: Renderer2 (no decorators)',
-            'detect: ɵNgModuleFactory (no decorators)',
+            'detect: NoDecorators (no decorators)',
             // First detect and (potentially) analyze.
             'detect: MyComponent@Component',
             'analyze: MyComponent@Component',
@@ -221,7 +212,7 @@ runInEachFileSystem(() => {
         beforeEach(() => {
           const INTERNAL_COMPONENT_PROGRAM = [
             {
-              name: _('/entrypoint.js'),
+              name: _('/node_modules/test-package/entrypoint.js'),
               contents: `
             import {Component, NgModule} from '@angular/core';
             import {ImportedComponent} from './component';
@@ -237,7 +228,7 @@ runInEachFileSystem(() => {
           `
             },
             {
-              name: _('/component.js'),
+              name: _('/node_modules/test-package/component.js'),
               contents: `
             import {Component} from '@angular/core';
             export class ImportedComponent {}
@@ -253,7 +244,8 @@ runInEachFileSystem(() => {
         // files is not yet solved.
         it('should analyze an internally imported component, which is not publicly exported from the entry-point',
            () => {
-             const file = getSourceFileOrError(program, _('/component.js'));
+             const file =
+                 getSourceFileOrError(program, _('/node_modules/test-package/component.js'));
              const analysis = result.get(file) !;
              expect(analysis).toBeDefined();
              const ImportedComponent =
@@ -262,11 +254,56 @@ runInEachFileSystem(() => {
            });
 
         it('should analyze an internally defined component, which is not exported at all', () => {
-          const file = getSourceFileOrError(program, _('/entrypoint.js'));
+          const file = getSourceFileOrError(program, _('/node_modules/test-package/entrypoint.js'));
           const analysis = result.get(file) !;
           expect(analysis).toBeDefined();
           const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent') !;
           expect(LocalComponent).toBeDefined();
+        });
+      });
+
+      describe('external components', () => {
+        beforeEach(() => {
+          const EXTERNAL_COMPONENT_PROGRAM: TestFile[] = [
+            {
+              name: _('/node_modules/test-package/entrypoint.js'),
+              contents: `
+        import {Component, NgModule} from '@angular/core';
+        import {ImportedComponent} from 'other/component';
+
+        export class LocalComponent {}
+        LocalComponent.decorators = [{type: Component}];
+
+        export class MyModule {}
+        MyModule.decorators = [{type: NgModule, args: [{
+                    declarations: [ImportedComponent, LocalComponent],
+                    exports: [ImportedComponent, LocalComponent],
+                },] }];
+      `
+            },
+            {
+              name: _('/node_modules/other/component.js'),
+              contents: `
+        import {Component} from '@angular/core';
+        export class ImportedComponent {}
+        ImportedComponent.decorators = [{type: Component}];
+      `,
+              isRoot: false,
+            },
+            {
+              name: _('/node_modules/other/component.d.ts'),
+              contents: `
+        import {Component} from '@angular/core';
+        export class ImportedComponent {}`
+            },
+          ];
+
+          setUpAndAnalyzeProgram(EXTERNAL_COMPONENT_PROGRAM);
+        });
+
+        it('should ignore classes from an externally imported file', () => {
+          const file = program.getSourceFile(_('/node_modules/other/component.js')) !;
+          expect(result.has(file)).toBe(false);
         });
       });
     });

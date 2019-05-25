@@ -31,7 +31,8 @@ function setup(file: TestFile) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(src.program);
+  const switchMarkerAnalyses =
+      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(src.program);
   const renderer = new UmdRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
   return {
@@ -54,7 +55,7 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
 
       PROGRAM = {
-        name: _('/some/file.js'),
+        name: _('/node_modules/test-package/some/file.js'),
         contents: `
 /* A copyright notice */
 (function (global, factory) {
@@ -123,7 +124,7 @@ exports.BadIife = BadIife;
 
 
       PROGRAM_DECORATE_HELPER = {
-        name: _('/some/file.js'),
+        name: _('/node_modules/test-package/some/file.js'),
         contents: `
 /* A copyright notice */
 (function (global, factory) {
@@ -181,7 +182,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
     describe('addImports', () => {
       it('should append the given imports into the CommonJS factory call', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addImports(
             output,
@@ -197,7 +198,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
 
       it('should append the given imports into the AMD initialization', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addImports(
             output,
@@ -213,7 +214,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
 
       it('should append the given imports into the global initialization', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addImports(
             output,
@@ -230,7 +231,7 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
       it('should append the given imports as parameters into the factory function definition',
          () => {
            const {renderer, program} = setup(PROGRAM);
-           const file = getSourceFileOrError(program, _('/some/file.js'));
+           const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
            const output = new MagicString(PROGRAM.contents);
            renderer.addImports(
                output,
@@ -253,9 +254,9 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addExports(
             output, PROGRAM.name.replace(/\.js$/, ''),
             [
-              {from: _('/some/a.js'), identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), identifier: 'ComponentB'},
+              {from: _('/node_modules/test-package/some/a.js'), identifier: 'ComponentA1'},
+              {from: _('/node_modules/test-package/some/a.js'), identifier: 'ComponentA2'},
+              {from: _('/node_modules/test-package/some/foo/b.js'), identifier: 'ComponentB'},
               {from: PROGRAM.name, identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -283,9 +284,21 @@ exports.TopLevelComponent = TopLevelComponent;
         renderer.addExports(
             output, PROGRAM.name.replace(/\.js$/, ''),
             [
-              {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA1',
+                identifier: 'ComponentA1'
+              },
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA2',
+                identifier: 'ComponentA2'
+              },
+              {
+                from: _('/node_modules/test-package/some/foo/b.js'),
+                alias: 'eComponentB',
+                identifier: 'ComponentB'
+              },
               {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -299,7 +312,7 @@ exports.TopLevelComponent = TopLevelComponent;
     describe('addConstants', () => {
       it('should insert the given constants after imports in the source file', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'var x = 3;', file);
         expect(output.toString()).toContain(`
@@ -319,7 +332,7 @@ var A = (function() {`);
     describe('rewriteSwitchableDeclarations', () => {
       it('should switch marked declaration initializers', () => {
         const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.rewriteSwitchableDeclarations(
             output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
@@ -364,14 +377,14 @@ SOME DEFINITION TEXT
         const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
         expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
             .toThrowError(
-                `Compiled class declaration is not inside an IIFE: NoIife in ${_('/some/file.js')}`);
+                `Compiled class declaration is not inside an IIFE: NoIife in ${_('/node_modules/test-package/some/file.js')}`);
 
         const badIifeDeclaration = getDeclaration(
             program, absoluteFromSourceFile(sourceFile), 'BadIife', ts.isVariableDeclaration);
         const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
         expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
             .toThrowError(
-                `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_('/some/file.js')}`);
+                `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_('/node_modules/test-package/some/file.js')}`);
       });
     });
 

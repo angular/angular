@@ -27,7 +27,7 @@ runInEachFileSystem(() => {
 
            const TEST_PROGRAM: TestFile[] = [
              {
-               name: _('/src/entry_point.js'),
+               name: _('/node_modules/test-package/src/entry_point.js'),
                isRoot: true,
                contents: `
         export {PublicComponent} from './a';
@@ -36,7 +36,7 @@ runInEachFileSystem(() => {
       `
              },
              {
-               name: _('/src/a.js'),
+               name: _('/node_modules/test-package/src/a.js'),
                isRoot: false,
                contents: `
         import {Component} from '@angular/core';
@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
       `
              },
              {
-               name: _('/src/b.js'),
+               name: _('/node_modules/test-package/src/b.js'),
                isRoot: false,
                contents: `
         import {Component, NgModule} from '@angular/core';
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
       `
              },
              {
-               name: _('/src/c.js'),
+               name: _('/node_modules/test-package/src/c.js'),
                isRoot: false,
                contents: `
         import {Component} from '@angular/core';
@@ -81,7 +81,7 @@ runInEachFileSystem(() => {
       `
              },
              {
-               name: _('/src/mod.js'),
+               name: _('/node_modules/test-package/src/mod.js'),
                isRoot: false,
                contents: `
         import {Component, NgModule} from '@angular/core';
@@ -100,7 +100,7 @@ runInEachFileSystem(() => {
            ];
            const TEST_DTS_PROGRAM = [
              {
-               name: _('/typings/entry_point.d.ts'),
+               name: _('/node_modules/test-package/typings/entry_point.d.ts'),
                isRoot: true,
                contents: `
         export {PublicComponent} from './a';
@@ -109,28 +109,28 @@ runInEachFileSystem(() => {
       `
              },
              {
-               name: _('/typings/a.d.ts'),
+               name: _('/node_modules/test-package/typings/a.d.ts'),
                isRoot: false,
                contents: `
         export declare class PublicComponent {}
       `
              },
              {
-               name: _('/typings/b.d.ts'),
+               name: _('/node_modules/test-package/typings/b.d.ts'),
                isRoot: false,
                contents: `
         export declare class ModuleB {}
       `
              },
              {
-               name: _('/typings/c.d.ts'),
+               name: _('/node_modules/test-package/typings/c.d.ts'),
                isRoot: false,
                contents: `
         export declare class InternalComponent1 {}
       `
              },
              {
-               name: _('/typings/mod.d.ts'),
+               name: _('/node_modules/test-package/typings/mod.d.ts'),
                isRoot: false,
                contents: `
         import {PublicComponent} from './a';
@@ -142,22 +142,31 @@ runInEachFileSystem(() => {
            ];
            const {program, referencesRegistry, analyzer} = setup(TEST_PROGRAM, TEST_DTS_PROGRAM);
 
-           addToReferencesRegistry(program, referencesRegistry, _('/src/a.js'), 'PublicComponent');
            addToReferencesRegistry(
-               program, referencesRegistry, _('/src/b.js'), 'PrivateComponent1');
+               program, referencesRegistry, _('/node_modules/test-package/src/a.js'),
+               'PublicComponent');
            addToReferencesRegistry(
-               program, referencesRegistry, _('/src/c.js'), 'InternalComponent1');
+               program, referencesRegistry, _('/node_modules/test-package/src/b.js'),
+               'PrivateComponent1');
+           addToReferencesRegistry(
+               program, referencesRegistry, _('/node_modules/test-package/src/c.js'),
+               'InternalComponent1');
 
            const analyses = analyzer.analyzeProgram(program);
            // Note that `PrivateComponent2` and `InternalComponent2` are not found because they are
            // not added to the ReferencesRegistry (i.e. they were not declared in an NgModule).
            expect(analyses.length).toEqual(2);
            expect(analyses).toEqual([
-             {identifier: 'PrivateComponent1', from: _('/src/b.js'), dtsFrom: null, alias: null},
+             {
+               identifier: 'PrivateComponent1',
+               from: _('/node_modules/test-package/src/b.js'),
+               dtsFrom: null,
+               alias: null
+             },
              {
                identifier: 'InternalComponent1',
-               from: _('/src/c.js'),
-               dtsFrom: _('/typings/c.d.ts'),
+               from: _('/node_modules/test-package/src/c.js'),
+               dtsFrom: _('/node_modules/test-package/typings/c.d.ts'),
                alias: null
              },
            ]);
@@ -167,7 +176,7 @@ runInEachFileSystem(() => {
         const _ = absoluteFrom;
         const ALIASED_EXPORTS_PROGRAM = [
           {
-            name: _('/src/entry_point.js'),
+            name: _('/node_modules/test-package/src/entry_point.js'),
             isRoot: true,
             contents: `
           // This component is only exported as an alias.
@@ -177,7 +186,7 @@ runInEachFileSystem(() => {
         `
           },
           {
-            name: _('/src/a.js'),
+            name: _('/node_modules/test-package/src/a.js'),
             isRoot: false,
             contents: `
         import {Component} from '@angular/core';
@@ -195,7 +204,7 @@ runInEachFileSystem(() => {
         ];
         const ALIASED_EXPORTS_DTS_PROGRAM = [
           {
-            name: _('/typings/entry_point.d.ts'),
+            name: _('/node_modules/test-package/typings/entry_point.d.ts'),
             isRoot: true,
             contents: `
           export declare class aliasedComponentOne {}
@@ -207,13 +216,15 @@ runInEachFileSystem(() => {
         const {program, referencesRegistry, analyzer} =
             setup(ALIASED_EXPORTS_PROGRAM, ALIASED_EXPORTS_DTS_PROGRAM);
 
-        addToReferencesRegistry(program, referencesRegistry, _('/src/a.js'), 'ComponentOne');
-        addToReferencesRegistry(program, referencesRegistry, _('/src/a.js'), 'ComponentTwo');
+        addToReferencesRegistry(
+            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentOne');
+        addToReferencesRegistry(
+            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentTwo');
 
         const analyses = analyzer.analyzeProgram(program);
         expect(analyses).toEqual([{
           identifier: 'ComponentOne',
-          from: _('/src/a.js'),
+          from: _('/node_modules/test-package/src/a.js'),
           dtsFrom: null,
           alias: 'aliasedComponentOne',
         }]);

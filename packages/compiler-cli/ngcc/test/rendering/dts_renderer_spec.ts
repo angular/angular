@@ -99,7 +99,7 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       _ = absoluteFrom;
       INPUT_PROGRAM = {
-        name: _('/src/file.js'),
+        name: _('/node_modules/test-package/src/file.js'),
         contents:
             `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
       };
@@ -139,8 +139,11 @@ runInEachFileSystem(() => {
           createTestRenderer('test-package', [INPUT_PROGRAM], [INPUT_DTS_PROGRAM]);
 
       // Add a mock export to trigger export rendering
-      privateDeclarationsAnalyses.push(
-          {identifier: 'ComponentB', from: _('/src/file.js'), dtsFrom: _('/typings/b.d.ts')});
+      privateDeclarationsAnalyses.push({
+        identifier: 'ComponentB',
+        from: _('/node_modules/test-package/src/file.js'),
+        dtsFrom: _('/typings/b.d.ts')
+      });
 
       const result = renderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);

@@ -69,7 +69,8 @@ function createTestRenderer(
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses =
+      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
   const testFormatter = new TestRenderingFormatter();
@@ -105,22 +106,22 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
 
       INPUT_PROGRAM = {
-        name: _('/src/file.js'),
+        name: _('/node_modules/test-package/src/file.js'),
         contents:
             `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
       };
 
       COMPONENT_PROGRAM = {
-        name: _('/src/component.js'),
+        name: _('/node_modules/test-package/src/component.js'),
         contents:
             `import { Component } from '@angular/core';\nexport class A {}\nA.decorators = [\n    { type: Component, args: [{ selector: 'a', template: '{{ person!.name }}' }] }\n];\n`
       };
 
       INPUT_PROGRAM_MAP = fromObject({
         'version': 3,
-        'file': _('/src/file.js'),
+        'file': _('/node_modules/test-package/src/file.js'),
         'sourceRoot': '',
-        'sources': [_('/src/file.ts')],
+        'sources': [_('/node_modules/test-package/src/file.ts')],
         'names': [],
         'mappings':
             'AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,eAAe,CAAC;AAC1C,MAAM;IACF,GAAG,CAAC,CAAS;QACT,OAAO,CAAC,CAAC;IACb,CAAC;;AACM,YAAU,GAAG;IAChB,EAAE,IAAI,EAAE,SAAS,EAAE,IAAI,EAAE,CAAC,EAAE,QAAQ,EAAE,KAAK,EAAE,CAAC,EAAE;CACnD,CAAC',
@@ -142,7 +143,7 @@ runInEachFileSystem(() => {
       OUTPUT_PROGRAM_MAP = fromObject({
         'version': 3,
         'file': 'file.js',
-        'sources': [_('/src/file.js')],
+        'sources': [_('/node_modules/test-package/src/file.js')],
         'sourcesContent': [INPUT_PROGRAM.contents],
         'names': [],
         'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
@@ -150,7 +151,7 @@ runInEachFileSystem(() => {
 
       MERGED_OUTPUT_PROGRAM_MAP = fromObject({
         'version': 3,
-        'sources': [_('/src/file.ts')],
+        'sources': [_('/node_modules/test-package/src/file.ts')],
         'names': [],
         'mappings': ';;;;;;;;;;AAAA',
         'file': 'file.js',
@@ -165,10 +166,10 @@ runInEachFileSystem(() => {
                createTestRenderer('test-package', [INPUT_PROGRAM]);
            const result = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-           expect(result[0].path).toEqual(_('/src/file.js'));
+           expect(result[0].path).toEqual(_('/node_modules/test-package/src/file.js'));
            expect(result[0].contents)
                .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
-           expect(result[1].path).toEqual(_('/src/file.js.map'));
+           expect(result[1].path).toEqual(_('/node_modules/test-package/src/file.js.map'));
            expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
          });
 
@@ -254,9 +255,10 @@ runInEachFileSystem(() => {
 
         it('should render classes without decorators if handler matches', () => {
           const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('test-package', [{
-                                                       name: _('/src/file.js'),
-                                                       contents: `
+                 testFormatter} =
+              createTestRenderer('test-package', [{
+                                   name: _('/node_modules/test-package/src/file.js'),
+                                   contents: `
                   import { Directive, ViewChild } from '@angular/core';
 
                   export class UndecoratedBase { test = null; }
@@ -268,7 +270,7 @@ runInEachFileSystem(() => {
                     }],
                   };
                 `
-                                                     }]);
+                                 }]);
 
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
@@ -312,7 +314,7 @@ runInEachFileSystem(() => {
                      }]);
              const result = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-             expect(result[0].path).toEqual(_('/src/file.js'));
+             expect(result[0].path).toEqual(_('/node_modules/test-package/src/file.js'));
              expect(result[0].contents)
                  .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
              expect(result[1]).toBeUndefined();
@@ -331,10 +333,10 @@ runInEachFileSystem(() => {
                  createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
              const result = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
-             expect(result[0].path).toEqual(_('/src/file.js'));
+             expect(result[0].path).toEqual(_('/node_modules/test-package/src/file.js'));
              expect(result[0].contents)
                  .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
-             expect(result[1].path).toEqual(_('/src/file.js.map'));
+             expect(result[1].path).toEqual(_('/node_modules/test-package/src/file.js.map'));
              expect(JSON.parse(result[1].contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
            });
       });
@@ -342,14 +344,14 @@ runInEachFileSystem(() => {
       describe('@angular/core support', () => {
         it('should render relative imports in ESM bundles', () => {
           const CORE_FILE: TestFile = {
-            name: _('/src/core.js'),
+            name: _('/node_modules/test-package/src/core.js'),
             contents:
                 `import { NgModule } from './ng_module';\nexport class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
           };
           const R3_SYMBOLS_FILE: TestFile = {
             // r3_symbols in the file name indicates that this is the path to rewrite core imports
             // to
-            name: _('/src/r3_symbols.js'),
+            name: _('/node_modules/test-package/src/r3_symbols.js'),
             contents: `export const NgModule = () => null;`
           };
           // The package name of `@angular/core` indicates that we are compiling the core library.
@@ -368,7 +370,7 @@ runInEachFileSystem(() => {
 
         it('should render no imports in FESM bundles', () => {
           const CORE_FILE: TestFile = {
-            name: _('/src/core.js'),
+            name: _('/node_modules/test-package/src/core.js'),
             contents: `export const NgModule = () => null;
             export class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
           };

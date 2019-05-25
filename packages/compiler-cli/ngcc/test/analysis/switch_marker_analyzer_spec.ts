@@ -11,54 +11,77 @@ import {loadTestFiles} from '../../../test/helpers';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
-import {getRootFiles, makeTestBundleProgram} from '../helpers/utils';
+import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {
   describe('SwitchMarkerAnalyzer', () => {
+
+    let _: typeof absoluteFrom;
+    let TEST_PROGRAM: TestFile[];
+
+    beforeEach(() => {
+      _ = absoluteFrom;
+      TEST_PROGRAM = [
+        {
+          name: _('/node_modules/test/entrypoint.js'),
+          contents: `
+        import {a} from './a';
+        import {b} from './b';
+        import {x} from '../other/x';
+        `
+        },
+        {
+          name: _('/node_modules/test/a.js'),
+          contents: `
+        import {c} from './c';
+        export const a = 1;
+        `
+        },
+        {
+          name: _('/node_modules/test/b.js'),
+          contents: `
+        export const b = 42;
+        var factoryB = factory__PRE_R3__;
+        `
+        },
+        {
+          name: _('/node_modules/test/c.js'),
+          contents: `
+        export const c = 'So long, and thanks for all the fish!';
+        var factoryC = factory__PRE_R3__;
+        var factoryD = factory__PRE_R3__;
+        `
+        },
+        {
+          name: _('/node_modules/other/x.js'),
+          contents: `
+          export const x = 3.142;
+          var factoryX = factory__PRE_R3__;
+          `
+        },
+        {
+          name: _('/node_modules/other/x.d.ts'),
+          contents: `
+          export const x: number;
+          `
+        },
+      ];
+    });
+
     describe('analyzeProgram()', () => {
       it('should check for switchable markers in all the files of the program', () => {
-        const _ = absoluteFrom;
-        const TEST_PROGRAM: TestFile[] = [
-          {
-            name: _('/entrypoint.js'),
-            contents: `
-          import {a} from './a';
-          import {b} from './b';
-          `
-          },
-          {
-            name: _('/a.js'),
-            contents: `
-          import {c} from './c';
-          export const a = 1;
-          `
-          },
-          {
-            name: _('/b.js'),
-            contents: `
-          export const b = 42;
-          var factoryB = factory__PRE_R3__;
-          `
-          },
-          {
-            name: _('/c.js'),
-            contents: `
-          export const c = 'So long, and thanks for all the fish!';
-          var factoryC = factory__PRE_R3__;
-          var factoryD = factory__PRE_R3__;
-          `
-          },
-        ];
         loadTestFiles(TEST_PROGRAM);
-        const {program} = makeTestBundleProgram(getRootFiles(TEST_PROGRAM)[0]);
+        const bundle = makeTestEntryPointBundle(
+            'test', 'esm2015', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
-        const analyzer = new SwitchMarkerAnalyzer(host);
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
         const analysis = analyzer.analyzeProgram(program);
 
-        const entrypoint = getSourceFileOrError(program, _('/entrypoint.js'));
-        const a = getSourceFileOrError(program, _('/a.js'));
-        const b = getSourceFileOrError(program, _('/b.js'));
-        const c = getSourceFileOrError(program, _('/c.js'));
+        const entrypoint = getSourceFileOrError(program, _('/node_modules/test/entrypoint.js'));
+        const a = getSourceFileOrError(program, _('/node_modules/test/a.js'));
+        const b = getSourceFileOrError(program, _('/node_modules/test/b.js'));
+        const c = getSourceFileOrError(program, _('/node_modules/test/c.js'));
 
         expect(analysis.size).toEqual(2);
         expect(analysis.has(entrypoint)).toBe(false);
@@ -75,6 +98,19 @@ runInEachFileSystem(() => {
           'factoryC = factory__PRE_R3__',
           'factoryD = factory__PRE_R3__',
         ]);
+      });
+
+      it('should ignore files that are outside the package', () => {
+        loadTestFiles(TEST_PROGRAM);
+        const bundle = makeTestEntryPointBundle(
+            'test', 'esm2015', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const program = bundle.src.program;
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
+        const analysis = analyzer.analyzeProgram(program);
+
+        const x = getSourceFileOrError(program, _('/node_modules/other/x.js'));
+        expect(analysis.has(x)).toBe(false);
       });
     });
   });
