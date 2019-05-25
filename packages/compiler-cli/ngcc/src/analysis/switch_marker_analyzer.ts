@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {isWithinPackage} from './util';
 
 export interface SwitchMarkerAnalysis {
   sourceFile: ts.SourceFile;
@@ -21,7 +23,7 @@ export const SwitchMarkerAnalyses = Map;
  * that will be replaced.
  */
 export class SwitchMarkerAnalyzer {
-  constructor(private host: NgccReflectionHost) {}
+  constructor(private host: NgccReflectionHost, private packagePath: AbsoluteFsPath) {}
   /**
    * Analyze the files in the program to identify declarations that contain R3
    * switch markers.
@@ -32,12 +34,14 @@ export class SwitchMarkerAnalyzer {
    */
   analyzeProgram(program: ts.Program): SwitchMarkerAnalyses {
     const analyzedFiles = new SwitchMarkerAnalyses();
-    program.getSourceFiles().forEach(sourceFile => {
-      const declarations = this.host.getSwitchableDeclarations(sourceFile);
-      if (declarations.length) {
-        analyzedFiles.set(sourceFile, {sourceFile, declarations});
-      }
-    });
+    program.getSourceFiles()
+        .filter(sourceFile => isWithinPackage(this.packagePath, sourceFile))
+        .forEach(sourceFile => {
+          const declarations = this.host.getSwitchableDeclarations(sourceFile);
+          if (declarations.length) {
+            analyzedFiles.set(sourceFile, {sourceFile, declarations});
+          }
+        });
     return analyzedFiles;
   }
 }

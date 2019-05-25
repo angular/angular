@@ -122,7 +122,8 @@ export class Transformer {
   analyzeProgram(reflectionHost: NgccReflectionHost, bundle: EntryPointBundle): ProgramAnalyses {
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
-    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    const switchMarkerAnalyzer =
+        new SwitchMarkerAnalyzer(reflectionHost, bundle.entryPoint.package);
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
     const decorationAnalyzer =
