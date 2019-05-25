@@ -10,9 +10,8 @@ import {AbsoluteFsPath, FileSystem, absoluteFrom, resolve} from '../../../src/ng
 import {NgtscCompilerHost} from '../../../src/ngtsc/file_system/src/compiler_host';
 import {PathMappings} from '../utils';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
-import {EntryPointFormat, EntryPointJsonProperty} from './entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty} from './entry_point';
 import {NgccSourcesCompilerHost} from './ngcc_compiler_host';
-
 
 /**
  * A bundle of files and paths (and TS programs) that correspond to a particular
@@ -38,27 +37,27 @@ export interface EntryPointBundle {
  * @param transformDts Whether to transform the typings along with this bundle.
  */
 export function makeEntryPointBundle(
-    fs: FileSystem, entryPointPath: string, formatPath: string, typingsPath: string,
-    isCore: boolean, formatProperty: EntryPointJsonProperty, format: EntryPointFormat,
-    transformDts: boolean, pathMappings?: PathMappings): EntryPointBundle|null {
+    fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
+    formatProperty: EntryPointJsonProperty, format: EntryPointFormat, transformDts: boolean,
+    pathMappings?: PathMappings): EntryPointBundle|null {
   // Create the TS program and necessary helpers.
   const options: ts.CompilerOptions = {
     allowJs: true,
     maxNodeModuleJsDepth: Infinity,
     noLib: true,
-    rootDir: entryPointPath, ...pathMappings
+    rootDir: entryPoint.path, ...pathMappings
   };
-  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPointPath);
+  const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
   const dtsHost = new NgtscCompilerHost(fs, options);
-  const rootDirs = [absoluteFrom(entryPointPath)];
+  const rootDirs = [absoluteFrom(entryPoint.path)];
 
   // Create the bundle programs, as necessary.
   const src = makeBundleProgram(
-      fs, isCore, resolve(entryPointPath, formatPath), 'r3_symbols.js', options, srcHost);
-  const dts = transformDts ?
-      makeBundleProgram(
-          fs, isCore, resolve(entryPointPath, typingsPath), 'r3_symbols.d.ts', options, dtsHost) :
-      null;
+      fs, isCore, resolve(entryPoint.path, formatPath), 'r3_symbols.js', options, srcHost);
+  const dts = transformDts ? makeBundleProgram(
+                                 fs, isCore, resolve(entryPoint.path, entryPoint.typings),
+                                 'r3_symbols.d.ts', options, dtsHost) :
+                             null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
   return {format, formatProperty, rootDirs, isCore, isFlatCore, src, dts};
