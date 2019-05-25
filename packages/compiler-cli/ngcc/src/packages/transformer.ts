@@ -58,25 +58,23 @@ export class Transformer {
    * @returns information about the files that were transformed.
    */
   transform(bundle: EntryPointBundle): FileToWrite[] {
-    const isCore = bundle.isCore;
-    const reflectionHost = this.getHost(isCore, bundle);
+    const reflectionHost = this.getHost(bundle);
 
     // Parse and analyze the files.
     const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-           moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, isCore, bundle);
+           moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, bundle);
 
     // Transform the source files and source maps.
-    const srcFormatter = this.getRenderingFormatter(reflectionHost, isCore, bundle);
+    const srcFormatter = this.getRenderingFormatter(reflectionHost, bundle);
 
-    const renderer =
-        new Renderer(srcFormatter, this.fs, this.logger, reflectionHost, isCore, bundle);
+    const renderer = new Renderer(srcFormatter, this.fs, this.logger, bundle);
     let renderedFiles = renderer.renderProgram(
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
     if (bundle.dts) {
-      const dtsFormatter = new EsmRenderingFormatter(reflectionHost, isCore);
+      const dtsFormatter = new EsmRenderingFormatter(reflectionHost, bundle.isCore);
       const dtsRenderer =
-          new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, isCore, bundle);
+          new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, bundle);
       const renderedDtsFiles = dtsRenderer.renderProgram(
           decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
       renderedFiles = renderedFiles.concat(renderedDtsFiles);
@@ -85,45 +83,43 @@ export class Transformer {
     return renderedFiles;
   }
 
-  getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
+  getHost(bundle: EntryPointBundle): NgccReflectionHost {
     const typeChecker = bundle.src.program.getTypeChecker();
     switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
+        return new Esm2015ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
       case 'esm5':
-        return new Esm5ReflectionHost(this.logger, isCore, typeChecker, bundle.dts);
+        return new Esm5ReflectionHost(this.logger, bundle.isCore, typeChecker, bundle.dts);
       case 'umd':
         return new UmdReflectionHost(
-            this.logger, isCore, bundle.src.program, bundle.src.host, bundle.dts);
+            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
       case 'commonjs':
         return new CommonJsReflectionHost(
-            this.logger, isCore, bundle.src.program, bundle.src.host, bundle.dts);
+            this.logger, bundle.isCore, bundle.src.program, bundle.src.host, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  getRenderingFormatter(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
-      RenderingFormatter {
+  getRenderingFormatter(host: NgccReflectionHost, bundle: EntryPointBundle): RenderingFormatter {
     switch (bundle.format) {
       case 'esm2015':
-        return new EsmRenderingFormatter(host, isCore);
+        return new EsmRenderingFormatter(host, bundle.isCore);
       case 'esm5':
-        return new Esm5RenderingFormatter(host, isCore);
+        return new Esm5RenderingFormatter(host, bundle.isCore);
       case 'umd':
         if (!(host instanceof UmdReflectionHost)) {
           throw new Error('UmdRenderer requires a UmdReflectionHost');
         }
-        return new UmdRenderingFormatter(host, isCore);
+        return new UmdRenderingFormatter(host, bundle.isCore);
       case 'commonjs':
-        return new CommonJsRenderingFormatter(host, isCore);
+        return new CommonJsRenderingFormatter(host, bundle.isCore);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
-      ProgramAnalyses {
+  analyzeProgram(reflectionHost: NgccReflectionHost, bundle: EntryPointBundle): ProgramAnalyses {
     const typeChecker = bundle.src.program.getTypeChecker();
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
@@ -132,7 +128,7 @@ export class Transformer {
 
     const decorationAnalyzer = new DecorationAnalyzer(
         this.fs, bundle.src.program, bundle.src.options, bundle.src.host, typeChecker,
-        reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
+        reflectionHost, referencesRegistry, bundle.rootDirs, bundle.isCore);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
