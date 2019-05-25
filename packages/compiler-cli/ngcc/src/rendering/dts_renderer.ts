@@ -53,8 +53,7 @@ export interface DtsClassInfo {
 export class DtsRenderer {
   constructor(
       private dtsFormatter: RenderingFormatter, private fs: FileSystem, private logger: Logger,
-      private host: NgccReflectionHost, private isCore: boolean, private bundle: EntryPointBundle) {
-  }
+      private host: NgccReflectionHost, private bundle: EntryPointBundle) {}
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses,
@@ -84,7 +83,8 @@ export class DtsRenderer {
     const outputText = new MagicString(input.source);
     const printer = ts.createPrinter();
     const importManager = new ImportManager(
-        getImportRewriter(this.bundle.dts !.r3SymbolsFile, this.isCore, false), IMPORT_PREFIX);
+        getImportRewriter(this.bundle.dts !.r3SymbolsFile, this.bundle.isCore, false),
+        IMPORT_PREFIX);
 
     renderInfo.classInfo.forEach(dtsClass => {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
