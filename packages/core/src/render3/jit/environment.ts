@@ -88,7 +88,7 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵload': r3.ɵɵload,
        'ɵɵprojection': r3.ɵɵprojection,
        'ɵɵelementProperty': r3.ɵɵelementProperty,
-       'ɵɵcomponentHostSyntheticProperty': r3.ɵɵcomponentHostSyntheticProperty,
+       'ɵɵupdateSyntheticHostBinding': r3.ɵɵupdateSyntheticHostBinding,
        'ɵɵcomponentHostSyntheticListener': r3.ɵɵcomponentHostSyntheticListener,
        'ɵɵpipeBind1': r3.ɵɵpipeBind1,
        'ɵɵpipeBind2': r3.ɵɵpipeBind2,

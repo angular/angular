@@ -110,10 +110,12 @@ export function ɵɵelementProperty<T>(
  *
  * @codeGenApi
  */
-export function ɵɵcomponentHostSyntheticProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
-    nativeOnly?: boolean) {
-  if (value !== NO_CHANGE) {
-    elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
+export function ɵɵupdateSyntheticHostBinding<T>(
+    propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null, nativeOnly?: boolean) {
+  const index = getSelectedIndex();
+  // TODO(benlesh): remove bind call here.
+  const bound = ɵɵbind(value);
+  if (bound !== NO_CHANGE) {
+    elementPropertyInternal(index, propName, bound, sanitizer, nativeOnly, loadComponentRenderer);
   }
 }
