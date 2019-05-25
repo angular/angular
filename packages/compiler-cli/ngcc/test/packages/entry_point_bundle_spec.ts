@@ -8,6 +8,7 @@
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
+import {EntryPoint} from '../../src/packages/entry_point';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 runInEachFileSystem(() => {
@@ -128,8 +129,16 @@ runInEachFileSystem(() => {
        () => {
          setupMockFileSystem();
          const fs = getFileSystem();
-         const esm5bundle = makeEntryPointBundle(
-             fs, '/node_modules/test', './index.js', './index.d.ts', false, 'esm5', 'esm5', true) !;
+         const entryPoint: EntryPoint = {
+           name: 'test',
+           packageJson: {name: 'test'},
+           package: absoluteFrom('/node_modules/test'),
+           path: absoluteFrom('/node_modules/test'),
+           typings: absoluteFrom('/node_modules/test/index.d.ts'),
+           compiledByAngular: true,
+         };
+         const esm5bundle =
+             makeEntryPointBundle(fs, entryPoint, './index.js', false, 'esm5', 'esm5', true) !;
 
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
