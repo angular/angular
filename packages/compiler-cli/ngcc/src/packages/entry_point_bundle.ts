@@ -18,6 +18,7 @@ import {NgccSourcesCompilerHost} from './ngcc_compiler_host';
  * format of a package entry-point.
  */
 export interface EntryPointBundle {
+  entryPoint: EntryPoint;
   formatProperty: EntryPointJsonProperty;
   format: EntryPointFormat;
   isCore: boolean;
@@ -60,5 +61,5 @@ export function makeEntryPointBundle(
                              null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {format, formatProperty, rootDirs, isCore, isFlatCore, src, dts};
+  return {entryPoint, format, formatProperty, rootDirs, isCore, isFlatCore, src, dts};
 }

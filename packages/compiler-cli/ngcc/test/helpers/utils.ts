@@ -8,9 +8,21 @@
 import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
-import {EntryPointFormat, EntryPointJsonProperty} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host';
+
+export function makeTestEntryPoint(
+    entryPointName: string, packageName: string = entryPointName): EntryPoint {
+  return {
+    name: entryPointName,
+    packageJson: {name: entryPointName},
+    package: absoluteFrom(`/node_modules/${packageName}`),
+    path: absoluteFrom(`/node_modules/${entryPointName}`),
+    typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
+    compiledByAngular: true,
+  };
+}
 
 /**
  *
@@ -19,12 +31,19 @@ import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host';
  * @param dtsFiles The typings files to include the bundle.
  */
 export function makeTestEntryPointBundle(
-    formatProperty: EntryPointJsonProperty, format: EntryPointFormat, isCore: boolean,
-    srcRootNames: AbsoluteFsPath[], dtsRootNames?: AbsoluteFsPath[]): EntryPointBundle {
+    packageName: string, formatProperty: EntryPointJsonProperty, format: EntryPointFormat,
+    isCore: boolean, srcRootNames: AbsoluteFsPath[],
+    dtsRootNames?: AbsoluteFsPath[]): EntryPointBundle {
+  const entryPoint = makeTestEntryPoint(packageName);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
   const dts = dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], isCore) : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
-  return {formatProperty, format, rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore};
+  return {
+    entryPoint,
+    formatProperty,
+    format,
+    rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore
+  };
 }
 
 export function makeTestBundleProgram(

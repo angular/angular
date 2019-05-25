@@ -25,7 +25,7 @@ function setup(file: TestFile) {
   loadTestFiles([file]);
   const fs = getFileSystem();
   const logger = new MockLogger();
-  const bundle = makeTestEntryPointBundle('esm5', 'esm5', false, [file.name]);
+  const bundle = makeTestEntryPointBundle('test-package', 'esm5', 'esm5', false, [file.name]);
   const src = bundle.src;
   const typeChecker = src.program.getTypeChecker();
   const host = new UmdReflectionHost(logger, false, src.program, src.host);

@@ -30,7 +30,8 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const fs = getFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle(
-      'es2015', 'esm2015', false, getRootFiles(files), dtsFiles && getRootFiles(dtsFiles)) !;
+      'test-package', 'es2015', 'esm2015', false, getRootFiles(files),
+      dtsFiles && getRootFiles(dtsFiles)) !;
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(logger, false, typeChecker, bundle.dts);
   const referencesRegistry = new NgccReferencesRegistry(host);
