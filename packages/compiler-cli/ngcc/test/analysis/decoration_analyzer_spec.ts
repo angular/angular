@@ -16,7 +16,7 @@ import {CompiledClass, DecorationAnalyses, DecorationAnalyzer} from '../../src/a
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {MockLogger} from '../helpers/mock_logger';
-import {getRootFiles, makeTestBundleProgram} from '../helpers/utils';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 type DecoratorHandlerWithResolve = DecoratorHandler<any, any>& {
   resolve: NonNullable<DecoratorHandler<any, any>['resolve']>;
@@ -91,15 +91,15 @@ runInEachFileSystem(() => {
         loadTestFiles(testFiles);
         loadFakeCore(getFileSystem());
         const rootFiles = getRootFiles(testFiles);
-        const {options, host, ...bundle} = makeTestBundleProgram(rootFiles[0]);
-        program = bundle.program;
+        const bundle =
+            makeTestEntryPointBundle('test-package', 'es2015', 'esm2015', false, rootFiles);
+        program = bundle.src.program;
 
         const reflectionHost =
             new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
         const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
-        const analyzer = new DecorationAnalyzer(
-            getFileSystem(), program, options, host, program.getTypeChecker(), reflectionHost,
-            referencesRegistry, [absoluteFrom('/')], false);
+        const analyzer =
+            new DecorationAnalyzer(getFileSystem(), bundle, reflectionHost, referencesRegistry);
         testHandler = createTestHandler();
         analyzer.handlers = [testHandler];
         result = analyzer.analyzeProgram();

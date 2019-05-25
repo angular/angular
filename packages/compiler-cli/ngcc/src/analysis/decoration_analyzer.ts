@@ -18,6 +18,7 @@ import {ClassDeclaration, ClassSymbol, Decorator} from '../../../src/ngtsc/refle
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {isDefined} from '../utils';
 
 export interface AnalyzedFile {
@@ -66,6 +67,12 @@ class NgccResourceLoader implements ResourceLoader {
  * This Analyzer will analyze the files that have decorated classes that need to be transformed.
  */
 export class DecorationAnalyzer {
+  private program = this.bundle.src.program;
+  private options = this.bundle.src.options;
+  private host = this.bundle.src.host;
+  private typeChecker = this.bundle.src.program.getTypeChecker();
+  private rootDirs = this.bundle.rootDirs;
+  private isCore = this.bundle.isCore;
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
@@ -112,10 +119,8 @@ export class DecorationAnalyzer {
   ];
 
   constructor(
-      private fs: FileSystem, private program: ts.Program, private options: ts.CompilerOptions,
-      private host: ts.CompilerHost, private typeChecker: ts.TypeChecker,
-      private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
-      private rootDirs: AbsoluteFsPath[], private isCore: boolean) {}
+      private fs: FileSystem, private bundle: EntryPointBundle,
+      private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry) {}
 
   /**
    * Analyze a program to find all the decorated files should be transformed.
