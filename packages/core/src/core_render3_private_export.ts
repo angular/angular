@@ -120,7 +120,7 @@ export {
   ɵɵpropertyInterpolate7,
   ɵɵpropertyInterpolate8,
   ɵɵpropertyInterpolateV,
-  ɵɵcomponentHostSyntheticProperty,
+  ɵɵupdateSyntheticHostBinding,
   ɵɵcomponentHostSyntheticListener,
   ɵɵprojectionDef,
   ɵɵreference,

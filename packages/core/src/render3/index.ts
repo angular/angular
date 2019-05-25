@@ -39,7 +39,6 @@ export {
   ɵɵclassMap,
   ɵɵclassProp,
   ɵɵcomponentHostSyntheticListener,
-  ɵɵcomponentHostSyntheticProperty,
 
   ɵɵcontainer,
   ɵɵcontainerRefreshEnd,
@@ -119,6 +118,8 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
+
+  ɵɵupdateSyntheticHostBinding,
 } from './instructions/all';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
