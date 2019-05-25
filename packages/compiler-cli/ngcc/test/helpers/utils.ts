@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as ts from 'typescript';
 import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
@@ -49,8 +50,10 @@ export function makeTestEntryPointBundle(
 export function makeTestBundleProgram(
     path: AbsoluteFsPath, isCore: boolean = false): BundleProgram {
   const fs = getFileSystem();
-  const options = {allowJs: true, checkJs: false};
   const entryPointPath = fs.dirname(path);
+  const rootDir = fs.dirname(entryPointPath);
+  const options: ts.CompilerOptions =
+      {allowJs: true, maxNodeModuleJsDepth: Infinity, checkJs: false, rootDir, rootDirs: [rootDir]};
   const host = new NgccSourcesCompilerHost(fs, options, entryPointPath);
   return makeBundleProgram(fs, isCore, path, 'r3_symbols.js', options, host);
 }
