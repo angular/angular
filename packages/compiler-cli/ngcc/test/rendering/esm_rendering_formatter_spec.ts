@@ -9,7 +9,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles, loadFakeCore} from '../../../test/helpers';
 import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -23,11 +23,12 @@ import {MockLogger} from '../helpers/mock_logger';
 import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
 
 function setup(files: TestFile[], dtsFiles?: TestFile[]) {
+  const fs = getFileSystem();
+  loadFakeCore(fs);
   loadTestFiles(files);
   if (dtsFiles) {
     loadTestFiles(dtsFiles);
   }
-  const fs = getFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle(
       'test-package', 'es2015', 'esm2015', false, getRootFiles(files),
@@ -37,7 +38,8 @@ function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses =
+      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
@@ -58,7 +60,7 @@ runInEachFileSystem(() => {
       _ = absoluteFrom;
 
       PROGRAM = {
-        name: _('/some/file.js'),
+        name: _('/node_modules/test-package/some/file.js'),
         contents: `
 /* A copyright notice */
 import 'some-side-effect';
@@ -120,9 +122,21 @@ import * as i1 from '@angular/common';`);
         renderer.addExports(
             output, _(PROGRAM.name.replace(/\.js$/, '')),
             [
-              {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+                identifier: 'ComponentA1'
+              },
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+                identifier: 'ComponentA2'
+              },
+              {
+                from: _('/node_modules/test-package/some/foo/b.js'),
+                dtsFrom: _('/node_modules/test-package/some/foo/b.d.ts'),
+                identifier: 'ComponentB'
+              },
               {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -140,9 +154,21 @@ export {TopLevelComponent};`);
         renderer.addExports(
             output, _(PROGRAM.name.replace(/\.js$/, '')),
             [
-              {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA1',
+                identifier: 'ComponentA1'
+              },
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA2',
+                identifier: 'ComponentA2'
+              },
+              {
+                from: _('/node_modules/test-package/some/foo/b.js'),
+                alias: 'eComponentB',
+                identifier: 'ComponentB'
+              },
               {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -156,7 +182,7 @@ export {TopLevelComponent};`);
     describe('addConstants', () => {
       it('should insert the given constants after imports in the source file', () => {
         const {renderer, program} = setup([PROGRAM]);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'const x = 3;', file);
         expect(output.toString()).toContain(`
@@ -168,7 +194,7 @@ export class A {}`);
 
       it('should insert constants after inserted imports', () => {
         const {renderer, program} = setup([PROGRAM]);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'const x = 3;', file);
         renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
@@ -184,7 +210,7 @@ export class A {`);
     describe('rewriteSwitchableDeclarations', () => {
       it('should switch marked declaration initializers', () => {
         const {renderer, program, switchMarkerAnalyses, sourceFile} = setup([PROGRAM]);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.rewriteSwitchableDeclarations(
             output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
@@ -292,7 +318,7 @@ A.decorators = [
 
       beforeEach(() => {
         PROGRAM_DECORATE_HELPER = {
-          name: _('/some/file.js'),
+          name: _('/node_modules/test-package/some/file.js'),
           contents: `
 import * as tslib_1 from "tslib";
 var D_1;

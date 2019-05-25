@@ -30,7 +30,7 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       _ = absoluteFrom;
       PROGRAM = {
-        name: _('/some/file.js'),
+        name: _('/node_modules/test-package/some/file.js'),
         contents: `
 /* A copyright notice */
 require('some-side-effect');
@@ -94,7 +94,7 @@ exports.BadIife = BadIife;`
       };
 
       PROGRAM_DECORATE_HELPER = {
-        name: _('/some/file.js'),
+        name: _('/node_modules/test-package/some/file.js'),
         contents: `
 var tslib_1 = require("tslib");
 /* A copyright notice */
@@ -156,8 +156,8 @@ exports.D = D;
       const referencesRegistry = new NgccReferencesRegistry(host);
       const decorationAnalyses =
           new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-      const switchMarkerAnalyses =
-          new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+      const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package)
+                                       .analyzeProgram(bundle.src.program);
       const renderer = new CommonJsRenderingFormatter(host, false);
       const importManager = new ImportManager(new NoopImportRewriter(), 'i');
       return {
@@ -197,9 +197,21 @@ var i1 = require('@angular/common');`);
         renderer.addExports(
             output, _(PROGRAM.name.replace(/\.js$/, '')),
             [
-              {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), dtsFrom: _('/some/a.d.ts'), identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), dtsFrom: _('/some/foo/b.d.ts'), identifier: 'ComponentB'},
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+                identifier: 'ComponentA1'
+              },
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+                identifier: 'ComponentA2'
+              },
+              {
+                from: _('/node_modules/test-package/some/foo/b.js'),
+                dtsFrom: _('/node_modules/test-package/some/foo/b.d.ts'),
+                identifier: 'ComponentB'
+              },
               {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -222,9 +234,21 @@ exports.TopLevelComponent = TopLevelComponent;`);
         renderer.addExports(
             output, _(PROGRAM.name.replace(/\.js$/, '')),
             [
-              {from: _('/some/a.js'), alias: 'eComponentA1', identifier: 'ComponentA1'},
-              {from: _('/some/a.js'), alias: 'eComponentA2', identifier: 'ComponentA2'},
-              {from: _('/some/foo/b.js'), alias: 'eComponentB', identifier: 'ComponentB'},
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA1',
+                identifier: 'ComponentA1'
+              },
+              {
+                from: _('/node_modules/test-package/some/a.js'),
+                alias: 'eComponentA2',
+                identifier: 'ComponentA2'
+              },
+              {
+                from: _('/node_modules/test-package/some/foo/b.js'),
+                alias: 'eComponentB',
+                identifier: 'ComponentB'
+              },
               {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
             ],
             importManager, sourceFile);
@@ -238,7 +262,7 @@ exports.TopLevelComponent = TopLevelComponent;`);
     describe('addConstants', () => {
       it('should insert the given constants after imports in the source file', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'var x = 3;', file);
         expect(output.toString()).toContain(`
@@ -250,7 +274,7 @@ var A = (function() {`);
 
       it('should insert constants after inserted imports', () => {
         const {renderer, program} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'var x = 3;', file);
         renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
@@ -266,7 +290,7 @@ var A = (function() {`);
     describe('rewriteSwitchableDeclarations', () => {
       it('should switch marked declaration initializers', () => {
         const {renderer, program, sourceFile, switchMarkerAnalyses} = setup(PROGRAM);
-        const file = getSourceFileOrError(program, _('/some/file.js'));
+        const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.rewriteSwitchableDeclarations(
             output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
@@ -311,14 +335,14 @@ SOME DEFINITION TEXT
         const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
         expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
             .toThrowError(
-                `Compiled class declaration is not inside an IIFE: NoIife in ${_('/some/file.js')}`);
+                `Compiled class declaration is not inside an IIFE: NoIife in ${_('/node_modules/test-package/some/file.js')}`);
 
         const badIifeDeclaration = getDeclaration(
             program, absoluteFromSourceFile(sourceFile), 'BadIife', ts.isVariableDeclaration);
         const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
         expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
             .toThrowError(
-                `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_('/some/file.js')}`);
+                `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_('/node_modules/test-package/some/file.js')}`);
       });
     });
 

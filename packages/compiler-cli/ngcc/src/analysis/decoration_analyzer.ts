@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
-import {AbsoluteFsPath, FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
+import {FileSystem, LogicalFileSystem, absoluteFrom, dirname, resolve} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
@@ -20,6 +20,7 @@ import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {isDefined} from '../utils';
+import {isWithinPackage} from './util';
 
 export interface AnalyzedFile {
   sourceFile: ts.SourceFile;
@@ -72,6 +73,7 @@ export class DecorationAnalyzer {
   private host = this.bundle.src.host;
   private typeChecker = this.bundle.src.program.getTypeChecker();
   private rootDirs = this.bundle.rootDirs;
+  private packagePath = this.bundle.entryPoint.package;
   private isCore = this.bundle.isCore;
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
@@ -130,6 +132,7 @@ export class DecorationAnalyzer {
   analyzeProgram(): DecorationAnalyses {
     const decorationAnalyses = new DecorationAnalyses();
     const analysedFiles = this.program.getSourceFiles()
+                              .filter(sourceFile => isWithinPackage(this.packagePath, sourceFile))
                               .map(sourceFile => this.analyzeFile(sourceFile))
                               .filter(isDefined);
     analysedFiles.forEach(analysedFile => this.resolveFile(analysedFile));
