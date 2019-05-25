@@ -667,18 +667,7 @@ function createHostBindingsFunction(
           sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
         }
       }
-      const isInstructionWithoutElementIndex =
-          instruction === R3.property || instruction === R3.attribute;
-      const instructionParams: o.Expression[] = isInstructionWithoutElementIndex ?
-          [
-            o.literal(bindingName),
-            bindingExpr.currValExpr,
-          ] :
-          [
-            elVarExp,
-            o.literal(bindingName),
-            o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
-          ];
+      const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
       if (sanitizerFn) {
         instructionParams.push(sanitizerFn);
       }
@@ -783,7 +772,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
       // host bindings that have a synthetic property (e.g. @foo) should always be rendered
       // in the context of the component and not the parent. Therefore there is a special
       // compatibility instruction available for this purpose.
-      instruction = R3.componentHostSyntheticProperty;
+      instruction = R3.updateSyntheticHostBinding;
     } else {
       instruction = R3.property;
     }

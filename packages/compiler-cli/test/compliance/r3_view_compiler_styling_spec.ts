@@ -350,7 +350,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵɵcomponentHostSyntheticListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); });
               $r3$.ɵɵcomponentHostSyntheticListener("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
             } if (rf & 2) {
-              $r3$.ɵɵcomponentHostSyntheticProperty(elIndex, "@myAnim", $r3$.ɵɵbind(ctx.myAnimState), null, true);
+              $r3$.ɵɵupdateSyntheticHostBinding("@myAnim", ctx.myAnimState, null, true);
             }
           }
           …
