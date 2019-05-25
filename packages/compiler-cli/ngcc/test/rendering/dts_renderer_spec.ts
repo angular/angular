@@ -82,7 +82,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
   spyOn(testFormatter, 'addModuleWithProvidersParams').and.callThrough();
 
-  const renderer = new DtsRenderer(testFormatter, fs, logger, host, isCore, bundle);
+  const renderer = new DtsRenderer(testFormatter, fs, logger, host, bundle);
 
   return {renderer,
           testFormatter,

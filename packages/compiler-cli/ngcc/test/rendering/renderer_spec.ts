@@ -83,7 +83,7 @@ function createTestRenderer(
   spyOn(testFormatter, 'rewriteSwitchableDeclarations').and.callThrough();
   spyOn(testFormatter, 'addModuleWithProvidersParams').and.callThrough();
 
-  const renderer = new Renderer(testFormatter, fs, logger, host, isCore, bundle);
+  const renderer = new Renderer(testFormatter, fs, logger, bundle);
 
   return {renderer,
           testFormatter,
