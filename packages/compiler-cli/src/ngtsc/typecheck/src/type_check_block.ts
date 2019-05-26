@@ -122,7 +122,7 @@ class TcbVariableOp extends TcbOp {
     const id = this.tcb.allocateId();
     const initializer = ts.createPropertyAccess(
         /* expression */ ctx,
-        /* name */ this.variable.value);
+        /* name */ this.variable.value || '$implicit');
 
     // Declare the variable, and return its identifier.
     this.scope.addStatement(tsCreateVariable(id, initializer));
