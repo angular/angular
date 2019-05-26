@@ -45,6 +45,16 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('_t1.htmlFor = "test";');
   });
 
+  it('should handle implicit vars on ng-template', () => {
+    const TEMPLATE = `<ng-template let-a></ng-template>`;
+    expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
+  });
+
+  it('should handle implicit vars when using microsyntax', () => {
+    const TEMPLATE = `<div *ngFor="let user of users"></div>`;
+    expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
+  });
+
   it('should generate a forward element reference correctly', () => {
     const TEMPLATE = `
       {{ i.value }}
