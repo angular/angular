@@ -765,8 +765,10 @@ export function generatePropertyAliases(tNode: TNode, direction: BindingDirectio
 }
 
 /**
-* Mapping between attributes names that don't correspond to their element property names.
-*/
+ * Mapping between attributes names that don't correspond to their element property names.
+ * Note: this mapping has to be kept in sync with the equally named mapping in the template
+ * type-checking machinery of ngtsc.
+ */
 const ATTR_TO_PROP: {[name: string]: string} = {
   'class': 'className',
   'for': 'htmlFor',
