@@ -40,6 +40,11 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('ctx.a[ctx.b];');
   });
 
+  it('should translate unclaimed bindings to their property equivalent', () => {
+    const TEMPLATE = `<label [for]="'test'"></label>`;
+    expect(tcb(TEMPLATE)).toContain('_t1.htmlFor = "test";');
+  });
+
   it('should generate a forward element reference correctly', () => {
     const TEMPLATE = `
       {{ i.value }}
