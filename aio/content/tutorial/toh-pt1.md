@@ -1,4 +1,5 @@
-# The Hero Editor
+# The Hero Editor...CarLTheGreat
+
 
 The application now has a basic title.
 Next you will create a new component to display hero information
