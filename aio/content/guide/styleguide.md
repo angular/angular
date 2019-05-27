@@ -1986,10 +1986,6 @@ Here is a compliant folder and file structure:
         <div class='children'>
 
           <div class='file'>
-            core.module.ts
-          </div>
-
-          <div class='file'>
             exception.service.ts|spec.ts
           </div>
 
