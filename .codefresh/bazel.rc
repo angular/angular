@@ -35,3 +35,6 @@ build --verbose_failures=true
 # https://github.com/bazelbuild/rules_typescript/pull/356
 build --action_env=PATH
 test --action_env=PATH --test_env=PATH
+
+# Having bazel-bin in dist/ seems to make Windows builds slower, so instead we set it at root.
+build --symlink_prefix=/
