@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, Injector, Input, LOCALE_ID, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, EventEmitter, Host, HostBinding, INJECTOR, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, forwardRef} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -28,6 +28,32 @@ describe('di', () => {
 
       const divElement = fixture.nativeElement.querySelector('div');
       expect(divElement.textContent).toContain('Created');
+    });
+  });
+
+  describe('multi providers', () => {
+    it('should process ModuleWithProvider providers after module imports', () => {
+      const testToken = new InjectionToken<string[]>('test-multi');
+
+      @NgModule({providers: [{provide: testToken, useValue: 'A', multi: true}]})
+      class TestModuleA {
+      }
+
+      @NgModule({providers: [{provide: testToken, useValue: 'B', multi: true}]})
+      class TestModuleB {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [
+          {
+            ngModule: TestModuleA,
+            providers: [{provide: testToken, useValue: 'C', multi: true}],
+          },
+          TestModuleB,
+        ]
+      });
+
+      expect(TestBed.get(testToken) as string[]).toEqual(['A', 'B', 'C']);
     });
   });
 
