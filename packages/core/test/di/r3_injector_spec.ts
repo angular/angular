@@ -217,6 +217,31 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class MultiProviderA {
+    static ngInjectorDef = ɵɵdefineInjector({
+      factory: () => new MultiProviderA(),
+      providers: [{provide: LOCALE, multi: true, useValue: 'A'}],
+    });
+  }
+
+  class MultiProviderB {
+    static ngInjectorDef = ɵɵdefineInjector({
+      factory: () => new MultiProviderB(),
+      providers: [{provide: LOCALE, multi: true, useValue: 'B'}],
+    });
+  }
+
+  class WithProvidersTest {
+    static ngInjectorDef = ɵɵdefineInjector({
+      factory: () => new WithProvidersTest(),
+      imports: [
+        {ngModule: MultiProviderA, providers: [{provide: LOCALE, multi: true, useValue: 'C'}]},
+        MultiProviderB
+      ],
+      providers: [],
+    });
+  }
+
   let injector: Injector;
 
   beforeEach(() => {
@@ -272,6 +297,11 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(ServiceWithMultiDep);
     expect(instance instanceof ServiceWithMultiDep);
     expect(instance.locale).toEqual(['en', 'es']);
+  });
+
+  it('should process "InjectionTypeWithProviders" providers after imports injection type', () => {
+    injector = createInjector(WithProvidersTest);
+    expect(injector.get(LOCALE)).toEqual(['A', 'B', 'C']);
   });
 
   it('injects an injector with dependencies', () => {
