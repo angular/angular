@@ -203,7 +203,7 @@ Read about other `FormControl` properties and methods in the [Reactive forms API
 <!--
 Reactive forms have methods to change a control's value programmatically, which gives you the flexibility to update the value without user interaction. A form control instance provides a `setValue()` method that updates the value of the form control and validates the structure of the value provided against the control's structure. For example, when retrieving form data from a backend API or service, use the `setValue()` method to update the control to its new value, replacing the old value entirely. 
 -->
-반응형 폼에서 제공하는 메소드를 사용하면 사용자의 동작 없이도 폼 컨트롤의 값을 컴포넌트 코드에서 변경할 수 있습니다. 이 중 `setValue()` 메소드를 사용하면 폼 컨트롤의 값을 변경할 수 있으며, 이 때 폼 컨트롤의 구조에 맞지 않는 데이터가 전달되는 유효성 검사도 수행합니다. 그래서 밸엔드 API나 서비스에서 데이터를 가져온 후에 `setValue()` 메소드를 사용하면 현재 폼 컨트롤의 값 전체를 한 번에 변경할 수 있습니다.
+반응형 폼에서 제공하는 메소드를 사용하면 사용자의 동작 없이도 폼 컨트롤의 값을 컴포넌트 코드에서 변경할 수 있습니다. 이 중 `setValue()` 메소드를 사용하면 폼 컨트롤의 값을 변경할 수 있으며, 이 때 폼 컨트롤의 구조에 맞지 않는 데이터가 전달되는 유효성 검사도 수행합니다. 그래서 백엔드 API나 서비스에서 데이터를 가져온 후에 `setValue()` 메소드를 사용하면 현재 폼 컨트롤의 값 전체를 한 번에 변경할 수 있습니다.
 
 <!--
 The following example adds a method to the component class to update the value of the control to *Nancy* using the `setValue()` method.
