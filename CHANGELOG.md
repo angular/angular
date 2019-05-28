@@ -1,3 +1,37 @@
+# 8.0.0 "osmium-octothorpe" (2019-05-28)
+
+
+### Bug Fixes
+
+* **ng-update:** do not always use double quotes for generated imports ([#16131](https://github.com/angular/components/issues/16131)) ([a3856c7](https://github.com/angular/components/commit/a3856c7)), closes [/github.com/microsoft/TypeScript/blob/6a559e37ee0d660fcc94f086a34370e79e94b17a/src/compiler/emitter.ts#L3796-L3797](https://github.com//github.com/microsoft/TypeScript/blob/6a559e37ee0d660fcc94f086a34370e79e94b17a/src/compiler/emitter.ts/issues/L3796-L3797) [#14532](https://github.com/angular/components/issues/14532)
+
+
+### Deprecations
+Importing directly from the root `@angular/material` entry-point is deprecated. You should instead
+import from specific entry-points, e.g. `@angular/material/button`. This aligns with `@angular/cdk`,
+makes clear where symbols originate, and helps safeguard against including unused code. The
+deprecated style will be removed in Angular v9.
+
+Angular CLI users can use `ng update @angular/material` to automatically migrate imports to the new
+style.
+
+### Breaking Changes (including changes from RC)
+
+* **tabs:** `_ngZone` and `_platform` parameters in `MatTabHeader` constructor are now required.
+* **tabs:** `changeDetectorRef` parameter in `MatTabBody` constructor is now required.
+* **expansion:** The `_document` and `_animationMode` parameters are now required.
+* **list:** `_elementRef` parameter in `MatList` constructor is now required.
+* **list:** `_changeDetectorRef` parameter in `MatListItem` constructor is now required. Also the order of constructor parameters has changed.
+* **progress-spinner:** The `animationMode` mode parameter is now required in the `MatProgressSpinner` and `MatSpinner` constructors.
+* **progress-spinner:** The `_elementRef` parameter has changed from `ElementRef<any>` to `ElementRef<HTMLElement>` in the `MatProgressSpinner` and `MatSpinner` constructors.
+* **button:** `_platform` parameter has been removed from the `MatButton` constructor and the `_animationMode` is now required.
+* **button:** `platform` parameter has been removed from the `MatAnchor` constructor and the `animationMode` is now required.
+* **button**: The `disabled` hosting binding for `MatButton` has changed from a property to an attribute, which
+affects any tests using `DebugElement.attributes`.
+* **badge:** `_document` parameter has been removed and the `_renderer` parameter is now required in the `MatBadge` constructor.
+
+
+
 # 8.0.0-rc.2 "mercury-melody" (2019-05-24)
 
 
