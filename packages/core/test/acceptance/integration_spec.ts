@@ -1043,10 +1043,10 @@ describe('acceptance integration tests', () => {
 
       @Directive({selector: '[DirWithStyle]'})
       class DirWithStyleDirective {
-        public stylesVal: string = '';
+        public stylesVal: any = '';
 
         @Input()
-        set style(value: string) { this.stylesVal = value; }
+        set style(value: any) { this.stylesVal = value; }
       }
 
       it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
@@ -1061,8 +1061,10 @@ describe('acceptance integration tests', () => {
            const fixture = TestBed.createComponent(App);
            fixture.detectChanges();
 
-           expect(fixture.componentInstance.mockClassDirective.classesVal)
-               .toEqual('apple orange banana');
+           // the initial values always get sorted in non VE code
+           // but there is no sorting guarantee within VE code
+           expect(fixture.componentInstance.mockClassDirective.classesVal.split(/\s+/).sort())
+               .toEqual(['apple', 'banana', 'orange']);
          });
 
       it('should delegate initial styles to a [style] input binding if present on a directive on the same element',
@@ -1118,7 +1120,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
 
                 expect(fixture.componentInstance.mockStyleDirective.stylesVal)
-                    .toEqual('width:200px;height:500px');
+                    .toEqual({'width': '200px', 'height': '500px'});
               });
 
       onlyInIvy('Style binding merging works differently in Ivy')

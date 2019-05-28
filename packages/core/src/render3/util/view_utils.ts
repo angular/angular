@@ -40,9 +40,9 @@ import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLA
 
 /**
  * Returns `RNode`.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`, `StylingContext`
+ * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapRNode(value: RNode | LView | LContainer | StylingContext): RNode {
+export function unwrapRNode(value: RNode | LView | LContainer): RNode {
   while (Array.isArray(value)) {
     value = value[HOST] as any;
   }
@@ -51,9 +51,9 @@ export function unwrapRNode(value: RNode | LView | LContainer | StylingContext):
 
 /**
  * Returns `LView` or `null` if not found.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`, `StylingContext`
+ * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLView(value: RNode | LView | LContainer | StylingContext): LView|null {
+export function unwrapLView(value: RNode | LView | LContainer): LView|null {
   while (Array.isArray(value)) {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -65,10 +65,9 @@ export function unwrapLView(value: RNode | LView | LContainer | StylingContext):
 
 /**
  * Returns `LContainer` or `null` if not found.
- * @param value wrapped value of `RNode`, `LView`, `LContainer`, `StylingContext`
+ * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLContainer(value: RNode | LView | LContainer | StylingContext): LContainer|
-    null {
+export function unwrapLContainer(value: RNode | LView | LContainer): LContainer|null {
   while (Array.isArray(value)) {
     // This check is same as `isLContainer()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.

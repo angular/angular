@@ -20,11 +20,6 @@ describe('view_utils', () => {
     const lContainer = createLContainer(lView, lView, div, tNode, true);
     const styleContext = createEmptyStylingContext(lContainer, null, null, null);
 
-    expect(unwrapRNode(styleContext)).toBe(div);
-    expect(unwrapStylingContext(styleContext)).toBe(styleContext);
-    expect(unwrapLContainer(styleContext)).toBe(lContainer);
-    expect(unwrapLView(styleContext)).toBe(lView);
-
     expect(isLView(lView)).toBe(true);
     expect(isLView(lContainer)).toBe(false);
     expect(isLView(styleContext)).toBe(false);

@@ -11,7 +11,6 @@ import {ViewRef} from '../../linker/view_ref';
 import {TNode} from './node';
 import {LQueries} from './query';
 import {RComment, RElement} from './renderer';
-import {StylingContext} from './styling';
 import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
 
 
@@ -54,11 +53,8 @@ export interface LContainer extends Array<any> {
    *
    * The host could be an LView if this container is on a component node.
    * In that case, the component LView is its HOST.
-   *
-   * It could also be a styling context if this is a node with a style/class
-   * binding.
    */
-  readonly[HOST]: RElement|RComment|StylingContext|LView;
+  readonly[HOST]: RElement|RComment|LView;
 
   /**
    * This is a type field which allows us to differentiate `LContainer` from `StylingContext` in an

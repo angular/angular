@@ -34,8 +34,9 @@ import {isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCheckNoChangesMode, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getSelectedIndex, incrementActiveDirectiveId, isCreationMode, leaveView, namespaceHTMLInternal, setActiveHostElement, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode, setSelectedIndex} from '../state';
 import {initializeStaticContext as initializeStaticStylingContext} from '../styling/class_and_style_bindings';
 import {ANIMATION_PROP_PREFIX, isAnimationProp} from '../styling/util';
+import {renderStylingMap} from '../styling_next/bindings';
+import {getInitialStylingValue, getStylingMapArray} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
-import {attrsStylingIndexOf} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
@@ -490,25 +491,6 @@ function getRenderFlags(view: LView): RenderFlags {
 //// Element
 //////////////////////////
 
-/**
- * Appropriately sets `stylingTemplate` on a TNode
- *
- * Does not apply styles to DOM nodes
- *
- * @param tNode The node whose `stylingTemplate` to set
- * @param attrs The attribute array source to set the attributes from
- * @param attrsStartIndex Optional start index to start processing the `attrs` from
- */
-export function setNodeStylingTemplate(
-    tView: TView, tNode: TNode, attrs: TAttributes, attrsStartIndex: number) {
-  if (tView.firstTemplatePass && !tNode.stylingTemplate) {
-    const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, attrsStartIndex);
-    if (stylingAttrsStartIndex >= 0) {
-      tNode.stylingTemplate = initializeStaticStylingContext(attrs, stylingAttrsStartIndex);
-    }
-  }
-}
-
 export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
   if (isContentQueryHost(tNode)) {
     const start = tNode.directiveStart;
@@ -756,66 +738,61 @@ export function createTNode(
     adjustedIndex: number, tagName: string | null, attrs: TAttributes | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   let injectorIndex = tParent ? tParent.injectorIndex : -1;
-  return ngDevMode ?
-      new TNodeConstructor(
-          tView,          // tView_: TView
-          type,           // type: TNodeType
-          adjustedIndex,  // index: number
-          injectorIndex,  // injectorIndex: number
-          -1,             // directiveStart: number
-          -1,             // directiveEnd: number
-          -1,             // propertyMetadataStartIndex: number
-          -1,             // propertyMetadataEndIndex: number
-          0,              // flags: TNodeFlags
-          0,              // providerIndexes: TNodeProviderIndexes
-          tagName,        // tagName: string|null
-          attrs,          // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
-          null,           // localNames: (string|number)[]|null
-          undefined,      // initialInputs: (string[]|null)[]|null|undefined
-          undefined,      // inputs: PropertyAliases|null|undefined
-          undefined,      // outputs: PropertyAliases|null|undefined
-          null,           // tViews: ITView|ITView[]|null
-          null,           // next: ITNode|null
-          null,           // projectionNext: ITNode|null
-          null,           // child: ITNode|null
-          tParent,        // parent: TElementNode|TContainerNode|null
-          null,           // stylingTemplate: StylingContext|null
-          null,           // projection: number|(ITNode|RNode[])[]|null
-          null,           // onElementCreationFns: Function[]|null
-          // TODO (matsko): rename this to `styles` once the old styling impl is gone
-          null,  // newStyles: TStylingContext|null
-          // TODO (matsko): rename this to `classes` once the old styling impl is gone
-          null,  // newClasses: TStylingContext|null
-          ) :
-      {
-        type: type,
-        index: adjustedIndex,
-        injectorIndex: injectorIndex,
-        directiveStart: -1,
-        directiveEnd: -1,
-        propertyMetadataStartIndex: -1,
-        propertyMetadataEndIndex: -1,
-        flags: 0,
-        providerIndexes: 0,
-        tagName: tagName,
-        attrs: attrs,
-        localNames: null,
-        initialInputs: undefined,
-        inputs: undefined,
-        outputs: undefined,
-        tViews: null,
-        next: null,
-        projectionNext: null,
-        child: null,
-        parent: tParent,
-        stylingTemplate: null,
-        projection: null,
-        onElementCreationFns: null,
-        // TODO (matsko): rename this to `styles` once the old styling impl is gone
-        newStyles: null,
-        // TODO (matsko): rename this to `classes` once the old styling impl is gone
-        newClasses: null,
-      };
+  return ngDevMode ? new TNodeConstructor(
+                         tView,          // tView_: TView
+                         type,           // type: TNodeType
+                         adjustedIndex,  // index: number
+                         injectorIndex,  // injectorIndex: number
+                         -1,             // directiveStart: number
+                         -1,             // directiveEnd: number
+                         -1,             // propertyMetadataStartIndex: number
+                         -1,             // propertyMetadataEndIndex: number
+                         0,              // flags: TNodeFlags
+                         0,              // providerIndexes: TNodeProviderIndexes
+                         tagName,        // tagName: string|null
+                         attrs,  // attrs: (string|AttributeMarker|(string|SelectorFlags)[])[]|null
+                         null,   // localNames: (string|number)[]|null
+                         undefined,  // initialInputs: (string[]|null)[]|null|undefined
+                         undefined,  // inputs: PropertyAliases|null|undefined
+                         undefined,  // outputs: PropertyAliases|null|undefined
+                         null,       // tViews: ITView|ITView[]|null
+                         null,       // next: ITNode|null
+                         null,       // projectionNext: ITNode|null
+                         null,       // child: ITNode|null
+                         tParent,    // parent: TElementNode|TContainerNode|null
+                         null,       // stylingTemplate: StylingContext|null
+                         null,       // projection: number|(ITNode|RNode[])[]|null
+                         null,       // onElementCreationFns: Function[]|null
+                         null,       // newStyles: TStylingContext|null
+                         null,       // newClasses: TStylingContext|null
+                         ) :
+                     {
+                       type: type,
+                       index: adjustedIndex,
+                       injectorIndex: injectorIndex,
+                       directiveStart: -1,
+                       directiveEnd: -1,
+                       propertyMetadataStartIndex: -1,
+                       propertyMetadataEndIndex: -1,
+                       flags: 0,
+                       providerIndexes: 0,
+                       tagName: tagName,
+                       attrs: attrs,
+                       localNames: null,
+                       initialInputs: undefined,
+                       inputs: undefined,
+                       outputs: undefined,
+                       tViews: null,
+                       next: null,
+                       projectionNext: null,
+                       child: null,
+                       parent: tParent,
+                       stylingTemplate: null,
+                       projection: null,
+                       onElementCreationFns: null,
+                       styles: null,
+                       classes: null,
+                     };
 }
 
 
@@ -1898,4 +1875,18 @@ export function textBindingInternal(lView: LView, index: number, value: string):
   ngDevMode && ngDevMode.rendererSetText++;
   const renderer = lView[RENDERER];
   isProceduralRenderer(renderer) ? renderer.setValue(element, value) : element.textContent = value;
+}
+
+/**
+ * Renders all initial styling (class and style values) on to the element from the tNode.
+ *
+ * All initial styling data (i.e. any values extracted from the `style` or `class` attributes
+ * on an element) are collected into the `tNode.styles` and `tNode.classes` data structures.
+ * These values are populated during the creation phase of an element and are then later
+ * applied once the element is instantiated. This function applies each of the static
+ * style and class entries to the element.
+ */
+export function renderInitialStyling(renderer: Renderer3, native: RElement, tNode: TNode) {
+  renderStylingMap(renderer, native, tNode.classes, true);
+  renderStylingMap(renderer, native, tNode.styles, false);
 }
