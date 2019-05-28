@@ -73,7 +73,8 @@ export class FactoryGenerator implements ShimGenerator {
       // This will encompass a lot of symbols which don't need factories, but that's okay
       // because it won't miss any that do.
       const varLines = symbolNames.map(
-          name => `export const ${name}NgFactory = new i0.ɵNgModuleFactory(${name});`);
+          name =>
+              `export const ${name}NgFactory: i0.ɵNgModuleFactory<any> = new i0.ɵNgModuleFactory(${name});`);
       sourceText += [
         // This might be incorrect if the current package being compiled is Angular core, but it's
         // okay to leave in at type checking time. TypeScript can handle this reference via its path
