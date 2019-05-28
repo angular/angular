@@ -376,7 +376,7 @@ The `@angular/platform-*` packages enable Angular to be run in different context
 
 Though web worker is useful to offload things requiring lots of processing, pushing whole apps to run in the web worker isn't a winning strategy due to many unresolved issues.
 
-Angular CLI doesn't allow use of these APIs because the build system and bundling doesn't support them. This whole package is deprecated in Angular version 8 and will be removed in the future.
+Angular CLI doesn't allow use of these APIs because the build system and bundling doesn't support them. This whole package is deprecated in Angular version 8 and will be removed in the future. If you're currently using the `@angular/platform-webworker` APIs in production, please reach out to devrel@angular.io and let us know - we're interested in hearing your use cases.
 
 Instead, use web workers primarily for offloading CPU intensive, but functionally not critical, work needed for initial rendering (for example, in memory search, image processing, and so on).
 
