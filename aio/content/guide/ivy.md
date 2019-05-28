@@ -32,4 +32,24 @@ To update an existing project to use Ivy, set the `enableIvy` option in the `ang
 }
 ```
 
-To stop using the Ivy compiler, set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely.
+AOT compilation with Ivy is faster and should be used by default. In the `angular.json` workspace configuration file, set the default build options for your project to always use AOT compilation.
+
+```json
+{
+  "projects": {
+    "my-existing-project": {
+      "architect": {
+        "build": {
+          "options": {
+            ...
+            "aot": true,
+          }
+        }
+      }
+    }
+  }
+}
+
+
+To stop using the Ivy compiler, set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely. Also remove `"aot": true` from your default build options if you didn't have it there before.
+ 
