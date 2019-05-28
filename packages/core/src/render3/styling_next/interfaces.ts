@@ -37,17 +37,37 @@ import {LView} from '../interfaces/view';
  * tNode.classes = [ ... a context only for classes ... ];
  * ```
  *
+ * `tNode.styles` and `tNode.classes` can be an instance of the following:
+ *
+ * ```typescript
+ * tNode.styles = null; // no static styling or styling bindings active
+ * tNode.styles = StylingMapArray; // only static values present (e.g. `<div style="width:200">`)
+ * tNode.styles = TStylingContext; // one or more styling bindings present (e.g. `<div
+ * [style.width]>`)
+ * ```
+ *
+ * Both `tNode.styles` and `tNode.classes` are instantiated when anything
+ * styling-related is active on an element. They are first created from
+ * from the any of the element-level instructions (e.g. `element`,
+ * `elementStart`, `elementHostAttrs`). When any static style/class
+ * values are encountered they are registered on the `tNode.styles`
+ * and `tNode.classes` data-structures. By default (when any static
+ * values are encountered) the `tNode.styles` or `tNode.classes` values
+ * are instances of a `StylingMapArray`. Only when style/class bindings
+ * are detected then that styling map is converted into an instance of
+ * `TStylingContext`.
+ *
  * Due to the fact the the `TStylingContext` is stored on a `TNode`
  * this means that all data within the context is static. Instead of
  * storing actual styling binding values, the lView binding index values
  * are stored within the context. (static nature means it is more compact.)
-
  *
  * ```typescript
  * // <div [class.active]="c"  // lView binding index = 20
  * //      [style.width]="x"   // lView binding index = 21
  * //      [style.height]="y"> // lView binding index = 22
  * tNode.stylesContext = [
+ *   [], // initial values array
  *   0, // the context config value
  *
  *   0b001, // guard mask for width
@@ -64,6 +84,7 @@ import {LView} from '../interfaces/view';
  * ];
  *
  * tNode.classesContext = [
+ *   [], // initial values array
  *   0, // the context config value
  *
  *   0b001, // guard mask for active
@@ -260,7 +281,11 @@ import {LView} from '../interfaces/view';
  * If sanitization returns an empty value then that empty value will be applied
  * to the element.
  */
-export interface TStylingContext extends Array<number|string|number|boolean|null|LStylingMap> {
+export interface TStylingContext extends
+    Array<number|string|number|boolean|null|StylingMapArray|{}> {
+  /** Initial value position for static styles */
+  [TStylingContextIndex.InitialStylingValuePosition]: StylingMapArray|null;
+
   /** Configuration data for the context */
   [TStylingContextIndex.ConfigPosition]: TStylingConfigFlags;
 
@@ -268,7 +293,7 @@ export interface TStylingContext extends Array<number|string|number|boolean|null
      the old styling code is fully removed. The reason why this
      is required is to figure out which directive is last and,
      when encountered, trigger a styling flush to happen */
-  [TStylingContextIndex.MaxDirectiveIndexPosition]: number;
+  [TStylingContextIndex.LastDirectiveIndexPosition]: number;
 
   /** The bit guard value for all map-based bindings on an element */
   [TStylingContextIndex.MapBindingsBitGuardPosition]: number;
@@ -303,22 +328,41 @@ export const enum TStylingConfigFlags {
    * bindings can be added to it).
    */
   Locked = 0b1,
+
+  /**
+   * Whether or not to store the state between updates in a global storage map.
+   *
+   * This flag helps the algorithm avoid storing all state values temporarily in
+   * a storage map (that lives in `state.ts`). The flag is only flipped to true if
+   * and when an element contains style/class bindings that exist both on the
+   * template-level as well as within host bindings on the same element. This is a
+   * rare case, and a storage map is required so that the state values can be restored
+   * between the template code running and the host binding code executing.
+   */
+  PersistStateValues = 0b10,
+
+  /** A Mask of all the configurations */
+  Mask = 0b11,
+
+  /** Total amount of configuration bits used */
+  TotalBits = 2,
 }
 
 /**
  * An index of position and offset values used to natigate the `TStylingContext`.
  */
 export const enum TStylingContextIndex {
-  ConfigPosition = 0,
-  MaxDirectiveIndexPosition = 1,
+  InitialStylingValuePosition = 0,
+  ConfigPosition = 1,
+  LastDirectiveIndexPosition = 2,
 
   // index/offset values for map-based entries (i.e. `[style]`
-  // and `[class] bindings).
-  MapBindingsPosition = 2,
-  MapBindingsBitGuardPosition = 2,
-  MapBindingsValuesCountPosition = 3,
-  MapBindingsPropPosition = 4,
-  MapBindingsBindingsStartPosition = 5,
+  // and `[class]` bindings).
+  MapBindingsPosition = 3,
+  MapBindingsBitGuardPosition = 3,
+  MapBindingsValuesCountPosition = 4,
+  MapBindingsPropPosition = 5,
+  MapBindingsBindingsStartPosition = 6,
 
   // each tuple entry in the context
   // (mask, count, prop, ...bindings||default-value)
@@ -326,6 +370,7 @@ export const enum TStylingContextIndex {
   ValuesCountOffset = 1,
   PropOffset = 2,
   BindingsStartOffset = 3,
+  MinTupleLength = 4,
 }
 
 /**
@@ -366,14 +411,14 @@ export type LStylingData = LView | (string | number | boolean | null)[];
  * of the key/value array that was used to populate the property/
  * value entries that take place in the remainder of the array.
  */
-export interface LStylingMap extends Array<{}|string|number|null> {
-  [LStylingMapIndex.RawValuePosition]: {}|string|null;
+export interface StylingMapArray extends Array<{}|string|number|null> {
+  [StylingMapArrayIndex.RawValuePosition]: {}|string|null;
 }
 
 /**
- * An index of position and offset points for any data stored within a `LStylingMap` instance.
+ * An index of position and offset points for any data stored within a `StylingMapArray` instance.
  */
-export const enum LStylingMapIndex {
+export const enum StylingMapArrayIndex {
   /** The location of the raw key/value map instance used last to populate the array entries */
   RawValuePosition = 0,
 
@@ -394,7 +439,7 @@ export const enum LStylingMapIndex {
  * Used to apply/traverse across all map-based styling entries up to the provided `targetProp`
  * value.
  *
- * When called, each of the map-based `LStylingMap` entries (which are stored in
+ * When called, each of the map-based `StylingMapArray` entries (which are stored in
  * the provided `LStylingData` array) will be iterated over. Depending on the provided
  * `mode` value, each prop/value entry may be applied or skipped over.
  *

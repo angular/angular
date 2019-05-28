@@ -9,8 +9,9 @@ import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanit
 import {ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 
 import {setStylingMapsSyncFn} from './bindings';
-import {ApplyStylingFn, LStylingData, LStylingMap, LStylingMapIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from './interfaces';
-import {getBindingValue, getValuesCount, isStylingValueDefined} from './util';
+import {ApplyStylingFn, LStylingData, StylingMapArray, StylingMapArrayIndex, StylingMapsSyncMode, SyncStylingMapsFn, TStylingContext, TStylingContextIndex} from './interfaces';
+import {concatString, getBindingValue, getMapProp, getMapValue, getValuesCount, hyphenate, isStylingValueDefined, setMapValue} from './util';
+
 
 
 /**
@@ -45,8 +46,8 @@ import {getBindingValue, getValuesCount, isStylingValueDefined} from './util';
  *
  * # The Algorithm
  * Whenever a map-based binding updates (which is when the identity of the
- * map-value changes) then the map is iterated over and a `LStylingMap` array
- * is produced. The `LStylingMap` instance is stored in the binding location
+ * map-value changes) then the map is iterated over and a `StylingMapArray` array
+ * is produced. The `StylingMapArray` instance is stored in the binding location
  * where the `BINDING_INDEX` is situated when the `styleMap()` or `classMap()`
  * instruction were called. Once the binding changes, then the internal `bitMask`
  * value is marked as dirty.
@@ -154,19 +155,18 @@ function innerSyncStylingMap(
     mode: StylingMapsSyncMode, targetProp: string | null, currentMapIndex: number,
     defaultValue: string | null): boolean {
   let targetPropValueWasApplied = false;
-
   const totalMaps = getValuesCount(context, TStylingContextIndex.MapBindingsPosition);
   if (currentMapIndex < totalMaps) {
     const bindingIndex = getBindingValue(
         context, TStylingContextIndex.MapBindingsPosition, currentMapIndex) as number;
-    const lStylingMap = data[bindingIndex] as LStylingMap;
+    const stylingMapArr = data[bindingIndex] as StylingMapArray;
 
     let cursor = getCurrentSyncCursor(currentMapIndex);
-    while (cursor < lStylingMap.length) {
-      const prop = getMapProp(lStylingMap, cursor);
+    while (cursor < stylingMapArr.length) {
+      const prop = getMapProp(stylingMapArr, cursor);
       const iteratedTooFar = targetProp && prop > targetProp;
       const isTargetPropMatched = !iteratedTooFar && prop === targetProp;
-      const value = getMapValue(lStylingMap, cursor);
+      const value = getMapValue(stylingMapArr, cursor);
       const valueIsDefined = isStylingValueDefined(value);
 
       // the recursive code is designed to keep applying until
@@ -183,6 +183,9 @@ function innerSyncStylingMap(
           currentMapIndex + 1, defaultValue);
 
       if (iteratedTooFar) {
+        if (!targetPropValueWasApplied) {
+          targetPropValueWasApplied = valueApplied;
+        }
         break;
       }
 
@@ -198,10 +201,23 @@ function innerSyncStylingMap(
       }
 
       targetPropValueWasApplied = valueApplied && isTargetPropMatched;
-      cursor += LStylingMapIndex.TupleSize;
+      cursor += StylingMapArrayIndex.TupleSize;
     }
     setCurrentSyncCursor(currentMapIndex, cursor);
+
+    // this is a fallback case in the event that the styling map is `null` for this
+    // binding but there are other map-based bindings that need to be evaluated
+    // afterwards. If the `prop` value is falsy then the intention is to cycle
+    // through all of the properties in the remaining maps as well. If the current
+    // styling map is too short then there are no values to iterate over. In either
+    // case the follow-up maps need to be iterated over.
+    if (stylingMapArr.length === StylingMapArrayIndex.ValuesStartPosition || !targetProp) {
+      return innerSyncStylingMap(
+          context, renderer, element, data, applyStylingFn, sanitizer, mode, targetProp,
+          currentMapIndex + 1, defaultValue);
+    }
   }
+
 
   return targetPropValueWasApplied;
 }
@@ -210,7 +226,7 @@ function innerSyncStylingMap(
 /**
  * Enables support for map-based styling bindings (e.g. `[style]` and `[class]` bindings).
  */
-export function activeStylingMapFeature() {
+export function activateStylingMapFeature() {
   setStylingMapsSyncFn(syncStylingMap);
 }
 
@@ -220,19 +236,21 @@ export function activeStylingMapFeature() {
  * If an inner map is iterated on then this is done so for one
  * of two reasons:
  *
- * - The target property was detected and the inner map
- *   must now "catch up" (pointer-wise) up to where the current
- *   map's cursor is situated.
+ * - value is being applied:
+ *   if the value is being applied from this current styling
+ *   map then there is no need to apply it in a deeper map.
  *
- * - The target property was not detected in the current map
- *   and must be found in an inner map. This can only be allowed
- *   if the current map iteration is not set to skip the target
- *   property.
+ * - value is being not applied:
+ *   apply the value if it is found in a deeper map.
+ *
+ * When these reasons are encountered the flags will for the
+ * inner map mode will be configured.
  */
 function resolveInnerMapMode(
     currentMode: number, valueIsDefined: boolean, isExactMatch: boolean): number {
   let innerMode = currentMode;
-  if (!valueIsDefined && isExactMatch && !(currentMode & StylingMapsSyncMode.SkipTargetProp)) {
+  if (!valueIsDefined && !(currentMode & StylingMapsSyncMode.SkipTargetProp) &&
+      (isExactMatch || (currentMode & StylingMapsSyncMode.ApplyAllValues))) {
     // case 1: set the mode to apply the targeted prop value if it
     // ends up being encountered in another map value
     innerMode |= StylingMapsSyncMode.ApplyTargetProp;
@@ -243,6 +261,7 @@ function resolveInnerMapMode(
     innerMode |= StylingMapsSyncMode.SkipTargetProp;
     innerMode &= ~StylingMapsSyncMode.ApplyTargetProp;
   }
+
   return innerMode;
 }
 
@@ -281,7 +300,7 @@ const MAP_CURSORS: number[] = [];
  */
 function resetSyncCursors() {
   for (let i = 0; i < MAP_CURSORS.length; i++) {
-    MAP_CURSORS[i] = LStylingMapIndex.ValuesStartPosition;
+    MAP_CURSORS[i] = StylingMapArrayIndex.ValuesStartPosition;
   }
 }
 
@@ -290,7 +309,7 @@ function resetSyncCursors() {
  */
 function getCurrentSyncCursor(mapIndex: number) {
   if (mapIndex >= MAP_CURSORS.length) {
-    MAP_CURSORS.push(LStylingMapIndex.ValuesStartPosition);
+    MAP_CURSORS.push(StylingMapArrayIndex.ValuesStartPosition);
   }
   return MAP_CURSORS[mapIndex];
 }
@@ -303,33 +322,34 @@ function setCurrentSyncCursor(mapIndex: number, indexValue: number) {
 }
 
 /**
- * Used to convert a {key:value} map into a `LStylingMap` array.
+ * Used to convert a {key:value} map into a `StylingMapArray` array.
  *
- * This function will either generate a new `LStylingMap` instance
+ * This function will either generate a new `StylingMapArray` instance
  * or it will patch the provided `newValues` map value into an
- * existing `LStylingMap` value (this only happens if `bindingValue`
- * is an instance of `LStylingMap`).
+ * existing `StylingMapArray` value (this only happens if `bindingValue`
+ * is an instance of `StylingMapArray`).
  *
- * If a new key/value map is provided with an old `LStylingMap`
+ * If a new key/value map is provided with an old `StylingMapArray`
  * value then all properties will be overwritten with their new
  * values or with `null`. This means that the array will never
  * shrink in size (but it will also not be created and thrown
  * away whenever the {key:value} map entries change).
  */
 export function normalizeIntoStylingMap(
-    bindingValue: null | LStylingMap,
-    newValues: {[key: string]: any} | string | null | undefined): LStylingMap {
-  const lStylingMap: LStylingMap = Array.isArray(bindingValue) ? bindingValue : [null];
-  lStylingMap[LStylingMapIndex.RawValuePosition] = newValues || null;
+    bindingValue: null | StylingMapArray,
+    newValues: {[key: string]: any} | string | null | undefined,
+    normalizeProps?: boolean): StylingMapArray {
+  const stylingMapArr: StylingMapArray = Array.isArray(bindingValue) ? bindingValue : [null];
+  stylingMapArr[StylingMapArrayIndex.RawValuePosition] = newValues || null;
 
   // because the new values may not include all the properties
   // that the old ones had, all values are set to `null` before
   // the new values are applied. This way, when flushed, the
   // styling algorithm knows exactly what style/class values
   // to remove from the element (since they are `null`).
-  for (let j = LStylingMapIndex.ValuesStartPosition; j < lStylingMap.length;
-       j += LStylingMapIndex.TupleSize) {
-    setMapValue(lStylingMap, j, null);
+  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
+       j += StylingMapArrayIndex.TupleSize) {
+    setMapValue(stylingMapArr, j, null);
   }
 
   let props: string[]|null = null;
@@ -346,36 +366,80 @@ export function normalizeIntoStylingMap(
   }
 
   if (props) {
-    outer: for (let i = 0; i < props.length; i++) {
+    for (let i = 0; i < props.length; i++) {
       const prop = props[i] as string;
+      const newProp = normalizeProps ? hyphenate(prop) : prop;
       const value = allValuesTrue ? true : map ![prop];
-      for (let j = LStylingMapIndex.ValuesStartPosition; j < lStylingMap.length;
-           j += LStylingMapIndex.TupleSize) {
-        const propAtIndex = getMapProp(lStylingMap, j);
-        if (prop <= propAtIndex) {
-          if (propAtIndex === prop) {
-            setMapValue(lStylingMap, j, value);
-          } else {
-            lStylingMap.splice(j, 0, prop, value);
-          }
-          continue outer;
-        }
-      }
-      lStylingMap.push(prop, value);
+      addItemToStylingMap(stylingMapArr, newProp, value, true);
     }
   }
 
-  return lStylingMap;
+  return stylingMapArr;
 }
 
-export function getMapProp(map: LStylingMap, index: number): string {
-  return map[index + LStylingMapIndex.PropOffset] as string;
+/**
+ * Inserts the provided item into the provided styling array at the right spot.
+ *
+ * The `StylingMapArray` type is a sorted key/value array of entries. This means
+ * that when a new entry is inserted it must be placed at the right spot in the
+ * array. This function figures out exactly where to place it.
+ */
+export function addItemToStylingMap(
+    stylingMapArr: StylingMapArray, prop: string, value: string | boolean | null,
+    allowOverwrite?: boolean) {
+  for (let j = StylingMapArrayIndex.ValuesStartPosition; j < stylingMapArr.length;
+       j += StylingMapArrayIndex.TupleSize) {
+    const propAtIndex = getMapProp(stylingMapArr, j);
+    if (prop <= propAtIndex) {
+      let applied = false;
+      if (propAtIndex === prop) {
+        const valueAtIndex = stylingMapArr[j];
+        if (allowOverwrite || !isStylingValueDefined(valueAtIndex)) {
+          applied = true;
+          setMapValue(stylingMapArr, j, value);
+        }
+      } else {
+        applied = true;
+        stylingMapArr.splice(j, 0, prop, value);
+      }
+      return applied;
+    }
+  }
+
+  stylingMapArr.push(prop, value);
+  return true;
 }
 
-export function setMapValue(map: LStylingMap, index: number, value: string | null): void {
-  map[index + LStylingMapIndex.ValueOffset] = value;
+/**
+ * Converts the provided styling map array into a string.
+ *
+ * Classes => `one two three`
+ * Styles => `prop:value; prop2:value2`
+ */
+export function stylingMapToString(map: StylingMapArray, isClassBased: boolean): string {
+  let str = '';
+  for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
+       i += StylingMapArrayIndex.TupleSize) {
+    const prop = getMapProp(map, i);
+    const value = getMapValue(map, i) as string;
+    const attrValue = concatString(prop, isClassBased ? '' : value, ':');
+    str = concatString(str, attrValue, isClassBased ? ' ' : '; ');
+  }
+  return str;
 }
 
-export function getMapValue(map: LStylingMap, index: number): string|null {
-  return map[index + LStylingMapIndex.ValueOffset] as string | null;
+/**
+ * Converts the provided styling map array into a key value map.
+ */
+export function stylingMapToStringMap(map: StylingMapArray | null): {[key: string]: any} {
+  let stringMap: {[key: string]: any} = {};
+  if (map) {
+    for (let i = StylingMapArrayIndex.ValuesStartPosition; i < map.length;
+         i += StylingMapArrayIndex.TupleSize) {
+      const prop = getMapProp(map, i);
+      const value = getMapValue(map, i) as string;
+      stringMap[prop] = value;
+    }
+  }
+  return stringMap;
 }

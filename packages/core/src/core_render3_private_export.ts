@@ -122,6 +122,7 @@ export {
   ɵɵelementContainer,
   ɵɵstyling,
   ɵɵstyleMap,
+  ɵɵstyleSanitizer,
   ɵɵclassMap,
   ɵɵclassMapInterpolate1,
   ɵɵclassMapInterpolate2,

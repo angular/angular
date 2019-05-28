@@ -15,8 +15,7 @@ import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
-import {parse as parseStyle} from './style_parser';
-import {compilerIsNewStylingInUse} from './styling_state';
+import {hyphenate, parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
 import {getInterpolationArgsLength} from './util';
 
@@ -69,7 +68,7 @@ interface BoundStylingEntry {
  *   classMap(...)
  *   styleProp(...)
  *   classProp(...)
- *   stylingApp(...)
+ *   stylingApply(...)
  * }
  *
  * The creation/update methods within the builder class produce these instructions.
@@ -171,6 +170,7 @@ export class StylingBuilder {
     if (isEmptyExpression(value)) {
       return null;
     }
+    name = normalizePropName(name);
     const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
     const entry: BoundStylingEntry = {
       name: property,
@@ -296,46 +296,7 @@ export class StylingBuilder {
         sourceSpan,
         allocateBindingSlots: 0,
         reference: R3.styling,
-        params: () => {
-          // a string array of every style-based binding
-          const styleBindingProps =
-              this._singleStyleInputs ? this._singleStyleInputs.map(i => o.literal(i.name)) : [];
-          // a string array of every class-based binding
-          const classBindingNames =
-              this._singleClassInputs ? this._singleClassInputs.map(i => o.literal(i.name)) : [];
-
-          // to salvage space in the AOT generated code, there is no point in passing
-          // in `null` into a param if any follow-up params are not used. Therefore,
-          // only when a trailing param is used then it will be filled with nulls in between
-          // (otherwise a shorter amount of params will be filled). The code below helps
-          // determine how many params are required in the expression code.
-          //
-          // min params => styling()
-          // max params => styling(classBindings, styleBindings, sanitizer)
-          //
-          const params: o.Expression[] = [];
-          let expectedNumberOfArgs = 0;
-          if (this._useDefaultSanitizer) {
-            expectedNumberOfArgs = 3;
-          } else if (styleBindingProps.length) {
-            expectedNumberOfArgs = 2;
-          } else if (classBindingNames.length) {
-            expectedNumberOfArgs = 1;
-          }
-
-          addParam(
-              params, classBindingNames.length > 0,
-              getConstantLiteralFromArray(constantPool, classBindingNames), 1,
-              expectedNumberOfArgs);
-          addParam(
-              params, styleBindingProps.length > 0,
-              getConstantLiteralFromArray(constantPool, styleBindingProps), 2,
-              expectedNumberOfArgs);
-          addParam(
-              params, this._useDefaultSanitizer, o.importExpr(R3.defaultStyleSanitizer), 3,
-              expectedNumberOfArgs);
-          return params;
-        }
+        params: () => [],
       };
     }
     return null;
@@ -370,12 +331,8 @@ export class StylingBuilder {
   private _buildMapBasedInstruction(
       valueConverter: ValueConverter, isClassBased: boolean,
       stylingInput: BoundStylingEntry): StylingInstruction {
-    let totalBindingSlotsRequired = 0;
-    if (compilerIsNewStylingInUse()) {
-      // the old implementation does not reserve slot values for
-      // binding entries. The new one does.
-      totalBindingSlotsRequired++;
-    }
+    // each styling binding value is stored in the LView
+    let totalBindingSlotsRequired = 1;
 
     // these values must be outside of the update block so that they can
     // be evaluated (the AST visit call) during creation time so that any
@@ -408,8 +365,11 @@ export class StylingBuilder {
       StylingInstruction[] {
     let totalBindingSlotsRequired = 0;
     return inputs.map(input => {
-      const bindingIndex: number = mapIndex.get(input.name !) !;
       const value = input.value.visit(valueConverter);
+
+      // each styling binding value is stored in the LView
+      let totalBindingSlotsRequired = 1;
+
       if (value instanceof Interpolation) {
         totalBindingSlotsRequired += value.expressions.length;
 
@@ -417,35 +377,25 @@ export class StylingBuilder {
           reference = getInterpolationExpressionFn(value);
         }
       }
-      if (compilerIsNewStylingInUse()) {
-        // the old implementation does not reserve slot values for
-        // binding entries. The new one does.
-        totalBindingSlotsRequired++;
-      }
+
       return {
         sourceSpan: input.sourceSpan,
         supportsInterpolation: !!getInterpolationExpressionFn,
         allocateBindingSlots: totalBindingSlotsRequired, reference,
         params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
-          // min params => stylingProp(elmIndex, bindingIndex, value)
-          // max params => stylingProp(elmIndex, bindingIndex, value, overrideFlag)
-          const params: o.Expression[] = [o.literal(bindingIndex)];
+          // params => stylingProp(propName, value)
+          const params: o.Expression[] = [];
+          params.push(o.literal(input.name));
+
           const convertResult = convertFn(value);
           if (Array.isArray(convertResult)) {
             params.push(...convertResult);
           } else {
             params.push(convertResult);
           }
-          if (allowUnits) {
-            if (input.unit) {
-              params.push(o.literal(input.unit));
-            } else if (input.hasOverrideFlag) {
-              params.push(o.NULL_EXPR);
-            }
-          }
 
-          if (input.hasOverrideFlag) {
-            params.push(o.literal(true));
+          if (allowUnits && input.unit) {
+            params.push(o.literal(input.unit));
           }
 
           return params;
@@ -496,7 +446,7 @@ export class StylingBuilder {
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: StylingInstruction[] = [];
     if (this.hasBindings) {
-      if (compilerIsNewStylingInUse() && this._useDefaultSanitizer) {
+      if (this._useDefaultSanitizer) {
         instructions.push(this._buildSanitizerFn());
       }
       const styleMapInstruction = this.buildStyleMapInstruction(valueConverter);
@@ -629,4 +579,8 @@ function getStylePropInterpolationExpression(interpolation: Interpolation) {
     default:
       return R3.stylePropInterpolateV;
   }
+}
+
+function normalizePropName(prop: string): string {
+  return hyphenate(prop);
 }

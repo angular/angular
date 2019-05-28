@@ -7,13 +7,13 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
-import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -25,10 +25,7 @@ describe('instructions', () => {
     ɵɵelementEnd();
   }
 
-  function createDiv(
-      initialClasses?: string[] | null, classBindingNames?: string[] | null,
-      initialStyles?: string[] | null, styleBindingNames?: string[] | null,
-      styleSanitizer?: StyleSanitizeFn) {
+  function createDiv(initialClasses?: string[] | null, initialStyles?: string[] | null) {
     const attrs: any[] = [];
     if (initialClasses) {
       attrs.push(AttributeMarker.Classes, ...initialClasses);
@@ -37,7 +34,7 @@ describe('instructions', () => {
       attrs.push(AttributeMarker.Styles, ...initialStyles);
     }
     ɵɵelementStart(0, 'div', attrs);
-    ɵɵstyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
+    ɵɵstyling();
     ɵɵelementEnd();
   }
 
@@ -56,16 +53,10 @@ describe('instructions', () => {
     it('should update bindings when value changes with the correct perf counters', () => {
       const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'Hello');
-      });
+      t.update(() => { ɵɵproperty('title', 'Hello'); });
       expect(t.html).toEqual('<a title="Hello"></a>');
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'World');
-      });
+      t.update(() => { ɵɵproperty('title', 'World'); });
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -78,10 +69,7 @@ describe('instructions', () => {
 
     it('should not update bindings when value does not change, with the correct perf counters',
        () => {
-         const idempotentUpdate = () => {
-           ɵɵselect(0);
-           ɵɵproperty('title', 'Hello');
-         };
+         const idempotentUpdate = () => { ɵɵproperty('title', 'Hello'); };
          const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
 
          t.update();
@@ -121,14 +109,10 @@ describe('instructions', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1, 1);
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('title', 'javascript:true', ɵɵsanitizeUrl);
-      });
+      t.update(() => { ɵɵattribute('title', 'javascript:true', ɵɵsanitizeUrl); });
       expect(t.html).toEqual('<div title="unsafe:javascript:true"></div>');
 
       t.update(() => {
-        ɵɵselect(0);
         ɵɵattribute('title', bypassSanitizationTrustUrl('javascript:true'), ɵɵsanitizeUrl);
       });
       expect(t.html).toEqual('<div title="javascript:true"></div>');
@@ -167,18 +151,17 @@ describe('instructions', () => {
 
   describe('styleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(() => {
-        return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
-      }, () => {}, 1);
+      const t = new TemplateFixture(() => { return createDiv(); }, () => {}, 1);
       t.update(() => {
-        ɵɵstyleProp(0, 'url("http://server")');
+        ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
+        ɵɵstyleProp('background-image', 'url("http://server")');
         ɵɵstylingApply();
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        ɵɵstyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
+        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('url("http://server2")'));
         ɵɵstylingApply();
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
@@ -187,13 +170,11 @@ describe('instructions', () => {
 
     it('should not re-apply the style value even if it is a newly bypassed again', () => {
       const sanitizerInterceptor = new MockSanitizerInterceptor();
-      const t = createTemplateFixtureWithSanitizer(
-          () => createDiv(
-              null, null, null, ['background-image'], sanitizerInterceptor.getStyleSanitizer()),
-          1, sanitizerInterceptor);
+      const t = createTemplateFixtureWithSanitizer(() => createDiv(), 1, sanitizerInterceptor);
 
       t.update(() => {
-        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
+        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('apple'));
         ɵɵstylingApply();
       });
 
@@ -201,7 +182,8 @@ describe('instructions', () => {
       sanitizerInterceptor.lastValue = null;
 
       t.update(() => {
-        ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
+        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
+        ɵɵstyleProp('background-image', bypassSanitizationTrustStyle('apple'));
         ɵɵstylingApply();
       });
       expect(sanitizerInterceptor.lastValue).toEqual(null);
@@ -211,7 +193,7 @@ describe('instructions', () => {
   describe('styleMap', () => {
     function createDivWithStyle() {
       ɵɵelementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
-      ɵɵstyling([], ['height']);
+      ɵɵstyling();
       ɵɵelementEnd();
     }
 
@@ -228,11 +210,11 @@ describe('instructions', () => {
       const detectedValues: string[] = [];
       const sanitizerInterceptor =
           new MockSanitizerInterceptor(value => { detectedValues.push(value); });
-      const fixture = createTemplateFixtureWithSanitizer(
-          () => createDiv(null, null, null, null, sanitizerInterceptor.getStyleSanitizer()), 1,
-          sanitizerInterceptor);
+      const fixture =
+          createTemplateFixtureWithSanitizer(() => createDiv(), 1, sanitizerInterceptor);
 
       fixture.update(() => {
+        ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
         ɵɵstyleMap({
           'background-image': 'background-image',
           'background': 'background',
@@ -265,7 +247,7 @@ describe('instructions', () => {
         ɵɵclassMap('multiple classes');
         ɵɵstylingApply();
       });
-      expect(fixture.html).toEqual('<div class="multiple classes"></div>');
+      expect(fixture.html).toEqual('<div class="classes multiple"></div>');
     });
   });
 
@@ -320,7 +302,6 @@ describe('instructions', () => {
               ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
             }
             if (rf & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵproperty('ngForOf', ctx.rows);
             }
           },
@@ -343,10 +324,7 @@ describe('instructions', () => {
       const inputValue = 'http://foo';
       const outputValue = 'http://foo-sanitized';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('href', inputValue, ɵɵsanitizeUrl);
-      });
+      t.update(() => { ɵɵattribute('href', inputValue, ɵɵsanitizeUrl); });
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -357,10 +335,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustUrl('http://foo');
       const outputValue = 'http://foo';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('href', inputValue, ɵɵsanitizeUrl);
-      });
+      t.update(() => { ɵɵattribute('href', inputValue, ɵɵsanitizeUrl); });
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -371,10 +346,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustUrl('http://foo');
       const outputValue = 'http://foo-ivy';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('href', inputValue, ɵɵsanitizeUrl);
-      });
+      t.update(() => { ɵɵattribute('href', inputValue, ɵɵsanitizeUrl); });
       expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -385,10 +357,7 @@ describe('instructions', () => {
       const inputValue = 'color:red';
       const outputValue = 'color:blue';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('style', inputValue, ɵɵsanitizeStyle);
-      });
+      t.update(() => { ɵɵattribute('style', inputValue, ɵɵsanitizeStyle); });
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -399,10 +368,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustStyle('color:maroon');
       const outputValue = 'color:maroon';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('style', inputValue, ɵɵsanitizeStyle);
-      });
+      t.update(() => { ɵɵattribute('style', inputValue, ɵɵsanitizeStyle); });
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -413,10 +379,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustStyle('font-family:foo');
       const outputValue = 'font-family:foo-ivy';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('style', inputValue, ɵɵsanitizeStyle);
-      });
+      t.update(() => { ɵɵattribute('style', inputValue, ɵɵsanitizeStyle); });
       expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -427,10 +390,7 @@ describe('instructions', () => {
       const inputValue = 'http://resource';
       const outputValue = 'http://resource-sanitized';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl);
-      });
+      t.update(() => { ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl); });
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -441,10 +401,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl);
-      });
+      t.update(() => { ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl); });
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -455,10 +412,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf-ivy';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl);
-      });
+      t.update(() => { ɵɵattribute('src', inputValue, ɵɵsanitizeResourceUrl); });
       expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -469,10 +423,7 @@ describe('instructions', () => {
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript); });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -483,10 +434,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript); });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -497,10 +445,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeScript); });
       expect(t.html).toEqual(`<script>${outputValue}</script>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -511,10 +456,7 @@ describe('instructions', () => {
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml); });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toEqual(outputValue);
     });
@@ -525,10 +467,7 @@ describe('instructions', () => {
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml); });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
@@ -539,10 +478,7 @@ describe('instructions', () => {
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml);
-      });
+      t.update(() => { ɵɵproperty('innerHTML', inputValue, ɵɵsanitizeHtml); });
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
     });
