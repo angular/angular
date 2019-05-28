@@ -117,9 +117,4 @@ RUN Invoke-WebRequest -UseBasicParsing https://www.python.org/ftp/python/3.5.1/p
     Start-Process python-3.5.1.exe -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait; `
     Remove-Item -Force python-3.5.1.exe
 
-# Add a fix for https://github.com/docker/for-win/issues/2920 as entry point to the container.
-SHELL ["cmd", "/c"]
-COPY "fix-msys64.cmd" "C:\\fix-msys64.cmd"
-ENTRYPOINT cmd /C C:\\fix-msys64.cmd && cmd /c
-
 CMD ["cmd.exe"]
