@@ -17,7 +17,6 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {StylingContext} from './interfaces/styling';
 import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, FLAGS, HOST, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -70,7 +69,7 @@ const enum WalkTNodeTreeAction {
  */
 function executeActionOnElementOrContainer(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
-    lNodeToHandle: RNode | LContainer | LView | StylingContext, beforeNode?: RNode | null) {
+    lNodeToHandle: RNode | LContainer | LView, beforeNode?: RNode | null) {
   ngDevMode && assertDefined(lNodeToHandle, '\'lNodeToHandle\' is undefined');
   let lContainer: LContainer|undefined;
   let isComponent = false;

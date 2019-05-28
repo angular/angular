@@ -1825,16 +1825,16 @@ runInEachFileSystem(os => {
       const hostBindingsFn = `
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          i0.ɵɵallocHostVars(2);
+          i0.ɵɵallocHostVars(3);
           i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
           i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵɵresolveBody);
           i0.ɵɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
-          i0.ɵɵstyling(_c0);
+          i0.ɵɵstyling();
         }
         if (rf & 2) {
           i0.ɵɵhostProperty("prop", ctx.bar);
           i0.ɵɵattribute("hello", ctx.foo);
-          i0.ɵɵclassProp(0, ctx.someClass);
+          i0.ɵɵclassProp("someclass", ctx.someClass);
           i0.ɵɵstylingApply();
         }
       }

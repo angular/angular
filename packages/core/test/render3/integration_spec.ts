@@ -633,7 +633,7 @@ describe('element discovery', () => {
            template: (rf: RenderFlags, ctx: StructuredComp) => {
              if (rf & RenderFlags.Create) {
                ɵɵelementStart(0, 'section');
-               ɵɵstyling(['class-foo']);
+               ɵɵstyling();
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
@@ -651,8 +651,7 @@ describe('element discovery', () => {
        expect(Array.isArray(result1)).toBeTruthy();
 
        const elementResult = result1[HEADER_OFFSET];  // first element
-       expect(Array.isArray(elementResult)).toBeTruthy();
-       expect(elementResult[StylingIndex.ElementPosition]).toBe(section);
+       expect(elementResult).toBe(section);
 
        const context = getLContext(section) !;
        const result2 = section[MONKEY_PATCH_KEY_NAME];

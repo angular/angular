@@ -1634,7 +1634,8 @@ describe('di', () => {
 
       expect(directive.otherAttr).toBe('value');
       expect(directive.className).toBe('hello there');
-      expect(directive.inlineStyles).toBe('margin: 1px; color: red;');
+      expect(directive.inlineStyles).toMatch(/color:\s*red/);
+      expect(directive.inlineStyles).toMatch(/margin:\s*1px/);
     });
 
     it('should not inject attributes with namespace', () => {

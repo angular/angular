@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, ElementRef} from '@angular/core';
+import {Component, Directive, ElementRef, Input} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('styling', () => {
   beforeEach(ngDevModeResetPerfCounters);
@@ -153,10 +153,8 @@ describe('styling', () => {
     expect(div.style.backgroundImage).toBe('url("#test")');
 
     onlyInIvy('perf counters').expectPerfCounters({
-      stylingApply: 2,
-      stylingApplyCacheMiss: 1,
-      stylingProp: 2,
-      stylingPropCacheMiss: 1,
+      styleProp: 2,
+      stylePropCacheMiss: 1,
       tNode: 3,
     });
   });
@@ -373,4 +371,187 @@ describe('styling', () => {
     expect(div.style.width).toBe('2667px');
   });
 
+  it('should not write to a `class` input binding in the event that there is no static class value',
+     () => {
+       let capturedClassBindingCount = 0;
+       let capturedClassBindingValue: string|null|undefined = undefined;
+       let capturedMyClassBindingCount = 0;
+       let capturedMyClassBindingValue: string|null|undefined = undefined;
+
+       @Component({template: '<div [class]="c" [my-class-dir]="x"></div>'})
+       class Cmp {
+         c: any = null;
+         x = 'foo';
+       }
+
+       @Directive({selector: '[my-class-dir]'})
+       class MyClassDir {
+         @Input('class')
+         set classVal(v: string) {
+           capturedClassBindingCount++;
+           capturedClassBindingValue = v;
+         }
+
+         @Input('my-class-dir')
+         set myClassVal(v: string) {
+           capturedMyClassBindingCount++;
+           capturedMyClassBindingValue = v;
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+       const fixture = TestBed.createComponent(Cmp);
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(1);
+       expect(capturedClassBindingValue as any).toEqual(null);
+       expect(capturedMyClassBindingCount).toEqual(1);
+       expect(capturedMyClassBindingValue !).toEqual('foo');
+
+       fixture.componentInstance.c = 'dynamic-value';
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(2);
+       expect(capturedClassBindingValue !).toEqual('dynamic-value');
+       expect(capturedMyClassBindingCount).toEqual(1);
+       expect(capturedMyClassBindingValue !).toEqual('foo');
+
+       fixture.componentInstance.c = null;
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(3);
+       expect(capturedClassBindingValue as any).toEqual(null);
+       expect(capturedMyClassBindingCount).toEqual(1);
+       expect(capturedMyClassBindingValue !).toEqual('foo');
+
+       fixture.componentInstance.c = '';
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(4);
+       expect(capturedClassBindingValue as any).toEqual('');
+       expect(capturedMyClassBindingCount).toEqual(1);
+       expect(capturedMyClassBindingValue !).toEqual('foo');
+     });
+
+  it('should write to [class] binding during `update` mode if there is an instantiation-level value',
+     () => {
+       let capturedClassBindingCount = 0;
+       let capturedClassBindingValue: string|null|undefined = undefined;
+
+       @Component({template: '<div [class]="c" my-class-dir></div>'})
+       class Cmp {
+         c: any = 'bar';
+       }
+
+       @Directive({selector: '[my-class-dir]'})
+       class MyClassDir {
+         @Input('class')
+         set classVal(v: string) {
+           capturedClassBindingCount++;
+           capturedClassBindingValue = v;
+         }
+       }
+
+       // Ivy does an extra `[class]` write with a falsy value since the value
+       // is applied during creation mode. This is a deviation from VE and should
+       // be (Jira Issue = FW-1467).
+       let totalWrites = ivyEnabled ? 1 : 0;
+
+       TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+       const fixture = TestBed.createComponent(Cmp);
+       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       expect(capturedClassBindingValue as any).toEqual('bar');
+
+       fixture.componentInstance.c = 'dynamic-bar';
+       fixture.detectChanges();
+
+       expect(capturedClassBindingCount).toEqual(totalWrites++);
+       expect(capturedClassBindingValue !).toEqual('dynamic-bar');
+     });
+
+  it('should write to a `class` input binding if there is a static class value', () => {
+    let capturedClassBindingCount = 0;
+    let capturedClassBindingValue: string|null = null;
+    let capturedMyClassBindingCount = 0;
+    let capturedMyClassBindingValue: string|null = null;
+
+    @Component({template: '<div class="static-val" [my-class-dir]="x"></div>'})
+    class Cmp {
+      x = 'foo';
+    }
+
+    @Directive({selector: '[my-class-dir]'})
+    class MyClassDir {
+      @Input('class')
+      set classVal(v: string) {
+        capturedClassBindingCount++;
+        capturedClassBindingValue = v;
+      }
+
+      @Input('my-class-dir')
+      set myClassVal(v: string) {
+        capturedMyClassBindingCount++;
+        capturedMyClassBindingValue = v;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    expect(capturedClassBindingValue !).toEqual('static-val');
+    expect(capturedClassBindingCount).toEqual(1);
+    expect(capturedMyClassBindingValue !).toEqual('foo');
+    expect(capturedMyClassBindingCount).toEqual(1);
+  });
+
+  onlyInIvy('only ivy persists static class/style attrs with their binding counterparts')
+      .it('should write to a `class` input binding if there is a static class value and there is a binding value',
+          () => {
+            let capturedClassBindingCount = 0;
+            let capturedClassBindingValue: string|null = null;
+            let capturedMyClassBindingCount = 0;
+            let capturedMyClassBindingValue: string|null = null;
+
+            @Component({template: '<div class="static-val" [class]="c" [my-class-dir]="x"></div>'})
+            class Cmp {
+              c: any = null;
+              x: any = 'foo';
+            }
+
+            @Directive({selector: '[my-class-dir]'})
+            class MyClassDir {
+              @Input('class')
+              set classVal(v: string) {
+                capturedClassBindingCount++;
+                capturedClassBindingValue = v;
+              }
+
+              @Input('my-class-dir')
+              set myClassVal(v: string) {
+                capturedMyClassBindingCount++;
+                capturedMyClassBindingValue = v;
+              }
+            }
+
+            TestBed.configureTestingModule({declarations: [Cmp, MyClassDir]});
+            const fixture = TestBed.createComponent(Cmp);
+            fixture.detectChanges();
+
+            expect(capturedClassBindingCount).toEqual(1);
+            expect(capturedClassBindingValue !).toEqual('static-val');
+            expect(capturedMyClassBindingCount).toEqual(1);
+            expect(capturedMyClassBindingValue !).toEqual('foo');
+
+            fixture.componentInstance.c = 'dynamic-val';
+            fixture.detectChanges();
+
+            expect(capturedClassBindingCount).toEqual(2);
+            expect(capturedClassBindingValue !).toEqual('static-val dynamic-val');
+            expect(capturedMyClassBindingCount).toEqual(1);
+            expect(capturedMyClassBindingValue !).toEqual('foo');
+          });
 });

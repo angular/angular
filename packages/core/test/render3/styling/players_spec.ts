@@ -258,7 +258,7 @@ class CompWithStyling {
     template: (rf: RenderFlags, ctx: CompWithStyling) => {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'div');
-        ɵɵstyling(['fooClass']);
+        ɵɵstyling();
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {

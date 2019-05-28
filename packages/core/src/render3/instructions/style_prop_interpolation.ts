@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {getLView, getSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
-
+import {stylePropInternal} from '../styling_next/instructions';
 import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
 import {TsickleIssue1009} from './shared';
-import {getActiveDirectiveStylingIndex, stylePropInternal} from './styling';
-
 
 
 /**
@@ -37,20 +34,15 @@ import {getActiveDirectiveStylingIndex, stylePropInternal} from './styling';
  * @param v0 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate1(
-    styleIndex: number, prefix: string, v0: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, suffix: string,
+    valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate1;
 }
 
@@ -79,20 +71,15 @@ export function ɵɵstylePropInterpolate1(
  * @param v1 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate2(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
+    valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate2;
 }
 
@@ -123,20 +110,15 @@ export function ɵɵstylePropInterpolate2(
  * @param v2 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate3(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string,
+    valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate3;
 }
 
@@ -169,21 +151,15 @@ export function ɵɵstylePropInterpolate3(
  * @param v3 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate4(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate4;
 }
 
@@ -218,22 +194,16 @@ export function ɵɵstylePropInterpolate4(
  * @param v4 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate5(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue =
       interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate5;
 }
 
@@ -270,22 +240,17 @@ export function ɵɵstylePropInterpolate5(
  * @param v5 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate6(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
-    valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
+    valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue =
       interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate6;
 }
 
@@ -325,22 +290,17 @@ export function ɵɵstylePropInterpolate6(
  * @param v6 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate7(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any,
-    suffix: string, valueSuffix?: string | null, forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
+    valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue =
       interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate7;
 }
 
@@ -382,23 +342,17 @@ export function ɵɵstylePropInterpolate7(
  * @param v7 Value checked for change.
  * @param suffix Static value used for concatenation only.
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolate8(
-    styleIndex: number, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string,
-    v7: any, suffix: string, valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
+    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
+    suffix: string, valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
   const interpolatedValue = interpolation8(
       lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
-  if (interpolatedValue !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolatedValue as string, valueSuffix, forceOverride);
-  }
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolate8;
 }
 
@@ -429,19 +383,13 @@ export function ɵɵstylePropInterpolate8(
  * a string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param valueSuffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param forceOverride Whether or not to update the styling value immediately.
  * @returns itself, so that it may be chained.
  * @codeGenApi
  */
 export function ɵɵstylePropInterpolateV(
-    styleIndex: number, values: any[], valueSuffix?: string | null,
-    forceOverride?: boolean): TsickleIssue1009 {
+    prop: string, values: any[], valueSuffix?: string | null): TsickleIssue1009 {
   const lView = getLView();
-  const interpolated = interpolationV(lView, values);
-  if (interpolated !== NO_CHANGE) {
-    stylePropInternal(
-        lView, getSelectedIndex(), styleIndex, getActiveDirectiveStylingIndex(),
-        interpolated as string, valueSuffix, forceOverride);
-  }
+  const interpolatedValue = interpolationV(lView, values);
+  stylePropInternal(getSelectedIndex(), prop, interpolatedValue as string, valueSuffix);
   return ɵɵstylePropInterpolateV;
 }

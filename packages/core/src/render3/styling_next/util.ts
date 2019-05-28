@@ -5,50 +5,62 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {Sanitizer, SecurityContext} from '../../sanitization/security';
-import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
-import {StylingContext} from '../interfaces/styling';
-import {LView, SANITIZER} from '../interfaces/view';
-import {getProp as getOldProp, getSinglePropIndexValue as getOldSinglePropIndexValue} from '../styling/class_and_style_bindings';
+import {TNode, TNodeFlags} from '../interfaces/node';
+import {isDifferent} from '../util/misc_utils';
 
-import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
-import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
+import {StylingMapArray, StylingMapArrayIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
 
 /**
  * Creates a new instance of the `TStylingContext`.
  *
- * This function will also pre-fill the context with data
- * for map-based bindings.
+ * The `TStylingContext` is used as a manifest of all style or all class bindings on
+ * an element. Because it is a T-level data-structure, it is only created once per
+ * tNode for styles and for classes. This function allocates a new instance of a
+ * `TStylingContext` with the initial values (see `interfaces.ts` for more info).
  */
-export function allocTStylingContext(): TStylingContext {
+export function allocTStylingContext(initialStyling?: StylingMapArray | null): TStylingContext {
   // because map-based bindings deal with a dynamic set of values, there
   // is no way to know ahead of time whether or not sanitization is required.
   // For this reason the configuration will always mark sanitization as active
   // (this means that when map-based values are applied then sanitization will
   // be checked against each property).
   const mapBasedConfig = TStylingContextPropConfigFlags.SanitizationRequired;
-  return [TStylingConfigFlags.Initial, 0, mapBasedConfig, 0, MAP_BASED_ENTRY_PROP_NAME];
+  const context: TStylingContext = [
+    initialStyling || null,
+    TStylingConfigFlags.Initial,
+    // the LastDirectiveIndex value in the context is used to track which directive is the last
+    // to call `stylingApply()`. The `-1` value implies that no directive has been set yet.
+    -1,
+    mapBasedConfig,
+    0,
+    MAP_BASED_ENTRY_PROP_NAME,
+  ];
+  return context;
 }
 
 /**
- * Temporary function that allows for a string-based property name to be
- * obtained from an index-based property identifier.
+ * Sets the provided directive as the last directive index in the provided `TStylingContext`.
  *
- * This function will be removed once the new styling refactor code (which
- * lives inside of `render3/styling_next/`) replaces the existing styling
- * implementation.
+ * Styling in Angular can be applied from the template as well as multiple sources of
+ * host bindings. This means that each binding function (the template function or the
+ * hostBindings functions) will generate styling instructions as well as a styling
+ * apply function (i.e. `stylingApply()`). Because host bindings functions and the
+ * template function are independent from one another this means that the styling apply
+ * function will be called multiple times. By tracking the last directive index (which
+ * is what happens in this function) the styling algorithm knows exactly when to flush
+ * styling (which is when the last styling apply function is executed).
  */
-export function getBindingNameFromIndex(
-    stylingContext: StylingContext, offset: number, directiveIndex: number, isClassBased: boolean) {
-  const singleIndex =
-      getOldSinglePropIndexValue(stylingContext, directiveIndex, offset, isClassBased);
-  return getOldProp(stylingContext, singleIndex);
-}
-
-export function updateContextDirectiveIndex(context: TStylingContext, index: number) {
-  context[TStylingContextIndex.MaxDirectiveIndexPosition] = index;
+export function updateLastDirectiveIndex(
+    context: TStylingContext, lastDirectiveIndex: number): void {
+  const currentValue = context[TStylingContextIndex.LastDirectiveIndexPosition];
+  if (lastDirectiveIndex !== currentValue) {
+    context[TStylingContextIndex.LastDirectiveIndexPosition] = lastDirectiveIndex;
+    if (currentValue === 0 && lastDirectiveIndex > 0) {
+      markContextToPersistState(context);
+    }
+  }
 }
 
 function getConfig(context: TStylingContext) {
@@ -101,8 +113,9 @@ export function getDefaultValue(context: TStylingContext, index: number): string
  * Temporary function which determines whether or not a context is
  * allowed to be flushed based on the provided directive index.
  */
-export function allowStylingFlush(context: TStylingContext, index: number) {
-  return index === context[TStylingContextIndex.MaxDirectiveIndexPosition];
+export function allowStylingFlush(context: TStylingContext | null, index: number) {
+  return (context && index === context[TStylingContextIndex.LastDirectiveIndexPosition]) ? true :
+                                                                                           false;
 }
 
 export function lockContext(context: TStylingContext) {
@@ -111,6 +124,14 @@ export function lockContext(context: TStylingContext) {
 
 export function isContextLocked(context: TStylingContext): boolean {
   return (getConfig(context) & TStylingConfigFlags.Locked) > 0;
+}
+
+export function stateIsPersisted(context: TStylingContext): boolean {
+  return (getConfig(context) & TStylingConfigFlags.PersistStateValues) > 0;
+}
+
+export function markContextToPersistState(context: TStylingContext) {
+  setConfig(context, getConfig(context) | TStylingConfigFlags.PersistStateValues);
 }
 
 export function getPropValuesStartPosition(context: TStylingContext) {
@@ -123,11 +144,20 @@ export function isMapBased(prop: string) {
 }
 
 export function hasValueChanged(
-    a: LStylingMap | number | String | string | null | boolean | undefined | {},
-    b: LStylingMap | number | String | string | null | boolean | undefined | {}): boolean {
-  const compareValueA = Array.isArray(a) ? a[LStylingMapIndex.RawValuePosition] : a;
-  const compareValueB = Array.isArray(b) ? b[LStylingMapIndex.RawValuePosition] : b;
-  return compareValueA !== compareValueB;
+    a: StylingMapArray | number | String | string | null | boolean | undefined | {},
+    b: StylingMapArray | number | String | string | null | boolean | undefined | {}): boolean {
+  let compareValueA = Array.isArray(a) ? a[StylingMapArrayIndex.RawValuePosition] : a;
+  let compareValueB = Array.isArray(b) ? b[StylingMapArrayIndex.RawValuePosition] : b;
+
+  // these are special cases for String based values (which are created as artifacts
+  // when sanitization is bypassed on a particular value)
+  if (compareValueA instanceof String) {
+    compareValueA = compareValueA.toString();
+  }
+  if (compareValueB instanceof String) {
+    compareValueB = compareValueB.toString();
+  }
+  return isDifferent(compareValueA, compareValueB);
 }
 
 /**
@@ -142,35 +172,59 @@ export function isStylingValueDefined(value: any) {
   return value != null && value !== '';
 }
 
-/**
- * Returns the current style sanitizer function for the given view.
- *
- * The default style sanitizer (which lives inside of `LView`) will
- * be returned depending on whether the `styleSanitizer` instruction
- * was called or not prior to any styling instructions running.
- */
-export function getCurrentOrLViewSanitizer(lView: LView): StyleSanitizeFn|null {
-  const sanitizer: StyleSanitizeFn|null = (getCurrentStyleSanitizer() || lView[SANITIZER]) as any;
-  if (sanitizer && typeof sanitizer !== 'function') {
-    setCurrentStyleSanitizer(sanitizer);
-    return sanitizeUsingSanitizerObject;
-  }
-  return sanitizer;
+export function concatString(a: string, b: string, separator = ' '): string {
+  return a + ((b.length && a.length) ? separator : '') + b;
+}
+
+export function hyphenate(value: string): string {
+  return value.replace(/[a-z][A-Z]/g, v => v.charAt(0) + '-' + v.charAt(1)).toLowerCase();
 }
 
 /**
- * Style sanitization function that internally uses a `Sanitizer` instance to handle style
- * sanitization.
+ * Returns an instance of `StylingMapArray`.
+ *
+ * This function is designed to find an instance of `StylingMapArray` in case it is stored
+ * inside of an instance of `TStylingContext`. When a styling context is created it
+ * will copy over an initial styling values from the tNode (which are stored as a
+ * `StylingMapArray` on the `tNode.classes` or `tNode.styles` values).
  */
-const sanitizeUsingSanitizerObject: StyleSanitizeFn =
-    (prop: string, value: string | null, mode?: StyleSanitizeMode) => {
-      const sanitizer = getCurrentStyleSanitizer() as Sanitizer;
-      if (sanitizer) {
-        if (mode !== undefined && mode & StyleSanitizeMode.SanitizeOnly) {
-          return sanitizer.sanitize(SecurityContext.STYLE, value);
-        } else {
-          return true;
-        }
-      }
-      return value;
-    };
+export function getStylingMapArray(value: TStylingContext | StylingMapArray | null):
+    StylingMapArray|null {
+  return isStylingContext(value) ?
+      (value as TStylingContext)[TStylingContextIndex.InitialStylingValuePosition] :
+      value;
+}
+
+export function isStylingContext(value: TStylingContext | StylingMapArray | null): boolean {
+  // the StylingMapArray is in the format of [initial, prop, string, prop, string]
+  // and this is the defining value to distinguish between arrays
+  return Array.isArray(value) &&
+      value.length >= TStylingContextIndex.MapBindingsBindingsStartPosition &&
+      typeof value[1] !== 'string';
+}
+
+export function getInitialStylingValue(context: TStylingContext | StylingMapArray | null): string {
+  const map = getStylingMapArray(context);
+  return map && (map[StylingMapArrayIndex.RawValuePosition] as string | null) || '';
+}
+
+export function hasClassInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
+}
+
+export function hasStyleInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
+}
+
+export function getMapProp(map: StylingMapArray, index: number): string {
+  return map[index + StylingMapArrayIndex.PropOffset] as string;
+}
+
+export function setMapValue(
+    map: StylingMapArray, index: number, value: string | boolean | null): void {
+  map[index + StylingMapArrayIndex.ValueOffset] = value;
+}
+
+export function getMapValue(map: StylingMapArray, index: number): string|null {
+  return map[index + StylingMapArrayIndex.ValueOffset] as string | null;
+}
