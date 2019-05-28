@@ -11,4 +11,4 @@ import {/* comment */ a as a3} from '@angular/material';
 import {VERSION} from '@angular/material';
 
 // type import
-import {SomeInterface} from '@angular/material';
+import {SomeInterface} from "@angular/material";

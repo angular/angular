@@ -88,6 +88,9 @@ function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
       return ctx.addFailureAtNode(declaration, Rule.NO_IMPORT_NAMED_SYMBOLS_FAILURE_STR);
     }
 
+    // Whether the existing import declaration is using a single quote module specifier.
+    const singleQuoteImport = declaration.moduleSpecifier.getText()[0] === `'`;
+
     // Map which consists of secondary entry-points and import specifiers which are used
     // within the current import declaration.
     const importMap = new Map<string, ts.ImportSpecifier[]>();
@@ -144,7 +147,7 @@ function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
               const newImport = ts.createImportDeclaration(
                   undefined, undefined,
                   ts.createImportClause(undefined, ts.createNamedImports(elements)),
-                  ts.createStringLiteral(`${materialModuleSpecifier}/${name}`));
+                  createStringLiteral(`${materialModuleSpecifier}/${name}`, singleQuoteImport));
               return printer.printNode(ts.EmitHint.Unspecified, newImport, sf);
             })
             .join('\n');
@@ -164,6 +167,18 @@ function walk(ctx: Lint.WalkContext<boolean>, checker: ts.TypeChecker): void {
   };
 
   sf.statements.forEach(cb);
+}
+
+/**
+ * Creates a string literal from the specified text.
+ * @param text Text of the string literal.
+ * @param singleQuotes Whether single quotes should be used when printing the literal node.
+ */
+function createStringLiteral(text: string, singleQuotes: boolean): ts.StringLiteral {
+  const literal = ts.createStringLiteral(text);
+  // See: https://github.com/microsoft/TypeScript/blob/master/src/compiler/utilities.ts#L584-L590
+  literal['singleQuote'] = singleQuotes;
+  return literal;
 }
 
 /** Gets the symbol that contains the value declaration of the given node. */
