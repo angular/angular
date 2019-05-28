@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertGreaterThan} from '../util/assert';
+import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
+import {assertDefined} from '../util/assert';
 
 import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
@@ -14,6 +15,7 @@ import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 import {setCachedStylingContext} from './styling/state';
+import {resetAllStylingState, resetStylingState} from './styling_next/state';
 import {resetPreOrderHookFlags} from './util/view_utils';
 
 
@@ -458,6 +460,8 @@ export function resetComponentState() {
   previousOrParentTNode = null !;
   elementDepthCount = 0;
   bindingsEnabled = true;
+  setCurrentStyleSanitizer(null);
+  resetAllStylingState();
 }
 
 /**
@@ -513,6 +517,10 @@ export function setSelectedIndex(index: number) {
   // remove the styling context from the cache
   // because we are now on a different element
   setCachedStylingContext(null);
+
+  // we have now jumped to another element
+  // therefore the state is stale
+  resetStylingState();
 }
 
 
@@ -556,4 +564,13 @@ export function namespaceHTMLInternal() {
 
 export function getNamespace(): string|null {
   return _currentNamespace;
+}
+
+let _currentSanitizer: StyleSanitizeFn|null;
+export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn | null) {
+  _currentSanitizer = sanitizer;
+}
+
+export function getCurrentStyleSanitizer() {
+  return _currentSanitizer;
 }
