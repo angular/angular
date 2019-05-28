@@ -580,7 +580,8 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
     }
   } else {
     ngDevMode && assertNodeType(parent, TNodeType.Element);
-    if (parent.flags & TNodeFlags.isComponent) {
+    const isIcuCase = tNode.parent && tNode.parent.type === TNodeType.IcuContainer;
+    if (parent.flags & TNodeFlags.isComponent && !isIcuCase) {
       const tData = currentView[TVIEW].data;
       const tNode = tData[parent.index] as TNode;
       const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
