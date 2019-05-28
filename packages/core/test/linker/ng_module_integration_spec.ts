@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
@@ -339,6 +339,28 @@ function declareTests(config?: {useJit: boolean}) {
           }
         }).not.toThrow();
       });
+
+      onlyInIvy('VE does not allow use of NgModuleFactory without importing the .ngfactory')
+          .it('should register a module even if not importing the .ngfactory file or calling create()',
+              () => {
+                class ChildModule {
+                  static ngModuleDef = defineNgModule({
+                    type: ChildModule,
+                    id: 'child',
+                  });
+                }
+
+                class Module {
+                  static ngModuleDef = defineNgModule({
+                    type: Module,
+                    id: 'test',
+                    imports: [ChildModule],
+                  });
+                }
+
+                createModuleFactory(ChildModule);
+                expect(getModuleFactory('child')).toBeAnInstanceOf(NgModuleFactory);
+              });
     });
 
     describe('entryComponents', () => {
