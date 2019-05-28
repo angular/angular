@@ -19,8 +19,7 @@ import {analyzeResolvedTemplate} from './analyze_template';
 
 type Logger = logging.LoggerApi;
 
-const README_URL =
-    'https://github.com/angular/angular/tree/master/packages/core/schematics/migrations/template-var-assignment/README.md';
+const README_URL = 'https://v8.angular.io/guide/deprecations#cannot-assign-to-template-variables';
 const FAILURE_MESSAGE = `Found assignment to template variable.`;
 
 /** Entry point for the V8 template variable assignment schematic. */
