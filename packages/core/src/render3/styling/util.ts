@@ -156,14 +156,6 @@ export function isAnimationProp(name: string): boolean {
   return name[0] === ANIMATION_PROP_PREFIX;
 }
 
-export function hasClassInput(tNode: TNode) {
-  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
-}
-
-export function hasStyleInput(tNode: TNode) {
-  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
-}
-
 export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):
     string {
   if (classes && typeof classes !== 'string') {
@@ -226,7 +218,7 @@ export function getPlayersInternal(playerContext: PlayerContext): Player[] {
   const players: Player[] = [];
   const nonFactoryPlayersStart = playerContext[PlayerIndex.NonBuilderPlayersStart];
 
-  // add all factory-based players (which are apart of [style] and [class] bindings)
+  // add all factory-based players (which are a part of [style] and [class] bindings)
   for (let i = PlayerIndex.PlayerBuildersStartPosition + PlayerIndex.PlayerOffsetPosition;
        i < nonFactoryPlayersStart; i += PlayerIndex.PlayerAndPlayerBuildersTupleSize) {
     const player = playerContext[i] as Player | null;
@@ -235,7 +227,7 @@ export function getPlayersInternal(playerContext: PlayerContext): Player[] {
     }
   }
 
-  // add all custom players (not apart of [style] and [class] bindings)
+  // add all custom players (not a part of [style] and [class] bindings)
   for (let i = nonFactoryPlayersStart; i < playerContext.length; i++) {
     players.push(playerContext[i] as Player);
   }

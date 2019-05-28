@@ -18,11 +18,10 @@ import {SelectorFlags} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
 import {RComment, RElement, RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {isStylingContext} from '../interfaces/type_checks';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, HookData, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TData, TVIEW, TView as ITView, TView, T_HOST} from '../interfaces/view';
 import {TStylingContext} from '../styling_next/interfaces';
-import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
+import {isStylingContext} from '../styling_next/util';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, unwrapRNode} from '../util/view_utils';
 
@@ -132,8 +131,8 @@ export const TNodeConstructor = class TNode implements ITNode {
       public stylingTemplate: StylingContext|null,                             //
       public projection: number|(ITNode|RNode[])[]|null,                       //
       public onElementCreationFns: Function[]|null,                            //
-      public newStyles: TStylingContext|null,                                  //
-      public newClasses: TStylingContext|null,                                 //
+      public styles: TStylingContext|null,                                     //
+      public classes: TStylingContext|null,                                    //
       ) {}
 
   get type_(): string {
@@ -331,16 +330,14 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     while (tNodeCursor) {
       const rawValue = lView[tNode.index];
       const native = unwrapRNode(rawValue);
-      const componentLViewDebug =
-          isStylingContext(rawValue) ? null : toDebug(readLViewValue(rawValue));
+      const componentLViewDebug = toDebug(readLViewValue(rawValue));
 
-      let styles: DebugNewStyling|null = null;
-      let classes: DebugNewStyling|null = null;
-      if (runtimeIsNewStylingInUse()) {
-        styles = tNode.newStyles ? new NodeStylingDebug(tNode.newStyles, lView, false) : null;
-        classes = tNode.newClasses ? new NodeStylingDebug(tNode.newClasses, lView, true) : null;
-      }
-
+      const styles = isStylingContext(tNode.styles) ?
+          new NodeStylingDebug(tNode.styles as any as TStylingContext, lView) :
+          null;
+      const classes = isStylingContext(tNode.classes) ?
+          new NodeStylingDebug(tNode.classes as any as TStylingContext, lView, true) :
+          null;
       debugNodes.push({
         html: toHtml(native),
         native: native as any, styles, classes,

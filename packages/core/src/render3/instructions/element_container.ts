@@ -15,8 +15,10 @@ import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {registerInitialStylingOnTNode} from '../styling_next/instructions';
 
-import {createDirectivesAndLocals, executeContentQueries, getOrCreateTNode, setNodeStylingTemplate} from './shared';
+import {createDirectivesAndLocals, executeContentQueries, getOrCreateTNode} from './shared';
+
 
 
 /**
@@ -52,10 +54,10 @@ export function ɵɵelementContainerStart(
       tView, lView[T_HOST], index, TNodeType.ElementContainer, tagName, attrs || null);
 
 
-  if (attrs) {
+  if (attrs && tView.firstTemplatePass) {
     // While ng-container doesn't necessarily support styling, we use the style context to identify
     // and execute directives on the ng-container.
-    setNodeStylingTemplate(tView, tNode, attrs, 0);
+    registerInitialStylingOnTNode(tNode, attrs as TAttributes, 0);
   }
 
   appendChild(native, tNode, lView);

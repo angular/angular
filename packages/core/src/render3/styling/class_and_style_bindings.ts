@@ -686,7 +686,7 @@ function patchStylingMapIntoContext(
   // directive values if their identity has not changed. If a previous directive set this
   // value as dirty (because its own shape changed) then this means that the object has been
   // offset to a different area in the context. Because its value has been offset then it
-  // can't write to a region that it wrote to before (which may have been apart of another
+  // can't write to a region that it wrote to before (which may have been a part of another
   // directive) and therefore its shape changes too.
   let valuesEntryShapeChange =
       existingCachedValueIsDirty || ((!existingCachedValue && cacheValue) ? true : false);
@@ -822,7 +822,7 @@ function patchStylingMapIntoContext(
   }
 
   // STEP 3:
-  // Remove (nullify) any existing entries in the context that were not apart of the
+  // Remove (nullify) any existing entries in the context that were not a part of the
   // map input value that was passed into this algorithm for this directive.
   while (ctxIndex < ctxEnd) {
     valuesEntryShapeChange = true;  // some values are missing
@@ -914,7 +914,13 @@ function updateSingleStylingValue(
   const currDirective = getDirectiveIndexFromEntry(context, singleIndex);
   const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
 
-  ngDevMode && ngDevMode.stylingProp++;
+  if (ngDevMode) {
+    if (isClassBased) {
+      ngDevMode.classProp++;
+    } else {
+      ngDevMode.styleProp++;
+    }
+  }
 
   if (hasValueChanged(currFlag, currValue, value) &&
       (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex))) {
@@ -973,7 +979,13 @@ function updateSingleStylingValue(
       setContextPlayersDirty(context, true);
     }
 
-    ngDevMode && ngDevMode.stylingPropCacheMiss++;
+    if (ngDevMode) {
+      if (isClassBased) {
+        ngDevMode.classPropCacheMiss++;
+      } else {
+        ngDevMode.stylePropCacheMiss++;
+      }
+    }
   }
 }
 
@@ -1002,7 +1014,7 @@ export function renderStyling(
     isFirstRender: boolean, classesStore?: BindingStore | null, stylesStore?: BindingStore | null,
     directiveIndex: number = 0): number {
   let totalPlayersQueued = 0;
-  ngDevMode && ngDevMode.stylingApply++;
+  ngDevMode && ngDevMode.flushStyling++;
 
   // this prevents multiple attempts to render style/class values on
   // the same element...
@@ -1017,8 +1029,6 @@ export function renderStyling(
     flushHostInstructionsQueue(context);
 
     if (isContextDirty(context)) {
-      ngDevMode && ngDevMode.stylingApplyCacheMiss++;
-
       // this is here to prevent things like <ng-container [style] [class]>...</ng-container>
       // or if there are any host style or class bindings present in a directive set on
       // a container node
@@ -1807,7 +1817,7 @@ function isMultiValueCacheHit(
  * - The dirty flag will be set to true
  *
  * If the `dirtyFutureValues` param is provided then it will update all future entries (binding
- * entries that exist as apart of other directives) to be dirty as well. This will force the
+ * entries that exist as a part of other directives) to be dirty as well. This will force the
  * styling algorithm to reapply those values once change detection checks them (which will in
  * turn cause the styling context to update itself and the correct styling values will be
  * rendered on screen).

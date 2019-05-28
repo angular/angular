@@ -150,6 +150,9 @@
     "name": "_selectedIndex"
   },
   {
+    "name": "_stateStorage"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -285,6 +288,12 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getMapProp"
+  },
+  {
+    "name": "getMapValue"
+  },
+  {
     "name": "getNativeAnchorNode"
   },
   {
@@ -339,6 +348,9 @@
     "name": "getSelectedIndex"
   },
   {
+    "name": "getStylingMapArray"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -382,6 +394,9 @@
   },
   {
     "name": "isRootView"
+  },
+  {
+    "name": "isStylingContext"
   },
   {
     "name": "leaveView"
@@ -444,19 +459,25 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialClasses"
-  },
-  {
-    "name": "renderInitialStyles"
+    "name": "renderInitialStyling"
   },
   {
     "name": "renderStringify"
+  },
+  {
+    "name": "renderStylingMap"
+  },
+  {
+    "name": "resetAllStylingState"
   },
   {
     "name": "resetComponentState"
   },
   {
     "name": "resetPreOrderHookFlags"
+  },
+  {
+    "name": "resetStylingState"
   },
   {
     "name": "selectInternal"
@@ -468,9 +489,6 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setCachedStylingContext"
-  },
-  {
     "name": "setClass"
   },
   {
@@ -478,6 +496,9 @@
   },
   {
     "name": "setCurrentQueryIndex"
+  },
+  {
+    "name": "setCurrentStyleSanitizer"
   },
   {
     "name": "setHostBindings"

@@ -9,23 +9,20 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
+import {PropertyAliases, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
-import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
 import {decreaseElementDepthCount, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getSelectedIndex, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
-import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
-import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
-import {registerInitialStylingIntoContext} from '../styling_next/instructions';
-import {runtimeIsNewStylingInUse} from '../styling_next/state';
-import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
+import {registerInitialStylingOnTNode} from '../styling_next/instructions';
+import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
+import {getInitialStylingValue, hasClassInput, hasStyleInput} from '../styling_next/util';
+import {setUpAttributes} from '../util/attrs_utils';
 import {getNativeByTNode, getTNode} from '../util/view_utils';
 
-import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
-import {getActiveDirectiveStylingIndex} from './styling';
+import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, renderInitialStyling, setInputsForProperty} from './shared';
 
 
 
@@ -58,31 +55,15 @@ export function ɵɵelementStart(
   const renderer = lView[RENDERER];
   const tNode =
       getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs || null);
-  let initialStylesIndex = 0;
-  let initialClassesIndex = 0;
 
-  let lastAttrIndex = -1;
-  if (attrs) {
-    lastAttrIndex = setUpAttributes(native, attrs);
-
-    // it's important to only prepare styling-related datastructures once for a given
-    // tNode and not each time an element is created. Also, the styling code is designed
-    // to be patched and constructed at various points, but only up until the styling
-    // template is first allocated (which happens when the very first style/class binding
-    // value is evaluated). When the template is allocated (when it turns into a context)
-    // then the styling template is locked and cannot be further extended (it can only be
-    // instantiated into a context per element)
-    setNodeStylingTemplate(tView, tNode, attrs, lastAttrIndex);
-
-    const stylingTemplate = tNode.stylingTemplate;
-    if (stylingTemplate) {
-      // the initial style/class values are rendered immediately after having been
-      // initialized into the context so the element styling is ready when directives
-      // are initialized (since they may read style/class values in their constructor)
-      initialStylesIndex = renderInitialStyles(native, stylingTemplate, renderer);
-      initialClassesIndex = renderInitialClasses(native, stylingTemplate, renderer);
+  if (attrs != null) {
+    const lastAttrIndex = setUpAttributes(native, attrs);
+    if (tView.firstTemplatePass) {
+      registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
     }
   }
+
+  renderInitialStyling(renderer, native, tNode);
 
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, tNode, localRefs);
@@ -104,20 +85,10 @@ export function ɵɵelementStart(
     if (inputData && inputData.hasOwnProperty('class')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
+
     if (inputData && inputData.hasOwnProperty('style')) {
       tNode.flags |= TNodeFlags.hasStyleInput;
     }
-  }
-
-  // we render the styling again below in case any directives have set any `style` and/or
-  // `class` host attribute values...
-  if (tNode.stylingTemplate) {
-    renderInitialClasses(native, tNode.stylingTemplate, renderer, initialClassesIndex);
-    renderInitialStyles(native, tNode.stylingTemplate, renderer, initialStylesIndex);
-  }
-
-  if (runtimeIsNewStylingInUse() && lastAttrIndex >= 0) {
-    registerInitialStylingIntoContext(tNode, attrs as TAttributes, lastAttrIndex);
   }
 
   const currentQueries = lView[QUERIES];
@@ -144,36 +115,29 @@ export function ɵɵelementEnd(): void {
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
+  const tNode = previousOrParentTNode;
+
   // this is required for all host-level styling-related instructions to run
   // in the correct order
-  previousOrParentTNode.onElementCreationFns && applyOnCreateInstructions(previousOrParentTNode);
+  tNode.onElementCreationFns && applyOnCreateInstructions(tNode);
 
-  ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
+  ngDevMode && assertNodeType(tNode, TNodeType.Element);
   const lView = getLView();
   const currentQueries = lView[QUERIES];
   // Go back up to parent queries only if queries have been cloned on this element.
-  if (currentQueries && previousOrParentTNode.index === currentQueries.nodeIndex) {
+  if (currentQueries && tNode.index === currentQueries.nodeIndex) {
     lView[QUERIES] = currentQueries.parent;
   }
 
-  registerPostOrderHooks(lView[TVIEW], previousOrParentTNode);
+  registerPostOrderHooks(lView[TVIEW], tNode);
   decreaseElementDepthCount();
 
-  // this is fired at the end of elementEnd because ALL of the stylingBindings code
-  // (for directives and the template) have now executed which means the styling
-  // context can be instantiated properly.
-  let stylingContext: StylingContext|null = null;
-  if (hasClassInput(previousOrParentTNode)) {
-    stylingContext = getStylingContextFromLView(previousOrParentTNode.index, lView);
-    setInputsForProperty(
-        lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+  if (hasClassInput(tNode) && tNode.classes) {
+    setDirectiveStylingInput(tNode.classes, lView, tNode.inputs !['class']);
   }
-  if (hasStyleInput(previousOrParentTNode)) {
-    stylingContext =
-        stylingContext || getStylingContextFromLView(previousOrParentTNode.index, lView);
-    setInputsForProperty(
-        lView, previousOrParentTNode.inputs !['style'] !,
-        getInitialStyleStringValue(stylingContext));
+
+  if (hasStyleInput(tNode) && tNode.styles) {
+    setDirectiveStylingInput(tNode.styles, lView, tNode.inputs !['style']);
   }
 }
 
@@ -237,6 +201,7 @@ export function ɵɵelement(
 export function ɵɵelementHostAttrs(attrs: TAttributes) {
   const hostElementIndex = getSelectedIndex();
   const lView = getLView();
+  const tView = lView[TVIEW];
   const tNode = getTNode(hostElementIndex, lView);
 
   // non-element nodes (e.g. `<ng-container>`) are not rendered as actual
@@ -245,16 +210,34 @@ export function ɵɵelementHostAttrs(attrs: TAttributes) {
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const lastAttrIndex = setUpAttributes(native, attrs);
-    const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
-    if (stylingAttrsStartIndex >= 0) {
-      const directiveStylingIndex = getActiveDirectiveStylingIndex();
-      if (tNode.stylingTemplate) {
-        patchContextWithStaticAttrs(
-            tNode.stylingTemplate, attrs, stylingAttrsStartIndex, directiveStylingIndex);
-      } else {
-        tNode.stylingTemplate =
-            initializeStaticContext(attrs, stylingAttrsStartIndex, directiveStylingIndex);
+    if (tView.firstTemplatePass) {
+      const stylingNeedsToBeRendered = registerInitialStylingOnTNode(tNode, attrs, lastAttrIndex);
+
+      // this is only called during the first template pass in the
+      // event that this current directive assigned initial style/class
+      // host attribute values to the element. Because initial styling
+      // values are applied before directives are first rendered (within
+      // `createElement`) this means that initial styling for any directives
+      // still needs to be applied. Note that this will only happen during
+      // the first template pass and not each time a directive applies its
+      // attribute values to the element.
+      if (stylingNeedsToBeRendered) {
+        const renderer = lView[RENDERER];
+        renderInitialStyling(renderer, native, tNode);
       }
     }
   }
+}
+
+function setDirectiveStylingInput(
+    context: TStylingContext | StylingMapArray, lView: LView, stylingInputs: (string | number)[]) {
+  // older versions of Angular treat the input as `null` in the
+  // event that the value does not exist at all. For this reason
+  // we can't have a styling value be an empty string.
+  const value = getInitialStylingValue(context) || null;
+
+  // Ivy does an extra `[class]` write with a falsy value since the value
+  // is applied during creation mode. This is a deviation from VE and should
+  // be (Jira Issue = FW-1467).
+  setInputsForProperty(lView, stylingInputs, value);
 }

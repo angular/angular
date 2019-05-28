@@ -16,10 +16,8 @@ import {ParamsOf, enqueueHostInstruction, registerHostDirective} from '../stylin
 import {BoundPlayerFactory} from '../styling/player_factory';
 import {DEFAULT_TEMPLATE_DIRECTIVE_INDEX} from '../styling/shared';
 import {getCachedStylingContext, setCachedStylingContext} from '../styling/state';
-import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
-import {classMap as newClassMap, classProp as newClassProp, styleMap as newStyleMap, styleProp as newStyleProp, stylingApply as newStylingApply, stylingInit as newStylingInit} from '../styling_next/instructions';
-import {runtimeAllowOldStyling, runtimeIsNewStylingInUse} from '../styling_next/state';
-import {getBindingNameFromIndex} from '../styling_next/util';
+import {allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContextFromLView} from '../styling/util';
+import {hasClassInput, hasStyleInput} from '../styling_next/util';
 import {NO_CHANGE} from '../tokens';
 import {renderStringify} from '../util/misc_utils';
 import {getRootContext} from '../util/view_traversal_utils';
@@ -76,13 +74,6 @@ export function ɵɵstyling(
 
   const directiveStylingIndex = getActiveDirectiveStylingIndex();
   if (directiveStylingIndex) {
-    // this is temporary hack to get the existing styling instructions to
-    // play ball with the new refactored implementation.
-    // TODO (matsko): remove this once the old implementation is not needed.
-    if (runtimeIsNewStylingInUse()) {
-      newStylingInit();
-    }
-
     // despite the binding being applied in a queue (below), the allocation
     // of the directive into the context happens right away. The reason for
     // this is to retain the ordering of the directives (which is important
@@ -165,15 +156,6 @@ export function stylePropInternal(
     updatestyleProp(
         stylingContext, styleIndex, valueToAdd, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
   }
-
-  if (runtimeIsNewStylingInUse()) {
-    const prop = getBindingNameFromIndex(stylingContext, styleIndex, directiveStylingIndex, false);
-
-    // the reason why we cast the value as `boolean` is
-    // because the new styling refactor does not yet support
-    // sanitization or animation players.
-    newStyleProp(prop, value as string | number, suffix);
-  }
 }
 
 function resolveStylePropValue(
@@ -232,15 +214,6 @@ export function ɵɵclassProp(
     updateclassProp(
         stylingContext, classIndex, input, DEFAULT_TEMPLATE_DIRECTIVE_INDEX, forceOverride);
   }
-
-  if (runtimeIsNewStylingInUse()) {
-    const prop = getBindingNameFromIndex(stylingContext, classIndex, directiveStylingIndex, true);
-
-    // the reason why we cast the value as `boolean` is
-    // because the new styling refactor does not yet support
-    // sanitization or animation players.
-    newClassProp(prop, input as boolean);
-  }
 }
 
 
@@ -292,10 +265,6 @@ export function ɵɵstyleMap(styles: {[styleName: string]: any} | NO_CHANGE | nu
     }
     updateStyleMap(stylingContext, styles);
   }
-
-  if (runtimeIsNewStylingInUse()) {
-    newStyleMap(styles);
-  }
 }
 
 
@@ -342,10 +311,6 @@ export function classMapInternal(
     }
     updateClassMap(stylingContext, classes);
   }
-
-  if (runtimeIsNewStylingInUse()) {
-    newClassMap(classes);
-  }
 }
 
 /**
@@ -371,13 +336,11 @@ export function ɵɵstylingApply(): void {
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
   const stylingContext = getStylingContext(index, lView);
 
-  if (runtimeAllowOldStyling()) {
-    const totalPlayersQueued = renderStyling(
-        stylingContext, renderer, lView, isFirstRender, null, null, directiveStylingIndex);
-    if (totalPlayersQueued > 0) {
-      const rootContext = getRootContext(lView);
-      scheduleTick(rootContext, RootContextFlags.FlushPlayers);
-    }
+  const totalPlayersQueued = renderStyling(
+      stylingContext, renderer, lView, isFirstRender, null, null, directiveStylingIndex);
+  if (totalPlayersQueued > 0) {
+    const rootContext = getRootContext(lView);
+    scheduleTick(rootContext, RootContextFlags.FlushPlayers);
   }
 
   // because select(n) may not run between every instruction, the cached styling
@@ -388,10 +351,6 @@ export function ɵɵstylingApply(): void {
   // cleared because there is no code in Angular that applies more styling code after a
   // styling flush has occurred. Note that this will be fixed once FW-1254 lands.
   setCachedStylingContext(null);
-
-  if (runtimeIsNewStylingInUse()) {
-    newStylingApply();
-  }
 }
 
 export function getActiveDirectiveStylingIndex() {

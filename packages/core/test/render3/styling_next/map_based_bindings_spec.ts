@@ -8,8 +8,8 @@
 import {normalizeIntoStylingMap as createMap} from '../../../src/render3/styling_next/map_based_bindings';
 
 describe('map-based bindings', () => {
-  describe('LStylingMap construction', () => {
-    it('should create a new LStylingMap instance from a given value', () => {
+  describe('StylingMapArray construction', () => {
+    it('should create a new StylingMapArray instance from a given value', () => {
       createAndAssertValues(null, []);
       createAndAssertValues(undefined, []);
       createAndAssertValues({}, []);
@@ -30,7 +30,7 @@ describe('map-based bindings', () => {
       expect(map2).toEqual([value2, 'maybe', true, 'no', true, 'yes', true]);
     });
 
-    it('should patch an existing LStylingMap entry with new values and retain the alphabetical order',
+    it('should patch an existing StylingMapArray entry with new values and retain the alphabetical order',
        () => {
          const value1 = {color: 'red'};
          const map1 = createMap(null, value1);
@@ -52,7 +52,7 @@ describe('map-based bindings', () => {
          expect(map4).toEqual([value4, 'everyonesClass', true, 'myClass', true, 'yourClass', true]);
        });
 
-    it('should nullify old values that are not apart of the new set of values', () => {
+    it('should nullify old values that are not a part of the new set of values', () => {
       const value1 = {color: 'red', fontSize: '20px'};
       const map1 = createMap(null, value1);
       expect(map1).toEqual([value1, 'color', 'red', 'fontSize', '20px']);
@@ -69,6 +69,12 @@ describe('map-based bindings', () => {
       const value4 = 'apple banana';
       const map4 = createMap(map3, value4);
       expect(map4).toEqual([value4, 'apple', true, 'banana', true, 'orange', null]);
+    });
+
+    it('should hyphenate property names ', () => {
+      const value1 = {fontSize: '50px', paddingTopLeft: '20px'};
+      const map1 = createMap(null, value1, true);
+      expect(map1).toEqual([value1, 'font-size', '50px', 'padding-top-left', '20px']);
     });
   });
 });

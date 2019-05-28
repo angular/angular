@@ -884,6 +884,7 @@ describe('compiler compliance: bindings', () => {
           factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
+              $r3$.ɵɵallocHostVars(2);
               $r3$.ɵɵelementHostAttrs($c1$);
               …
             }

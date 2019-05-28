@@ -478,24 +478,21 @@ describe('compiler compliance', () => {
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
-        const $e0_classBindings$ = ["error"];
-        const $e0_styleBindings$ = ["background-color"];
-        …
         MyComponent.ngComponentDef = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory: function MyComponent_Factory(t){
               return new (t || MyComponent)();
             },
             consts: 1,
-            vars: 0,
+            vars: 2,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵɵelementStart(0, "div");
-                $r3$.ɵɵstyling($e0_classBindings$, $e0_styleBindings$);
+                $r3$.ɵɵstyling();
                 $r3$.ɵɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵɵstyleProp(0, ctx.color);
-                $r3$.ɵɵclassProp(0, ctx.error);
+                $r3$.ɵɵstyleProp("background-color", ctx.color);
+                $r3$.ɵɵclassProp("error", ctx.error);
                 $r3$.ɵɵstylingApply();
               }
             },

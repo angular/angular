@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TStylingContext} from '../styling_next/interfaces';
+import {StylingMapArray, TStylingContext} from '../styling_next/interfaces';
+
 import {CssSelector} from './projection';
 import {RNode} from './renderer';
 import {StylingContext} from './styling';
 import {LView, TView} from './view';
+
 
 
 /**
@@ -457,10 +459,46 @@ export interface TNode {
    * with functions each time the creation block is called.
    */
   onElementCreationFns: Function[]|null;
-  // TODO (matsko): rename this to `styles` once the old styling impl is gone
-  newStyles: TStylingContext|null;
-  // TODO (matsko): rename this to `classes` once the old styling impl is gone
-  newClasses: TStylingContext|null;
+
+  /**
+   * A collection of all style bindings and/or static style values for an element.
+   *
+   * This field will be populated if and when:
+   *
+   * - There are one or more initial styles on an element (e.g. `<div style="width:200px">`)
+   * - There are one or more style bindings on an element (e.g. `<div [style.width]="w">`)
+   *
+   * If and when there are only initial styles (no bindings) then an instance of `StylingMapArray`
+   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
+   * are one or more style bindings on an element.
+   *
+   * During element creation this value is likely to be populated with an instance of
+   * `StylingMapArray` and only when the bindings are evaluated (which happens during
+   * update mode) then it will be converted to a `TStylingContext` if any style bindings
+   * are encountered. If and when this happens then the existing `StylingMapArray` value
+   * will be placed into the initial styling slot in the newly created `TStylingContext`.
+   */
+  styles: StylingMapArray|TStylingContext|null;
+
+  /**
+   * A collection of all class bindings and/or static class values for an element.
+   *
+   * This field will be populated if and when:
+   *
+   * - There are one or more initial classes on an element (e.g. `<div class="one two three">`)
+   * - There are one or more class bindings on an element (e.g. `<div [class.foo]="f">`)
+   *
+   * If and when there are only initial classes (no bindings) then an instance of `StylingMapArray`
+   * will be used here. Otherwise an instance of `TStylingContext` will be created when there
+   * are one or more class bindings on an element.
+   *
+   * During element creation this value is likely to be populated with an instance of
+   * `StylingMapArray` and only when the bindings are evaluated (which happens during
+   * update mode) then it will be converted to a `TStylingContext` if any class bindings
+   * are encountered. If and when this happens then the existing `StylingMapArray` value
+   * will be placed into the initial styling slot in the newly created `TStylingContext`.
+   */
+  classes: StylingMapArray|TStylingContext|null;
 }
 
 /** Static data for an element  */

@@ -22,6 +22,7 @@ import {isComponent, isComponentDef} from './interfaces/type_checks';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
+import {getInitialStylingValue} from './styling_next/util';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
@@ -269,6 +270,13 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
+  if (attrNameToInject === 'class') {
+    return getInitialStylingValue(tNode.classes);
+  }
+  if (attrNameToInject === 'style') {
+    return getInitialStylingValue(tNode.styles);
+  }
+
   const attrs = tNode.attrs;
   if (attrs) {
     const attrsLength = attrs.length;
@@ -289,22 +297,8 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
       } else if (typeof value === 'number') {
         // Skip to the first value of the marked attribute.
         i++;
-        if (value === AttributeMarker.Classes && attrNameToInject === 'class') {
-          let accumulatedClasses = '';
-          while (i < attrsLength && typeof attrs[i] === 'string') {
-            accumulatedClasses += ' ' + attrs[i++];
-          }
-          return accumulatedClasses.trim();
-        } else if (value === AttributeMarker.Styles && attrNameToInject === 'style') {
-          let accumulatedStyles = '';
-          while (i < attrsLength && typeof attrs[i] === 'string') {
-            accumulatedStyles += `${attrs[i++]}: ${attrs[i++]}; `;
-          }
-          return accumulatedStyles.trim();
-        } else {
-          while (i < attrsLength && typeof attrs[i] === 'string') {
-            i++;
-          }
+        while (i < attrsLength && typeof attrs[i] === 'string') {
+          i++;
         }
       } else if (value === attrNameToInject) {
         return attrs[i + 1] as string;

@@ -337,11 +337,11 @@ describe('css selector matching', () => {
 
            // <div class="abc"> (with attrs but without styling context)
            tNode.attrs = ['class', 'abc'];
-           tNode.stylingTemplate = null;
+           tNode.classes = null;
            expect(isMatching('div', tNode, selector)).toBeTruthy();
 
            // <div class="abc"> (with styling context but without attrs)
-           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc'], 0);
+           tNode.classes = ['abc', 'abc', true];
            tNode.attrs = null;
            expect(isMatching('div', tNode, selector)).toBeTruthy();
          });

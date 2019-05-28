@@ -17,7 +17,7 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTNode, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions/shared';
+import {CLEAN_PROMISE, addToViewTree, createLView, createTView, getOrCreateTNode, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews, renderInitialStyling} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
@@ -230,10 +230,10 @@ export function createRootComponent<T>(
     setActiveHostElement(null);
   }
 
-  if (rootTNode.stylingTemplate) {
+  if (rootTNode.classes !== null || rootTNode.styles !== null) {
     const native = componentView[HOST] !as RElement;
-    renderInitialClasses(native, rootTNode.stylingTemplate, componentView[RENDERER]);
-    renderInitialStyles(native, rootTNode.stylingTemplate, componentView[RENDERER]);
+    const renderer = componentView[RENDERER];
+    renderInitialStyling(renderer, native, rootTNode);
   }
 
   return component;

@@ -586,14 +586,8 @@ function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
     bindingParser: BindingParser, constantPool: ConstantPool, selector: string,
     name?: string): o.Expression|null {
-  // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
-  // except 'style' and 'class' properties, since they should *not* allocate host var slots
-  const hostVarsCount = Object.keys(hostBindingsMetadata.properties)
-                            .filter(name => {
-                              const prefix = getStylingPrefix(name);
-                              return prefix !== 'style' && prefix !== 'class';
-                            })
-                            .length;
+  // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
+  const hostVarsCount = Object.keys(hostBindingsMetadata.properties).length;
   const elVarExp = o.variable('elIndex');
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(elVarExp, bindingContext);
@@ -733,7 +727,10 @@ function createHostBindingsFunction(
     // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
     // are evaluated and updated for the element.
     styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
-      totalHostVarsCount += instruction.allocateBindingSlots;
+      // we subtract a value of `1` here because the binding slot was already
+      // allocated at the top of this method when all the input bindings were
+      // counted.
+      totalHostVarsCount += Math.max(instruction.allocateBindingSlots - 1, 0);
       updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
     });
   }

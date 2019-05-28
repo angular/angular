@@ -47,6 +47,23 @@ describe('styling context', () => {
     });
   });
 
+  it('should only register the same binding index once per property', () => {
+    const debug = makeContextWithDebug();
+    const context = debug.context;
+    expect(debug.entries).toEqual({});
+
+    registerBinding(context, 1, 'width', 123);
+    registerBinding(context, 1, 'width', 123);
+    expect(debug.entries['width']).toEqual({
+      prop: 'width',
+      valuesCount: 2,
+      sanitizationRequired: false,
+      guardMask: buildGuardMask(1),
+      defaultValue: null,
+      sources: [123, null],
+    });
+  });
+
   it('should overwrite a default value for an entry only if it is non-null', () => {
     const debug = makeContextWithDebug();
     const context = debug.context;

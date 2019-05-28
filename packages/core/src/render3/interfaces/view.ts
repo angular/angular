@@ -20,7 +20,6 @@ import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
-import {StylingContext} from './styling';
 
 
 
@@ -71,13 +70,9 @@ export interface OpaqueViewState {
 export interface LView extends Array<any> {
   /**
    * The host node for this LView instance, if this is a component view.
-   *
    * If this is an embedded view, HOST will be null.
-   *
-   * If the component uses host bindings for styling that the `RElement` will be wrapped with
-   * `StylingContext`.
    */
-  [HOST]: RElement|StylingContext|null;
+  [HOST]: RElement|null;
 
   /**
    * The static data for this view. We need a reference to this so we can easily walk up the
