@@ -395,7 +395,7 @@ We've learned a lot from this experiment, and have come to the conclusion that p
 
 As a result, as of Angular version 8, we are deprecating the `platform-webworker` APIs in Angular. This consists of both NPM packages, `@angular/platform-webworker` and `@angular/platform-webworker-dynamic`.
 
-Going forward, we will focus our efforts related to web workers around their primary use case of offloading CPU-intensive but not critical work.
+Going forward, we will focus our efforts related to web workers around their primary use case of offloading CPU-intensive but not critical work. If you're currently using the `@angular/platform-webworker` APIs in production, please reach out to devrel@angular.io and let us know about your use case.
 
 {@a removed}
 ## Removed APIs
