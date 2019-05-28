@@ -2149,6 +2149,22 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`export var \u0275NonEmptyModule = true;`);
   });
 
+  it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+    env.write('test.ts', `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'test',
+        template: '...',
+      })
+      export class TestCmp {}
+    `);
+    env.driveMain();
+
+    const ngfactoryContents = env.getContents('test.ngfactory.d.ts');
+    expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
+  });
+
   it('should copy a top-level comment into a factory stub', () => {
     env.tsconfig({'allowEmptyCodegenFiles': true});
 
