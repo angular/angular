@@ -37,10 +37,21 @@ function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Ty
   }
 }
 
-export function registerNgModuleType(id: string, ngModuleType: NgModuleType) {
-  const existing = modules.get(id) as NgModuleType | null;
-  assertSameOrNotExisting(id, existing, ngModuleType);
-  modules.set(id, ngModuleType);
+export function registerNgModuleType(ngModuleType: NgModuleType) {
+  if (ngModuleType.ngModuleDef.id !== null) {
+    const id = ngModuleType.ngModuleDef.id;
+    const existing = modules.get(id) as NgModuleType | null;
+    assertSameOrNotExisting(id, existing, ngModuleType);
+    modules.set(id, ngModuleType);
+  }
+
+  let imports = ngModuleType.ngModuleDef.imports;
+  if (imports instanceof Function) {
+    imports = imports();
+  }
+  if (imports) {
+    imports.forEach((i: NgModuleType<any>) => registerNgModuleType(i));
+  }
 }
 
 export function clearModulesForTest(): void {
