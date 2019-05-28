@@ -21,7 +21,7 @@ import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateSt
 import {TStylingContext} from './interfaces';
 import {activeStylingMapFeature, normalizeIntoStylingMap} from './map_based_bindings';
 import {attachStylingDebugObject} from './styling_debug';
-import {allocStylingContext, hasValueChanged, updateContextDirectiveIndex} from './util';
+import {allocTStylingContext, hasValueChanged, updateContextDirectiveIndex} from './util';
 
 
 
@@ -302,7 +302,7 @@ function getClassesContext(tNode: TNode): TStylingContext {
 function getContext(tNode: TNode, isClassBased: boolean) {
   let context = isClassBased ? tNode.newClasses : tNode.newStyles;
   if (!context) {
-    context = allocStylingContext();
+    context = allocTStylingContext();
     if (ngDevMode) {
       attachStylingDebugObject(context);
     }

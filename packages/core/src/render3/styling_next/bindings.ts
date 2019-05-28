@@ -157,8 +157,7 @@ function updateBindingData(
 function deferBindingRegistration(
     context: TStylingContext, counterIndex: number, prop: string | null, bindingIndex: number,
     sanitizationRequired: boolean) {
-  deferredBindingQueue.splice(
-      0, 0, context, counterIndex, prop, bindingIndex, sanitizationRequired);
+  deferredBindingQueue.unshift(context, counterIndex, prop, bindingIndex, sanitizationRequired);
 }
 
 /**

@@ -1507,5 +1507,80 @@ describe('compiler compliance: styling', () => {
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+
+    it('should generate a `styleSanitizer` instruction when a `styleMap` instruction is used',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              template: \`
+                <div [style]="mapExp"></div>
+              \`
+            })
+            export class MyAppComp {
+              mapExp = {};
+            }
+          `
+           }
+         };
+
+         const template = `
+        template: function MyAppComp_Template(rf, ctx) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵstyleSanitizer($r3$.ɵɵdefaultStyleSanitizer);
+            $r3$.ɵɵstyleMap(ctx.mapExp);
+            $r3$.ɵɵstylingApply();
+          }
+          …
+        }
+      `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('shouldn\'t generate a `styleSanitizer` instruction when class-based instructions are used',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              template: \`
+                <div [class]="mapExp" [class.name]="nameExp"></div>
+              \`
+            })
+            export class MyAppComp {
+              mapExp = {};
+              nameExp = true;
+            }
+          `
+           }
+         };
+
+         const template = `
+        template: function MyAppComp_Template(rf, ctx) {
+          …
+          if (rf & 2) {
+            $r3$.ɵɵselect(0);
+            $r3$.ɵɵclassMap(ctx.mapExp);
+            $r3$.ɵɵclassProp(0, ctx.nameExp);
+            $r3$.ɵɵstylingApply();
+          }
+          …
+        }
+      `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
   });
 });

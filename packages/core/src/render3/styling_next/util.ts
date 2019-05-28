@@ -18,7 +18,7 @@ const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
  * This function will also pre-fill the context with data
  * for map-based bindings.
  */
-export function allocStylingContext(): TStylingContext {
+export function allocTStylingContext(): TStylingContext {
   // because map-based bindings deal with a dynamic set of values, there
   // is no way to know ahead of time whether or not sanitization is required.
   // For this reason the configuration will always mark sanitization as active

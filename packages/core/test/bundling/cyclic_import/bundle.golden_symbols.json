@@ -192,7 +192,7 @@
     "name": "allocStylingContext"
   },
   {
-    "name": "allocStylingContext"
+    "name": "allocTStylingContext"
   },
   {
     "name": "allocateNewContextEntry"

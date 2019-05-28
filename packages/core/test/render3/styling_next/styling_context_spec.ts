@@ -7,7 +7,7 @@
  */
 import {DEFAULT_GUARD_MASK_VALUE, registerBinding} from '@angular/core/src/render3/styling_next/bindings';
 import {attachStylingDebugObject} from '@angular/core/src/render3/styling_next/styling_debug';
-import {allocStylingContext} from '../../../src/render3/styling_next/util';
+import {allocTStylingContext} from '../../../src/render3/styling_next/util';
 
 describe('styling context', () => {
   it('should register a series of entries into the context', () => {
@@ -85,7 +85,7 @@ describe('styling context', () => {
 });
 
 function makeContextWithDebug() {
-  const ctx = allocStylingContext();
+  const ctx = allocTStylingContext();
   return attachStylingDebugObject(ctx);
 }
 
