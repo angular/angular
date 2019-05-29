@@ -816,8 +816,12 @@
       "title": "Languages",
       "children": [
         {
-          "title": "中文版",
+          "title": "简体中文版",
           "url": "https://angular.cn/"
+        },
+        {
+          "title": "正體中文版",
+          "url": "https://angular.tw/"
         },
         {
           "title": "日本語版",
