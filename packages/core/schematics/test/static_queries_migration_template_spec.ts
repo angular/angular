@@ -158,6 +158,29 @@ describe('static-queries migration with template strategy', () => {
           .toContain(`@ViewChild('myTmpl', { static: true }) query: any;`);
     });
 
+    it('should detect queries selecting ng-template as static (BOM)', async() => {
+      writeFile('/index.ts', `\uFEFF
+        import {Component, NgModule, ViewChild} from '@angular/core';
+
+        @Component({template: \`
+          <ng-template #myTmpl>
+            My template
+          </ng-template>
+        \`})
+        export class MyComp {
+          private @ViewChild('myTmpl') query: any;
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ViewChild('myTmpl', { static: true }) query: any;`);
+    });
+
     it('should detect queries selecting component view providers through string token', async() => {
       writeFile('/index.ts', `
         import {Component, Directive, NgModule, ViewChild} from '@angular/core';
