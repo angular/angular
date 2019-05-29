@@ -2162,7 +2162,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const ngfactoryContents = env.getContents('test.ngfactory.d.ts');
-    expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<typeof TestCmp>`);
+    expect(ngfactoryContents).toContain(`i0.ɵNgModuleFactory<any>`);
   });
 
   it('should copy a top-level comment into a factory stub', () => {
