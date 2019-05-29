@@ -60,6 +60,20 @@ describe('injectable pipe migration', () => {
         .toMatch(/@Injectable\(\)\s+@Pipe\(\{ name: 'myPipe' \}\)\s+export class MyPipe/);
   });
 
+  it('should add @Injectable to pipes that do not have it (BOM)', () => {
+    writeFile('/index.ts', `\uFEFF
+      import { Pipe } from '@angular/core';
+
+      @Pipe({ name: 'myPipe' })
+      export class MyPipe {
+      }
+    `);
+
+    runMigration();
+    expect(tree.readContent('/index.ts'))
+        .toMatch(/@Injectable\(\)\s+@Pipe\(\{ name: 'myPipe' \}\)\s+export class MyPipe/);
+  });
+
   it('should add an import for Injectable to the @angular/core import declaration', () => {
     writeFile('/index.ts', `
       import { Pipe } from '@angular/core';

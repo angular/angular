@@ -54,7 +54,7 @@ function runTemplateVariableAssignmentCheck(
   // program to be based on the file contents in the virtual file tree.
   host.readFile = fileName => {
     const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
+    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
   };
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);

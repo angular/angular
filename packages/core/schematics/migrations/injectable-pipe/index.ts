@@ -47,7 +47,7 @@ function runInjectablePipeMigration(tree: Tree, tsconfigPath: string, basePath: 
   // source files, it can end up updating query definitions multiple times.
   host.readFile = fileName => {
     const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
+    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
   };
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);

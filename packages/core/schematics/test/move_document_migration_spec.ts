@@ -60,6 +60,19 @@ describe('move-document migration', () => {
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
+    it('should properly apply import replacement (BOM)', () => {
+      writeFile('/index.ts', `\uFEFF
+        import {DOCUMENT} from '@angular/platform-browser';
+      `);
+
+      runMigration();
+
+      const content = tree.readContent('/index.ts');
+
+      expect(content).toContain(`import { DOCUMENT } from "@angular/common";`);
+      expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
+    });
+
     it('should properly apply import replacement with existing import', () => {
       writeFile('/index.ts', `
         import {DOCUMENT} from '@angular/platform-browser';
