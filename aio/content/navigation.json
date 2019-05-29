@@ -452,6 +452,11 @@
           "tooltip": "Developing for content security in Angular applications."
         },
         {
+          "url": "guide/a11y",
+          "title": "Accessibility",
+          "tooltip": "Learn how to make accessible Angular applications."
+        },
+        {
           "url": "guide/i18n",
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."

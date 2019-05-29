@@ -1,0 +1,203 @@
+<nav role="navigation" class="skiplink">
+  <a href="form-controls#implicit">Go directly to implicit labeling</a>
+  <a href="form-controls#explicit">Go directly to explicit labeling</a>
+  <a href="form-controls#hiding">Go directly to hiding labels</a>
+  <a href="form-controls#custom">Go directly to labeling custom controls</a>
+</nav>
+
+<article role="article">
+  <header class="row">
+    <h2 class="main-header">Accessible form control labels</h2>
+  </header>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="implicit" tabindex="-1">Implicit labeling</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <!-- #docregion cb-a11y-form-controls-input-implicit -->
+      <div class="form-group">
+        <label>First name:
+          <input class="form-control"
+                 [(ngModel)]="inputModel">
+        </label>
+      </div>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="inputModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-textarea-implicit -->
+      <div class="form-group">
+        <label>Comments:
+          <textarea class="form-control"
+                    [(ngModel)]="textModel"></textarea>
+        </label>
+      </div>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="textModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-checkboxes-implicit -->
+      <fieldset class="form-group row">
+        <legend class="col-xs-12">
+          What do you like most about Angular?
+        </legend>
+        <div *ngFor="let checkbox of checkBoxes" class="checkbox col-xs-12">
+          <label>
+            <input #checkboxInput type="checkbox"
+                   [checked]="isChecked(checkbox.value)"
+                   (click)="toggleCheckbox(checkboxInput.value)"
+                   [value]="checkbox.value" [name]="checkboxName">
+            {{checkbox.name}}
+          </label>
+        </div>
+      </fieldset>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="checkboxModel | json"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-radiobuttons-implicit -->
+      <fieldset class="form-group row">
+        <legend class="col-xs-12">
+          Choose your favorite Angular language:
+        </legend>
+        <div *ngFor="let radiobutton of radioButtons"
+             class="radio col-xs-12">
+          <label>
+            <input type="radio"
+                   [checked]="radioModel == radiobutton.value"
+                   [value]="radiobutton.value"
+                   [name]="'language'"
+                   (click)="radioModel = radiobutton.value">
+            {{radiobutton.name}}
+          </label>
+        </div>
+      </fieldset>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="radioModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-select-implicit -->
+      <div class="form-group">
+        <label>Why are you interested in a11y?
+          <select #selectField class="form-control"
+                  [(ngModel)]="selectModel">
+            <option *ngFor="let option of selectOptions"
+                    [value]="option.value">
+              {{option.name}}
+            </option>
+          </select>
+        </label>
+      </div>
+      <!-- #enddocregion -->
+      <app-value-helper [displayValue]="selectModel"></app-value-helper>
+    </div>
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="explicit" tabindex="-1">Explicit labeling</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <!-- #docregion cb-a11y-form-controls-input-explicit -->
+      <div class="form-group">
+        <label for="inputexplicit">
+          Label for input:
+        </label>
+        <input id="inputexplicit"
+               [(ngModel)]="inputExplicitModel"
+               class="form-control">
+      </div>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="inputExplicitModel"></app-value-helper>
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="hiding" tabindex="-1">Hiding labels</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <!-- #docregion cb-a11y-form-controls-hidden-label-explicit -->
+      <div class="form-group">
+        <label class="visually-hidden" for="inputsearch">
+          Search:
+        </label>
+        <input id="inputsearch"
+               [(ngModel)]="searchModel"
+               placeholder="Search... (Label hidden with style)"
+               class="form-control">
+      </div>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="searchModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-hidden-label-aria -->
+      <div class="form-group">
+        <input placeholder="Filter... (Labeled with aria-label)"
+               [(ngModel)]="filterModel"
+               aria-label="Search:"
+               class="form-control">
+      </div>
+      <!-- #enddocregion -->
+
+      <app-value-helper [displayValue]="searchModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-hidden-label-aria-labelledby -->
+      <div class="form-group">
+        <span id="explicit-aria-label">
+          Filter:
+        </span>
+        <input placeholder="Filter... (Labeled with aria-labelledby)"
+               [(ngModel)]="filterModel"
+               aria-labelledby="explicit-aria-label"
+               class="form-control">
+      </div>
+      <!-- #enddocregion -->
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="custom" tabindex="-1">Labeling custom controls</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <!-- #docregion cb-a11y-form-controls-custom-control-usage -->
+      <app-custom-control [(ngModel)]="inputDivModel">
+        Write in this labeled div:
+      </app-custom-control>
+      <!--#enddocregion-->
+
+      <app-value-helper [displayValue]="inputDivModel"></app-value-helper>
+
+      <!-- #docregion cb-a11y-form-controls-custom-control-wrapped-usage -->
+      <app-input-wrapper (onSave)="onSave()">
+        <span class="wrapped-label">Write in this wrapped input:</span>
+        <input [(ngModel)]="inputWrappedModel">
+      </app-input-wrapper>
+      <!--#enddocregion-->
+
+      <app-value-helper [displayValue]="inputWrappedSaveModel"></app-value-helper>
+
+    </div>
+
+  </section>
+
+</article>

@@ -1,0 +1,18 @@
+<!-- #docregion -->
+<div #errorBlock
+     tabindex="-1"
+     class="alert alert-danger"
+     role="alert"
+     [attr.aria-hidden]="hideErrorConfirmation"
+     [ngClass]="{'hide-element' : hideErrorConfirmation}">
+  <strong>Error!</strong> I need to be acknowledged.
+  <button class="close"
+          (click)="hideErrorConfirmation = true; errorButton.focus();"
+          aria-label="Close error">&times;</button>
+</div>
+<button #errorButton
+        class="btn btn-primary"
+        (click)="setFocusOn(errorBlock)">
+  Show error
+</button>
+<!-- #enddocregion -->

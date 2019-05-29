@@ -1,0 +1,110 @@
+<!-- #docregion cb-a11y-managing-focus-skiplinks-links -->
+<nav role="navigation" class="skiplink">
+  <a href="managing-focus#focusoutline">Go directly to focus outline</a>
+  <a href="managing-focus#focusflow">Go directly to focus flow</a>
+  <a href="managing-focus'#customcontrolfocus">Go directly to focusing custom controls</a>
+  <a href="managing-focus'#internalcomponentfocus">Got directly to internal focus in a component</a>
+</nav>
+<!-- #enddocregion -->
+
+<article role="article">
+
+  <header class="row">
+    <h2 class="main-header">Managing focus</h2>
+  </header>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="focusoutline" tabindex="-1">The focus outline</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <div class="form-group">
+        <label>Focus me for the standard browser outline:
+          <input class="like-bootstrap">
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Focus me for a new and unusual outline:
+          <input class="form-control custom-outline">
+        </label>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <!-- #docregion cb-a11y-managing-focus-skiplinks-destination -->
+      <h3 id="focusflow" tabindex="-1">Focus flow</h3>
+      <!-- #enddocregion -->
+    </header>
+
+    <div class="showcase-content">
+
+      <!-- #docregion cb-a11y-managing-focus-flow -->
+      <div class="row" *ngFor="let country of countriesWorkedIn">
+        <div class="form-group col-xs-6">
+          <label>Which city of {{country}} did you work in:
+            <input class="form-control">
+          </label>
+        </div>
+        <div class="form-group col-xs-6">
+          <label>How many months did you work in {{country}}:
+            <input class="form-control">
+          </label>
+        </div>
+      </div>
+      <!-- #enddocregion -->
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="customcontrolfocus" tabindex="-1">Focusing custom controls</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <div class="row">
+        <div class="col-xs-12">
+          <!-- #docregion cb-a11y-custom-button-usage -->
+          <app-custom-button (click)="onClick()">Do something...</app-custom-button>
+          <!-- #enddocregion -->
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <app-value-helper [displayValue]="generateButtonString()"></app-value-helper>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="internalcomponentfocus" tabindex="-1">Internal focus in a component</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <app-error-demo></app-error-demo>
+
+    </div>
+
+  </section>
+
+</article>
+

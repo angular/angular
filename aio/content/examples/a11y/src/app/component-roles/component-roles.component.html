@@ -1,0 +1,56 @@
+<nav role="navigation" class="skiplink">
+  <a href="component-roles#templateroles">Go directly to roles in the template</a>
+  <a href="component-roles#hostroles">Go directly roles of the host element</a>
+</nav>
+
+<article role="article">
+
+  <header class="row">
+    <h2 class="main-header">Roles for custom component widgets</h2>
+  </header>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="templateroles" tabindex="-1">Roles in the template</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <app-custom-control [(ngModel)]="inputDivModel">
+        I set the role in my template:
+      </app-custom-control>
+
+      <app-value-helper [displayValue]="inputDivModel"></app-value-helper>
+
+    </div>
+
+  </section>
+
+  <section class="row showcase shadow-1 docs-content">
+
+    <header class="showcase-header">
+      <h3 id="hostroles" tabindex="-1">Roles of the host element</h3>
+    </header>
+
+    <div class="showcase-content">
+
+      <div class="row">
+        <div class="col-xs-12">
+          <!-- #docregion cb-app-custom-button-usage -->
+          <app-custom-button (click)="onClick()">Do something...</app-custom-button>
+          <!-- #enddocregion -->
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <app-value-helper [displayValue]="generateButtonString()"></app-value-helper>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</article>

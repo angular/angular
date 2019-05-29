@@ -1,0 +1,91 @@
+label {
+  width: 100%;
+}
+
+hr {
+  border-top: 3px double;
+}
+
+h3 {
+  outline: 0;
+}
+
+.hide-element {
+  display: none !important;
+}
+
+.btn {
+  margin-bottom: 15px;
+}
+
+.skiplink {
+  min-height: 20px;
+}
+
+/* #docregion cb-a11y-managing-focus-skiplinks-style */
+.skiplink a {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  color: darkblue;
+}
+
+.skiplink a:active,
+.skiplink a:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+
+/* #enddocregion */
+
+/* #docregion cb-a11y-managing-focus-custom-outline */
+.custom-outline:focus {
+  border-color: #7F0037;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(127, 0, 55, .6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(127, 0, 55, .6);
+}
+
+/* #enddocregion */
+
+/* #docregion cb-a11y-form-controls-visually-hidden-style*/
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/* #enddocregion */
+
+.like-bootstrap {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #000000;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}

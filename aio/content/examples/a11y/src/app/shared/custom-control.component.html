@@ -1,0 +1,18 @@
+<!-- #docregion -->
+<div class="row">
+  <div class="form-group col-xs-6">
+    <label [id]="uniqueId">
+      <ng-content></ng-content>
+    </label>
+    <div #divTextBox
+         role="textbox"
+         aria-multiline="true"
+         [attr.aria-labelledby]="uniqueId"
+         class="form-control edit-box"
+         [innerHTML]="outerValue"
+         (keypress)="onChange($event, divTextBox.innerHTML)"
+         (blur)="onBlur()"
+         contenteditable></div>
+  </div>
+</div>
+<!-- #enddocregion -->

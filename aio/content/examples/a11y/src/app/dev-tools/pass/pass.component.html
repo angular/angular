@@ -1,0 +1,48 @@
+<article role="article">
+  <header class="row">
+    <h2>Demo with full a11y features</h2>
+  </header>
+
+  <form #demoForm="ngForm"
+        (ngSubmit)="submit(submitMessage)">
+
+    <div class="form-group">
+      <label>Your name:
+        <input #nameInput
+               class="form-control"
+               [(ngModel)]="model.name"
+               name="name">
+      </label>
+
+      <label>Your surname:
+      <input class="form-control"
+             [(ngModel)]="model.surname"
+             name="surname">
+      </label>
+
+      <label>Tell us why you love Angular:
+        <input class="form-control"
+               [(ngModel)]="model.reason"
+               name="reason">
+      </label>
+    </div>
+
+    <div #submitMessage
+         tabindex="-1"
+         class="alert alert-success"
+         role="alert"
+         [attr.aria-hidden]="hideSuccessConfirmation"
+         [ngClass]="{'hide-element' : hideSuccessConfirmation}">
+      <strong>Hi {{demoForm.value.name}} {{demoForm.value.surname}}!</strong> Your reason for liking Angular is: {{demoForm.value.reason}}.
+      <button type="button" class="close"
+              (click)="nameInput.focus(); hideSuccessConfirmation = true;"
+              aria-label="Close error">&times;</button>
+    </div>
+
+    <button #submitButton
+            type="submit"
+            class="btn btn-primary">Submit</button>
+
+  </form>
+
+</article>
