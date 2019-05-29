@@ -13,11 +13,11 @@
 To build Material in dev mode, run `gulp material:build`.
 To build Material in release mode, run `gulp material:build-release`
 
-To bring up a local server, run `gulp serve:devapp`. This will automatically watch for changes
+To bring up a local server, run `yarn dev-app`. This will automatically watch for changes
 and rebuild. The browser should refresh automatically when changes are made.
 
 ### Running tests
 
-To run unit tests, run `gulp test`.
-To run the e2e tests, run `gulp e2e`.
-To run lint, run `gulp lint`.
+To run unit tests, run `yarn test`.
+To run the e2e tests, run `yarn e2e`.
+To run lint, run `yarn lint`.

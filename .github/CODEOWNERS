@@ -171,38 +171,6 @@
 /src/dev-app/virtual-scroll/**                     @mmalerba
 
 # E2E app
-/e2e/*                                             @jelbourn
-/e2e/components/block-scroll-strategy-e2e.spec.ts  @andrewseguin @crisbeto
-/e2e/components/button-e2e.spec.ts                 @jelbourn
-/e2e/components/button-toggle-e2e.spec.ts          @jelbourn
-/e2e/components/card-e2e.spec.ts                   @jelbourn
-/e2e/components/checkbox-e2e.spec.ts               @jelbourn @devversion
-/e2e/components/dialog-e2e.spec.ts                 @jelbourn @crisbeto
-/e2e/components/expansion-e2e.spec.ts              @josephperrott @jelbourn
-/e2e/components/grid-list-e2e.spec.ts              @jelbourn
-/e2e/components/icon-e2e.spec.ts                   @jelbourn
-/e2e/components/input-e2e.spec.ts                  @mmalerba
-/e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto @devversion
-/e2e/components/mdc-button-e2e.spec.ts             @andrewseguin
-# Note to implementer: please repossess
-/e2e/components/mdc-card-e2e.spec.ts               @mmalerba
-/e2e/components/mdc-checkbox-e2e.spec.ts           @mmalerba
-/e2e/components/mdc-chips-e2e.spec.ts              @mmalerba
-/e2e/components/mdc-menu-e2e.spec.ts               @crisbeto
-# Note to implementer: please repossess
-/e2e/components/mdc-radio-e2e.spec.ts              @mmalerba
-/e2e/components/mdc-slide-toggle-e2e.spec.ts       @crisbeto
-/e2e/components/menu-e2e.spec.ts                   @crisbeto
-/e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
-/e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
-/e2e/components/radio-e2e.spec.ts                  @jelbourn @devversion
-/e2e/components/sidenav-e2e.spec.ts                @mmalerba
-/e2e/components/slide-toggle-e2e.spec.ts           @devversion
-/e2e/components/stepper-e2e.spec.ts                @mmalerba
-/e2e/components/tabs-e2e.spec.ts                   @andrewseguin
-/e2e/components/toolbar-e2e.spec.ts                @devversion
-/e2e/components/virtual-scroll-e2e.spec.ts         @mmalerba
-/e2e/util/**                                       @jelbourn
 /src/e2e-app/*                                     @jelbourn
 /src/e2e-app/block-scroll-strategy/**              @andrewseguin @crisbeto
 /src/e2e-app/button/**                             @jelbourn
@@ -234,6 +202,7 @@
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/stepper/**                            @mmalerba
 /src/e2e-app/tabs/**                               @andrewseguin
+/src/e2e-app/test-util/**                          @jelbourn
 /src/e2e-app/toolbar/**                            @devversion
 /src/e2e-app/virtual-scroll/**                     @mmalerba
 

@@ -19,8 +19,8 @@ ng_module(
 )
 
 ng_test_library(
-  name = "moment_adapter_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     "//src/material/core",
     "//src/material/testing",
@@ -33,7 +33,7 @@ ng_web_test_suite(
   name = "unit_tests",
   deps = [
     ":require-config.js",
-    ":moment_adapter_test_sources"
+    ":unit_test_sources"
   ],
   # We need to load Moment statically since it is not a named AMD module and needs to
   # be manually configured through "require.js" which is used by "ts_web_test_suite".

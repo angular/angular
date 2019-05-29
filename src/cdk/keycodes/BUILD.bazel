@@ -9,8 +9,8 @@ ts_library(
 )
 
 ts_library(
-  name = "keycodes_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     "@npm//@types/jasmine",
     "//src/cdk/testing",
@@ -21,7 +21,7 @@ ts_library(
 
 ts_web_test_suite(
   name = "unit_tests",
-  deps = [":keycodes_test_sources"],
+  deps = [":unit_test_sources"],
 )
 
 markdown_to_html(

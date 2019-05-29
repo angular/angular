@@ -48,6 +48,8 @@ const rollupCdkExperimentalEntryPoints =
 export const rollupGlobals = {
   'moment': 'moment',
   'tslib': 'tslib',
+  'protractor': 'protractor',
+  'selenium-webdriver': 'selenium-webdriver',
 
   // MDC Web
   '@material/animation': 'mdc.animation',
@@ -110,6 +112,8 @@ export const rollupGlobals = {
   ...rollupMatEntryPoints,
   ...rollupCdkExperimentalEntryPoints,
   ...rollupMaterialExperimentalEntryPoints,
+
+  '@angular/cdk/testing/e2e': 'ng.cdk.testing.e2e',
 
   'rxjs': 'rxjs',
   'rxjs/operators': 'rxjs.operators',

@@ -5,13 +5,13 @@ import {
   expectLocation,
   expectToExist,
   pressKeys,
-} from '../util/index';
+} from '@angular/cdk/testing/e2e';
 
 const presenceOf = ExpectedConditions.presenceOf;
 const not = ExpectedConditions.not;
 
 describe('menu', () => {
-  const menuSelector = '.mat-menu-panel';
+  const menuSelector = '.mat-mdc-menu-panel';
   const page = {
     menu: () => element(by.css(menuSelector)),
     start: () => element(by.id('start')),
@@ -29,7 +29,7 @@ describe('menu', () => {
     getResultText: () => page.textArea().getText(),
   };
 
-  beforeEach(async () => await browser.get('/menu'));
+  beforeEach(async () => await browser.get('/mdc-menu'));
 
   it('should open menu when the trigger is clicked', async () => {
     await expectToExist(menuSelector, false);
@@ -84,7 +84,7 @@ describe('menu', () => {
 
   it('should mirror classes on host to menu template in overlay', async () => {
     await page.trigger().click();
-    expect(await page.menu().getAttribute('class')).toContain('mat-menu-panel');
+    expect(await page.menu().getAttribute('class')).toContain('mat-mdc-menu-panel');
     expect(await page.menu().getAttribute('class')).toContain('custom');
   });
 

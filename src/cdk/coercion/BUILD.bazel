@@ -12,8 +12,8 @@ ts_library(
 )
 
 ts_library(
-  name = "coercion_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     "@npm//@angular/core",
     "@npm//@types/jasmine",
@@ -24,7 +24,7 @@ ts_library(
 
 ts_web_test_suite(
   name = "unit_tests",
-  deps = [":coercion_test_sources"],
+  deps = [":unit_test_sources"],
 )
 
 markdown_to_html(

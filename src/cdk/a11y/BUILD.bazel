@@ -31,8 +31,8 @@ sass_binary(
 )
 
 ng_test_library(
-  name = "a11y_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     "@npm//@angular/platform-browser",
     "@npm//rxjs",
@@ -46,7 +46,7 @@ ng_test_library(
 
 ng_web_test_suite(
   name = "unit_tests",
-  deps = [":a11y_test_sources"],
+  deps = [":unit_test_sources"],
 )
 
 markdown_to_html(

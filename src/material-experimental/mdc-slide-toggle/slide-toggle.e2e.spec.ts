@@ -1,5 +1,5 @@
 import {browser, element, by, Key} from 'protractor';
-import {expectToExist} from '../util/index';
+import {expectToExist} from '@angular/cdk/testing/e2e';
 
 
 describe('slide-toggle', () => {

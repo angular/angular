@@ -43,13 +43,13 @@ npm_package(
 
 jasmine_node_test(
   name = "unit_tests",
-  srcs = [":schematics_test_sources"],
+  srcs = [":unit_test_sources"],
   data = [":schematics_assets", ":schematics_test_cases"],
 )
 
 ts_library(
-  name = "schematics_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude=["ng-generate/*/files/**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts", "ng-generate/*/files/**/*.spec.ts"]),
   deps = [
     ":schematics",
     "//src/cdk/schematics",

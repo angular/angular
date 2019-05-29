@@ -1,5 +1,5 @@
 import {browser} from 'protractor';
-import {expectToExist} from '../util/index';
+import {expectToExist} from '@angular/cdk/testing/e2e';
 
 describe('progress-bar', () => {
   beforeEach(async () => await browser.get('/progress-bar'));

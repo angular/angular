@@ -1,7 +1,8 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite", "ng_e2e_test_library")
 
 ng_module(
   name = "mdc-checkbox",
@@ -46,7 +47,7 @@ sass_binary(
 
 ng_test_library(
   name = "checkbox_tests_lib",
-  srcs = glob(["**/*.spec.ts"]),
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     ":mdc-checkbox",
     "@npm//@angular/platform-browser",
@@ -61,5 +62,29 @@ ng_web_test_suite(
   deps = [
     "//src/material-experimental:mdc_require_config.js",
     ":checkbox_tests_lib",
+  ],
+)
+
+ng_e2e_test_library(
+  name = "e2e_test_sources",
+  srcs = glob(["**/*.e2e.spec.ts"]),
+  deps = [
+    "//src/cdk/testing/e2e",
+  ]
+)
+
+protractor_web_test_suite(
+  name = "e2e_tests",
+  tags = ["e2e"],
+  configuration = "//src/e2e-app:protractor.conf.js",
+  on_prepare = "//src/e2e-app:start-devserver.js",
+  server = "//src/e2e-app:devserver",
+  deps = [
+    ":e2e_test_sources",
+    "//src/cdk/testing/e2e",
+  ],
+  data = [
+    "@npm//@angular/bazel",
+    "//tools/axe-protractor",
   ],
 )

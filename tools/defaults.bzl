@@ -98,6 +98,19 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
     **kwargs
   )
 
+def ng_e2e_test_library(deps = [], tsconfig = None, **kwargs):
+  local_deps = [
+    "@npm//@types/jasmine",
+    "@npm//@types/selenium-webdriver",
+    "@npm//protractor",
+  ] + deps;
+
+  ts_library(
+    testonly = 1,
+    deps = local_deps,
+    **kwargs
+  )
+
 def ts_web_test_suite(deps = [], srcs = [], **kwargs):
   _ts_web_test_suite(
     deps = ["//tools/rxjs:rxjs_umd_modules"] + deps,

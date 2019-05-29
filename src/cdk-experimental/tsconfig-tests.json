@@ -27,5 +27,8 @@
     // Include the index.ts for each secondary entry-point
     "./*/index.ts",
     "**/*.spec.ts"
+  ],
+  "exclude": [
+    "**/*.e2e.spec.ts"
   ]
 }

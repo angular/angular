@@ -27,8 +27,8 @@ sass_binary(
 )
 
 ng_test_library(
-  name = "dialog_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  name = "unit_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
   deps = [
     "@npm//@angular/common",
     "@npm//@angular/platform-browser",
@@ -42,6 +42,6 @@ ng_test_library(
 
 ng_web_test_suite(
   name = "unit_tests",
-  deps = [":dialog_test_sources"]
+  deps = [":unit_test_sources"]
 )
 

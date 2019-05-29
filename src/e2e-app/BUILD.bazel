@@ -1,13 +1,15 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:defs.bzl", "ts_devserver", "ts_library")
 load("//tools:defaults.bzl", "ng_module")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS")
 
+exports_files(["protractor.conf.js", "start-devserver.js"])
+
 ng_module(
   name = "e2e-app",
-  srcs = glob(["**/*.ts"]),
+  srcs = glob(["**/*.ts"], exclude = ["test-util/**"]),
   assets = glob(["**/*.html", "**/*.css"], exclude = ["index.html"]),
   deps = [
     "@npm//@angular/core",

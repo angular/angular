@@ -1,5 +1,5 @@
 import {browser} from 'protractor';
-import {expectToExist} from '../util/index';
+import {expectToExist} from '@angular/cdk/testing/e2e';
 
 describe('grid-list', () => {
   beforeEach(async () => await browser.get('/grid-list'));
