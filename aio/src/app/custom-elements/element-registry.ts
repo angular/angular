@@ -4,7 +4,7 @@ import { LoadChildrenCallback } from '@angular/router';
 // Modules containing custom elements must be set up as lazy-loaded routes (loadChildren)
 // TODO(andrewjs): This is a hack, Angular should have first-class support for preparing a module
 // that contains custom elements.
-export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
+export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   {
     selector: 'aio-announcement-bar',
     loadChildren: () => import('./announcement-bar/announcement-bar.module').then(mod => mod.AnnouncementBarModule)
@@ -52,10 +52,10 @@ export interface WithCustomElementComponent {
 }
 
 /** Injection token to provide the element path modules. */
-export const ELEMENT_MODULE_PATHS_TOKEN = new InjectionToken<Map<string, LoadChildrenCallback>>('aio/elements-map');
+export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<Map<string, LoadChildrenCallback>>('aio/elements-map');
 
 /** Map of possible custom element selectors to their lazy-loadable module paths. */
-export const ELEMENT_MODULE_PATHS = new Map<string, LoadChildrenCallback>();
-ELEMENT_MODULE_PATHS_AS_ROUTES.forEach(route => {
-  ELEMENT_MODULE_PATHS.set(route.selector, route.loadChildren);
+export const ELEMENT_MODULE_LOAD_CALLBACKS = new Map<string, LoadChildrenCallback>();
+ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES.forEach(route => {
+  ELEMENT_MODULE_LOAD_CALLBACKS.set(route.selector, route.loadChildren);
 });

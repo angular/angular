@@ -7,7 +7,7 @@ import {
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { ElementsLoader } from './elements-loader';
-import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElementComponent } from './element-registry';
+import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
 
 
 interface Deferred {
@@ -22,7 +22,7 @@ describe('ElementsLoader', () => {
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
-        { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: new Map<string, () => Promise<NgModuleFactory<any>>>([
+        { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<string, () => Promise<NgModuleFactory<WithCustomElementComponent>>>([
           ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
           ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))]
         ])},

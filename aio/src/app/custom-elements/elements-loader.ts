@@ -1,10 +1,10 @@
 import {
   Inject,
   Injectable,
-  NgModuleRef,
   NgModuleFactory,
+  NgModuleRef,
 } from '@angular/core';
-import { ELEMENT_MODULE_PATHS_TOKEN } from './element-registry';
+import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
 import { from, Observable, of } from 'rxjs';
 import { createCustomElement } from '@angular/elements';
 import { LoadChildrenCallback } from '@angular/router';
@@ -18,7 +18,7 @@ export class ElementsLoader {
   private elementsLoading = new Map<string, Promise<void>>();
 
   constructor(private moduleRef: NgModuleRef<any>,
-              @Inject(ELEMENT_MODULE_PATHS_TOKEN) elementModulePaths: Map<string, LoadChildrenCallback>) {
+              @Inject(ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN) elementModulePaths: Map<string, LoadChildrenCallback>) {
     this.elementsToLoad = new Map(elementModulePaths);
   }
 
@@ -48,7 +48,7 @@ export class ElementsLoader {
     if (this.elementsToLoad.has(selector)) {
       // Load and register the custom element (for the first time).
       const modulePathLoader = this.elementsToLoad.get(selector)!;
-      const loadedAndRegistered = (modulePathLoader() as Promise<NgModuleFactory<any>>)
+      const loadedAndRegistered = (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent>>)
           .then(elementModuleFactory => {
             const elementModuleRef = elementModuleFactory.create(this.moduleRef.injector);
             const injector = elementModuleRef.injector;
