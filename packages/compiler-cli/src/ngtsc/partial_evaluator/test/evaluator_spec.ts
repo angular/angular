@@ -39,6 +39,9 @@ describe('ngtsc metadata', () => {
   it('map access works',
      () => { expect(evaluate('const obj = {a: "test"};', 'obj.a')).toEqual('test'); });
 
+  it('resolves undefined property access',
+     () => { expect(evaluate('const obj: any = {}', 'obj.bar')).toEqual(undefined); });
+
   it('function calls work', () => {
     expect(evaluate(`function foo(bar) { return bar; }`, 'foo("test")')).toEqual('test');
   });

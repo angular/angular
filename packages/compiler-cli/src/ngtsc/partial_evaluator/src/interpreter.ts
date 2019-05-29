@@ -329,7 +329,7 @@ export class StaticInterpreter {
       if (lhs.has(strIndex)) {
         return lhs.get(strIndex) !;
       } else {
-        throw new Error(`Invalid map access: [${Array.from(lhs.keys())}] dot ${rhs}`);
+        return undefined;
       }
     } else if (Array.isArray(lhs)) {
       if (rhs === 'length') {
