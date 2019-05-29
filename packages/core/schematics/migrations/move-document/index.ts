@@ -48,6 +48,9 @@ function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: st
   // source files, it can end up updating query definitions multiple times.
   host.readFile = fileName => {
     const buffer = tree.read(relative(basePath, fileName));
+    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
+    // which breaks the CLI UpdateRecorder.
+    // See: https://github.com/angular/angular/pull/30719
     return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
   };
 
