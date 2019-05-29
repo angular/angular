@@ -346,13 +346,13 @@ In the following example, the two-way binding means that `optionName`
 should be written when the `valueChange` event fires.
 
 ```html
-<option *ngFor="let optionName of options" [(value)]="optionName"></cmp>
+<option *ngFor="let optionName of options" [(value)]="optionName"></option>
 ```
 
 However, in practice, Angular simply ignores two-way bindings to template variables. Starting in version 8, attempting to write to template variables is deprecated. In a future version, we will throw to indicate that the write is not supported.
 
 ```html
-<option *ngFor="let optionName of options" [value]="optionName"></cmp>
+<option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
 
 {@a binding-to-innertext}
