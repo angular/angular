@@ -127,6 +127,26 @@ describe('static-queries migration with usage strategy', () => {
           .toContain(`@ContentChild('test', { static: false }) query: any;`);
     });
 
+    it('should not mark content queries used in "ngAfterContentInit" as static (BOM)', async() => {
+      writeFile('/index.ts', `\uFEFF
+        import {Component, ContentChild} from '@angular/core';
+
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @ContentChild('test') query: any;
+
+          ngAfterContentInit() {
+            this.query.classList.add('test');
+          }
+        }
+      `);
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@ContentChild('test', { static: false }) query: any;`);
+    });
+
     it('should not mark content queries used in "ngAfterContentChecked" as static', async() => {
       writeFile('/index.ts', `
         import {Component, ContentChild} from '@angular/core';

@@ -53,7 +53,10 @@ function runTemplateVariableAssignmentCheck(
   // program to be based on the file contents in the virtual file tree.
   host.readFile = fileName => {
     const buffer = tree.read(relative(basePath, fileName));
-    return buffer ? buffer.toString() : undefined;
+    // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset which
+    // which breaks the CLI UpdateRecorder.
+    // See: https://github.com/angular/angular/pull/30719
+    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
   };
 
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
