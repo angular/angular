@@ -318,8 +318,6 @@ The need for this polyfill was removed in Angular version 8.0 ([see #14473](http
 
 In a typical Angular project, the polyfill is not used in production builds, so removing it should not impact production applications. The goal behind this removal is overall simplification of the build setup and decrease in the number of external dependencies.
 
-We expect to remove the polyfill from most if not all CLI projects via an `ng upgrade` migration from version 8 to 9.
-
 {@a static-query-resolution}
 ### `@ViewChild()` / `@ContentChild()` static resolution as the default
 
