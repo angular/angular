@@ -49,7 +49,7 @@ AOT compilation with Ivy is faster and should be used by default. In the `angula
     }
   }
 }
-
+```
 
 To stop using the Ivy compiler, set `enableIvy` to `false` in `tsconfig.app.json`, or remove it completely. Also remove `"aot": true` from your default build options if you didn't have it there before.
  
