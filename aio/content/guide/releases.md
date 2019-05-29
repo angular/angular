@@ -92,9 +92,9 @@ The following table contains our current target release dates for the next two m
 
  Date                   | Stable Release | Compatibility 
  ---------------------- | -------------- | -------------
- May 2019               | 8.0.0          | ^7.0.0
  October/November 2019  | 9.0.0          | ^8.0.0
-
+ May 2020               | 10.0.0         | ^9.0.0
+ 
  Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
 
@@ -115,7 +115,7 @@ The following table provides the status for Angular versions under support.
 
 Version | Status | Released     | Active Ends  | LTS Ends
 ------- | ------ | ------------ | ------------ | ------------ 
-^8.0.0  | Active | May 22, 2019 | Nov 22, 2019 | Nov 22, 2020
+^8.0.0  | Active | May 28, 2019 | Nov 28, 2019 | Nov 28, 2020
 ^7.0.0  | LTS    | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
 ^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
 
