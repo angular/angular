@@ -5,165 +5,58 @@ Sometimes, APIs and features become obsolete and need to be removed or replaced 
 
 To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your apps to the latest APIs and best practices.
 
-This guide contains a summary of all Angular APIs and features that are currently deprecated.
+This guide contains a summary of all Angular APIs and features that are currently deprecated. 
+To help you plan migration of your apps, this document is organized by the release in which they are candidates for removal. 
 
 
 <div class="alert is-helpful">
 
+Related resources: 
 
-Features and APIs that were deprecated in v6 or earlier are candidates for removal in version 9 or any later major version. For information about Angular's deprecation and removal practices, see [Angular Release Practices](guide/releases#deprecation-practices "Angular Release Practices: Deprecation practices").
+* For information about Angular's deprecation and removal practices, see [Angular Versioning and Release Practices](guide/releases#deprecation-practices "Angular Release Practices: Deprecation practices").
 
-For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io).
+* Support status: These features are currently supported under Angular's [long-term support (LTS) policy](guide/releases#support).  
 
-</div>
+* For step-by-step instructions on how to update to the latest Angular release, use the interactive update guide at [update.angular.io](https://update.angular.io). 
 
-
-## Index
-
-To help you future-proof your apps, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
-
-<!--
-deprecation -> removal cheat sheet
-v4 - v7
-v5 - v8
-v6 - v9
-v7 - v10
-v8 - v11
--->
-
-
-| Area | API or Feature | May be removed in |
-| ---- | -------------- | ----------------- |
-| `@angular/common` | [Pipes using Intl API](#i18n-pipes) | <!--v8--> v9 |
-| `@angular/common` | [`ReflectiveInjector`](#reflectiveinjector) | <!--v8--> v9 |
-| `@angular/core` | [`CollectionChangeRecord`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`DefaultIterableDiffer`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`ReflectiveKey`](#core) | <!--v8--> v9 |
-| `@angular/core` | [`RenderComponentType`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`Renderer`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`RootRenderer`](#core) | <!--v7--> v9 |
-| `@angular/core` | [`ViewEncapsulation.Native`](#core) | v9 |
-| `@angular/forms` | [`ngForm` element selector](#ngform) | v9 |
-| `@angular/forms` | [`NgFormSelectorWarning`](#forms) | v9 |
-| `@angular/forms` | [`ngModel` with reactive forms](#ngmodel-reactive) | v9 |
-| `@angular/router` | [`preserveQueryParams`](#router) | <!--v7--> v9 |
-| `@angular/upgrade` | [`@angular/upgrade`](#upgrade) | <!--v8--> v9 |
-| `@angular/upgrade` | [`getAngularLib`](#upgrade-static) | <!--v8--> v9 |
-| `@angular/upgrade` | [`setAngularLib`](#upgrade-static) | <!--v8--> v9 |
-| template syntax | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector) | <!--v7--> unspecified |
-| template syntax | [`<template`>](#template-tag) | <!--v7--> v9 |
-| service worker | [`versionedFiles` setting](#sw-versionedfiles)| v9 |
-| polyfills | [reflect-metadata](#reflect-metadata) | <!--v8--> v9 |
-| `@angular/core` | [`defineInjectable`](#core) | v11 |
-| `@angular/router` | [`loadChildren` string syntax](#loadChildren) | v11 |
-| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
-
-
-
-
-## Deprecated APIs
-
-This section contains a complete list all of the currently-deprecated APIs, with details to help you plan your migration to a replacement.
-
-
-<div class="alert is-helpful">
-
-Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
+* Doc tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
 
 </div>
 
 
 
-{@a common}
-### @angular/common
+
+{@a v9-removal}
+## v9 removal candidates
+
+The following APIs and features were announced as deprecated in versions 4, 5, and 6. They are all currently under LTS and candidates for removal in version 9. 
 
 
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [`CommonModule`](api/common/CommonModule#pipes) | v5 | See [Pipes](#i18n-pipes) |
- | [`DeprecatedCurrencyPipe`](api/common/DeprecatedCurrencyPipe) | [`CurrencyPipe`](api/common/CurrencyPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | v5  | See [Pipes](#i18n-pipes) |
- | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | v5 | See [Pipes](#i18n-pipes) |
+{@a v9-removal-apis}
+### APIs
+
+| Area | API or Feature | Replacement | Notes |
+| ---- | -------------- | ----------- | ----- |
+| `@angular/common` | [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) | [Pipes in `CommonModule`](api/common/CommonModule#pipes) | See [Pipes](#i18n-pipes) <!--dep v5--> |
+| `@angular/common` | [`DeprecatedCurrencyPipe`](api/common/DeprecatedCurrencyPipe) | [`CurrencyPipe`](api/common/CurrencyPipe) | See [Pipes](#i18n-pipes) <!--dep v5--> |
+| `@angular/common` | [`DeprecatedDatePipe`](api/common/DeprecatedDatePipe) | [`DatePipe`](api/common/DatePipe) | See [Pipes](#i18n-pipes) <!--dep v5--> |
+| `@angular/common` | [`DeprecatedDecimalPipe`](api/common/DeprecatedDecimalPipe) | [`DecimalPipe`](api/common/DecimalPipe) | See [Pipes](#i18n-pipes) <!--dep v5--> |
+| `@angular/common` | [`DeprecatedPercentPipe`](api/common/DeprecatedPercentPipe) | [`PercentPipe`](api/common/PercentPipe) | See [Pipes](#i18n-pipes) <!--dep v5--> |
+| `@angular/core` | [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | none <!--dep v4--> | 
+| `@angular/core` | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | <!--dep v4--> Not part of public API | 
+| `@angular/core` | [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create) | <!--dep v5--> See [`ReflectiveInjector`](#reflectiveinjector) | 
+| `@angular/core` | [`ReflectiveKey`](api/core/ReflectiveKey) | none | none <!--dep v5--> | 
+| `@angular/core` | [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2) and  [`Renderer2`](api/core/Renderer2) | none <!--dep v4--> | 
+| `@angular/core` | [`Renderer`](api/core/Renderer) | [`Renderer2`](api/core/Renderer2) | none <!--dep v4-->  | 
+| `@angular/core` | [`RootRenderer`](api/core/RootRenderer) | [`RendererFactory2`](api/core/RendererFactory2) | none <!--dep v4-->  | 
+| `@angular/core` | [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | <!--dep v6--> Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32). | 
+| `@angular/forms` | [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | <!--dep v6--> See [ngForm] (#ngform) | 
+| `@angular/router` | [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | none <!--dep v4-->  | 
+| `@angular/upgrade` | [All entry points](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | <!--dep v5--> See [Upgrading from AngularJS](guide/upgrade) | 
+| `@angular/upgrade` | [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | <!--dep v5--> See [Upgrading from AngularJS](guide/upgrade)| 
+| `@angular/upgrade` | [`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | <!--dep v5--> See [Upgrading from AngularJS](guide/upgrade)| 
 
 
-{@a core}
-### @angular/core
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`CollectionChangeRecord`](api/core/CollectionChangeRecord) | [`IterableChangeRecord`](api/core/IterableChangeRecord) | v4 | none |
-| [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
-| [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
-| [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
-| [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
-| [`RenderComponentType`](api/core/RenderComponentType) | [`RendererType2`](api/core/RendererType2) and  [`Renderer2`](api/core/Renderer2) | v4 | none |
-| [`Renderer`](api/core/Renderer) | [`Renderer2`](api/core/Renderer2) | v4 | none |
-| [`RootRenderer`](api/core/RootRenderer) | [`RendererFactory2`](api/core/RendererFactory2) | v4 | none |
-| [`ViewEncapsulation.Native`](api/core/ViewEncapsulation#Native) | [`ViewEncapsulation.ShadowDom`](api/core/ViewEncapsulation#ShadowDom) | v6 | Use the native encapsulation mechanism of the renderer. See [view.ts](https://github.com/angular/angular/blob/3e992e18ebf51d6036818f26c3d77b52d3ec48eb/packages/core/src/metadata/view.ts#L32).
-| [`WtfScopeFn`](api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfCreateScope`](api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| [`wtfLeave`](api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
-
-
-{@a forms}
-### @angular/forms
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`NgFormSelectorWarning`](api/forms/NgFormSelectorWarning) | n/a | v6 | See [ngForm](#ngform). |
-
-{@a router}
-### @angular/router
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`preserveQueryParams`](api/router/NavigationExtras#preserveQueryParams) | [`queryParamsHandling`](api/router/NavigationExtras#queryParamsHandling) | v4 | none |
-
-{@a platform-webworker}
-### @angular/platform-webworker
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [All entry points](api/platform-webworker) | none | v8 | See [platform-webworker](#webworker-apps). |
-
-{@a platform-webworker-dynamic}
-### @angular/platform-webworker-dynamic
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [All entry points](api/platform-webworker-dynamic) | none | v8 | See [platform-webworker](#webworker-apps). |
-
-{@a upgrade}
-### @angular/upgrade
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [All entry points](api/upgrade) | [`@angular/upgrade/static`](api/upgrade/static) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
-
-{@a upgrade-static}
-### @angular/upgrade/static
-
-| API | Replacement | Deprecation announced | Notes |
-| --- | ----------- | --------------------- | ----- |
-| [`getAngularLib`](api/upgrade/static/getAngularLib) | [`getAngularJSGlobal`](api/upgrade/static/getAngularJSGlobal) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
-[`setAngularLib`](api/upgrade/static/setAngularLib) | [`setAngularJSGlobal`](api/upgrade/static/setAngularJSGlobal) | v5 | See [Upgrading from AngularJS](guide/upgrade). |
-
-
-
-{@a deprecated-features}
-## Deprecated features
-
-This section lists all of the currently-deprecated features, which includes template syntax, configuration options, and any other deprecations not listed in the [Deprecated APIs](#deprecated-apis) section above. It also includes deprecated API usage scenarios or API combinations, to augment the information above.
-
-
-
-{@a wtf}
-### Web Tracing Framework integration
-
-Angular previously has supported an integration with the Web Tracing Framework (WTF) for performance testing of Angular applications. This integration has not been maintained and likely does not work for the majority of Angular applications today. As a result, we are deprecating the integration in Angular version 8.
 
 
 {@a deep-component-style-selector}
@@ -211,12 +104,23 @@ Support for using the `ngModel` input property and `ngModelChange` event with re
 For more information, see the usage notes for [`FormControlDirective`](api/forms/FormControlDirective#use-with-ngmodel) and [`FormControlName`](api/forms/FormControlName#use-with-ngmodel).
 
 
-{@a sw-versionedfiles}
-### Service worker versionedFiles
 
-In the service worker configuration file `ngsw-config.json`, `versionedFiles` and `files` have the same behavior. As of v6, `versionedFiles` is deprecated; use `files` instead.
 
-For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
+{@a i18n-pipes}
+### Pipes using Intl API
+
+<!--
+From https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced
+-->
+
+Angular used to rely on the browser to provide number, date, and currency formatting using browser i18n APIs. This practice meant that most apps needed to use a polyfill, users were seeing inconsistent results across browsers, and common formats (such as the currency pipe) didn’t match developer expectations out of the box.
+
+In version 4.3, Angular introduced new number, date, and currency pipes that increase standardization across browsers and eliminate the need for i18n polyfills. These pipes use the Unicode Common Locale Data Repository (CLDR) instead of the JS Intl API to provide extensive locale support.
+
+In version 5.0.0, Angular updated its standard pipes to use the CLRD implementation.
+At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
+
+Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
 
 
 {@a reflectiveinjector}
@@ -236,21 +140,44 @@ After:
 Injector.create({providers});
 ```
 
-{@a i18n-pipes}
-### Pipes using Intl API
 
-<!--
-From https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced
--->
+{@a sw-versionedfiles}
+### Service worker versionedFiles
 
-Angular used to rely on the browser to provide number, date, and currency formatting using browser i18n APIs. This practice meant that most apps needed to use a polyfill, users were seeing inconsistent results across browsers, and common formats (such as the currency pipe) didn’t match developer expectations out of the box.
+In the service worker configuration file `ngsw-config.json`, `versionedFiles` and `files` have the same behavior. As of v6, `versionedFiles` is deprecated; use `files` instead.
 
-In version 4.3, Angular introduced new number, date, and currency pipes that increase standardization across browsers and eliminate the need for i18n polyfills. These pipes use the Unicode Common Locale Data Repository (CLDR) instead of the JS Intl API to provide extensive locale support.
+For more information, see [Service Worker Configuration](guide/service-worker-config#assetgroups).
 
-In version 5.0.0, Angular updated its standard pipes to use the CLRD implementation.
-At that time, Angular also added [`DeprecatedI18NPipesModule`](api/common/DeprecatedI18NPipesModule) and related APIs to provide limited-time access to the old behavior. If you need to use these `Deprecated*` pipes, see [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md#i18n-pipes) and the [Date Formats mappings](https://docs.google.com/spreadsheets/d/12iygt-_cakNP1VO7MV9g4lq9NsxVWG4tSfc98HpHb0k/edit#gid=0 "Date Formats Google sheet").
 
-Reminder: If you use these `Deprecated*` pipes, you should migrate to the current APIs listed above as soon as possible. These deprecated APIs are candidates for removal in version 9.
+
+{@a v10-removal}
+## v10 removal candidates
+
+At this time, no deprecated APIs or features are candidates for removal in version 10. 
+
+Any deprecated API or feature that is a candidate for removal in version 9 may&mdash;at the discretion of the Angular management team&mdash;be retained in version 9 and become a candidate for version 10. 
+
+
+
+{@a 11-removal}
+## v11 removal candidates
+
+The following APIs and features were announced as deprecated in version 8. They are all currently under LTS and candidates for removal in version 11. 
+
+
+{@a 11-removal-apis}
+### APIs
+
+| Area | API or Feature | Replacement | Notes |
+| ---- | -------------- | ----------- | ----- |
+| `@angular/core` | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | Used only in generated code. No source code should depend on this API. <!--dep v8--> |
+| `@angular/core` | [`WtfScopeFn`](api/core/WtfScopeFn) | none | See [Web Tracing Framework](#wtf) <!--dep v8--> |
+| `@angular/core` | [`wtfCreateScope`](api/core/wtfCreateScope) | none | See [Web Tracing Framework](#wtf) <!--dep v8--> |
+| `@angular/core` | [`wtfStartTimeRange`](api/core/wtfStartTimeRange) | none | See [Web Tracing Framework](#wtf) <!--dep v8--> |
+| `@angular/core` | [`wtfEndTimeRange`](api/core/wtfEndTimeRange) | none | See [Web Tracing Framework](#wtf)<!--dep v8--> |
+| `@angular/core` | [`wtfLeave`](api/core/wtfLeave) | none | See [Web Tracing Framework](#wtf) <!--dep v8--> |
+| `@anglar/platform-webworker` | | [All entry points](api/platform-webworker) | none | See [platform-webworker](#webworker-apps) <!--dep v8--> |
+| `@angular/platform-webworker-dynamic` | [All entry points](api/platform-webworker-dynamic) | none | See [platform-webworker](#webworker-apps) <!--dep v8--> |
 
 
 {@a loadChildren}
@@ -296,22 +223,15 @@ const routes: Routes = [{
 </div>
 
 
+{@a wtf}
+### Web Tracing Framework integration
 
-{@a activatedroute-props}
-### ActivatedRoute params and queryParams properties
-
-[ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
-
-| Property | Replacement |
-| -------- | ----------- |
-| `params` | `paramMap` |
-| `queryParams` | `queryParamMap` |
-
-For more information see the [Router guide](guide/router#activated-route).
+Angular previously has supported an integration with the Web Tracing Framework (WTF) for performance testing of Angular applications. This integration has not been maintained and likely does not work for the majority of Angular applications today. As a result, we are deprecating the integration in Angular version 8.
 
 
 {@a reflect-metadata}
 ### Dependency on a reflect-metadata polyfill in JIT mode
+
 Angular applications, and specifically applications that relied on the JIT compiler, used to require a polyfill for the [reflect-metadata](https://github.com/rbuckton/reflect-metadata) APIs.
 
 The need for this polyfill was removed in Angular version 8.0 ([see #14473](https://github.com/angular/angular-cli/pull/14473)), rendering the presence of the poylfill in most Angular applications unnecessary. Because the polyfill can be depended on by 3rd-party libraries, instead of removing it from all Angular projects, we are deprecating the requirement for this polyfill as of version 8.0. This should give library authors and application developers sufficient time to evaluate if they need the polyfill, and perform any refactoring necessary to remove the dependency on it.
@@ -389,8 +309,36 @@ As of Angular version 8, all  `platform-webworker` APIs are deprecated.
 This includes both packages: `@angular/platform-webworker` and
 `@angular/platform-webworker-dynamic`.
 
+
+{@a unspecified}
+## Other removal candidates
+
+The following APIs and features have not formally been announced as deprecated, but they are no longer considered the best practice and may be deprecated in a future release.
+
+
+| Area | API or Feature | 
+| ---- | -------------- | 
+| `@angular/router` | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) |
+
+
+{@a activatedroute-props}
+### ActivatedRoute params and queryParams properties
+
+[ActivatedRoute](api/router/ActivatedRoute) contains two [properties](api/router/ActivatedRoute#properties) that are less capable than their replacements and may be deprecated in a future Angular version.
+
+| Property | Replacement |
+| -------- | ----------- |
+| `params` | `paramMap` |
+| `queryParams` | `queryParamMap` |
+
+For more information see the [Router guide](guide/router#activated-route).
+
+
+
 {@a removed}
 ## Removed APIs
+
+### v8
 
 The following APIs have been removed starting with version 8.0.0:
 
@@ -465,6 +413,7 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 
+<<<<<<< HEAD
 ## Renderer to Renderer2 migration
 
 ### Migration Overview
@@ -561,3 +510,61 @@ The following table shows all methods that the migration maps from `Renderer` to
 |`createViewRoot(hostElement)`|Should be replaced with a reference to `hostElement`|
 |`invokeElementMethod(renderElement, methodName, args?)`|`(renderElement as any)<methodName>.apply(renderElement, args);`|
 |`animate(element, startingStyles, keyframes, duration, delay, easing, previousPlayers?)`|Throws an error (same behavior as `Renderer.animate()`)|
+=======
+
+
+{@a v7-removal}
+### v7 removals
+
+No deprecated APIs or features were removed in v7. 
+
+
+{@a v6-removal}
+### v6 removals
+
+
+#### @angular/core/animations
+
+In v6, all exports from the entry point [@angular/core/animations](https://v5.angular.io/api/animations) were removed. Use [@angular/animations](api/animations) instead. For more information, see the [Animations](guide/animations "Animations guide") guide. 
+
+<!-- 
+| @angular/core/animations | Closest replacement in @angular/animations |
+| ------------------------ | ------------------------------------------ |
+| animate |  |
+| AnimationAnimateMetadata |  |
+| AnimationEntryMetadata |  |
+| AnimationGroupMetadata |  |
+| AnimationKeyframe |  |
+| AnimationKeyframesSequenceMetadata |  |
+| AnimationMetadata |  |
+| AnimationPlayer |  |
+| AnimationSequenceMetadata |  |
+| AnimationStateMetadata |  |
+| AnimationStateTransitionMetadata |  |
+| AnimationStyleMetadata |  |
+| AnimationStyles |  |
+| AnimationTransitionEvent |  |
+| AnimationTransitionMetadata |  |
+| AnimationTriggerMetadata |  |
+| AUTO_STYLE |  |
+| group |  |
+| keyframes |  |
+| sequence |  |
+| state |  |
+| style |  |
+| transition |  |
+| trigger|  |
+-->
+
+{@a v5-removal}
+### v5 removals
+
+#### NgFor 
+
+In v5, the directive [NgFor](https://v4.angular.io/api/common/NgFor) was removed. Use [`NgForOf`](api/common/NgForOf) instead.
+
+#### NgProbeToken
+
+In v5, [NgProbeToken](https://v4.angular.io/api/platform-browser/NgProbeToken) was removed from `@angular/platform-browser`. Use [NgProbeToken in `@angular/core`](api/core/NgProbeToken).
+
+>>>>>>> docs: deprecations reordered by future removal
