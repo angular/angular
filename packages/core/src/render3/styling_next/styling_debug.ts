@@ -5,16 +5,18 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer} from '../../sanitization/security';
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {RElement} from '../interfaces/renderer';
-import {LView} from '../interfaces/view';
+import {LView, SANITIZER} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 
 import {applyStyling} from './bindings';
-import {getCurrentStyleSanitizer} from './instructions';
 import {ApplyStylingFn, LStylingData, TStylingContext, TStylingContextIndex} from './interfaces';
 import {activeStylingMapFeature} from './map_based_bindings';
-import {getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked, isMapBased, isSanitizationRequired} from './util';
+import {getCurrentStyleSanitizer} from './state';
+import {getCurrentOrLViewSanitizer, getDefaultValue, getGuardMask, getProp, getValuesCount, isContextLocked, isMapBased, isSanitizationRequired} from './util';
+
 
 
 /**
@@ -215,7 +217,7 @@ export class NodeStylingDebug implements DebugStyling {
         };
 
     const sanitizer = this._isClassBased ? null : (this._sanitizer ||
-                                                   getCurrentStyleSanitizer(this._data as LView));
+                                                   getCurrentOrLViewSanitizer(this._data as LView));
     applyStyling(this.context, null, mockElement, this._data, true, mapFn, sanitizer);
   }
 }

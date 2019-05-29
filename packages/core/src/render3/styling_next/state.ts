@@ -5,6 +5,8 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer} from '../../sanitization/security';
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 
 /**
  * --------
@@ -47,4 +49,13 @@ export function runtimeIsNewStylingInUse() {
 
 export function runtimeAllowOldStyling() {
   return _stylingMode < RuntimeStylingMode.UseNew;
+}
+
+let _currentSanitizer: Sanitizer|StyleSanitizeFn|null;
+export function setCurrentStyleSanitizer(sanitizer: Sanitizer | StyleSanitizeFn | null) {
+  _currentSanitizer = sanitizer;
+}
+
+export function getCurrentStyleSanitizer() {
+  return _currentSanitizer;
 }

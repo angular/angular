@@ -5,10 +5,14 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
+import {Sanitizer, SecurityContext} from '../../sanitization/security';
+import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
 import {StylingContext} from '../interfaces/styling';
+import {LView, SANITIZER} from '../interfaces/view';
 import {getProp as getOldProp, getSinglePropIndexValue as getOldSinglePropIndexValue} from '../styling/class_and_style_bindings';
 
 import {LStylingMap, LStylingMapIndex, TStylingConfigFlags, TStylingContext, TStylingContextIndex, TStylingContextPropConfigFlags} from './interfaces';
+import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
 
 const MAP_BASED_ENTRY_PROP_NAME = '--MAP--';
 
@@ -137,3 +141,36 @@ export function isStylingValueDefined(value: any) {
   // set a value to an empty string to remove it.
   return value != null && value !== '';
 }
+
+/**
+ * Returns the current style sanitizer function for the given view.
+ *
+ * The default style sanitizer (which lives inside of `LView`) will
+ * be returned depending on whether the `styleSanitizer` instruction
+ * was called or not prior to any styling instructions running.
+ */
+export function getCurrentOrLViewSanitizer(lView: LView): StyleSanitizeFn|null {
+  const sanitizer: StyleSanitizeFn|null = (getCurrentStyleSanitizer() || lView[SANITIZER]) as any;
+  if (sanitizer && typeof sanitizer !== 'function') {
+    setCurrentStyleSanitizer(sanitizer);
+    return sanitizeUsingSanitizerObject;
+  }
+  return sanitizer;
+}
+
+/**
+ * Style sanitization function that internally uses a `Sanitizer` instance to handle style
+ * sanitization.
+ */
+const sanitizeUsingSanitizerObject: StyleSanitizeFn =
+    (prop: string, value: string, mode: StyleSanitizeMode) => {
+      const sanitizer = getCurrentStyleSanitizer() as Sanitizer;
+      if (sanitizer) {
+        if (mode & StyleSanitizeMode.SanitizeOnly) {
+          return sanitizer.sanitize(SecurityContext.STYLE, value);
+        } else {
+          return true;
+        }
+      }
+      return value;
+    };

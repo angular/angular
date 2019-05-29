@@ -5,8 +5,8 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {Sanitizer, SecurityContext} from '../../sanitization/security';
-import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
+import {Sanitizer} from '../../sanitization/security';
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {LContainer} from '../interfaces/container';
 import {AttributeMarker, TAttributes, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
@@ -20,8 +20,9 @@ import {getTNode, isStylingContext as isOldStylingContext} from '../util/view_ut
 import {applyClasses, applyStyles, registerBinding, updateClassBinding, updateStyleBinding} from './bindings';
 import {TStylingContext} from './interfaces';
 import {activeStylingMapFeature, normalizeIntoStylingMap} from './map_based_bindings';
+import {getCurrentStyleSanitizer, setCurrentStyleSanitizer} from './state';
 import {attachStylingDebugObject} from './styling_debug';
-import {allocTStylingContext, hasValueChanged, updateContextDirectiveIndex} from './util';
+import {allocTStylingContext, getCurrentOrLViewSanitizer, hasValueChanged, updateContextDirectiveIndex} from './util';
 
 
 
@@ -54,8 +55,6 @@ export function stylingInit() {
   updateLastDirectiveIndex(tNode, getActiveDirectiveStylingIndex());
 }
 
-let _currentSanitizer: Sanitizer|StyleSanitizeFn|null;
-
 /**
  * Sets the current style sanitizer function which will then be used
  * within all follow-up prop and map-based style binding instructions
@@ -74,10 +73,6 @@ let _currentSanitizer: Sanitizer|StyleSanitizeFn|null;
  */
 export function styleSanitizer(sanitizer: Sanitizer | StyleSanitizeFn | null): void {
   setCurrentStyleSanitizer(sanitizer);
-}
-
-function setCurrentStyleSanitizer(sanitizer: Sanitizer | StyleSanitizeFn | null) {
-  _currentSanitizer = sanitizer;
 }
 
 /**
@@ -110,7 +105,7 @@ function _stylingProp(
         getClassesContext(tNode), lView, prop, bindingIndex, value as string | boolean | null,
         defer, false);
   } else {
-    const sanitizer = getCurrentStyleSanitizer(lView);
+    const sanitizer = getCurrentOrLViewSanitizer(lView);
     updateStyleBinding(
         getStylesContext(tNode), lView, prop, bindingIndex, value as string | null, sanitizer,
         defer, false);
@@ -153,7 +148,7 @@ function _stylingMap(value: {[key: string]: any} | string | null, isClassBased: 
       updateClassBinding(
           getClassesContext(tNode), lView, null, bindingIndex, lStylingMap, defer, valueHasChanged);
     } else {
-      const sanitizer = getCurrentStyleSanitizer(lView);
+      const sanitizer = getCurrentOrLViewSanitizer(lView);
       updateStyleBinding(
           getStylesContext(tNode), lView, null, bindingIndex, lStylingMap, sanitizer, defer,
           valueHasChanged);
@@ -185,21 +180,10 @@ export function stylingApply() {
   const directiveIndex = getActiveDirectiveStylingIndex();
   applyClasses(renderer, lView, getClassesContext(tNode), native, directiveIndex);
 
-  const sanitizer = getCurrentStyleSanitizer(lView);
-  const stylesFlushed =
-      applyStyles(renderer, lView, getStylesContext(tNode), native, directiveIndex, sanitizer);
+  const sanitizer = getCurrentOrLViewSanitizer(lView);
+  applyStyles(renderer, lView, getStylesContext(tNode), native, directiveIndex, sanitizer);
 
-  // this means that all style bindings have been fully applied to this
-  // element. The reason why we have this check is because `stylingApply()`
-  // may be called multiple times for an element because styling may exist
-  // in multiple directives/components as well as the template code. This
-  // means that they could all be writing to the same element one by one.
-  // The boolean check will tell us if they were actually applied (the last
-  // `stylingApply` will actually apply values). Note that this check will
-  // be removed once `select(n)` is fully functional.
-  if (stylesFlushed) {
-    setCurrentStyleSanitizer(null);
-  }
+  setCurrentStyleSanitizer(null);
 }
 
 /**
@@ -314,39 +298,6 @@ function getContext(tNode: TNode, isClassBased: boolean) {
   }
   return context;
 }
-
-/**
- * Returns the current style sanitizer function for the given view.
- *
- * The default style sanitizer (which lives inside of `LView`) will
- * be returned depending on whether the `styleSanitizer` instruction
- * was called or not prior to any styling instructions running.
- */
-export function getCurrentStyleSanitizer(lView: LView): StyleSanitizeFn|null {
-  const sanitizer: StyleSanitizeFn|null = (_currentSanitizer || lView[SANITIZER]) as any;
-  if (sanitizer && typeof sanitizer !== 'function') {
-    setCurrentStyleSanitizer(sanitizer);
-    return sanitizeUsingSanitizerObject;
-  }
-  return sanitizer;
-}
-
-/**
- * Style sanitization function that internally uses a `Sanitizer` instance to handle style
- * sanitization.
- */
-const sanitizeUsingSanitizerObject: StyleSanitizeFn =
-    (prop: string, value: string, mode: StyleSanitizeMode) => {
-      const sanitizer = _currentSanitizer as Sanitizer;
-      if (sanitizer) {
-        if (mode & StyleSanitizeMode.SanitizeOnly) {
-          return sanitizer.sanitize(SecurityContext.STYLE, value);
-        } else {
-          return true;
-        }
-      }
-      return value;
-    };
 
 function resolveStylePropValue(
     value: string | number | String | null, suffix: string | null | undefined) {
