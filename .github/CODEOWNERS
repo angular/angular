@@ -812,6 +812,7 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/releases.md                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/updating.md                                  @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/workspace-config.md                          @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/deprecations.md                              @angular/fw-docs-packaging @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
