@@ -1,8 +1,9 @@
 import {
+  Compiler,
   ComponentFactory,
   ComponentFactoryResolver, ComponentRef, Injector, NgModuleFactory,
   NgModuleRef,
-  Type
+  Type,
 } from '@angular/core';
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
@@ -17,19 +18,25 @@ interface Deferred {
 
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
+  let compiler: Compiler;
 
   beforeEach(() => {
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
-        { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<string, () => Promise<NgModuleFactory<WithCustomElementComponent>>>([
+        {
+          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<
+            string, () => Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>
+          >([
           ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
-          ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))]
+          ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))],
+          ['element-c-selector', () => Promise.resolve(FakeCustomElementModule)]
         ])},
       ]
     });
 
     elementsLoader = injector.get(ElementsLoader);
+    compiler = injector.get(Compiler);
   });
 
   describe('loadContainedCustomElements()', () => {
@@ -221,6 +228,20 @@ describe('ElementsLoader', () => {
         expect(definedSpy).toHaveBeenCalledTimes(1);
       })
     );
+
+    it('should be able to load and register an element after compiling its NgModule', fakeAsync(() => {
+      const compilerSpy = spyOn(compiler, 'compileModuleAsync')
+        .and.returnValue(Promise.resolve(new FakeModuleFactory('element-c-module')));
+
+      elementsLoader.loadCustomElement('element-c-selector');
+      flushMicrotasks();
+
+      expect(definedSpy).toHaveBeenCalledTimes(1);
+      expect(definedSpy).toHaveBeenCalledWith('element-c-selector', jasmine.any(Function));
+
+      expect(compilerSpy).toHaveBeenCalledTimes(1);
+      expect(compilerSpy).toHaveBeenCalledWith(FakeCustomElementModule);
+    }));
   });
 });
 
