@@ -22,7 +22,10 @@ describe('ElementsLoader', () => {
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
-        { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<string, () => Promise<NgModuleFactory<WithCustomElementComponent>>>([
+        {
+          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: new Map<
+            string, () => Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>
+          >([
           ['element-a-selector', () => Promise.resolve(new FakeModuleFactory('element-a-module'))],
           ['element-b-selector', () => Promise.resolve(new FakeModuleFactory('element-b-module'))]
         ])},
