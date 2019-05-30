@@ -11,7 +11,7 @@ import {SecurityContext} from '@angular/core/src/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
 import {DebugNode, LViewDebug, toDebug} from '@angular/core/src/render3/debug';
 import {SANITIZER} from '@angular/core/src/render3/interfaces/view';
-import {RuntimeStylingMode, runtimeSetStylingMode} from '@angular/core/src/render3/styling_next/state';
+import {RuntimeStylingMode, runtimeSetStylingMode, setCurrentStyleSanitizer} from '@angular/core/src/render3/styling_next/state';
 import {loadLContextFromNode} from '@angular/core/src/render3/util/discovery_utils';
 import {ngDevModeResetPerfCounters as resetStylingCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
@@ -712,6 +712,10 @@ describe('new styling integration', () => {
         const node = getDebugNode(element) !;
         const styles = node.styles !;
         expect(styles.values['width']).toEqual('200px-safe');
+
+        // this is here so that it won't get picked up accidentally in another test
+        lView[SANITIZER] = null;
+        setCurrentStyleSanitizer(null);
       });
 
   it('should be able to bind a SafeValue to clip-path', () => {
