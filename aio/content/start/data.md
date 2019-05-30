@@ -6,7 +6,7 @@ Users can click on a product name from the list to see details in a new view, wi
 In this section, you'll create the shopping cart. You'll:
 * Update the product details page to include a "Buy" button, which adds the current product to a list of products managed by a cart service. 
 * Add a cart component, which displays the items you added to your cart.
-* Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's HttpClient to retrieve shipping data from a `.json` file.
+* Add a shipping component, which retrieves shipping prices for the items in the cart by using Angular's `HttpClient` to retrieve shipping data from a `.json` file.
 
 {@a services}
 ## Services
@@ -34,7 +34,7 @@ Later, in the [Forms](start/forms "Getting Started: Forms") part of this tutoria
 
 1. Generate a cart service.
 
-    1. Right click on the `app` folder, choose `Angular Generator`, and choose `**Service**`. Name the new service `cart`.
+    1. Right click on the `app` folder, choose `Angular Generator`, and choose `Service`. Name the new service `cart`.
 
         <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.1.ts"></code-example>
 
@@ -238,7 +238,7 @@ In this section, you'll use the HTTP client to retrieve shipping prices from an 
 
 ### Predefined shipping data
 
-For the purpose of this Getting Started, we have provided shipping data in `assets/shipping.json`. 
+For the purpose of this Getting Started guide, we have provided shipping data in `assets/shipping.json`. 
 You'll use this data to add shipping prices for items in the cart. 
 
 <code-example header="src/assets/shipping.json" path="getting-started/src/assets/shipping.json">
@@ -306,7 +306,7 @@ Here you'll define the `get()` method that will be used.
 
 <div class="alert is-helpful">
 
-Learn more: See the [HttpClient guide](guide/http "HttpClient guide") for more information about Angular's HttpClient. 
+Learn more: See the [HttpClient guide](guide/http "HttpClient guide") for more information about Angular's `HttpClient`.
 
 </div>
 
