@@ -48,8 +48,9 @@ describe('Elements Schematics', () => {
         .subscribe((tree: UnitTestTree) => appTree = tree, done.fail, done);
   });
 
-  it('should run the ng-add schematic', () => {
-    const tree = schematicRunner.runSchematic('ng-add', defaultOptions, appTree);
+  it('should run the ng-add schematic', async() => {
+    const tree =
+        await schematicRunner.runSchematicAsync('ng-add', defaultOptions, appTree).toPromise();
     const configText = tree.readContent('/angular.json');
     const config = JSON.parse(configText);
     const scripts = config.projects.elements.architect.build.options.scripts;
