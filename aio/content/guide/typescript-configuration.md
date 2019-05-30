@@ -106,7 +106,7 @@ Many libraries include definition files in their npm packages where both the Typ
 can find them. Angular is one such library.
 The `node_modules/@angular/core/` folder of any Angular application contains several `d.ts` files that describe parts of Angular.
 
-**You need to do nothing to get *typings* files for library packages that include `d.ts` files.
+**You don't need to do anything to get *typings* files for library packages that include `d.ts` files.
 Angular packages include them already.**
 
 ### lib.d.ts
