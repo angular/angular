@@ -16,7 +16,9 @@ export class ShippingComponent {
 // #enddocregion props
 
 // #docregion inject-cart-service
-  constructor(private cartService: CartService) {
+  constructor(
+    private cartService: CartService
+  ) {
 // #enddocregion inject-cart-service
     this.shippingCosts = this.cartService.getShippingPrices();
 // #docregion inject-cart-service
