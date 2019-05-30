@@ -194,7 +194,7 @@ For details on how to migrate, please refer to [the deprecations guide](https://
 
 * TypeScript 3.1 and 3.2 are no longer supported.
 
-  Please update your TypeScript version to 3.4
+  Please update your TypeScript version to 3.4, as version 3.3 is also not supported.
 
 
   <a name="8.0.0-rc.5"></a>
