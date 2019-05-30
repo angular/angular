@@ -638,14 +638,19 @@ function getDebugNode__PRE_R3__(nativeNode: any): DebugNode|null {
   return _nativeNodeToDebugNode.get(nativeNode) || null;
 }
 
+const NG_DEBUG_PROPERTY = '__ng_debug__';
+
 export function getDebugNode__POST_R3__(nativeNode: Element): DebugElement__POST_R3__;
 export function getDebugNode__POST_R3__(nativeNode: Node): DebugNode__POST_R3__;
 export function getDebugNode__POST_R3__(nativeNode: null): null;
 export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
   if (nativeNode instanceof Node) {
-    return nativeNode.nodeType == Node.ELEMENT_NODE ?
-        new DebugElement__POST_R3__(nativeNode as Element) :
-        new DebugNode__POST_R3__(nativeNode);
+    if (!(nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY))) {
+      (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType == Node.ELEMENT_NODE ?
+          new DebugElement__POST_R3__(nativeNode as Element) :
+          new DebugNode__POST_R3__(nativeNode);
+    }
+    return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }
   return null;
 }
@@ -678,9 +683,9 @@ export interface Predicate<T> { (value: T): boolean; }
 /**
  * @publicApi
  */
-export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__ as any;
+export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__;
 
 /**
  * @publicApi
  */
-export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__ as any;
+export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__;
