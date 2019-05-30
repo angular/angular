@@ -7,7 +7,7 @@
  */
 
 
-import {Component, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -676,6 +676,23 @@ class TestCmptWithPropBindings {
 
       const divB = divA.query(By.css('div'));
       expect(divB.nativeElement.getAttribute('id')).toBe('b');
+    });
+
+    it('should be an instance of DebugNode', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+      expect(fixture.debugElement).toBeAnInstanceOf(DebugNode);
+    });
+
+    it('should return the same element when queried twice', () => {
+      fixture = TestBed.createComponent(ParentComp);
+      fixture.detectChanges();
+
+      const childTestElsFirst = fixture.debugElement.queryAll(By.css('child-comp'));
+      const childTestElsSecond = fixture.debugElement.queryAll(By.css('child-comp'));
+
+      expect(childTestElsFirst.length).toBe(1);
+      expect(childTestElsSecond[0]).toBe(childTestElsFirst[0]);
     });
 
   });
