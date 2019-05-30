@@ -582,7 +582,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     //      / \    / \
     //     .  c   .   e
     //    / \    / \
-    //   a   b  ,   d
+    //   a   b  .   d
     //         / \
     //        .   c
     //       / \
