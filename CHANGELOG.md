@@ -6,7 +6,7 @@
 
 * add support for TypeScript 3.4 (and drop older versions) ([#29372](https://github.com/angular/angular/issues/29372)) ([ef85336](https://github.com/angular/angular/commit/ef85336))
 * **common:** add ability to watch for AngularJS URL updates through `onUrlChange` hook ([#30466](https://github.com/angular/angular/issues/30466)) ([8022d36](https://github.com/angular/angular/commit/8022d36))
-* **common:** stricter types for SlicePipe ([#30156](https://github.com/angular/angular/issues/30156)) ([722b2fa](https://github.com/angular/angular/commit/722b2fa))
+* **common:** stricter types for `SlicePipe` ([#30156](https://github.com/angular/angular/issues/30156)) ([722b2fa](https://github.com/angular/angular/commit/722b2fa))
 * **bazel:** use `rbe_autoconfig()` and new container ([#29336](https://github.com/angular/angular/issues/29336)) ([e562acc](https://github.com/angular/angular/commit/e562acc))
 * **common:** add @angular/common/upgrade package for `$location`-related APIs ([#30055](https://github.com/angular/angular/issues/30055)) ([152d99e](https://github.com/angular/angular/commit/152d99e))
 * **common:** add ability to retrieve the state from `Location` service ([#30055](https://github.com/angular/angular/issues/30055)) ([b44b143](https://github.com/angular/angular/commit/b44b143))
