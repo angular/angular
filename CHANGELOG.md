@@ -1,3 +1,52 @@
+<a name="8.1.0-beta.0"></a>
+# [8.1.0-beta.0](https://github.com/angular/angular/compare/8.0.0...8.1.0-beta.0) (2019-05-30)
+
+
+### Bug Fixes
+
+* **bazel:** allow ts_library interop with list-typed inputs ([#30600](https://github.com/angular/angular/issues/30600)) ([3125376](https://github.com/angular/angular/commit/3125376))
+* **bazel:** Bump ibazel to 0.10.1 for windows fixes ([#30196](https://github.com/angular/angular/issues/30196)) ([1353bf0](https://github.com/angular/angular/commit/1353bf0))
+* **bazel:** Directly spawn native Bazel binary ([#30306](https://github.com/angular/angular/issues/30306)) ([2a0f497](https://github.com/angular/angular/commit/2a0f497))
+* **bazel:** Disable sandbox on Mac OS ([#30460](https://github.com/angular/angular/issues/30460)) ([b6b1aec](https://github.com/angular/angular/commit/b6b1aec))
+* **bazel:** Exclude common/upgrade* in metadata.tsconfig.json ([#30133](https://github.com/angular/angular/issues/30133)) ([1f4c380](https://github.com/angular/angular/commit/1f4c380))
+* **bazel:** ng test should run specific ts_web_test_suite ([#30526](https://github.com/angular/angular/issues/30526)) ([e688e02](https://github.com/angular/angular/commit/e688e02))
+* **bazel:** pass correct arguments to http_server in Windows ([#30346](https://github.com/angular/angular/issues/30346)) ([3aff79c](https://github.com/angular/angular/commit/3aff79c)), closes [#29785](https://github.com/angular/angular/issues/29785)
+* **bazel:** update peerDep ranges ([#30155](https://github.com/angular/angular/issues/30155)) ([4ae0ee8](https://github.com/angular/angular/commit/4ae0ee8))
+* **bazel:** Use existing npm/yarn lock files ([#30438](https://github.com/angular/angular/issues/30438)) ([ff29ccc](https://github.com/angular/angular/commit/ff29ccc))
+* **compiler-cli:** log ngcc skipping messages as debug instead of info ([#30232](https://github.com/angular/angular/issues/30232)) ([60a8888](https://github.com/angular/angular/commit/60a8888))
+* **core:** consistently use ng:/// for sourcemap URLs ([#29826](https://github.com/angular/angular/issues/29826)) ([392473e](https://github.com/angular/angular/commit/392473e))
+* **core:** CSS sanitizer now allows parens in file names ([#30322](https://github.com/angular/angular/issues/30322)) ([728db88](https://github.com/angular/angular/commit/728db88))
+* **core:** fix interpolate identifier in AOT ([#30243](https://github.com/angular/angular/issues/30243)) ([30d1f29](https://github.com/angular/angular/commit/30d1f29))
+* **core:** migrations not always migrating all files ([#30269](https://github.com/angular/angular/issues/30269)) ([349935a](https://github.com/angular/angular/commit/349935a))
+* **core:** remove deprecated `TestBed.deprecatedOverrideProvider` API ([#30576](https://github.com/angular/angular/issues/30576)) ([a96976e](https://github.com/angular/angular/commit/a96976e))
+* **core:** require 'static' flag on queries in typings ([#30639](https://github.com/angular/angular/issues/30639)) ([84dd267](https://github.com/angular/angular/commit/84dd267))
+* **core:** static-query migration errors not printed properly ([#30458](https://github.com/angular/angular/issues/30458)) ([6ceb903](https://github.com/angular/angular/commit/6ceb903))
+* **core:** static-query migration fails with default parameter values ([#30269](https://github.com/angular/angular/issues/30269)) ([6357d4a](https://github.com/angular/angular/commit/6357d4a))
+* **core:** static-query migration should gracefully exit if AOT compiler throws ([#30269](https://github.com/angular/angular/issues/30269)) ([509352f](https://github.com/angular/angular/commit/509352f))
+* **core:** static-query migration should handle queries on accessors ([#30327](https://github.com/angular/angular/issues/30327)) ([0ffdb48](https://github.com/angular/angular/commit/0ffdb48))
+* **core:** static-query migration should not fallback to test strategy ([#30458](https://github.com/angular/angular/issues/30458)) ([0cdf598](https://github.com/angular/angular/commit/0cdf598))
+* **core:** static-query migration should not prompt if no queries are used ([#30254](https://github.com/angular/angular/issues/30254)) ([4c12d74](https://github.com/angular/angular/commit/4c12d74))
+* **core:** static-query usage migration strategy should detect ambiguous query usage ([#30215](https://github.com/angular/angular/issues/30215)) ([8d3365e](https://github.com/angular/angular/commit/8d3365e))
+* **core:** temporarily remove [@deprecated](https://github.com/deprecated) jsdoc tag for a TextBed.get overload ([#30514](https://github.com/angular/angular/issues/30514)) ([f6bf892](https://github.com/angular/angular/commit/f6bf892)), closes [#29290](https://github.com/angular/angular/issues/29290) [#29905](https://github.com/angular/angular/issues/29905)
+* **language-service:** Remove tsserverlibrary from rollup globals ([#30123](https://github.com/angular/angular/issues/30123)) ([124e497](https://github.com/angular/angular/commit/124e497))
+* **router:** ensure `history.state` is set in `eager` update mode ([#30154](https://github.com/angular/angular/issues/30154)) ([b40f6f3](https://github.com/angular/angular/commit/b40f6f3))
+* **router:** ensure navigations start with the current URL value incase redirect is skipped ([#30344](https://github.com/angular/angular/issues/30344)) ([0fd9d08](https://github.com/angular/angular/commit/0fd9d08)), closes [#30340](https://github.com/angular/angular/issues/30340) [#30160](https://github.com/angular/angular/issues/30160)
+* **router:** fix a problem with router not responding to back button ([#30160](https://github.com/angular/angular/issues/30160)) ([3327bd8](https://github.com/angular/angular/commit/3327bd8))
+* **router:** IE 11 bug can break URL unification when comparing objects ([#30393](https://github.com/angular/angular/issues/30393)) ([197584d](https://github.com/angular/angular/commit/197584d))
+* **router:** type cast correctly for IE 11 bug breaking URL Unification when comparing objects ([#30464](https://github.com/angular/angular/issues/30464)) ([53f3564](https://github.com/angular/angular/commit/53f3564))
+
+
+### Features
+
+* **bazel:** use `rbe_autoconfig()` and new container. ([#29336](https://github.com/angular/angular/issues/29336)) ([9abf114](https://github.com/angular/angular/commit/9abf114))
+* **common:** add ability to watch for AngularJS URL updates through `onUrlChange` hook ([#30466](https://github.com/angular/angular/issues/30466)) ([1aff524](https://github.com/angular/angular/commit/1aff524))
+* **common:** stricter types for `SlicePipe` ([#30156](https://github.com/angular/angular/issues/30156)) ([95830ee](https://github.com/angular/angular/commit/95830ee))
+* **core:** deprecate integration with the Web Tracing Framework (WTF) ([#30642](https://github.com/angular/angular/issues/30642)) ([f310a59](https://github.com/angular/angular/commit/f310a59))
+* **language-service:** Implement `definitionAndBoundSpan` ([#30125](https://github.com/angular/angular/issues/30125)) ([f491673](https://github.com/angular/angular/commit/f491673))
+* **platform-webworker:** deprecate platform-webworker ([#30642](https://github.com/angular/angular/issues/30642)) ([ccc76f7](https://github.com/angular/angular/commit/ccc76f7))
+
+
+
 <a name="8.0.0"></a>
 # [8.0.0](https://github.com/angular/angular/compare/8.0.0-rc.5...8.0.0) (2019-05-28)
 
