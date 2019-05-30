@@ -47,12 +47,12 @@ describe('move-document migration', () => {
   });
 
   describe('move-document', () => {
-    it('should properly apply import replacement', () => {
+    it('should properly apply import replacement', async() => {
       writeFile('/index.ts', `
         import {DOCUMENT} from '@angular/platform-browser';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
 
@@ -60,7 +60,7 @@ describe('move-document migration', () => {
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
-    it('should properly apply import replacement with existing import', () => {
+    it('should properly apply import replacement with existing import', async() => {
       writeFile('/index.ts', `
         import {DOCUMENT} from '@angular/platform-browser';
         import {someImport} from '@angular/common';
@@ -71,7 +71,7 @@ describe('move-document migration', () => {
         import {DOCUMENT} from '@angular/platform-browser';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
       const contentReverse = tree.readContent('/reverse.ts');
@@ -83,7 +83,7 @@ describe('move-document migration', () => {
       expect(contentReverse).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
-    it('should properly apply import replacement with existing import w/ comments', () => {
+    it('should properly apply import replacement with existing import w/ comments', async() => {
       writeFile('/index.ts', `
         /**
          * this is a comment
@@ -92,7 +92,7 @@ describe('move-document migration', () => {
         import {DOCUMENT} from '@angular/platform-browser';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
 
@@ -102,14 +102,14 @@ describe('move-document migration', () => {
       expect(content).toMatch(/.*this is a comment.*/);
     });
 
-    it('should properly apply import replacement with existing and redundant imports', () => {
+    it('should properly apply import replacement with existing and redundant imports', async() => {
       writeFile('/index.ts', `
         import {DOCUMENT} from '@angular/platform-browser';
         import {anotherImport} from '@angular/platform-browser-dynamic';
         import {someImport} from '@angular/common';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
 
@@ -118,13 +118,13 @@ describe('move-document migration', () => {
     });
 
     it('should properly apply import replacement with existing import and leave original import',
-       () => {
+       async() => {
          writeFile('/index.ts', `
         import {DOCUMENT, anotherImport} from '@angular/platform-browser';
         import {someImport} from '@angular/common';
       `);
 
-         runMigration();
+         await runMigration();
 
          const content = tree.readContent('/index.ts');
 
@@ -132,13 +132,13 @@ describe('move-document migration', () => {
          expect(content).toContain(`import { anotherImport } from '@angular/platform-browser';`);
        });
 
-    it('should properly apply import replacement with existing import and alias', () => {
+    it('should properly apply import replacement with existing import and alias', async() => {
       writeFile('/index.ts', `
         import {DOCUMENT as doc, anotherImport} from '@angular/platform-browser';
         import {someImport} from '@angular/common';
       `);
 
-      runMigration();
+      await runMigration();
 
       const content = tree.readContent('/index.ts');
 
@@ -151,5 +151,7 @@ describe('move-document migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration() { runner.runSchematic('migration-v8-move-document', {}, tree); }
+  function runMigration() {
+    runner.runSchematicAsync('migration-v8-move-document', {}, tree).toPromise();
+  }
 });
