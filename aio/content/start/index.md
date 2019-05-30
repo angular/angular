@@ -11,7 +11,7 @@ You don't need to install anything: you'll build the app using the [StackBlitz](
 <header>New to web development?</header>
 
 
-You'll find many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codeacademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics. 
+You'll find many resources to complement the Angular docs. Mozilla's MDN docs include both [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials") and [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript") introductions. [TypeScript's docs](https://www.typescriptlang.org/docs/home.html "TypeScript documentation") include a 5-minute tutorial. Various online course platforms, such as [Udemy](http://www.udemy.com "Udemy online courses") and [Codecademy](https://www.codecademy.com/ "Codeacademy online courses"), also cover web development basics. 
 
 
 </div> 
@@ -69,7 +69,9 @@ In this section, you'll learn about template syntax by enhancing the "Products" 
       `*ngFor` causes the `<div>` to be repeated for each product in the list. 
 
       <div class="alert is-helpful">
-      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an * is a structural directive.
+
+      `*ngFor` is a "structural directive". Structural directives shape or reshape the DOM's structure, typically by adding, removing, and manipulating the elements to which they are attached. Any directive with an `*` is a structural directive.
+      
       </div>
 
     1. To display the names of the products, use the interpolation syntax {{ }}. Interpolation renders a property's value as text. Inside the `<div>`, add an `<h3>` heading to display the interpolation of the product's name property: 
@@ -131,9 +133,9 @@ The app now has a product list and sharing feature.
 In the process, you've learned to use five common features of Angular's template syntax: 
 * `*ngFor`
 * `*ngIf`
-* Interpolation {{ }}
-* Property binding [ ]
-* Event binding ( ) 
+* Interpolation `{{ }}`
+* Property binding `[ ]`
+* Event binding `( )`
 
 
 <div class="alert is-helpful">
