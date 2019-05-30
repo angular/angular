@@ -1,4 +1,4 @@
-import { NgModule, NgModuleFactoryLoader, SystemJsNgModuleLoader } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { ROUTES} from '@angular/router';
 import { ElementsLoader } from './elements-loader';
 import {
@@ -13,7 +13,6 @@ import { LazyCustomElementComponent } from './lazy-custom-element.component';
   exports: [ LazyCustomElementComponent ],
   providers: [
     ElementsLoader,
-    { provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader },
     { provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, useValue: ELEMENT_MODULE_LOAD_CALLBACKS },
 
     // Providing these routes as a signal to the build system that these modules should be
