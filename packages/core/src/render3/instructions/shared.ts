@@ -1836,3 +1836,17 @@ export function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, v
     }
   }
 }
+
+/**
+ * Updates a text binding at a given index in a given LView.
+ */
+export function textBindingInternal<T>(lView: LView, index: number, value: T): void {
+  ngDevMode && assertNotSame(value, NO_CHANGE as any, 'value should not be NO_CHANGE');
+  ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
+  const element = getNativeByIndex(index, lView) as any as RText;
+  ngDevMode && assertDefined(element, 'native element should exist');
+  ngDevMode && ngDevMode.rendererSetText++;
+  const renderer = lView[RENDERER];
+  isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
+                                   element.textContent = renderStringify(value);
+}

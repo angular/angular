@@ -955,8 +955,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           () => this.getUpdateInstructionArguments(value));
     } else {
       this.updateInstruction(
-          nodeIndex, text.sourceSpan, R3.textBinding,
-          () => [o.literal(nodeIndex), this.convertPropertyBinding(value)]);
+          nodeIndex, text.sourceSpan, R3.textBinding, () => [this.convertPropertyBinding(value)]);
     }
   }
 
