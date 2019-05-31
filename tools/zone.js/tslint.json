@@ -1,0 +1,16 @@
+{
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/vrsource-tslint-rules/rules"
+  ],
+  "rules": {
+    "file-header": [true, "Copyright Google Inc\\."],
+    "no-duplicate-imports": true,
+    "no-duplicate-variable": true,
+    "no-jasmine-focus": true,
+    "no-var-keyword": true,
+    "semicolon": true,
+    "variable-name": [true, "ban-keywords"],
+    "no-inner-declarations": [true, "function"]
+  }
+}

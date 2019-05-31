@@ -1,0 +1,121 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
+load("//lib:bundle.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
+
+package(default_visibility = ["//:__subpackages__"])
+
+# copy this file from //lib to //dist
+genrule(
+    name = "zone_externs",
+    srcs = ["//lib:closure/zone_externs.js"],
+    outs = ["zone_externs.js"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "zone_d_ts",
+    srcs = ["//lib"],
+    outs = ["zone.js.d.ts"],
+    cmd = "rsync -ul $(SRCS) $(@D) && mv $(@D)/zone.d.ts $(@D)/zone.js.d.ts",
+)
+
+[
+    rollup_bundle(
+        name = b[0] + "-rollup",
+        entry_point = b[1],
+        globals = {
+            "electron": "electron",
+        },
+        deps = [
+            "//lib",
+        ],
+        license_banner = "//:angular_license.txt",
+    )
+    for b in ES5_BUNDLES.items()
+]
+
+[
+    rollup_bundle(
+        name = b[0] + "-rollup",
+        entry_point = b[1],
+        global_name = "Zone",
+        deps = [
+            "//lib",
+        ],
+        license_banner = "//:angular_license.txt",
+    )
+    for b in ES5_GLOBAL_BUNDLES.items() + ES2015_BUNDLES.items()
+]
+
+# the es5 filegroups
+[
+    filegroup(
+        name = b[0] + ".es5",
+        srcs = [":" + b[0] + "-rollup"],
+        output_group = "es5_umd",
+    )
+    for b in ES5_BUNDLES.items() + ES5_GLOBAL_BUNDLES.items()
+]
+
+# the es5.min filegroups
+[
+    filegroup(
+        name = b[0] + ".es5.min",
+        srcs = [":" + b[0] + "-rollup"],
+        output_group = "es5_umd_min",
+    )
+    for b in ES5_BUNDLES.items() + ES5_GLOBAL_BUNDLES.items()
+]
+
+# the es2015 filegroups
+[
+    filegroup(
+        name = b + ".umd",
+        srcs = [":" + b + "-rollup"],
+        output_group = "umd",
+    )
+    for b in ES2015_BUNDLES
+]
+
+# the es2015.min filegroups
+[
+    filegroup(
+        name = b + ".umd.min",
+        srcs = [":" + b + "-rollup"],
+        output_group = "umd_min",
+    )
+    for b in ES2015_BUNDLES
+]
+
+# Extract and rename each es5 bundle to a .js and .min.js in the dist/ dir
+[
+    genrule(
+        name = b[0] + "-dist",
+        srcs = [b[0] + ".es5", b[0] + ".es5.min"],
+        outs = [b[0] + ".js", b[0] + ".min.js"],
+        cmd = " && ".join([
+            "mkdir -p $(@D)",
+            "mv $(locations :" + b[0] + ".es5) $(@D)/",
+            "mv $(locations :" + b[0] + ".es5.min) $(@D)/",
+            "mv $(@D)/" + b[0] + "-rollup.es5umd.js $(@D)/" + b[0] + ".js",
+            "mv $(@D)/" + b[0] + "-rollup.min.es5umd.js $(@D)/" + b[0] + ".min.js",
+        ]),
+    )
+    for b in ES5_BUNDLES.items() + ES5_GLOBAL_BUNDLES.items()
+]
+
+# Extract and rename each es2015 bundle to a .js and .min.js in the dist/ dir
+[
+    genrule(
+        name = b + "-dist",
+        srcs = [b + ".umd", b + ".umd.min"],
+        outs = [b + ".js", b + ".min.js"],
+        cmd = " && ".join([
+            "mkdir -p $(@D)",
+            "mv $(locations :" + b + ".umd) $(@D)/",
+            "mv $(locations :" + b + ".umd.min) $(@D)/",
+            "mv $(@D)/" + b + "-rollup.umd.js $(@D)/" + b + ".js",
+            "mv $(@D)/" + b + "-rollup.min.umd.js $(@D)/" + b + ".min.js",
+        ]),
+    )
+    for b in ES2015_BUNDLES
+]

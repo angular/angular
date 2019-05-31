@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "target": "es5",
+    "noImplicitAny": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "outDir": "build-esm",
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "declaration": true,
+    "downlevelIteration": false,
+    "noEmitOnError": false,
+    "stripInternal": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.promise",
+      "es2015.symbol",
+      "es2015.symbol.wellknown"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "bazel-out",
+    "build",
+    "build-esm",
+    "build-esm-2015",
+    "dist",
+    "lib/closure",
+    "lib/node/**",
+    "lib/mix/**",
+    "test/node/**",
+    "test/node_bluebird_entry_point.ts",
+    "test/node_entry_point.ts",
+    "test/node_error_entry_point.ts",
+    "test/node_tests.ts"
+  ]
+}

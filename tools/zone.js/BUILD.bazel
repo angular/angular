@@ -1,0 +1,43 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package", "rollup_bundle")
+load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@npm_bazel_typescript//:defs.bzl", "ts_library")
+load("//lib:bundle.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
+
+exports_files([
+    "tsconfig.json",
+    "tsconfig-node.json",
+    "angular_license.txt",
+])
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "CHANGELOG.md",
+        "LICENSE",
+        "LICENSE.wrapped",
+        "README.md",
+        "package.json",
+    ],
+    deps = [
+        "//dist:zone_externs",
+        "//lib",
+    ] + ["//dist:" + b + "-dist" for b in ES5_BUNDLES] + ["//dist:" + b + "-dist" for b in ES2015_BUNDLES] + ["//dist:" + b + "-dist" for b in ES5_GLOBAL_BUNDLES] + ["//dist:zone_d_ts"],
+)
+
+ts_library(
+    name = "npm_package_spec_lib",
+    testonly = True,
+    srcs = ["test/npm_package/npm_package.spec.ts"],
+    deps = [
+        "@npm//@types",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_npm_package",
+    srcs = [":npm_package_spec_lib"],
+    data = [
+        ":npm_package",
+        "@npm//shelljs",
+    ],
+)
