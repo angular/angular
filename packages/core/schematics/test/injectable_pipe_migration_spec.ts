@@ -74,7 +74,7 @@ describe('injectable pipe migration', () => {
         .toMatch(/@Injectable\(\)\s+@Pipe\(\{ name: 'myPipe' \}\)\s+export class MyPipe/);
   });
 
-  it('should add an import for Injectable to the @angular/core import declaration', () => {
+  it('should add an import for Injectable to the @angular/core import declaration', async() => {
     writeFile('/index.ts', `
       import { Pipe } from '@angular/core';
 
