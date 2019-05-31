@@ -16,9 +16,9 @@ import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 
 import {attachPatchData} from './context_discovery';
-import {setDelayProjection, ɵɵload, ɵɵtextBinding} from './instructions/all';
+import {setDelayProjection, ɵɵload} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
-import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty} from './instructions/shared';
+import {allocExpando, elementAttributeInternal, elementPropertyInternal, getOrCreateTNode, setInputsForProperty, textBindingInternal} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from './interfaces/node';
@@ -839,7 +839,7 @@ function readUpdateOpCodes(
                 elementPropertyInternal(nodeIndex, propName, value, sanitizeFn);
                 break;
               case I18nUpdateOpCode.Text:
-                ɵɵtextBinding(nodeIndex, value);
+                textBindingInternal(viewData, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;

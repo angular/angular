@@ -9,7 +9,7 @@
 import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, ɵNgModuleDef as NgModuleDef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
 import {createInjector} from '../../src/di/r3_injector';
-import {injectComponentFactoryResolver, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject} from '../../src/render3/index';
+import {injectComponentFactoryResolver, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵselect, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {ɵɵbind, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵinterpolation1, ɵɵtext, ɵɵtextBinding} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
@@ -879,8 +879,10 @@ describe('providers', () => {
               ɵɵtext(1);
             }
             if (fs & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(ctx.s));
-              ɵɵtextBinding(1, ɵɵbind(ctx.n));
+              ɵɵselect(0);
+              ɵɵtextBinding(ctx.s);
+              ɵɵselect(1);
+              ɵɵtextBinding(ctx.n);
             }
           }
         });
@@ -962,8 +964,10 @@ describe('providers', () => {
               ɵɵtext(1);
             }
             if (fs & RenderFlags.Update) {
-              ɵɵtextBinding(0, ɵɵbind(ctx.s));
-              ɵɵtextBinding(1, ɵɵbind(ctx.n));
+              ɵɵselect(0);
+              ɵɵtextBinding(ctx.s);
+              ɵɵselect(1);
+              ɵɵtextBinding(ctx.n);
             }
           },
           features: [
@@ -1043,7 +1047,8 @@ describe('providers', () => {
             ɵɵtext(0);
           }
           if (rf & RenderFlags.Update) {
-            ɵɵtextBinding(0, ɵɵinterpolation1('', cmp.s, ''));
+            ɵɵselect(0);
+            ɵɵtextInterpolate1('', cmp.s, '');
           }
         }
       });
