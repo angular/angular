@@ -37,8 +37,6 @@ export class Identifiers {
   static componentHostSyntheticListener:
       o.ExternalReference = {name: 'ɵɵcomponentHostSyntheticListener', moduleName: CORE};
 
-  static elementAttribute: o.ExternalReference = {name: 'ɵɵelementAttribute', moduleName: CORE};
-
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 
   static attributeInterpolate1:

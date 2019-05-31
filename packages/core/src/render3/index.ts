@@ -47,7 +47,6 @@ export {
   ɵɵdirectiveInject,
 
   ɵɵelement,
-  ɵɵelementAttribute,
   ɵɵelementContainerEnd,
 
   ɵɵelementContainerStart,

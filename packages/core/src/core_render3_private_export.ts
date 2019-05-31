@@ -126,7 +126,6 @@ export {
   ɵɵenableBindings,
   ɵɵdisableBindings,
   ɵɵallocHostVars,
-  ɵɵelementAttribute,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵstyling,

@@ -5,16 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {validateAgainstEventAttributes} from '../../sanitization/sanitization';
 import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {TAttributes, TNodeFlags, TNodeType} from '../interfaces/node';
-import {RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
-import {SanitizerFn} from '../interfaces/sanitization';
+import {RElement} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, LView, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, QUERIES, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild} from '../node_manipulation';
 import {applyOnCreateInstructions} from '../node_util';
@@ -23,12 +21,12 @@ import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticCo
 import {getStylingContextFromLView, hasClassInput, hasStyleInput} from '../styling/util';
 import {registerInitialStylingIntoContext} from '../styling_next/instructions';
 import {runtimeIsNewStylingInUse} from '../styling_next/state';
-import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
-import {renderStringify} from '../util/misc_utils';
-import {getNativeByIndex, getNativeByTNode, getTNode} from '../util/view_utils';
+import {getNativeByTNode, getTNode} from '../util/view_utils';
+
 import {createDirectivesAndLocals, elementCreate, executeContentQueries, getOrCreateTNode, initializeTNodeInputs, setInputsForProperty, setNodeStylingTemplate} from './shared';
 import {getActiveDirectiveStylingIndex} from './styling';
+
 
 
 /**
@@ -195,54 +193,6 @@ export function ɵɵelement(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   ɵɵelementStart(index, name, attrs, localRefs);
   ɵɵelementEnd();
-}
-
-
-/**
- * Updates the value or removes an attribute on an Element.
- *
- * @param index The index of the element in the data array
- * @param name name The name of the attribute.
- * @param value value The attribute is removed when value is `null` or `undefined`.
- *                  Otherwise the attribute value is set to the stringified value.
- * @param sanitizer An optional function used to sanitize the value.
- * @param namespace Optional namespace to use when setting the attribute.
- *
- * @codeGenApi
- */
-export function ɵɵelementAttribute(
-    index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
-    namespace?: string): void {
-  if (value !== NO_CHANGE) {
-    const lView = getLView();
-    const renderer = lView[RENDERER];
-    elementAttributeInternal(index, name, value, lView, renderer, sanitizer, namespace);
-  }
-}
-
-export function elementAttributeInternal(
-    index: number, name: string, value: any, lView: LView, renderer: Renderer3,
-    sanitizer?: SanitizerFn | null, namespace?: string) {
-  ngDevMode && validateAgainstEventAttributes(name);
-  const element = getNativeByIndex(index, lView) as RElement;
-  if (value == null) {
-    ngDevMode && ngDevMode.rendererRemoveAttribute++;
-    isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name, namespace) :
-                                     element.removeAttribute(name);
-  } else {
-    ngDevMode && ngDevMode.rendererSetAttribute++;
-    const tNode = getTNode(index, lView);
-    const strValue =
-        sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
-
-
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(element, name, strValue, namespace);
-    } else {
-      namespace ? element.setAttributeNS(namespace, name, strValue) :
-                  element.setAttribute(name, strValue);
-    }
-  }
 }
 
 /**
