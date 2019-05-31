@@ -385,7 +385,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (!Array.isArray(resolvedList)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-          `Expected array when reading property ${arrayName}`);
+          `Expected array when reading property ${arrayName} of ${className}`);
     }
 
     resolvedList.forEach((entry, idx) => {
