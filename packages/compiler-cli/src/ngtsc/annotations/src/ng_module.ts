@@ -396,7 +396,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (!Array.isArray(resolvedList)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-          `Expected array when reading property ${arrayName}`);
+          `Expected array when reading the NgModule.${arrayName} of ${className}`);
     }
 
     resolvedList.forEach((entry, idx) => {
@@ -413,14 +413,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         if (!this.isClassDeclarationReference(entry)) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a class`);
+              `Value at position ${idx} in the NgModule.${arrayName} of ${className} is not a class`);
         }
         refList.push(entry);
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a reference: ${entry}`);
+            `Value at position ${idx} in the NgModule.${arrayName} of ${className} is not a reference: ${entry}`);
       }
     });
 
