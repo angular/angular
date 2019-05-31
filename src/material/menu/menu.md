@@ -52,10 +52,10 @@ Menus support displaying `mat-icon` elements before the menu item text.
 
 ### Customizing menu position
 
-By default, the menu will display below (y-axis), after (x-axis), and overlapping its trigger.
-The position can be changed using the `xPosition` (`before | after`) and `yPosition`
-(`above | below`) attributes. The menu can be be forced to not overlap the trigger using
-`[overlapTrigger]="false"` attribute.
+By default, the menu will display below (y-axis), after (x-axis), without overlapping
+its trigger. The position can be changed using the `xPosition` (`before | after`) and `yPosition`
+(`above | below`) attributes. The menu can be forced to overlap the trigger using the
+`overlapTrigger` attribute.
 
 ```html
 <mat-menu #appMenu="matMenu" yPosition="above">
