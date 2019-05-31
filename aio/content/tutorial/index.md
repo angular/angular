@@ -15,7 +15,7 @@ The Getting Started tutorial covers the same major topics as this Tour of Heroes
 This _Tour of Heroes_ tutorial provides an introduction to the fundamentals of Angular. 
 It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
 
-In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its stable of heroes.
+In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its table of heroes.
 
 This app has many of the features you'd expect to find in a data-driven application.
 It acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
