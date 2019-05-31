@@ -54,6 +54,13 @@ export class ElementsLoader {
       const loadedAndRegistered =
           (modulePathLoader() as Promise<NgModuleFactory<WithCustomElementComponent> | Type<WithCustomElementComponent>>)
           .then(elementModuleOrFactory => {
+            /**
+             * With View Engine, the NgModule factory is created and provided when loaded.
+             * With Ivy, only the NgModule class is provided loaded and must be compiled.
+             * This uses the same mechanism as the deprecated `SystemJsNgModuleLoader` in
+             * in `packages/core/src/linker/system_js_ng_module_factory_loader.ts`
+             * to pass on the NgModuleFactory, or compile the NgModule and return its NgModuleFactory.
+             */
             if (elementModuleOrFactory instanceof NgModuleFactory) {
               return elementModuleOrFactory;
             } else {
