@@ -12,7 +12,6 @@ import {appendProjectedNodes} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, setIsNotParent} from '../state';
 import {findComponentView} from '../util/view_traversal_utils';
-
 import {getOrCreateTNode} from './shared';
 
 
@@ -103,6 +102,11 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
   }
 }
 
+let delayProjection = false;
+export function setDelayProjection(value: boolean) {
+  delayProjection = value;
+}
+
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
@@ -127,6 +131,9 @@ export function ɵɵprojection(
   // `<ng-content>` has no content
   setIsNotParent();
 
-  // re-distribution of projectable nodes is stored on a component's view level
-  appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+  // We might need to delay the projection of nodes if they are in the middle of an i18n block
+  if (!delayProjection) {
+    // re-distribution of projectable nodes is stored on a component's view level
+    appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
+  }
 }

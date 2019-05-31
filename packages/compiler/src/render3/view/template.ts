@@ -483,6 +483,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     this.creationInstruction(ngContent.sourceSpan, R3.projection, parameters);
+    if (this.i18n) {
+      this.i18n.appendProjection(ngContent.i18n !, slot);
+    }
   }
 
 

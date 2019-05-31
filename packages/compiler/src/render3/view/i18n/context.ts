@@ -14,7 +14,8 @@ import {assembleBoundTextPlaceholders, findIndex, getSeqNumberGenerator, updateP
 
 enum TagType {
   ELEMENT,
-  TEMPLATE
+  TEMPLATE,
+  PROJECTION
 }
 
 /**
@@ -93,6 +94,12 @@ export class I18nContext {
   }
   appendElement(node: i18n.AST, index: number, closed?: boolean) {
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
+  }
+  appendProjection(node: i18n.AST, index: number) {
+    // add open and close tags at the same time,
+    // since we process projected content separately
+    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, false);
+    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, true);
   }
 
   /**
@@ -181,6 +188,7 @@ function findTemplateFn(ctx: number, templateIndex: number | null) {
 function serializePlaceholderValue(value: any): string {
   const element = (data: any, closed?: boolean) => wrapTag('#', data, closed);
   const template = (data: any, closed?: boolean) => wrapTag('*', data, closed);
+  const projection = (data: any, closed?: boolean) => wrapTag('!', data, closed);
 
   switch (value.type) {
     case TagType.ELEMENT:
@@ -197,6 +205,9 @@ function serializePlaceholderValue(value: any): string {
 
     case TagType.TEMPLATE:
       return template(value, value.closed);
+
+    case TagType.PROJECTION:
+      return projection(value, value.closed);
 
     default:
       return value;

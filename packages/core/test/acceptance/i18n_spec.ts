@@ -9,6 +9,7 @@
 import {registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
 import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
@@ -18,6 +19,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({declarations: [AppComp, DirectiveWithTplRef]});
   });
+
+  afterEach(() => { setDelayProjection(false); });
 
   it('should translate text', () => {
     ɵi18nConfigureLocalize({translations: {'text': 'texte'}});
@@ -989,6 +992,170 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toEqual('<child><span title="keepMe">Contenu</span></child>');
+    });
+
+    it('should project content in i18n blocks', () => {
+      @Component({
+        selector: 'child',
+        template: `<div i18n>Content projected from <ng-content></ng-content></div>`
+      })
+      class Child {
+      }
+
+      @Component({selector: 'parent', template: `<child>{{name}}</child>`})
+      class Parent {
+        name: string = 'Parent';
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({
+        translations: {
+          'Content projected from {$startTagNgContent}{$closeTagNgContent}':
+              'Contenu projeté depuis {$startTagNgContent}{$closeTagNgContent}'
+        }
+      });
+
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<child><div>Contenu projeté depuis Parent</div></child>`);
+
+      fixture.componentRef.instance.name = 'Parent component';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<child><div>Contenu projeté depuis Parent component</div></child>`);
+    });
+
+    it('should project content in i18n blocks with placeholders', () => {
+      @Component({
+        selector: 'child',
+        template: `<div i18n>Content projected from <ng-content></ng-content></div>`
+      })
+      class Child {
+      }
+
+      @Component({selector: 'parent', template: `<child><b>{{name}}</b></child>`})
+      class Parent {
+        name: string = 'Parent';
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({
+        translations: {
+          'Content projected from {$startTagNgContent}{$closeTagNgContent}':
+              '{$startTagNgContent}{$closeTagNgContent} a projeté le contenu'
+        }
+      });
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<child><div><b>Parent</b> a projeté le contenu</div></child>`);
+    });
+
+    it('should project translated content in i18n blocks', () => {
+      @Component(
+          {selector: 'child', template: `<div i18n>Child content <ng-content></ng-content></div>`})
+      class Child {
+      }
+
+      @Component({selector: 'parent', template: `<child i18n>and projection from {{name}}</child>`})
+      class Parent {
+        name: string = 'Parent';
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({
+        translations: {
+          'Child content {$startTagNgContent}{$closeTagNgContent}':
+              'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
+          'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
+        }
+      });
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(`<child><div>Contenu enfant et projection depuis Parent</div></child>`);
+    });
+
+    it('should project bare ICU expressions', () => {
+      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      class Child {
+      }
+
+      @Component({
+        selector: 'parent',
+        template: `
+      <child i18n>{
+        value // i18n(ph = "blah"),
+        plural,
+         =1 {one}
+        other {at least {{value}} .}
+      }</child>`
+      })
+      class Parent {
+        value = 3;
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({translations: {}});
+
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('at least');
+    });
+
+    it('should project ICUs in i18n blocks', () => {
+      @Component(
+          {selector: 'child', template: `<div i18n>Child content <ng-content></ng-content></div>`})
+      class Child {
+      }
+
+      @Component({
+        selector: 'parent',
+        template:
+            `<child i18n>and projection from {name, select, angular {Angular} other {{{name}}}}</child>`
+      })
+      class Parent {
+        name: string = 'Parent';
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({
+        translations: {
+          'Child content {$startTagNgContent}{$closeTagNgContent}':
+              'Contenu enfant {$startTagNgContent}{$closeTagNgContent}',
+          'and projection from {$icu}': 'et projection depuis {$icu}'
+        }
+      });
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(
+              `<child><div>Contenu enfant et projection depuis Parent<!--ICU 15--></div></child>`);
+
+      fixture.componentRef.instance.name = 'angular';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual(
+              `<child><div>Contenu enfant et projection depuis Angular<!--ICU 15--></div></child>`);
+    });
+
+    it(`shouldn't project deleted projections in i18n blocks`, () => {
+      @Component(
+          {selector: 'child', template: `<div i18n>Child content <ng-content></ng-content></div>`})
+      class Child {
+      }
+
+      @Component({selector: 'parent', template: `<child i18n>and projection from {{name}}</child>`})
+      class Parent {
+        name: string = 'Parent';
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({
+        translations: {
+          'Child content {$startTagNgContent}{$closeTagNgContent}': 'Contenu enfant',
+          'and projection from {$interpolation}': 'et projection depuis {$interpolation}'
+        }
+      });
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual(`<child><div>Contenu enfant</div></child>`);
     });
   });
 

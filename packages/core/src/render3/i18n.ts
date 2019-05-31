@@ -7,38 +7,42 @@
  */
 
 import '../util/ng_i18n_closure_mode';
-
 import {getPluralCase} from '../i18n/localization';
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
-
 import {attachPatchData} from './context_discovery';
-import {elementAttributeInternal, ɵɵload, ɵɵtextBinding} from './instructions/all';
+import {elementAttributeInternal, setDelayProjection, ɵɵload, ɵɵtextBinding} from './instructions/all';
 import {attachI18nOpCodesDebug} from './instructions/lview_debug';
 import {allocExpando, elementPropertyInternal, getOrCreateTNode, setInputsForProperty} from './instructions/shared';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
-import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TIcuContainerNode, TNode, TNodeType, TProjectionNode} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
+import {appendChild, appendProjectedNodes, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {renderStringify} from './util/misc_utils';
+import {findComponentView} from './util/view_traversal_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
 
 
 const MARKER = `�`;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
-const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
+const PH_REGEXP = /�(\/?[#*!]\d+):?\d*�/gi;
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
+const enum TagType {
+  ELEMENT = '#',
+  TEMPLATE = '*',
+  PROJECTION = '!',
+}
 
 // i18nPostprocess consts
 const ROOT_TEMPLATE_ID = 0;
@@ -340,6 +344,10 @@ const parentIndexStack: number[] = [];
  *   and end of DOM element that were embedded in the original translation block. The placeholder
  *   `index` points to the element index in the template instructions set. An optional `block` that
  *   matches the sub-template in which it was declared.
+ * - `�!{index}(:{block})�`/`�/!{index}(:{block})�`: *Projection Placeholder*:  Marks the
+ *   beginning and end of <ng-content> that was embedded in the original translation block.
+ *   The placeholder `index` points to the element index in the template instructions set.
+ *   An optional `block` that matches the sub-template in which it was declared.
  * - `�*{index}:{block}�`/`�/*{index}:{block}�`: *Sub-template Placeholder*: Sub-templates must be
  *   split up and translated separately in each angular template function. The `index` points to the
  *   `template` instruction index. A `block` that matches the sub-template in which it was declared.
@@ -354,6 +362,8 @@ export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?:
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
+  // We need to delay projections until `i18nEnd`
+  setDelayProjection(true);
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
     i18nStartFirstPass(tView, index, message, subTemplateIndex);
   }
@@ -398,7 +408,7 @@ function i18nStartFirstPass(
       // Odd indexes are placeholders (elements and sub-templates)
       if (value.charAt(0) === '/') {
         // It is a closing tag
-        if (value.charAt(1) === '#') {
+        if (value.charAt(1) === TagType.ELEMENT) {
           const phIndex = parseInt(value.substr(2), 10);
           parentIndex = parentIndexStack[--parentIndexPointer];
           createOpCodes.push(phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd);
@@ -410,7 +420,7 @@ function i18nStartFirstPass(
             phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
             parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-        if (value.charAt(0) === '#') {
+        if (value.charAt(0) === TagType.ELEMENT) {
           parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
         }
       }
@@ -506,6 +516,14 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
       cursor.next = nextNode;
     }
     cursor = cursor.next;
+  }
+
+  // If the placeholder to append is a projection, we need to move the projected nodes instead
+  if (tNode.type === TNodeType.Projection) {
+    const tProjectionNode = tNode as TProjectionNode;
+    appendProjectedNodes(
+        viewData, tProjectionNode, tProjectionNode.projection, findComponentView(viewData));
+    return tNode;
   }
 
   appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
@@ -632,6 +650,8 @@ export function ɵɵi18nEnd(): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nEndFirstPass(tView);
+  // Stop delaying projections
+  setDelayProjection(false);
 }
 
 /**
