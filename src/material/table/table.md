@@ -187,7 +187,7 @@ For more information on using and configuring the sorting behavior, check out th
 [matSort docs](https://material.angular.io/components/sort/overview).
 
 The `MatSort` is one provided solution to sorting your table's data, but it is not the only option.
-In fact, the table can work with any custom pagination UI or strategy since the `MatTable` and
+In fact, the table can work with any custom sorting UI or strategy since the `MatTable` and
 its interface is not tied to any one specific implementation.
 
 #### Filtering
