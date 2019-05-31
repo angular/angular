@@ -42,5 +42,6 @@
     "examples/**/main.ts",
     "platform-server/integrationtest",
     "router/test/aot_ngsummary_test",
+    "zone.js"
   ]
 }
