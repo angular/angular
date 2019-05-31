@@ -40,7 +40,7 @@ export interface InjectableDecorator {
    *
    * The following example shows how service classes are properly marked as
    * injectable.
-   *Z
+   *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
    */
