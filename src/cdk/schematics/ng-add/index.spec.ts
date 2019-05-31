@@ -11,8 +11,8 @@ describe('CDK ng-add', () => {
     appTree = await createTestApp(runner);
   });
 
-  it('should update the package.json', () => {
-    const tree = runner.runSchematic('ng-add', {}, appTree);
+  it('should update the package.json', async () => {
+    const tree = await runner.runSchematicAsync('ng-add', {}, appTree).toPromise();
     const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
     const dependencies = packageJson.dependencies;
 

@@ -15,7 +15,8 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should create dashboard files and add them to module', async () => {
-    const tree = runner.runSchematic('dashboard', baseOptions, await createTestApp(runner));
+    const app = await createTestApp(runner);
+    const tree = await runner.runSchematicAsync('dashboard', baseOptions, app).toPromise();
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -29,7 +30,8 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should add dashboard imports to module', async () => {
-    const tree = runner.runSchematic('dashboard', baseOptions, await createTestApp(runner));
+    const app = await createTestApp(runner);
+    const tree = await runner.runSchematicAsync('dashboard', baseOptions, app).toPromise();
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatGridListModule');
@@ -45,22 +47,28 @@ describe('material-dashboard-schematic', () => {
 
   it('should throw if no name has been specified', async () => {
     const appTree = await createTestApp(runner);
-    expect(() => {
-      runner.runSchematic('dashboard', {project: 'material'}, appTree);
-    }).toThrowError(/required property 'name'/);
+    let message: string | null = null;
+
+    try {
+      await runner.runSchematicAsync('dashboard', {project: 'material'}, appTree).toPromise();
+    } catch (e) {
+      message = e.message;
+    }
+
+    expect(message).toMatch(/required property 'name'/);
   });
 
   describe('style option', () => {
     it('should respect the option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', {style: 'scss', ...baseOptions}, await createTestApp(runner));
+      const tree = await runner.runSchematicAsync(
+          'dashboard', {style: 'scss', ...baseOptions}, await createTestApp(runner)).toPromise();
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', baseOptions, await createTestApp(runner, {style: 'less'}));
+      const tree = await runner.runSchematicAsync(
+          'dashboard', baseOptions, await createTestApp(runner, {style: 'less'})).toPromise();
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
     });
@@ -68,15 +76,16 @@ describe('material-dashboard-schematic', () => {
 
   describe('inlineStyle option', () => {
     it('should respect the option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', {inlineStyle: true, ...baseOptions}, await createTestApp(runner));
+      const app = await createTestApp(runner);
+      const tree = await runner.runSchematicAsync(
+          'dashboard', {inlineStyle: true, ...baseOptions}, app).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', baseOptions, await createTestApp(runner, {inlineStyle: true}));
+      const tree = await runner.runSchematicAsync(
+          'dashboard', baseOptions, await createTestApp(runner, {inlineStyle: true})).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
@@ -84,15 +93,16 @@ describe('material-dashboard-schematic', () => {
 
   describe('inlineTemplate option', () => {
     it('should respect the option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', {inlineTemplate: true, ...baseOptions}, await createTestApp(runner));
+      const app = await createTestApp(runner);
+      const tree = await runner.runSchematicAsync(
+          'dashboard', {inlineTemplate: true, ...baseOptions}, app).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', baseOptions, await createTestApp(runner, {inlineTemplate: true}));
+      const app = await createTestApp(runner, {inlineTemplate: true});
+      const tree = await runner.runSchematicAsync('dashboard', baseOptions, app).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
@@ -100,15 +110,15 @@ describe('material-dashboard-schematic', () => {
 
   describe('skipTests option', () => {
     it('should respect the option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', {skipTests: true, ...baseOptions}, await createTestApp(runner));
+      const tree = await runner.runSchematicAsync(
+          'dashboard', {skipTests: true, ...baseOptions}, await createTestApp(runner)).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
 
     it('should fall back to the @schematics/angular:component option value', async () => {
-      const tree = runner.runSchematic(
-          'dashboard', baseOptions, await createTestApp(runner, {skipTests: true}));
+      const tree = await runner.runSchematicAsync(
+          'dashboard', baseOptions, await createTestApp(runner, {skipTests: true})).toPromise();
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
