@@ -832,20 +832,24 @@
   ],
   "docVersions": [
     {
+      "title": "v7",
+      "url": "https://v7.angular.io/"
+    },
+    {
       "title": "v6",
-      "url": "https://v6.angular.io"
+      "url": "https://v6.angular.io/"
     },
     {
       "title": "v5",
-      "url": "https://v5.angular.io"
+      "url": "https://v5.angular.io/"
     },
     {
       "title": "v4",
-      "url": "https://v4.angular.io"
+      "url": "https://v4.angular.io/"
     },
     {
       "title": "v2",
-      "url": "https://v2.angular.io"
+      "url": "https://v2.angular.io/"
     }
   ]
 }
