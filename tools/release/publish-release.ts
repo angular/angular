@@ -79,7 +79,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     // Branch that will be used to build the output for the release of the current version.
     const publishBranch = this.switchToPublishBranch(newVersion);
 
-    this._verifyLastCommitVersionBump();
+    this._verifyLastCommitFromStagingScript();
     this.verifyLocalCommitsMatchUpstream(publishBranch);
 
     const upstreamRemote = await this._getProjectUpstreamRemote();
@@ -147,13 +147,13 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /**
-   * Verifies that the latest commit on the current branch is a version bump from the
-   * staging script.
+   * Verifies that the latest commit on the current branch has been created
+   * through the release staging script.
    */
-  private _verifyLastCommitVersionBump() {
-    if (!/chore: bump version/.test(this.git.getCommitTitle('HEAD'))) {
-      console.error(red(`  ✘   The latest commit of the current branch does not seem to be a ` +
-        `version bump.`));
+  private _verifyLastCommitFromStagingScript() {
+    if (!/chore: (bump version|update changelog for)/.test(this.git.getCommitTitle('HEAD'))) {
+      console.error(red(`  ✘   The latest commit of the current branch does not seem to be ` +
+        ` created by the release staging script.`));
       console.error(red(`      Please stage the release using the staging script.`));
       process.exit(1);
     }

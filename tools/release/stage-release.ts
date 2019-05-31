@@ -76,6 +76,7 @@ class StageReleaseTask extends BaseReleaseTask {
 
     const newVersion = await promptForNewVersion(this.currentVersion);
     const newVersionName = newVersion.format();
+    const needsVersionBump = !newVersion.equalsTo(this.currentVersion);
     const stagingBranch = `release-stage/${newVersionName}`;
 
     // After the prompt for the new version, we print a new line because we want the
@@ -97,11 +98,13 @@ class StageReleaseTask extends BaseReleaseTask {
       process.exit(1);
     }
 
-    this._updatePackageJsonVersion(newVersionName);
+    if (needsVersionBump) {
+      this._updatePackageJsonVersion(newVersionName);
 
-    console.log(green(`  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
-      `${italic('package.json')}`));
-    console.log();
+      console.log(green(`  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
+        `${italic('package.json')}`));
+      console.log();
+    }
 
     await promptAndGenerateChangelog(join(this.projectDir, CHANGELOG_FILE_NAME));
 
@@ -119,7 +122,14 @@ class StageReleaseTask extends BaseReleaseTask {
     }
 
     this.git.stageAllChanges();
-    this.git.createNewCommit(`chore: bump version to ${newVersionName} w/ changelog`);
+
+    // Note: When updating the commit messages here. Please also update the
+    // release publish script to detect the new commit messages.
+    if (needsVersionBump) {
+      this.git.createNewCommit(`chore: bump version to ${newVersionName} w/ changelog`);
+    } else {
+      this.git.createNewCommit(`chore: update changelog for ${newVersionName}`);
+    }
 
     console.info();
     console.info(green(`  ✓   Created the staging commit for: "${newVersionName}".`));

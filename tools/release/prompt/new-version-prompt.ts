@@ -1,4 +1,4 @@
-import {ChoiceType, prompt} from 'inquirer';
+import {ChoiceType, prompt, Separator} from 'inquirer';
 import {createNewVersion, ReleaseType} from '../version-name/create-version';
 import {parseVersionName, Version} from '../version-name/parse-version';
 import {determineAllowedPrereleaseLabels} from './prerelease-labels';
@@ -17,6 +17,7 @@ type VersionPromptAnswers = {
 export async function promptForNewVersion(currentVersion: Version): Promise<Version> {
   const allowedPrereleaseChoices = determineAllowedPrereleaseLabels(currentVersion);
   const versionChoices: ChoiceType[] = [];
+  const currentVersionName = currentVersion.format();
 
   if (currentVersion.prereleaseLabel) {
     versionChoices.push(
@@ -39,6 +40,11 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
       createVersionChoice(currentVersion, 'patch', 'Patch release'));
   }
 
+  // We always want to provide the option to use the current version. This is useful
+  // if the version got bumped manually before.
+  versionChoices.push(new Separator(),
+    {name: `Use current version (${currentVersionName})`, value: currentVersionName});
+
   const answers = await prompt<VersionPromptAnswers>([{
     type: 'list',
     name: 'proposedVersion',
@@ -48,8 +54,10 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
     type: 'confirm',
     name: 'isPrerelease',
     message: 'Should this be a pre-release?',
-    // Prompt whether this should a pre-release if the current release is not a pre-release
-    when: !currentVersion.prereleaseLabel,
+    // We don't want to prompt whether this should be a pre-release if the current version
+    // is already a pre-release or if the version has been already bumped manually.
+    when: ({proposedVersion}) =>
+      !currentVersion.prereleaseLabel && proposedVersion !== currentVersionName,
     default: false,
   }, {
     type: 'list',
