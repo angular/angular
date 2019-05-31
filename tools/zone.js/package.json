@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.9.1",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "Zones for JavaScript",
   "main": "dist/zone-node.js",
   "browser": "dist/zone.js",
@@ -70,6 +70,7 @@
     "url": "https://github.com/angular/zone.js/issues"
   },
   "dependencies": {},
+  "//": "TODO: remove devDependencies as we now get them from package.json in angular root",
   "devDependencies": {
     "@bazel/bazel": "^0.22.0",
     "@bazel/buildifier": "^0.22.0",

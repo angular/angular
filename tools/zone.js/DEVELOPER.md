@@ -1,10 +1,3 @@
-Submitting Changes
-------------------
-
-Do NOT submit changes to the built files in the `dist` folder. These are generated before
-releases.
-
-
 To run tests
 ------------
 
@@ -82,4 +75,12 @@ export SAUCE_ACCESS_KEY=XXX
 sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
 yarn webdriver-http
 yarn webdriver-sauce-test
+```
+
+Releasing
+---------
+```
+$ VERSION=<version>
+$ git tag 'zone.js-$VERSION'
+$ yarn bazel --output_base=$(mktemp -d) run //tools/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
 ```

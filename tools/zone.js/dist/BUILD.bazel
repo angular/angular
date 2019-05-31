@@ -100,8 +100,6 @@ genrule(
         ],
         cmd = " && ".join([
             "mkdir -p $(@D)",
-            "mv $(locations :" + b[0] + ".es5) $(@D)/",
-            "mv $(locations :" + b[0] + ".es5.min) $(@D)/",
             "mv $(@D)/" + b[0] + "-rollup.es5umd.js $(@D)/" + b[0] + ".js",
             "mv $(@D)/" + b[0] + "-rollup.min.es5umd.js $(@D)/" + b[0] + ".min.js",
         ]),
@@ -123,8 +121,6 @@ genrule(
         ],
         cmd = " && ".join([
             "mkdir -p $(@D)",
-            "mv $(locations :" + b + ".umd) $(@D)/",
-            "mv $(locations :" + b + ".umd.min) $(@D)/",
             "mv $(@D)/" + b + "-rollup.umd.js $(@D)/" + b + ".js",
             "mv $(@D)/" + b + "-rollup.min.umd.js $(@D)/" + b + ".min.js",
         ]),
