@@ -46,7 +46,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
        'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
-       'ɵɵelementAttribute': r3.ɵɵelementAttribute,
        'ɵɵbind': r3.ɵɵbind,
        'ɵɵcontainer': r3.ɵɵcontainer,
        'ɵɵnextContext': r3.ɵɵnextContext,
