@@ -12,6 +12,7 @@ import {makeProgram} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {EntryPointFormat, EntryPointJsonProperty} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
+import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from '../../src/packages/patch_ts_expando_initializer';
 import {Folder} from './mock_file_system';
 
 export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
@@ -53,7 +54,11 @@ function makeTestProgramInternal(
   host: ts.CompilerHost,
   options: ts.CompilerOptions,
 } {
-  return makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false});
+  const originalTsGetExpandoInitializer = patchTsGetExpandoInitializer();
+  const program =
+      makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false});
+  restoreGetExpandoInitializer(originalTsGetExpandoInitializer);
+  return program;
 }
 
 export function makeTestProgram(

@@ -50,6 +50,35 @@ const SOME_DIRECTIVE_FILE = {
     }());
   `,
 };
+
+const TOPLEVEL_DECORATORS_FILE = {
+  name: '/toplevel_decorators.js',
+  contents: `
+    import { Directive, Inject, InjectionToken, Input } from '@angular/core';
+
+    var INJECTED_TOKEN = new InjectionToken('injected');
+    var ViewContainerRef = {};
+    var TemplateRef = {};
+
+    var SomeDirective = (function() {
+      function SomeDirective(_viewContainer, _template, injected) {}
+      return SomeDirective;
+    }());
+    SomeDirective.decorators = [
+      { type: Directive, args: [{ selector: '[someDirective]' },] }
+    ];
+    SomeDirective.ctorParameters = function() { return [
+      { type: ViewContainerRef, },
+      { type: TemplateRef, },
+      { type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN,] },] },
+    ]; };
+    SomeDirective.propDecorators = {
+      "input1": [{ type: Input },],
+      "input2": [{ type: Input },],
+    };
+  `,
+};
+
 const ACCESSORS_FILE = {
   name: '/accessors.js',
   contents: `
@@ -758,6 +787,24 @@ describe('Esm5ReflectionHost', () => {
       ]);
     });
 
+    it('should find the decorators on a class at the top level', () => {
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const decorators = host.getDecoratorsOfDeclaration(classNode) !;
+
+      expect(decorators).toBeDefined();
+      expect(decorators.length).toEqual(1);
+
+      const decorator = decorators[0];
+      expect(decorator.name).toEqual('Directive');
+      expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+      expect(decorator.args !.map(arg => arg.getText())).toEqual([
+        '{ selector: \'[someDirective]\' }',
+      ]);
+    });
+
     it('should return null if the symbol is not a class', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
@@ -884,6 +931,24 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const members = host.getMembersOfClass(classNode);
+
+      const input1 = members.find(member => member.name === 'input1') !;
+      expect(input1.kind).toEqual(ClassMemberKind.Property);
+      expect(input1.isStatic).toEqual(false);
+      expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+
+      const input2 = members.find(member => member.name === 'input2') !;
+      expect(input2.kind).toEqual(ClassMemberKind.Property);
+      expect(input2.isStatic).toEqual(false);
+      expect(input2.decorators !.map(d => d.name)).toEqual(['Input']);
+    });
+
+    it('should find decorated members on a class at the top level', () => {
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const input1 = members.find(member => member.name === 'input1') !;
@@ -1143,6 +1208,24 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+      const parameters = host.getConstructorParameters(classNode);
+
+      expect(parameters).toBeDefined();
+      expect(parameters !.map(parameter => parameter.name)).toEqual([
+        '_viewContainer', '_template', 'injected'
+      ]);
+      expectTypeValueReferencesForParameters(parameters !, [
+        'ViewContainerRef',
+        'TemplateRef',
+        null,
+      ]);
+    });
+
+    it('should find the decorated constructor parameters at the top level', () => {
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
+      const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
       const parameters = host.getConstructorParameters(classNode);
 
       expect(parameters).toBeDefined();
