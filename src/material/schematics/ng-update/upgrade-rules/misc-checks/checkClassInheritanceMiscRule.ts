@@ -34,7 +34,7 @@ export class Walker extends ProgramAwareRuleWalker {
     if (baseTypes.includes('MatFormFieldControl')) {
       const hasFloatLabelMember = node.members
           .filter(member => member.name)
-          .find(member => member.name!.getText() === 'shouldFloatLabel');
+          .find(member => member.name!.getText() === 'shouldLabelFloat');
 
       if (!hasFloatLabelMember) {
         this.addFailureAtNode(node, `Found class "${bold(className)}" which extends ` +
