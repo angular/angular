@@ -800,7 +800,7 @@ describe('Esm5ReflectionHost', () => {
     });
 
     it('should find the decorators on a class at the top level', () => {
-      const program = makeTestProgram([TOPLEVEL_DECORATORS_FILE]);
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
@@ -811,7 +811,7 @@ describe('Esm5ReflectionHost', () => {
 
       const decorator = decorators[0];
       expect(decorator.name).toEqual('Directive');
-      expect(decorator.import).toEqual({name: 'Directive', from: ANGULAR_CORE_SPECIFIER});
+      expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
       expect(decorator.args !.map(arg => arg.getText())).toEqual([
         '{ selector: \'[someDirective]\' }',
       ]);
@@ -957,7 +957,7 @@ describe('Esm5ReflectionHost', () => {
     });
 
     it('should find decorated members on a class at the top level', () => {
-      const program = makeTestProgram([TOPLEVEL_DECORATORS_FILE]);
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
@@ -1234,7 +1234,7 @@ describe('Esm5ReflectionHost', () => {
     });
 
     it('should find the decorated constructor parameters at the top level', () => {
-      const program = makeTestProgram([TOPLEVEL_DECORATORS_FILE]);
+      const program = makeTestProgram(TOPLEVEL_DECORATORS_FILE);
       const host = new Esm5ReflectionHost(new MockLogger(), false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
