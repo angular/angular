@@ -11,6 +11,8 @@
  * @suppress {undefinedVars,globalThis,missingRequire}
  */
 
+/// <reference types="node"/>
+
 // issue #989, to reduce bundle size, use short name
 /** Object.getOwnPropertyDescriptor */
 export const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;

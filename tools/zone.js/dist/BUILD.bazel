@@ -1,19 +1,19 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle")
-load("//lib:bundle.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
+load("//tools/zone.js/lib:bundle.bzl", "ES2015_BUNDLES", "ES5_BUNDLES", "ES5_GLOBAL_BUNDLES")
 
-package(default_visibility = ["//:__subpackages__"])
+package(default_visibility = ["//tools/zone.js/:__subpackages__"])
 
 # copy this file from //lib to //dist
 genrule(
     name = "zone_externs",
-    srcs = ["//lib:closure/zone_externs.js"],
+    srcs = ["//tools/zone.js/lib:closure/zone_externs.js"],
     outs = ["zone_externs.js"],
     cmd = "cp $< $@",
 )
 
 genrule(
     name = "zone_d_ts",
-    srcs = ["//lib"],
+    srcs = ["//tools/zone.js/lib"],
     outs = ["zone.js.d.ts"],
     cmd = "rsync -ul $(SRCS) $(@D) && mv $(@D)/zone.d.ts $(@D)/zone.js.d.ts",
 )
@@ -26,7 +26,7 @@ genrule(
             "electron": "electron",
         },
         deps = [
-            "//lib",
+            "//tools/zone.js/lib",
         ],
         license_banner = "//:angular_license.txt",
     )
@@ -39,7 +39,7 @@ genrule(
         entry_point = b[1],
         global_name = "Zone",
         deps = [
-            "//lib",
+            "//tools/zone.js/lib",
         ],
         license_banner = "//:angular_license.txt",
     )

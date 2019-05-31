@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="jasmine"/>
+
 'use strict';
 ((_global: any) => {
   const __extends = function(d: any, b: any) {
