@@ -7,9 +7,8 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵinterpolation1, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextBinding} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyling, ɵɵstylingApply, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
@@ -297,7 +296,8 @@ describe('instructions', () => {
         }
         if (rf & RenderFlags.Update) {
           const col_r3 = ctx1.$implicit;
-          ɵɵtextBinding(1, ɵɵinterpolation1('', col_r3, ''));
+          ɵɵselect(1);
+          ɵɵtextInterpolate1('', col_r3, '');
         }
       }
 
