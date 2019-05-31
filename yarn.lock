@@ -427,6 +427,11 @@
   resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.2.5.tgz#582b2476169a6cba460a214d476c744441d873d5"
   integrity sha1-WCskdhaabLpGCiFNR2x0REHYc9U=
 
+"@types/bluebird@^3.5.27":
+  version "3.5.27"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.27.tgz#61eb4d75dc6bfbce51cf49ee9bbebe941b2cb5d0"
+  integrity sha512-6BmYWSBea18+tSjjSC3QIyV93ZKAeNWGM7R6aYt1ryTZXrlHF+QLV0G2yV0viEGVyRkyQsWfMoJ0k/YghBX5sQ==
+
 "@types/chai@^4.1.2":
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.7.tgz#1b8e33b61a8c09cbe1f85133071baa0dbf9fa71a"
@@ -1586,6 +1591,11 @@ bluebird@^3.5.1, bluebird@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.3.tgz#7d01c6f9616c9a51ab0f8c549a79dfe6ec33efa7"
   integrity sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw==
+
+bluebird@^3.5.5:
+  version "3.5.5"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
+  integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
 
 body-parser@1.18.3, body-parser@^1.16.1, body-parser@^1.18.3:
   version "1.18.3"
@@ -5031,18 +5041,17 @@ gtoken@^2.3.0:
     mime "^2.2.0"
     pify "^4.0.0"
 
-gulp-clang-format@1.0.23:
-  version "1.0.23"
-  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.23.tgz#fe258586b83998491e632fc0c4fc0ecdfa10c89f"
-  integrity sha1-/iWFhrg5mEkeYy/AxPwOzfoQyJ8=
+gulp-clang-format@1.0.27:
+  version "1.0.27"
+  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.27.tgz#c89716c26745703356c4ff3f2b0964393c73969e"
+  integrity sha512-Jj4PGuNXKdqVCh9fijvL7wdzma5TQRJz1vv8FjOjnSkfq3s/mvbdE/jq+5HG1c/q+jcYkXTEGkYT3CrdnJOLaQ==
   dependencies:
     clang-format "^1.0.32"
+    fancy-log "^1.3.2"
     gulp-diff "^1.0.0"
-    gulp-util "^3.0.4"
-    pkginfo "^0.3.0"
+    plugin-error "^1.0.1"
     stream-combiner2 "^1.1.1"
-    stream-equal "0.1.6"
-    through2 "^0.6.3"
+    through2 "^2.0.3"
 
 gulp-connect@5.0.0:
   version "5.0.0"
@@ -5111,7 +5120,7 @@ gulp-tslint@8.1.2:
     map-stream "~0.0.7"
     through "~2.3.8"
 
-gulp-util@^3.0.0, gulp-util@^3.0.4, gulp-util@^3.0.6, gulp-util@~3.0.8:
+gulp-util@^3.0.0, gulp-util@^3.0.6, gulp-util@~3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   integrity sha1-AFTh50RQLifATBh8PsxQXdVLu08=
@@ -7840,6 +7849,11 @@ node-watch@0.3.4:
   resolved "https://registry.yarnpkg.com/node-watch/-/node-watch-0.3.4.tgz#755f64ef5f8ad4acb5bafd2c4e7f4fb6a8db0214"
   integrity sha1-dV9k71+K1Ky1uv0sTn9PtqjbAhQ=
 
+nodejs-websocket@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/nodejs-websocket/-/nodejs-websocket-1.7.2.tgz#94abd1e248f57d4d1c663dec3831015c6dad98a6"
+  integrity sha512-PFX6ypJcCNDs7obRellR0DGTebfUhw1SXGKe2zpB+Ng1DQJhdzbzx1ob+AvJCLzy2TJF4r8cCDqMQqei1CZdPQ==
+
 nopt@3.0.x, nopt@^3.0.1, nopt@~3.0.1:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"
@@ -8574,7 +8588,7 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
 
-pkginfo@0.3.x, pkginfo@^0.3.0:
+pkginfo@0.3.x:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.3.1.tgz#5b29f6a81f70717142e09e765bbeab97b4f81e21"
   integrity sha1-Wyn2qB9wcXFC4J52W76rl7T4HiE=
@@ -10381,11 +10395,6 @@ stream-each@^1.1.0:
     end-of-stream "^1.1.0"
     stream-shift "^1.0.0"
 
-stream-equal@0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/stream-equal/-/stream-equal-0.1.6.tgz#cc522fab38516012e4d4ee47513b147b72359019"
-  integrity sha1-zFIvqzhRYBLk1O5HUTsUe3I1kBk=
-
 stream-events@^1.0.1, stream-events@^1.0.3:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/stream-events/-/stream-events-1.0.5.tgz#bbc898ec4df33a4902d892333d47da9bf1c406d5"
@@ -10755,7 +10764,7 @@ through2@2.0.1:
     readable-stream "~2.0.0"
     xtend "~4.0.0"
 
-through2@^0.6.1, through2@^0.6.3:
+through2@^0.6.1:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
   integrity sha1-QaucZ7KdVyCQcUEOHXp6lozTrUg=

@@ -641,6 +641,17 @@ jobs:
           name: "Running Material unit tests"
           command: ./scripts/ci/run_angular_material_unit_tests.sh
 
+  test_zonejs:
+    <<: *job_defaults
+    steps:
+      - *attach_workspace
+      - *init_environment
+        # Install
+      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
+        # Run zone.js tools tests
+      - run: yarn --cwd packages/zone.js promisetest
+      - run: yarn --cwd packages/zone.js promisefinallytest
+
 workflows:
   version: 2
   default_workflow:
@@ -725,6 +736,9 @@ workflows:
       - material-unit-tests:
           requires:
             - build-ivy-npm-packages
+      - test_zonejs:
+          requires:
+            - setup
 
   saucelabs_tests:
     jobs:

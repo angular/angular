@@ -1,0 +1,36 @@
+{
+  "name": "zone.js",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Zones for JavaScript",
+  "main": "dist/zone-node.js",
+  "browser": "dist/zone.js",
+  "unpkg": "dist/zone.js",
+  "typings": "dist/zone.js.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.2",
+    "promises-aplus-tests": "^2.1.2",
+    "typescript": "~3.4.2"
+  },
+  "scripts": {
+    "promisetest": "tsc -p . && node ./promise-test.js",
+    "promisefinallytest": "tsc -p . && mocha promise.finally.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/angular/angular.git",
+    "directory": "packages/zone.js"
+  },
+  "author": "Brian Ford",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  }
+}

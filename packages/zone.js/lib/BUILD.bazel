@@ -1,0 +1,18 @@
+load("@npm_bazel_typescript//:defs.bzl", "ts_library")
+
+package(default_visibility = ["//packages/zone.js:__pkg__"])
+
+exports_files(glob([
+    "**/*",
+]))
+
+ts_library(
+    name = "lib",
+    srcs = glob(["**/*.ts"]),
+    visibility = ["//packages/zone.js:__subpackages__"],
+    deps = [
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//rxjs",
+    ],
+)

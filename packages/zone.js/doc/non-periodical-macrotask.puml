@@ -1,0 +1,18 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: setTimeout/\nXMLHttpRequest.send\nand so on
+
+scheduling: zoneSpec.onScheduleTask
+scheduling: zoneSpec.onHasTask
+
+scheduling --> scheduled
+scheduled --> running: timeout callback\nreadystatechange\ncallback
+running: zoneSpec:onInvokeTask
+
+scheduled --> canceling: clearTimeout\n/abort request
+canceling: zoneSpec.onCancelTask
+canceling --> notScheduled
+canceling: zoneSpec.onHasTask
+running --> notScheduled
+running: zoneSpec.onHasTask
+@enduml
