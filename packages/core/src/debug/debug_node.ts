@@ -423,24 +423,24 @@ function _queryAllR3(
 function _queryNodeChildrenR3(
     tNode: TNode, lView: LView, predicate: Predicate<DebugNode>, matches: DebugNode[],
     elementsOnly: boolean, rootNativeNode: any) {
+  const nativeNode = getNativeByTNode(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
     // Case 1: the TNode is an element
     // The native node has to be checked.
-    _addQueryMatchR3(
-        getNativeByTNode(tNode, lView), predicate, matches, elementsOnly, rootNativeNode);
+    _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
     if (isComponent(tNode)) {
       // If the element is the host of a component, then all nodes in its view have to be processed.
       // Note: the component's content (tNode.child) will be processed from the insertion points.
       const componentView = getComponentViewByIndex(tNode.index, lView);
-      if (componentView && componentView[TVIEW].firstChild)
+      if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildrenR3(
             componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,
             rootNativeNode);
-    } else {
+      }
+    } else if (tNode.child) {
       // Otherwise, its children have to be processed.
-      if (tNode.child)
-        _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
+      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
     }
     // In all cases, if a dynamic container exists for this node, each view inside it has to be
     // processed.
@@ -468,25 +468,24 @@ function _queryNodeChildrenR3(
       for (let nativeNode of head) {
         _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
       }
-    } else {
-      if (head) {
-        const nextLView = componentView[PARENT] !as LView;
-        const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
-        _queryNodeChildrenR3(
-            nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
-      }
+    } else if (head) {
+      const nextLView = componentView[PARENT] !as LView;
+      const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
+      _queryNodeChildrenR3(nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
     }
-  } else {
+  } else if (tNode.child) {
     // Case 4: the TNode is a view.
-    if (tNode.child) {
-      _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
-    }
+    _queryNodeChildrenR3(tNode.child, lView, predicate, matches, elementsOnly, rootNativeNode);
   }
-  // To determine the next node to be processed, we need to use the next or the projectionNext link,
-  // depending on whether the current node has been projected.
-  const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
-  if (nextTNode) {
-    _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
+
+  // We don't want to go to the next sibling of the root node.
+  if (rootNativeNode !== nativeNode) {
+    // To determine the next node to be processed, we need to use the next or the projectionNext
+    // link, depending on whether the current node has been projected.
+    const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
+    if (nextTNode) {
+      _queryNodeChildrenR3(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
+    }
   }
 }
 
