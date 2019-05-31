@@ -15,7 +15,7 @@ Functions that control complex animation sequences are as follows:
 
 * `query()` finds one or more inner HTML elements.
 * `stagger()` applies a cascading delay to animations for multiple elements.
-* `group()` runs multiple animation steps in parallel.
+* [`group()`](api/animations/group) runs multiple animation steps in parallel.
 * `sequence()` runs animation steps one after another.
 
 {@a complex-sequence}
@@ -42,11 +42,11 @@ The following example demonstrates how to use `query()` and `stagger()` function
 
 ## Parallel animation using group() function
 
-You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation `group()` function.
+You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different `easing` function for each one. For this, you can use the animation [`group()`](api/animations/group) function.
 
 <div class="alert is-helpful">
 
-**Note:** The `group()` function is used to group animation *steps*, rather than animated elements.
+**Note:** The [`group()`](api/animations/group) function is used to group animation *steps*, rather than animated elements.
 </div>
 
 In the following example, using groups on both `:enter` and `:leave` allow for two different timing configurations. They're applied to the same element in parallel, but run independently.
@@ -55,7 +55,7 @@ In the following example, using groups on both `:enter` and `:leave` allow for t
 
 ## Sequential vs. parallel animations
 
-Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used `group()` to run multiple animations all at the same time, in parallel.
+Complex animations can have many things happening at once. But what if you want to create an animation involving several animations happening one after the other? Earlier we used [`group()`](api/animations/group) to run multiple animations all at the same time, in parallel.
 
 A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
 
@@ -92,7 +92,7 @@ For each match:
 
 ## Animation sequence summary
 
-Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, [`group()`](api/animations/group), and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
 
 ## More on Angular animations
 
