@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getSelectedIndex} from '../state';
+import {getLView, getSelectedIndex} from '../state';
+import {NO_CHANGE} from '../tokens';
 
-import {ɵɵelementAttribute} from './element';
 import {ɵɵbind} from './property';
+import {elementAttributeInternal} from './shared';
+
+
 
 /**
  * Updates the value of or removes a bound attribute on an Element.
@@ -27,6 +30,10 @@ import {ɵɵbind} from './property';
 export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null, namespace?: string) {
   const index = getSelectedIndex();
+  const lView = getLView();
   // TODO(FW-1340): Refactor to remove the use of other instructions here.
-  return ɵɵelementAttribute(index, name, ɵɵbind(value), sanitizer, namespace);
+  const bound = ɵɵbind(value);
+  if (bound !== NO_CHANGE) {
+    return elementAttributeInternal(index, name, bound, lView, sanitizer, namespace);
+  }
 }
