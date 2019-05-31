@@ -73,7 +73,7 @@ describe('move-document migration', () => {
       expect(content).not.toContain(`import {DOCUMENT} from '@angular/platform-browser';`);
     });
 
-    it('should properly apply import replacement with existing import', () => {
+    it('should properly apply import replacement with existing import', async() => {
       writeFile('/index.ts', `
         import {DOCUMENT} from '@angular/platform-browser';
         import {someImport} from '@angular/common';
