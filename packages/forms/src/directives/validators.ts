@@ -136,11 +136,11 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  * @description
  * A directive that adds the `required` validator to any controls marked with the
  * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
- * 
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
- * 
+ *
  * ### Adding a required validator using template-driven forms
  *
  * ```
@@ -197,15 +197,15 @@ export class RequiredValidator implements Validator {
 /**
  * A Directive that adds the `required` validator to checkbox controls marked with the
  * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
- * 
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
- * 
+ *
  * ### Adding a required checkbox validator using template-driven forms
  *
  * The following example shows how to add a checkbox required validator to an input attached to an ngModel binding.
- * 
+ *
  * ```
  * <input type="checkbox" name="active" ngModel required>
  * ```
@@ -248,11 +248,11 @@ export const EMAIL_VALIDATOR: any = {
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
- * 
+ *
  * ### Adding an email validator
  *
  * The following example shows how to add an email validator to an input attached to an ngModel binding.
- * 
+ *
  * ```
  * <input type="email" name="email" ngModel email>
  * <input type="email" name="email" ngModel email="true">
@@ -334,7 +334,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
 /**
  * A directive that adds minimum length validation to controls marked with the
  * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` mult-provider list.
- * 
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
@@ -391,7 +391,13 @@ export class MinLengthValidator implements Validator,
    * requirement. Returns the validation result if enabled, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.minlength == null ? null : this._validator(control);
+    if (!this.minlength) {
+      return null;
+    }
+    if (!this._validator) {
+      this._createValidator();
+    }
+    return this._validator(control);
   }
 
   /**
@@ -420,7 +426,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 /**
  * A directive that adds max length validation to controls marked with the
  * `maxlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
- * 
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
@@ -477,7 +483,13 @@ export class MaxLengthValidator implements Validator,
    * the maximum length requirement.
    */
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.maxlength != null ? this._validator(control) : null;
+    if (!this.maxlength) {
+      return null;
+    }
+    if (!this._validator) {
+      this._createValidator();
+    }
+    return this._validator(control);
   }
 
   /**
@@ -509,7 +521,7 @@ export const PATTERN_VALIDATOR: any = {
  * A directive that adds regex pattern validation to controls marked with the
  * `pattern` attribute. The regex must match the entire control value.
  * The directive is provided with the `NG_VALIDATORS` multi-provider list.
- * 
+ *
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
@@ -522,7 +534,7 @@ export const PATTERN_VALIDATOR: any = {
  * ```html
  * <input name="firstName" ngModel pattern="[a-zA-Z ]*">
  * ```
- * 
+ *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
  * @publicApi
@@ -565,7 +577,12 @@ export class PatternValidator implements Validator,
    * Method that validates whether the value matches the
    * the pattern requirement.
    */
-  validate(control: AbstractControl): ValidationErrors|null { return this._validator(control); }
+  validate(control: AbstractControl): ValidationErrors|null {
+    if (!this._validator) {
+      this._createValidator();
+    }
+    return this._validator(control);
+  }
 
   /**
    * @description

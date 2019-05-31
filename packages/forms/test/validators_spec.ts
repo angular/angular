@@ -10,7 +10,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
 import {normalizeAsyncValidator} from '@angular/forms/src/directives/normalize_validator';
-import {AsyncValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
+import {AsyncValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
 import {Observable, of , timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
@@ -199,6 +199,14 @@ import {first, map} from 'rxjs/operators';
           'minlength': {'requiredLength': 2, 'actualLength': 1}
         });
       });
+
+      it('should not error when AOT calls validate before onChanges', () => {
+        const validator = new MinLengthValidator();
+        validator.minlength = '10';
+        expect(validator.validate(new FormControl('a'))).toEqual({
+          'minlength': {'requiredLength': 10, 'actualLength': 1}
+        });
+      });
     });
 
     describe('maxLength', () => {
@@ -229,6 +237,14 @@ import {first, map} from 'rxjs/operators';
         const fa = new FormArray([new FormControl(''), new FormControl('')]);
         expect(Validators.maxLength(1)(fa)).toEqual({
           'maxlength': {'requiredLength': 1, 'actualLength': 2}
+        });
+      });
+
+      it('should not error when AOT calls validate before onChanges', () => {
+        const validator = new MaxLengthValidator();
+        validator.maxlength = '10';
+        expect(validator.validate(new FormControl('abcdefghijklmnopqrstuvwxyz'))).toEqual({
+          'maxlength': {'requiredLength': 10, 'actualLength': 26}
         });
       });
     });
@@ -285,6 +301,14 @@ import {first, map} from 'rxjs/operators';
 
       it('should work with pattern string not containing any boundary symbols',
          () => expect(Validators.pattern('[aA]*')(new FormControl('aaAA'))).toBeNull());
+
+      it('should not error when AOT calls validate before onChanges', () => {
+        const validator = new PatternValidator();
+        validator.pattern = new RegExp('^[a-zA-Z ]*$');
+        expect(validator.validate(new FormControl('aaa0'))).toEqual({
+          'pattern': {'requiredPattern': '/^[a-zA-Z ]*$/', 'actualValue': 'aaa0'}
+        });
+      });
     });
 
     describe('compose', () => {
