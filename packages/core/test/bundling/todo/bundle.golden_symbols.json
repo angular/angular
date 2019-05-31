@@ -1518,6 +1518,9 @@
     "name": "syncViewWithBlueprint"
   },
   {
+    "name": "textBindingInternal"
+  },
+  {
     "name": "throwMultipleComponentError"
   },
   {
@@ -1636,9 +1639,6 @@
   },
   {
     "name": "ɵɵtext"
-  },
-  {
-    "name": "ɵɵtextBinding"
   },
   {
     "name": "ɵɵtextInterpolate"

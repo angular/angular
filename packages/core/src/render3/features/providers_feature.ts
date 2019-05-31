@@ -14,6 +14,7 @@ import {DirectiveDef} from '../interfaces/definition';
  * and publish them into the DI system, making it visible to others for injection.
  *
  * For example:
+ * ```ts
  * class ComponentWithProviders {
  *   constructor(private greeter: GreeterDE) {}
  *
@@ -25,15 +26,17 @@ import {DirectiveDef} from '../interfaces/definition';
  *    vars: 1,
  *    template: function(fs: RenderFlags, ctx: ComponentWithProviders) {
  *      if (fs & RenderFlags.Create) {
- *        text(0);
+ *        ɵɵtext(0);
  *      }
  *      if (fs & RenderFlags.Update) {
- *        textBinding(0, bind(ctx.greeter.greet()));
+ *        ɵɵselect(0);
+ *        ɵɵtextBinding(ctx.greeter.greet());
  *      }
  *    },
  *    features: [ProvidersFeature([GreeterDE])]
  *  });
  * }
+ * ```
  *
  * @param definition
  *
