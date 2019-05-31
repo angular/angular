@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpHandler} from '../src/backend';
-import {HttpHeaders} from '../src/headers';
-import {HttpRequest} from '../src/request';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor} from '../src/xsrf';
+import {HttpHeaders} from '@angular/common/http/src/headers';
+import {HttpRequest} from '@angular/common/http/src/request';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor} from '@angular/common/http/src/xsrf';
 
-import {HttpClientTestingBackend} from '../testing/src/backend';
+import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 
-class SampleTokenExtractor {
-  constructor(private token: string|null) {}
+class SampleTokenExtractor extends HttpXsrfTokenExtractor {
+  constructor(private token: string|null) { super(); }
 
   getToken(): string|null { return this.token; }
 }

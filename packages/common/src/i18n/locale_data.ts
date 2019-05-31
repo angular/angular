@@ -6,16 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @experimental i18n support is experimental.
- */
-export const LOCALE_DATA: {[localeId: string]: any} = {};
+import {ɵLOCALE_DATA as LOCALE_DATA, ɵLocaleDataIndex as LocaleDataIndex} from '@angular/core';
 
 /**
  * Register global data to be used internally by Angular. See the
  * ["I18n guide"](guide/i18n#i18n-pipes) to know how to import additional locale data.
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 // The signature registerLocaleData(data: any, extraData?: any) is deprecated since v5.1
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
@@ -31,32 +28,6 @@ export function registerLocaleData(data: any, localeId?: string | any, extraData
   if (extraData) {
     LOCALE_DATA[localeId][LocaleDataIndex.ExtraData] = extraData;
   }
-}
-
-/**
- * Index of each type of locale data from the locale data array
- */
-export const enum LocaleDataIndex {
-  LocaleId = 0,
-  DayPeriodsFormat,
-  DayPeriodsStandalone,
-  DaysFormat,
-  DaysStandalone,
-  MonthsFormat,
-  MonthsStandalone,
-  Eras,
-  FirstDayOfWeek,
-  WeekendRange,
-  DateFormat,
-  TimeFormat,
-  DateTimeFormat,
-  NumberSymbols,
-  NumberFormats,
-  CurrencySymbol,
-  CurrencyName,
-  Currencies,
-  PluralCase,
-  ExtraData
 }
 
 /**

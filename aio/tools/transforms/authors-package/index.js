@@ -22,6 +22,14 @@ function createPackage(changedFile) {
     return require('./tutorial-package').createPackage(tutorialName);
   }
 
+  const gettingStartedMatch = /^aio\/content\/start\/([^.]+)\.md/.exec(changedFile);
+  const gettingStartedExampleMatch = /^aio\/content\/examples\/getting-started\/([^\/]+)\//.exec(changedFile);
+  if (gettingStartedMatch || gettingStartedExampleMatch) {
+    const gettingStartedName = gettingStartedMatch && gettingStartedMatch[1] || 'index';
+    console.log('Building getting started docs');
+    return require('./getting-started-package').createPackage(gettingStartedName);
+  }
+
   const guideMatch = /^aio\/content\/guide\/([^.]+)\.md/.exec(changedFile);
   const exampleMatch = /^aio\/content\/examples\/(?:cb-)?([^\/]+)\//.exec(changedFile);
   if (guideMatch || exampleMatch) {

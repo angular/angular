@@ -103,7 +103,7 @@ describe('diagnostics', () => {
 
     it('should not report an error for a form\'s host directives', () => {
       const code = '\n@Component({template: \'<form></form>\'}) export class MyComponent {}';
-      addCode(code, (fileName, content) => {
+      addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
         expectOnlyModuleDiagnostics(diagnostics);
       });
@@ -143,6 +143,15 @@ describe('diagnostics', () => {
     it('should not report an error for sub-types of string', () => {
       const code =
           ` @Component({template: \`<div *ngIf="something === 'foo'"></div>\`}) export class MyComponent { something: 'foo' | 'bar'; }`;
+      addCode(code, fileName => {
+        const diagnostics = ngService.getDiagnostics(fileName);
+        expectOnlyModuleDiagnostics(diagnostics);
+      });
+    });
+
+    it('should not report an error for sub-types of number', () => {
+      const code =
+          ` @Component({template: \`<div *ngIf="something === 123"></div>\`}) export class MyComponent { something: 123 | 456; }`;
       addCode(code, fileName => {
         const diagnostics = ngService.getDiagnostics(fileName);
         expectOnlyModuleDiagnostics(diagnostics);

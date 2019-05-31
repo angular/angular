@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="rxjs" />
+
 import {Subject, Subscription} from 'rxjs';
 
 /**
@@ -59,6 +61,7 @@ import {Subject, Subscription} from 'rxjs';
  *
  * Once a reference implementation of the spec is available, switch to it.
  *
+ * @publicApi
  */
 export class EventEmitter<T> extends Subject<T> {
   // TODO: mark this as internal once all the facades are gone
@@ -96,7 +99,7 @@ export class EventEmitter<T> extends Subject<T> {
    * @param complete When supplied, a custom handler for a completion
    * notification from this emitter.
    */
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
     let schedulerFn: (t: any) => any;
     let errorFn = (err: any): any => null;
     let completeFn = (): any => null;

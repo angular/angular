@@ -7,13 +7,8 @@
  */
 
 import {KeyValuePipe} from '@angular/common';
-import {EventEmitter, KeyValueDiffers, WrappedValue, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
-import {defaultComparator} from '../../src/pipes/keyvalue_pipe';
-import {SpyChangeDetectorRef} from '../spies';
+import {defaultComparator} from '@angular/common/src/pipes/keyvalue_pipe';
+import {ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
 
 describe('KeyValuePipe', () => {
   it('should return null when given null', () => {
@@ -30,6 +25,10 @@ describe('KeyValuePipe', () => {
     expect(pipe.transform(fn as any)).toEqual(null);
   });
   describe('object dictionary', () => {
+    it('should return empty array of an empty dictionary', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform({})).toEqual([]);
+    });
     it('should transform a basic dictionary', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform({1: 2})).toEqual([{key: '1', value: 2}]);
@@ -67,6 +66,10 @@ describe('KeyValuePipe', () => {
   });
 
   describe('Map', () => {
+    it('should return an empty array for an empty Map', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(new Map())).toEqual([]);
+    });
     it('should transform a basic Map', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(new Map([[1, 2]]))).toEqual([{key: 1, value: 2}]);

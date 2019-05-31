@@ -38,6 +38,7 @@ import {URLSearchParams} from './url_search_params';
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class RequestOptions {
   /**
@@ -201,6 +202,7 @@ export class RequestOptions {
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {

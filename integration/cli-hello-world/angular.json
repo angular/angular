@@ -76,6 +76,13 @@
             },
             "production": {
               "browserTarget": "cli-hello-world:build:production"
+            },
+            "ci": {
+              "progress": false
+            },
+            "ci-production": {
+              "browserTarget": "cli-hello-world:build:production",
+              "progress": false
             }
           }
         },
@@ -141,6 +148,12 @@
           "configurations": {
             "production": {
               "devServerTarget": "cli-hello-world:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "cli-hello-world:serve:ci"
+            },
+            "ci-production": {
+              "devServerTarget": "cli-hello-world:serve:ci-production"
             }
           }
         },

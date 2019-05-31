@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpHeaders} from '@angular/common/http/src/headers';
+import {HttpResponse} from '@angular/common/http/src/response';
 import {ddescribe, describe, it} from '@angular/core/testing/src/testing_internal';
-
-import {HttpHeaders} from '../src/headers';
-import {HttpResponse} from '../src/response';
 
 {
   describe('HttpResponse', () => {

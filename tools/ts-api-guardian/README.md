@@ -23,14 +23,14 @@ ts-api-guardian --verifyDir api_guard [--rootDir .] core/index.d.ts core/testing
 Build and test this library:
 
 ```sh
-$ bazel run //:install
-$ bazel test //tools/ts-api-guardian:all
+$ yarn bazel run //:install
+$ yarn bazel test //tools/ts-api-guardian:all
 ```
 
 Publish to NPM:
 
 ```sh
-$ npm whoami # should be logged in as angular
+$ yarn bazel run @nodejs//:npm whoami # should be logged in as angular
 $ grep version tools/ts-api-guardian/package.json # advance as needed
-$ bazel run //tools/ts-api-guardian:ts-api-guardian.publish
+$ yarn bazel run //tools/ts-api-guardian:ts-api-guardian.publish
 ```

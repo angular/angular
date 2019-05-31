@@ -65,7 +65,7 @@ function parseTimeExpression(
 
     const delayMatch = matches[3];
     if (delayMatch != null) {
-      delay = _convertTimeValueToMS(Math.floor(parseFloat(delayMatch)), matches[4]);
+      delay = _convertTimeValueToMS(parseFloat(delayMatch), matches[4]);
     }
 
     const easingVal = matches[5];
@@ -157,10 +157,13 @@ function writeStyleAttribute(element: any) {
   element.setAttribute('style', styleAttrValue);
 }
 
-export function setStyles(element: any, styles: ɵStyleData) {
+export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[key: string]: any}) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
       const camelProp = dashCaseToCamelCase(prop);
+      if (formerStyles && !formerStyles.hasOwnProperty(prop)) {
+        formerStyles[prop] = element.style[camelProp];
+      }
       element.style[camelProp] = styles[prop];
     });
     // On the server set the 'style' attribute since it's not automatically reflected.

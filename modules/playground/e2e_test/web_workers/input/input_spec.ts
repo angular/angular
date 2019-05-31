@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorkers Input', function() {
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('WebWorkers Input', function() {
     browser.ignoreSynchronization = false;
   });
   const selector = 'input-app';
-  const URL = 'all/playground/src/web_workers/input/index.html';
+  const URL = '/';
   const VALUE = 'test val';
 
   it('should bootstrap', () => {

@@ -6,33 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
-import {Type} from '../../type';
-import {LNode} from './node';
+
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
+
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
   /**
-   * Ask queries to prepare copy of itself. This assures that tracking new queries on child nodes
+   * The parent LQueries instance.
+   *
+   * When there is a content query, a new LQueries instance is created to avoid mutating any
+   * existing LQueries. After we are done searching content children, the parent property allows
+   * us to traverse back up to the original LQueries instance to continue to search for matches
+   * in the main view.
+   */
+  parent: LQueries|null;
+
+  /**
+   * Ask queries to prepare copy of itself. This assures that tracking new queries on content nodes
    * doesn't mutate list of queries tracked on a parent node. We will clone LQueries before
    * constructing content queries.
    */
-  clone(): LQueries|null;
+  clone(): LQueries;
 
   /**
-   * Used to ask queries if those should be cloned to the child element.
-   *
-   * For example in the case of deep queries the `child()` returns
-   * queries for the child node. In case of shallow queries it returns
-   * `null`.
-   */
-  child(): LQueries|null;
-
-  /**
-   * Notify `LQueries` that a new `LNode` has been created and needs to be added to query results
+   * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
    * if matching query predicate.
    */
-  addNode(node: LNode): void;
+  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): void;
+
+  /**
+   * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
+   * if matching query predicate. This is a special mode invoked if the query container has to
+   * be created out of order (e.g. view created in the constructor of a directive).
+   */
+  insertNodeBeforeViews(tNode: TElementNode|TContainerNode|TElementContainerNode): void;
 
   /**
    * Notify `LQueries` that a new LContainer was added to ivy data structures. As a result we need
@@ -68,10 +78,8 @@ export interface LQueries {
    */
   track<T>(
       queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: QueryReadType<T>|Type<T>): void;
+      read?: Type<T>): void;
 }
-
-export class QueryReadType<T> { private defeatStructuralTyping: any; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

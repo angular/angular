@@ -26,11 +26,13 @@
 !.vscode/extensions.json
 
 # misc
+/.firebase/
 /.sass-cache
 /connect.lock
 /coverage
 /libpeerconnection.log
 debug.log
+firebase-debug.log
 npm-debug.log
 testem.log
 /typings
@@ -44,6 +46,3 @@ protractor-results*.txt
 # System Files
 .DS_Store
 Thumbs.db
-
-# copied dependencies
-src/assets/js/lunr*

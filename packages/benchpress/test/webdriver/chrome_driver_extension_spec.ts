@@ -47,7 +47,8 @@ import {TraceEventFactory} from '../trace_event_factory';
                           provide: WebDriverAdapter,
                           useValue: new MockDriverAdapter(log, perfRecords, messageMethod)
                         },
-                        {provide: Options.USER_AGENT, useValue: userAgent}
+                        {provide: Options.USER_AGENT, useValue: userAgent},
+                        {provide: Options.RAW_PERFLOG_PATH, useValue: null}
                       ])
                       .get(ChromeDriverExtension);
       return extension;
@@ -61,16 +62,17 @@ import {TraceEventFactory} from '../trace_event_factory';
          });
        }));
 
-    it('should clear the perf logs and mark the timeline via console.time() on the first call',
+    it('should clear the perf logs and mark the timeline via performance.mark() on the first call',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension().timeBegin('someName').then(() => {
-           expect(log).toEqual(
-               [['logs', 'performance'], ['executeScript', `console.time('someName');`]]);
+           expect(log).toEqual([
+             ['logs', 'performance'], ['executeScript', `performance.mark('someName-bpstart');`]
+           ]);
            async.done();
          });
        }));
 
-    it('should mark the timeline via console.time() on the second call',
+    it('should mark the timeline via performance.mark() on the second call',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const ext = createExtension();
          ext.timeBegin('someName')
@@ -79,24 +81,25 @@ import {TraceEventFactory} from '../trace_event_factory';
                ext.timeBegin('someName');
              })
              .then(() => {
-               expect(log).toEqual([['executeScript', `console.time('someName');`]]);
+               expect(log).toEqual([['executeScript', `performance.mark('someName-bpstart');`]]);
                async.done();
              });
        }));
 
-    it('should mark the timeline via console.timeEnd()',
+    it('should mark the timeline via performance.mark()',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension().timeEnd('someName', null).then((_) => {
-           expect(log).toEqual([['executeScript', `console.timeEnd('someName');`]]);
+           expect(log).toEqual([['executeScript', `performance.mark('someName-bpend');`]]);
            async.done();
          });
        }));
 
-    it('should mark the timeline via console.time() and console.timeEnd()',
+    it('should mark the timeline via performance.mark() with start and end of a test',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension().timeEnd('name1', 'name2').then((_) => {
-           expect(log).toEqual(
-               [['executeScript', `console.timeEnd('name1');console.time('name2');`]]);
+           expect(log).toEqual([[
+             'executeScript', `performance.mark('name1-bpend');performance.mark('name2-bpstart');`
+           ]]);
            async.done();
          });
        }));

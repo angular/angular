@@ -63,7 +63,7 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * You can tell the directive to how to handle queryParams, available options are:
+ * You can tell the directive how to handle queryParams. Available options are:
  *  - `'merge'`: merge the queryParams into the current queryParams
  *  - `'preserve'`: preserve the current queryParams
  *  - default/`''`: use the queryParams only
@@ -77,6 +77,27 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
+ * You can provide a `state` value to be persisted to the browser's History.state
+ * property (See https://developer.mozilla.org/en-US/docs/Web/API/History#Properties). It's
+ * used as follows:
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" [state]="{tracingId: 123}">
+ *   link to user component
+ * </a>
+ * ```
+ *
+ * And later the value can be read from the router through `router.getCurrentNavigation`.
+ * For example, to capture the `tracingId` above during the `NavigationStart` event:
+ *
+ * ```
+ * // Get NavigationStart events
+ * router.events.pipe(filter(e => e instanceof NavigationStart)).subscribe(e => {
+ *   const navigation = router.getCurrentNavigation();
+ *   tracingService.trace({id: navigation.extras.state.tracingId});
+ * });
+ * ```
+ *
  * The router link directive always treats the provided input as a delta to the current url.
  *
  * For instance, if the current url is `/user/(box//aux:team)`.
@@ -88,9 +109,9 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
-@Directive({selector: ':not(a)[routerLink]'})
+@Directive({selector: ':not(a):not(area)[routerLink]'})
 export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() queryParams !: {[k: string]: any};
@@ -104,6 +125,7 @@ export class RouterLink {
   @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
+  @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   // TODO(issue/24571): remove '!'.
   private preserve !: boolean;
@@ -167,9 +189,9 @@ export class RouterLink {
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
-@Directive({selector: 'a[routerLink]'})
+@Directive({selector: 'a[routerLink],area[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target !: string;
@@ -185,6 +207,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl !: boolean;
+  @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   private subscription: Subscription;
   // TODO(issue/24571): remove '!'.
@@ -237,6 +260,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
+      state: this.state
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;

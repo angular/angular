@@ -73,7 +73,7 @@ aio-notification {
   }
 
   mat-sidenav.mat-sidenav.sidenav {
-    top: 56px + $notificationHeight;
+    top: 64px + $notificationHeight;
 
     @media (max-width: 600px) {
       top: 56px + $notificationHeight;
@@ -89,7 +89,7 @@ aio-notification {
   }
 
   &.page-home, &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute  {
-    section {
+    main {
       padding-top: $notificationHeight;
     }
   }

@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, ErrorHandler, Inject, Input, LOCALE_ID, NgModule, OnDestroy, PLATFORM_ID, PLATFORM_INITIALIZER, Pipe, Provider, StaticProvider, Type, VERSION, createPlatformFactory} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, fit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -159,17 +159,35 @@ function bootstrap(
 
     afterEach(destroyPlatform);
 
-    it('should throw if bootstrapped Directive is not a Component',
-       inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
-         const logger = new MockConsole();
-         const errorHandler = new ErrorHandler();
-         (errorHandler as any)._console = logger as any;
-         expect(
-             () => bootstrap(
-                 HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
-             .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
-         done.done();
-       }));
+    // TODO(misko): can't use `modifiedInIvy.it` because the `it` is somehow special here.
+    modifiedInIvy('bootstrapping non-Component throws in View Engine').isEnabled &&
+        it('should throw if bootstrapped Directive is not a Component',
+           inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
+             const logger = new MockConsole();
+             const errorHandler = new ErrorHandler();
+             (errorHandler as any)._console = logger as any;
+             expect(
+                 () => bootstrap(
+                     HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
+                 .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
+             done.done();
+           }));
+
+    // TODO(misko): can't use `onlyInIvy.it` because the `it` is somehow special here.
+    onlyInIvy('bootstrapping non-Component rejects Promise in Ivy').isEnabled &&
+        it('should throw if bootstrapped Directive is not a Component',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const logger = new MockConsole();
+             const errorHandler = new ErrorHandler();
+             (errorHandler as any)._console = logger as any;
+             bootstrap(HelloRootDirectiveIsNotCmp, [
+               {provide: ErrorHandler, useValue: errorHandler}
+             ]).catch((error: Error) => {
+               expect(error).toEqual(
+                   new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
+               async.done();
+             });
+           }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -212,10 +230,15 @@ function bootstrap(
          bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
            CustomModule
          ]).then(null, (e: Error) => {
-           expect(e.message).toContain(
-               'StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n' +
-               '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
-               '    NullInjectorError: No provider for IDontExist!');
+           let errorMsg: string;
+           if (ivyEnabled) {
+             errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
+           } else {
+             errorMsg = `StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n` +
+                 '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
+                 '    NullInjectorError: No provider for IDontExist!';
+           }
+           expect(e.message).toContain(errorMsg);
            async.done();
            return null;
          });
@@ -444,5 +467,82 @@ function bootstrap(
          });
        }));
 
+    describe('change detection', () => {
+      const log: string[] = [];
+      @Component({
+        selector: 'hello-app',
+        template: '<div id="button-a" (click)="onClick()">{{title}}</div>',
+      })
+      class CompA {
+        title: string = '';
+        ngDoCheck() { log.push('CompA:ngDoCheck'); }
+        onClick() {
+          this.title = 'CompA';
+          log.push('CompA:onClick');
+        }
+      }
+
+      @Component({
+        selector: 'hello-app-2',
+        template: '<div id="button-b" (click)="onClick()">{{title}}</div>',
+      })
+      class CompB {
+        title: string = '';
+        ngDoCheck() { log.push('CompB:ngDoCheck'); }
+        onClick() {
+          this.title = 'CompB';
+          log.push('CompB:onClick');
+        }
+      }
+
+      it('should be triggered for all bootstrapped components in case change happens in one of them',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           @NgModule({
+             imports: [BrowserModule],
+             declarations: [CompA, CompB],
+             bootstrap: [CompA, CompB],
+             schemas: [CUSTOM_ELEMENTS_SCHEMA]
+           })
+           class TestModuleA {
+           }
+           platformBrowserDynamic().bootstrapModule(TestModuleA).then((ref) => {
+             log.length = 0;
+             el.querySelectorAll('#button-a')[0].click();
+             expect(log).toContain('CompA:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).toContain('CompB:ngDoCheck');
+
+             log.length = 0;
+             el2.querySelectorAll('#button-b')[0].click();
+             expect(log).toContain('CompB:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).toContain('CompB:ngDoCheck');
+
+             async.done();
+           });
+         }));
+
+
+      it('should work in isolation for each component bootstrapped individually',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const refPromise1 = bootstrap(CompA);
+           const refPromise2 = bootstrap(CompB);
+           Promise.all([refPromise1, refPromise2]).then((refs) => {
+             log.length = 0;
+             el.querySelectorAll('#button-a')[0].click();
+             expect(log).toContain('CompA:onClick');
+             expect(log).toContain('CompA:ngDoCheck');
+             expect(log).not.toContain('CompB:ngDoCheck');
+
+             log.length = 0;
+             el2.querySelectorAll('#button-b')[0].click();
+             expect(log).toContain('CompB:onClick');
+             expect(log).toContain('CompB:ngDoCheck');
+             expect(log).not.toContain('CompA:ngDoCheck');
+
+             async.done();
+           });
+         }));
+    });
   });
 }

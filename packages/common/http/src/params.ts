@@ -11,7 +11,7 @@
  *
  * Used by `HttpParams`.
  *
- *
+ * @publicApi
  **/
 export interface HttpParameterCodec {
   encodeKey(key: string): string;
@@ -22,19 +22,21 @@ export interface HttpParameterCodec {
 }
 
 /**
- * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
- * serialize and parse URL parameter keys and values.
+ * A class that uses `encodeURIComponent` and `decodeURIComponent` to
+ * serialize and parse URL parameter keys and values. If you pass URL query parameters
+ * without encoding, the query parameters can get misinterpreted at the receiving end.
+ * Use the `HttpParameterCodec` class to encode and decode the query-string values.
  *
- *
+ * @publicApi
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(value: string): string { return standardEncoding(value); }
 
-  decodeKey(k: string): string { return decodeURIComponent(k); }
+  decodeKey(key: string): string { return decodeURIComponent(key); }
 
-  decodeValue(v: string) { return decodeURIComponent(v); }
+  decodeValue(value: string) { return decodeURIComponent(value); }
 }
 
 
@@ -81,7 +83,7 @@ export interface HttpParamsOptions {
    */
   fromString?: string;
 
-  /** Object map of the HTTP params. Mutally exclusive with `fromString`. */
+  /** Object map of the HTTP params. Mutually exclusive with `fromString`. */
   fromObject?: {[param: string]: string | string[]};
 
   /** Encoding codec used to parse and serialize the params. */
@@ -94,7 +96,7 @@ export interface HttpParamsOptions {
  *
  * This class is immutable - all mutation operations return a new instance.
  *
- *
+ * @publicApi
  */
 export class HttpParams {
   private map: Map<string, string[]>|null;
@@ -225,7 +227,7 @@ export class HttpParams {
             }
         }
       });
-      this.cloneFrom = null;
+      this.cloneFrom = this.updates = null;
     }
   }
 }

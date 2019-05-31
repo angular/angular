@@ -68,6 +68,8 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       describe('transform', () => {
         it('should return correct value for numbers', () => {
           expect(pipe.transform(1.23)).toEqual('123%');
+          expect(pipe.transform(1.234)).toEqual('123%');
+          expect(pipe.transform(1.236)).toEqual('124%');
           expect(pipe.transform(12.3456, '0.0-10')).toEqual('1,234.56%');
         });
 

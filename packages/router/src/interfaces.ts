@@ -10,12 +10,17 @@ import {Observable} from 'rxjs';
 
 import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+import {UrlSegment, UrlTree} from './url_tree';
 
 
 /**
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a route can be activated.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
  *
  * ```
  * class UserToken {}
@@ -32,7 +37,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *   canActivate(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -42,7 +47,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canActivate: [CanActivateTeam]
  *       }
  *     ])
@@ -60,7 +65,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canActivate: ['canActivateTeam']
  *       }
  *     ])
@@ -75,17 +80,24 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|Promise<boolean>|boolean;
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
+
+export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a child route can be activated.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
  *
  * ```
  * class UserToken {}
@@ -102,7 +114,7 @@ export interface CanActivate {
  *   canActivateChild(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -116,7 +128,7 @@ export interface CanActivate {
  *         children: [
  *           {
  *              path: 'team/:id',
- *              component: Team
+ *              component: TeamComponent
  *           }
  *         ]
  *       }
@@ -139,7 +151,7 @@ export interface CanActivate {
  *         children: [
  *           {
  *             path: 'team/:id',
- *             component: Team
+ *             component: TeamComponent
  *           }
  *         ]
  *       }
@@ -155,17 +167,24 @@ export interface CanActivate {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanActivateChild {
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|Promise<boolean>|boolean;
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
+
+export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a route can be deactivated.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
  *
  * ```
  * class UserToken {}
@@ -184,7 +203,7 @@ export interface CanActivateChild {
  *     currentRoute: ActivatedRouteSnapshot,
  *     currentState: RouterStateSnapshot,
  *     nextState: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -194,7 +213,7 @@ export interface CanActivateChild {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canDeactivate: [CanDeactivateTeam]
  *       }
  *     ])
@@ -212,7 +231,7 @@ export interface CanActivateChild {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         canDeactivate: ['canDeactivateTeam']
  *       }
  *     ])
@@ -228,18 +247,24 @@ export interface CanActivateChild {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanDeactivate<T> {
   canDeactivate(
       component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-      nextState?: RouterStateSnapshot): Observable<boolean>|Promise<boolean>|boolean;
+      nextState?: RouterStateSnapshot): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean
+      |UrlTree;
 }
+
+export type CanDeactivateFn<T> =
+    (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
+     nextState?: RouterStateSnapshot) =>
+        Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description
  *
- * Interface that class can implement to be a data provider.
+ * Interface that classes can implement to be a data provider.
  *
  * ```
  * class Backend {
@@ -265,7 +290,7 @@ export interface CanDeactivate<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         resolve: {
  *           team: TeamResolver
  *         }
@@ -285,7 +310,7 @@ export interface CanDeactivate<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         resolve: {
  *           team: 'teamResolver'
  *         }
@@ -302,6 +327,7 @@ export interface CanDeactivate<T> {
  * class AppModule {}
  * ```
  *
+ * @publicApi
  */
 export interface Resolve<T> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T>|Promise<T>|T;
@@ -311,12 +337,12 @@ export interface Resolve<T> {
 /**
  * @description
  *
- * Interface that a class can implement to be a guard deciding if a children can be loaded.
+ * Interface that a class can implement to be a guard deciding if children can be loaded.
  *
  * ```
  * class UserToken {}
  * class Permissions {
- *   canLoadChildren(user: UserToken, id: string): boolean {
+ *   canLoadChildren(user: UserToken, id: string, segments: UrlSegment[]): boolean {
  *     return true;
  *   }
  * }
@@ -325,8 +351,8 @@ export interface Resolve<T> {
  * class CanLoadTeamSection implements CanLoad {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean {
- *     return this.permissions.canLoadChildren(this.currentUser, route);
+ *   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canLoadChildren(this.currentUser, route, segments);
  *   }
  * }
  *
@@ -335,7 +361,7 @@ export interface Resolve<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         loadChildren: 'team.js',
  *         canLoad: [CanLoadTeamSection]
  *       }
@@ -354,7 +380,7 @@ export interface Resolve<T> {
  *     RouterModule.forRoot([
  *       {
  *         path: 'team/:id',
- *         component: TeamCmp,
+ *         component: TeamComponent,
  *         loadChildren: 'team.js',
  *         canLoad: ['canLoadTeamSection']
  *       }
@@ -363,13 +389,18 @@ export interface Resolve<T> {
  *   providers: [
  *     {
  *       provide: 'canLoadTeamSection',
- *       useValue: (route: Route) => true
+ *       useValue: (route: Route, segments: UrlSegment[]) => true
  *     }
  *   ]
  * })
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
-export interface CanLoad { canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean; }
+export interface CanLoad {
+  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
+}
+
+export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
+    Observable<boolean>| Promise<boolean>| boolean;

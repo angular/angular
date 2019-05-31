@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, looseIdentical} from '../util';
+import {looseIdentical} from '../util/comparison';
+import {getSymbolIterator} from '../util/symbol';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);
@@ -42,6 +43,7 @@ export function devModeEqual(a: any, b: any): boolean {
  *  }
  * ```
  *
+ * @publicApi
  */
 export class WrappedValue {
   /** @deprecated from 5.3, use `unwrap()` instead - will switch to protected */
@@ -60,19 +62,6 @@ export class WrappedValue {
 
   /** Returns true if `value` is a wrapped value. */
   static isWrapped(value: any): value is WrappedValue { return value instanceof WrappedValue; }
-}
-
-/**
- * Represents a basic change from a previous to a new value.
- *
- */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
-
-  /**
-   * Check whether the new value is the first value assigned.
-   */
-  isFirstChange(): boolean { return this.firstChange; }
 }
 
 export function isListLikeIterable(obj: any): boolean {

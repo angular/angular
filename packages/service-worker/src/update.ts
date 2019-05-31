@@ -17,12 +17,25 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UpdateActivatedEvent, UpdateAvail
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class SwUpdate {
+  /**
+   * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
+   */
   readonly available: Observable<UpdateAvailableEvent>;
+
+  /**
+   * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
+   */
   readonly activated: Observable<UpdateActivatedEvent>;
+
+  /**
+   * True if the Service Worker is enabled (supported by the browser and enabled via
+   * `ServiceWorkerModule`).
+   */
+  get isEnabled(): boolean { return this.sw.isEnabled; }
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
@@ -33,12 +46,6 @@ export class SwUpdate {
     this.available = this.sw.eventsOfType<UpdateAvailableEvent>('UPDATE_AVAILABLE');
     this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
   }
-
-  /**
-   * Returns true if the Service Worker is enabled (supported by the browser and enabled via
-   * ServiceWorkerModule).
-   */
-  get isEnabled(): boolean { return this.sw.isEnabled; }
 
   checkForUpdate(): Promise<void> {
     if (!this.sw.isEnabled) {

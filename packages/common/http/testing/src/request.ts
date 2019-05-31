@@ -15,7 +15,7 @@ import {Observer} from 'rxjs';
  * This interface allows access to the underlying `HttpRequest`, and allows
  * responding with `HttpEvent`s or `HttpErrorResponse`s.
  *
- *
+ * @publicApi
  */
 export class TestRequest {
   /**
@@ -33,6 +33,8 @@ export class TestRequest {
   /**
    * Resolve the request by returning a body plus additional HTTP information (such as response
    * headers) if provided.
+   * If the request specifies an expected body type, the body is converted into the requested type.
+   * Otherwise, the body is converted to `JSON` by default.
    *
    * Both successful and unsuccessful responses can be delivered via `flush()`.
    */

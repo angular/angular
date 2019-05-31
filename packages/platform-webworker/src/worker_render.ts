@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
-import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
-import {DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {DOCUMENT, ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
+import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER} from '@angular/core';
+import {EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
 import {ClientMessageBrokerFactory} from './web_workers/shared/client_message_broker';
@@ -25,7 +25,8 @@ import {MessageBasedRenderer2} from './web_workers/ui/renderer';
  * Wrapper class that exposes the Worker
  * and underlying {@link MessageBus} for lower level message passing.
  *
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 @Injectable()
 export class WebWorkerInstance {
@@ -42,7 +43,8 @@ export class WebWorkerInstance {
 }
 
 /**
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
 
@@ -50,7 +52,8 @@ export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
  * A multi-provider used to automatically call the `start()` method after the service is
  * created.
  *
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new InjectionToken<({start: () => void})[]>('WorkerRenderStartableMsgService');
@@ -133,7 +136,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
     let scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
-    } catch (e) {
+    } catch {
       throw new Error(
           'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
     }
@@ -146,7 +149,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
 }
 
 /**
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
  */
 export const platformWorkerUi =
     createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);

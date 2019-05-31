@@ -10,6 +10,8 @@ module.exports = function renderExamples(getExampleRegion, log, createDocMessage
     $runBefore: ['writing-files'],
     ignoreBrokenExamples: false,
     $process: function(docs) {
+      const titleVsHeaderErrors = [];
+
       docs.forEach(doc => {
         if (doc.renderedContent) {
           // We match either `code-example` or `code-pane` elements that have a path attribute
@@ -17,6 +19,14 @@ module.exports = function renderExamples(getExampleRegion, log, createDocMessage
             /<(code-example|code-pane)([^>]*)>[^<]*<\/([^>]+)>/g,
             (original, openingTag, attributes, closingTag) => {
               const attrMap = parseAttributes(attributes);
+
+              if (attrMap.hasOwnProperty('title')) {
+                titleVsHeaderErrors.push(createDocMessage(
+                  `Using the "title" attribute for specifying a ${openingTag} header is no longer supported. ` +
+                  `Use the "header" attribute instead.\n<${openingTag}${attributes}>`, doc));
+                return;
+              }
+
               if (attrMap.path) {
                 try {
                   if (closingTag !== openingTag) {
@@ -59,6 +69,11 @@ module.exports = function renderExamples(getExampleRegion, log, createDocMessage
             });
         }
       });
+
+      if (titleVsHeaderErrors.length) {
+        titleVsHeaderErrors.forEach(err => log.error(err));
+        throw new Error('Some code snippets use the `title` attribute instead of `header`.');
+      }
     }
   };
 };

@@ -13,6 +13,5 @@
 /// <reference types="jasminewd2" />
 /// <reference types="node" />
 /// <reference types="zone.js" />
-/// <reference path="../tools/types-ext/jasminewd2.d.ts" />
-/// <reference path="./es6-subset.d.ts" />
+/// <reference lib="es2015" />
 /// <reference path="./system.d.ts" />

@@ -18,21 +18,33 @@ function main(args) {
   if (args.length < 3) {
     console.error('Usage: $0 input.tsconfig.json output.tsconfig.json newRoot binDir');
   }
-  [input, output, newRoot, binDir] = args;
 
+  const [input, output, newRoot, binDir] = args;
   const data = JSON.parse(fs.readFileSync(input, {encoding: 'utf-8'}));
-  data['compilerOptions']['target'] = 'es5';
-  data['bazelOptions']['es5Mode'] = true;
-  // Enable tsickle for decorator downleveling only
-  data['bazelOptions']['tsickle'] = true;
-  data['bazelOptions']['tsickleExternsPath'] = '';
-  data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
+  const {compilerOptions, bazelOptions} = data;
+
+  // Relative path to the execroot that refers to the directory for the ES5 output files.
+  const newOutputBase = path.posix.join(binDir, newRoot);
+
+  // Update the compiler options to produce ES5 output. Also ensure that the new ES5 output
+  // directory is used.
+  compilerOptions['target'] = 'es5';
+  compilerOptions['outDir'] = path.posix.join(compilerOptions['outDir'], newRoot);
+
+  bazelOptions['es5Mode'] = true;
+  bazelOptions['tsickleExternsPath'] =
+      bazelOptions['tsickleExternsPath'].replace(binDir, newOutputBase);
+
   if (data['angularCompilerOptions']) {
+    const {angularCompilerOptions} = data;
     // Don't enable tsickle's closure conversions
-    data['angularCompilerOptions']['annotateForClosureCompiler'] = false;
-    data['angularCompilerOptions']['expectedOut'] =
-        data['angularCompilerOptions']['expectedOut'].map(
-            f => f.replace(/\.closure\.js$/, '.js').replace(binDir, path.join(binDir, newRoot)));
+    angularCompilerOptions['annotateForClosureCompiler'] = false;
+    // Note: It's important that the "expectedOut" is only modified in a way that still
+    // keeps posix normalized paths. Otherwise this could cause unexpected behavior because
+    // ngc-wrapped is expecting POSIX paths and the TypeScript Bazel rules by default only pass
+    // POSIX paths as well.
+    angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map(
+        f => f.replace(/\.closure\.js$/, '.js').replace(binDir, newOutputBase));
   }
   fs.writeFileSync(output, JSON.stringify(data));
 }

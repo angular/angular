@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "platform-webworker",
@@ -10,13 +10,13 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-webworker",
     deps = [
         "//packages:types",
         "//packages/common",
         "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
+        "@npm//rxjs",
     ],
 )
 
@@ -25,9 +25,11 @@ ng_package(
     srcs = ["package.json"],
     entry_point = "packages/platform-webworker/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":platform-webworker",
     ],

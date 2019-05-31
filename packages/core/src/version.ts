@@ -9,7 +9,7 @@
 /**
  * @description Represents the version of Angular
  *
- *
+ * @publicApi
  */
 export class Version {
   public readonly major: string;
@@ -23,4 +23,7 @@ export class Version {
   }
 }
 
+/**
+ * @publicApi
+ */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

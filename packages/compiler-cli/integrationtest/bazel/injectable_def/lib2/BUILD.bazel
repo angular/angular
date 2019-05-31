@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "lib2",
@@ -13,6 +13,6 @@ ng_module(
     deps = [
         "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib1",
         "//packages/core",
-        "@rxjs",
+        "@npm//rxjs",
     ],
 )

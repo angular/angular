@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError} from './errors';
+import {getDebugContext, getErrorLogger, getOriginalError} from './errors';
 
 
 
@@ -32,6 +32,8 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
  * })
  * class MyModule {}
  * ```
+ *
+ * @publicApi
  */
 export class ErrorHandler {
   /**
@@ -74,12 +76,4 @@ export class ErrorHandler {
 
     return e;
   }
-}
-
-export function wrappedError(message: string, originalError: any): Error {
-  const msg =
-      `${message} caused by: ${originalError instanceof Error ? originalError.message: originalError }`;
-  const error = Error(msg);
-  (error as any)[ERROR_ORIGINAL_ERROR] = originalError;
-  return error;
 }

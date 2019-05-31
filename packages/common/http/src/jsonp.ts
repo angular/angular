@@ -42,7 +42,7 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  * `HttpBackend` that only processes `HttpRequest` with the JSONP method,
  * by performing JSONP style requests.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
@@ -206,7 +206,7 @@ export class JsonpClientBackend implements HttpBackend {
  * An `HttpInterceptor` which identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class JsonpInterceptor {

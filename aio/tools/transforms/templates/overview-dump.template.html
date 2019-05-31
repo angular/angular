@@ -1,4 +1,4 @@
-{% import "api/lib/githubLinks.html" as github -%}
+{% import "lib/githubLinks.html" as github -%}
 {% import "api/lib/memberHelpers.html" as members -%}
 {% macro goToCode(doc) %}<a href="{$ github.githubViewHref(doc, versionInfo) $}" class="go-to-code" title="Go to source code"><i class="material-icons" aria-hidden="true" role="img">code</i></a>{% endmacro %}
 {% macro label(test, class, text) %}{% if test %}<label class="{$ class $}">{$ text $}</label>{% endif %}{% endmacro %}

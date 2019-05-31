@@ -6,6 +6,7 @@ import { map, tap } from 'rxjs/operators';
 
 import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
+import { ScrollService } from './scroll.service';
 
 @Injectable()
 export class LocationService {
@@ -25,6 +26,7 @@ export class LocationService {
   constructor(
     private gaService: GaService,
     private location: Location,
+    private scrollService: ScrollService,
     private platformLocation: PlatformLocation,
     swUpdates: SwUpdatesService) {
 
@@ -41,9 +43,13 @@ export class LocationService {
   go(url: string|null|undefined) {
     if (!url) { return; }
     url = this.stripSlashes(url);
-    if (/^http/.test(url) || this.swUpdateActivated) {
+    if (/^http/.test(url)) {
       // Has http protocol so leave the site
-      // (or do a "full page navigation" if a ServiceWorker update has been activated)
+      this.goExternal(url);
+    } else if (this.swUpdateActivated) {
+      // (Do a "full page navigation" if a ServiceWorker update has been activated)
+      // We need to remove stored Position in order to be sure to scroll to the Top position
+      this.scrollService.removeStoredScrollPosition();
       this.goExternal(url);
     } else {
       this.location.go(url);

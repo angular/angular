@@ -8,6 +8,4 @@
 
 import {bootstrapWorkerUi} from '@angular/platform-webworker';
 
-export function main() {
-  bootstrapWorkerUi('loader.js');
-}
+bootstrapWorkerUi('loader.js');

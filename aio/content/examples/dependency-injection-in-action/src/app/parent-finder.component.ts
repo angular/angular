@@ -19,20 +19,20 @@ const DifferentParent = Parent;
 // #enddocregion provide-the-parent
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
-const provideParent =
+export function provideParent
 // #enddocregion provide-parent, provide-the-parent
 // #docregion provide-parent
-  (component: any, parentType?: any) => {
+  (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
-  };
+  }
 // #enddocregion provide-parent
 
 // Simpler syntax version that always provides the component in the name of `Parent`.
-const provideTheParent =
+export function provideTheParent
 // #docregion provide-the-parent
-  (component: any) => {
+  (component: any) {
     return { provide: Parent, useExisting: forwardRef(() => component) };
-  };
+  }
 // #enddocregion provide-the-parent
 
 

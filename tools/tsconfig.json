@@ -18,7 +18,10 @@
       "dom"
     ],
     "target": "es5",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
   },
   "exclude": [
     "testing",
@@ -27,5 +30,8 @@
     "typings-test",
     "public_api_guard",
     "docs"
-  ]
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
 }

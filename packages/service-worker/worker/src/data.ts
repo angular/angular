@@ -258,7 +258,7 @@ export class DataGroup {
       const table = await this.lruTable;
       try {
         this._lru = new LruList(await table.read<LruState>('lru'));
-      } catch (e) {
+      } catch {
         this._lru = new LruList();
       }
     }
@@ -371,7 +371,7 @@ export class DataGroup {
     // If that fetch errors, treat it as a timed out request.
     try {
       res = await timeoutFetch;
-    } catch (e) {
+    } catch {
       res = undefined;
     }
 
@@ -407,7 +407,7 @@ export class DataGroup {
       const safeNetworkFetch = (async() => {
         try {
           return await networkFetch;
-        } catch (err) {
+        } catch {
           return this.adapter.newResponse(null, {
             status: 504,
             statusText: 'Gateway Timeout',
@@ -417,7 +417,7 @@ export class DataGroup {
       const networkFetchUndefinedError = (async() => {
         try {
           return await networkFetch;
-        } catch (err) {
+        } catch {
           return undefined;
         }
       })();
@@ -436,7 +436,7 @@ export class DataGroup {
   private async safeCacheResponse(req: Request, res: Promise<Response>): Promise<void> {
     try {
       await this.cacheResponse(req, await res, await this.lru());
-    } catch (e) {
+    } catch {
       // TODO: handle this error somehow?
     }
   }
@@ -460,7 +460,7 @@ export class DataGroup {
         }
 
         // Otherwise, or if there was an error, assume the response is expired, and evict it.
-      } catch (e) {
+      } catch {
         // Some error getting the age for the response. Assume it's expired.
       }
 
@@ -546,7 +546,7 @@ export class DataGroup {
   private async safeFetch(req: Request): Promise<Response> {
     try {
       return this.scope.fetch(req);
-    } catch (err) {
+    } catch {
       return this.adapter.newResponse(null, {
         status: 504,
         statusText: 'Gateway Timeout',

@@ -1,15 +1,7 @@
-/**
- * Angular note: local copy downloaded from https://cdnjs.cloudflare.com/ajax/libs/gumby/2.6.0/css/gumby.css
- * local modification:
- *    - forced google fonts to be fetched via http in order to avoid SSL error
- *      https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700 - Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR
- *      it's unclear why the CI tries to fetch the font via SSL when the base url is http
- *      example broken build: https://travis-ci.org/angular/angular/jobs/204456086#L2355
- *
- */
-
 @charset "UTF-8";
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
+
+@import url("/angular/third_party/fonts.google.com/open-sans/open-sans.css");
+
 /**
 * Gumby Framework
 * ---------------

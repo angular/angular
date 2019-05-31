@@ -1,87 +1,83 @@
 workspace(name = "bazel_integration_test")
 
-#
-# Download Bazel toolchain dependencies as needed by build actions
-#
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
-    strip_prefix = "rules_nodejs-0.10.1",
-    sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
+    sha256 = "1db950bbd27fb2581866e307c0130983471d4c3cd49c46063a2503ca7b6770a4",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.29.0/rules_nodejs-0.29.0.tar.gz"],
 )
 
-http_archive(
-    name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/8fd9ce0fd9254bde251da0bc373d6cd08e811434.zip",
-    strip_prefix = "rules_webtesting-8fd9ce0fd9254bde251da0bc373d6cd08e811434",
-    sha256 = "4baee95fcfadfbaf868707af8accfd1cb98c5d13f808908e0152468bfb47f0f7",
-)
-
-http_archive(
-    name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.0.zip",
-    strip_prefix = "rules_typescript-0.15.0",
-    sha256 = "1aa75917330b820cb239b3c10a936a10f0a46fe215063d4492dd76dc6e1616f4",
-)
-
-http_archive(
-    name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.11.0/rules_go-0.11.0.tar.gz",
-    sha256 = "f70c35a8c779bb92f7521ecb5a1c6604e9c3edd431e50b6376d7497abc8ad3c1",
-)
-
+# Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    url = "https://github.com/bazelbuild/rules_sass/archive/0.1.0.zip",
-    strip_prefix = "rules_sass-0.1.0",
-    sha256 = "b243c4d64f054c174051785862ab079050d90b37a1cef7da93821c6981cb9ad4",
+    sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
+    strip_prefix = "rules_sass-1.11.0",
+    url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
 )
 
-#
-# Point Bazel to WORKSPACEs that live in subdirectories
-#
+# Check the bazel version and download npm dependencies
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-local_repository(
-    name = "angular",
-    path = "node_modules/@angular/bazel",
+# Bazel version must be at least v0.21.0 because:
+#   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
+#            (see https://github.com/angular/angular/issues/27514#issuecomment-451438271)
+check_bazel_version(
+    message = """
+You no longer need to install Bazel on your machine.
+Angular has a dependency on the @bazel/bazel package which supplies it.
+Try running `yarn bazel` instead.
+    (If you did run that, check that you've got a fresh `yarn install`)
+
+""",
+    minimum_bazel_version = "0.21.0",
 )
 
-local_repository(
-    name = "rxjs",
-    path = "node_modules/rxjs/src",
+# Setup the Node.js toolchain
+node_repositories(
+    node_version = "10.9.0",
+    yarn_version = "1.12.1",
 )
 
-#
-# Load and install our dependencies downloaded above.
-#
+# Install our npm dependencies into @npm
+yarn_install(
+    name = "npm",
+    data = [
+        # Needed because this tsconfig file is used in the "postinstall" script.
+        "//:angular-metadata.tsconfig.json",
+    ],
+    package_json = "//src:package.json",
+    yarn_lock = "//src:yarn.lock",
+)
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+# Install all bazel dependencies of our npm packages
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
 
-check_bazel_version("0.15.0")
-node_repositories(package_json = ["//:package.json"])
+install_bazel_dependencies()
 
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+# Load karma dependencies
+load("@npm_bazel_karma//:package.bzl", "rules_karma_dependencies")
 
-go_rules_dependencies()
-go_register_toolchains()
+rules_karma_dependencies()
 
-load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+# Setup the rules_webtesting toolchain
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories()
-browser_repositories(
-    chromium = True,
-    firefox = True,
-)
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
+# Temporary work-around for https://github.com/angular/angular/issues/28681
+# TODO(gregmagolan): go back to @io_bazel_rules_webtesting browser_repositories
+load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
+
+browser_repositories()
+
+# Setup the rules_typescript tooolchain
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 
+# Setup the rules_sass toolchain
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
-
-load("@angular//:index.bzl", "ng_setup_workspace")
-
-ng_setup_workspace()

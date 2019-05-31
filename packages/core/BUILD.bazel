@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "core",
@@ -9,16 +9,16 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = ["src/ivy_switch.ts"],
-    ) + [
-        ":ivy_switch",
-    ],
-    module_name = "@angular/core",
+    ),
     deps = [
         "//packages:types",
-        "//packages/compiler",
-        "@rxjs",
-        "@rxjs//operators",
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+        "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 
@@ -29,32 +29,26 @@ ng_package(
         "//packages/core/testing:package.json",
     ],
     entry_point = "packages/core/index.js",
+    packages = [
+        "//packages/core/schematics:npm_package",
+    ],
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/diagnostics:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
     ],
     deps = [
         ":core",
         "//packages/core/testing",
     ],
-)
-
-## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
-##
-## This file generates `src/ivy_switch.ts` file which reexports symbols for `ViewEngine` or `Ivy.`
-## - append `--define=compile=legacy` (default) to `bazel` command to reexport `./ivy_switch_legacy`
-##   and use `ViewEngine`
-## - append `--define=compile=jit` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
-## - append `--define=compile=local` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
-##   in the local analysis mode. (run as part of `ngtsc`)
-##
-## NOTE: `--define=compile=jit` works with any `bazel` command or target across the repo.
-##
-## See: `//tools/bazel.rc` where `--define=ivy=false` is defined as default.
-## See: `./src/ivy_switch.ts` for more details.
-genrule(
-    name = "ivy_switch",
-    outs = ["src/ivy_switch.ts"],
-    cmd = "echo export '*' from \"'./ivy_switch_$(compile)';\" > $@",
 )

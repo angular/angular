@@ -1,9 +1,8 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
@@ -12,24 +11,21 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler/test:test_utils",
-        "//packages/compiler/testing",
-        "//packages/core",
+        "@npm//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "compliance",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
+        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
     tags = [
-        "ivy-local",
         "ivy-only",
     ],
     deps = [
         ":test_lib",
-        "//tools/testing:node",
+        "//tools/testing:node_no_angular",
     ],
 )

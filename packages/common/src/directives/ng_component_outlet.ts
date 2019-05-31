@@ -16,6 +16,8 @@ import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgMo
  * `NgComponentOutlet` requires a component type, if a falsy value is set the view will clear and
  * any existing component will get destroyed.
  *
+ * @usageNotes
+ *
  * ### Fine tune control
  *
  * You can control the component creation process by using the following optional attributes:
@@ -50,19 +52,17 @@ import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgMo
  *                                   ngModuleFactory: moduleFactory;">
  * </ng-container>
  * ```
- * ## Example
+ *
+ * ### A simple example
  *
  * {@example common/ngComponentOutlet/ts/module.ts region='SimpleExample'}
  *
  * A more complete example with additional options:
  *
  * {@example common/ngComponentOutlet/ts/module.ts region='CompleteExample'}
-
- * A more complete example with ngModuleFactory:
  *
- * {@example common/ngComponentOutlet/ts/module.ts region='NgModuleFactoryExample'}
- *
- * @experimental
+ * @publicApi
+ * @ngModule CommonModule
  */
 @Directive({selector: '[ngComponentOutlet]'})
 export class NgComponentOutlet implements OnChanges, OnDestroy {

@@ -223,8 +223,19 @@ function isEligibleForLowering(node: ts.Node | undefined): boolean {
         // Don't lower expressions in a declaration.
         return false;
       case ts.SyntaxKind.VariableDeclaration:
-        // Avoid lowering expressions already in an exported variable declaration
-        return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) == 0;
+        const isExported = (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
+                            ts.ModifierFlags.Export) == 0;
+        // This might be unnecessary, as the variable might be exported and only used as a reference
+        // in another expression. However, the variable also might be involved in provider
+        // definitions. If that's the case, there is a specific token (`ROUTES`) which the compiler
+        // attempts to understand deeply. Sub-expressions within that token (`loadChildren` for
+        // example) might also require lowering even if the top-level declaration is already
+        // properly exported.
+        const varNode = node as ts.VariableDeclaration;
+        return isExported || (varNode.initializer !== undefined &&
+                              (ts.isObjectLiteralExpression(varNode.initializer) ||
+                               ts.isArrayLiteralExpression(varNode.initializer) ||
+                               ts.isCallExpression(varNode.initializer)));
     }
     return isEligibleForLowering(node.parent);
   }
@@ -370,7 +381,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.ClassDeclaration:
       case ts.SyntaxKind.FunctionDeclaration:
       case ts.SyntaxKind.InterfaceDeclaration:
-        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0) {
+        if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) != 0) {
           const classDeclaration =
               node as(ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
           const name = classDeclaration.name;
@@ -385,7 +396,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         break;
       case ts.SyntaxKind.VariableDeclaration:
         const variableDeclaration = node as ts.VariableDeclaration;
-        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0 &&
+        if ((ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) != 0 &&
             variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
           const name = variableDeclaration.name as ts.Identifier;
           exportTable.add(name.text);

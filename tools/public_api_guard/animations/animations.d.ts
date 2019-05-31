@@ -28,12 +28,10 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
 }
 
-/** @experimental */
 export declare abstract class AnimationBuilder {
     abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
 
-/** @experimental */
 export interface AnimationEvent {
     disabled: boolean;
     element: any;
@@ -44,7 +42,6 @@ export interface AnimationEvent {
     triggerName: string;
 }
 
-/** @experimental */
 export declare abstract class AnimationFactory {
     abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
 }
@@ -85,7 +82,6 @@ export declare interface AnimationOptions {
     };
 }
 
-/** @experimental */
 export interface AnimationPlayer {
     beforeDestroy?: () => any;
     parentPlayer: AnimationPlayer | null;
@@ -102,7 +98,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(p: any /** TODO #9100 */): void;
+    setPosition(position: any /** TODO #9100 */): void;
 }
 
 export interface AnimationQueryMetadata extends AnimationMetadata {
@@ -174,7 +170,6 @@ export declare function group(steps: AnimationMetadata[], options?: AnimationOpt
 
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
-/** @experimental */
 export declare class NoopAnimationPlayer implements AnimationPlayer {
     parentPlayer: AnimationPlayer | null;
     readonly totalTime: number;
@@ -191,7 +186,7 @@ export declare class NoopAnimationPlayer implements AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(p: number): void;
+    setPosition(position: number): void;
 }
 
 export declare function query(selector: string, animation: AnimationMetadata | AnimationMetadata[], options?: AnimationQueryOptions | null): AnimationQueryMetadata;
@@ -216,7 +211,6 @@ export declare function transition(stateChangeExpr: string | ((fromState: string
     [key: string]: any;
 }) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
 
-/** @experimental */
 export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;
 
 export declare function useAnimation(animation: AnimationReferenceMetadata, options?: AnimationOptions | null): AnimationAnimateRefMetadata;

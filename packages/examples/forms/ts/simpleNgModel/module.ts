@@ -18,3 +18,5 @@ import {SimpleNgModelComp} from './simple_ng_model_example';
 })
 export class AppModule {
 }
+
+export {SimpleNgModelComp as AppComponent};

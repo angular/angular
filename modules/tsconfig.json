@@ -24,11 +24,10 @@
   },
   "exclude": [
     "angular1_router",
-    "benchmarks/e2e_test/old",
-    "benchmarks/src/old",
-    "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
-    "payload_tests"
+    "payload_tests",
+    "playground/",
+    "benchmarks/"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true

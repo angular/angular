@@ -22,12 +22,12 @@ function isEmptyInputValue(value: any): boolean {
  * An `InjectionToken` for registering additional synchronous validators used with `AbstractControl`s.
  *
  * @see `NG_ASYNC_VALIDATORS`
- * 
+ *
  * @usageNotes
- * 
+ *
  * ### Providing a custom validator
- * 
- * The following example registers a custom validator directive. Adding the validator to the 
+ *
+ * The following example registers a custom validator directive. Adding the validator to the
  * existing collection of validators requires the `multi: true` option.
  *
  * ```typescript
@@ -42,6 +42,7 @@ function isEmptyInputValue(value: any): boolean {
  * }
  * ```
  *
+ * @publicApi
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
 
@@ -50,7 +51,8 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  * An `InjectionToken` for registering additional asynchronous validators used with `AbstractControl`s.
  *
  * @see `NG_VALIDATORS`
- * 
+ *
+ * @publicApi
  */
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
@@ -64,9 +66,10 @@ const EMAIL_REGEXP =
  *
  * A validator is a function that processes a `FormControl` or collection of
  * controls and returns an error map or null. A null map means that validation has passed.
- * 
+ *
  * @see [Form Validation](/guide/form-validation)
  *
+ * @publicApi
  */
 export class Validators {
   /**
@@ -270,8 +273,12 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value to match a regex pattern. This validator is also
-   * provided
-   * by default if you use the HTML5 `pattern` attribute.
+   * provided by default if you use the HTML5 `pattern` attribute.
+   *
+   * Note that if a Regexp is provided, the Regexp is used as is to test the values. On the other
+   * hand, if a string is passed, the `^` character is prepended and the `$` character is
+   * appended to the provided string (if not already present), and the resulting regular
+   * expression is used to test the values.
    *
    * @usageNotes
    *
@@ -322,7 +329,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    */
-  static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
+  static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
 
   /**
    * @description

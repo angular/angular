@@ -11,18 +11,24 @@ import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModul
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-{
-  describe('forwardRef integration', function() {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
-
-    it('should instantiate components which are declared using forwardRef', () => {
-      const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
-      a.detectChanges();
-      expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-      expect(TestBed.get(ModuleFrame)).toBeDefined();
-    });
-  });
+class Frame {
+  name: string = 'frame';
 }
+
+class ModuleFrame {
+  name: string = 'moduleFram';
+}
+
+describe('forwardRef integration', function() {
+  beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
+
+  it('should instantiate components which are declared using forwardRef', () => {
+    const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+    a.detectChanges();
+    expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+    expect(TestBed.get(ModuleFrame)).toBeDefined();
+  });
+});
 
 @NgModule({
   imports: [CommonModule],
@@ -42,8 +48,8 @@ class App {
 }
 
 @Component({
-  selector: 'lock',
-  template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
+  selector: 'door',
+  template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   // TODO(issue/24571): remove '!'.
@@ -51,14 +57,6 @@ class Door {
   frame: Frame;
 
   constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }
-}
-
-class Frame {
-  name: string = 'frame';
-}
-
-class ModuleFrame {
-  name: string = 'moduleFram';
 }
 
 @Directive({selector: 'lock'})

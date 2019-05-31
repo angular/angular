@@ -9,7 +9,6 @@
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import * as lex from './lexer';
 import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
 
@@ -30,11 +29,8 @@ export class ParseTreeResult {
 export class Parser {
   constructor(public getTagDefinition: (tagName: string) => TagDefinition) {}
 
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    const tokensAndErrors =
-        lex.tokenize(source, url, this.getTagDefinition, parseExpansionForms, interpolationConfig);
+  parse(source: string, url: string, options?: lex.TokenizeOptions): ParseTreeResult {
+    const tokensAndErrors = lex.tokenize(source, url, this.getTagDefinition, options);
 
     const treeAndErrors = new _TreeBuilder(tokensAndErrors.tokens, this.getTagDefinition).build();
 
@@ -278,15 +274,6 @@ class _TreeBuilder {
       this._elementStack.pop();
     }
 
-    const tagDef = this.getTagDefinition(el.name);
-    const {parent, container} = this._getParentElementSkippingContainers();
-
-    if (parent && tagDef.requireExtraParent(parent.name)) {
-      const newParent = new html.Element(
-          tagDef.parentToAdd, [], [], el.sourceSpan, el.startSourceSpan, el.endSourceSpan);
-      this._insertBeforeContainer(parent, container, newParent);
-    }
-
     this._addToParent(el);
     this._elementStack.push(el);
   }
@@ -330,11 +317,18 @@ class _TreeBuilder {
     let end = attrName.sourceSpan.end;
     let value = '';
     let valueSpan: ParseSourceSpan = undefined !;
+    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
+      this._advance();
+    }
     if (this._peek.type === lex.TokenType.ATTR_VALUE) {
       const valueToken = this._advance();
       value = valueToken.parts[0];
       end = valueToken.sourceSpan.end;
       valueSpan = valueToken.sourceSpan;
+    }
+    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
+      const quoteToken = this._advance();
+      end = quoteToken.sourceSpan.end;
     }
     return new html.Attribute(
         fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), valueSpan);
@@ -399,9 +393,9 @@ class _TreeBuilder {
 
   private _getElementFullName(prefix: string, localName: string, parentElement: html.Element|null):
       string {
-    if (prefix == null) {
-      prefix = this.getTagDefinition(localName).implicitNamespacePrefix !;
-      if (prefix == null && parentElement != null) {
+    if (prefix === '') {
+      prefix = this.getTagDefinition(localName).implicitNamespacePrefix || '';
+      if (prefix === '' && parentElement != null) {
         prefix = getNsPrefix(parentElement.name);
       }
     }

@@ -10,7 +10,7 @@ import {EventEmitter, NgZone} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {scheduleMicroTask} from '../../src/util';
+import {scheduleMicroTask} from '../../src/util/microtask';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;

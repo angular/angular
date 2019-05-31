@@ -7,7 +7,6 @@
  */
 
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
-// TODO(i): switch to fromPromise once it's expored in rxjs
 import {Observable, from, of } from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
@@ -15,7 +14,7 @@ import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
  * @docsNotRequired
- * @experimental
+ * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 

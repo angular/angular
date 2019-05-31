@@ -11,7 +11,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
-const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
+export const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -91,14 +91,19 @@ export class NavigationService {
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
     const currentNodes = combineLatest(
-      navigationViews.pipe(map(views => this.computeUrlToNavNodesMap(views))),
-      this.location.currentPath,
-
-      (navMap, url) => {
-        const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
-      })
-      .pipe(publishReplay(1));
+      navigationViews.pipe(
+          map(views => this.computeUrlToNavNodesMap(views))),
+          this.location.currentPath,
+      ).pipe(
+        map((result) => ({navMap: result[0] , url: result[1]})),
+        map((result) => {
+        const matchSpecialUrls = /^api/.exec(result.url);
+        if (matchSpecialUrls) {
+            result.url = matchSpecialUrls[0];
+        }
+        return result.navMap.get(result.url) || { '' : { view: '', url: result.url, nodes: [] }};
+        }),
+        publishReplay(1));
     (currentNodes as ConnectableObservable<CurrentNodes>).connect();
     return currentNodes;
   }

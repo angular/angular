@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, inject} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Inject, Injectable, ɵɵinject} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
-import {DOCUMENT} from '../dom/dom_tokens';
 
 /**
  * Factory to create Title service.
  */
 export function createTitle() {
-  return new Title(inject(DOCUMENT));
+  return new Title(ɵɵinject(DOCUMENT));
 }
 
 /**
@@ -26,7 +26,7 @@ export function createTitle() {
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable({providedIn: 'root', useFactory: createTitle, deps: []})
 export class Title {

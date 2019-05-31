@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {modifiedInIvy} from '@angular/private/testing';
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 function waitForElement(selector: string) {
   const EC = ExpectedConditions;
@@ -16,7 +18,7 @@ function waitForElement(selector: string) {
 }
 
 describe('ngComponentOutlet', () => {
-  const URL = 'common/ngComponentOutlet/ts/';
+  const URL = '/ngComponentOutlet';
   afterEach(verifyNoBrowserErrors);
 
   describe('ng-component-outlet-example', () => {
@@ -26,18 +28,13 @@ describe('ngComponentOutlet', () => {
       expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
     });
 
-    it('should render complete', () => {
-      browser.get(URL);
-      waitForElement('ng-component-outlet-complete-example');
-      expect(element.all(by.css('complete-component')).getText()).toEqual(['Complete: AhojSvet!']);
-    });
-
-    it('should render other module', () => {
-      browser.get(URL);
-      waitForElement('ng-component-outlet-other-module-example');
-      expect(element.all(by.css('other-module-component')).getText()).toEqual([
-        'Other Module Component!'
-      ]);
-    });
+    modifiedInIvy('Different behavior for projectableNodes in ViewContainerRef.createComponent')
+        .it('should render complete', () => {
+          browser.get(URL);
+          waitForElement('ng-component-outlet-complete-example');
+          expect(element.all(by.css('complete-component')).getText()).toEqual([
+            'Complete: AhojSvet!'
+          ]);
+        });
   });
 });

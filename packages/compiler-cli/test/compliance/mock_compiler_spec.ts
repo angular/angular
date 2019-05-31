@@ -7,16 +7,16 @@
  */
 
 
-import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
+import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('mock_compiler', () => {
   // This produces a MockDirectory of the file needed to compile an Angular application.
   // This setup is performed in a beforeAll which populates the map returned.
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('compiling', () => {
@@ -82,6 +82,34 @@ describe('mock_compiler', () => {
           result.source, 'name   \n\n   .  \n    length',
           'name length expression not found (whitespace)');
     });
+
+    it('should throw if the expected output contains unknown characters', () => {
+      const files = {
+        app: {
+          'test.ts': `ɵsayHello();`,
+        }
+      };
+
+      const result = compile(files, angularFiles);
+
+      expect(() => {
+        expectEmit(result.source, `ΔsayHello();`, 'Output does not match.');
+      }).toThrowError(/Invalid test, no token found for "Δ"/);
+    });
+
+    it('should be able to properly handle string literals with escaped quote', () => {
+      const files = {
+        app: {
+          'test.ts': String.raw `const identifier = "\"quoted\"";`,
+        }
+      };
+
+      const result = compile(files, angularFiles);
+
+      expect(() => {
+        expectEmit(result.source, String.raw `const $a$ = "\"quoted\"";`, 'Output does not match.');
+      }).not.toThrow();
+    });
   });
 
   it('should be able to skip untested regions (… and // ...)', () => {
@@ -140,7 +168,7 @@ describe('mock_compiler', () => {
     expectEmit(
         result.source, `
     // TODO: this comment should not be taken into account
-    $r3$.ɵT(0, "Hello!");
+    $r3$.ɵɵtext(0, "Hello!");
     // TODO: this comment should not be taken into account
     `,
         'todo comments should be ignored');

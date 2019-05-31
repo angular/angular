@@ -42,7 +42,7 @@ describe('Symbols', () => {
   beforeEach(() => {
     host = new Host(FILES, ['consts.ts', 'expressions.ts', 'imports.ts']);
     service = ts.createLanguageService(host);
-    program = service.getProgram();
+    program = service.getProgram() !;
     expressions = program.getSourceFile('expressions.ts') !;
     imports = program.getSourceFile('imports.ts') !;
   });

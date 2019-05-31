@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: dependency injection', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   it('should create factory methods', () => {
@@ -21,7 +21,6 @@ describe('compiler compliance: dependency injection', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule, Injectable, Attribute, Host, SkipSelf, Self, Optional} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Injectable()
               export class MyService {}
@@ -33,7 +32,7 @@ describe('compiler compliance: dependency injection', () => {
               export class MyComponent {
                 constructor(
                   @Attribute('name') name:string,
-                  s1: MyService, 
+                  s1: MyService,
                   @Host() s2: MyService,
                   @Self() s4: MyService,
                   @SkipSelf() s3: MyService,
@@ -42,22 +41,22 @@ describe('compiler compliance: dependency injection', () => {
                 ) {}
               }
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule], providers: [MyService]})
+              @NgModule({declarations: [MyComponent], providers: [MyService]})
               export class MyModule {}
           `
       }
     };
 
     const factory = `
-      factory: function MyComponent_Factory() {
-        return new MyComponent(
-          $r3$.ɵinjectAttribute('name'),
-          $r3$.ɵdirectiveInject(MyService), 
-          $r3$.ɵdirectiveInject(MyService, 1),
-          $r3$.ɵdirectiveInject(MyService, 2),
-          $r3$.ɵdirectiveInject(MyService, 4),
-          $r3$.ɵdirectiveInject(MyService, 8),
-          $r3$.ɵdirectiveInject(MyService, 10)
+      factory: function MyComponent_Factory(t) {
+        return new (t || MyComponent)(
+          $r3$.ɵɵinjectAttribute('name'),
+          $r3$.ɵɵdirectiveInject(MyService),
+          $r3$.ɵɵdirectiveInject(MyService, 1),
+          $r3$.ɵɵdirectiveInject(MyService, 2),
+          $r3$.ɵɵdirectiveInject(MyService, 4),
+          $r3$.ɵɵdirectiveInject(MyService, 8),
+          $r3$.ɵɵdirectiveInject(MyService, 10)
         );
       }`;
 

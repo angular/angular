@@ -1,18 +1,48 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 ng_module(
-    name = "render3_lib",
-    srcs = glob(
-        [
-            "**/*.ts",
-        ],
-    ),
+    name = "tree_lib",
+    srcs = glob(["**/*.ts"]),
+    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/tree:util_lib",
         "//packages:types",
+        "//packages/common",
         "//packages/core",
-        "@rxjs",
+        "@npm//reflect-metadata",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = "modules/benchmarks/src/tree/render3/index.js",
+    tags = ["ivy-only"],
+    deps = [
+        ":tree_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    static_files = [
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
+        "index.html",
+    ],
+    tags = ["ivy-only"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    tags = ["ivy-only"],
+    deps = [
+        "//modules/benchmarks/src/tree:perf_detect_changes_lib",
+        "//modules/benchmarks/src/tree:perf_lib",
     ],
 )

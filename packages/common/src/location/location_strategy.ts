@@ -25,7 +25,7 @@ import {LocationChangeListener} from './platform_location';
  *
  * See these two classes for more.
  *
- *
+ * @publicApi
  */
 export abstract class LocationStrategy {
   abstract path(includeHash?: boolean): string;
@@ -40,14 +40,15 @@ export abstract class LocationStrategy {
 
 
 /**
- * The `APP_BASE_HREF` token represents the base href to be used with the
- * {@link PathLocationStrategy}.
+ * A predefined [DI token](guide/glossary#di-token) for the base href
+ * to be used with the `PathLocationStrategy`.
+ * The base href is the URL prefix that should be preserved when generating
+ * and recognizing URLs.
  *
- * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
- * representing the URL prefix that should be preserved when generating and recognizing
- * URLs.
+ * @usageNotes
  *
- * ### Example
+ * The following example shows how to use this token to configure the root app injector
+ * with a base href value, so that the DI framework can supply the dependency anywhere in the app.
  *
  * ```typescript
  * import {Component, NgModule} from '@angular/core';
@@ -59,6 +60,6 @@ export abstract class LocationStrategy {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');

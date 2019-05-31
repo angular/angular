@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
 
 import {getDOM} from '../dom_adapter';
-import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
@@ -29,7 +29,7 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
 };
 
 /**
- * @experimental
+ * @publicApi
  * A browser plug-in that provides support for handling of key events in Angular.
  */
 @Injectable()

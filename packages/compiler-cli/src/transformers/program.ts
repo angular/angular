@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {compareVersions} from '../diagnostics/typescript_version';
-import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
 import {NgtscProgram} from '../ngtsc/program';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
@@ -22,6 +22,7 @@ import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalRef
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
+import {nocollapseHack} from './nocollapse_hack';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
@@ -29,37 +30,6 @@ import {getAngularClassTransformerFactory} from './r3_transform';
 import {TscPassThroughProgram} from './tsc_pass_through';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
-
-// Closure compiler transforms the form `Service.ngInjectableDef = X` into
-// `Service$ngInjectableDef = X`. To prevent this transformation, such assignments need to be
-// annotated with @nocollapse. Unfortunately, a bug in Typescript where comments aren't propagated
-// through the TS transformations precludes adding the comment via the AST. This workaround detects
-// the static assignments to R3 properties such as ngInjectableDef using a regex, as output files
-// are written, and applies the annotation through regex replacement.
-//
-// TODO(alxhub): clean up once fix for TS transformers lands in upstream
-//
-// Typescript reference issue: https://github.com/Microsoft/TypeScript/issues/22497
-
-// Pattern matching all Render3 property names.
-const R3_DEF_NAME_PATTERN = ['ngInjectableDef'].join('|');
-
-// Pattern matching `Identifier.property` where property is a Render3 property.
-const R3_DEF_ACCESS_PATTERN = `[^\\s\\.()[\\]]+\.(${R3_DEF_NAME_PATTERN})`;
-
-// Pattern matching a source line that contains a Render3 static property assignment.
-// It declares two matching groups - one for the preceding whitespace, the second for the rest
-// of the assignment expression.
-const R3_DEF_LINE_PATTERN = `^(\\s*)(${R3_DEF_ACCESS_PATTERN} = .*)$`;
-
-// Regex compilation of R3_DEF_LINE_PATTERN. Matching group 1 yields the whitespace preceding the
-// assignment, matching group 2 gives the rest of the assignment expressions.
-const R3_MATCH_DEFS = new RegExp(R3_DEF_LINE_PATTERN, 'gmu');
-
-// Replacement string that complements R3_MATCH_DEFS. It inserts `/** @nocollapse */` before the
-// assignment but after any indentation. Note that this will mess up any sourcemaps on this line
-// (though there shouldn't be any, since Render3 properties are synthetic).
-const R3_NOCOLLAPSE_DEFS = '$1\/** @nocollapse *\/ $2';
 
 /**
  * Maximum number of files that are emitable via calling ts.Program.emit
@@ -102,14 +72,14 @@ const defaultEmitCallback: TsEmitCallback =
  * Minimum supported TypeScript version
  * ∀ supported typescript version v, v >= MIN_TS_VERSION
  */
-const MIN_TS_VERSION = '2.7.2';
+const MIN_TS_VERSION = '3.4.0';
 
 /**
  * Supremum of supported TypeScript versions
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '2.10.0';
+const MAX_TS_VERSION = '3.5.0';
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
@@ -293,15 +263,10 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy === 'ngtsc' || this.options.enableIvy === 'tsc') {
+    if (this.options.enableIvy) {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
-    return this.options.enableIvy === true ? this._emitRender3(parameters) :
-                                             this._emitRender2(parameters);
-  }
-
-  private _annotateR3Properties(contents: string): string {
-    return contents.replace(R3_MATCH_DEFS, R3_NOCOLLAPSE_DEFS);
+    return this._emitRender2(parameters);
   }
 
   private _emitRender3(
@@ -332,7 +297,7 @@ class AngularCompilerProgram implements Program {
           let genFile: GeneratedFile|undefined;
           if (this.options.annotateForClosureCompiler && sourceFile &&
               TS.test(sourceFile.fileName)) {
-            outData = this._annotateR3Properties(outData);
+            outData = nocollapseHack(outData);
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
         };
@@ -425,7 +390,7 @@ class AngularCompilerProgram implements Program {
               }
             }
             if (this.options.annotateForClosureCompiler && TS.test(sourceFile.fileName)) {
-              outData = this._annotateR3Properties(outData);
+              outData = nocollapseHack(outData);
             }
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
@@ -498,14 +463,14 @@ class AngularCompilerProgram implements Program {
     // Match behavior of tsc: only produce emit diagnostics if it would block
     // emit. If noEmitOnError is false, the emit will happen in spite of any
     // errors, so we should not report them.
-    if (this.options.noEmitOnError === true) {
+    if (emitResult && this.options.noEmitOnError === true) {
       // translate the diagnostics in the emitResult as well.
       const translatedEmitDiags = translateDiagnostics(this.hostAdapter, emitResult.diagnostics);
       emitResult.diagnostics = translatedEmitDiags.ts.concat(
           this.structuralDiagnostics.concat(translatedEmitDiags.ng).map(ngToTsDiagnostic));
     }
 
-    if (!outSrcMapping.length) {
+    if (emitResult && !outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
       emitResult.diagnostics =
           emitResult.diagnostics.concat([createMessageDiagnostic(`Emitted no files.`)]);
@@ -541,7 +506,7 @@ class AngularCompilerProgram implements Program {
       });
     }
     const emitEnd = Date.now();
-    if (this.options.diagnostics) {
+    if (emitResult && this.options.diagnostics) {
       emitResult.diagnostics = emitResult.diagnostics.concat([createMessageDiagnostic([
         `Emitted in ${emitEnd - emitStart}ms`,
         `- ${emittedUserTsCount} user ts files`,
@@ -933,8 +898,8 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
-  if (options.enableIvy === 'ngtsc') {
-    return new NgtscProgram(rootNames, options, host, oldProgram);
+  if (options.enableIvy === true) {
+    return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram);
   } else if (options.enableIvy === 'tsc') {
     return new TscPassThroughProgram(rootNames, options, host, oldProgram);
   }
@@ -969,12 +934,14 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 
   return {
     locale: options.i18nInLocale,
-    i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
+    i18nFormat: options.i18nInFormat || options.i18nOutFormat,
+    i18nUseExternalIds: options.i18nUseExternalIds, translations, missingTranslation,
     enableSummariesForJit: options.enableSummariesForJit,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
     allowEmptyCodegenFiles: options.allowEmptyCodegenFiles,
     enableIvy: options.enableIvy,
+    createExternalSymbolFactoryReexports: options.createExternalSymbolFactoryReexports,
   };
 }
 
@@ -1008,10 +975,8 @@ function normalizeSeparators(path: string): string {
  * TODO(tbosch): talk to the TypeScript team to expose their logic for calculating the `rootDir`
  * if none was specified.
  *
- * Note: This function works on normalized paths from typescript.
- *
- * @param outDir
- * @param outSrcMappings
+ * Note: This function works on normalized paths from typescript but should always return
+ * POSIX normalized paths for output paths.
  */
 export function createSrcToOutPathMapper(
     outDir: string | undefined, sampleSrcFileName: string | undefined,
@@ -1020,7 +985,6 @@ export function createSrcToOutPathMapper(
       resolve: typeof path.resolve,
       relative: typeof path.relative
     } = path): (srcFileName: string) => string {
-  let srcToOutPath: (srcFileName: string) => string;
   if (outDir) {
     let path: {} = {};  // Ensure we error if we use `path` instead of `host`.
     if (sampleSrcFileName == null || sampleOutFileName == null) {
@@ -1040,11 +1004,18 @@ export function createSrcToOutPathMapper(
            srcDirParts[srcDirParts.length - 1 - i] === outDirParts[outDirParts.length - 1 - i])
       i++;
     const rootDir = srcDirParts.slice(0, srcDirParts.length - i).join('/');
-    srcToOutPath = (srcFileName) => host.resolve(outDir, host.relative(rootDir, srcFileName));
+    return (srcFileName) => {
+      // Note: Before we return the mapped output path, we need to normalize the path delimiters
+      // because the output path is usually passed to TypeScript which sometimes only expects
+      // posix normalized paths (e.g. if a custom compiler host is used)
+      return normalizeSeparators(host.resolve(outDir, host.relative(rootDir, srcFileName)));
+    };
   } else {
-    srcToOutPath = (srcFileName) => srcFileName;
+    // Note: Before we return the output path, we need to normalize the path delimiters because
+    // the output path is usually passed to TypeScript which only passes around posix
+    // normalized paths (e.g. if a custom compiler host is used)
+    return (srcFileName) => normalizeSeparators(srcFileName);
   }
-  return srcToOutPath;
 }
 
 export function i18nExtract(
@@ -1055,7 +1026,7 @@ export function i18nExtract(
   const ext = i18nGetExtension(formatName);
   const content = i18nSerialize(bundle, formatName, options);
   const dstFile = outFile || `messages.${ext}`;
-  const dstPath = path.resolve(options.outDir || options.basePath, dstFile);
+  const dstPath = path.resolve(options.outDir || options.basePath !, dstFile);
   host.writeFile(dstPath, content, false, undefined, []);
   return [dstPath];
 }

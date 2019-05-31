@@ -553,7 +553,7 @@ export class AotCompiler {
         null;
     const {json, exportAs} = serializeSummaries(
         srcFileName, forJitOutputCtx, this._summaryResolver, this._symbolResolver, symbolSummaries,
-        typeData);
+        typeData, this._options.createExternalSymbolFactoryReexports);
     exportAs.forEach((entry) => {
       ngFactoryCtx.statements.push(
           o.variable(entry.exportAs).set(ngFactoryCtx.importExpr(entry.symbol)).toDeclStmt(null, [

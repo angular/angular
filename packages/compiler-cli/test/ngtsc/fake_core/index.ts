@@ -39,6 +39,8 @@ export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
 export const HostBinding = callablePropDecorator();
 export const HostListener = callablePropDecorator();
+export const Input = callablePropDecorator();
+export const Output = callablePropDecorator();
 export const ViewChild = callablePropDecorator();
 export const ViewChildren = callablePropDecorator();
 
@@ -47,9 +49,31 @@ export type ModuleWithProviders<T> = any;
 export class ChangeDetectorRef {}
 export class ElementRef {}
 export class Injector {}
-export class TemplateRef {}
+export class TemplateRef<T = any> {}
 export class ViewContainerRef {}
+export class Renderer2 {}
+export class ɵNgModuleFactory<T> {
+  constructor(public clazz: T) {}
+}
 
 export function forwardRef<T>(fn: () => T): T {
   return fn();
+}
+
+export interface SimpleChanges { [propName: string]: any; }
+
+export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
+export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
+export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
+
+export enum ViewEncapsulation {
+  Emulated = 0,
+  Native = 1,
+  None = 2,
+  ShadowDom = 3
+}
+
+export enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1
 }

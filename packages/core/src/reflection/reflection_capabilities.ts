@@ -6,21 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../type';
-import {global, stringify} from '../util';
+import {Type, isType} from '../interface/type';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+import {global} from '../util/global';
+import {stringify} from '../util/stringify';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
+
 
 
 /**
  * Attention: These regex has to hold even if the code is minified!
  */
 export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
-export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
+export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
 export const INHERITED_CLASS_WITH_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{[\s\S]*constructor\s*\(/;
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
+export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s+super\(\.\.\.arguments\)/;
+
+/**
+ * Determine whether a stringified type is a class which delegates its constructor
+ * to its parent.
+ *
+ * This is not trivial since compiled code can actually contain a constructor function
+ * even if the original source code did not. For instance, when the child class contains
+ * an initialized instance property.
+ */
+export function isDelegateCtor(typeStr: string): boolean {
+  return DELEGATE_CTOR.test(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
+      (INHERITED_CLASS.test(typeStr) && !INHERITED_CLASS_WITH_CTOR.test(typeStr));
+}
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -68,8 +85,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(typeStr) ||
-        (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
+    if (isDelegateCtor(typeStr)) {
       return null;
     }
 
@@ -206,6 +222,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
       });
     }
     return propMetadata;
+  }
+
+  ownPropMetadata(typeOrFunc: any): {[key: string]: any[]} {
+    if (!isType(typeOrFunc)) {
+      return {};
+    }
+    return this._ownPropMetadata(typeOrFunc, getParentCtor(typeOrFunc)) || {};
   }
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {

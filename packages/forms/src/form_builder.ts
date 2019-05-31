@@ -9,7 +9,14 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
+import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
+
+function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
+    options is AbstractControlOptions {
+  return (<AbstractControlOptions>options).asyncValidators !== undefined ||
+      (<AbstractControlOptions>options).validators !== undefined ||
+      (<AbstractControlOptions>options).updateOn !== undefined;
+}
 
 /**
  * @description
@@ -21,6 +28,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  *
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  *
+ * @publicApi
  */
 @Injectable()
 export class FormBuilder {
@@ -31,29 +39,58 @@ export class FormBuilder {
    * @param controlsConfig A collection of child controls. The key for each child is the name
    * under which it is registered.
    *
-   * @param extra An object of configuration options for the `FormGroup`.
+   * @param options Configuration options object for the `FormGroup`. The object can
+   * have two shapes:
+   *
+   * 1) `AbstractControlOptions` object (preferred), which consists of:
+   * * `validators`: A synchronous validator function, or an array of validator functions
+   * * `asyncValidators`: A single async validator or array of async validator functions
+   * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur' |
+   * submit')
+   *
+   * 2) Legacy configuration object, which consists of:
    * * `validator`: A synchronous validator function, or an array of validator functions
    * * `asyncValidator`: A single async validator or array of async validator functions
    *
    */
-  group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any}|null = null): FormGroup {
+  group(
+      controlsConfig: {[key: string]: any},
+      options: AbstractControlOptions|{[key: string]: any}|null = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
-    const validator: ValidatorFn = extra != null ? extra['validator'] : null;
-    const asyncValidator: AsyncValidatorFn = extra != null ? extra['asyncValidator'] : null;
-    return new FormGroup(controls, validator, asyncValidator);
+
+    let validators: ValidatorFn|ValidatorFn[]|null = null;
+    let asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null = null;
+    let updateOn: FormHooks|undefined = undefined;
+
+    if (options != null) {
+      if (isAbstractControlOptions(options)) {
+        // `options` are `AbstractControlOptions`
+        validators = options.validators != null ? options.validators : null;
+        asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
+        updateOn = options.updateOn != null ? options.updateOn : undefined;
+      } else {
+        // `options` are legacy form group options
+        validators = options['validator'] != null ? options['validator'] : null;
+        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
+      }
+    }
+
+    return new FormGroup(controls, {asyncValidators, updateOn, validators});
   }
 
   /**
    * @description
-   * Construct a new `FormControl` instance.
+   * Construct a new `FormControl` with the given state, validators and options.
    *
-   * @param formState Initializes the control with an initial value,
-   * or an object that defines the initial value and disabled state.
+   * @param formState Initializes the control with an initial state value, or
+   * with an object that contains both a value and a disabled status.
    *
-   * @param validator A synchronous validator function, or an array of synchronous validator
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains
+   * validation functions and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator
    * functions.
-   *
-   * @param asyncValidator A single async validator or array of async validator functions
    *
    * @usageNotes
    *
@@ -64,31 +101,33 @@ export class FormBuilder {
    * <code-example path="forms/ts/formBuilder/form_builder_example.ts"
    *   linenums="false" region="disabled-control">
    * </code-example>
-   *
    */
   control(
-      formState: any, validator?: ValidatorFn|ValidatorFn[]|null,
+      formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl {
-    return new FormControl(formState, validator, asyncValidator);
+    return new FormControl(formState, validatorOrOpts, asyncValidator);
   }
 
   /**
-   * @description
-   * Construct a new `FormArray` instance.
+   * Constructs a new `FormArray` from the given array of configurations,
+   * validators and options.
    *
-   * @param controlsConfig An array of child controls. The key for each child control is its index
-   * in the array.
+   * @param controlsConfig An array of child controls or control configs. Each
+   * child control is given an index when it is registered.
    *
-   * @param validator A synchronous validator function, or an array of synchronous validator
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains
+   * validation functions and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator
    * functions.
-   *
-   * @param asyncValidator A single async validator or array of async validator functions
    */
   array(
-      controlsConfig: any[], validator?: ValidatorFn|ValidatorFn[]|null,
+      controlsConfig: any[],
+      validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
     const controls = controlsConfig.map(c => this._createControl(c));
-    return new FormArray(controls, validator, asyncValidator);
+    return new FormArray(controls, validatorOrOpts, asyncValidator);
   }
 
   /** @internal */

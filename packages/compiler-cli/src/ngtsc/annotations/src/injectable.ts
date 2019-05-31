@@ -6,39 +6,69 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral} from '../../metadata';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {DefaultImportRecorder} from '../../imports';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {getConstructorDependencies, isAngularCore} from './util';
+import {generateSetClassMetadataCall} from './metadata';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, validateConstructorDependencies} from './util';
 
+export interface InjectableHandlerData {
+  meta: R3InjectableMetadata;
+  metadataStmt: Statement|null;
+}
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableDecoratorHandler implements DecoratorHandler<R3InjectableMetadata> {
-  constructor(private reflector: ReflectionHost, private isCore: boolean) {}
+export class InjectableDecoratorHandler implements
+    DecoratorHandler<InjectableHandlerData, Decorator> {
+  constructor(
+      private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean, private strictCtorDeps: boolean) {}
 
-  detect(decorator: Decorator[]): Decorator|undefined {
-    return decorator.find(
-        decorator => decorator.name === 'Injectable' && (this.isCore || isAngularCore(decorator)));
+  readonly precedence = HandlerPrecedence.SHARED;
+
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+    if (!decorators) {
+      return undefined;
+    }
+    const decorator = findAngularDecorator(decorators, 'Injectable', this.isCore);
+    if (decorator !== undefined) {
+      return {
+        trigger: decorator.node,
+        metadata: decorator,
+      };
+    } else {
+      return undefined;
+    }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3InjectableMetadata> {
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
     return {
-      analysis: extractInjectableMetadata(node, decorator, this.reflector, this.isCore),
+      analysis: {
+        meta: extractInjectableMetadata(
+            node, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
+            this.strictCtorDeps),
+        metadataStmt: generateSetClassMetadataCall(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
+      },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): CompileResult {
-    const res = compileIvyInjectable(analysis);
+  compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
+    const res = compileIvyInjectable(analysis.meta);
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngInjectableDef',
-      initializer: res.expression,
-      statements: [],
+      initializer: res.expression, statements,
       type: res.type,
     };
   }
@@ -47,26 +77,68 @@ export class InjectableDecoratorHandler implements DecoratorHandler<R3Injectable
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the input
  * metadata needed to run `compileIvyInjectable`.
+ *
+ * A `null` return value indicates this is @Injectable has invalid data.
  */
 function extractInjectableMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
-    isCore: boolean): R3InjectableMetadata {
-  if (clazz.name === undefined) {
-    throw new Error(`@Injectables must have names`);
-  }
+    clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    strictCtorDeps: boolean): R3InjectableMetadata {
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
+  const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
-    throw new Error(`@Injectable must be called`);
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
   }
   if (decorator.args.length === 0) {
+    // Ideally, using @Injectable() would have the same effect as using @Injectable({...}), and be
+    // subject to the same validation. However, existing Angular code abuses @Injectable, applying
+    // it to things like abstract classes with constructors that were never meant for use with
+    // Angular's DI.
+    //
+    // To deal with this, @Injectable() without an argument is more lenient, and if the constructor
+    // signature does not work for DI then an ngInjectableDef that throws.
+    let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;
+    if (strictCtorDeps) {
+      ctorDeps = getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+    } else {
+      const possibleCtorDeps =
+          getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+      if (possibleCtorDeps !== null) {
+        if (possibleCtorDeps.deps !== null) {
+          // This use of @Injectable has valid constructor dependencies.
+          ctorDeps = possibleCtorDeps.deps;
+        } else {
+          // This use of @Injectable is technically invalid. Generate a factory function which
+          // throws
+          // an error.
+          // TODO(alxhub): log warnings for the bad use of @Injectable.
+          ctorDeps = 'invalid';
+        }
+      }
+    }
     return {
       name,
       type,
-      providedIn: new LiteralExpr(null),
-      deps: getConstructorDependencies(clazz, reflector, isCore),
+      typeArgumentCount,
+      providedIn: new LiteralExpr(null), ctorDeps,
     };
   } else if (decorator.args.length === 1) {
+    const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+    let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;
+
+    // rawCtorDeps will be null if the class has no constructor.
+    if (rawCtorDeps !== null) {
+      if (rawCtorDeps.deps !== null) {
+        // A constructor existed and had valid dependencies.
+        ctorDeps = rawCtorDeps.deps;
+      } else {
+        // A constructor existed but had invalid dependencies.
+        ctorDeps = 'invalid';
+      }
+    }
+
     const metaNode = decorator.args[0];
     // Firstly make sure the decorator argument is an inline literal - if not, it's illegal to
     // transport references from one location to another. This is the problem that lowering
@@ -81,33 +153,65 @@ function extractInjectableMetadata(
     if (meta.has('providedIn')) {
       providedIn = new WrappedNodeExpr(meta.get('providedIn') !);
     }
+
+    let userDeps: R3DependencyMetadata[]|undefined = undefined;
+    if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
+      const depsExpr = meta.get('deps') !;
+      if (!ts.isArrayLiteralExpression(depsExpr)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_NOT_LITERAL, depsExpr,
+            `In Ivy, deps metadata must be an inline array.`);
+      }
+      userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
+    }
+
     if (meta.has('useValue')) {
-      return {name, type, providedIn, useValue: new WrappedNodeExpr(meta.get('useValue') !)};
+      return {
+        name,
+        type,
+        typeArgumentCount,
+        ctorDeps,
+        providedIn,
+        useValue: new WrappedNodeExpr(meta.get('useValue') !),
+      };
     } else if (meta.has('useExisting')) {
-      return {name, type, providedIn, useExisting: new WrappedNodeExpr(meta.get('useExisting') !)};
+      return {
+        name,
+        type,
+        typeArgumentCount,
+        ctorDeps,
+        providedIn,
+        useExisting: new WrappedNodeExpr(meta.get('useExisting') !),
+      };
     } else if (meta.has('useClass')) {
-      return {name, type, providedIn, useClass: new WrappedNodeExpr(meta.get('useClass') !)};
+      return {
+        name,
+        type,
+        typeArgumentCount,
+        ctorDeps,
+        providedIn,
+        useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps,
+      };
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
       const factory = new WrappedNodeExpr(meta.get('useFactory') !);
-      const deps: R3DependencyMetadata[] = [];
-      if (meta.has('deps')) {
-        const depsExpr = meta.get('deps') !;
-        if (!ts.isArrayLiteralExpression(depsExpr)) {
-          throw new Error(`In Ivy, deps metadata must be inline.`);
-        }
-        if (depsExpr.elements.length > 0) {
-          throw new Error(`deps not yet supported`);
-        }
-        deps.push(...depsExpr.elements.map(dep => getDep(dep, reflector)));
-      }
-      return {name, type, providedIn, useFactory: factory, deps};
+      return {
+        name,
+        type,
+        typeArgumentCount,
+        providedIn,
+        useFactory: factory, ctorDeps, userDeps,
+      };
     } else {
-      const deps = getConstructorDependencies(clazz, reflector, isCore);
-      return {name, type, providedIn, deps};
+      if (strictCtorDeps) {
+        // Since use* was not provided, validate the deps according to strictCtorDeps.
+        validateConstructorDependencies(clazz, rawCtorDeps);
+      }
+      return {name, type, typeArgumentCount, providedIn, ctorDeps};
     }
   } else {
-    throw new Error(`Too many arguments to @Injectable`);
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_ARITY_WRONG, decorator.args[2], 'Too many arguments to @Injectable');
   }
 }
 

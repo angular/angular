@@ -37,17 +37,9 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
     loadChildren: './code/code-tabs.module#CodeTabsModule'
   },
   {
-    selector: 'current-location',
-    loadChildren: './current-location/current-location.module#CurrentLocationModule'
-  },
-  {
-    selector: 'expandable-section',
-    loadChildren: './expandable-section/expandable-section.module#ExpandableSectionModule'
-  },
-  {
     selector: 'live-example',
     loadChildren: './live-example/live-example.module#LiveExampleModule'
-  },
+  }
 ];
 
 /**

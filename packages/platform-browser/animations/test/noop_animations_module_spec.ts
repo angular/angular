@@ -9,8 +9,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine} from '@angular/animations/browser';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
-import {NoopAnimationsModule} from '../src/module';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 {
   describe('NoopAnimationsModule', () => {

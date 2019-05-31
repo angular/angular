@@ -1,8 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_module", "ng_package")
+load("@npm_bazel_karma//:index.bzl", "ts_web_test_suite")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", "ng_module", "ng_package")
 
 sass_binary(
     name = "hello-world-styles",
@@ -16,10 +17,10 @@ ng_module(
         exclude = ["*.spec.ts"],
     ),
     assets = [":hello-world-styles"],
-    tsconfig = "//src:tsconfig.json",
-    # FIXME(alexeagle): the rxjs dep should come from Angular, but if we use the
-    # npm distro of angular there is no ts_library rule to propagate the dep.
-    deps = ["@rxjs"],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@types",
+    ],
 )
 
 ng_package(
@@ -32,19 +33,30 @@ ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(["*.spec.ts"]),
-    deps = [":hello-world"],
+    deps = [
+        ":hello-world",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types",
+        "@npm//jasmine",
+    ],
 )
 
 ts_web_test_suite(
     name = "test",
-    bootstrap = ["//:node_modules/zone.js/dist/zone-testing-bundle.js"],
+    bootstrap = [
+        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
+    ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
-        "@io_bazel_rules_webtesting//browsers:firefox-local",
+        # TODO(gregmagolan): re-enable firefox testing once fixed
+        # See https://github.com/bazelbuild/rules_typescript/issues/296
+        # "@io_bazel_rules_webtesting//browsers:firefox-local",
     ],
     deps = [
         ":test_lib",
-        "//:angular_bundles",
-        "//:angular_test_bundles",
+        "//src:rxjs_umd_modules",
     ],
 )

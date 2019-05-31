@@ -34,7 +34,7 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   comment = '';
 
   // Query for a CONTENT child of type `ChildComponent`
-  @ContentChild(ChildComponent) contentChild: ChildComponent;
+  @ContentChild(ChildComponent, {static: false}) contentChild: ChildComponent;
 
 // #enddocregion hooks
   constructor(private logger: LoggerService) {

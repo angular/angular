@@ -120,6 +120,10 @@ export function calcProjectFileAndBasePath(project: string):
 
 export function createNgCompilerOptions(
     basePath: string, config: any, tsOptions: ts.CompilerOptions): api.CompilerOptions {
+  // enableIvy `ngtsc` is an alias for `true`.
+  if (config.angularCompilerOptions && config.angularCompilerOptions.enableIvy === 'ngtsc') {
+    config.angularCompilerOptions.enableIvy = true;
+  }
   return {...tsOptions, ...config.angularCompilerOptions, genDir: basePath, basePath};
 }
 
@@ -128,7 +132,37 @@ export function readConfiguration(
   try {
     const {projectFile, basePath} = calcProjectFileAndBasePath(project);
 
-    let {config, error} = ts.readConfigFile(projectFile, ts.sys.readFile);
+    const readExtendedConfigFile =
+        (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
+          const {config, error} = ts.readConfigFile(configFile, ts.sys.readFile);
+
+          if (error) {
+            return {error};
+          }
+
+          // we are only interested into merging 'angularCompilerOptions' as
+          // other options like 'compilerOptions' are merged by TS
+          const baseConfig = existingConfig || config;
+          if (existingConfig) {
+            baseConfig.angularCompilerOptions = {...config.angularCompilerOptions,
+                                                 ...baseConfig.angularCompilerOptions};
+          }
+
+          if (config.extends) {
+            let extendedConfigPath = path.resolve(path.dirname(configFile), config.extends);
+            extendedConfigPath = path.extname(extendedConfigPath) ? extendedConfigPath :
+                                                                    `${extendedConfigPath}.json`;
+
+            if (fs.existsSync(extendedConfigPath)) {
+              // Call read config recursively as TypeScript only merges CompilerOptions
+              return readExtendedConfigFile(extendedConfigPath, baseConfig);
+            }
+          }
+
+          return {config: baseConfig};
+        };
+
+    const {config, error} = readExtendedConfigFile(projectFile);
 
     if (error) {
       return {
@@ -145,8 +179,9 @@ export function readConfiguration(
       readDirectory: ts.sys.readDirectory,
       readFile: ts.sys.readFile
     };
-    const parsed =
-        ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, existingOptions);
+    const configFileName = path.resolve(process.cwd(), projectFile);
+    const parsed = ts.parseJsonConfigFileContent(
+        config, parseConfigHost, basePath, existingOptions, configFileName);
     const rootNames = parsed.fileNames.map(f => path.normalize(f));
 
     const options = createNgCompilerOptions(basePath, config, parsed.options);

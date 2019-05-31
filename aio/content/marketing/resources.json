@@ -16,6 +16,18 @@
             "rev": true,
             "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
             "url": "https://angular-ru.github.io/"
+          },
+          "made-with-angular": {
+            "desc": "A showcase of web apps built with Angular.",
+            "rev": true,
+            "title": "Made with Angular",
+            "url": "https://www.madewithangular.com/"
+          },
+          "angular-subreddit": {
+            "desc": "An Angular-dedicated subreddit.",
+            "rev": true,
+            "title": "Angular Subreddit",
+            "url": "https://www.reddit.com/r/Angular2/"
           }
         }
       },
@@ -52,6 +64,13 @@
             "rev": true,
             "title": "AngularAir",
             "url": "https://angularair.com/"
+          },
+          "sdlkfjsldfkz": {
+            "desc": "A weekly German podcast for Angular on the go",
+            "logo": "",
+            "rev": true,
+            "title": "Happy Angular Podcast",
+            "url": "https://happy-angular.de/"
           },
           "sldkfjsldjf": {
             "desc": "The live broadcast podcast all about JavaScript",
@@ -143,6 +162,13 @@
             "rev": true,
             "title": "AngularCommerce",
             "url": "https://github.com/NodeArt/angular-commerce"
+          },
+          "ngx-api-utils": {
+            "desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "ngx-api-utils",
+            "url": "https://github.com/ngx-api-utils/ngx-api-utils"
           }
         }
       },
@@ -205,7 +231,7 @@
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
-            "url": "https://github.com/angular/universal"
+            "url": "https://angular.io/guide/universal"
           },
           "c1": {
             "desc": "Lightweight development only Node.js® server",
@@ -260,6 +286,20 @@
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
+          },
+          "uijar": {
+            "desc": "A drop in module to automatically create a living style guide based on the test you write for your components.",
+            "logo": "",
+            "rev": true,
+            "title": "UI-jar - Test Driven Style Guide Development",
+            "url": "https://github.com/ui-jar/ui-jar"
+          },
+          "protactor": {
+            "desc": "The official end to end testing framework for Angular apps",
+            "logo": "",
+            "rev": true,
+            "title": "Protractor",
+            "url": "https://protractor.angular.io/"
           }
         }
       },
@@ -317,7 +357,7 @@
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular",
+            "desc": "A professional grade library of Angular UI components written in TypeScript that includes our Data Grid, TreeView, Charts, Editors, DropDowns, DatePickers, and many more. Features include support for AOT compilation, Tree Shaking for high-performance, localization, and accessibility.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
@@ -349,7 +389,7 @@
             "logo": "",
             "rev": true,
             "title": "Angular Material",
-            "url": "https://github.com/angular/material2"
+            "url": "https://material.angular.io/"
           },
           "mcc": {
             "desc": "Material components made by the community",
@@ -364,11 +404,29 @@
             "title": "Ant Design of Angular (ng-zorro-antd)",
             "url": "https://ng.ant.design/docs/introduce/en"
           },
+          "ngzorromobile": {
+            "desc": "A set of enterprise-class mobile UI components based on Ant Design Mobile and Angular",
+            "rev": true,
+            "title": "Ant Design Mobile of Angular (ng-zorro-antd-mobile)",
+            "url": "http://ng.mobile.ant.design/#/docs/introduce/en"
+          },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
+          },
+          "fancygrid": {
+            "desc": "Angular grid library with charts integration and server communication for Enterprise.",
+            "rev": true,
+            "title": "FancyGrid",
+            "url": "https://fancygrid.com/docs/getting-started/angular"
+          },
+          "ngx-smart-modal": {
+            "desc": "Angular smart, light and fast modal handler to manage modals and data everywhere.",
+            "rev": true,
+            "title": "ngx-smart-modal",
+            "url": "https://biig-io.github.io/ngx-smart-modal"
           },
           "jqwidgets": {
             "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
@@ -400,7 +458,44 @@
             "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
             "rev": true,
             "title": "Truly UI",
-            "url": "http://truly-ui.tk"
+            "url": "http://truly-ui.com"
+          },
+          "ngsqui": {
+            "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "logo": "https://sq-ui.github.io/ng-sq-ui/_media/sq-ui-logo.png",
+            "rev": true,
+            "title": "Simple Quality UI",
+            "url": "https://sq-ui.github.io/ng-sq-ui/#/"
+          },
+          "smart": {
+            "desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "rev": true,
+            "title": "Smart Web Components",
+            "url": "https://www.htmlelements.com/angular/"
+          },
+          "AlyleUI": {
+            "desc": "Minimal Design, a set of components for Angular.",
+            "rev": true,
+            "title": "Alyle UI",
+            "url": "https://alyle-ui.firebaseapp.com/"
+          },
+          "nebular": {
+            "desc": "Theme System, UI Components, Auth and Security for your next Angular application.",
+            "rev": true,
+            "title": "Nebular",
+            "url": "https://akveo.github.io/nebular/"
+          },
+          "carbondesignsystem": {
+            "desc": "An Angular implementation of the Carbon Design System for IBM.",
+            "rev": true,
+            "title": "Carbon Components Angular",
+            "url": "https://angular.carbondesignsystem.com/"
+          },
+          "jigsaw": {
+            "desc": "Jigsaw provides a set of web components based on Angular. It is supporting the development of all applications of Big Data Product of ZTE (http://www.zte.com.cn).",
+            "rev": true,
+            "title": "Awade Jigsaw (Chinese)",
+            "url": "http://rdk.zte.com.cn/components"
           }
         }
       }
@@ -421,8 +516,8 @@
           "-KLIzGEp8Mh5W-FkiQnL": {
             "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
             "rev": true,
-            "title": "Learning Angular",
-            "url": "https://www.packtpub.com/web-development/learning-angular-2"
+            "title": "Learning Angular - Second Edition",
+            "url": "https://www.packtpub.com/web-development/learning-angular-second-edition"
           },
           "3ab": {
             "desc": "More than 15 books from O'Reilly about Angular",
@@ -503,6 +598,13 @@
             "rev": true,
             "title": "The Angular Guide by Wishtack (Français)",
             "url": "https://guide-angular.wishtack.io/"
+          },
+          "ab5": {
+            "desc": "How to build Angular applications using NGRX",
+            "logo": "",
+            "rev": true,
+            "title": "Architecting Angular Applications with NGRX",
+            "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           }
         }
       },
@@ -629,12 +731,30 @@
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
+          },
+          "loiane-angulartraining": {
+            "desc": "Free Angular course in Portuguese.",
+            "rev": true,
+            "title": "Loiane Training (Português)",
+            "url": "https://loiane.training/course/angular/"
           }
         }
       },
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
+          "webucator": {
+            "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "rev": true,
+            "title": "Webucator",
+            "url": "https://www.webucator.com/webdev-training/angular-training"
+          },
+          "-acceleb": {
+            "desc": "Customized, Instructor-Led Angular Training",
+            "rev": true,
+            "title": "Accelebrate",
+            "url": "https://www.accelebrate.com/angular-training"
+          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,
@@ -717,11 +837,23 @@
             "title": "SFEIR School (French)",
             "url": "https://school.sfeir.com/project/sa200/"
           },
+          "zenika-angular": {
+            "desc": "Angular trainings delivered by Zenika (FRANCE)",
+            "rev": true,
+            "title": "Angular Trainings (French)",
+            "url": "https://training.zenika.com/fr/training/angular2/description"
+          },
           "formationjs": {
             "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
             "rev": true,
             "title": "Formation JavaScript (French)",
             "url": "https://formationjavascript.com/formation-angular/"
+          },
+          "humancoders-angular": {
+            "desc": "Angular trainings delivered by Human Coders (France)",
+            "rev": true,
+            "title": "Formation Angular (French)",
+            "url": "https://www.humancoders.com/formations/angular"
           },
           "wao": {
             "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
@@ -742,6 +874,13 @@
             "rev": true,
             "title": "StrongBrew",
             "url": "https://strongbrew.io/"
+          },
+          "angular.de": {
+            "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "logo": "https://angular.de/assets/img/angular-de-logo.svg",
+            "rev": true,
+            "title": "Angular.de (German)",
+            "url": "https://angular.de/"
           }
         }
       }

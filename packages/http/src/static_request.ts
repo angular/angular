@@ -53,6 +53,7 @@ import {URLSearchParams} from './url_search_params';
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Request extends Body {
   /**
@@ -184,7 +185,7 @@ function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
 
 const noop = function() {};
 const w = typeof window == 'object' ? window : noop;
-const FormData = (w as any /** TODO #9100 */)['FormData'] || noop;
-const Blob = (w as any /** TODO #9100 */)['Blob'] || noop;
+const FormData = (() => (w as any /** TODO #9100 */)['FormData'] || noop)();
+const Blob = (() => (w as any /** TODO #9100 */)['Blob'] || noop)();
 export const ArrayBuffer: ArrayBufferConstructor =
-    (w as any /** TODO #9100 */)['ArrayBuffer'] || noop;
+    (() => (w as any /** TODO #9100 */)['ArrayBuffer'] || noop)();

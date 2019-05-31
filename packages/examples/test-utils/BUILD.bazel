@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "test-utils",
+    srcs = ["index.ts"],
+    deps = [
+        "@npm//@types/selenium-webdriver",
+    ],
+)

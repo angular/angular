@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {stringify} from '../util/stringify';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {NgModuleRef} from './ng_module_factory';
@@ -33,6 +33,9 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   }
 }
 
+/**
+ * @publicApi
+ */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
   abstract resolveComponentFactory<T>(component: Type<T>): ComponentFactory<T>;

@@ -12,9 +12,11 @@
 export interface ɵStyleData { [key: string]: string|number; }
 
 /**
-* Represents animation-step timing parameters for an animation step.  
-* @see `animate()`
-*/
+ * Represents animation-step timing parameters for an animation step.
+ * @see `animate()`
+ *
+ * @publicApi
+ */
 export declare type AnimateTimings = {
   /**
    * The full duration of an animation step. A number and optional time unit,
@@ -53,6 +55,8 @@ export declare type AnimateTimings = {
  *
  * Programmatic animations built using the `AnimationBuilder` service also
  * make use of `AnimationOptions`.
+ *
+ * @publicApi
  */
 export declare interface AnimationOptions {
   /**
@@ -74,6 +78,8 @@ export declare interface AnimationOptions {
  * Adds duration options to control animation styling and timing for a child animation.
  *
  * @see `animateChild()`
+ *
+ * @publicApi
  */
 export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
 
@@ -82,6 +88,8 @@ export declare interface AnimateChildOptions extends AnimationOptions { duration
  *
  * A corresponding function defines a set of parameters for each category, and
  * collects them into a corresponding `AnimationMetadata` object.
+ *
+ * @publicApi
  */
 export const enum AnimationMetadataType {
   /**
@@ -153,17 +161,23 @@ export const enum AnimationMetadataType {
 
 /**
  * Specifies automatic styling.
+ *
+ * @publicApi
  */
 export const AUTO_STYLE = '*';
 
 /**
  * Base for animation data structures.
+ *
+ * @publicApi
  */
 export interface AnimationMetadata { type: AnimationMetadataType; }
 
 /**
  * Contains an animation trigger. Instantiated and returned by the
  * `trigger()` function.
+ *
+ * @publicApi
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
   /**
@@ -185,6 +199,8 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation state by associating a state name with a set of CSS styles.
  * Instantiated and returned by the `state()` function.
+ *
+ * @publicApi
  */
 export interface AnimationStateMetadata extends AnimationMetadata {
   /**
@@ -206,6 +222,8 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation transition. Instantiated and returned by the
  * `transition()` function.
+ *
+ * @publicApi
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   /**
@@ -230,6 +248,8 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
  * Encapsulates a reusable animation, which is a collection of individual animation steps.
  * Instantiated and returned by the `animation()` function, and
  * passed to the `useAnimation()` function.
+ *
+ * @publicApi
  */
 export interface AnimationReferenceMetadata extends AnimationMetadata {
   /**
@@ -247,6 +267,8 @@ export interface AnimationReferenceMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation query. Instantiated and returned by
  * the `query()` function.
+ *
+ * @publicApi
  */
 export interface AnimationQueryMetadata extends AnimationMetadata {
   /**
@@ -266,6 +288,8 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
 /**
  * Encapsulates a keyframes sequence. Instantiated and returned by
  * the `keyframes()` function.
+ *
+ * @publicApi
  */
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
   /**
@@ -277,6 +301,8 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation style. Instantiated and returned by
  * the `style()` function.
+ *
+ * @publicApi
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
   /**
@@ -292,6 +318,8 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation step. Instantiated and returned by
  * the `animate()` function.
+ *
+ * @publicApi
  */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
   /**
@@ -307,6 +335,8 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
 /**
  * Encapsulates a child animation, that can be run explicitly when the parent is run.
  * Instantiated and returned by the `animateChild` function.
+ *
+ * @publicApi
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
   /**
@@ -320,6 +350,8 @@ export interface AnimationAnimateChildMetadata extends AnimationMetadata {
 /**
  * Encapsulates a reusable animation.
  * Instantiated and returned by the `useAnimation()` function.
+ *
+ * @publicApi
  */
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
   /**
@@ -337,6 +369,8 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation sequence.
  * Instantiated and returned by the `sequence()` function.
+ *
+ * @publicApi
  */
 export interface AnimationSequenceMetadata extends AnimationMetadata {
   /**
@@ -354,6 +388,8 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 /**
  * Encapsulates an animation group.
  * Instantiated and returned by the `{@link animations/group group()}` function.
+ *
+ * @publicApi
  */
 export interface AnimationGroupMetadata extends AnimationMetadata {
   /**
@@ -371,6 +407,8 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
 /**
  * Encapsulates animation query options.
  * Passed to the `query()` function.
+ *
+ * @publicApi
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
   /**
@@ -391,6 +429,8 @@ export declare interface AnimationQueryOptions extends AnimationOptions {
 /**
  * Encapsulates parameters for staggering the start times of a set of animation steps.
  * Instantiated and returned by the `stagger()` function.
+ *
+ * @publicApi
  **/
 export interface AnimationStaggerMetadata extends AnimationMetadata {
   /**
@@ -413,7 +453,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * and `transition()` declarations.
  *
  * @return An object that encapsulates the trigger data.
- * 
+ *
  * @usageNotes
  * Define an animation trigger in the `animations` section of `@Component` metadata.
  * In the template, reference the trigger by name and bind it to a trigger expression that
@@ -421,12 +461,12 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * `[@triggerName]="expression"`
  *
- * Animation trigger bindings convert all values to strings, and then match the 
+ * Animation trigger bindings convert all values to strings, and then match the
  * previous and current values against any linked transitions.
  * Booleans can be specified as `1` or `true` and `0` or `false`.
  *
  * ### Usage Example
- * 
+ *
  * The following example creates an animation trigger reference based on the provided
  * name value.
  * The provided animation value is expected to be an array consisting of state and
@@ -487,7 +527,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * ```
  *
  * ### Disabling Animations
- * When true, the special animation control binding `@.disabled` binding prevents 
+ * When true, the special animation control binding `@.disabled` binding prevents
  * all animations from rendering.
  * Place the  `@.disabled` binding on an element to disable
  * animations on the element itself, as well as any inner animation triggers
@@ -519,7 +559,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * along with any inner animations.
  *
  * ### Disable animations application-wide
- * When an area of the template is set to have animations disabled, 
+ * When an area of the template is set to have animations disabled,
  * **all** inner components have their animations disabled as well.
  * This means that you can disable all animations for an app
  * by placing a host binding set on `@.disabled` on the topmost Angular component.
@@ -539,8 +579,8 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * ### Overriding disablement of inner animations
  * Despite inner animations being disabled, a parent animation can `query()`
- * for inner elements located in disabled areas of the template and still animate 
- * them if needed. This is also the case for when a sub animation is 
+ * for inner elements located in disabled areas of the template and still animate
+ * them if needed. This is also the case for when a sub animation is
  * queried by a parent and then later animated using `animateChild()`.
  *
  * ### Detecting when an animation is disabled
@@ -549,7 +589,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * an instance of an `AnimationEvent`. If animations are disabled,
  * the `.disabled` flag on the event is true.
  *
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
   return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
@@ -610,6 +650,8 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  *   style({ background: "red" }))
  *  ])
  * ```
+ *
+ * @publicApi
  */
 export function animate(
     timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata |
@@ -626,11 +668,11 @@ export function animate(
  * - To specify offset styles to be applied at a later time, define steps with
  * `keyframes()`, or use `animate()` calls with a delay value.
  * For example:
- * 
+ *
  * ```typescript
  * group([
- *   animate("1s", { background: "black" }))
- *   animate("2s", { color: "white" }))
+ *   animate("1s", style({ background: "black" })),
+ *   animate("2s", style({ color: "white" }))
  * ])
  * ```
  *
@@ -641,12 +683,14 @@ export function animate(
  * @return An object that encapsulates the group data.
  *
  * @usageNotes
- * Grouped animations are useful when a series of styles must be 
+ * Grouped animations are useful when a series of styles must be
  * animated at different starting times and closed off at different ending times.
  *
  * When called within a `sequence()` or a
  * `transition()` call, does not continue to the next
  * instruction until all of the inner animation steps have completed.
+ *
+ * @publicApi
  */
 export function group(
     steps: AnimationMetadata[], options: AnimationOptions | null = null): AnimationGroupMetadata {
@@ -664,7 +708,7 @@ export function group(
  * ```typescript
  * sequence([
  *   style({ opacity: 0 })),
- *   animate("1s", { opacity: 1 }))
+ *   animate("1s", style({ opacity: 1 }))
  * ])
  * ```
  *
@@ -683,6 +727,7 @@ export function group(
  * execution continues to the next instruction only after each of the inner animation
  * steps have completed.
  *
+ * @publicApi
  **/
 export function sequence(steps: AnimationMetadata[], options: AnimationOptions | null = null):
     AnimationSequenceMetadata {
@@ -701,7 +746,7 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  * - An asterisk (*), to use auto-styling, where styles are derived from the element
  * being animated and applied to the animation when it starts.
  *
- * Auto-styling can be used to define a state that depends on layout or other 
+ * Auto-styling can be used to define a state that depends on layout or other
  * environmental factors.
  *
  * @return An object that encapsulates the style data.
@@ -709,7 +754,7 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  * @usageNotes
  * The following examples create animation styles that collect a set of
  * CSS property values:
- * 
+ *
  * ```typescript
  * // string values for CSS properties
  * style({ background: "red", color: "blue" })
@@ -726,6 +771,7 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  * animate("1s", style({ height: "*" }))
  * ```
  *
+ * @publicApi
  **/
 export function style(
     tokens: '*' | {[key: string]: string | number} |
@@ -759,6 +805,8 @@ export function style(
  * Use the `transition()` function to animate between states.
  * When a state is active within a component, its associated styles persist on the element,
  * even when the animation ends.
+ *
+ * @publicApi
  **/
 export function state(
     name: string, styles: AnimationStyleMetadata,
@@ -808,6 +856,8 @@ export function state(
  *   style({ backgroundColor: "black" }) // offset = 1
  * ]))
  *```
+
+ * @publicApi
  */
 export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata {
   return {type: AnimationMetadataType.Keyframes, steps};
@@ -978,6 +1028,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *   transition('false <=> true', animate(500))
  * ])
  * ```
+ *
+ * @publicApi
  **/
 export function transition(
     stateChangeExpr: string | ((fromState: string, toState: string, element?: any,
@@ -1029,6 +1081,8 @@ export function transition(
  * If any of the passed-in parameter values are missing from this call,
  * the default values are used. If one or more parameter values are missing before a step is
  * animated, `useAnimation()` throws an error.
+ *
+ * @publicApi
  */
 export function animation(
     steps: AnimationMetadata | AnimationMetadata[],
@@ -1049,9 +1103,11 @@ export function animation(
  * for a child animation to run, the parent animation must query each of the elements
  * containing child animations, and run them using this function.
  *
- * Note that this feature designed to be used with `query()` and it will only work
+ * Note that this feature is designed to be used with `query()` and it will only work
  * with animations that are assigned using the Angular animation library. CSS keyframes
  * and transitions are not handled by this API.
+ *
+ * @publicApi
  */
 export function animateChild(options: AnimateChildOptions | null = null):
     AnimationAnimateChildMetadata {
@@ -1062,9 +1118,11 @@ export function animateChild(options: AnimateChildOptions | null = null):
  * Starts a reusable animation that is created using the `animation()` function.
  *
  * @param animation The reusable animation to start.
- * @param options An options object that can contain a delay value for the start of 
+ * @param options An options object that can contain a delay value for the start of
  * the animation, and additional override values for developer-defined parameters.
  * @return An object that contains the animation parameters.
+ *
+ * @publicApi
  */
 export function useAnimation(
     animation: AnimationReferenceMetadata,
@@ -1074,7 +1132,7 @@ export function useAnimation(
 
 /**
  * Finds one or more inner elements within the current element that is
- * being animated within a sequence. Use with `animateChild()`.
+ * being animated within a sequence. Use with `animate()`.
  *
  * @param selector The element to query, or a set of elements that contain Angular-specific
  * characteristics, specified with one or more of the following tokens.
@@ -1121,7 +1179,7 @@ export function useAnimation(
  * ### Usage Example
  *
  * The following example queries for inner elements and animates them
- * individually using `animateChild()`. 
+ * individually using `animate()`. 
  *
  * ```typescript
  * @Component({
@@ -1142,8 +1200,8 @@ export function useAnimation(
  *        query('.content', style({ opacity: 0 })),
  *
  *        // animate the inner elements in, one by one
- *        query('h1', animate(1000, style({ opacity: 1 })),
- *        query('.content', animate(1000, style({ opacity: 1 })),
+ *        query('h1', animate(1000, style({ opacity: 1 }))),
+ *        query('.content', animate(1000, style({ opacity: 1 }))),
  *      ])
  *    ])
  *  ]
@@ -1156,6 +1214,8 @@ export function useAnimation(
  *   }
  * }
  * ```
+ *
+ * @publicApi
  */
 export function query(
     selector: string, animation: AnimationMetadata | AnimationMetadata[],
@@ -1240,6 +1300,8 @@ export function query(
  *   ])
  * ])
  * ```
+ *
+ * @publicApi
  */
 export function stagger(
     timings: string | number,

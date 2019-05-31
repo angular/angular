@@ -3,143 +3,227 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
 
-"""This provides a variant of rollup_bundle that works better for Angular apps.
+"""Rollup with Build Optimizer
 
-   It registers @angular-devkit/build-optimizer as a rollup plugin, to get
+   This provides a variant of the [rollup_bundle] rule that works better for Angular apps.
+
+   It registers `@angular-devkit/build-optimizer` as a rollup plugin, to get
    better optimization. It also uses ESM5 format inputs, as this is what
    build-optimizer is hard-coded to look for and transform.
+
+   [rollup_bundle]: https://bazelbuild.github.io/rules_nodejs/rollup/rollup_bundle.html
 """
 
-load("@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
-    "rollup_module_mappings_aspect",
+load(
+    "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
-    "ROLLUP_OUTPUTS",
-    "write_rollup_config",
+    "ROLLUP_DEPS_ASPECTS",
     "run_rollup",
-    "run_uglify",
-    "run_sourcemapexplorer")
-load("@build_bazel_rules_nodejs//internal:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
-load(":esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
+    "run_sourcemapexplorer",
+    "run_terser",
+    "write_rollup_config",
+)
+load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
+load(":esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
-PACKAGES=["packages/core/src", "packages/common/src", "packages/compiler/src", "external/rxjs"]
-PLUGIN_CONFIG="{sideEffectFreeModules: [\n%s]}" % ",\n".join(
-    ["        '.esm5/{0}'".format(p) for p in PACKAGES])
-BO_ROLLUP="angular_cli/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
-BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
+ROLLUP_OUTPUTS = {
+    "build_cjs": "%{name}.cjs.js",
+    "build_es2015": "%{name}.es2015.js",
+    "build_es2015_min": "%{name}.min.es2015.js",
+    "build_es2015_min_debug": "%{name}.min_debug.es2015.js",
+    "build_es5": "%{name}.js",
+    "build_es5_min": "%{name}.min.js",
+    "build_es5_min_debug": "%{name}.min_debug.js",
+    "build_umd": "%{name}.umd.js",
+    "explore_html": "%{name}.explore.html",
+}
+
+PACKAGES = [
+    # Generated paths when using ng_rollup_bundle outside this monorepo.
+    "external/angular/packages/core/src",
+    "external/angular/packages/common/src",
+    "external/angular/packages/compiler/src",
+    "external/angular/packages/platform-browser/src",
+    "external/rxjs",
+    # Generated paths when using ng_rollup_bundle inside this monorepo.
+    "packages/core/src",
+    "packages/common/src",
+    "packages/compiler/src",
+    "packages/platform-browser/src",
+]
+PLUGIN_CONFIG = "{sideEffectFreeModules: [\n%s]}" % ",\n".join(
+    ["        '.esm5/{0}'".format(p) for p in PACKAGES],
+)
+BO_ROLLUP = "npm/node_modules/@angular-devkit/build-optimizer/src/build-optimizer/rollup-plugin.js"
+BO_PLUGIN = "require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
 def _use_plain_rollup(ctx):
-  """Determine whether to use the Angular or upstream versions of the rollup_bundle rule.
+    """Determine whether to use the Angular or upstream versions of the rollup_bundle rule.
 
-  In most modes, the Angular version of rollup is used. This runs build optimizer as part of its
-  processing, which affects decorators and annotations.
+    In most modes, the Angular version of rollup is used. This runs build optimizer as part of its
+    processing, which affects decorators and annotations.
 
-  In JIT modes, an emulation of the upstream rollup_bundle rule is used. This avoids running
-  build optimizer on code which isn't designed to be optimized by it.
+    In JIT modes, an emulation of the upstream rollup_bundle rule is used. This avoids running
+    build optimizer on code which isn't designed to be optimized by it.
 
-  Args:
-    ctx: skylark rule execution context
+    Args:
+      ctx: skylark rule execution context
 
-  Returns:
-    true iff the Angular version of rollup with build optimizer should be used, false otherwise
-  """
+    Returns:
+      true iff the Angular version of rollup with build optimizer should be used, false otherwise
+    """
 
-  if 'compile' not in ctx.var:
-    return False
+    if "compile" not in ctx.var:
+        return False
 
-  strategy = ctx.var['compile']
-  return strategy == 'jit'
-
+    strategy = ctx.var["compile"]
+    return strategy == "jit"
 
 def run_brotli(ctx, input, output):
-  ctx.actions.run(
-      executable = ctx.executable._brotli,
-      inputs = [input],
-      outputs = [output],
-      arguments = ["--output=%s" % output.path, input.path],
-  )
+    """Execute the Brotli compression utility.
+
+    Args:
+      ctx: Bazel's rule execution context
+      input: any file
+      output: the compressed file
+    """
+    ctx.actions.run(
+        executable = ctx.executable._brotli,
+        inputs = [input],
+        outputs = [output],
+        arguments = ["--output=%s" % output.path, input.path],
+    )
 
 # Borrowed from bazelbuild/rules_nodejs
 def _run_tsc(ctx, input, output):
-  args = ctx.actions.args()
-  args.add("--target", "es5")
-  args.add("--allowJS")
-  args.add(input)
-  args.add("--outFile", output)
+    args = ctx.actions.args()
+    args.add("--target", "es5")
+    args.add("--allowJS")
+    args.add(input)
+    args.add("--outFile", output)
 
-  ctx.action(
-      executable = ctx.executable._tsc,
-      inputs = [input],
-      outputs = [output],
-      arguments = [args]
-  )
+    ctx.actions.run(
+        executable = ctx.executable._tsc,
+        inputs = [input],
+        outputs = [output],
+        arguments = [args],
+    )
 
 # Borrowed from bazelbuild/rules_nodejs, with the addition of brotli compression output
 def _plain_rollup_bundle(ctx):
-  rollup_config = write_rollup_config(ctx)
-  run_rollup(ctx, collect_es2015_sources(ctx), rollup_config, ctx.outputs.build_es6)
-  _run_tsc(ctx, ctx.outputs.build_es6, ctx.outputs.build_es5)
-  source_map = run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
-  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
-  umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
-  run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
-  run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, source_map, ctx.outputs.explore_html)
+    rollup_config = write_rollup_config(ctx)
+    run_rollup(ctx, collect_es2015_sources(ctx), rollup_config, ctx.outputs.build_es2015)
+    run_terser(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es2015_min, config_name = ctx.label.name + "es2015_min")
+    run_terser(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es2015_min_debug, debug = True, config_name = ctx.label.name + "es2015_min_debug")
+    _run_tsc(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es5)
+    source_map = run_terser(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
+    run_terser(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
+    umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
+    run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
+    cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
+    run_rollup(ctx, collect_es2015_sources(ctx), cjs_rollup_config, ctx.outputs.build_cjs)
+    run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, source_map, ctx.outputs.explore_html)
 
-  run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
-  files = [ctx.outputs.build_es5_min, source_map]
-  return DefaultInfo(files = depset(files), runfiles = ctx.runfiles(files))
+    run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
+    files = [ctx.outputs.build_es5_min, source_map]
+    return DefaultInfo(files = depset(files), runfiles = ctx.runfiles(files))
 
 def _ng_rollup_bundle(ctx):
-  # Escape and use the plain rollup rule if the compilation strategy requires it
-  if _use_plain_rollup(ctx):
-    return _plain_rollup_bundle(ctx)
+    # Escape and use the plain rollup rule if the compilation strategy requires it
+    if _use_plain_rollup(ctx):
+        return _plain_rollup_bundle(ctx)
 
-  # We don't expect anyone to make use of this bundle yet, but it makes this rule
-  # compatible with rollup_bundle which allows them to be easily swapped back and
-  # forth.
-  esm2015_rollup_config = write_rollup_config(ctx, filename = "_%s.rollup_es6.conf.js")
-  run_rollup(ctx, collect_es2015_sources(ctx), esm2015_rollup_config, ctx.outputs.build_es6)
+    # We don't expect anyone to make use of this bundle yet, but it makes this rule
+    # compatible with rollup_bundle which allows them to be easily swapped back and
+    # forth.
+    esm2015_rollup_config = write_rollup_config(ctx, filename = "_%s.rollup_es2015.conf.js")
+    esm2015_rollup_sourcemap = run_rollup(ctx, collect_es2015_sources(ctx), esm2015_rollup_config, ctx.outputs.build_es2015)
 
-  esm5_sources = flatten_esm5(ctx)
+    run_terser(
+        ctx,
+        ctx.outputs.build_es2015,
+        ctx.outputs.build_es2015_min,
+        config_name = ctx.label.name + "es2015_min",
+        comments = False,
+        in_source_map = esm2015_rollup_sourcemap,
+    )
+    run_terser(
+        ctx,
+        ctx.outputs.build_es2015,
+        ctx.outputs.build_es2015_min_debug,
+        config_name = ctx.label.name + "es2015_min_debug",
+        debug = True,
+        comments = False,
+    )
 
-  rollup_config = write_rollup_config(ctx, [BO_PLUGIN], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
-  rollup_sourcemap = run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
+    esm5_sources = flatten_esm5(ctx)
 
-  sourcemap = run_uglify(ctx,
-      ctx.outputs.build_es5,
-      ctx.outputs.build_es5_min,
-      comments = False,
-      in_source_map = rollup_sourcemap)
-  run_uglify(ctx,
-      ctx.outputs.build_es5,
-      ctx.outputs.build_es5_min_debug,
-      debug = True, comments = False)
+    rollup_config = write_rollup_config(ctx, [BO_PLUGIN], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
+    rollup_sourcemap = run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
 
-  umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
-  run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
+    sourcemap = run_terser(
+        ctx,
+        ctx.outputs.build_es5,
+        ctx.outputs.build_es5_min,
+        config_name = ctx.label.name + "es5_min",
+        comments = False,
+        in_source_map = rollup_sourcemap,
+    )
+    run_terser(
+        ctx,
+        ctx.outputs.build_es5,
+        ctx.outputs.build_es5_min_debug,
+        config_name = ctx.label.name + "es5_min_debug",
+        debug = True,
+        comments = False,
+    )
 
-  run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
+    umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
+    run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
+    cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
+    run_rollup(ctx, collect_es2015_sources(ctx), cjs_rollup_config, ctx.outputs.build_cjs)
 
-  run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, sourcemap, ctx.outputs.explore_html)
+    run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
 
-  return DefaultInfo(files=depset([ctx.outputs.build_es5_min, sourcemap]))
+    run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, sourcemap, ctx.outputs.explore_html)
+
+    return DefaultInfo(files = depset([ctx.outputs.build_es5_min, sourcemap]))
+
+DEPS_ASPECTS = [esm5_outputs_aspect]
+
+# Workaround skydoc bug which assumes ROLLUP_DEPS_ASPECTS is a str type
+[DEPS_ASPECTS.append(a) for a in ROLLUP_DEPS_ASPECTS]
 
 ng_rollup_bundle = rule(
     implementation = _ng_rollup_bundle,
     attrs = dict(ROLLUP_ATTRS, **{
-        "deps": attr.label_list(aspects = [
-            rollup_module_mappings_aspect,
-            esm5_outputs_aspect,
-        ]),
-        "_rollup": attr.label(
-            executable = True,
-            cfg = "host",
-            default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer")),
+        "deps": attr.label_list(
+            doc = """Other targets that provide JavaScript files.
+            Typically this will be `ts_library` or `ng_module` targets.""",
+            aspects = DEPS_ASPECTS,
+        ),
         "_brotli": attr.label(
             executable = True,
             cfg = "host",
-            default = Label("@org_brotli//:brotli")),
+            default = Label("//tools/brotli-cli"),
+        ),
+        "_rollup": attr.label(
+            executable = True,
+            cfg = "host",
+            default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer"),
+        ),
     }),
     outputs = dict(ROLLUP_OUTPUTS, **{
         "build_es5_min_compressed": "%{name}.min.js.br",
     }),
 )
+"""
+Run [Rollup] with the [Build Optimizer] plugin.
+
+This rule extends from the [rollup_bundle] rule, so attributes and outputs of
+that rule are used here too.
+
+[Rollup]: https://rollupjs.org/
+[Build Optimizer]: https://www.npmjs.com/package/@angular-devkit/build-optimizer
+[rollup_bundle]: https://bazelbuild.github.io/rules_nodejs/rollup/rollup_bundle.html
+"""

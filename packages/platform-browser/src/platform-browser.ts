@@ -12,10 +12,11 @@ export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {BrowserTransferStateModule, StateKey, TransferState, makeStateKey} from './browser/transfer_state';
 export {By} from './dom/debug/by';
-export {DOCUMENT} from './dom/dom_tokens';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader} from './dom/events/hammer_gestures';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
 
 export * from './private_export';
 export {VERSION} from './version';
+// This must be exported so it doesn't get tree-shaken away prematurely
+export {ELEMENT_PROBE_PROVIDERS__POST_R3__ as ɵELEMENT_PROBE_PROVIDERS__POST_R3__} from './dom/debug/ng_probe';

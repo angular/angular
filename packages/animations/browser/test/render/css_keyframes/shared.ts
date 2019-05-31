@@ -23,7 +23,7 @@ export function supportsAnimationEventCreation() {
   try {
     makeAnimationEvent('end', 'test', 0);
     supported = true;
-  } catch (e) {
+  } catch {
   }
   return supported;
 }

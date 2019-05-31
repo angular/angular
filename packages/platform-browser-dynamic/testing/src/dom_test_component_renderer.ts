@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 /**
  * A DOM based implementation of the TestComponentRenderer.
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc: any /** TODO #9100 */) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
 
   insertRootElement(rootElId: string) {
     const rootEl = <HTMLElement>getDOM().firstChild(

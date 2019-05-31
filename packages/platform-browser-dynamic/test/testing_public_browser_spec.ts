@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
-import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
 
 
@@ -37,7 +37,7 @@ class BadTemplateUrl {
 
 // Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
-{
+if (isBrowser) {
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
       let actuallyDone: boolean;
@@ -143,9 +143,8 @@ class BadTemplateUrl {
              expect(componentFixture.nativeElement.textContent).toEqual('from external template');
            });
          }),
-         10000);  // Long timeout here because this test makes an actual ResourceLoader request, and
-                  // is slow
-                  // on Edge.
+         10000);  // Long timeout here because this test makes an actual ResourceLoader
+                  // request, and is slow on Edge.
     });
   });
 }

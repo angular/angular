@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
+import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Inject, Injectable, Optional} from '@angular/core';
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import * as url from 'url';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 
-function parseUrl(urlStr: string): {pathname: string, search: string, hash: string} {
+function parseUrl(urlStr: string) {
   const parsedUrl = url.parse(urlStr);
   return {
+    hostname: parsedUrl.hostname || '',
+    protocol: parsedUrl.protocol || '',
+    port: parsedUrl.port || '',
     pathname: parsedUrl.pathname || '',
     search: parsedUrl.search || '',
     hash: parsedUrl.hash || '',
@@ -29,6 +32,10 @@ function parseUrl(urlStr: string): {pathname: string, search: string, hash: stri
  */
 @Injectable()
 export class ServerPlatformLocation implements PlatformLocation {
+  public readonly href: string = '/';
+  public readonly hostname: string = '/';
+  public readonly protocol: string = '/';
+  public readonly port: string = '/';
   public readonly pathname: string = '/';
   public readonly search: string = '';
   public readonly hash: string = '';
@@ -39,6 +46,9 @@ export class ServerPlatformLocation implements PlatformLocation {
     const config = _config as PlatformConfig | null;
     if (!!config && !!config.url) {
       const parsedUrl = parseUrl(config.url);
+      this.hostname = parsedUrl.hostname;
+      this.protocol = parsedUrl.protocol;
+      this.port = parsedUrl.port;
       this.pathname = parsedUrl.pathname;
       this.search = parsedUrl.search;
       this.hash = parsedUrl.hash;
@@ -83,6 +93,9 @@ export class ServerPlatformLocation implements PlatformLocation {
   forward(): void { throw new Error('Not implemented'); }
 
   back(): void { throw new Error('Not implemented'); }
+
+  // History API isn't available on server, therefore return undefined
+  getState(): unknown { return undefined; }
 }
 
 export function scheduleMicroTask(fn: Function) {

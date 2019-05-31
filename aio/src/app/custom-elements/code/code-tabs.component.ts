@@ -1,5 +1,5 @@
 /* tslint:disable component-selector */
-import { Component, AfterViewInit, ViewChild, Input, ViewChildren, QueryList, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CodeComponent } from './code.component';
 
 export interface TabInfo {
@@ -9,7 +9,7 @@ export interface TabInfo {
   linenums: any;
   path: string;
   region: string;
-  title: string|null;
+  header: string|null;
 }
 
 /**
@@ -29,14 +29,14 @@ export interface TabInfo {
       <mat-tab-group class="code-tab-group" disableRipple>
         <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
           <ng-template mat-tab-label>
-            <span class="{{ tab.class }}">{{ tab.title }}</span>
+            <span class="{{ tab.class }}">{{ tab.header }}</span>
           </ng-template>
           <aio-code class="{{ tab.class }}"
                     [language]="tab.language"
                     [linenums]="tab.linenums"
                     [path]="tab.path"
                     [region]="tab.region"
-                    [title]="tab.title">
+                    [header]="tab.header">
           </aio-code>
         </mat-tab>
       </mat-tab-group>
@@ -46,18 +46,17 @@ export interface TabInfo {
 export class CodeTabsComponent implements OnInit, AfterViewInit {
   tabs: TabInfo[];
 
-  @Input('linenums') linenums: string;
+  @Input() linenums: string;
 
-  @ViewChild('content') content;
+  @ViewChild('content', { static: true }) content: ElementRef<HTMLDivElement>;
 
   @ViewChildren(CodeComponent) codeComponents: QueryList<CodeComponent>;
 
   ngOnInit() {
     this.tabs = [];
-    const codeExamples = this.content.nativeElement.querySelectorAll('code-pane');
+    const codeExamples = Array.from(this.content.nativeElement.querySelectorAll('code-pane'));
 
-    for (let i = 0; i < codeExamples.length; i++) {
-      const tabContent = codeExamples[i];
+    for (const tabContent of codeExamples) {
       this.tabs.push(this.getTabInfo(tabContent));
     }
   }
@@ -69,7 +68,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
   }
 
   /** Gets the extracted TabInfo data from the provided code-pane element. */
-  private getTabInfo(tabContent: HTMLElement): TabInfo {
+  private getTabInfo(tabContent: Element): TabInfo {
     return {
       class: tabContent.getAttribute('class'),
       code: tabContent.innerHTML,
@@ -77,7 +76,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
       linenums: tabContent.getAttribute('linenums') || this.linenums,
       path: tabContent.getAttribute('path') || '',
       region: tabContent.getAttribute('region') || '',
-      title: tabContent.getAttribute('title')
+      header: tabContent.getAttribute('header')
     };
   }
 }

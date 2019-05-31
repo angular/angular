@@ -7,6 +7,7 @@
  */
 
 export class MockBody implements Body {
+  readonly body !: ReadableStream;
   bodyUsed: boolean = false;
 
   constructor(public _body: string|null) {}
@@ -60,26 +61,29 @@ export class MockHeaders implements Headers {
 
   [Symbol.iterator]() { return this.map[Symbol.iterator](); }
 
-  append(name: string, value: string): void { this.map.set(name, value); }
+  append(name: string, value: string): void { this.map.set(name.toLowerCase(), value); }
 
-  delete (name: string): void { this.map.delete(name); }
+  delete (name: string): void { this.map.delete(name.toLowerCase()); }
 
   entries() { return this.map.entries(); }
 
   forEach(callback: Function): void { this.map.forEach(callback as any); }
 
-  get(name: string): string|null { return this.map.get(name) || null; }
+  get(name: string): string|null { return this.map.get(name.toLowerCase()) || null; }
 
-  has(name: string): boolean { return this.map.has(name); }
+  has(name: string): boolean { return this.map.has(name.toLowerCase()); }
 
   keys() { return this.map.keys(); }
 
-  set(name: string, value: string): void { this.map.set(name, value); }
+  set(name: string, value: string): void { this.map.set(name.toLowerCase(), value); }
 
   values() { return this.map.values(); }
 }
 
 export class MockRequest extends MockBody implements Request {
+  readonly isHistoryNavigation: boolean = false;
+  readonly isReloadNavigation: boolean = false;
+  readonly body !: ReadableStream;
   readonly cache: RequestCache = 'default';
   readonly credentials: RequestCredentials = 'omit';
   readonly destination: RequestDestination = 'document';
@@ -91,7 +95,6 @@ export class MockRequest extends MockBody implements Request {
   readonly redirect: RequestRedirect = 'error';
   readonly referrer: string = '';
   readonly referrerPolicy: ReferrerPolicy = 'no-referrer';
-  readonly type: RequestType = '';
   readonly signal: AbortSignal = null as any;
 
   url: string;
@@ -132,13 +135,13 @@ export class MockRequest extends MockBody implements Request {
 }
 
 export class MockResponse extends MockBody implements Response {
+  readonly trailer: Promise<Headers> = Promise.resolve(new MockHeaders());
   readonly headers: Headers = new MockHeaders();
   get ok(): boolean { return this.status >= 200 && this.status < 300; }
   readonly status: number;
   readonly statusText: string;
   readonly type: ResponseType = 'basic';
   readonly url: string = '';
-  readonly body: ReadableStream|null = null;
   readonly redirected: boolean = false;
 
   constructor(

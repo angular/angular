@@ -95,6 +95,8 @@ export class IcuPlaceholder implements Node {
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
 }
 
+export type AST = Message | Node;
+
 export interface Visitor {
   visitText(text: Text, context?: any): any;
   visitContainer(container: Container, context?: any): any;

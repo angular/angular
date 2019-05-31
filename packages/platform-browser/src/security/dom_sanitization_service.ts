@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
 
-import {DOCUMENT} from '../dom/dom_tokens';
 
 export {SecurityContext};
 
@@ -17,42 +17,42 @@ export {SecurityContext};
 /**
  * Marker interface for a value that's safe to use in a particular context.
  *
- *
+ * @publicApi
  */
 export interface SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as HTML.
  *
- *
+ * @publicApi
  */
 export interface SafeHtml extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as style (CSS).
  *
- *
+ * @publicApi
  */
 export interface SafeStyle extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as JavaScript.
  *
- *
+ * @publicApi
  */
 export interface SafeScript extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL linking to a document.
  *
- *
+ * @publicApi
  */
 export interface SafeUrl extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL to load executable code from.
  *
- *
+ * @publicApi
  */
 export interface SafeResourceUrl extends SafeValue {}
 
@@ -85,7 +85,7 @@ export interface SafeResourceUrl extends SafeValue {}
  * into this call. Make sure any user data is appropriately escaped for this security context.
  * For more detail, see the [Security Guide](http://g.co/ng/security).
  *
- *
+ * @publicApi
  */
 export abstract class DomSanitizer implements Sanitizer {
   /**

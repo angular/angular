@@ -2,30 +2,31 @@
 
 import { browser, element, by } from 'protractor';
 
-describe('Attribute directives', function () {
+describe('Attribute directives', () => {
 
   let _title = 'My First Attribute Directive';
 
-  beforeAll(function () {
+  beforeAll(() => {
     browser.get('');
   });
 
-  it(`should display correct title: ${_title}`, function () {
+  it(`should display correct title: ${_title}`, () => {
     expect(element(by.css('h1')).getText()).toEqual(_title);
   });
 
-  it('should be able to select green highlight', function () {
-    let highlightedEle = element(by.cssContainingText('p', 'Highlight me!'));
-    let lightGreen = 'rgba(144, 238, 144, 1)';
+  it('should be able to select green highlight', () => {
+    const highlightedEle = element(by.cssContainingText('p', 'Highlight me!'));
+    const lightGreen = 'rgba(144, 238, 144, 1)';
+    const getBgColor = () => highlightedEle.getCssValue('background-color');
 
     expect(highlightedEle.getCssValue('background-color')).not.toEqual(lightGreen);
-    // let greenRb = element(by.cssContainingText('input', 'Green'));
-    let greenRb = element.all(by.css('input')).get(0);
-    greenRb.click().then(function() {
-      // TypeScript Todo: find the right type for highlightedEle
-      browser.actions().mouseMove(highlightedEle as any).perform();
-      expect(highlightedEle.getCssValue('background-color')).toEqual(lightGreen);
-    });
 
+    const greenRb = element.all(by.css('input')).get(0);
+    greenRb.click();
+    browser.actions().mouseMove(highlightedEle).perform();
+
+    // Wait for up to 2s for the background color to be updated,
+    // to account for slow environments (e.g. CI).
+    browser.wait(() => highlightedEle.getCssValue('background-color').then(c => c === lightGreen), 2000);
   });
 });

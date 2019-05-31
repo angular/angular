@@ -16,7 +16,8 @@ import {WebWorkerPlatformLocation} from './platform_location';
  * The {@link PlatformLocation} providers that should be added when the {@link Location} is used in
  * a worker context.
  *
- * @experimental
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_APP_LOCATION_PROVIDERS = [
   {provide: PlatformLocation, useClass: WebWorkerPlatformLocation}, {

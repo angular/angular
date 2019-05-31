@@ -8,7 +8,7 @@
 
 import {$, browser, by, element, protractor} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 
 function waitForElement(selector: string) {
@@ -21,10 +21,9 @@ describe('Location', () => {
   afterEach(verifyNoBrowserErrors);
 
   it('should verify paths', () => {
-    browser.get('/common/location/ts/#/bar/baz');
+    browser.get('/location/#/bar/baz');
     waitForElement('hash-location');
-    expect(element.all(by.css('path-location code')).get(0).getText())
-        .toEqual('/common/location/ts');
+    expect(element.all(by.css('path-location code')).get(0).getText()).toEqual('/location');
     expect(element.all(by.css('hash-location code')).get(0).getText()).toEqual('/bar/baz');
   });
 });

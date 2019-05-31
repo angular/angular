@@ -11,7 +11,8 @@ import {MessageBus} from './message_bus';
 import {Serializer, SerializerTypes} from './serializer';
 
 /**
- * @experimental WebWorker support in Angular is experimental.
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 @Injectable()
 export class ClientMessageBrokerFactory {
@@ -38,7 +39,8 @@ interface PromiseCompleter {
 }
 
 /**
- * @experimental WebWorker support in Angular is experimental.
+ * @publicApi
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export class ClientMessageBroker {
   private _pending = new Map<string, PromiseCompleter>();
@@ -141,7 +143,7 @@ interface ResponseMessageData {
 }
 
 /**
- * @experimental WebWorker support in Angular is experimental.
+ * @publicApi
  */
 export class FnArg {
   constructor(
@@ -149,7 +151,7 @@ export class FnArg {
 }
 
 /**
- * @experimental WebWorker support in Angular is experimental.
+ * @publicApi
  */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}

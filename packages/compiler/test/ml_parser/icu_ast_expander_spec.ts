@@ -17,7 +17,7 @@ import {humanizeNodes} from './ast_spec_utils';
   describe('Expander', () => {
     function expand(template: string): ExpansionResult {
       const htmlParser = new HtmlParser();
-      const res = htmlParser.parse(template, 'url', true);
+      const res = htmlParser.parse(template, 'url', {tokenizeExpansionForms: true});
       return expandNodes(res.rootNodes);
     }
 

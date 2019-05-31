@@ -1,3 +1,10 @@
+/*
+Copyright Google LLC. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/
+
+
 /**
  * WEB VERSION FOR CURRENT ANGULAR BUILD
  * (based on systemjs.config.js in angular.io)
@@ -47,7 +54,6 @@
       '@angular/platform-browser': 'ng:platform-browser-builds/master/bundles/platform-browser.umd.js',
       '@angular/platform-browser/animations': 'ng:animations-builds/master/bundles/platform-browser-animations.umd.js',
       '@angular/platform-browser-dynamic': 'ng:platform-browser-dynamic-builds/master/bundles/platform-browser-dynamic.umd.js',
-      '@angular/http': 'ng:http-builds/master/bundles/http.umd.js',
       '@angular/router': 'ng:router-builds/master/bundles/router.umd.js',
       '@angular/router/upgrade': 'ng:router-builds/master/bundles/router-upgrade.umd.js',
       '@angular/forms': 'ng:forms-builds/master/bundles/forms.umd.js',
@@ -61,7 +67,6 @@
       '@angular/compiler/testing': 'ng:compiler-builds/master/bundles/compiler-testing.umd.js',
       '@angular/platform-browser/testing': 'ng:platform-browser-builds/master/bundles/platform-browser-testing.umd.js',
       '@angular/platform-browser-dynamic/testing': 'ng:platform-browser-dynamic-builds/master/bundles/platform-browser-dynamic-testing.umd.js',
-      '@angular/http/testing': 'ng:http-builds/master/bundles/http-testing.umd.js',
       '@angular/router/testing': 'ng:router-builds/master/bundles/router-testing.umd.js',
       '@angular/forms/testing': 'ng:forms-builds/master/bundles/forms-testing.umd.js',
 
@@ -94,9 +99,3 @@
   });
 
 })(this);
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

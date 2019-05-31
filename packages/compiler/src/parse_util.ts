@@ -139,3 +139,19 @@ export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): P
   return new ParseSourceSpan(
       new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
 }
+
+/**
+ * Generates Source Span object for a given R3 Type for JIT mode.
+ *
+ * @param kind Component or Directive.
+ * @param typeName name of the Component or Directive.
+ * @param sourceUrl reference to Component or Directive source.
+ * @returns instance of ParseSourceSpan that represent a given Component or Directive.
+ */
+export function r3JitTypeSourceSpan(
+    kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
+  const sourceFileName = `in ${kind} ${typeName} in ${sourceUrl}`;
+  const sourceFile = new ParseSourceFile('', sourceFileName);
+  return new ParseSourceSpan(
+      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
+}

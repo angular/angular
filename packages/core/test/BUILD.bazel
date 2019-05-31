@@ -1,60 +1,58 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [
             "**/*_node_only_spec.ts",
-            "render3/**/*.ts",
-            "ivy_local_empty_spec.ts",
         ],
     ),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
-        "@rxjs",
-        "@rxjs//operators",
-    ],
-)
-
-ts_library(
-    name = "ivy_local_empty_lib",
-    testonly = 1,
-    srcs = ["ivy_local_empty_spec.ts"],
-    deps = [
-        "//packages:types",
+        "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 
 ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*_node_only_spec.ts"]),
     deps = [
         ":test_lib",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -67,19 +65,9 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
-    ],
-)
-
-jasmine_node_test(
-    name = "ivy_local_empty_test",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
-    tags = [
-        "ivy-local",
-        "ivy-only",
-    ],
-    deps = [
-        ":ivy_local_empty_lib",
-        "//tools/testing:node_no_angular",
+        "@npm//base64-js",
+        "@npm//source-map",
+        "@npm//zone.js",
     ],
 )
 

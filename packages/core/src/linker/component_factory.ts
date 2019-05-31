@@ -8,43 +8,43 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {ViewRef} from './view_ref';
 
 /**
- * Represents an instance of a Component created via a {@link ComponentFactory}.
+ * Represents a component created by a `ComponentFactory`.
+ * Provides access to the component instance and related objects,
+ * and provides the means of destroying the instance.
  *
- * `ComponentRef` provides access to the Component Instance as well other objects related to this
- * Component Instance and allows you to destroy the Component Instance via the {@link #destroy}
- * method.
- *
+ * @publicApi
  */
 export abstract class ComponentRef<C> {
   /**
-   * Location of the Host Element of this Component Instance.
+   * The host or anchor [element](guide/glossary#element) for this component instance.
    */
   abstract get location(): ElementRef;
 
   /**
-   * The injector on which the component instance exists.
+   * The [dependency injector](guide/glossary#injector) for this component instance.
    */
   abstract get injector(): Injector;
 
   /**
-   * The instance of the Component.
+   * This component instance.
    */
   abstract get instance(): C;
 
   /**
-   * The {@link ViewRef} of the Host View of this Component instance.
+   * The [host view](guide/glossary#view-tree) defined by the template
+   * for this component instance.
    */
   abstract get hostView(): ViewRef;
 
   /**
-   * The {@link ChangeDetectorRef} of the Component instance.
+   * The change detector for this component instance.
    */
   abstract get changeDetectorRef(): ChangeDetectorRef;
 
@@ -59,24 +59,36 @@ export abstract class ComponentRef<C> {
   abstract destroy(): void;
 
   /**
-   * Allows to register a callback that will be called when the component is destroyed.
+   * A lifecycle hook that provides additional developer-defined cleanup
+   * functionality for the component.
+   * @param callback A handler function that cleans up developer-defined data
+   * associated with this component. Called when the `destroy()` method is invoked.
    */
   abstract onDestroy(callback: Function): void;
 }
 
+/**
+ * @publicApi
+ */
 export abstract class ComponentFactory<C> {
+  /**
+   * The component's HTML selector.
+   */
   abstract get selector(): string;
+  /**
+   * The component's type
+   */
   abstract get componentType(): Type<any>;
   /**
-   * selector for all <ng-content> elements in the component.
+   * Selector for all <ng-content> elements in the component.
    */
   abstract get ngContentSelectors(): string[];
   /**
-   * the inputs of the component.
+   * The inputs of the component.
    */
   abstract get inputs(): {propName: string, templateName: string}[];
   /**
-   * the outputs of the component.
+   * The outputs of the component.
    */
   abstract get outputs(): {propName: string, templateName: string}[];
   /**

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, InjectionToken, Optional, ɵConsole as Console} from '@angular/core';
-
-import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
@@ -57,26 +56,35 @@ const EVENT_NAMES = {
  * DI token for providing [HammerJS](http://hammerjs.github.io/) support to Angular.
  * @see `HammerGestureConfig`
  *
- * @experimental
+ * @publicApi
  */
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
 
-/** Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded. */
+/**
+ * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
+ *
+ * @publicApi
+ */
 export type HammerLoader = () => Promise<void>;
 
-/** Injection token used to provide a {@link HammerLoader} to Angular. */
+/**
+ * Injection token used to provide a {@link HammerLoader} to Angular.
+ *
+ * @publicApi
+ */
 export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
 
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
   off(eventName: string, callback?: Function): void;
+  destroy?(): void;
 }
 
 /**
  * An injectable [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
  * for gesture recognition. Configures specific event recognition.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class HammerGestureConfig {
@@ -214,7 +222,13 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
         zone.runGuarded(function() { handler(eventObj); });
       };
       mc.on(eventName, callback);
-      return () => mc.off(eventName, callback);
+      return () => {
+        mc.off(eventName, callback);
+        // destroy mc to prevent memory leak
+        if (typeof mc.destroy === 'function') {
+          mc.destroy();
+        }
+      };
     });
   }
 

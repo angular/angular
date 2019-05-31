@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -24,13 +24,15 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     (focus)="doFocus()"
     (click)="doSearch()">`
 })
-export class SearchBoxComponent implements OnInit {
+export class SearchBoxComponent implements AfterViewInit {
 
   private searchDebounce = 300;
   private searchSubject = new Subject<string>();
 
-  @ViewChild('searchBox') searchBox: ElementRef;
+  @ViewChild('searchBox', { static: true }) searchBox: ElementRef;
+  // tslint:disable-next-line: no-output-on-prefix
   @Output() onSearch = this.searchSubject.pipe(distinctUntilChanged(), debounceTime(this.searchDebounce));
+  // tslint:disable-next-line: no-output-on-prefix
   @Output() onFocus = new EventEmitter<string>();
 
   constructor(private locationService: LocationService) { }
@@ -38,10 +40,10 @@ export class SearchBoxComponent implements OnInit {
   /**
    * When we first show this search box we trigger a search if there is a search query in the URL
    */
-  ngOnInit() {
+  ngAfterViewInit() {
     const query = this.locationService.search()['search'];
     if (query) {
-      this.query = query;
+      this.query = this.decodeQuery(query);
       this.doSearch();
     }
   }
@@ -56,6 +58,11 @@ export class SearchBoxComponent implements OnInit {
 
   focus() {
     this.searchBox.nativeElement.focus();
+  }
+
+  private decodeQuery(query: string): string {
+    // `decodeURIComponent` does not handle `+` for spaces, replace via RexEx.
+    return query.replace(/\+/g, ' ');
   }
 
   private get query() { return this.searchBox.nativeElement.value; }

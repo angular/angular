@@ -11,11 +11,10 @@
  * We do this by defining a subset of DOM API to be the renderer and than
  * use that time for rendering.
  *
- * At runtime we can than use the DOM api directly, in server or web-worker
+ * At runtime we can then use the DOM api directly, in server or web-worker
  * it will be easy to implement such API.
  */
 
-import {ViewEncapsulation} from '../../metadata/view';
 import {RendererStyleFlags2, RendererType2} from '../../render/api';
 
 
@@ -26,6 +25,12 @@ export enum RendererStyleFlags3 {
 }
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
+
+export type GlobalTargetName = 'document' | 'window' | 'body';
+
+export type GlobalTargetResolver = (element: any) => {
+  name: GlobalTargetName, target: EventTarget
+};
 
 /**
  * Object Oriented style of API needed to create elements and text nodes.
@@ -69,8 +74,11 @@ export interface ProceduralRenderer3 {
   destroyNode?: ((node: RNode) => void)|null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void;
-  removeChild(parent: RElement, oldChild: RNode): void;
+  removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
   selectRootElement(selectorOrNode: string|any): RElement;
+
+  parentNode(node: RNode): RElement|null;
+  nextSibling(node: RNode): RNode|null;
 
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void;
   removeAttribute(el: RElement, name: string, namespace?: string|null): void;
@@ -81,10 +89,12 @@ export interface ProceduralRenderer3 {
       flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   setProperty(el: RElement, name: string, value: any): void;
-  setValue(node: RText, value: string): void;
+  setValue(node: RText|RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void;
+  listen(
+      target: GlobalTargetName|RNode, eventName: string,
+      callback: (event: any) => boolean | void): () => void;
 }
 
 export interface RendererFactory3 {
@@ -100,7 +110,27 @@ export const domRendererFactory3: RendererFactory3 = {
 
 /** Subset of API needed for appending elements and text nodes. */
 export interface RNode {
-  removeChild(oldChild: RNode): void;
+  /**
+   * Returns the parent Element, Document, or DocumentFragment
+   */
+  parentNode: RNode|null;
+
+
+  /**
+   * Returns the parent Element if there is one
+   */
+  parentElement: RElement|null;
+
+  /**
+   * Gets the Node immediately following this one in the parent's childNodes
+   */
+  nextSibling: RNode|null;
+
+  /**
+   * Removes a child from the current node and returns the removed node
+   * @param oldChild the child node to remove
+   */
+  removeChild(oldChild: RNode): RNode;
 
   /**
    * Insert a child node.
@@ -146,7 +176,7 @@ export interface RDomTokenList {
 
 export interface RText extends RNode { textContent: string|null; }
 
-export interface RComment extends RNode {}
+export interface RComment extends RNode { textContent: string|null; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

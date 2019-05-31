@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
 /**
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class NoopAnimationDriver implements AnimationDriver {
@@ -40,7 +40,7 @@ export class NoopAnimationDriver implements AnimationDriver {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export abstract class AnimationDriver {
   static NOOP: AnimationDriver = new NoopAnimationDriver();

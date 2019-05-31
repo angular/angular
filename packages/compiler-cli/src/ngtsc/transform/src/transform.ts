@@ -6,25 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedNodeExpr} from '@angular/compiler';
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, ReflectionHost} from '../../host';
-import {relativePathBetween} from '../../util/src/path';
+import {DefaultImportRecorder, ImportRewriter} from '../../imports';
+import {Decorator, ReflectionHost} from '../../reflection';
+import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
-import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
-import {ImportManager, translateExpression, translateStatement} from './translator';
+import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 
+const CLOSURE_FILE_OVERVIEW_REGEXP = /\s+@fileoverview\s+/i;
+
+/**
+ * Metadata to support @fileoverview blocks (Closure annotations) extracting/restoring.
+ */
+interface FileOverviewMeta {
+  comments: ts.SynthesizedComment[];
+  host: ts.Statement;
+  trailing: boolean;
+}
+
 export function ivyTransformFactory(
-    compilation: IvyCompilation, reflector: ReflectionHost,
-    coreImportsFrom: ts.SourceFile | null): ts.TransformerFactory<ts.SourceFile> {
+    compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(compilation, context, reflector, coreImportsFrom, file);
+      return transformIvySourceFile(
+          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled,
+          defaultImportRecorder);
     };
   };
 }
@@ -32,7 +46,8 @@ export function ivyTransformFactory(
 class IvyVisitor extends Visitor {
   constructor(
       private compilation: IvyCompilation, private reflector: ReflectionHost,
-      private importManager: ImportManager, private isCore: boolean) {
+      private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean, private constantPool: ConstantPool) {
     super();
   }
 
@@ -40,7 +55,7 @@ class IvyVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
-    const res = this.compilation.compileIvyFieldFor(node);
+    const res = this.compilation.compileIvyFieldFor(node, this.constantPool);
 
     if (res !== undefined) {
       // There is at least one field to add.
@@ -49,14 +64,16 @@ class IvyVisitor extends Visitor {
 
       res.forEach(field => {
         // Translate the initializer for the field into TS nodes.
-        const exprNode = translateExpression(field.initializer, this.importManager);
+        const exprNode =
+            translateExpression(field.initializer, this.importManager, this.defaultImportRecorder);
 
         // Create a static property declaration for the new field.
         const property = ts.createProperty(
             undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
             undefined, exprNode);
 
-        field.statements.map(stmt => translateStatement(stmt, this.importManager))
+        field.statements
+            .map(stmt => translateStatement(stmt, this.importManager, this.defaultImportRecorder))
             .forEach(stmt => statements.push(stmt));
 
         members.push(property);
@@ -66,12 +83,11 @@ class IvyVisitor extends Visitor {
       node = ts.updateClassDeclaration(
           node,
           // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(
-              node.decorators, this.compilation.ivyDecoratorFor(node) !.node as ts.Decorator),
+          maybeFilterDecorator(node.decorators, this.compilation.ivyDecoratorsFor(node)),
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           // Map over the class members and remove any Angular decorators from them.
           members.map(member => this._stripAngularDecorators(member)));
-      return {node, before: statements};
+      return {node, after: statements};
     }
 
     return {node};
@@ -188,36 +204,78 @@ class IvyVisitor extends Visitor {
  */
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
-    coreImportsFrom: ts.SourceFile | null, file: ts.SourceFile): ts.SourceFile {
-  const importManager = new ImportManager(coreImportsFrom !== null);
+    importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
+    isClosureCompilerEnabled: boolean,
+    defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
+  const constantPool = new ConstantPool();
+  const importManager = new ImportManager(importRewriter);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
-  const sf = visit(
-      file, new IvyVisitor(compilation, reflector, importManager, coreImportsFrom !== null),
-      context);
+  const visitor = new IvyVisitor(
+      compilation, reflector, importManager, defaultImportRecorder, isCore, constantPool);
+  let sf = visit(file, visitor, context);
 
-  // Generate the import statements to prepend.
-  const imports = importManager.getAllImports(file.fileName, coreImportsFrom).map(i => {
-    return ts.createImportDeclaration(
-        undefined, undefined,
-        ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
-        ts.createLiteral(i.name));
-  });
+  // Generate the constant statements first, as they may involve adding additional imports
+  // to the ImportManager.
+  const constants = constantPool.statements.map(
+      stmt => translateStatement(stmt, importManager, defaultImportRecorder));
 
-  // Prepend imports if needed.
-  if (imports.length > 0) {
-    sf.statements = ts.createNodeArray([...imports, ...sf.statements]);
+  // Preserve @fileoverview comments required by Closure, since the location might change as a
+  // result of adding extra imports and constant pool statements.
+  const fileOverviewMeta = isClosureCompilerEnabled ? getFileOverviewComment(sf.statements) : null;
+
+  // Add new imports for this file.
+  sf = addImports(importManager, sf, constants);
+
+  if (fileOverviewMeta !== null) {
+    setFileOverviewComment(sf, fileOverviewMeta);
   }
+
   return sf;
+}
+
+function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOverviewMeta|null {
+  if (statements.length > 0) {
+    const host = statements[0];
+    let trailing = false;
+    let comments = ts.getSyntheticLeadingComments(host);
+    // If @fileoverview tag is not found in source file, tsickle produces fake node with trailing
+    // comment and inject it at the very beginning of the generated file. So we need to check for
+    // leading as well as trailing comments.
+    if (!comments || comments.length === 0) {
+      trailing = true;
+      comments = ts.getSyntheticTrailingComments(host);
+    }
+    if (comments && comments.length > 0 && CLOSURE_FILE_OVERVIEW_REGEXP.test(comments[0].text)) {
+      return {comments, host, trailing};
+    }
+  }
+  return null;
+}
+
+function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): void {
+  const {comments, host, trailing} = fileoverview;
+  // If host statement is no longer the first one, it means that extra statements were added at the
+  // very beginning, so we need to relocate @fileoverview comment and cleanup the original statement
+  // that hosted it.
+  if (sf.statements.length > 0 && host !== sf.statements[0]) {
+    if (trailing) {
+      ts.setSyntheticTrailingComments(host, undefined);
+    } else {
+      ts.setSyntheticLeadingComments(host, undefined);
+    }
+    ts.setSyntheticLeadingComments(sf.statements[0], comments);
+  }
 }
 
 function maybeFilterDecorator(
     decorators: ts.NodeArray<ts.Decorator>| undefined,
-    toRemove: ts.Decorator): ts.NodeArray<ts.Decorator>|undefined {
+    toRemove: ts.Decorator[]): ts.NodeArray<ts.Decorator>|undefined {
   if (decorators === undefined) {
     return undefined;
   }
-  const filtered = decorators.filter(dec => ts.getOriginalNode(dec) !== toRemove);
+  const filtered = decorators.filter(
+      dec => toRemove.find(decToRemove => ts.getOriginalNode(dec) === decToRemove) === undefined);
   if (filtered.length === 0) {
     return undefined;
   }

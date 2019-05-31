@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -15,9 +15,7 @@ import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {BuiltinType, Declaration, DeclarationError, DeclarationKind, Declarations, Definition, DiagnosticMessageChain, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
-import {isTypescriptVersion} from './utils';
-
+import {Declaration, DeclarationError, Declarations, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, Symbol, SymbolQuery, TemplateSource, TemplateSources} from './types';
 
 
 /**
@@ -38,11 +36,7 @@ export function createLanguageServiceFromTypescript(
  * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    return new ParseTreeResult([], []);
-  }
+  parse(): ParseTreeResult { return new ParseTreeResult([], []); }
 }
 
 /**
@@ -58,7 +52,7 @@ export class DummyResourceLoader extends ResourceLoader {
  * The `TypeScriptServiceHost` implements the Angular `LanguageServiceHost` using
  * the TypeScript language services.
  *
- * @experimental
+ * @publicApi
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
   // TODO(issue/24571): remove '!'.
@@ -166,7 +160,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         };
       } else {
         const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-        const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
+        const programFiles = this.program !.getSourceFiles().map(sf => sf.fileName);
         analyzedModules =
             analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
       }
@@ -224,7 +218,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getSourceFile(fileName: string): ts.SourceFile|undefined {
-    return this.tsService.getProgram().getSourceFile(fileName);
+    return this.tsService.getProgram() !.getSourceFile(fileName);
   }
 
   updateAnalyzedModules() {
@@ -244,7 +238,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private get checker() {
     let checker = this._checker;
     if (!checker) {
-      checker = this._checker = this.program.getTypeChecker();
+      checker = this._checker = this.program !.getTypeChecker();
     }
     return checker;
   }
@@ -257,7 +251,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           this._staticSymbolResolver.invalidateFile(fileName);
       this.clearCaches();
       const seen = new Set<string>();
-      for (let sourceFile of this.program.getSourceFiles()) {
+      for (let sourceFile of this.program !.getSourceFiles()) {
         const fileName = sourceFile.fileName;
         seen.add(fileName);
         const version = this.host.getScriptVersion(fileName);
@@ -325,14 +319,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         span,
         type,
         get members() {
-          return getClassMembersFromDeclaration(t.program, t.checker, sourceFile, declaration);
+          return getClassMembersFromDeclaration(t.program !, t.checker, sourceFile, declaration);
         },
         get query() {
           if (!queryCache) {
             const pipes = t.service.getPipesAt(fileName, node.getStart());
             queryCache = getSymbolQuery(
-                t.program, t.checker, sourceFile,
-                () => getPipesTable(sourceFile, t.program, t.checker, pipes));
+                t.program !, t.checker, sourceFile,
+                () => getPipesTable(sourceFile, t.program !, t.checker, pipes));
           }
           return queryCache;
         }
@@ -394,7 +388,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       // The host's getCurrentDirectory() is not reliable as it is always "" in
       // tsserver. We don't need the exact base directory, just one that contains
       // a source file.
-      const source = this.tsService.getProgram().getSourceFile(this.context);
+      const source = this.tsService.getProgram() !.getSourceFile(this.context);
       if (!source) {
         throw new Error('Internal error: no context could be determined');
       }
@@ -410,7 +404,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         options.paths = compilerOptions.paths;
       }
       result = this._reflectorHost =
-          new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
+          new ReflectorHost(() => this.tsService.getProgram() !, this.host, options);
     }
     return result;
   }

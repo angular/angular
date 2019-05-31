@@ -109,4 +109,11 @@ describe('autoLinkCode post-processor', () => {
     processor.$process([doc]);
     expect(doc.renderedContent).toEqual('<code-example><a href="a/b/myclass" class="code-anchor">MyClass</a></code-example>');
   });
+
+  it('should ignore code blocks that are marked with a `no-auto-link` class', () => {
+    aliasMap.addDoc({ docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass' });
+    const doc = { docType: 'test-doc', renderedContent: '<code class="no-auto-link">MyClass</code>' };
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code class="no-auto-link">MyClass</code>');
+  });
 });

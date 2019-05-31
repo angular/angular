@@ -37,7 +37,6 @@ export declare class ActivatedRouteSnapshot {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -45,7 +44,6 @@ export declare class ActivationEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ActivationStart {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -54,22 +52,21 @@ export declare class ActivationStart {
 }
 
 export interface CanActivate {
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 export interface CanActivateChild {
-    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 export interface CanDeactivate<T> {
-    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
+    canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 export interface CanLoad {
-    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean;
+    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
 }
 
-/** @experimental */
 export declare class ChildActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -77,7 +74,6 @@ export declare class ChildActivationEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ChildActivationStart {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -105,7 +101,9 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
-/** @experimental */
+/** @deprecated */
+export declare type DeprecatedLoadChildren = string;
+
 export declare type DetachedRouteHandle = {};
 
 export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
@@ -126,7 +124,6 @@ export interface ExtraOptions {
     useHash?: boolean;
 }
 
-/** @experimental */
 export declare class GuardsCheckEnd extends RouterEvent {
     shouldActivate: boolean;
     state: RouterStateSnapshot;
@@ -140,7 +137,6 @@ export declare class GuardsCheckEnd extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare class GuardsCheckStart extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -152,9 +148,19 @@ export declare class GuardsCheckStart extends RouterEvent {
     toString(): string;
 }
 
-export declare type LoadChildren = string | LoadChildrenCallback;
+export declare type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
-export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>>;
+export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Observable<Type<any>> | Promise<NgModuleFactory<any> | Type<any> | any>;
+
+export declare type Navigation = {
+    id: number;
+    initialUrl: string | UrlTree;
+    extractedUrl: UrlTree;
+    finalUrl?: UrlTree;
+    trigger: 'imperative' | 'popstate' | 'hashchange';
+    extras: NavigationExtras;
+    previousNavigation: Navigation | null;
+};
 
 export declare class NavigationCancel extends RouterEvent {
     reason: string;
@@ -192,11 +198,15 @@ export interface NavigationExtras {
     relativeTo?: ActivatedRoute | null;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
+    state?: {
+        [k: string]: any;
+    };
 }
 
 export declare class NavigationStart extends RouterEvent {
     navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
     restoredState?: {
+        [k: string]: any;
         navigationId: number;
     } | null;
     constructor(
@@ -204,12 +214,12 @@ export declare class NavigationStart extends RouterEvent {
     url: string,
     navigationTrigger?: 'imperative' | 'popstate' | 'hashchange',
     restoredState?: {
+        [k: string]: any;
         navigationId: number;
     } | null);
     toString(): string;
 }
 
-/** @experimental */
 export declare class NoPreloading implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
@@ -233,12 +243,10 @@ export declare type Params = {
     [key: string]: any;
 };
 
-/** @experimental */
 export declare class PreloadAllModules implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
 
-/** @experimental */
 export declare abstract class PreloadingStrategy {
     abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
@@ -255,7 +263,6 @@ export declare type ResolveData = {
     [name: string]: any;
 };
 
-/** @experimental */
 export declare class ResolveEnd extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -267,7 +274,6 @@ export declare class ResolveEnd extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ResolveStart extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -297,7 +303,6 @@ export interface Route {
     runGuardsAndResolvers?: RunGuardsAndResolvers;
 }
 
-/** @experimental */
 export declare class RouteConfigLoadEnd {
     route: Route;
     constructor(
@@ -305,7 +310,6 @@ export declare class RouteConfigLoadEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class RouteConfigLoadStart {
     route: Route;
     constructor(
@@ -330,6 +334,7 @@ export declare class Router {
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
+    getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
@@ -343,10 +348,8 @@ export declare class Router {
 
 export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 
-/** @experimental */
 export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
-/** @experimental */
 export declare abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
@@ -355,7 +358,6 @@ export declare abstract class RouteReuseStrategy {
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
 }
 
-/** @experimental */
 export declare class RouterEvent {
     id: number;
     url: string;
@@ -375,6 +377,9 @@ export declare class RouterLink {
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
+    state?: {
+        [k: string]: any;
+    };
     readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
     onClick(): boolean;
@@ -388,7 +393,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     routerLinkActiveOptions: {
         exact: boolean;
     };
-    constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef);
+    constructor(router: Router, element: ElementRef, renderer: Renderer2, link?: RouterLink | undefined, linkWithHref?: RouterLinkWithHref | undefined);
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
@@ -406,6 +411,9 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
+    state?: {
+        [k: string]: any;
+    };
     target: string;
     readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
@@ -455,7 +463,6 @@ export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
 
 export declare type Routes = Route[];
 
-/** @experimental */
 export declare const ROUTES: InjectionToken<Route[][]>;
 
 export declare class RoutesRecognized extends RouterEvent {
@@ -469,8 +476,7 @@ export declare class RoutesRecognized extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
-export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export declare type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always' | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 export declare class Scroll {
     readonly anchor: string | null;
@@ -483,17 +489,14 @@ export declare class Scroll {
     toString(): string;
 }
 
-/** @experimental */
 export declare abstract class UrlHandlingStrategy {
     abstract extract(url: UrlTree): UrlTree;
     abstract merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree;
     abstract shouldProcessUrl(url: UrlTree): boolean;
 }
 
-/** @experimental */
 export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
 
-/** @experimental */
 export declare type UrlMatchResult = {
     consumed: UrlSegment[];
     posParams?: {

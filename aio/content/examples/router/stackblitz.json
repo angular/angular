@@ -4,8 +4,8 @@
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[0-9].*",
-    "!src/app/crisis-list.component.ts",
-    "!src/app/hero-list.component.ts"
+    "!src/app/crisis-list/*.*",
+    "!src/app/hero-list/*.*"
   ],
   "tags": ["router"]
 }

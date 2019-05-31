@@ -68,6 +68,24 @@ export class BrowserDetection {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
         this._ua.indexOf('Edge') == -1;
   }
+
+  get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
+
+  get supportsDeprecatedCustomCustomElementsV0() {
+    return (typeof(document as any).registerElement !== 'undefined');
+  }
+
+  get supportsRegExUnicodeFlag(): boolean { return RegExp.prototype.hasOwnProperty('unicode'); }
+
+  get supportsShadowDom() {
+    const testEl = document.createElement('div');
+    return (typeof testEl.attachShadow !== 'undefined');
+  }
+
+  get supportsDeprecatedShadowDomV0() {
+    const testEl = document.createElement('div') as any;
+    return (typeof testEl.createShadowRoot !== 'undefined');
+  }
 }
 
 BrowserDetection.setup();
@@ -89,7 +107,7 @@ export function normalizeCSS(css: string): string {
       .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
-const _singleTagWhitelist = ['br', 'hr', 'input'];
+const _selfClosingTags = ['br', 'hr', 'input'];
 export function stringifyElement(el: any /** TODO #9100 */): string {
   let result = '';
   if (getDOM().isElementNode(el)) {
@@ -100,14 +118,19 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     const attributeMap = getDOM().attributeMap(el);
-    const keys: string[] = Array.from(attributeMap.keys()).sort();
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const attValue = attributeMap.get(key);
+    const sortedKeys = Array.from(attributeMap.keys()).sort();
+    for (const key of sortedKeys) {
       const lowerCaseKey = key.toLowerCase();
+      let attValue = attributeMap.get(key);
+
       if (typeof attValue !== 'string') {
         result += ` ${lowerCaseKey}`;
       } else {
+        // Browsers order style rules differently. Order them alphabetically for consistency.
+        if (lowerCaseKey === 'style') {
+          attValue = attValue.split(/; ?/).filter(s => !!s).sort().map(s => `${s};`).join(' ');
+        }
+
         result += ` ${lowerCaseKey}="${attValue}"`;
       }
     }
@@ -121,7 +144,7 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     }
 
     // Closing tag
-    if (_singleTagWhitelist.indexOf(tagName) == -1) {
+    if (_selfClosingTags.indexOf(tagName) == -1) {
       result += `</${tagName}>`;
     }
   } else if (getDOM().isCommentNode(el)) {

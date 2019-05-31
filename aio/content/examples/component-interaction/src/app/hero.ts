@@ -3,7 +3,7 @@ export class Hero {
 }
 
 export const HEROES = [
-  {name: 'Mr. IQ'},
+  {name: 'Dr IQ'},
   {name: 'Magneta'},
   {name: 'Bombasto'}
 ];

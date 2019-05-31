@@ -12,12 +12,10 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {HostListener} from '../../src/metadata/directives';
-import {TestBed} from '../../testing';
-import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
-
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
@@ -889,7 +887,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
              ]
            })
            class Cmp {
-             @ViewChild('container') public container: any;
+             @ViewChild('container', {static: false}) public container: any;
              public items: any[] = [];
            }
 
@@ -1203,9 +1201,9 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
              public exp1: any = '';
              public exp2: any = true;
 
-             @ViewChild('ancestor') public ancestorElm: any;
+             @ViewChild('ancestor', {static: false}) public ancestorElm: any;
 
-             @ViewChild('parent') public parentElm: any;
+             @ViewChild('parent', {static: false}) public parentElm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1282,9 +1280,9 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
              public exp2: any = '';
              public parentExp: any = true;
 
-             @ViewChild('ancestor') public ancestorElm: any;
+             @ViewChild('ancestor', {static: false}) public ancestorElm: any;
 
-             @ViewChild('parent') public parentElm: any;
+             @ViewChild('parent', {static: false}) public parentElm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1638,7 +1636,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child') public child: any;
+             @ViewChild('child', {static: false}) public child: any;
            }
 
            @Component({
@@ -1687,7 +1685,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child') public child: any;
+             @ViewChild('child', {static: true}) public child: any;
            }
 
            @Component({
@@ -1705,6 +1703,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
            const fixture = TestBed.createComponent(ParentCmp);
            const cmp = fixture.componentInstance;
+
            cmp.child.items = [4, 5, 6];
            fixture.detectChanges();
 
@@ -1849,9 +1848,9 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent') public elm1: any;
+          @ViewChild('parent', {static: false}) public elm1: any;
 
-          @ViewChild('child') public elm2: any;
+          @ViewChild('child', {static: false}) public elm2: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1911,7 +1910,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
              public exp: any;
              public items: any[] = [0, 1, 2, 3, 4];
 
-             @ViewChild('parent') public elm: any;
+             @ViewChild('parent', {static: false}) public elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1981,7 +1980,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           public exp: any;
           public items: any[] = [0, 1, 2, 3, 4];
 
-          @ViewChild('parent') public elm: any;
+          @ViewChild('parent', {static: false}) public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2034,7 +2033,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
              public exp1: any;
              public exp2: any;
 
-             @ViewChild('parent') public elm: any;
+             @ViewChild('parent', {static: false}) public elm: any;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2104,7 +2103,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent') public elm: any;
+          @ViewChild('parent', {static: false}) public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2157,7 +2156,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent') public elm: any;
+          @ViewChild('parent', {static: false}) public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2209,7 +2208,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           public exp1: any;
           public exp2: any;
 
-          @ViewChild('parent') public elm: any;
+          @ViewChild('parent', {static: false}) public elm: any;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2258,7 +2257,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            })
            class ParentCmp {
              public exp: boolean = true;
-             @ViewChild('child') public childElm: any;
+             @ViewChild('child', {static: false}) public childElm: any;
 
              public childEvent: any;
 
@@ -2694,7 +2693,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         class ParentCmp {
           public exp: any;
 
-          @ViewChild('child') public childCmp: any;
+          @ViewChild('child', {static: false}) public childCmp: any;
         }
 
         @Component({
@@ -2758,7 +2757,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           `
            })
            class ParentCmp {
-             @ViewChild('child') public childCmp: any;
+             @ViewChild('child', {static: false}) public childCmp: any;
 
              public exp: any;
              public log: string[] = [];
@@ -2936,7 +2935,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child') public childCmp: any;
+             @ViewChild('child', {static: false}) public childCmp: any;
            }
 
            @Component({
@@ -3014,13 +3013,13 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            class ParentCmp {
              public exp: any;
 
-             @ViewChild('child') public innerCmp: any;
+             @ViewChild('child', {static: false}) public innerCmp: any;
            }
 
            @Component(
                {selector: 'child-cmp', template: '<grandchild-cmp #grandchild></grandchild-cmp>'})
            class ChildCmp {
-             @ViewChild('grandchild') public innerCmp: any;
+             @ViewChild('grandchild', {static: false}) public innerCmp: any;
            }
 
            @Component({

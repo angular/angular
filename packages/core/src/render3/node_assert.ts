@@ -6,18 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertEqual} from './assert';
-import {LNode, TNodeType} from './interfaces/node';
+import {assertDefined, assertEqual} from '../util/assert';
+import {TNode, TNodeType} from './interfaces/node';
 
-export function assertNodeType(node: LNode, type: TNodeType) {
-  assertDefined(node, 'should be called with a node');
-  assertEqual(node.tNode.type, type, `should be a ${typeName(type)}`);
+export function assertNodeType(tNode: TNode, type: TNodeType) {
+  assertDefined(tNode, 'should be called with a TNode');
+  assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
 }
 
-export function assertNodeOfPossibleTypes(node: LNode, ...types: TNodeType[]) {
-  assertDefined(node, 'should be called with a node');
-  const found = types.some(type => node.tNode.type === type);
-  assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);
+export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]) {
+  assertDefined(tNode, 'should be called with a TNode');
+  const found = types.some(type => tNode.type === type);
+  assertEqual(
+      found, true,
+      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
 }
 
 function typeName(type: TNodeType): string {
@@ -25,5 +27,6 @@ function typeName(type: TNodeType): string {
   if (type == TNodeType.Container) return 'Container';
   if (type == TNodeType.View) return 'View';
   if (type == TNodeType.Element) return 'Element';
+  if (type == TNodeType.ElementContainer) return 'ElementContainer';
   return '<unknown>';
 }

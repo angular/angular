@@ -7,9 +7,11 @@
  */
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
-const elProto = Element.prototype as any;
-const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-    elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+const matches = (() => {
+  const elProto = Element.prototype as any;
+  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
+      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+})();
 
 /**
  * Provide methods for scheduling the execution of a callback.
@@ -74,8 +76,8 @@ export function createCustomEvent(doc: Document, name: string, detail: any): Cus
 /**
  * Check whether the input is an `Element`.
  */
-export function isElement(node: Node): node is Element {
-  return node.nodeType === Node.ELEMENT_NODE;
+export function isElement(node: Node | null): node is Element {
+  return !!node && node.nodeType === Node.ELEMENT_NODE;
 }
 
 /**

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 # Test that should only be run in node
 NODE_ONLY = [
@@ -13,6 +12,7 @@ UTILS = [
 
 ts_library(
     name = "test_utils",
+    testonly = True,
     srcs = UTILS,
     visibility = [
         "//packages/compiler-cli/test:__subpackages__",
@@ -22,12 +22,13 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@npm//typescript",
     ],
 )
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = NODE_ONLY + UTILS,
@@ -37,8 +38,10 @@ ts_library(
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
@@ -48,7 +51,7 @@ ts_library(
 
 ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         NODE_ONLY,
         exclude = UTILS,
@@ -61,6 +64,7 @@ ts_library(
         "//packages/compiler/test/expression_parser/utils",
         "//packages/compiler/testing",
         "//packages/core",
+        "@npm//typescript",
     ],
 )
 
@@ -72,16 +76,25 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core:npm_package",
     ],
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
-        "//packages/core",
         "//tools/testing:node",
+        "@npm//base64-js",
+        "@npm//source-map",
     ],
 )
 
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
     deps = [
         ":test_lib",
     ],

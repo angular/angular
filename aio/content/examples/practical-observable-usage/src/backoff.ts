@@ -5,10 +5,9 @@ import { retryWhen, map, mergeMap } from 'rxjs/operators';
 
 function backoff(maxTries, ms) {
  return pipe(
-   retryWhen(attempts => range(1, maxTries)
+   retryWhen(attempts => zip(range(1, maxTries), attempts)
      .pipe(
-       zip(attempts, (i) => i),
-       map(i => i * i),
+       map(([i]) => i * i),
        mergeMap(i =>  timer(i * ms))
      )
    )

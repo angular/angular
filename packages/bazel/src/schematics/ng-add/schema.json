@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAngularBazelNgAdd",
+  "title": "Angular Bazel Ng Add Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the project.",
+      "type": "string",
+      "format": "html-selector",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "skipInstall": {
+      "description": "When true, does not install dependency packages.",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+  ]
+}

@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 // #docregion observer
 
 // Create simple observable that emits three values
-const myObservable = Observable.of(1, 2, 3);
+const myObservable = of(1, 2, 3);
 
 // Create observer object
 const myObserver = {

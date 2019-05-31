@@ -1,0 +1,24 @@
+{
+  "scripts": [
+    { "name": "ng", "command": "ng" },
+    { "name": "build", "command": "ng build --prod" },
+    { "name": "build:lib", "command": "ng build my-lib" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e" }
+  ],
+  "dependencies": [],
+  "devDependencies": [
+    "@angular-devkit/build-angular",
+    "@angular-devkit/build-ng-packagr",
+    "@angular/cli",
+    "@types/jasminewd2",
+    "jasmine-spec-reporter",
+    "karma-coverage-istanbul-reporter",
+    "ng-packagr",
+    "tsickle",
+    "tslib",
+    "ts-node"
+  ]
+}

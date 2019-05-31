@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('r3_view_compiler', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('hello world', () => {
@@ -47,7 +47,6 @@ describe('r3_view_compiler', () => {
       app: {
         'example.ts': `
         import {Component, OnInit, OnDestroy, ElementRef, Input, NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
 
         @Component({
           selector: 'my-app',
@@ -83,7 +82,6 @@ describe('r3_view_compiler', () => {
 
         @NgModule({
           declarations: [TodoComponent, MyApp],
-          imports: [CommonModule]
         })
         export class TodoModule{}
         `
@@ -95,7 +93,7 @@ describe('r3_view_compiler', () => {
 
   describe('interpolations', () => {
     // Regression #21927
-    it('should generate a correct call to bV with more than 8 interpolations', () => {
+    it('should generate a correct call to textInterpolateV with more than 8 interpolations', () => {
       const files: MockDirectory = {
         app: {
           'example.ts': `
@@ -114,11 +112,87 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call = `$r3$.ɵiV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
-        " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
-        " "])`;
+      const bV_call = `
+      …
+      function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵɵtext(0);
+        }
+        if (rf & 2) {
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵtextInterpolateV([" ", ctx.list[0], " ", ctx.list[1], " ", ctx.list[2], " ", ctx.list[3], " ", ctx.list[4], " ", ctx.list[5], " ", ctx.list[6], " ", ctx.list[7], " ", ctx.list[8], " "]);
+        }
+      }
+      …
+      `;
       const result = compile(files, angularFiles);
       expectEmit(result.source, bV_call, 'Incorrect bV call');
+    });
+  });
+
+  describe('animations', () => {
+    it('should not register any @attr attributes as static attributes', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<div @attr [@binding]="exp"></div>'
+          })
+          export class MyApp {
+          }
+
+          @NgModule({declarations: [MyApp]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+      template: function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵɵelement(0, "div");
+        }
+        if (rf & 2) {
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵproperty("@attr", …);
+          $i0$.ɵɵproperty("@binding", …);
+        }
+      }`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect initialization attributes');
+    });
+
+    it('should dedup multiple [@event] listeners', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<div (@mySelector.start)="false" (@mySelector.done)="false" [@mySelector]="0"></div>'
+          })
+          export class MyApp {
+          }
+
+          @NgModule({declarations: [MyApp]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+      template: function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵɵelementStart(0, "div");
+          …
+          $i0$.ɵɵselect(0);
+          $i0$.ɵɵproperty("@mySelector", …);
+        }
+      }`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect initialization attributes');
     });
   });
 });

@@ -22,7 +22,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
       <input formControlName="email" placeholder="Email">
       <button>Submit</button>
     </form>
-    
+
     <p>Value: {{ form.value | json }}</p>
     <p>Validation status: {{ form.status }}</p>
   `
@@ -31,13 +31,15 @@ export class FormBuilderComp {
   form: FormGroup;
 
   constructor(@Inject(FormBuilder) fb: FormBuilder) {
-    this.form = fb.group({
-      name: fb.group({
-        first: ['Nancy', Validators.minLength(2)],
-        last: 'Drew',
-      }),
-      email: '',
-    });
+    this.form = fb.group(
+        {
+          name: fb.group({
+            first: ['Nancy', Validators.minLength(2)],
+            last: 'Drew',
+          }),
+          email: '',
+        },
+        {updateOn: 'change'});
   }
 }
 // #enddocregion

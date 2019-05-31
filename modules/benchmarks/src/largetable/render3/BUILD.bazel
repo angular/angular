@@ -1,40 +1,31 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
-load("//packages/bazel:index.bzl", "protractor_web_test")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
-ts_library(
+ng_module(
     name = "largetable_lib",
-    srcs = glob(
-        [
-            "**/*.ts",
-        ],
-        exclude = ["protractor.on-prepare.ts"],
-    ),
+    srcs = glob(["**/*.ts"]),
+    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/largetable:util_lib",
         "//packages:types",
+        "//packages/common",
         "//packages/core",
-        "@rxjs",
+        "@npm//reflect-metadata",
     ],
 )
 
 ng_rollup_bundle(
     name = "bundle",
     entry_point = "modules/benchmarks/src/largetable/render3/index.js",
+    tags = ["ivy-only"],
     deps = [
         ":largetable_lib",
+        "@npm//rxjs",
     ],
-)
-
-genrule(
-    name = "favicon",
-    srcs = ["//modules/benchmarks:favicon"],
-    outs = ["favicon.ico"],
-    cmd = "cp $< $@",
 )
 
 ts_devserver(
@@ -43,21 +34,13 @@ ts_devserver(
         ":bundle.min_debug.js",
         ":bundle.min.js",
         "index.html",
-        ":favicon",
     ],
+    tags = ["ivy-only"],
 )
 
-protractor_web_test(
+benchmark_test(
     name = "perf",
-    configuration = "//:protractor-perf.conf.js",
-    data = [
-        "//packages/bazel/src/protractor/utils",
-        "//packages/benchpress",
-    ],
-    on_prepare = ":protractor.on-prepare.js",
     server = ":devserver",
-    tags = ["manual"],
-    deps = [
-        "//modules/benchmarks/src/largetable:perf_lib",
-    ],
+    tags = ["ivy-only"],
+    deps = ["//modules/benchmarks/src/largetable:perf_lib"],
 )

@@ -14,7 +14,8 @@
     "inlineSourceMap": true,
     "lib": ["es2015", "dom"],
     "target": "es2017",
-    "typeRoots": []
+    "typeRoots": [],
+    "types": []
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

@@ -59,6 +59,20 @@ import {of } from 'rxjs';
         expect(a.controls).toEqual([c1, c3]);
       });
 
+      it('should support clearing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+      });
+
       it('should support inserting', () => {
         a.push(c1);
         a.push(c3);
@@ -93,6 +107,58 @@ import {of } from 'rxjs';
         (a.at(1) as FormArray).at(1).disable();
 
         expect(a.getRawValue()).toEqual([{'c2': 'v2', 'c3': 'v3'}, ['v4', 'v5']]);
+      });
+    });
+
+    describe('markAllAsTouched', () => {
+      it('should mark all descendants as touched', () => {
+        const formArray: FormArray = new FormArray([
+          new FormControl('v1'), new FormControl('v2'),
+          new FormGroup({'c1': new FormControl('v1')}),
+          new FormArray([new FormGroup({'c2': new FormControl('v2')})])
+        ]);
+
+        expect(formArray.touched).toBe(false);
+
+        const control1 = formArray.at(0) as FormControl;
+
+        expect(control1.touched).toBe(false);
+
+        const group1 = formArray.at(2) as FormGroup;
+
+        expect(group1.touched).toBe(false);
+
+        const group1Control1 = group1.get('c1') as FormControl;
+
+        expect(group1Control1.touched).toBe(false);
+
+        const innerFormArray = formArray.at(3) as FormArray;
+
+        expect(innerFormArray.touched).toBe(false);
+
+        const innerFormArrayGroup = innerFormArray.at(0) as FormGroup;
+
+        expect(innerFormArrayGroup.touched).toBe(false);
+
+        const innerFormArrayGroupControl1 = innerFormArrayGroup.get('c2') as FormControl;
+
+        expect(innerFormArrayGroupControl1.touched).toBe(false);
+
+        formArray.markAllAsTouched();
+
+        expect(formArray.touched).toBe(true);
+
+        expect(control1.touched).toBe(true);
+
+        expect(group1.touched).toBe(true);
+
+        expect(group1Control1.touched).toBe(true);
+
+        expect(innerFormArray.touched).toBe(true);
+
+        expect(innerFormArrayGroup.touched).toBe(true);
+
+        expect(innerFormArrayGroupControl1.touched).toBe(true);
       });
     });
 
@@ -534,6 +600,23 @@ import {of } from 'rxjs';
           a.reset();
           expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
         });
+
+        it('should mark as pristine and not dirty before emitting valueChange and statusChange events when resetting',
+           () => {
+             const pristineAndNotDirty = () => {
+               expect(a.pristine).toBe(true);
+               expect(a.dirty).toBe(false);
+             };
+
+             c2.markAsDirty();
+             expect(a.pristine).toBe(false);
+             expect(a.dirty).toBe(true);
+
+             a.valueChanges.subscribe(pristineAndNotDirty);
+             a.statusChanges.subscribe(pristineAndNotDirty);
+
+             a.reset();
+           });
       });
     });
 

@@ -7,13 +7,19 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../test-utils';
+
+// Declare the global "window" and "document" constant since we don't want to add the "dom"
+// TypeScript lib for the e2e specs that execute code in the browser and reference such
+// global constants.
+declare const window: any;
+declare const document: any;
 
 describe('testability example', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('using task tracking', () => {
-    const URL = '/core/testability/ts/whenStable/';
+    const URL = '/testability/whenStable/';
 
     it('times out with a list of tasks', done => {
       browser.get(URL);
@@ -22,7 +28,7 @@ describe('testability example', () => {
       // Script that runs in the browser and calls whenStable with a timeout.
       let waitWithResultScript = function(done: any) {
         let rootEl = document.querySelector('example-app');
-        let testability = (window as any).getAngularTestability(rootEl);
+        let testability = window.getAngularTestability(rootEl);
         testability.whenStable((didWork: boolean, tasks: any) => { done(tasks); }, 1000);
       };
 
@@ -30,7 +36,7 @@ describe('testability example', () => {
 
       browser.driver.executeAsyncScript(waitWithResultScript).then((result: any[]) => {
         let pendingTask = result[0];
-        expect(pendingTask.delay).toEqual(5000);
+        expect(pendingTask.data.delay).toEqual(5000);
         expect(pendingTask.source).toEqual('setTimeout');
         expect(element(by.css('.status')).getText()).not.toContain('done');
         done();

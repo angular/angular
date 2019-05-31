@@ -10,7 +10,7 @@
  * An abstraction over a virtual file system used to enable testing and operation
  * of the config generator in different environments.
  *
- * @experimental
+ * @publicApi
  */
 export interface Filesystem {
   list(dir: string): Promise<string[]>;

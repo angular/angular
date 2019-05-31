@@ -8,7 +8,6 @@
     "@angular/compiler",
     "@angular/core",
     "@angular/forms",
-    "@angular/http",
     "@angular/platform-browser",
     "@angular/platform-browser-dynamic",
     "@angular/router",
@@ -29,9 +28,7 @@
     "karma-cli",
     "karma-jasmine",
     "karma-jasmine-html-reporter",
-    "karma-phantomjs-launcher",
     "lodash",
-    "phantomjs-prebuilt",
     "protractor",
     "tslint",
     "typescript"

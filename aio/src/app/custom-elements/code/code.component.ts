@@ -85,19 +85,19 @@ export class CodeComponent implements OnChanges {
   /** Region of the source of the code being displayed. */
   @Input() region: string;
 
-  /** Optional title to be displayed above the code. */
+  /** Optional header to be displayed above the code. */
   @Input()
-  set title(title: string) {
-    this._title = title;
-    this.ariaLabel = this.title ? `Copy code snippet from ${this.title}` : '';
+  set header(header: string) {
+    this._header = header;
+    this.ariaLabel = this.header ? `Copy code snippet from ${this.header}` : '';
   }
-  get title(): string { return this._title; }
-  private _title: string;
+  get header(): string { return this._header; }
+  private _header: string;
 
   @Output() codeFormatted = new EventEmitter<void>();
 
   /** The element in the template that will display the formatted code. */
-  @ViewChild('codeContainer') codeContainer: ElementRef;
+  @ViewChild('codeContainer', { static: true }) codeContainer: ElementRef;
 
   constructor(
     private snackbar: MatSnackBar,

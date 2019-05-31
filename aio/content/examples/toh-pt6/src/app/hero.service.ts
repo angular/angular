@@ -40,9 +40,9 @@ export class HeroService {
   // #enddocregion getHeroes-1
       .pipe(
         // #enddocregion getHeroes-2
-        tap(heroes => this.log('fetched heroes')),
+        tap(_ => this.log('fetched heroes')),
         // #docregion getHeroes-2
-        catchError(this.handleError('getHeroes', []))
+        catchError(this.handleError<Hero[]>('getHeroes', []))
       );
   // #docregion getHeroes-1
   }
@@ -97,7 +97,7 @@ export class HeroService {
   /** POST: add a new hero to the server */
   addHero (hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
-      tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
+      tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
     );
   }

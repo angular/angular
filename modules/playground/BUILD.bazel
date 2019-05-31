@@ -1,0 +1,6 @@
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig-e2e.json",
+    "systemjs-config.js",
+    "systemjs-rxjs-operators.js",
+])

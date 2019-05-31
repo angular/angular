@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_library(
+    name = "baseline",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/baseline/index",
+    index_html = "index.html",
+    port = 4200,
+    deps = [":baseline"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/tree:perf_lib"],
+)

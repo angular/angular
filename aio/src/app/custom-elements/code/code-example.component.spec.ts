@@ -23,28 +23,28 @@ describe('CodeExampleComponent', () => {
     });
 
     fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
     hostComponent = fixture.componentInstance;
     codeExampleComponent = hostComponent.codeExampleComponent;
-
-    fixture.detectChanges();
   });
 
   it('should be able to capture the code snippet provided in content', () => {
     expect(codeExampleComponent.aioCode.code.trim()).toBe(`const foo = "bar";`);
   });
 
-  it('should change aio-code classes based on title presence', () => {
-    expect(codeExampleComponent.title).toBe('Great Example');
+  it('should change aio-code classes based on header presence', () => {
+    expect(codeExampleComponent.header).toBe('Great Example');
     expect(fixture.nativeElement.querySelector('header')).toBeTruthy();
     expect(codeExampleComponent.classes).toEqual({
       'headed-code': true,
       'simple-code': false
     });
 
-    codeExampleComponent.title = '';
+    codeExampleComponent.header = '';
     fixture.detectChanges();
 
-    expect(codeExampleComponent.title).toBe('');
+    expect(codeExampleComponent.header).toBe('');
     expect(fixture.nativeElement.querySelector('header')).toBeFalsy();
     expect(codeExampleComponent.classes).toEqual({
       'headed-code': false,
@@ -85,16 +85,16 @@ describe('CodeExampleComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-    <code-example [title]="title" [path]="path" [hidecopy]="hidecopy">
+    <code-example [header]="header" [path]="path" [hidecopy]="hidecopy">
       {{code}}
     </code-example>
   `
 })
 class HostComponent {
   code = `const foo = "bar";`;
-  title = 'Great Example';
+  header = 'Great Example';
   path = 'code-path';
   hidecopy: boolean | string = false;
 
-  @ViewChild(CodeExampleComponent) codeExampleComponent: CodeExampleComponent;
+  @ViewChild(CodeExampleComponent, {static: true}) codeExampleComponent: CodeExampleComponent;
 }

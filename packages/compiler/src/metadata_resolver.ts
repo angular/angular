@@ -115,16 +115,13 @@ export class CompileMetadataResolver {
     return this.getGeneratedClass(dirType, cpl.hostViewClassName(dirType));
   }
 
-  getHostComponentType(dirType: any): StaticSymbol|Type {
+  getHostComponentType(dirType: any): StaticSymbol|cpl.ProxyClass {
     const name = `${cpl.identifierName({reference: dirType})}_Host`;
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(dirType.filePath, name);
-    } else {
-      const HostClass = <any>function HostClass() {};
-      HostClass.overriddenName = name;
-
-      return HostClass;
     }
+
+    return this._createProxyClass(dirType, name);
   }
 
   private getRendererType(dirType: any): StaticSymbol|object {
@@ -936,7 +933,7 @@ export class CompileMetadataResolver {
       }
       if (token == null) {
         hasUnknownDeps = true;
-        return null !;
+        return {};
       }
 
       return {
@@ -952,7 +949,7 @@ export class CompileMetadataResolver {
 
     if (hasUnknownDeps) {
       const depsTokens =
-          dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
+          dependenciesMetadata.map((dep) => dep.token ? stringifyType(dep.token) : '?').join(', ');
       const message =
           `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
       if (throwOnUnknownDeps || this._config.strictInjectionParameters) {
@@ -1160,7 +1157,8 @@ export class CompileMetadataResolver {
       selectors,
       first: q.first,
       descendants: q.descendants, propertyName,
-      read: q.read ? this._getTokenMetadata(q.read) : null !
+      read: q.read ? this._getTokenMetadata(q.read) : null !,
+      static: q.static
     };
   }
 

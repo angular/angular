@@ -14,7 +14,7 @@ import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merge
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
-import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
+import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
 {
   describe('Extractor', () => {
@@ -501,7 +501,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
 
 function parseHtml(html: string): html.Node[] {
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(html, 'extractor spec', true);
+  const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
   if (parseResult.errors.length > 1) {
     throw new Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }

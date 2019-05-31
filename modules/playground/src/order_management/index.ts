@@ -41,7 +41,7 @@ class Order {
 
 let _nextId = 1000;
 @Injectable()
-class DataService {
+export class DataService {
   orderItems: OrderItem[];
   orders: Order[];
   currentOrder: Order = null;
@@ -104,7 +104,7 @@ class DataService {
   	</div>
   `
 })
-class OrderListComponent {
+export class OrderListComponent {
   orders: Order[];
 
   constructor(private _service: DataService) { this.orders = _service.orders; }
@@ -137,7 +137,7 @@ class OrderListComponent {
     </div>
   `
 })
-class OrderItemComponent {
+export class OrderItemComponent {
   @Input() item: OrderItem;
   @Output() delete = new EventEmitter();
 
@@ -173,7 +173,7 @@ class OrderItemComponent {
     </div>
   `
 })
-class OrderDetailsComponent {
+export class OrderDetailsComponent {
   constructor(private _service: DataService) {}
 
   get order(): Order { return this._service.currentOrder; }
@@ -191,7 +191,7 @@ class OrderDetailsComponent {
     <order-details-cmp></order-details-cmp>
   `
 })
-class OrderManagementApplication {
+export class OrderManagementApplication {
 }
 
 @NgModule({
@@ -200,9 +200,7 @@ class OrderManagementApplication {
       [OrderManagementApplication, OrderListComponent, OrderDetailsComponent, OrderItemComponent],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

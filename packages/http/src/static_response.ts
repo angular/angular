@@ -21,6 +21,7 @@ import {Headers} from './headers';
  * usually instantiated by end-users, it is the primary object interacted with when it comes time to
  * add data to a view.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -33,6 +34,7 @@ import {Headers} from './headers';
  * most significant.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Response extends Body {
   /**

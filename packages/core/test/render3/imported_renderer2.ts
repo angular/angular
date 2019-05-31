@@ -9,12 +9,11 @@
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {NgZone, RendererFactory2} from '@angular/core';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-
-import {NoopNgZone} from '../../src/zone/ng_zone';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
   constructor(doc: any) { super(doc); }
@@ -36,7 +35,7 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   const rendererFactory =
-      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document), 'dummyappid');
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function() {
     const renderer = origCreateRenderer.apply(this, arguments);

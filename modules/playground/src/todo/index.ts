@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
 @Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
-class TodoApp {
+export class TodoApp {
   todoEdit: Todo = null;
 
   constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
@@ -52,9 +52,7 @@ class TodoApp {
 }
 
 @NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

@@ -7,7 +7,8 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle, copyStyles} from '../../util';
+import {computeStyle} from '../../util';
+import {SpecialCasedStyles} from '../special_cased_styles';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -33,7 +34,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number}) {
+      public options: {[key: string]: string | number},
+      private _specialStyles?: SpecialCasedStyles|null) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
@@ -91,6 +93,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
       this._started = true;
+      if (this._specialStyles) {
+        this._specialStyles.start();
+      }
     }
     this.domPlayer.play();
   }
@@ -102,6 +107,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   finish(): void {
     this.init();
+    if (this._specialStyles) {
+      this._specialStyles.finish();
+    }
     this._onFinish();
     this.domPlayer.finish();
   }
@@ -131,6 +139,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._destroyed = true;
       this._resetDomPlayerState();
       this._onFinish();
+      if (this._specialStyles) {
+        this._specialStyles.destroy();
+      }
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];
     }

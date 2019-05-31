@@ -64,7 +64,7 @@ function addScript(options: Schema) {
         scripts.push({input: script});
         host.overwrite('angular.json', JSON.stringify(json, null, 2));
       }
-    } catch (e) {
+    } catch {
       context.logger.log(
           'warn', 'Failed to add the polyfill document-register-element.js to scripts');
     }

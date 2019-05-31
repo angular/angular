@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 function waitForElement(selector: string) {
   // Waits for the element with id 'abc' to be present on the dom.
@@ -19,7 +20,7 @@ describe('routing inbox-app', () => {
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {
-    const URL = 'all/playground/src/routing/';
+    const URL = '/';
 
     it('should list out the current collection of items', () => {
       browser.get(URL);

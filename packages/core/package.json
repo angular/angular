@@ -16,14 +16,15 @@
     "tslib": "^1.9.0"
   },
   "peerDependencies": {
-    "rxjs": "^6.0.0",
-    "zone.js": "~0.8.26"
+    "rxjs": "^6.4.0",
+    "zone.js": "~0.9.1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
   "ng-update": {
+    "migrations": "./schematics/migrations.json",
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": false

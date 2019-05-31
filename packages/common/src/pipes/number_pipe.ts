@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Inject, Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -19,20 +19,20 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * formatted according to locale rules that determine group sizing and
  * separator, decimal-point character, and other locale-specific
  * configurations.
- * 
+ *
  * If no parameters are specified, the function rounds off to the nearest value using this
  * [rounding method](https://en.wikibooks.org/wiki/Arithmetic/Rounding).
  * The behavior differs from that of the JavaScript ```Math.round()``` function.
- * In the following case for example, the pipe rounds down where 
+ * In the following case for example, the pipe rounds down where
  * ```Math.round()``` rounds up:
- * 
+ *
  * ```html
  * -2.5 | number:'1.0-0'
  * > -3
  * Math.round(-2.5)
  * > -2
  * ```
- * 
+ *
  * @see `formatNumber()`
  *
  * @usageNotes
@@ -44,8 +44,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
- *
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
@@ -97,8 +98,9 @@ export class DecimalPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
  *
- *
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
@@ -114,7 +116,7 @@ export class PercentPipe implements PipeTransform {
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
    * Default is `0`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `0`.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
@@ -151,8 +153,9 @@ export class PercentPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
  *
- *
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
@@ -170,6 +173,7 @@ export class CurrencyPipe implements PipeTransform {
    * For example, the Canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`. If the
    * locale has no narrow symbol, uses the standard symbol for the locale.
    *   - String: Use the given string value instead of a code or a symbol.
+   * For example, an empty string will suppress the currency & symbol.
    *   - Boolean (marked deprecated in v5): `true` for symbol and false for `code`.
    *
    * @param digitsInfo Decimal representation options, specified by a string
@@ -178,9 +182,9 @@ export class CurrencyPipe implements PipeTransform {
    *   - `minIntegerDigits`: The minimum number of integer digits before the decimal point.
    * Default is `1`.
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
-   * Default is `0`.
+   * Default is `2`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `2`.
    * If not provided, the number will be formatted with the proper amount of digits,
    * depending on what the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) specifies.
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.

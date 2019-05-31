@@ -16,13 +16,13 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
-const STRING = /'[^']*'|"[^"]*"|`[\s\S]*?`/;
+    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
+const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"|`(\\`[\s\S])*?`/;
 const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})`,
+    `\\s*((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
     'y');
 
 type Piece = string | RegExp;
@@ -35,10 +35,11 @@ function tokenize(text: string): Piece[] {
   TOKEN.lastIndex = 0;
 
   let match: RegExpMatchArray|null;
+  let tokenizedTextEnd = 0;
   const pieces: Piece[] = [];
 
   while ((match = TOKEN.exec(text)) !== null) {
-    const token = match[1];
+    const [fullMatch, token] = match;
     if (token === 'IDENT') {
       pieces.push(IDENTIFIER);
     } else if (token === ELLIPSIS) {
@@ -46,12 +47,17 @@ function tokenize(text: string): Piece[] {
     } else {
       pieces.push(token);
     }
+    tokenizedTextEnd += fullMatch.length;
   }
 
-  if (pieces.length === 0 || TOKEN.lastIndex !== 0) {
-    const from = TOKEN.lastIndex;
+  if (pieces.length === 0 || tokenizedTextEnd < text.length) {
+    // The new token that could not be found is located after the
+    // last tokenized character.
+    const from = tokenizedTextEnd;
     const to = from + ERROR_CONTEXT_WIDTH;
-    throw Error(`Invalid test, no token found for '${text.substr(from, to)}...'`);
+    throw Error(
+        `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
+        `(context = '${text.substr(from, to)}...'`);
   }
 
   return pieces;
@@ -74,8 +80,14 @@ export function expectEmit(
       const m = source.match(regexp);
       const expectedPiece = pieces[i - 1] == IDENTIFIER ? '<IDENT>' : pieces[i - 1];
       if (!m) {
+        // display at most `contextLength` characters of the line preceding the error location
+        const contextLength = 50;
+        const fullContext = source.substring(source.lastIndexOf('\n', last) + 1, last);
+        const context = fullContext.length > contextLength ?
+            `...${fullContext.substr(-contextLength)}` :
+            fullContext;
         fail(
-            `${description}: Expected to find ${expectedPiece} '${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
+            `${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
         return;
       } else {
         last = (m.index || 0) + m[0].length;

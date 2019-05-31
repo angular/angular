@@ -17,13 +17,28 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 };
 
 /**
- * The accessor for writing a number value and listening to changes that is used by the
- * `NgModel`, `FormControlDirective`, and `FormControlName` directives.
+ * @description
+ * The `ControlValueAccessor` for writing a number value and listening to number input changes.
+ * The value accessor is used by the `FormControlDirective`, `FormControlName`, and  `NgModel`
+ * directives.
  *
- *  ### Example
- *  ```
- *  <input type="number" [(ngModel)]="age">
- *  ```
+ * @usageNotes
+ *
+ * ### Using a number input with a reactive form.
+ *
+ * The following example shows how to use a number input with a reactive form.
+ *
+ * ```ts
+ * const totalCountControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="number" [formControl]="totalCountControl">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -36,22 +51,55 @@ export const NUMBER_VALUE_ACCESSOR: any = {
   providers: [NUMBER_VALUE_ACCESSOR]
 })
 export class NumberValueAccessor implements ControlValueAccessor {
+  /**
+   * @description
+   * The registered callback function called when a change or input event occurs on the input
+   * element.
+   */
   onChange = (_: any) => {};
+
+  /**
+   * @description
+   * The registered callback function called when a blur event occurs on the input element.
+   */
   onTouched = () => {};
 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
+  /**
+   * Sets the "value" property on the input element.
+   *
+   * @param value The checked value
+   */
   writeValue(value: number): void {
     // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
     const normalizedValue = value == null ? '' : value;
     this._renderer.setProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
+  /**
+   * @description
+   * Registers a function called when the control value changes.
+   *
+   * @param fn The callback function
+   */
   registerOnChange(fn: (_: number|null) => void): void {
     this.onChange = (value) => { fn(value == '' ? null : parseFloat(value)); };
   }
+
+  /**
+   * @description
+   * Registers a function called when the control is touched.
+   *
+   * @param fn The callback function
+   */
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
 
+  /**
+   * Sets the "disabled" property on the input element.
+   *
+   * @param isDisabled The disabled value
+   */
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }

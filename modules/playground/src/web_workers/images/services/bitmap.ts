@@ -35,7 +35,7 @@ export class BitmapService {
   toDataUri(imageData: ImageData): string {
     const header = this._createBMPHeader(imageData);
     imageData = this._imageDataToBMP(imageData);
-    return 'data:image/bmp;base64,' + btoa(header) + fromByteArray(imageData.data);
+    return 'data:image/bmp;base64,' + btoa(header) + fromByteArray(Uint8Array.from(imageData.data));
   }
 
   // converts a .bmp file ArrayBuffer to a dataURI

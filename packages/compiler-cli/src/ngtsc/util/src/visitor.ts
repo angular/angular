@@ -14,7 +14,8 @@ import * as ts from 'typescript';
  */
 export type VisitListEntryResult<B extends ts.Node, T extends B> = {
   node: T,
-  before?: B[]
+  before?: B[],
+  after?: B[],
 };
 
 /**
@@ -36,6 +37,11 @@ export abstract class Visitor {
   private _before = new Map<ts.Node, ts.Statement[]>();
 
   /**
+   * Maps statements to an array of statements that should be inserted after them.
+   */
+  private _after = new Map<ts.Node, ts.Statement[]>();
+
+  /**
    * Visit a class declaration, returning at least the transformed declaration and optionally other
    * nodes to insert before the declaration.
    */
@@ -51,6 +57,10 @@ export abstract class Visitor {
       // Record that some nodes should be inserted before the given declaration. The declaration's
       // parent's _visit call is responsible for performing this insertion.
       this._before.set(result.node, result.before);
+    }
+    if (result.after !== undefined) {
+      // Same with nodes that should be inserted after.
+      this._after.set(result.node, result.after);
     }
     return result.node;
   }
@@ -88,8 +98,9 @@ export abstract class Visitor {
 
   private _maybeProcessStatements<T extends ts.Node&{statements: ts.NodeArray<ts.Statement>}>(
       node: T): T {
-    // Shortcut - if every statement doesn't require nodes to be prepended, this is a no-op.
-    if (node.statements.every(stmt => !this._before.has(stmt))) {
+    // Shortcut - if every statement doesn't require nodes to be prepended or appended,
+    // this is a no-op.
+    if (node.statements.every(stmt => !this._before.has(stmt) && !this._after.has(stmt))) {
       return node;
     }
 
@@ -104,6 +115,10 @@ export abstract class Visitor {
         this._before.delete(stmt);
       }
       newStatements.push(stmt);
+      if (this._after.has(stmt)) {
+        newStatements.push(...(this._after.get(stmt) !as ts.Statement[]));
+        this._after.delete(stmt);
+      }
     });
     clone.statements = ts.createNodeArray(newStatements, node.statements.hasTrailingComma);
     return clone;

@@ -1,18 +1,17 @@
-# Visual Studio 2015 QuickStart
+# Using Angular with Visual Studio 2015
 
 {@a top}
 
 Some developers prefer Visual Studio as their Integrated Development Environment (IDE).
 
-This cookbook describes the steps required to set up and use the
-Angular QuickStart files in **Visual Studio 2015 within an ASP.NET 4.x project**.
+This cookbook describes the steps required to set up and use Angular app files in Visual Studio 2015 within an ASP.NET 4.x project.
 
 <div class="alert is-helpful">
 
 
 
 There is no *live example* for this cookbook because it describes Visual Studio, not 
-the QuickStart application itself.
+the Angular application itself. It uses the starter Angular application created by the CLI command [`ng new`](cli/new) as an example. 
 
 
 </div>
@@ -22,7 +21,7 @@ the QuickStart application itself.
 
 ## ASP.NET 4.x Project
 
-To set up the QuickStart files with an **ASP.NET 4.x project** in
+To set up the Getting Started files with an **ASP.NET 4.x project** in
 Visual Studio 2015, follow these steps:
 
 <div class="alert is-helpful">
@@ -48,17 +47,9 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
-
-<div class="alert is-helpful">
-
+See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for supported versions and instructions. 
 
 
-**Verify that you are running Node.js version `8.x` or greater, and npm `5.x` or greater**
-by running `node -v` and `npm -v` in a terminal window.
-Older versions produce errors.
-
-
-</div>
 
 
 
@@ -100,21 +91,20 @@ find them in either location, it will use its own versions of the tools.
 
 
 <h2 id='prereq4'>
-  Prerequisite: Install TypeScript 2.2 for Visual Studio 2015
+  Prerequisite: Install TypeScript for Visual Studio 2015
 </h2>
 
 
 
-While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with TypeScript 2.2, 
-which you need to develop Angular applications.
+While Visual Studio Update 3 ships with TypeScript support out of the box, it currently doesn’t ship with more recent versions of TypeScript, which you need to develop Angular applications.
 
-To install TypeScript 2.2:
+To install the latest version of TypeScript:
 
- * Download and install **[TypeScript 2.2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593)**
+ * Download and install the latest [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593),
 
- * OR install it with npm: `npm install -g typescript@2.2`.
+ * OR install it with npm: `npm install -g typescript@latest`.
 
-You can find out more about TypeScript 2.2 support in Visual studio **[here](https://blogs.msdn.microsoft.com/typescript/2017/02/22/announcing-typescript-2-2/)**.
+You can find out more about TypeScript support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
 
 At this point, Visual Studio is ready. It’s a good idea to close Visual Studio and 
 restart it to make sure everything is clean.
@@ -122,13 +112,13 @@ restart it to make sure everything is clean.
 
 
 <h2 id='download'>
-  Step 1: Download the QuickStart files
+  Step 1: Create a starter Angular app
 </h2>
 
+ 
+ Follow the instructions in [Local Environment Setup](guide/setup-local "Setting up for Local Development") to create a starter Angular app using the CLI command [`ng new`](cli/new). 
 
-
-[Download the QuickStart source](https://github.com/angular/quickstart)
-from GitHub. If you downloaded as a zip file, extract the files.
+ 
 
 
 
@@ -160,12 +150,10 @@ no authentication, and no hosting. Pick the template and options appropriate for
 
 
 <h2 id='copy'>
-  Step 3: Copy the QuickStart files into the ASP.NET project folder
+  Step 3: Copy the Angular project files into the ASP.NET project folder
 </h2>
 
-
-
-Copy the QuickStart files you downloaded from GitHub into the folder containing the `.csproj` file.
+Copy files from the starter Angular app into the folder containing the `.csproj` file.
 Include the files in the Visual Studio project as follows:
 
 * Click the `Show All Files` button in Solution Explorer to reveal all of the hidden files in the project.
@@ -212,7 +200,7 @@ Right-click `index.html` in Solution Explorer and select option `Set As Start Pa
 ### To run in VS with F5
 
 Most Visual Studio developers like to press the F5 key and see the IIS server come up. 
-To use the IIS server with the QuickStart app, you must make the following three changes. 
+To use the IIS server with the Getting Started app, you must make the following three changes. 
 
 1. In `index.html`, change base href from `<base href="/">` to `<base href="/src/">`.
 2. Also in `index.html`, change  the scripts to use `/node_modules` with a slash 
@@ -249,7 +237,7 @@ for any address other than `/` or `/index.html`.
 You have to configure the server to return `index.html` for requests to these "unknown" pages.
 The `lite-server` development server does out-of-the-box.
 If you've switched over to F5 and IIS, you have to configure IIS to do it.
-This section walks through the steps to adapt the QuickStart application.
+This section walks through the steps to adapt the Getting Started application.
 
 #### Configure IIS rewrite rules
 
@@ -309,7 +297,7 @@ It's faster to run without the debugger by pressing `Ctrl-F5`.
 
 
 
-The default browser opens and displays the QuickStart sample application.
+The default browser opens and displays the Getting Started sample application.
 
 Try editing any of the project files. Save and refresh the browser to
 see the changes. 

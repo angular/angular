@@ -8,9 +8,9 @@
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {NAMESPACE_URIS} from '@angular/platform-browser/src/dom/dom_renderer';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 {
   describe('DefaultDomRendererV2', () => {
@@ -87,8 +87,18 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
       });
     });
 
-    // other browsers don't support shadow dom
-    if (browserDetection.isChromeDesktop) {
+    describe('removeChild', () => {
+      it('should not error when removing a child with a different parent than given', () => {
+        const savedParent = document.createElement('div');
+        const realParent = document.createElement('div');
+        const child = document.createElement('div');
+
+        realParent.appendChild(child);
+        renderer.removeChild(savedParent, child);
+      });
+    });
+
+    if (browserDetection.supportsDeprecatedShadowDomV0) {
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
          () => {
            const fixture = TestBed.createComponent(SomeApp);

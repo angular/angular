@@ -1,27 +1,27 @@
 # Overview - Security model
 
 
-Whenever a PR job is run on Travis, we want to build `angular.io` and upload the build artifacts to
+Whenever a PR job is run on CircleCI, we want to build `angular.io` and host the build artifacts on
 a publicly accessible server so that collaborators (developers, designers, authors, etc) can preview
 the changes without having to checkout and build the app locally.
 
-This document discusses the security considerations associated with uploading build artifacts as
-part of the CI setup and serving them publicly.
+This document discusses the security considerations associated with moving build artifacts as
+part of the CI process and serving them publicly.
 
 
 ## Security objectives
 
-- **Prevent uploading arbitrary content to our servers.**
-  Since there is no restriction on who can submit a PR, we cannot allow any PR's build artifacts to
-  be uploaded.
+- **Prevent hosting arbitrary content on our servers.**
+  Since there is no restriction on who can submit a PR, we cannot allow arbitrary, untrusted PRs'
+  build artifacts to be hosted.
 
-- **Prevent overwriting other peoples uploaded content.**
-  There needs to be a mechanism in place to ensure that the uploaded content does indeed correspond
+- **Prevent overwriting other people's hosted build artifacts.**
+  There needs to be a mechanism in place to ensure that the hosted content does indeed correspond
   to the PR indicated by its URL.
 
 - **Prevent arbitrary access on the server.**
-  Since the PR author has full access over the build artifacts that would be uploaded, we must
-  ensure that the uploaded files will not enable arbitrary access to the server or expose sensitive
+  Since the PR author has full access over the build artifacts that would be hosted, we must
+  ensure that the build artifacts will not have arbitrary access to the server or expose sensitive
   info.
 
 
@@ -30,7 +30,7 @@ part of the CI setup and serving them publicly.
 - Because the PR author can change the scripts run on CI, any security mechanisms must be immune to
   such changes.
 
-- For security reasons, encrypted Travis variables are not available to PRs, so we can't rely on
+- For security reasons, encrypted CircleCI variables are not available to PRs, so we can't rely on
   them to implement security.
 
 
@@ -40,41 +40,57 @@ part of the CI setup and serving them publicly.
 ### In a nutshell
 The implemented approach can be broken up to the following sub-tasks:
 
-1. Verify which PR the uploaded artifacts correspond to.
-2. Fetch the PR's metadata, including author and labels.
-3. Check whether the PR can be automatically verified as "trusted" (based on its author or labels).
-4. If necessary, update the corresponding PR's verification status.
-5. Deploy the artifacts to the corresponding PR's directory.
-6. Prevent overwriting previously deployed artifacts (which ensures that the guarantees established
+1. Receive notification from CircleCI of a completed build.
+2. Verify that the build is valid and can have a preview.
+3. Download the build artifact.
+4. Fetch the PR's metadata, including author and labels.
+5. Check whether the PR can be automatically verified as "trusted" (based on its author or labels).
+6. If necessary, update the corresponding PR's verification status.
+7. Deploy the artifacts to the corresponding PR's directory.
+8. Prevent overwriting previously deployed artifacts (which ensures that the guarantees established
    during deployment will remain valid until the artifacts are removed).
-7. Prevent uploaded files from accessing anything outside their directory.
+9. Prevent hosted preview files from accessing anything outside their directory.
 
 
 ### Implementation details
 This section describes how each of the aforementioned sub-tasks is accomplished:
 
-1. **Verify which PR the uploaded artifacts correspond to.**
+1. **Receive notification from CircleCI of a completed build**
 
-   We are taking advantage of Travis' [JWT addon](https://docs.travis-ci.com/user/jwt). By sharing
-   a secret between Travis (which keeps it private but uses it to sign a JWT) and the server (which
-   uses it to verify the authenticity of the JWT), we can accomplish the following:
-   a. Verify that the upload request comes from Travis.
-   b. Determine the PR that these artifacts correspond to (since Travis puts that information into
-      the JWT, without the PR author being able to modify it).
+  CircleCI is configured to trigger a webhook on our preview-server whenever a build completes.
+  The payload contains the number of the build that completed.
 
-   _Note:_
-   _There are currently certain limitation in the implementation of the JWT addon._
-   _See the next section for more details._
+2. **Verify that the build is valid and can have a preview.**
 
-2. **Fetch the PR's metadata, including author and labels**.
+   We cannot trust that the data in the webhook trigger is authentic, so we only extract the build
+   number and then run a direct query against the CircleCI API to get hold of the real data for
+   the given build number.
 
-   Once we have securely associated the uploaded artifacts to a PR, we retrieve the PR's metadata -
+   We perform a number of preliminary checks:
+   - Was the webhook triggered by the designated CircleCI job (currently `aio_preview`)?
+   - Was the build successful?
+   - Are the associated GitHub organisation and repository what we expect (e.g. `angular/angular`)?
+   - Has the PR touched any files that might affect the angular.io app (currently the `aio/` or
+     `packages/` directories, ignoring spec files)?
+
+   If any of the preliminary checks fails, the process is aborted and not preview is generated.
+
+3. **Download the build artifact.**
+
+   Next we make another call to the CircleCI API to get a list of the URLs for artifacts of that
+   build. If there is one that matches the configured artifact path, we download the contents of the
+   build artifact and store it in a local folder. This download has a maximum size limit to prevent
+   PRs from producing artifacts that are so large they would cause the preview server to crash.
+
+4. **Fetch the PR's metadata, including author and labels**.
+
+   Once we have securely downloaded the artifact for a build, we retrieve the PR's metadata -
    including the author's username and the labels - using the
    [GitHub API](https://developer.github.com/v3/).
    To avoid rate-limit restrictions, we use a Personal Access Token (issued by
    [@mary-poppins](https://github.com/mary-poppins)).
 
-3. **Check whether the PR can be automatically verified as "trusted"**.
+5. **Check whether the PR can be automatically verified as "trusted"**.
 
    "Trusted" means that we are confident that the build artifacts are suitable for being deployed
    and publicly accessible on the preview server. There are two ways to check that:
@@ -86,53 +102,48 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
       `read:org` scope issued by a user that can "see" the specified GitHub organization.
       Here too, we use the token by @mary-poppins.
 
-4. **If necessary update the corresponding PR's verification status**.
+6. **If necessary update the corresponding PR's verification status**.
 
    Once we have determined whether the PR is considered "trusted", we update its "visibility" (i.e.
    whether it is publicly accessible or not), based on the new verification status. For example, if
    a PR was initially considered "not trusted" but the check triggered by a new build determined
-   otherwise, the PR (and all the previously uploaded previews) are made public. It works the same
+   otherwise, the PR (and all the previously downloaded previews) are made public. It works the same
    way if a PR has gone from "trusted" to "not trusted".
 
-5. **Deploy the artifacts to the corresponding PR's directory.**
+7. **Deploy the artifacts to the corresponding PR's directory.**
 
-   With the preceding steps, we have verified that the uploaded artifacts have been uploaded by
-   Travis. Additionally, we have determined whether the PR can be trusted to have its previews
-   publicly accessible or whether further verification is necessary. The artifacts will be stored to
-   the PR's directory, but will not be publicly accessible unless the PR has been verified.
-   Essentially, as long as sub-tasks 1, 2 and 3 can be securely accomplished, it is possible to
-   "project" the trust we have in a team's members through the PR and Travis to the build artifacts.
+   With the preceding steps, we have verified that the build artifacts are valid. Additionally, we
+   have determined whether the PR can be trusted to have its previews publicly accessible or whether
+   further verification is necessary.
 
-6. **Prevent overwriting previously deployed artifacts**.
+   The artifacts will be stored to the PR's directory, but will not be publicly accessible unless
+   the PR has been verified. Essentially, as long as sub-tasks 2, 3, 4 and 5 can be securely
+   accomplished, it is possible to "project" the trust we have in a team's members through the PR to
+   the build artifacts.
+
+8. **Prevent overwriting previously deployed artifacts**.
 
    In order to enforce this restriction (and ensure that the deployed artifacts' validity is
-   preserved throughout their "lifetime"), the server that handles the upload (currently a Node.js
-   Express server) rejects uploads that target an existing directory.
-   _Note: A PR can contain multiple uploads; one for each SHA that was built on Travis._
+   preserved throughout their "lifetime"), the server that handles the artifacts (currently a Node.js Express server) rejects builds that have already been handled.
+   _Note: A PR can contain multiple builds; one for each SHA that was built on CircleCI._
 
-7. **Prevent uploaded files from accessing anything outside their directory.**
+9. **Prevent hosted preview files from accessing anything outside their directory.**
 
-   Nginx (which is used to serve the uploaded artifacts) has been configured to not follow symlinks
-   outside of the directory where the build artifacts are stored.
+   Nginx (which is used to serve the hosted preview) has been configured to not follow symlinks
+   outside of the directory where the preview files are stored.
 
 
 ## Assumptions / Things to keep in mind
 
-- Each trusted PR author has full control over the content that is uploaded for their PRs. Part of
-  the security model relies on the trustworthiness of these authors.
+- Other than the initial webhook trigger, which provides a build number, all requests for data come
+  from the preview-server making requests to well defined API endpoints (e.g. CircleCI and Github).
+  This means that any secret access keys need only be stored on the preview-server and not on any of
+  the CI build infrastructure (e.g. CircleCI).
 
-- Adding the specified label on a PR and marking it as trusted, gives the author full control over
-  the content that is uploaded for the specific PR (e.g. by pushing more commits to it). The user
+- Each trusted PR author has full control over the content that is hosted as a preview for their
+  PRs. Part of the security model relies on the trustworthiness of these authors.
+
+- Adding the specified label on a PR to mark it as trusted, gives the author full control over the
+  content that is hosted for the specific PR preview (e.g. by pushing more commits to it). The user
   adding the label is responsible for ensuring that this control is not abused and that the PR is
   either closed (one way of another) or the access is revoked.
-
-- If anyone gets access to the `PREVIEW_DEPLOYMENT_TOKEN` (a.k.a. `NGBUILDS_IO_KEY` on
-  angular/angular) variable generated for each Travis job, they will be able to impersonate the
-  corresponding PR's author on the preview server for as long as the token is valid (currently 90
-  mins). Because of this, the value of the `PREVIEW_DEPLOYMENT_TOKEN` should not be made publicly
-  accessible (e.g. by printing it on the Travis job log).
-
-- Travis does only allow specific whitelisted property names to be used with the JWT addon. The only
-  known such property at the time is `SAUCE_ACCESS_KEY` (used for integration with SauceLabs). In
-  order to be able to actually use the JWT addon we had to name the encrypted variable
-  `SAUCE_ACCESS_KEY` (which we later re-assign to `NGBUILDS_IO_KEY`).

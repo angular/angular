@@ -27,13 +27,18 @@ import {InjectionToken} from '@angular/core';
  * {@link Location} / {@link LocationStrategy} and DOM apis flow through the `PlatformLocation`
  * class they are all platform independent.
  *
- *
+ * @publicApi
  */
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
+  abstract getState(): unknown;
   abstract onPopState(fn: LocationChangeListener): void;
   abstract onHashChange(fn: LocationChangeListener): void;
 
+  abstract get href(): string;
+  abstract get protocol(): string;
+  abstract get hostname(): string;
+  abstract get port(): string;
   abstract get pathname(): string;
   abstract get search(): string;
   abstract get hash(): string;
@@ -48,8 +53,10 @@ export abstract class PlatformLocation {
 }
 
 /**
- * @description Indicates when a location is initialized.
- * @experimental
+ * @description
+ * Indicates when a location is initialized.
+ *
+ * @publicApi
  */
 export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location Initialized');
 
@@ -57,7 +64,7 @@ export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location I
  * @description
  * A serializable version of the event from `onPopState` or `onHashChange`
  *
- * @experimental
+ * @publicApi
  */
 export interface LocationChangeEvent {
   type: string;
@@ -65,6 +72,6 @@ export interface LocationChangeEvent {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
-export interface LocationChangeListener { (e: LocationChangeEvent): any; }
+export interface LocationChangeListener { (event: LocationChangeEvent): any; }

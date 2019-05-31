@@ -82,6 +82,7 @@ function containsSegmentGroupHelper(
  * serialized tree.
  * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -100,7 +101,7 @@ function containsSegmentGroupHelper(
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class UrlTree {
   /** @internal */
@@ -134,7 +135,7 @@ export class UrlTree {
  *
  * See `UrlTree` for more information.
  *
- *
+ * @publicApi
  */
 export class UrlSegmentGroup {
   /** @internal */
@@ -173,7 +174,8 @@ export class UrlSegmentGroup {
  * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
  * parameters associated with the segment.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -188,7 +190,7 @@ export class UrlSegmentGroup {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class UrlSegment {
   /** @internal */
@@ -249,7 +251,7 @@ export function mapChildrenIntoArray<T>(
  *
  * See `DefaultUrlSerializer` for an example of a URL serializer.
  *
- *
+ * @publicApi
  */
 export abstract class UrlSerializer {
   /** Parse a url into a `UrlTree` */
@@ -275,7 +277,7 @@ export abstract class UrlSerializer {
  * colon syntax to specify the outlet, and the ';parameter=value' syntax (e.g., open=true) to
  * specify route specific parameters.
  *
- *
+ * @publicApi
  */
 export class DefaultUrlSerializer implements UrlSerializer {
   /** Parses a url into a `UrlTree` */

@@ -2,7 +2,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import {
+  CurrentNodes, NavigationNode, navigationPath, NavigationService, NavigationViews, VersionInfo,
+} from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 
@@ -46,10 +48,9 @@ describe('NavigationService', () => {
     it('navigationViews observable should complete', () => {
       let completed = false;
       navService.navigationViews.subscribe(undefined, undefined, () => completed = true);
-      expect(true).toBe(true, 'observable completed');
 
-      // Stop `$httpMock.verify()` from complaining.
-      httpMock.expectOne({});
+      httpMock.expectOne({method: 'get', url: navigationPath}).flush({});
+      expect(completed).toBe(true, 'observable completed');
     });
 
     it('should return the same object to all subscribers', () => {

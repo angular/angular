@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Injectable, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {NgLocalization, getPluralCategory} from '../i18n/localization';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -18,12 +18,15 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * Maps a value to a string that pluralizes the value according to locale rules.
  *
- *  ## Example
+ * @usageNotes
+ *
+ * ### Example
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
  *
- * @experimental
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'i18nPlural', pure: true})
 export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}

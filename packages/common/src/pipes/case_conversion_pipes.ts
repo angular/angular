@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -21,8 +21,10 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/lowerupper_pipe.ts" region='LowerUpperPipe'></code-example>
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'lowercase'})
 export class LowerCasePipe implements PipeTransform {
   /**
@@ -63,8 +65,10 @@ const unicodeWordMatch =
  *
  * <code-example path="common/pipes/ts/titlecase_pipe.ts" region='TitleCasePipe'></code-example>
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
   /**
@@ -85,7 +89,11 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see `LowerCasePipe`
  * @see `TitleCasePipe`
+ *
+ * @ngModule CommonModule
+ * @publicApi
  */
+@Injectable()
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {
   /**

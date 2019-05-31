@@ -1,21 +1,12 @@
 const { dirname } = require('canonical-path');
 
-module.exports = function processPackages() {
+module.exports = function processPackages(collectPackageContentDocsProcessor) {
   return {
-    $runAfter: ['extractDecoratedClassesProcessor'],
-    $runBefore: ['computing-ids'],
+    $runAfter: ['processAliasDocs', 'collectPackageContentDocsProcessor'],
+    $runBefore: ['rendering-docs', 'checkContentRules'],
     $process(docs) {
-      const packageContentFiles = {};
+      const packageContentFiles = collectPackageContentDocsProcessor.packageContentFiles;
       const packageMap = {};
-
-      docs = docs.filter(doc => {
-        if (doc.docType === 'package-content') {
-          packageContentFiles[dirname(doc.fileInfo.filePath)] = doc;
-          return false;
-        } else {
-          return true;
-        }
-      });
 
       docs.forEach(doc => {
         if (doc.docType === 'module') {
@@ -26,13 +17,18 @@ module.exports = function processPackages() {
 
           // Partition the exports into groups by type
           if (doc.exports) {
-            doc.classes = doc.exports.filter(doc => doc.docType === 'class');
-            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator');
-            doc.functions = doc.exports.filter(doc => doc.docType === 'function');
-            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface');
-            doc.directives = doc.exports.filter(doc => doc.docType === 'directive');
-            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe');
-            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const');
+            const publicExports = doc.exports.filter(doc => !doc.privateExport);
+            doc.ngmodules = publicExports.filter(doc => doc.docType === 'ngmodule').sort(byId);
+            doc.classes = publicExports.filter(doc => doc.docType === 'class').sort(byId);
+            doc.decorators = publicExports.filter(doc => doc.docType === 'decorator').sort(byId);
+            doc.functions = publicExports.filter(doc => doc.docType === 'function').sort(byId);
+            doc.structures = publicExports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface').sort(byId);
+            doc.directives = publicExports.filter(doc => doc.docType === 'directive').sort(byId);
+            doc.pipes = publicExports.filter(doc => doc.docType === 'pipe').sort(byId);
+            doc.types = publicExports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
+            if (publicExports.every(doc => !!doc.deprecated)) {
+              doc.deprecated = 'all exports of this entry point are deprecated.';
+            }
           }
 
           // Copy over docs from the PACKAGE.md file that is used to document packages
@@ -57,7 +53,16 @@ module.exports = function processPackages() {
         }
       });
 
-      return docs;
+      // Update package deprecation status (compared to entry point status)
+      Object.keys(packageMap).forEach(key => {
+        const pkg = packageMap[key];
+        pkg.primary.packageDeprecated = pkg.primary.deprecated !== undefined && pkg.secondary.every(entryPoint => entryPoint.deprecated !== undefined);
+      });
     }
   };
 };
+
+
+function byId(a, b) {
+  return a.id > b.id ? 1 : -1;
+}

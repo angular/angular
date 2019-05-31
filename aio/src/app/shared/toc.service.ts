@@ -56,9 +56,8 @@ export class TocService {
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
     const div: HTMLDivElement = this.document.createElement('div');
     div.innerHTML = heading.innerHTML;
-    const anchorLinks: NodeListOf<HTMLAnchorElement> = div.querySelectorAll('a');
-    for (let i = 0; i < anchorLinks.length; i++) {
-      const anchorLink = anchorLinks[i];
+    const anchorLinks = Array.from(div.querySelectorAll('a'));
+    for (const anchorLink of anchorLinks) {
       if (!anchorLink.classList.contains('header-link')) {
         // this is an anchor that contains actual content that we want to keep
         // move the contents of the anchor into its parent
@@ -68,7 +67,10 @@ export class TocService {
         }
       }
       // now remove the anchor
-      anchorLink.remove();
+      if (anchorLink.parentNode !== null) {
+        // We cannot use ChildNode.remove() because of IE11
+        anchorLink.parentNode.removeChild(anchorLink);
+      }
     }
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe

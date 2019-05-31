@@ -31,6 +31,7 @@ System.config({
     'rxjs': 'node_modules/rxjs',
   },
   packages: {
+    '@angular/core/src/render3': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
     '@angular/animations/browser/testing': {main: 'index.js', defaultExtension: 'js'},
@@ -62,6 +63,7 @@ System.config({
     '@angular/platform-server': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/private/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/elements': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},

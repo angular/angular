@@ -6,1736 +6,784 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOfContext} from '@angular/common';
-import {Component} from '../../src/core';
-import {defineComponent} from '../../src/render3/definition';
-import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {NgForOf} from './common_with_def';
-import {ComponentFixture, TemplateFixture} from './render_util';
+import {noop} from '../../../compiler/src/render3/view/util';
+import {getTranslationForTemplate, ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '../../src/render3/i18n';
+import {ɵɵelementEnd, ɵɵelementStart} from '../../src/render3/instructions/all';
+import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
+import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
+import {TemplateFixture} from './render_util';
 
 describe('Runtime i18n', () => {
-  it('should support html elements', () => {
-    // Html tags are replaced by placeholders.
-    // Open tag placeholders are never re-used (closing tag placeholders can be).
-    const MSG_DIV_SECTION_1 =
-        `{$START_C}trad 1{$END_C}{$START_A}trad 2{$START_B}trad 3{$END_B}{$END_A}`;
-    let i18n_1: I18nInstruction[][];
-    // Initial template:
-    // <div i18n>
-    //  <a>
-    //    <b></b>
-    //    <remove-me></remove-me>
-    //  </a>
-    //  <c></c>
-    // </div>
+  describe('getTranslationForTemplate', () => {
+    it('should crop messages for the selected template', () => {
+      let message = `simple text`;
+      expect(getTranslationForTemplate(message)).toEqual(message);
 
-    // Translated to:
-    // <div i18n>
-    //  <c>trad 1</c>
-    //  <a>
-    //    trad 2
-    //    <b>trad 3</b>
-    //  </a>
-    // </div>
-    function createTemplate() {
-      if (!i18n_1) {
-        i18n_1 = i18nMapping(
-            MSG_DIV_SECTION_1, [{'START_A': 1, 'START_B': 2, 'START_REMOVE_ME': 3, 'START_C': 4}]);
-      }
+      message = `Hello �0�!`;
+      expect(getTranslationForTemplate(message)).toEqual(message);
 
-      elementStart(0, 'div');
-      {  // Start of translated section 1
-        // - i18n sections do not contain any text() instruction
-        elementStart(1, 'a');  // START_A
-        {
-          element(2, 'b');          // START_B
-          element(3, 'remove-me');  // START_REMOVE_ME
-        }
-        elementEnd();
-        element(4, 'c');  // START_C
-      }                   // End of translated section 1
-      elementEnd();
-      i18nApply(1, i18n_1[0]);
-    }
+      message = `Hello �#2��0��/#2�!`;
+      expect(getTranslationForTemplate(message)).toEqual(message);
 
-    const fixture = new TemplateFixture(createTemplate);
-    expect(fixture.html).toEqual('<div><c>trad 1</c><a>trad 2<b>trad 3</b></a></div>');
-  });
+      // Embedded sub-templates
+      message = `�0� is rendered as: �*2:1�before�*1:2�middle�/*1:2�after�/*2:1�!`;
+      expect(getTranslationForTemplate(message)).toEqual('�0� is rendered as: �*2:1��/*2:1�!');
+      expect(getTranslationForTemplate(message, 1)).toEqual('before�*1:2��/*1:2�after');
+      expect(getTranslationForTemplate(message, 2)).toEqual('middle');
 
-  it('should support expressions', () => {
-    const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
-
-    class MyApp {
-      exp1 = '1';
-      exp2 = '2';
-
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div i18n>
-        //  {{exp1}} {{exp2}}
-        // </div>
-
-        // Translated to:
-        // <div i18n>
-        //  start {{exp2}} middle {{exp1}} end
-        // </div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1, 'EXP_2': 2}]);
-            }
-
-            elementStart(0, 'div');
-            {
-              // Start of translated section 1
-              // One text node is added per expression in the interpolation
-              text(1);  // EXP_1
-              text(2);  // EXP_2
-              // End of translated section 1
-            }
-            elementEnd();
-            i18nApply(1, i18n_1[0]);
-          }
-          if (rf & RenderFlags.Update) {
-            textBinding(1, bind(ctx.exp1));
-            textBinding(2, bind(ctx.exp2));
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyApp);
-    expect(fixture.html).toEqual('<div>start 2 middle 1 end</div>');
-
-    // Change detection cycle, no model changes
-    fixture.update();
-    expect(fixture.html).toEqual('<div>start 2 middle 1 end</div>');
-
-    // Change the expressions
-    fixture.component.exp1 = 'expr 1';
-    fixture.component.exp2 = 'expr 2';
-    fixture.update();
-    expect(fixture.html).toEqual('<div>start expr 2 middle expr 1 end</div>');
-  });
-
-  it('should support expressions on removed nodes', () => {
-    const MSG_DIV_SECTION_1 = `message`;
-    let i18n_1: I18nInstruction[][];
-
-    class MyApp {
-      exp1 = '1';
-
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div i18n>
-        //  {{exp1}}
-        // </div>
-
-        // Translated to:
-        // <div i18n>
-        //   message
-        // </div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1}]);
-            }
-
-            elementStart(0, 'div');
-            {
-              // Start of translated section 1
-              text(1);  // EXP_1 will be removed
-              // End of translated section 1
-            }
-            elementEnd();
-            i18nApply(1, i18n_1[0]);
-          }
-          if (rf & RenderFlags.Update) {
-            textBinding(1, bind(ctx.exp1));
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyApp);
-    expect(fixture.html).toEqual('<div>message</div>');
-
-    // Change detection cycle, no model changes
-    fixture.update();
-    expect(fixture.html).toEqual('<div>message</div>');
-
-    // Change the expressions
-    fixture.component.exp1 = 'expr 1';
-    fixture.update();
-    expect(fixture.html).toEqual('<div>message</div>');
-  });
-
-  it('should support expressions in attributes', () => {
-    const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
-
-    class MyApp {
-      exp1: any = '1';
-      exp2: any = '2';
-
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
-
-        // Translated to:
-        // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            element(0, 'div');  // translated section 1
-          }
-          if (rf & RenderFlags.Update) {
-            elementProperty(0, 'title', i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2));
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyApp);
-    expect(fixture.html).toEqual('<div title="start 2 middle 1 end"></div>');
-
-    // Change detection cycle, no model changes
-    fixture.update();
-    expect(fixture.html).toEqual('<div title="start 2 middle 1 end"></div>');
-
-    // Change the expressions
-    fixture.component.exp1 = function test() {};
-    fixture.component.exp2 = null;
-    fixture.update();
-    expect(fixture.html).toEqual('<div title="start  middle test end"></div>');
-  });
-
-  it('should support both html elements, expressions and expressions in attributes', () => {
-    const MSG_DIV_SECTION_1 = `{$EXP_1} {$START_P}trad {$EXP_2}{$END_P}`;
-    const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
-    let i18n_2: I18nExpInstruction[];
-
-    class MyApp {
-      exp1 = '1';
-      exp2 = '2';
-      exp3 = '3';
-
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div i18n i18n-title title="{{exp1}}{{exp2}}">
-        //  {{exp1}}
-        //  <remove-me-1>
-        //    <remove-me-2></remove-me-2>
-        //    <remove-me-3></remove-me-3>
-        //  </remove-me-1>
-        //  <p>
-        //    {{exp2}}
-        //  </p>
-        //  {{exp3}}
-        // </div>
-
-        // Translated to:
-        // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end">
-        //  {{exp1}}
-        //  <p>
-        //    trad {{exp2}}
-        //  </p>
-        // </div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(
-                  MSG_DIV_SECTION_1, [{
-                    'START_REMOVE_ME_1': 2,
-                    'START_REMOVE_ME_2': 3,
-                    'START_REMOVE_ME_3': 4,
-                    'START_P': 5
-                  }],
-                  [{'EXP_1': 1, 'EXP_2': 6, 'EXP_3': 7}]);
-            }
-            if (!i18n_2) {
-              i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
-            }
-
-            elementStart(0, 'div');
-            {
-              // Start of translated section 1
-              text(1);                         // EXP_1
-              elementStart(2, 'remove-me-1');  // START_REMOVE_ME_1
-              {
-                element(3, 'remove-me-2');  // START_REMOVE_ME_2
-                element(4, 'remove-me-3');  // START_REMOVE_ME_3
-              }
-              elementEnd();
-              elementStart(5, 'p');  // START_P
-              { text(6); }           // EXP_2
-              elementEnd();
-              text(7);  // EXP_3
-              // End of translated section 1
-            }
-            elementEnd();
-            i18nApply(1, i18n_1[0]);
-          }
-          if (rf & RenderFlags.Update) {
-            textBinding(1, bind(ctx.exp1));
-            textBinding(6, bind(ctx.exp2));
-            textBinding(7, bind(ctx.exp3));
-            elementProperty(0, 'title', i18nInterpolation2(i18n_2, ctx.exp1, ctx.exp2));
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyApp);
-    expect(fixture.html).toEqual('<div title="start 2 middle 1 end">1 <p>trad 2</p></div>');
-
-    // Change detection cycle, no model changes
-    fixture.update();
-    expect(fixture.html).toEqual('<div title="start 2 middle 1 end">1 <p>trad 2</p></div>');
-
-    // Change the expressions
-    fixture.component.exp1 = 'expr 1';
-    fixture.component.exp2 = 'expr 2';
-    fixture.update();
-    expect(fixture.html)
-        .toEqual('<div title="start expr 2 middle expr 1 end">expr 1 <p>trad expr 2</p></div>');
-  });
-
-  it('should support multiple i18n elements', () => {
-    const MSG_DIV_SECTION_1 = `trad {$EXP_1}`;
-    const MSG_DIV_SECTION_2 = `{$START_C}trad{$END_C}`;
-    const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
-    let i18n_2: I18nInstruction[][];
-    let i18n_3: I18nExpInstruction[];
-
-    class MyApp {
-      exp1 = '1';
-      exp2 = '2';
-
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div>
-        //  <a i18n>
-        //    {{exp1}}
-        //  </a>
-        //  hello
-        //  <b i18n i18n-title title="{{exp1}}{{exp2}}">
-        //    <c></c>
-        //  </b>
-        // </div>
-
-        // Translated to:
-        // <div>
-        //  <a i18n>
-        //    trad {{exp1}}
-        //  </a>
-        //  hello
-        //  <b i18n i18n-title title="start {{exp2}} middle {{exp1}} end">
-        //    <c>trad</c>
-        //  </b>
-        // </div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 2}]);
-            }
-            if (!i18n_2) {
-              i18n_2 = i18nMapping(MSG_DIV_SECTION_2, [{'START_C': 5}]);
-            }
-            if (!i18n_3) {
-              i18n_3 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
-            }
-
-            elementStart(0, 'div');
-            {
-              elementStart(1, 'a');
-              {
-                // Start of translated section 1
-                text(2);  // EXP_1
-                // End of translated section 1
-              }
-              elementEnd();
-              text(3, 'hello');
-              elementStart(4, 'b');
-              {
-                // Start of translated section 2
-                element(5, 'c');  // START_C
-                // End of translated section 2
-              }
-              elementEnd();
-            }
-            elementEnd();
-            i18nApply(2, i18n_1[0]);
-            i18nApply(5, i18n_2[0]);
-          }
-          if (rf & RenderFlags.Update) {
-            textBinding(2, bind(ctx.exp1));
-            elementProperty(4, 'title', i18nInterpolation2(i18n_3, ctx.exp1, ctx.exp2));
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyApp);
-    expect(fixture.html)
-        .toEqual('<div><a>trad 1</a>hello<b title="start 2 middle 1 end"><c>trad</c></b></div>');
-
-    // Change detection cycle, no model changes
-    fixture.update();
-    expect(fixture.html)
-        .toEqual('<div><a>trad 1</a>hello<b title="start 2 middle 1 end"><c>trad</c></b></div>');
-
-    // Change the expressions
-    fixture.component.exp1 = 'expr 1';
-    fixture.component.exp2 = 'expr 2';
-    fixture.update();
-    expect(fixture.html)
-        .toEqual(
-            '<div><a>trad expr 1</a>hello<b title="start expr 2 middle expr 1 end"><c>trad</c></b></div>');
-  });
-
-  describe('view containers / embedded templates', () => {
-    it('should support containers', () => {
-      const MSG_DIV_SECTION_1 = `valeur: {$EXP_1}`;
-      // The indexes are based on the main template function
-      let i18n_1: I18nInstruction[][];
-
-      class MyApp {
-        exp1 = '1';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // before (
-          // % if (condition) { // with i18n
-          //   value: {{exp1}}
-          // % }
-          // ) after
-
-          // Translated :
-          // before (
-          // % if (condition) { // with i18n
-          //   valeur: {{exp1}}
-          // % }
-          // ) after
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 0}]);
-              }
-
-              text(0, 'before (');
-              container(1);
-              text(2, ') after');
-            }
-            if (rf & RenderFlags.Update) {
-              containerRefreshStart(1);
-              {
-                let rf0 = embeddedViewStart(0);
-                if (rf0 & RenderFlags.Create) {
-                  // Start of translated section 1
-                  text(0);  // EXP_1
-                  // End of translated section 1
-                  i18nApply(0, i18n_1[0]);
-                }
-                if (rf0 & RenderFlags.Update) {
-                  textBinding(0, bind(myApp.exp1));
-                }
-                embeddedViewEnd();
-              }
-              containerRefreshEnd();
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('before (valeur: 1) after');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html).toEqual('before (valeur: 1) after');
+      // Embedded & sibling sub-templates
+      message =
+          `�0� is rendered as: �*2:1�before�*1:2�middle�/*1:2�after�/*2:1� and also �*4:3�before�*1:4�middle�/*1:4�after�/*4:3�!`;
+      expect(getTranslationForTemplate(message))
+          .toEqual('�0� is rendered as: �*2:1��/*2:1� and also �*4:3��/*4:3�!');
+      expect(getTranslationForTemplate(message, 1)).toEqual('before�*1:2��/*1:2�after');
+      expect(getTranslationForTemplate(message, 2)).toEqual('middle');
+      expect(getTranslationForTemplate(message, 3)).toEqual('before�*1:4��/*1:4�after');
+      expect(getTranslationForTemplate(message, 4)).toEqual('middle');
     });
 
-    it('should support ng-container', () => {
-      const MSG_DIV_SECTION_1 = `{$START_B}{$END_B}`;
-      // With ng-container the i18n node doesn't create any element at runtime which means that
-      // its children are not the only children of their parent, some nodes which are not
-      // translated might also be the children of the same parent.
-      // This is why we need to pass the `lastChildIndex` to `i18nMapping`
-      let i18n_1: I18nInstruction[][];
-      // Initial template:
-      // <div i18n>
-      //  <a></a>
-      //  <ng-container i18n>
-      //    <b></b>
-      //    <c></c>
-      //  </ng-container>
-      //  <d></d>
-      // </div>
+    it('should throw if the template is malformed', () => {
+      const message = `�*2:1�message!`;
+      expect(() => getTranslationForTemplate(message)).toThrowError(/Tag mismatch/);
+    });
+  });
 
-      // Translated to:
-      // <div i18n>
-      //  <a></a>
-      //  <ng-container i18n>
-      //    <b></b>
-      //  </ng-container>
-      //  <d></d>
-      // </div>
-      function createTemplate() {
-        if (!i18n_1) {
-          i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 2, 'START_C': 3}], null, null, 4);
-        }
+  function prepareFixture(
+      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts = 0,
+      nbVars = 0): TemplateFixture {
+    return new TemplateFixture(createTemplate, updateTemplate || noop, nbConsts, nbVars);
+  }
 
-        elementStart(0, 'div');
-        {
-          element(1, 'a');
+  function getOpCodes(
+      createTemplate: () => void, updateTemplate: (() => void)|null, nbConsts: number,
+      index: number): TI18n|I18nUpdateOpCodes {
+    const fixture = prepareFixture(createTemplate, updateTemplate, nbConsts);
+    const tView = fixture.hostView[TVIEW];
+    return tView.data[index + HEADER_OFFSET] as TI18n;
+  }
+
+  describe('i18nStart', () => {
+    it('for text', () => {
+      const MSG_DIV = `simple text`;
+      const nbConsts = 1;
+      const index = 0;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      // Check debug
+      const debugOps = (opCodes as any).create.debug !.operations;
+      expect(debugOps[0].__raw_opCode).toBe('simple text');
+      expect(debugOps[0].type).toBe('Create Text Node');
+      expect(debugOps[0].nodeIndex).toBe(1);
+      expect(debugOps[0].text).toBe('simple text');
+      expect(debugOps[1].__raw_opCode).toBe(1);
+      expect(debugOps[1].type).toBe('AppendChild');
+      expect(debugOps[1].nodeIndex).toBe(0);
+
+      expect(opCodes).toEqual({
+        vars: 1,
+        create: [
+          'simple text', nbConsts,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+        ],
+        update: [],
+        icus: null
+      });
+    });
+
+    it('for elements', () => {
+      const MSG_DIV = `Hello �#2�world�/#2� and �#3�universe�/#3�!`;
+      // Template: `<div>Hello <div>world</div> and <span>universe</span>!`
+      // 3 consts for the 2 divs and 1 span + 1 const for `i18nStart` = 4 consts
+      const nbConsts = 4;
+      const index = 1;
+      const elementIndex = 2;
+      const elementIndex2 = 3;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual({
+        vars: 5,
+        create: [
+          'Hello ',
+          nbConsts,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          elementIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          'world',
+          nbConsts + 1,
+          elementIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          elementIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
+          ' and ',
+          nbConsts + 2,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          elementIndex2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          'universe',
+          nbConsts + 3,
+          elementIndex2 << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          elementIndex2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
+          '!',
+          nbConsts + 4,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+        ],
+        update: [],
+        icus: null
+      });
+    });
+
+    it('for simple bindings', () => {
+      const MSG_DIV = `Hello �0�!`;
+      const nbConsts = 2;
+      const index = 1;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      expect((opCodes as any).update.debug.operations).toEqual([
+        {__raw_opCode: 8, checkBit: 1, type: 'Text', nodeIndex: 2, text: 'Hello �0�!'}
+      ]);
+
+      expect(opCodes).toEqual({
+        vars: 1,
+        create:
+            ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
+        update: [
+          0b1,  // bindings mask
+          4,    // if no update, skip 4
+          'Hello ',
+          -1,  // binding index
+          '!', (index + 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
+        ],
+        icus: null
+      });
+    });
+
+    it('for multiple bindings', () => {
+      const MSG_DIV = `Hello �0� and �1�, again �0�!`;
+      const nbConsts = 2;
+      const index = 1;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual({
+        vars: 1,
+        create:
+            ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
+        update: [
+          0b11,  // bindings mask
+          8,     // if no update, skip 8
+          'Hello ', -1, ' and ', -2, ', again ', -1, '!',
+          (index + 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
+        ],
+        icus: null
+      });
+    });
+
+    it('for sub-templates', () => {
+      // Template:
+      // <div>
+      //   {{value}} is rendered as:
+      //   <span *ngIf>
+      //     before <b *ngIf>middle</b> after
+      //   </span>
+      //   !
+      // </div>
+      const MSG_DIV =
+          `�0� is rendered as: �*2:1��#1:1�before�*2:2��#1:2�middle�/#1:2��/*2:2�after�/#1:1��/*2:1�!`;
+
+      /**** Root template ****/
+      // �0� is rendered as: �*2:1��/*2:1�!
+      let nbConsts = 3;
+      let index = 1;
+      const firstTextNode = 3;
+      let opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual({
+        vars: 2,
+        create: [
+          '',
+          nbConsts,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          '!',
+          nbConsts + 1,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+        ],
+        update: [
+          0b1,  //  bindings mask
+          3,    // if no update, skip 3
+          -1,   // binding index
+          ' is rendered as: ', firstTextNode << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text
+        ],
+        icus: null
+      });
+
+
+      /**** First sub-template ****/
+      // �#1:1�before�*2:2�middle�/*2:2�after�/#1:1�
+      nbConsts = 3;
+      index = 0;
+      const spanElement = 1;
+      const bElementSubTemplate = 2;
+      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 1); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual({
+        vars: 2,
+        create: [
+          spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          'before',
+          nbConsts,
+          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          'after',
+          nbConsts + 1,
+          spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
+        ],
+        update: [],
+        icus: null
+      });
+
+
+      /**** Second sub-template ****/
+      // middle
+      nbConsts = 2;
+      index = 0;
+      const bElement = 1;
+      opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV, 2); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual({
+        vars: 1,
+        create: [
+          bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          'middle',
+          nbConsts,
+          bElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+          bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd,
+        ],
+        update: [],
+        icus: null
+      });
+    });
+
+    it('for ICU expressions', () => {
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
+        other {�0� <span title="�1�">emails</span>}
+      }`;
+      const nbConsts = 1;
+      const index = 0;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const tIcuIndex = 0;
+      const icuCommentNodeIndex = index + 1;
+      const firstTextNodeIndex = index + 2;
+      const bElementNodeIndex = index + 3;
+      const iElementNodeIndex = index + 3;
+      const spanElementNodeIndex = index + 3;
+      const innerTextNode = index + 4;
+      const lastTextNode = index + 5;
+
+      const debugOps = (opCodes as any).update.debug.operations;
+      expect(debugOps[0].__raw_opCode).toBe(6);
+      expect(debugOps[0].checkBit).toBe(1);
+      expect(debugOps[0].type).toBe('IcuSwitch');
+      expect(debugOps[0].nodeIndex).toBe(1);
+      expect(debugOps[0].tIcuIndex).toBe(0);
+      expect(debugOps[0].mainBinding).toBe('�0�');
+
+      expect(debugOps[1].__raw_opCode).toBe(7);
+      expect(debugOps[1].checkBit).toBe(3);
+      expect(debugOps[1].type).toBe('IcuUpdate');
+      expect(debugOps[1].nodeIndex).toBe(1);
+      expect(debugOps[1].tIcuIndex).toBe(0);
+
+      const icuDebugOps = (opCodes as any).icus[0].create[0].debug.operations;
+      let op: any;
+      let i = 0;
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('no ');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(2);
+      expect(op.text).toBe('no ');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toEqual({marker: 'element'});
+      expect(op.type).toBe('ELEMENT_MARKER');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('b');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(3);
+      expect(op.text).toBe('b');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(28);
+      expect(op.type).toBe('Attr');
+      expect(op.nodeIndex).toBe(3);
+      expect(op.attrName).toBe('title');
+      expect(op.attrValue).toBe('none');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('emails');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(4);
+      expect(op.text).toBe('emails');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(393217);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(3);
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe('!');
+      expect(op.type).toBe('Create Text Node');
+      expect(op.nodeIndex).toBe(5);
+      expect(op.text).toBe('!');
+
+      op = icuDebugOps[i++];
+      expect(op.__raw_opCode).toBe(131073);
+      expect(op.type).toBe('AppendChild');
+      expect(op.nodeIndex).toBe(1);
+
+      expect(opCodes).toEqual({
+        vars: 5,
+        create: [
+          COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+        ],
+        update: [
+          0b1,  // mask for ICU main binding
+          3,    // skip 3 if not changed
+          -1,   // icu main binding
+          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
+          0b11,  // mask for all ICU bindings
+          2,     // skip 2 if not changed
+          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex
+        ],
+        icus: [{
+          type: 1,
+          vars: [4, 3, 3],
+          childIcus: [[], [], []],
+          cases: ['0', '1', 'other'],
+          create: [
+            [
+              'no ',
+              firstTextNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              ELEMENT_MARKER,
+              'b',
+              bElementNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              bElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Attr,
+              'title',
+              'none',
+              'emails',
+              innerTextNode,
+              bElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              '!',
+              lastTextNode,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+            ],
+            [
+              'one ', firstTextNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              ELEMENT_MARKER, 'i', iElementNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              'email', innerTextNode,
+              iElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+            ],
+            [
+              '', firstTextNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              ELEMENT_MARKER, 'span', spanElementNodeIndex,
+              icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+              'emails', innerTextNode,
+              spanElementNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+            ]
+          ],
+          remove: [
+            [
+              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              bElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              lastTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+            ],
+            [
+              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              iElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+            ],
+            [
+              firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              innerTextNode << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              spanElementNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+            ]
+          ],
+          update: [
+            [], [],
+            [
+              0b1,  // mask for the first binding
+              3,    // skip 3 if not changed
+              -1,   // binding index
+              ' ',  // text string to concatenate to the binding value
+              firstTextNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
+              0b10,  // mask for the title attribute binding
+              4,     // skip 4 if not changed
+              -2,    // binding index
+              bElementNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr,
+              'title',  // attribute name
+              null      // sanitize function
+            ]
+          ]
+        }]
+      });
+    });
+
+    it('for nested ICU expressions', () => {
+      const MSG_DIV = `{�0�, plural,
+        =0 {zero}
+        other {�0� {�1�, select,
+                       cat {cats}
+                       dog {dogs}
+                       other {animals}
+                     }!}
+      }`;
+      const nbConsts = 1;
+      const index = 0;
+      const opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
+      const icuCommentNodeIndex = index + 1;
+      const firstTextNodeIndex = index + 2;
+      const nestedIcuCommentNodeIndex = index + 3;
+      const lastTextNodeIndex = index + 4;
+      const nestedTextNodeIndex = index + 5;
+      const tIcuIndex = 1;
+      const nestedTIcuIndex = 0;
+
+      expect(opCodes).toEqual({
+        vars: 6,
+        create: [
+          COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
+          index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+        ],
+        update: [
+          0b1,  // mask for ICU main binding
+          3,    // skip 3 if not changed
+          -1,   // icu main binding
+          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
+          0b11,  // mask for all ICU bindings
+          2,     // skip 2 if not changed
+          icuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex
+        ],
+        icus: [
           {
-            // Start of translated section 1
-            element(2, 'b');  // START_B
-            element(3, 'c');  // START_C
-            // End of translated section 1
-          }
-          element(4, 'd');
-        }
-        elementEnd();
-        i18nApply(2, i18n_1[0]);
-      }
-
-      const fixture = new TemplateFixture(createTemplate);
-      expect(fixture.html).toEqual('<div><a></a><b></b><d></d></div>');
-    });
-
-    it('should support embedded templates', () => {
-      const MSG_DIV_SECTION_1 = `{$START_LI}valeur: {$EXP_1}!{$END_LI}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-      class MyApp {
-        items: string[] = ['1', '2'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">value: {{item}}</li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">valeur: {{item}}!</li>
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
-                    ['START_LI']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);  // START_LI
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
+            type: 0,
+            vars: [1, 1, 1],
+            childIcus: [[], [], []],
+            cases: ['cat', 'dog', 'other'],
+            create: [
+              [
+                'cats', nestedTextNodeIndex, nestedIcuCommentNodeIndex
+                        << I18nMutateOpCode.SHIFT_PARENT |
+                    I18nMutateOpCode.AppendChild
+              ],
+              [
+                'dogs', nestedTextNodeIndex, nestedIcuCommentNodeIndex
+                        << I18nMutateOpCode.SHIFT_PARENT |
+                    I18nMutateOpCode.AppendChild
+              ],
+              [
+                'animals', nestedTextNodeIndex, nestedIcuCommentNodeIndex
+                        << I18nMutateOpCode.SHIFT_PARENT |
+                    I18nMutateOpCode.AppendChild
+              ]
+            ],
+            remove: [
+              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
+              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
+              [nestedTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove]
+            ],
+            update: [[], [], []]
           },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<ul><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: 1!</li></ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: one!</li></ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: one!</li><li>valeur: two!</li></ul>');
-    });
-
-    it('should support sibling embedded templates', () => {
-      const MSG_DIV_SECTION_1 =
-          `{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-      class MyApp {
-        items: string[] = ['1', '2'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">value: {{item}}</li>
-          //   <li *ngFor="let item of items">value bis: {{item}}</li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">valeur: {{item}}!</li>
-          //   <li *ngFor="let item of items">valeur bis: {{item}}!</li>
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                container(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(myApp.items));
-              elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_0
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-
-            function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_2
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-          },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur: 1!</li><li>valeur: 2!</li><li>valeur bis: 1!</li><li>valeur bis: 2!</li></ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur: 1!</li><li>valeur: 2!</li><li>valeur bis: 1!</li><li>valeur bis: 2!</li></ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: 1!</li><li>valeur bis: 1!</li></ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur: one!</li><li>valeur bis: one!</li></ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur: one!</li><li>valeur: two!</li><li>valeur bis: one!</li><li>valeur bis: two!</li></ul>');
-    });
-
-    it('should support changing the order of multiple template roots in the same template', () => {
-      const MSG_DIV_SECTION_1 =
-          `{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-      class MyApp {
-        items: string[] = ['1', '2'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">value: {{item}}</li>
-          //   <li *ngFor="let item of items">value bis: {{item}}</li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">valeur bis: {{item}}!</li>
-          //   <li *ngFor="let item of items">valeur: {{item}}!</li>
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                container(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(myApp.items));
-              elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_0
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-
-            function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_2
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-          },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur bis: 1!</li><li>valeur bis: 2!</li><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur bis: 1!</li><li>valeur bis: 2!</li><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur bis: 1!</li><li>valeur: 1!</li></ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>valeur bis: one!</li><li>valeur: one!</li></ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li>valeur bis: one!</li><li>valeur bis: two!</li><li>valeur: one!</li><li>valeur: two!</li></ul>');
-    });
-
-    it('should support nested embedded templates', () => {
-      const MSG_DIV_SECTION_1 = `{$START_LI}{$START_SPAN}valeur: {$EXP_1}!{$END_SPAN}{$END_LI}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-      class MyApp {
-        items: string[] = ['1', '2'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">
-          //     <span *ngFor="let item of items">value: {{item}}</span>
-          //   </li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">
-          //     <span *ngFor="let item of items">valeur: {{item}}!</span>
-          //   </li>
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI': 1}, {'START_LI': 0, 'START_SPAN': 1}, {'START_SPAN': 0}],
-                    [null, null, {'EXP_1': 1}], ['START_LI', 'START_SPAN']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);  // START_LI
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                {
-                  container(1, spanTemplate, null, ['ngForOf', '']);  // START_SPAN
-                }
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                elementProperty(1, 'ngForOf', bind(myApp.items));
-              }
-            }
-
-            function spanTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'span');  // START_SPAN
-                { text(1); }              // EXP_1
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-          },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li><span>valeur: 1!</span><span>valeur: 2!</span></li><li><span>valeur: 1!</span><span>valeur: 2!</span></li></ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li><span>valeur: 1!</span><span>valeur: 2!</span></li><li><span>valeur: 1!</span><span>valeur: 2!</span></li></ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li><span>valeur: 1!</span></li></ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li><span>valeur: one!</span></li></ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html)
-          .toEqual(
-              '<ul><li><span>valeur: one!</span><span>valeur: two!</span></li><li><span>valeur: one!</span><span>valeur: two!</span></li></ul>');
-    });
-
-    it('should be able to move template roots around', () => {
-      const MSG_DIV_SECTION_1 =
-          `{$START_LI_0}début{$END_LI_0}{$START_LI_1}valeur: {$EXP_1}{$END_LI_1}fin`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-
-      class MyApp {
-        items: string[] = ['first', 'second'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li>start</li>
-          //   <li *ngFor="let item of items">value: {{item}}</li>
-          //   <li>delete me</li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   <li>début</li>
-          //   <li *ngFor="let item of items">valeur: {{item}}</li>
-          //   fin
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2, 'START_LI_2': 3}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}], ['START_LI_1']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                element(1, 'li');                                 // START_LI_0
-                container(2, liTemplate, null, ['ngForOf', '']);  // START_LI_1
-                elementStart(3, 'li');                            // START_LI_2
-                { text(4, 'delete me'); }
-                elementEnd();
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-          },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html)
-          .toEqual('<ul><li>début</li><li>valeur: first</li><li>valeur: second</li>fin</ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html)
-          .toEqual('<ul><li>début</li><li>valeur: first</li><li>valeur: second</li>fin</ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>début</li><li>valeur: first</li>fin</ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul><li>début</li><li>valeur: one</li>fin</ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html)
-          .toEqual('<ul><li>début</li><li>valeur: one</li><li>valeur: two</li>fin</ul>');
-    });
-
-    it('should be able to remove template roots', () => {
-      const MSG_DIV_SECTION_1 = `loop`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
-
-      class MyApp {
-        items: string[] = ['first', 'second'];
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <ul i18n>
-          //   <li *ngFor="let item of items">value: {{item}}</li>
-          // </ul>
-
-          // Translated to:
-          // <ul i18n>
-          //   loop
-          // </ul>
-          template: (rf: RenderFlags, myApp: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
-                    ['START_LI']);
-              }
-
-              elementStart(0, 'ul');
-              {
-                // Start of translated section 1
-                container(1, liTemplate, undefined, ['ngForOf', '']);  // START_LI
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-          },
-          directives: () => [NgForOf]
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<ul>loop</ul>');
-
-      // Change detection cycle, no model changes
-      fixture.update();
-      expect(fixture.html).toEqual('<ul>loop</ul>');
-
-      // Remove the last item
-      fixture.component.items.length = 1;
-      fixture.update();
-      expect(fixture.html).toEqual('<ul>loop</ul>');
-
-      // Change an item
-      fixture.component.items[0] = 'one';
-      fixture.update();
-      expect(fixture.html).toEqual('<ul>loop</ul>');
-
-      // Add an item
-      fixture.component.items.push('two');
-      fixture.update();
-      expect(fixture.html).toEqual('<ul>loop</ul>');
-    });
-  });
-
-  describe('projection', () => {
-    it('should project the translations', () => {
-      @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
-      class Child {
-        static ngComponentDef = defineComponent({
-          type: Child,
-          selectors: [['child']],
-          factory: () => new Child(),
-          template: (rf: RenderFlags, cmp: Child) => {
-            if (rf & RenderFlags.Create) {
-              projectionDef();
-              elementStart(0, 'p');
-              { projection(1); }
-              elementEnd();
-            }
+          {
+            type: 1,
+            vars: [1, 4],
+            childIcus: [[], [0]],
+            cases: ['0', 'other'],
+            create: [
+              [
+                'zero', firstTextNodeIndex,
+                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+              ],
+              [
+                '', firstTextNodeIndex,
+                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+                COMMENT_MARKER, 'nested ICU 0', nestedIcuCommentNodeIndex,
+                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
+                '!', lastTextNodeIndex,
+                icuCommentNodeIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
+              ]
+            ],
+            remove: [
+              [firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove],
+              [
+                firstTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+                lastTextNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+                0 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.RemoveNestedIcu,
+                nestedIcuCommentNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove,
+              ]
+            ],
+            update: [
+              [],
+              [
+                0b1,  // mask for ICU main binding
+                3,    // skip 3 if not changed
+                -1,   // binding index
+                ' ',  // text string to concatenate to the binding value
+                firstTextNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Text,
+                0b10,  // mask for inner ICU main binding
+                3,     // skip 3 if not changed
+                -2,    // inner ICU main binding
+                nestedIcuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF |
+                    I18nUpdateOpCode.IcuSwitch,
+                nestedTIcuIndex,
+                0b10,  // mask for all inner ICU bindings
+                2,     // skip 2 if not changed
+                nestedIcuCommentNodeIndex << I18nUpdateOpCode.SHIFT_REF |
+                    I18nUpdateOpCode.IcuUpdate,
+                nestedTIcuIndex
+              ]
+            ]
           }
-        });
-      }
-
-      const MSG_DIV_SECTION_1 =
-          `{$START_CHILD}Je suis projeté depuis {$START_B}{$EXP_1}{$END_B}{$END_CHILD}`;
-      let i18n_1: I18nInstruction[][];
-      const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      let i18n_2: I18nExpInstruction[];
-
-      @Component({
-        selector: 'parent',
-        template: `
-        <div i18n>
-          <child>I am projected from <b i18n-title title="Child of {{name}}">{{name}}<remove-me-1></remove-me-1></b><remove-me-2></remove-me-2></child>
-          <remove-me-3></remove-me-3>
-        </div>`
-        // Translated to:
-        // <div i18n>
-        //   <child>
-        //     Je suis projeté depuis <b i18n-title title="Enfant de {{name}}">{{name}}</b>
-        //   </child>
-        // </div>
-      })
-      class Parent {
-        name: string = 'Parent';
-        static ngComponentDef = defineComponent({
-          type: Parent,
-          selectors: [['parent']],
-          directives: [Child],
-          factory: () => new Parent(),
-          template: (rf: RenderFlags, cmp: Parent) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{
-                      'START_CHILD': 1,
-                      'START_B': 2,
-                      'START_REMOVE_ME_1': 4,
-                      'START_REMOVE_ME_2': 5,
-                      'START_REMOVE_ME_3': 6
-                    }],
-                    [{'EXP_1': 3}]);
-              }
-              if (!i18n_2) {
-                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
-              }
-
-              elementStart(0, 'div');
-              {
-                // Start of translated section 1
-                elementStart(1, 'child');  // START_CHILD
-                {
-                  elementStart(2, 'b');  // START_B
-                  {
-                    text(3);                    // EXP_1
-                    element(4, 'remove-me-1');  // START_REMOVE_ME_1
-                  }
-                  elementEnd();
-                  element(5, 'remove-me-2');  // START_REMOVE_ME_2
-                }
-                elementEnd();
-                element(6, 'remove-me-3');  // START_REMOVE_ME_3
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(2, 'title', i18nInterpolation1(i18n_2, cmp.name));
-              textBinding(3, bind(cmp.name));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(Parent);
-      expect(fixture.html)
-          .toEqual(
-              '<div><child><p>Je suis projeté depuis <b title="Enfant de Parent">Parent</b></p></child></div>');
-    });
-
-    it('should project a translated i18n block', () => {
-      @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
-      class Child {
-        static ngComponentDef = defineComponent({
-          type: Child,
-          selectors: [['child']],
-          factory: () => new Child(),
-          template: (rf: RenderFlags, cmp: Child) => {
-            if (rf & RenderFlags.Create) {
-              projectionDef();
-              elementStart(0, 'p');
-              { projection(1); }
-              elementEnd();
-            }
-          }
-        });
-      }
-
-      const MSG_DIV_SECTION_1 = `Je suis projeté depuis {$EXP_1}`;
-      let i18n_1: I18nInstruction[][];
-      const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      let i18n_2: I18nExpInstruction[];
-
-      @Component({
-        selector: 'parent',
-        template: `
-        <div>
-          <child><any></any><b i18n i18n-title title="Child of {{name}}">I am projected from {{name}}</b><any></any></child>
-        </div>`
-        // Translated to:
-        // <div>
-        //   <child>
-        //     <any></any>
-        //     <b i18n i18n-title title="Enfant de {{name}}">Je suis projeté depuis {{name}}</b>
-        //     <any></any>
-        //   </child>
-        // </div>
-      })
-      class Parent {
-        name: string = 'Parent';
-        static ngComponentDef = defineComponent({
-          type: Parent,
-          selectors: [['parent']],
-          directives: [Child],
-          factory: () => new Parent(),
-          template: (rf: RenderFlags, cmp: Parent) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 4}]);
-              }
-              if (!i18n_2) {
-                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
-              }
-
-              elementStart(0, 'div');
-              {
-                elementStart(1, 'child');
-                {
-                  element(2, 'any');
-                  elementStart(3, 'b');
-                  {
-                    // Start of translated section 1
-                    text(4);  // EXP_1
-                    // End of translated section 1
-                  }
-                  elementEnd();
-                  element(5, 'any');
-                }
-                elementEnd();
-              }
-              elementEnd();
-              i18nApply(4, i18n_1[0]);
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(3, 'title', i18nInterpolation1(i18n_2, cmp.name));
-              textBinding(4, bind(cmp.name));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(Parent);
-      expect(fixture.html)
-          .toEqual(
-              '<div><child><p><any></any><b title="Enfant de Parent">Je suis projeté depuis Parent</b><any></any></p></child></div>');
-    });
-
-    it('should re-project translations when multiple projections', () => {
-      @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
-      class GrandChild {
-        static ngComponentDef = defineComponent({
-          type: GrandChild,
-          selectors: [['grand-child']],
-          factory: () => new GrandChild(),
-          template: (rf: RenderFlags, cmp: Child) => {
-            if (rf & RenderFlags.Create) {
-              projectionDef();
-              elementStart(0, 'div');
-              { projection(1); }
-              elementEnd();
-            }
-          }
-        });
-      }
-
-      @Component(
-          {selector: 'child', template: '<grand-child><ng-content></ng-content></grand-child>'})
-      class Child {
-        static ngComponentDef = defineComponent({
-          type: Child,
-          selectors: [['child']],
-          directives: [GrandChild],
-          factory: () => new Child(),
-          template: (rf: RenderFlags, cmp: Child) => {
-            if (rf & RenderFlags.Create) {
-              projectionDef();
-              elementStart(0, 'grand-child');
-              { projection(1); }
-              elementEnd();
-            }
-          }
-        });
-      }
-
-      const MSG_DIV_SECTION_1 = `{$START_B}Bonjour{$END_B} Monde!`;
-      let i18n_1: I18nInstruction[][];
-
-      @Component({
-        selector: 'parent',
-        template: `<child i18n><b>Hello</b> World!</child>`
-        // Translated to:
-        // <child i18n><grand-child><div><b>Bonjour</b> Monde!</div></grand-child></child>
-      })
-      class Parent {
-        name: string = 'Parent';
-        static ngComponentDef = defineComponent({
-          type: Parent,
-          selectors: [['parent']],
-          directives: [Child],
-          factory: () => new Parent(),
-          template: (rf: RenderFlags, cmp: Parent) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 1}]);
-              }
-
-              elementStart(0, 'child');
-              {
-                // Start of translated section 1
-                element(1, 'b');  // START_B
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(Parent);
-      expect(fixture.html)
-          .toEqual('<child><grand-child><div><b>Bonjour</b> Monde!</div></grand-child></child>');
-    });
-
-    it('should project translations with selectors', () => {
-      @Component({
-        selector: 'child',
-        template: `
-          <ng-content select="span"></ng-content>
-        `
-      })
-      class Child {
-        static ngComponentDef = defineComponent({
-          type: Child,
-          selectors: [['child']],
-          factory: () => new Child(),
-          template: (rf: RenderFlags, cmp: Child) => {
-            if (rf & RenderFlags.Create) {
-              projectionDef([[['span']]], ['span']);
-              projection(0, 1);
-            }
-          }
-        });
-      }
-
-      const MSG_DIV_SECTION_1 = `{$START_SPAN_0}Contenu{$END_SPAN_0}`;
-      let i18n_1: I18nInstruction[][];
-
-      @Component({
-        selector: 'parent',
-        template: `
-          <child i18n>
-            <span title="keepMe"></span>
-            <span title="deleteMe"></span>
-          </child>
-        `
-        // Translated to:
-        // <child i18n><span title="keepMe">Contenu</span></child>
-      })
-      class Parent {
-        static ngComponentDef = defineComponent({
-          type: Parent,
-          selectors: [['parent']],
-          directives: [Child],
-          factory: () => new Parent(),
-          template: (rf: RenderFlags, cmp: Parent) => {
-            if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_SPAN_0': 1, 'START_SPAN_1': 2}]);
-              }
-
-              elementStart(0, 'child');
-              {
-                // Start of translated section 1
-                element(1, 'span', ['title', 'keepMe']);    // START_SPAN_0
-                element(2, 'span', ['title', 'deleteMe']);  // START_SPAN_1
-                // End of translated section 1
-              }
-              elementEnd();
-              i18nApply(1, i18n_1[0]);
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(Parent);
-      expect(fixture.html).toEqual('<child><span title="keepMe">Contenu</span></child>');
-    });
-  });
-
-  describe('i18nInterpolation', () => {
-    it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
-      const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
-      let interpolation;
-      let interpolationV;
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              interpolation = i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2);
-              interpolationV = i18nInterpolationV(i18n_1, [ctx.exp1, ctx.exp2]);
-              elementProperty(0, 'title', interpolation);
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(interpolation).toBeDefined();
-      expect(interpolation).toEqual(interpolationV);
-    });
-
-    it('i18nInterpolation3 should work', () => {
-      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2});
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(0, 'title', i18nInterpolation3(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 end"></div>');
-    });
-
-    it('i18nInterpolation4 should work', () => {
-      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} end`;
-      const i18n_1 =
-          i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3});
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-        exp4: any = '4';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(
-                  0, 'title', i18nInterpolation4(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 end"></div>');
-    });
-
-    it('i18nInterpolation5 should work', () => {
-      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4});
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-        exp4: any = '4';
-        exp5: any = '5';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
-          // end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(
-                  0, 'title',
-                  i18nInterpolation5(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 end"></div>');
-    });
-
-    it('i18nInterpolation6 should work', () => {
-      const MSG_DIV_SECTION_1 =
-          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1,
-          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5});
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-        exp4: any = '4';
-        exp5: any = '5';
-        exp6: any = '6';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
-          // _ {{exp6}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(
-                  0, 'title',
-                  i18nInterpolation6(
-                      i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 end"></div>');
-    });
-
-    it('i18nInterpolation7 should work', () => {
-      const MSG_DIV_SECTION_1 =
-          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1,
-          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5, 'EXP_7': 6});
-
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-        exp4: any = '4';
-        exp5: any = '5';
-        exp6: any = '6';
-        exp7: any = '7';
-
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title
-          // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
-          // _ {{exp6}} _ {{exp7}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(
-                  0, 'title', i18nInterpolation7(
-                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
-                                  ctx.exp6, ctx.exp7));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 _ 7 end"></div>');
-    });
-
-    it('i18nInterpolation8 should work', () => {
-      const MSG_DIV_SECTION_1 =
-          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} _ {$EXP_8} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {
-        'EXP_1': 0,
-        'EXP_2': 1,
-        'EXP_3': 2,
-        'EXP_4': 3,
-        'EXP_5': 4,
-        'EXP_6': 5,
-        'EXP_7': 6,
-        'EXP_8': 7
+        ]
       });
+    });
+  });
 
-      class MyApp {
-        exp1: any = '1';
-        exp2: any = '2';
-        exp3: any = '3';
-        exp4: any = '4';
-        exp5: any = '5';
-        exp6: any = '6';
-        exp7: any = '7';
-        exp8: any = '8';
+  describe(`i18nAttribute`, () => {
+    it('for text', () => {
+      const MSG_title = `Hello world!`;
+      const MSG_div_attr = ['title', MSG_title];
+      const nbConsts = 2;
+      const index = 1;
+      const fixture = prepareFixture(() => {
+        ɵɵelementStart(0, 'div');
+        ɵɵi18nAttributes(index, MSG_div_attr);
+        ɵɵelementEnd();
+      }, null, nbConsts, index);
+      const tView = fixture.hostView[TVIEW];
+      const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
 
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          factory: () => new MyApp(),
-          selectors: [['my-app']],
-          // Initial template:
-          // <div i18n i18n-title
-          // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}{{exp8}}"></div>
-
-          // Translated to:
-          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
-          // _ {{exp6}} _ {{exp7}} _ {{exp8}} end"></div>
-          template: (rf: RenderFlags, ctx: MyApp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');  // translated section 1
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(
-                  0, 'title', i18nInterpolation8(
-                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
-                                  ctx.exp6, ctx.exp7, ctx.exp8));
-            }
-          }
-        });
-      }
-
-      const fixture = new ComponentFixture(MyApp);
-      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 _ 7 _ 8 end"></div>');
+      expect(opCodes).toEqual([]);
+      expect(
+          (getNativeByIndex(0, fixture.hostView as LView) as any as Element).getAttribute('title'))
+          .toEqual(MSG_title);
     });
 
+    it('for simple bindings', () => {
+      const MSG_title = `Hello �0�!`;
+      const MSG_div_attr = ['title', MSG_title];
+      const nbConsts = 2;
+      const index = 1;
+      const opCodes =
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual([
+        0b1,  // bindings mask
+        6,    // if no update, skip 4
+        'Hello ',
+        -1,  // binding index
+        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null
+      ]);
+    });
+
+    it('for multiple bindings', () => {
+      const MSG_title = `Hello �0� and �1�, again �0�!`;
+      const MSG_div_attr = ['title', MSG_title];
+      const nbConsts = 2;
+      const index = 1;
+      const opCodes =
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual([
+        0b11,  // bindings mask
+        10,    // size
+        'Hello ', -1, ' and ', -2, ', again ', -1, '!',
+        (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null
+      ]);
+    });
+
+    it('for multiple attributes', () => {
+      const MSG_title = `Hello �0�!`;
+      const MSG_div_attr = ['title', MSG_title, 'aria-label', MSG_title];
+      const nbConsts = 2;
+      const index = 1;
+      const opCodes =
+          getOpCodes(() => { ɵɵi18nAttributes(index, MSG_div_attr); }, null, nbConsts, index);
+
+      expect(opCodes).toEqual([
+        0b1,  // bindings mask
+        6,    // if no update, skip 4
+        'Hello ',
+        -1,  // binding index
+        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'title', null,
+        0b1,  // bindings mask
+        6,    // if no update, skip 4
+        'Hello ',
+        -1,  // binding index
+        '!', (index - 1) << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.Attr, 'aria-label', null
+      ]);
+    });
+  });
+
+  describe('i18nPostprocess', () => {
+    it('should handle valid cases', () => {
+      const arr = ['�*1:1��#2:1�', '�#4:1�', '�6:1�', '�/#2:1��/*1:1�'];
+      const str = `[${arr.join('|')}]`;
+
+      const cases = [
+        // empty string
+        ['', {}, ''],
+
+        // string without any special cases
+        ['Foo [1,2,3] Bar - no ICU here', {}, 'Foo [1,2,3] Bar - no ICU here'],
+
+        // multi-value cases
+        [
+          `Start: ${str}, ${str} and ${str}, ${str} end.`, {},
+          `Start: ${arr[0]}, ${arr[1]} and ${arr[2]}, ${arr[3]} end.`
+        ],
+
+        // replace VAR_SELECT
+        [
+          'My ICU: {VAR_SELECT, select, =1 {one} other {other}}', {VAR_SELECT: '�1:2�'},
+          'My ICU: {�1:2�, select, =1 {one} other {other}}'
+        ],
+
+        [
+          'My ICU: {\n\n\tVAR_SELECT_1 \n\n, select, =1 {one} other {other}}',
+          {VAR_SELECT_1: '�1:2�'}, 'My ICU: {\n\n\t�1:2� \n\n, select, =1 {one} other {other}}'
+        ],
+
+        // replace VAR_PLURAL
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1} other {other}}', {VAR_PLURAL: '�1:2�'},
+          'My ICU: {�1:2�, plural, one {1} other {other}}'
+        ],
+
+        [
+          'My ICU: {\n\n\tVAR_PLURAL_1 \n\n, select, =1 {one} other {other}}',
+          {VAR_PLURAL_1: '�1:2�'}, 'My ICU: {\n\n\t�1:2� \n\n, select, =1 {one} other {other}}'
+        ],
+
+        // do not replace VAR_* anywhere else in a string (only in ICU)
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1} other {other}} VAR_PLURAL and VAR_SELECT',
+          {VAR_PLURAL: '�1:2�'},
+          'My ICU: {�1:2�, plural, one {1} other {other}} VAR_PLURAL and VAR_SELECT'
+        ],
+
+        // replace VAR_*'s in nested ICUs
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1 - {VAR_SELECT, age, 50 {fifty} other {other}}} other {other}}',
+          {VAR_PLURAL: '�1:2�', VAR_SELECT: '�5�'},
+          'My ICU: {�1:2�, plural, one {1 - {�5�, age, 50 {fifty} other {other}}} other {other}}'
+        ],
+
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1 - {VAR_PLURAL_1, age, 50 {fifty} other {other}}} other {other}}',
+          {VAR_PLURAL: '�1:2�', VAR_PLURAL_1: '�5�'},
+          'My ICU: {�1:2�, plural, one {1 - {�5�, age, 50 {fifty} other {other}}} other {other}}'
+        ],
+
+        // ICU replacement
+        [
+          'My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�',
+          {ICU: ['ICU_VALUE_1', 'ICU_VALUE_2']}, 'My ICU #1: ICU_VALUE_1, My ICU #2: ICU_VALUE_2'
+        ],
+
+        // mixed case
+        [
+          `Start: ${str}, ${str}. ICU: {VAR_SELECT, count, 10 {ten} other {other}}.
+          Another ICU: �I18N_EXP_ICU� and ${str}, ${str} and one more ICU: �I18N_EXP_ICU� and end.`,
+          {VAR_SELECT: '�1:2�', ICU: ['ICU_VALUE_1', 'ICU_VALUE_2']},
+          `Start: ${arr[0]}, ${arr[1]}. ICU: {�1:2�, count, 10 {ten} other {other}}.
+          Another ICU: ICU_VALUE_1 and ${arr[2]}, ${arr[3]} and one more ICU: ICU_VALUE_2 and end.`,
+        ],
+      ];
+      cases.forEach(([input, replacements, output]) => {
+        expect(ɵɵi18nPostprocess(input as string, replacements as any)).toEqual(output as string);
+      });
+    });
+
+    it('should handle nested template represented by multi-value placeholders', () => {
+      /**
+       * <div i18n>
+       *   <span>
+       *     Hello - 1
+       *   </span>
+       *   <span *ngIf="visible">
+       *     Hello - 2
+       *     <span *ngIf="visible">
+       *       Hello - 3
+       *       <span *ngIf="visible">
+       *         Hello - 4
+       *       </span>
+       *     </span>
+       *   </span>
+       *   <span>
+       *     Hello - 5
+       *   </span>
+       * </div>
+       */
+      const generated = `
+        [�#2�|�#4�] Bonjour - 1 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�]
+          Bonjour - 2
+          [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�]
+            Bonjour - 3
+            [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�] Bonjour - 4 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+          [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�#2�|�#4�] Bonjour - 5 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+      `;
+      const final = `
+        �#2� Bonjour - 1 �/#2�
+        �*3:1�
+          �#1:1�
+            Bonjour - 2
+            �*2:2�
+              �#1:2�
+                Bonjour - 3
+                �*2:3�
+                  �#1:3� Bonjour - 4 �/#1:3�
+                �/*2:3�
+              �/#1:2�
+            �/*2:2�
+          �/#1:1�
+        �/*3:1�
+        �#4� Bonjour - 5 �/#4�
+      `;
+      expect(ɵɵi18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
+    });
+
+    it('should throw in case we have invalid string', () => {
+      expect(
+          () => ɵɵi18nPostprocess(
+              'My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}))
+          .toThrowError();
+    });
   });
 });

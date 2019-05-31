@@ -1,22 +1,26 @@
 {
   "extends": "../tsconfig-build.json",
-
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "rxjs/*": ["../../node_modules/rxjs/*"],
-      "@angular/core": ["."]
+      "rxjs/*": [
+        "../../node_modules/rxjs/*"
+      ],
+      "@angular/core": [
+        "."
+      ],
+      "@angular/compiler": [
+        "../../dist/packages/compiler"
+      ]
     },
     "outDir": "../../dist/packages/core"
   },
-
   "files": [
     "public_api.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts",
     "../system.d.ts"
   ],
-
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,

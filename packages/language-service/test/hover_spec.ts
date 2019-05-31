@@ -40,7 +40,7 @@ describe('hover', () => {
 
   it('should be able to find a method from a call', () => {
     hover(
-        ` @Component({template: '<div (click)="«∆myClick∆()»;"></div>'}) export class MyComponent { myClick() { }}`,
+        ` @Component({template: '<div (click)="«ᐱmyClickᐱ()»;"></div>'}) export class MyComponent { myClick() { }}`,
         'method myClick of MyComponent');
   });
 
@@ -52,19 +52,19 @@ describe('hover', () => {
 
   it('should be able to find a reference to a component', () => {
     hover(
-        ` @Component({template: '«<∆test∆-comp></test-comp>»'}) export class MyComponent { }`,
+        ` @Component({template: '«<ᐱtestᐱ-comp></test-comp>»'}) export class MyComponent { }`,
         'component TestComponent');
   });
 
   it('should be able to find an event provider', () => {
     hover(
-        ` @Component({template: '<test-comp «(∆test∆)="myHandler()"»></div>'}) export class MyComponent { myHandler() {} }`,
+        ` @Component({template: '<test-comp «(ᐱtestᐱ)="myHandler()"»></div>'}) export class MyComponent { myHandler() {} }`,
         'event testEvent of TestComponent');
   });
 
   it('should be able to find an input provider', () => {
     hover(
-        ` @Component({template: '<test-comp «[∆tcName∆]="name"»></div>'}) export class MyComponent { name = 'my name'; }`,
+        ` @Component({template: '<test-comp «[ᐱtcNameᐱ]="name"»></div>'}) export class MyComponent { name = 'my name'; }`,
         'property name of TestComponent');
   });
 

@@ -13,6 +13,10 @@
     "paths": {
       "@angular/compiler": ["../../dist/packages/compiler"]
     },
+    "strict": true,
+    "types": [
+      "node"
+    ],
     "outDir": "../../dist/packages/compiler-cli"
   },
   "bazelOptions": {

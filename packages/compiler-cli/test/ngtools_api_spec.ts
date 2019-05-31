@@ -7,6 +7,7 @@
  */
 
 import {__NGTOOLS_PRIVATE_API_2 as NgTools_InternalApi_NG_2} from '@angular/compiler-cli';
+import {ivyEnabled} from '@angular/private/testing';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -18,7 +19,7 @@ describe('ngtools_api (deprecated)', () => {
   beforeEach(() => { testSupport = setup(); });
 
   function createProgram(rootNames: string[]) {
-    const options = testSupport.createCompilerOptions();
+    const options = testSupport.createCompilerOptions({enableIvy: ivyEnabled});
     const host = ts.createCompilerHost(options, true);
     const program =
         ts.createProgram(rootNames.map(p => path.resolve(testSupport.basePath, p)), options, host);
@@ -36,7 +37,7 @@ describe('ngtools_api (deprecated)', () => {
         export class ErrorComp2 {}
 
         @NgModule({
-          declarations: [ErrorComp2, NonExistentComp],
+          declarations: [ErrorComp2],
           imports: [RouterModule.forRoot([{loadChildren: './child#ChildModule'}])]
         })
         export class MainModule {}
@@ -61,7 +62,8 @@ describe('ngtools_api (deprecated)', () => {
 
   it('should list lazy routes recursively', () => {
     writeSomeRoutes();
-    const {program, host, options} = createProgram(['src/main.ts']);
+    const {program, host, options} =
+        createProgram(['src/main.ts', 'src/child.ts', 'src/child2.ts']);
     const routes = NgTools_InternalApi_NG_2.listLazyRoutes({
       program,
       host,
@@ -69,14 +71,15 @@ describe('ngtools_api (deprecated)', () => {
       entryModule: 'src/main#MainModule',
     });
     expect(routes).toEqual({
-      './child#ChildModule': path.resolve(testSupport.basePath, 'src/child.ts'),
-      './child2#ChildModule2': path.resolve(testSupport.basePath, 'src/child2.ts'),
+      './child#ChildModule': path.posix.join(testSupport.basePath, 'src/child.ts'),
+      './child2#ChildModule2': path.posix.join(testSupport.basePath, 'src/child2.ts'),
     });
   });
 
   it('should allow to emit the program after analyzing routes', () => {
     writeSomeRoutes();
-    const {program, host, options} = createProgram(['src/main.ts']);
+    const {program, host, options} =
+        createProgram(['src/main.ts', 'src/child.ts', 'src/child2.ts']);
     NgTools_InternalApi_NG_2.listLazyRoutes({
       program,
       host,

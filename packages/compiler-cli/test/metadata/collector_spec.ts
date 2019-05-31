@@ -40,7 +40,7 @@ describe('Collector', () => {
       'interface-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
-    program = service.getProgram();
+    program = service.getProgram() !;
     collector = new MetadataCollector({quotedNames: true});
   });
 
@@ -243,7 +243,7 @@ describe('Collector', () => {
       version: METADATA_VERSION,
       metadata: {
         HEROES: [
-          {'id': 11, 'name': 'Mr. Nice', '$quoted$': ['id', 'name']},
+          {'id': 11, 'name': 'Dr Nice', '$quoted$': ['id', 'name']},
           {'id': 12, 'name': 'Narco', '$quoted$': ['id', 'name']},
           {'id': 13, 'name': 'Bombasto', '$quoted$': ['id', 'name']},
           {'id': 14, 'name': 'Celeritas', '$quoted$': ['id', 'name']},
@@ -1128,7 +1128,7 @@ describe('Collector', () => {
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
-    program = service.getProgram();
+    program = service.getProgram() !;
   }
 
   function collectSource(content: string): ModuleMetadata {
@@ -1221,7 +1221,7 @@ const FILES: Directory = {
       import {Hero as Hero} from './hero';
 
       export const HEROES: Hero[] = [
-          {"id": 11, "name": "Mr. Nice"},
+          {"id": 11, "name": "Dr Nice"},
           {"id": 12, "name": "Narco"},
           {"id": 13, "name": "Bombasto"},
           {"id": 14, "name": "Celeritas"},

@@ -46,8 +46,8 @@ export class Token {
 
   isString(): boolean { return this.type == TokenType.String; }
 
-  isOperator(operater: string): boolean {
-    return this.type == TokenType.Operator && this.strValue == operater;
+  isOperator(operator: string): boolean {
+    return this.type == TokenType.Operator && this.strValue == operator;
   }
 
   isIdentifier(): boolean { return this.type == TokenType.Identifier; }

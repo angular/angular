@@ -14,10 +14,10 @@ Observables can simplify the implementation of type-ahead suggestions. Typically
 
 Writing this in full JavaScript can be quite involved. With observables, you can use a simple series of RxJS operators:
 
-<code-example path="practical-observable-usage/src/typeahead.ts" title="Typeahead"></code-example>
+<code-example path="practical-observable-usage/src/typeahead.ts" header="Typeahead"></code-example>
 
 ## Exponential backoff
 
 Exponential backoff is a technique in which you retry an API after failure, making the time in between retries longer after each consecutive failure, with a maximum number of retries after which the request is considered to have failed. This can be quite complex to implement with promises and other methods of tracking AJAX calls. With observables, it is very easy:
 
-<code-example path="practical-observable-usage/src/backoff.ts" title="Exponential backoff"></code-example>
+<code-example path="practical-observable-usage/src/backoff.ts" header="Exponential backoff"></code-example>

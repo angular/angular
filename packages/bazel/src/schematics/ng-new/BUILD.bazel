@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "ng-new",
+    srcs = [
+        "index.ts",
+        "schema.d.ts",
+    ],
+    data = glob(["files/**/*"]) + [
+        "schema.json",
+    ],
+    deps = [
+        "//packages/bazel/src/schematics/ng-add",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+    ],
+)
+
+ts_library(
+    name = "test",
+    testonly = True,
+    srcs = [
+        "index_spec.ts",
+    ],
+    data = [
+        "//packages/bazel/src/schematics:package_assets",
+    ],
+    deps = [
+        ":ng-new",
+        "@npm//@angular-devkit/schematics",
+    ],
+)

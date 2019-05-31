@@ -1,0 +1,19 @@
+{
+  "schematics": {
+    "migration-v8-move-document": {
+      "version": "8-beta",
+      "description": "Migrates DOCUMENT Injection token from platform-browser imports to common import",
+      "factory": "./migrations/move-document/index"
+    },
+    "migration-v8-static-queries": {
+      "version": "8-beta",
+      "description": "Migrates ViewChild and ContentChild to explicit query timing",
+      "factory": "./migrations/static-queries/index"
+    },
+    "migration-v8-template-local-variables": {
+      "version": "8-beta",
+      "description": "Warns developers if values are assigned to template variables",
+      "factory": "./migrations/template-var-assignment/index"
+    }
+  }
+}

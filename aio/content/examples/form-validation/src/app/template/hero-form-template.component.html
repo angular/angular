@@ -11,7 +11,7 @@
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
           <!-- #docregion name-input -->
-          <input id="name" name="name" class="form-control" 
+          <input id="name" name="name" class="form-control"
                 required minlength="4" appForbiddenName="bob"
                 [(ngModel)]="hero.name" #name="ngModel" >
           <!-- #enddocregion name-input -->
@@ -35,8 +35,20 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <input id="alterEgo" class="form-control"
-                name="alterEgo" [(ngModel)]="hero.alterEgo" >
+        <!-- #docregion async-validation -->
+          <input id="alterEgo" class="form-control" name="alterEgo"
+                #alterEgo="ngModel"
+                [(ngModel)]="hero.alterEgo"
+                [ngModelOptions]="{ updateOn: 'blur' }"
+                appUniqueAlterEgo>
+        <!-- #enddocregion async-validation -->
+
+          <div *ngIf="alterEgo.pending">Validating...</div>
+          <div *ngIf="alterEgo.invalid" class="alert alert-danger alter-ego-errors">
+            <div *ngIf="alterEgo.errors?.uniqueAlterEgo">
+              Alter ego is already taken.
+            </div>
+          </div>
         </div>
 
         <!-- #docregion cross-validation-error-message -->

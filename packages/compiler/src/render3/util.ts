@@ -52,3 +52,31 @@ export interface R3Reference {
   value: o.Expression;
   type: o.Expression;
 }
+
+const ANIMATE_SYMBOL_PREFIX = '@';
+export function prepareSyntheticPropertyName(name: string) {
+  return `${ANIMATE_SYMBOL_PREFIX}${name}`;
+}
+
+export function prepareSyntheticListenerName(name: string, phase: string) {
+  return `${ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
+}
+
+export function isSyntheticPropertyOrListener(name: string) {
+  return name.charAt(0) == ANIMATE_SYMBOL_PREFIX;
+}
+
+export function getSyntheticPropertyName(name: string) {
+  // this will strip out listener phase values...
+  // @foo.start => @foo
+  const i = name.indexOf('.');
+  name = i > 0 ? name.substring(0, i) : name;
+  if (name.charAt(0) !== ANIMATE_SYMBOL_PREFIX) {
+    name = ANIMATE_SYMBOL_PREFIX + name;
+  }
+  return name;
+}
+
+export function prepareSyntheticListenerFunctionName(name: string, phase: string) {
+  return `animation_${name}_${phase}`;
+}

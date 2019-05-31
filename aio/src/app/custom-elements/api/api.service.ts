@@ -20,6 +20,7 @@ export interface ApiSection {
   path: string;
   name: string;
   title: string;
+  deprecated: boolean;
   items: ApiItem[]|null;
 }
 
@@ -34,8 +35,8 @@ export class ApiService implements OnDestroy {
   private _sections = this.sectionsSubject.pipe(takeUntil(this.onDestroy));
 
   /**
-  * Return a cached observable of API sections from a JSON file.
-  * API sections is an array of Angular top modules and metadata about their API documents (items).
+   * Return a cached observable of API sections from a JSON file.
+   * API sections is an array of Angular top modules and metadata about their API documents (items).
    */
   get sections() {
 
@@ -47,8 +48,13 @@ export class ApiService implements OnDestroy {
       this._sections.subscribe(sections => this.logger.log('ApiService got API sections') );
     }
 
-    return this._sections;
-  };
+    return this._sections.pipe(tap(sections => {
+      sections.forEach(section => {
+        section.deprecated = !!section.items &&
+            section.items.every(item => item.stability === 'deprecated');
+      });
+    }));
+  }
 
   constructor(private http: HttpClient, private logger: Logger) { }
 

@@ -1,0 +1,16 @@
+{
+  "name": "@angular/bazel",
+  "version": "0.1",
+  "schematics": {
+    "ng-add": {
+      "factory": "./ng-add",
+      "schema": "ng-add/schema.json",
+      "description": "Add Bazel build files and configurations to a project"
+    },
+    "ng-new": {
+      "factory": "./ng-new",
+      "schema": "./ng-new/schema.json",
+      "description": "Create an Angular project that builds with Bazel."
+    }
+  }
+}

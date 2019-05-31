@@ -21,7 +21,7 @@ const DEFAULT_NAVIGATION_URLS = [
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
- * @experimental
+ * @publicApi
  */
 export class Generator {
   constructor(readonly fs: Filesystem, private baseHref: string) {}
@@ -32,6 +32,7 @@ export class Generator {
 
     return {
       configVersion: 1,
+      timestamp: Date.now(),
       appData: config.appData,
       index: joinUrls(this.baseHref, config.index), assetGroups,
       dataGroups: this.processDataGroups(config),

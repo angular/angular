@@ -7,7 +7,7 @@
  */
 
 import {ɵisPromise as isPromise} from '@angular/core';
-import {global} from '@angular/core/src/util';
+import {global} from '@angular/core/src/util/global';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestBed, inject} from './test_bed';
@@ -116,6 +116,7 @@ function _it(
     jsmFn: Function, testName: string, testFn: (done?: DoneFn) => any, testTimeout = 0): void {
   if (runnerStack.length == 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
+    // tslint:disable-next-line
     debugger;
     throw new Error('Empty Stack!');
   }
@@ -168,7 +169,7 @@ export class SpyObject {
         let m: any = null;
         try {
           m = type.prototype[prop];
-        } catch (e) {
+        } catch {
           // As we are creating spys for abstract classes,
           // these classes might have getters that throw when they are accessed.
           // As we are only auto creating spys for methods, this
