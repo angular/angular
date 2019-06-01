@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HOST_REG_EXP} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {Component, Directive, Type, createComponent, createContentChild, createContentChildren, createDirective, createHostBinding, createHostListener, createInput, createOutput, createViewChild, createViewChildren} from './core';
 import {resolveForwardRef, splitAtColon, stringify} from './util';
@@ -98,8 +99,12 @@ export class DirectiveResolver {
       const hostListeners = propertyMetadata[propName].filter(a => createHostListener.isTypeOf(a));
       hostListeners.forEach(hostListener => {
         const args = hostListener.args || [];
-        host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
+        const key = `(${hostListener.eventName})`;
+        const value = `${propName}(${args.join(',')})`;
+
+        host[key] = host[key] ? this.mergeHostListeners(host[key], value) : value;
       });
+
       const query = findLast(
           propertyMetadata[propName], (a) => QUERY_METADATA_IDENTIFIERS.some(i => i.isTypeOf(a)));
       if (query) {
@@ -135,7 +140,8 @@ export class DirectiveResolver {
         this._dedupeBindings(directive.inputs ? directive.inputs.concat(inputs) : inputs);
     const mergedOutputs =
         this._dedupeBindings(directive.outputs ? directive.outputs.concat(outputs) : outputs);
-    const mergedHost = directive.host ? {...directive.host, ...host} : host;
+
+    const mergedHost = directive.host ? this.mergeHosts(directive.host, host) : host;
     const mergedQueries = directive.queries ? {...directive.queries, ...queries} : queries;
     if (createComponent.isTypeOf(directive)) {
       const comp = directive as Component;
@@ -172,6 +178,30 @@ export class DirectiveResolver {
       });
     }
   }
+
+  private mergeHosts(target: {[key: string]: string}, source: {[key: string]: string}) {
+    const toMerge = Object.keys(source).reduce(
+        (acc, key) => {
+          if (isHostListener(key)) {
+            acc[key] =
+                target[key] ? this.mergeHostListeners(target[key], source[key]) : source[key];
+          } else {
+            acc[key] = source[key];
+          }
+
+          return acc;
+        },
+        {} as{[key: string]: string});
+
+    return {...target, ...toMerge};
+  }
+
+  private mergeHostListeners(target: string, source: string) { return target.concat(';', source); }
+}
+
+function isHostListener(hostKey: string) {
+  const matches = hostKey.match(HOST_REG_EXP);
+  return matches && matches[2] != null;
 }
 
 function isDirectiveMetadata(type: any): type is Directive {

@@ -16,7 +16,7 @@ import {splitAtColon, stringify} from './util';
 // group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
 // group 3: "@trigger" from "@trigger"
-const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
+export const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 
 export function sanitizeIdentifier(name: string): string {
   return name.replace(/\W/g, '_');

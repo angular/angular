@@ -391,6 +391,22 @@ class SomeDirectiveWithoutMetadata {}
           '[c2]': 'p2'
         });
       });
+
+      it('should support multiple methods with same host listener', () => {
+        @Directive({selector: 'p', host: {'(a)': 'onA1()'}})
+        class SomeDirectiveWithMultipleMethods {
+          onA1() {}
+          @HostListener('a')
+          onA2() {}
+          @HostListener('a')
+          onA3() {}
+        }
+
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithMultipleMethods);
+        expect(directiveMetadata.host).toEqual({
+          '(a)': 'onA1();onA2();onA3()',
+        });
+      });
     });
 
     describe('queries', () => {
