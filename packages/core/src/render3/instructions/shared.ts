@@ -1397,7 +1397,7 @@ function generateInitialInputs(
 //////////////////////////
 
 // Not sure why I need to do `any` here but TS complains later.
-const LContainerArray: any = createNamedArrayType('LContainer');
+const LContainerArray: any = ngDevMode && createNamedArrayType('LContainer');
 
 /**
  * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.

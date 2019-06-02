@@ -54,7 +54,7 @@ import {getTNode, isStylingContext, unwrapRNode} from '../util/view_utils';
  */
 
 
-export const LViewArray = createNamedArrayType('LView');
+export const LViewArray = ngDevMode && createNamedArrayType('LView');
 let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                              // constructor could have side-effects.
 /**
@@ -103,7 +103,7 @@ export const TViewConstructor = class TView implements ITView {
       ) {}
 };
 
-const TViewData = createNamedArrayType('TViewData');
+const TViewData = ngDevMode && createNamedArrayType('TViewData');
 let TVIEWDATA_EMPTY:
     unknown[];  // can't initialize here or it will not be tree shaken, because `LView`
                 // constructor could have side-effects.
@@ -117,14 +117,14 @@ export function cloneToTViewData(list: any[]): TData {
   return TVIEWDATA_EMPTY.concat(list) as any;
 }
 
-export const LViewBlueprint = createNamedArrayType('LViewBlueprint');
-export const MatchesArray = createNamedArrayType('MatchesArray');
-export const TViewComponents = createNamedArrayType('TViewComponents');
-export const TNodeLocalNames = createNamedArrayType('TNodeLocalNames');
-export const TNodeInitialInputs = createNamedArrayType('TNodeInitialInputs');
-export const TNodeInitialData = createNamedArrayType('TNodeInitialData');
-export const LCleanup = createNamedArrayType('LCleanup');
-export const TCleanup = createNamedArrayType('TCleanup');
+export const LViewBlueprint = ngDevMode && createNamedArrayType('LViewBlueprint');
+export const MatchesArray = ngDevMode && createNamedArrayType('MatchesArray');
+export const TViewComponents = ngDevMode && createNamedArrayType('TViewComponents');
+export const TNodeLocalNames = ngDevMode && createNamedArrayType('TNodeLocalNames');
+export const TNodeInitialInputs = ngDevMode && createNamedArrayType('TNodeInitialInputs');
+export const TNodeInitialData = ngDevMode && createNamedArrayType('TNodeInitialData');
+export const LCleanup = ngDevMode && createNamedArrayType('LCleanup');
+export const TCleanup = ngDevMode && createNamedArrayType('TCleanup');
 
 
 
