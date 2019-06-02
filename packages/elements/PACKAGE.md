@@ -5,4 +5,6 @@ A custom element extends HTML by allowing you to define a tag whose content is c
 
 The `createCustomElement()` function provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API. 
 
+Needs installation.
+
 For more information, see [Angular Elements Overview](guide/elements).
