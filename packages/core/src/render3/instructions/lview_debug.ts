@@ -63,7 +63,7 @@ let LVIEW_EMPTY: unknown[];  // can't initialize here or it will not be tree sha
  * Simple slice will keep the same type, and we need it to be LView
  */
 export function cloneToLView(list: any[]): LView {
-  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray();
+  if (LVIEW_EMPTY === undefined) LVIEW_EMPTY = new LViewArray !();
   return LVIEW_EMPTY.concat(list) as any;
 }
 
@@ -113,7 +113,7 @@ let TVIEWDATA_EMPTY:
  * Simple slice will keep the same type, and we need it to be TData
  */
 export function cloneToTViewData(list: any[]): TData {
-  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData();
+  if (TVIEWDATA_EMPTY === undefined) TVIEWDATA_EMPTY = new TViewData !();
   return TVIEWDATA_EMPTY.concat(list) as any;
 }
 

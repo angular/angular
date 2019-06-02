@@ -641,7 +641,7 @@ export function createTView(
 }
 
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
-  const blueprint = new (ngDevMode ? LViewBlueprint : Array)(initialViewLength)
+  const blueprint = new (ngDevMode ? LViewBlueprint ! : Array)(initialViewLength)
                         .fill(null, 0, bindingStartIndex)
                         .fill(NO_CHANGE, bindingStartIndex) as LView;
   blueprint[BINDING_INDEX] = bindingStartIndex;
@@ -1178,7 +1178,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
       if (isNodeMatchingSelectorList(tNode, def.selectors !, /* isProjectionMode */ false)) {
-        matches || (matches = ngDevMode ? new MatchesArray() : []);
+        matches || (matches = ngDevMode ? new MatchesArray !() : []);
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
                 getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
@@ -1205,7 +1205,7 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
   const tView = getLView()[TVIEW];
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
-  (tView.components || (tView.components = ngDevMode ? new TViewComponents() : [
+  (tView.components || (tView.components = ngDevMode ? new TViewComponents !() : [
    ])).push(previousOrParentTNode.index);
 }
 
@@ -1215,7 +1215,7 @@ function cacheMatchingLocalNames(
     tNode: TNode, localRefs: string[] | null, exportsMap: {[key: string]: number}): void {
   if (localRefs) {
     const localNames: (string | number)[] = tNode.localNames =
-        ngDevMode ? new TNodeLocalNames() : [];
+        ngDevMode ? new TNodeLocalNames !() : [];
 
     // Local names must be stored in tNode in the same order that localRefs are defined
     // in the template to ensure the data is loaded in the same slots as their refs
@@ -1355,7 +1355,7 @@ function setInputsFromAttrs<T>(
 function generateInitialInputs(
     directiveIndex: number, inputs: {[key: string]: string}, tNode: TNode): InitialInputData {
   const initialInputData: InitialInputData =
-      tNode.initialInputs || (tNode.initialInputs = ngDevMode ? new TNodeInitialInputs() : []);
+      tNode.initialInputs || (tNode.initialInputs = ngDevMode ? new TNodeInitialInputs !() : []);
   // Ensure that we don't create sparse arrays
   for (let i = initialInputData.length; i <= directiveIndex; i++) {
     initialInputData.push(null);
@@ -1383,7 +1383,7 @@ function generateInitialInputs(
 
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs = initialInputData[directiveIndex] ||
-          (initialInputData[directiveIndex] = ngDevMode ? new TNodeInitialData() : []);
+          (initialInputData[directiveIndex] = ngDevMode ? new TNodeInitialData !() : []);
       inputsToStore.push(attrName as string, minifiedInputName, attrValue as string);
     }
 
@@ -1752,11 +1752,11 @@ export function initializeTNodeInputs(tNode: TNode): PropertyAliases|null {
 
 export function getCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
+  return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup !() : []);
 }
 
 function getTViewCleanup(view: LView): any[] {
-  return view[TVIEW].cleanup || (view[TVIEW].cleanup = ngDevMode ? new TCleanup() : []);
+  return view[TVIEW].cleanup || (view[TVIEW].cleanup = ngDevMode ? new TCleanup !() : []);
 }
 
 /**
