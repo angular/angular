@@ -12,6 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual, assertNotSame} from '../../util/assert';
+import {createNamedArrayType} from '../../util/named_array_type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {assertLView, assertPreviousIsParent} from '../assert';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -38,7 +39,6 @@ import {INTERPOLATION_DELIMITER, stringifyForError} from '../util/misc_utils';
 import {getLViewParent, getRootContext} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isLContainer, isRootView, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
 
-import {createNamedArrayType} from './debug';
 import {LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeInitialData, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor, attachLContainerDebug, attachLViewDebug, cloneToLView, cloneToTViewData} from './lview_debug';
 
 

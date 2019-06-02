@@ -9,6 +9,7 @@
 import {ComponentTemplate} from '..';
 import {SchemaMetadata} from '../../core';
 import {assertDefined} from '../../util/assert';
+import {createNamedArrayType} from '../../util/named_array_type';
 import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
@@ -21,8 +22,6 @@ import {runtimeIsNewStylingInUse} from '../styling_next/state';
 import {DebugStyling as DebugNewStyling, NodeStylingDebug} from '../styling_next/styling_debug';
 import {attachDebugObject} from '../util/debug_utils';
 import {getTNode, isStylingContext, unwrapRNode} from '../util/view_utils';
-
-import {createNamedArrayType} from './debug';
 
 
 /*
