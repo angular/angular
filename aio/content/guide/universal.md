@@ -17,14 +17,14 @@ You can easily prepare an app for server-side rendering using the [Angular CLI](
 This guide describes a Universal sample application that launches quickly as a server-rendered page.
 Meanwhile, the browser downloads the full client version and switches to it automatically after the code loads.
 -->
-이 문서는 **Angular Universal**에 대해 소개합니다. Angular Universal은 Angular 애플리케이션을 서버에서 실행하는 테크닉을 의미합니다.
+이 문서는 **Angular Universal**에 대해 소개합니다. Angular Universal은 Angular 애플리케이션을 서버에서 실행하는 테크닉입니다.
 
 일반적으로 Angular 애플리케이션은 _브라우저_ 에서 실행됩니다. DOM에 페이지가 렌더링되고 사용자의 동작에 반응하는 것도 모두 브라우저에서 이루어집니다.
 그런데 Angular Universal은 애플리케이션 페이지를 _서버_ 에 _정적으로_ 만들어두는 방식입니다. 이 방식은 _서버 사이드 렌더링_ (Server-side rendering, SSR)이라고도 합니다.
-Angular 앱에 Universal을 적용해도 이전처럼 브라우저에서 애플리케이션 페이지를 렌더링하는 방식을 그대로 사용할 수 있습니다.
-그런데 이 방식 외에도 서버에서 미리 생성해둔 페이지를 HTML 형식으로 직접 전달할 수도 있습니다.
+Angular 앱에 Universal을 적용하면 클라이언트에서 앱을 빠르게 실행하기 위해 서버에서 직접 생성한 페이지를 브라우저로 보냅니다.
+그리고 클라이언트 앱을 온전히 다운받은 후에는 클라이언트 앱으로 대체됩니다.
 
-[Angular CLI](guide/glossary#cli)를 사용하면 서버 사이드 렌더링이 적용된 앱을 간단하게 만들 수 있습니다.  아래에서 설명하겠지만, CLI 스키매틱으로 제공되는 `@nguniversal/express-engine`을 적용하면 됩니다.
+[Angular CLI](guide/glossary#cli)를 사용하면 서버 사이드 렌더링이 적용된 앱을 간단하게 만들 수 있습니다. 아래에서 설명하겠지만, CLI 스키매틱으로 제공되는 `@nguniversal/express-engine`을 적용하면 됩니다.
 
 이 문서에서는 Universal이 적용된 샘플 애플리케이션을 소개하는데, 이 앱은 서버에서 미리 렌더링되기 때문에 빠르게 실행됩니다. 그리고 나서는 이 앱을 통채로 다운로드받아 브라우저에 직접 로드하는 방법에 대해서도 알아봅시다.
 
@@ -97,7 +97,7 @@ For these cases, you may require a server-rendered, no-JavaScript version of the
 This version, however limited, may be the only practical alternative for
 people who otherwise couldn't use the app at all.
 -->
-JavaScript를 지원하지 않는 디바이스가 존재하기도 하고 JavaScript를 실행하는 것이 사용자의 UX를 오히려 해치는 디바이스도 존재합니다.
+JavaScript를 지원하지 않는 디바이스가 존재하기도 하고 JavaScript를 실행하는 것이 오히려 사용자의 UX를 해치는 디바이스도 존재합니다.
 이런 경우에는 클라이언트에서 JavaScript를 실행하지 말고 서버에서 미리 렌더링된 앱을 보내서 간단하게 실행하는 것이 더 좋습니다.
 앱을 이렇게 제공하면 원래 사용자에게 제공하려던 기능을 모두 제공할 수는 없겠지만, 앱을 전혀 사용할 수 없는 상황은 피할 수 있습니다.
 
@@ -122,16 +122,16 @@ At the same time, you'll load the full Angular app behind it.
 The user perceives near-instant performance from the landing page
 and gets the full interactive experience after the full app loads.
 -->
-사용자가 다시 찾는 웹사이트를 만들려면 첫 페이지를 빠르게 표시하는 것이 무엇보다 중요합니다.
-그래서 첫 페이지가 3초 안에 표시되지 않는다면 [53%의 모바일 사용자가 재방문하지 않는다는 통계](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/)도 있습니다.
+사용자의 재방문을 유도하려면 첫 페이지를 빠르게 표시하는 것이 무엇보다 중요합니다.
+심지어 첫 페이지가 3초 안에 표시되지 않는다면 [53%의 모바일 사용자가 재방문하지 않는다는 통계](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/)도 있습니다.
 사이트를 방문한 사용자가 다른 곳으로 발길을 돌리는 것을 원하지 않는다면 앱을 최대한 빠르게 실행하는 것이 좋습니다.
 
 이 때 Angular Universal을 사용하면 온전한 앱과 거의 비슷하게 동작하는 랜딩 페이지를 생성할 수 있습니다.
 페이지는 HTML만으로 구성되기 때문에 JavaScript가 비활성화되어도 화면을 제대로 표시할 수 있습니다.
-하지만 JavaScript가 실행되지 않으면 브라우저 이벤트를 처리할 수 없기 때문에 네비게이션은 [`routerLink`](guide/router#router-link)를 사용하는 방식으로 구현되어야 합니다.
+다만, JavaScript가 실행되지 않으면 브라우저 이벤트를 처리할 수 없기 때문에 네비게이션은 [`routerLink`](guide/router#router-link)를 사용하는 방식으로 구현되어야 합니다.
 
 운영환경에서도 첫 페이지를 빠르게 표시하기 위해 페이지를 정적으로 렌더링해서 제공하는 경우가 많습니다.
-이와 동시에 온전한 버전의 Angular 앱을 로드하는 방법을 사용하기도 합니다.
+그 이후에 온전한 버전의 Angular 앱을 로드하는 방법을 사용하기도 합니다.
 그러면 애플리케이션 첫 페이지를 빠르게 표시하면서도 앱에 구현한 기능을 온전히 사용자에게 제공할 수 있습니다.
 
 
@@ -153,7 +153,7 @@ Universal 웹 서버는 애플리케이션 페이지 요청을 받았을 때 [Un
 이 서버는 일반적으로 브라우저에서 HTTP 요청을 받고 HTTP 응답을 내려주는데, 스크립트 파일이나 CSS, 이미지 파일과 같은 정적 애셋들도 함께 제공합니다.
 이 외에도 API로 통하는 데이터 요청은 Universal 웹 서버가 직접 처리하거나 프록시 역할을 하면서 다른 데이터 서버를 중개할 수도 있을 것입니다.
 
-이 문서에서는 이미 유명한 [Express](https://expressjs.com/) 프레임워크를 사용해서 샘플 웹 서버를 구현해 봅니다.
+이 문서에서는 널리 사용되는 [Express](https://expressjs.com/) 프레임워크를 사용해서 샘플 웹 서버를 구현해 봅니다.
 
 <div class="alert is-helpful">
 
@@ -192,7 +192,7 @@ Universal 앱을 만들려면 `platform-server` 패키지를 설치해야 하는
 이 문서에서 다루는 것처럼 [Node Express](https://expressjs.com/)를 사용하는 서버라면 애플리케이션 페이지 요청을 Universal이 제공하는 `renderModuleFactory()` 함수로 전달합니다.
 
 그러면 `renderModuleFactory()` 함수가 HTML *템플릿* 페이지(일반적으로 `index.html`)를 바탕으로 Angular 컴포넌트로 구성된 *모듈*을 생성하며, *라우팅 규칙*에 맞게 컴포넌트를 화면에 표시합니다.
-이 때 라우팅 규칙은 클라이언트가 서버로 보낸 것입니다.
+이 때 라우팅 규칙은 클라이언트가 서버로 보낸 것이 사용됩니다.
 
 클라이언트가 보낸 요청의 결과는 해당 라우팅 규칙과 연결된 애플리케이션 페이지가 됩니다.
 그래서 `renderModuleFactory()` 함수는 템플릿의 `<app>` 태그에 뷰를 렌더링하며, 결과적으로 온전하게 HTML로 구성된 페이지가 생성됩니다.
@@ -244,7 +244,7 @@ The following sections go into each of these main steps in more detail.
 <!--
 <header>Security for server requests</header>
 -->
-<header>서버가 보내는 HTTP 요청에 대해 보안성 검토</header>
+<header>서버가 보내는 HTTP 요청에 대해 보안성 검토하기</header>
 
 <!--
 HTTP requests issued from a browser app aren't the same as those issued by the Universal app on the server.
@@ -319,7 +319,7 @@ Make your `AppModule` compatible with Universal by adding `.withServerTransition
 @NgModule({
   bootstrap: [AppComponent],
   imports: [
-    //  Universal 렌더링을 지원하기 위해 .withServerTransition()를 추가합니다.
+    // Universal 렌더링을 지원하기 위해 .withServerTransition()를 추가합니다.
     // 애플리케이션 ID는 앱을 구분할 수 있는 값으로 자유롭게 지정할 수 있습니다.
     BrowserModule.withServerTransition({appId: 'my-app'}),
     ...
@@ -339,7 +339,7 @@ Create a module named `AppServerModule` to act as the root module when running o
 
 Here's an example in `src/app/app.server.module.ts`.
 -->
-서버에서 최상위 모듈로 동작하는 모듈을 `AppServerModule`이라고 합시다. 이 모듈은 `app.server.module.ts` 파일에 정의하는데, `app.module.ts`을 대체하는 용도로 사용하기 때문에 `app.module.ts` 파일과 같은 위치에 생성합니다. `AppServerModule`은 `AppModule`이 로드하는 것을 모두 로드하면서, 추가로 `ServerModule`을 로드합니다. 이 때 지연로딩하는 라우팅 규칙이 있다면 서버에서도 이것을 처리하기 위해 `ModuleMapLoaderModule`을 추가합니다.
+서버에서 최상위 모듈로 동작하는 모듈을 `AppServerModule`이라고 합시다. 이 모듈은 `app.server.module.ts` 파일에 정의하는데, `app.module.ts`을 대체하는 용도로 사용하기 때문에 `app.module.ts` 파일과 같은 위치에 생성합니다. `AppServerModule`은 `AppModule`이 로드하는 것을 모두 로드하면서, 추가로 `ServerModule`을 로드합니다. 이 때 지연로딩하는 라우팅 규칙이 있다면 서버에서도 이것을 처리하기 위해 `ModuleMapLoaderModule`을 추가해야 합니다.
 
 그러면 `src/app/app.server.module.ts` 파일은 다음과 같이 구성됩니다.
 
@@ -357,7 +357,7 @@ import {AppComponent} from './app.component';
     // AppServerModule을 로드해야 합니다.
     AppModule,
     ServerModule,
-    ModuleMapLoaderModule // <-- *Important* to have lazy-loaded routes work
+    ModuleMapLoaderModule // <-- *중요* 라우터에 지연로딩을 사용한다면 꼭 추가해야 합니다.
   ],
   // 앱을 부트스트랩하면서 로드하는 컴포넌트는 AppModule에 설정한 것과 별개입니다.
   // AppServerModule에도 이 컴포넌트를 추가합니다.
@@ -877,7 +877,7 @@ which then forwards it to the client in the HTTP response.
 
 `ngExpressEngine()` 함수는 렌더링된 페이지를 `Promise` 콜백 형태로 반환합니다.
 그리고 이 페이지를 어떻게 활용할 것인지는 서버에서 사용하는 엔진에 따라 달라집니다.
-단순하게 구현하면, `Promise` 콜백 형태로 전달된 페이지를 웹 서버로 반환하면, 웹 서버가 HTTP 응답으로 클라이언트에 전달할 수 있습니다.
+단순하게 구현하면, `Promise` 콜백 형태로 전달된 페이지를 웹 서버로 반환하고 웹 서버가 HTTP 응답으로 클라이언트에 전달하면 됩니다.
 
 <div class="alert is-helpful">
 
@@ -889,8 +889,12 @@ which then forwards it to the client in the HTTP response.
 
 </div>
 
+<!--
 ### Filtering request URLs
+-->
+### 요청으로 보내는 URL 필터링하기
 
+<!--
 The web server must distinguish _app page requests_ from other kinds of requests.
 
 It's not as simple as intercepting a request to the root address `/`.
@@ -910,40 +914,94 @@ Because we use routing, we can easily recognize the three types of requests and 
 
 A Node Express server is a pipeline of middleware that filters and processes URL requests one after the other. 
 You configure the Node Express server pipeline with calls to `app.get()` like this one for data requests.
+-->
+웹 서버는 _앱 페이지를 요청하는 것_ 과 데이터를 요청하는 것을 구별할 수 있어야 합니다.
 
+하지만 최상위 주소 `/` 이외에는 이 요청이 어떤 용도로 사용되는 것인지 구분하기 어렵습니다.
+브라우저가 사용하는 라우팅 경로가 `/dashboard`나 `heroes`, `/detail:12`와 같은 형식으로 존재할 수 있기 때문입니다.
+그런데 앱이 서버에서 모두 렌더링되어 서비스된다고 하면, 사용자가 클릭할 수 있는 _모든_ 앱 링크는 페이지를 전환하는 URL에 해당하며 Angular 라우터가 모두 처리해야 한다고 간주할 수 있습니다.
+
+다행히 애플리케이션 라우팅이 공통으로 활용할 수 있는 규칙이 있습니다: 파일 확장자가 없는 URL을 모두 라우팅 경로로 간주하는 방법입니다.
+(데이터 요청도 확장자가 없지만, 이 경우에는 URL이 `/api`로 시작하기 때문에 쉽게 구분할 수 있습니다.)
+앱에 필요한 정적 애셋(static asset)들은 모두 확장자가 존재합니다. (ex. `main.js`, `/node_modules/zone.js/dist/zone.js`)
+
+Angular 앱은 라우터를 사용하기 때문에 다음과 같은 3가지 요청을 쉽게 구분하고 적절한 방법으로 처리할 수 있습니다.
+
+1. 데이터 요청 - URL이 `/api`로 시작하는 경우
+2. 앱 네비게이션 - 파일 확장자가 없는 경우
+3. 정적 애셋 - 두 경우를 제외한 모든 경우
+
+Node Express 서버는 미들웨어 파이프라인을 연결하는 방식으로 동작하기 때문에 클라이언트가 보낸 요청을 처리할 때 URL을 활용할 수 있습니다.
+그래서 데이터 요청 URL을 처리하는 Node Express 서버의 파이프라인을 정의한다면 Express가 제공하는 `app.get()` 함수를 사용해서 다음과 같이 정의할 수 있습니다.
+
+<!--
 <code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request" linenums="false">
+</code-example>
+-->
+<code-example path="universal/server.ts" header="server.ts (데이터 URL)" region="data-request" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
+  <!--
   **Note:** This sample server doesn't handle data requests.
 
   The tutorial's "in-memory web API" module, a demo and development tool, intercepts all HTTP calls and
   simulates the behavior of a remote data server.
   In practice, you would remove that module and register your web API middleware on the server here.
+  -->
+  **참고:** 튜토리얼 설정으로는 데이터 요청을 처리하지 않습니다.
+
+  지금 살펴보고 있는 튜토리얼은 "인-메모리 웹 API" 모듈을 사용하기 때문에, 서버로 보내야 하는 모든 HTTP 요청을 가로채서 메모리 안에서 처리합니다.
+  리모트 데이터 서버로 실제 요청을 보내려면 이 모듈을 제거하고 서버에 웹 API 미들웨어를 설정해야 합니다.
 
 </div>
 
+<!--
 The following code filters for request URLs with no extensions and treats them as navigation requests.
+-->
+다음 코드는 URL에 확장자가 없을 때 이 요청을 네비게이션 요청으로 처리하는 코드입니다.
 
+<!--
 <code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request" linenums="false">
 </code-example>
+-->
+<code-example path="universal/server.ts" header="server.ts (네비게이션)" region="navigation-request" linenums="false">
+</code-example>
 
+<!--
 ### Serving static files safely
+-->
+### 정적 파일 안전하게 제공하기
 
+<!--
 A single `app.use()` treats all other URLs as requests for static assets
 such as JavaScript, image, and style files.
 
 To ensure that clients can only download the files that they are permitted to see, put all client-facing asset files in the `/dist` folder and only honor requests for files from the `/dist` folder.
 
 The following Node Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the file isn't found.
+-->
+JavaScript 파일이나 이미지 파일, 스타일 파일과 같은 정적 애셋은 `app.use()` 하나로 간단하게 처리할 수 있습니다.
 
+그리고 클라이언트가 이 파일들을 다운로드 받을 수 있는 권한을 지정하기 위해, 애셋 파일은 모두 `/dist` 폴더에 두는 것이 좋습니다.
+
+아래 코드는 정적 애셋을 요청받았을 때 실행되는 Node Express 코드입니다. 요청받은 파일은 `/dist` 폴더에서 찾아 보내는데, 이 파일이 존재하지 않으면 `404 - NOT FOUND`를 반환합니다.
+
+<!--
 <code-example path="universal/server.ts" header="server.ts (static files)" region="static" linenums="false">
+</code-example>
+-->
+<code-example path="universal/server.ts" header="server.ts (정적 파일)" region="static" linenums="false">
 </code-example>
 
 
+<!--
 ### Universal in action
+-->
+### Universal 동작 확인하기
 
+<!--
 Open a browser to http://localhost:4000/.
 You should see the familiar Tour of Heroes dashboard page.
 
@@ -972,3 +1030,31 @@ Find the [Network Throttling](https://developers.google.com/web/tools/chrome-dev
 
 Try one of the "3G" speeds.
 The server-rendered app still launches quickly but the full client app may take seconds to load.
+-->
+브라우저를 열고 http://localhost:4000/로 접속합니다.
+그러면 이전에 봤던 "히어로들의 여행" 대시보드 페이지를 확인할 수 있습니다.
+
+`routerLinks`를 사용하는 네비게이션도 잘 동작합니다.
+대시보드 페이지에서 히어로 목록 페이지로 이동할 수 있고, 반대 경우도 마찬가지입니다.
+대시보드 페이지에서 히어로를 한 명 클릭하면 상세정보 페이지로도 이동할 수 있습니다.
+
+그런데 다음 기능은 동작하지 않습니다.
+
+* 히어로 목록 페이지에서 히어로를 클릭하면 아무 반응이 없습니다.
+* 히어로를 추가하거나 제거할 수 없습니다.
+* 대시보드 페이지에 있는 검색 박스를 사용할 수 없습니다.
+* 상세정보 페이지에 있는 *뒤로 가기* 버튼과 *저장* 버튼이 동작하지 않습니다.
+
+사용자가 유발하는 이벤트는 `routerLink` 클릭 말고는 모두 사용할 수 없습니다.
+클라이언트 앱을 전체 버전으로 내려받기 전까지는 그렇습니다.
+그래서 클라이언트 앱을 컴파일해서 `dist/` 폴더에 둬야 합니다.
+
+서버가 렌더링한 앱은 아주 짧은 시간 안에 클라이언트 앱으로 전환됩니다.
+이 전환 동작을 확실하게 확인하려면 네트워크 속도를 제한하면 됩니다.
+애초에 Universal 앱은 저사양의 장비나 네트워크 상황이 좋지 않은 상태를 보완하기 위해 제공되는 테크닉입니다.
+
+Chrome 개발자 도구를 열고 Network 탭으로 이동하세요.
+이 탭에서 메뉴바 가장 오른쪽에 있는 [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) 드롭다운을 사용하면 네트워크 속도를 제한할 수 있습니다.
+
+"3G" 설정에서 앱을 실행해 보세요.
+서버가 렌더링한 앱은 여전히 빨리 실행되지만 클라이언트 앱으로 온전히 대체되는 것은 몇 초가 걸릴 것입니다.

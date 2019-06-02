@@ -37,19 +37,19 @@ app.set('view engine', 'html');
 app.set('views', join(DIST_FOLDER, 'browser'));
 
 // #docregion data-request
-// TODO: implement data requests securely
+// TODO: 보안 로직을 추가해야 합니다.
 app.get('/api/*', (req, res) => {
   res.status(404).send('data requests are not supported');
 });
 // #enddocregion data-request
 
 // #docregion static
-// Server static files from /browser
+// 정적 파일을 요청하면 /browser에서 찾아서 보냅니다.
 app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 // #enddocregion static
 
 // #docregion navigation-request
-// All regular routes use the Universal engine
+// 페이지 요청은 Universal 엔진을 사용합니다.
 app.get('*', (req, res) => {
   res.render('index', { req });
 });
