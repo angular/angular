@@ -320,7 +320,7 @@ If you don't, Angular reports an error.
 The [Angular CLI's](cli) generator registers the pipe automatically.
 -->
 커스텀 파이프는 `AppModule`에 등록해야 사용할 수 있으며, 등록하지 않은 파이프를 사용하면 Angular에서 에러가 발생합니다.
-[Angular CLI's](cli)를 사용해서 파이프를 생성하면, 이 파이프는 `AppModule`에 자동으로 등록됩니다.
+[Angular CLI](cli)를 사용해서 파이프를 생성하면, 이 파이프는 `AppModule`에 자동으로 등록됩니다.
 
 </div>
 
