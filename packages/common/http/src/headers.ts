@@ -75,7 +75,7 @@ export class HttpHeaders {
           if (typeof values === 'string') {
             values = [values];
           }
-          if (values.length > 0) {
+          if (values && values.length > 0) {
             this.headers.set(key, values);
             this.maybeSetNormalizedName(name, key);
           }
