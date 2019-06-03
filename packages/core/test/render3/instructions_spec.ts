@@ -50,7 +50,6 @@ describe('instructions', () => {
       const t = new TemplateFixture(createDiv, () => {}, 1, 0);
       expect(() => { t.update(() => { ɵɵselect(-1); }); }).toThrow();
       expect(() => { t.update(() => { ɵɵselect(1); }); }).toThrow();
-      expect(() => { t.update(() => { ɵɵselect(0); }); }).not.toThrow();
     });
   });
 
@@ -140,15 +139,9 @@ describe('instructions', () => {
     it('should chain', () => {
       // <div [title]="title" [accesskey]="key"></div>
       const t = new TemplateFixture(createDiv, () => {}, 1, 2);
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'one')('accessKey', 'A');
-      });
+      t.update(() => { ɵɵproperty('title', 'one')('accessKey', 'A'); });
       expect(t.html).toEqual('<div accesskey="A" title="one"></div>');
-      t.update(() => {
-        ɵɵselect(0);
-        ɵɵproperty('title', 'two')('accessKey', 'B');
-      });
+      t.update(() => { ɵɵproperty('title', 'two')('accessKey', 'B'); });
       expect(t.html).toEqual('<div accesskey="B" title="two"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
@@ -158,17 +151,6 @@ describe('instructions', () => {
         rendererSetProperty: 4,
       });
     });
-
-    it('should error in dev mode if ɵɵselect was not called prior', () => {
-      const t = new TemplateFixture(createDiv, () => {}, 1, 1);
-      expect(() => { t.update(() => { ɵɵproperty('title', 'test'); }); }).toThrow();
-      expect(() => {
-        t.update(() => {
-          ɵɵselect(0);
-          ɵɵproperty('title', 'test');
-        });
-      }).not.toThrow();
-    });
   });
 
   describe('styleProp', () => {
@@ -177,7 +159,6 @@ describe('instructions', () => {
         return createDiv(null, null, null, ['background-image'], ɵɵdefaultStyleSanitizer);
       }, () => {}, 1);
       t.update(() => {
-        ɵɵselect(0);
         ɵɵstyleProp(0, 'url("http://server")');
         ɵɵstylingApply();
       });
@@ -185,7 +166,6 @@ describe('instructions', () => {
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        ɵɵselect(0);
         ɵɵstyleProp(0, bypassSanitizationTrustStyle('url("http://server2")'));
         ɵɵstylingApply();
       });
@@ -201,7 +181,6 @@ describe('instructions', () => {
           1, sanitizerInterceptor);
 
       t.update(() => {
-        ɵɵselect(0);
         ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
         ɵɵstylingApply();
       });
@@ -210,7 +189,6 @@ describe('instructions', () => {
       sanitizerInterceptor.lastValue = null;
 
       t.update(() => {
-        ɵɵselect(0);
         ɵɵstyleProp(0, bypassSanitizationTrustStyle('apple'));
         ɵɵstylingApply();
       });
@@ -228,7 +206,6 @@ describe('instructions', () => {
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle, () => {}, 1);
       fixture.update(() => {
-        ɵɵselect(0);
         ɵɵstyleMap({'background-color': 'red'});
         ɵɵstylingApply();
       });
@@ -244,7 +221,6 @@ describe('instructions', () => {
           sanitizerInterceptor);
 
       fixture.update(() => {
-        ɵɵselect(0);
         ɵɵstyleMap({
           'background-image': 'background-image',
           'background': 'background',
@@ -274,7 +250,6 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling, () => {}, 1);
       fixture.update(() => {
-        ɵɵselect(0);
         ɵɵclassMap('multiple classes');
         ɵɵstylingApply();
       });

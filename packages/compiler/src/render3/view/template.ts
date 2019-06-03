@@ -1066,7 +1066,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       nodeIndex: number, span: ParseSourceSpan|null, reference: o.ExternalReference,
       paramsOrFn?: o.Expression[]|(() => o.Expression[])) {
     if (this._lastNodeIndexWithFlush < nodeIndex) {
-      this.instructionFn(this._updateCodeFns, span, R3.select, [o.literal(nodeIndex)]);
+      if (nodeIndex > 0) {
+        this.instructionFn(this._updateCodeFns, span, R3.select, [o.literal(nodeIndex)]);
+      }
       this._lastNodeIndexWithFlush = nodeIndex;
     }
     this.instructionFn(this._updateCodeFns, span, reference, paramsOrFn || []);
