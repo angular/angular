@@ -16,7 +16,7 @@
   }
 
   .mat-simple-snackbar-action {
-    color: if($is-dark-theme, inherit, mat-color($accent));
+    color: if($is-dark-theme, inherit, mat-color($accent, text));
   }
 }
 

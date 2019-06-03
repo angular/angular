@@ -86,7 +86,7 @@ $_mat-button-ripple-opacity: 0.1;
     color: inherit;
     background: transparent;
 
-    @include _mat-button-theme-property($theme, 'color', default);
+    @include _mat-button-theme-property($theme, 'color', text);
     @include _mat-button-focus-overlay-color($theme);
 
     // Setup the ripple color to be based on the text color. This ensures that the ripples

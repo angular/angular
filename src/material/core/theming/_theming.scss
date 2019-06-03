@@ -14,11 +14,12 @@
 // @param $color-map
 // @param $primary
 // @param $lighter
-@function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700) {
+@function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700, $text: $default) {
   $result: map_merge($base-palette, (
     default: map-get($base-palette, $default),
     lighter: map-get($base-palette, $lighter),
     darker: map-get($base-palette, $darker),
+    text: map-get($base-palette, $text),
 
     default-contrast: mat-contrast($base-palette, $default),
     lighter-contrast: mat-contrast($base-palette, $lighter),

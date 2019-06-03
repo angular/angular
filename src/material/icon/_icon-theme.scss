@@ -11,15 +11,15 @@
 
   .mat-icon {
     &.mat-primary {
-      color: mat-color($primary);
+      color: mat-color($primary, text);
     }
 
     &.mat-accent {
-      color: mat-color($accent);
+      color: mat-color($accent, text);
     }
 
     &.mat-warn {
-      color: mat-color($warn);
+      color: mat-color($warn, text);
     }
   }
 }

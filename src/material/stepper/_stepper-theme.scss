@@ -47,7 +47,7 @@
 
     .mat-step-icon-state-error {
       background-color: transparent;
-      color: mat-color($warn);
+      color: mat-color($warn, text);
     }
 
     .mat-step-label.mat-step-label-active {
@@ -55,7 +55,7 @@
     }
 
     .mat-step-label.mat-step-label-error {
-      color: mat-color($warn);
+      color: mat-color($warn, text);
     }
   }
 

@@ -40,20 +40,20 @@
   .mat-form-field {
     &.mat-focused {
       &.mat-primary .mat-select-arrow {
-        color: mat-color($primary);
+        color: mat-color($primary, text);
       }
 
       &.mat-accent .mat-select-arrow {
-        color: mat-color($accent);
+        color: mat-color($accent, text);
       }
 
       &.mat-warn .mat-select-arrow {
-        color: mat-color($warn);
+        color: mat-color($warn, text);
       }
     }
 
     .mat-select.mat-select-invalid .mat-select-arrow {
-      color: mat-color($warn);
+      color: mat-color($warn, text);
     }
 
     .mat-select.mat-select-disabled .mat-select-arrow {

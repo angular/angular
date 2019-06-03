@@ -19,14 +19,14 @@
 
   // Label colors. Required is used for the `*` star shown in the label.
   $label-color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
-  $focused-label-color: mat-color($primary);
-  $required-label-color: mat-color($accent);
+  $focused-label-color: mat-color($primary, text);
+  $required-label-color: mat-color($accent, text);
 
   // Underline colors.
   $underline-color-base: mat-color($foreground, divider, if($is-dark-theme, 1, 0.87));
-  $underline-color-accent: mat-color($accent);
-  $underline-color-warn: mat-color($warn);
-  $underline-focused-color: mat-color($primary);
+  $underline-color-accent: mat-color($accent, text);
+  $underline-color-warn: mat-color($warn, text);
+  $underline-focused-color: mat-color($primary, text);
 
   .mat-form-field-label {
     color: $label-color;

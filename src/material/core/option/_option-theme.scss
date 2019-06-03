@@ -33,15 +33,15 @@
   }
 
   .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($primary);
+    color: mat-color($primary, text);
   }
 
   .mat-accent .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($accent);
+    color: mat-color($accent, text);
   }
 
   .mat-warn .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($warn);
+    color: mat-color($warn, text);
   }
 }
 

@@ -122,14 +122,14 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-datepicker-toggle-active {
-    color: mat-color(map-get($theme, primary));
+    color: mat-color(map-get($theme, primary), text);
 
     &.mat-accent {
-      color: mat-color(map-get($theme, accent));
+      color: mat-color(map-get($theme, accent), text);
     }
 
     &.mat-warn {
-      color: mat-color(map-get($theme, warn));
+      color: mat-color(map-get($theme, warn), text);
     }
   }
 }

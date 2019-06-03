@@ -21,7 +21,7 @@
   }
 
   .mat-input-element {
-    caret-color: mat-color($primary);
+    caret-color: mat-color($primary, text);
 
     @include input-placeholder {
       color: _mat-control-placeholder-color($theme);
@@ -44,16 +44,16 @@
   }
 
   .mat-accent .mat-input-element {
-    caret-color: mat-color($accent);
+    caret-color: mat-color($accent, text);
   }
 
   .mat-warn .mat-input-element,
   .mat-form-field-invalid .mat-input-element {
-    caret-color: mat-color($warn);
+    caret-color: mat-color($warn, text);
   }
 
   .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
-    color: mat-color($warn);
+    color: mat-color($warn, text);
   }
 }
 
