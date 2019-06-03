@@ -591,6 +591,33 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          fixture.detectChanges();
          expect(fixture.nativeElement.innerHTML).toEqual('no email<!--ICU 2-->');
        });
+
+    it('projection', () => {
+      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      class Child {
+      }
+
+      @Component({
+        selector: 'parent',
+        template: `
+      <child i18n>{
+        value // i18n(ph = "blah"),
+        plural,
+         =1 {one}
+        other {at least {{value}} .}
+      }</child>`
+      })
+      class Parent {
+        value = 3;
+      }
+      TestBed.configureTestingModule({declarations: [Parent, Child]});
+      ɵi18nConfigureLocalize({translations: {}});
+
+      const fixture = TestBed.createComponent(Parent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('at least');
+    });
   });
 
   describe('should support attributes', () => {
