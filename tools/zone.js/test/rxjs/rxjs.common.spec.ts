@@ -23,7 +23,7 @@ import {map} from 'rxjs/operators';
  */
 describe('Zone interaction', () => {
   it('should run methods in the zone of declaration', () => {
-    const log: string[] = [];
+    const log: any[] = [];
     const constructorZone: Zone = Zone.current.fork({name: 'Constructor Zone'});
     const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
     let subscriber: any = null;
@@ -65,7 +65,7 @@ describe('Zone interaction', () => {
   });
 
   it('should run methods in the zone of declaration when nexting synchronously', () => {
-    const log: string[] = [];
+    const log: any[] = [];
     const rootZone: Zone = Zone.current;
     const constructorZone: Zone = Zone.current.fork({name: 'Constructor Zone'});
     const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
@@ -100,7 +100,7 @@ describe('Zone interaction', () => {
   });
 
   it('should run operators in the zone of declaration', () => {
-    const log: string[] = [];
+    const log: any[] = [];
     const rootZone: Zone = Zone.current;
     const constructorZone: Zone = Zone.current.fork({name: 'Constructor Zone'});
     const operatorZone: Zone = Zone.current.fork({name: 'Operator Zone'});
@@ -145,7 +145,7 @@ describe('Zone interaction', () => {
   });
 
   it('should run subscribe in zone of declaration with Observable.create', () => {
-    const log: string[] = [];
+    const log: any[] = [];
     const constructorZone: Zone = Zone.current.fork({name: 'Constructor Zone'});
     let observable: any = constructorZone.run(() => Observable.create((subscriber: any) => {
       expect(Zone.current.name).toEqual(constructorZone.name);
@@ -165,7 +165,7 @@ describe('Zone interaction', () => {
   });
 
   it('should run in the zone when subscribe is called to the same Subject', () => {
-    const log: string[] = [];
+    const log: any[] = [];
     const constructorZone: Zone = Zone.current.fork({name: 'Constructor Zone'});
     const subscriptionZone1: Zone = Zone.current.fork({name: 'Subscription Zone 1'});
     const subscriptionZone2: Zone = Zone.current.fork({name: 'Subscription Zone 2'});

@@ -10,7 +10,7 @@ import {interval, Observable} from 'rxjs';
 import {asyncTest} from '../test-util';
 
 describe('Observable.interval', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

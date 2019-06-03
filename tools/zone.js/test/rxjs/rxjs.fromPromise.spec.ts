@@ -10,7 +10,7 @@ import {from} from 'rxjs';
 import {asyncTest} from '../test-util';
 
 describe('Observable.fromPromise', () => {
-  let log: string[];
+  let log: any[];
   let observable1: any;
 
   beforeEach(() => {

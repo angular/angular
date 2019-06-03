@@ -9,7 +9,7 @@ import {NEVER, Observable} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 
 describe('Observable.never', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;

@@ -6,33 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {asapScheduler, of} from 'rxjs';
+import {asapScheduler, of } from 'rxjs';
 import {map, observeOn} from 'rxjs/operators';
 
 import {asyncTest} from '../test-util';
 
 describe('Scheduler.asap', () => {
-  let log: string[];
+  let log: any[];
   let errorCallback: Function;
   const constructorZone: Zone = Zone.root.fork({name: 'Constructor Zone'});
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('scheduler asap should run in correct zone', asyncTest((done: any) => {
        let observable: any;
-       constructorZone.run(() => {
-         observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
-       });
+       constructorZone.run(() => { observable = of (1, 2, 3).pipe(observeOn(asapScheduler)); });
 
        const zone = Zone.current.fork({name: 'subscribeZone'});
 
        zone.run(() => {
-         observable
-             .pipe(map((value: number) => {
-               return value;
-             }))
+         observable.pipe(map((value: number) => { return value; }))
              .subscribe(
                  (value: number) => {
                    expect(Zone.current.name).toEqual(zone.name);
@@ -40,17 +33,13 @@ describe('Scheduler.asap', () => {
                      setTimeout(done);
                    }
                  },
-                 (err: any) => {
-                   fail('should not be here');
-                 });
+                 (err: any) => { fail('should not be here'); });
        });
      }, Zone.root));
 
   it('scheduler asap error should run in correct zone', asyncTest((done: any) => {
        let observable: any;
-       constructorZone.run(() => {
-         observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
-       });
+       constructorZone.run(() => { observable = of (1, 2, 3).pipe(observeOn(asapScheduler)); });
 
        Zone.root.run(() => {
          observable

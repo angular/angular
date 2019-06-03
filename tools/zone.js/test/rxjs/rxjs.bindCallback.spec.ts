@@ -11,16 +11,14 @@ import {asapScheduler, bindCallback} from 'rxjs';
 import {asyncTest} from '../test-util';
 
 describe('Observable.bindCallback', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone: Zone = Zone.root.fork({name: 'Constructor Zone'});
   const subscriptionZone: Zone = Zone.root.fork({name: 'Subscription Zone'});
   let func: any;
   let boundFunc: any;
   let observable: any;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('bindCallback func callback should run in the correct zone', () => {
     constructorZone.run(() => {

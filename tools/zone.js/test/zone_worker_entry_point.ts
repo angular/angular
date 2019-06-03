@@ -26,6 +26,6 @@ System.import('../lib/browser/api-util').then(() => {
           websocket.send('text');
         });
       });
-    }, (e) => (<any>self).postMessage(`error ${e.message}`));
+    }, (e: any) => (<any>self).postMessage(`error ${e.message}`));
   });
 });

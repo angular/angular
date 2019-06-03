@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {combineLatest, Observable} from 'rxjs';
+import {Observable, combineLatest} from 'rxjs';
 
 describe('Observable.combineLatest', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const constructorZone2: Zone = Zone.current.fork({name: 'Constructor Zone2'});
   const constructorZone3: Zone = Zone.current.fork({name: 'Constructor Zone3'});
@@ -21,9 +21,7 @@ describe('Observable.combineLatest', () => {
 
   let combinedObservable: any;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('combineLatest func should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => new Observable((_subscriber) => {
@@ -37,9 +35,7 @@ describe('Observable.combineLatest', () => {
                                          log.push('setup2');
                                        }));
 
-    constructorZone3.run(() => {
-      combinedObservable = combineLatest(observable1, observable2);
-    });
+    constructorZone3.run(() => { combinedObservable = combineLatest(observable1, observable2); });
 
     subscriptionZone.run(() => {
       combinedObservable.subscribe((combined: any) => {

@@ -11,7 +11,7 @@ import {take, takeLast, takeUntil, takeWhile} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.take', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
   let defaultTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 

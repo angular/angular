@@ -9,7 +9,7 @@ import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 describe('Observable.tap', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

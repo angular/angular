@@ -11,7 +11,7 @@ import {combineAll, map} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.combine', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

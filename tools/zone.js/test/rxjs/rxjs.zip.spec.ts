@@ -9,7 +9,7 @@
 import {of, range, zip} from 'rxjs';
 
 describe('Observable.zip', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
 

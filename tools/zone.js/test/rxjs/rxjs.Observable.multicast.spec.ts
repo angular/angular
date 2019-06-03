@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, Subject, of } from 'rxjs';
 import {mapTo, multicast, tap} from 'rxjs/operators';
+
 
 // TODO: @JiaLiPassion, Observable.prototype.multicast return a readonly _subscribe
 // should find another way to patch subscribe
 describe('Observable.multicast', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const doZone1: Zone = Zone.current.fork({name: 'Do Zone1'});
   const mapZone1: Zone = Zone.current.fork({name: 'Map Zone1'});
@@ -19,14 +20,10 @@ describe('Observable.multicast', () => {
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('multicast func callback should run in the correct zone', () => {
-    observable1 = constructorZone1.run(() => {
-      return of(1, 2, 3);
-    });
+    observable1 = constructorZone1.run(() => { return of (1, 2, 3); });
 
     observable1 = doZone1.run(() => {
       return observable1.pipe(tap((v: any) => {
@@ -35,9 +32,7 @@ describe('Observable.multicast', () => {
       }));
     });
 
-    observable1 = mapZone1.run(() => {
-      return observable1.pipe(mapTo('test'));
-    });
+    observable1 = mapZone1.run(() => { return observable1.pipe(mapTo('test')); });
 
     const multi: any = multicastZone1.run(() => {
       return observable1.pipe(multicast(() => {
@@ -46,13 +41,9 @@ describe('Observable.multicast', () => {
       }));
     });
 
-    multi.subscribe((val: any) => {
-      log.push('one' + val);
-    });
+    multi.subscribe((val: any) => { log.push('one' + val); });
 
-    multi.subscribe((val: any) => {
-      log.push('two' + val);
-    });
+    multi.subscribe((val: any) => { log.push('two' + val); });
 
     multi.connect();
 
@@ -62,9 +53,7 @@ describe('Observable.multicast', () => {
             expect(Zone.current.name).toEqual(subscriptionZone.name);
             log.push(result);
           },
-          () => {
-            fail('should not call error');
-          },
+          () => { fail('should not call error'); },
           () => {
             log.push('completed');
             expect(Zone.current.name).toEqual(subscriptionZone.name);

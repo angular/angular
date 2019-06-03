@@ -9,7 +9,7 @@ import {Observable, timer} from 'rxjs';
 import {asyncTest} from '../test-util';
 
 describe('Observable.timer', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

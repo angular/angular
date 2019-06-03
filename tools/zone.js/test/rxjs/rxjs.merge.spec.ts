@@ -11,7 +11,7 @@ import {map, take} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.merge', () => {
-  let log: string[];
+  let log: any[];
 
   beforeEach(() => {
     log = [];

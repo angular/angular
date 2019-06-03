@@ -11,7 +11,7 @@ import {sample, take, throttle} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.sample', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

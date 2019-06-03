@@ -12,7 +12,7 @@ import {concatAll, concatMap, concatMapTo, map} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable instance method concat', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const constructorZone2: Zone = Zone.current.fork({name: 'Constructor Zone2'});
   const constructorZone3: Zone = Zone.current.fork({name: 'Constructor Zone3'});

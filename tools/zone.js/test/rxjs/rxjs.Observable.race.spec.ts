@@ -11,7 +11,7 @@ import {mapTo} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.race', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

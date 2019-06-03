@@ -12,7 +12,7 @@ import {buffer, bufferCount, bufferTime, bufferToggle, bufferWhen} from 'rxjs/op
 import {asyncTest} from '../test-util';
 
 xdescribe('Observable.buffer', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

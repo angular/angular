@@ -9,7 +9,7 @@ import {Observable, of} from 'rxjs';
 import {catchError, map, retry} from 'rxjs/operators';
 
 describe('Observable.catch', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

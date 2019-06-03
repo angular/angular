@@ -12,7 +12,7 @@ import {delay, delayWhen} from 'rxjs/operators';
 import {asyncTest} from '../test-util';
 
 describe('Observable.delay', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

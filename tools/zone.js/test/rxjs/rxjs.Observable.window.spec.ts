@@ -13,7 +13,7 @@ import {asyncTest} from '../test-util';
 // @JiaLiPassion, in Safari 9(iOS 9), the case is not
 // stable because of the timer, try to fix it later
 xdescribe('Observable.window', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

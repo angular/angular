@@ -10,7 +10,7 @@ import {Observable, of} from 'rxjs';
 import {distinct, distinctUntilChanged, distinctUntilKeyChanged} from 'rxjs/operators';
 
 describe('Observable.distinct', () => {
-  let log: string[];
+  let log: any[];
   let observable1: Observable<any>;
 
   beforeEach(() => {

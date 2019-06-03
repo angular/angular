@@ -13,7 +13,7 @@ import {ifEnvSupports} from '../test-util';
 import {supportFeature} from './rxjs.util';
 
 describe('Observable.map', () => {
-  let log: string[];
+  let log: any[];
   const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;
