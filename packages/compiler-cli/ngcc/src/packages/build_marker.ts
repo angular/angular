@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {writeFileSync} from 'fs';
+import {writeFileSync, writeFile} from 'fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 
@@ -53,5 +53,5 @@ export function markAsProcessed(
     format: EntryPointJsonProperty) {
   if (!packageJson.__processed_by_ivy_ngcc__) packageJson.__processed_by_ivy_ngcc__ = {};
   packageJson.__processed_by_ivy_ngcc__[format] = NGCC_VERSION;
-  writeFileSync(packageJsonPath, JSON.stringify(packageJson), 'utf8');
+  writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
 }
