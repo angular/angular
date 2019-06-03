@@ -939,7 +939,7 @@ export declare type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
 export declare function ɵɵprojection(nodeIndex: number, selectorIndex?: number, attrs?: TAttributes): void;
 
-export declare function ɵɵprojectionDef(selectors?: CssSelectorList[]): void;
+export declare function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void;
 
 export declare function ɵɵproperty<T>(propName: string, value: T, sanitizer?: SanitizerFn | null, nativeOnly?: boolean): TsickleIssue1009;
 

@@ -2059,7 +2059,7 @@ describe('Runtime i18n', () => {
             template: (rf: RenderFlags, cmp: Child) => {
               if (rf & RenderFlags.Create) {
                 ɵɵprojectionDef([[['span']]]);
-                ɵɵprojection(0, 1);
+                ɵɵprojection(0);
               }
             }
           });
