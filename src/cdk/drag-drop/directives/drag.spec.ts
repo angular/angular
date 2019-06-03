@@ -3467,6 +3467,60 @@ describe('CdkDrag', () => {
     }));
 
   });
+
+  describe('with nested drags', () => {
+    it('should not move draggable container when dragging child (multitouch)', fakeAsync(() => {
+
+      const fixture = createComponent(NestedDragsComponent, [], 10);
+      fixture.detectChanges();
+
+      // First finger drags container (less then threshold)
+      startDraggingViaTouch(fixture, fixture.componentInstance.container.nativeElement);
+      continueDraggingViaTouch(fixture, 2, 0);
+
+      // Second finger drags container
+      startDraggingViaTouch(fixture, fixture.componentInstance.container.nativeElement);
+      continueDraggingViaTouch(fixture, 0, 10);
+      continueDraggingViaTouch(fixture, 0, 20);
+
+      // First finger releases
+      stopDraggingViaTouch(fixture, 0, 20);
+      // Second finger releases
+      stopDraggingViaTouch(fixture, 0, 10);
+
+      // Container spies worked
+      const containerDragStartedCount =
+          fixture.componentInstance.containerDragStartedSpy.calls.count();
+      const containerDragMovedCount =
+          fixture.componentInstance.containerDragMovedSpy.calls.count();
+      const containerDragReleasedCount =
+          fixture.componentInstance.containerDragReleasedSpy.calls.count();
+
+      expect(containerDragStartedCount).toBeGreaterThan(0);
+      expect(containerDragMovedCount).toBeGreaterThan(0);
+      expect(containerDragReleasedCount).toBeGreaterThan(0);
+
+      // Drag item
+      startDraggingViaTouch(fixture, fixture.componentInstance.item.nativeElement);
+      continueDraggingViaTouch(fixture, 20, 20);
+      continueDraggingViaTouch(fixture, 40, 40);
+      stopDraggingViaTouch(fixture, 60, 60);
+
+      // Spies on item worked
+      expect(fixture.componentInstance.itemDragStartedSpy).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.itemDragMovedSpy).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.itemDragReleasedSpy).toHaveBeenCalledTimes(1);
+
+      // Spies on container stay intact
+      expect(fixture.componentInstance.containerDragStartedSpy)
+          .toHaveBeenCalledTimes(containerDragStartedCount);
+      expect(fixture.componentInstance.containerDragMovedSpy)
+          .toHaveBeenCalledTimes(containerDragMovedCount);
+      expect(fixture.componentInstance.containerDragReleasedSpy)
+          .toHaveBeenCalledTimes(containerDragReleasedCount);
+
+    }));
+  });
 });
 
 @Component({
@@ -4063,6 +4117,56 @@ class WrappedDropContainerComponent {
   @Input() items: string[];
 }
 
+@Component({
+  styles: [`
+    :host {
+      height: 400px;
+      width: 400px;
+      position: absolute;
+    }
+    .container {
+      height: 200px;
+      width: 200px;
+      position: absolute;
+    }
+    .item {
+      height: 50px;
+      width: 50px;
+      position: absolute;
+    }
+  `],
+  template: `
+    <div
+      cdkDrag
+      #container
+      class="container"
+      (cdkDragStarted)="containerDragStartedSpy($event)"
+      (cdkDragMoved)="containerDragMovedSpy($event)"
+      (cdkDragReleased)="containerDragReleasedSpy($event)"
+    >
+      <div
+        cdkDrag
+        class="item"
+        #item
+        (cdkDragStarted)="itemDragStartedSpy($event)"
+        (cdkDragMoved)="itemDragMovedSpy($event)"
+        (cdkDragReleased)="itemDragReleasedSpy($event)"
+      >
+      </div>
+    </div>`
+})
+class NestedDragsComponent {
+  @ViewChild('container', {static: false}) container: ElementRef;
+  @ViewChild('item', {static: false}) item: ElementRef;
+
+  containerDragStartedSpy = jasmine.createSpy('container drag started spy');
+  containerDragMovedSpy = jasmine.createSpy('container drag moved spy');
+  containerDragReleasedSpy = jasmine.createSpy('container drag released spy');
+  itemDragStartedSpy = jasmine.createSpy('item drag started spy');
+  itemDragMovedSpy = jasmine.createSpy('item drag moved spy');
+  itemDragReleasedSpy = jasmine.createSpy('item drag released spy');
+}
+
 /**
  * Drags an element to a position on the page using the mouse.
  * @param fixture Fixture on which to run change detection.
@@ -4107,16 +4211,40 @@ function startDraggingViaMouse(fixture: ComponentFixture<any>,
  */
 function dragElementViaTouch(fixture: ComponentFixture<any>,
     element: Element, x: number, y: number) {
+  startDraggingViaTouch(fixture, element);
+  continueDraggingViaTouch(fixture, x, y);
+  stopDraggingViaTouch(fixture, x, y);
+}
 
+/**
+ * @param fixture Fixture on which to run change detection.
+ * @param element Element which is being dragged.
+ */
+function startDraggingViaTouch(fixture: ComponentFixture<any>,
+    element: Element) {
   dispatchTouchEvent(element, 'touchstart');
   fixture.detectChanges();
 
   dispatchTouchEvent(document, 'touchmove');
   fixture.detectChanges();
+}
 
+/**
+ * @param fixture Fixture on which to run change detection.
+ * @param x Position along the x axis to which to drag the element.
+ * @param y Position along the y axis to which to drag the element.
+ */
+function continueDraggingViaTouch(fixture: ComponentFixture<any>, x: number, y: number) {
   dispatchTouchEvent(document, 'touchmove', x, y);
   fixture.detectChanges();
+}
 
+/**
+ * @param fixture Fixture on which to run change detection.
+ * @param x Position along the x axis to which to drag the element.
+ * @param y Position along the y axis to which to drag the element.
+ */
+function stopDraggingViaTouch(fixture: ComponentFixture<any>, x: number, y: number) {
   dispatchTouchEvent(document, 'touchend', x, y);
   fixture.detectChanges();
 }

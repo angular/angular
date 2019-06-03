@@ -689,8 +689,13 @@ export class DragRef<T = any> {
     this._toggleNativeDragInteractions();
     this._hasStartedDragging = this._hasMoved = false;
     this._initialContainer = this._dropContainer!;
+
+    // Avoid multiple subscriptions and memory leaks when multi touch
+    // (isDragging check above isn't enough because of possible temporal and/or dimensional delays)
+    this._removeSubscriptions();
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
+
     this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
 
     if (this._boundaryElement) {
