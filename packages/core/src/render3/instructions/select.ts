@@ -7,8 +7,9 @@
  */
 import {assertGreaterThan, assertLessThan} from '../../util/assert';
 import {executePreOrderHooks} from '../hooks';
-import {HEADER_OFFSET, TVIEW} from '../interfaces/view';
+import {HEADER_OFFSET, LView, TVIEW} from '../interfaces/view';
 import {getCheckNoChangesMode, getLView, setSelectedIndex} from '../state';
+
 
 /**
  * Selects an element for later binding instructions.
@@ -37,7 +38,11 @@ export function ɵɵselect(index: number): void {
       assertLessThan(
           index, getLView().length - HEADER_OFFSET, 'Should be within range for the view data');
   const lView = getLView();
+  selectInternal(lView, index);
+}
 
+
+export function selectInternal(lView: LView, index: number) {
   // Flush the initial hooks for elements in the view that have been added up to this point.
   executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 

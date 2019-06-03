@@ -684,6 +684,9 @@
     "name": "saveResolvedLocalsInData"
   },
   {
+    "name": "selectInternal"
+  },
+  {
     "name": "setActiveHostElement"
   },
   {

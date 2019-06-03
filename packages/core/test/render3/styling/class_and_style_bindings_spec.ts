@@ -396,7 +396,6 @@ describe('style and class based bindings', () => {
                ɵɵelementEnd();
              }
              if (rf & RenderFlags.Update) {
-               ɵɵselect(0);
                ɵɵstyleMap(ctx.myStyles);
                ɵɵstyleProp(0, ctx.myWidth);
                ɵɵstylingApply();
@@ -435,7 +434,6 @@ describe('style and class based bindings', () => {
                 ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                ɵɵselect(0);
                 ɵɵstyleProp(0, ctx.diameter, 'px');
                 ɵɵstyleProp(1, ctx.diameter, 'px');
                 ɵɵstylingApply();
@@ -475,7 +473,6 @@ describe('style and class based bindings', () => {
                 ɵɵelementEnd();
               }
               if (rf & RenderFlags.Update) {
-                ɵɵselect(0);
                 ɵɵstyleProp(0, ctx.borderWidth);
                 ɵɵstyleProp(1, ctx.borderColor);
                 ɵɵstylingApply();
@@ -3118,7 +3115,6 @@ describe('style and class based bindings', () => {
                  ɵɵelementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 ɵɵselect(0);
                  ɵɵstyleMap(styleMapFactory);
                  ɵɵclassMap(classMapFactory);
                  ɵɵstyleProp(0, widthFactory);
@@ -3193,7 +3189,6 @@ describe('style and class based bindings', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵstyleMap(styleMapFactory);
               ɵɵclassMap(classMapFactory);
               ɵɵstyleProp(0, widthFactory);
@@ -3291,7 +3286,6 @@ describe('style and class based bindings', () => {
               ɵɵelementEnd();
             }
             if (rf & RenderFlags.Update) {
-              ɵɵselect(0);
               ɵɵstyleProp(0, ctx.widthFactory);
               ɵɵclassProp(0, ctx.fooFactory);
               ɵɵstylingApply();

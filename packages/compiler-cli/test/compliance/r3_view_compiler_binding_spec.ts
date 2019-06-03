@@ -81,7 +81,6 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("title", $ctx$.title);
         }
       }`;
@@ -116,7 +115,6 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵpropertyInterpolate1("title", "Hello ", $ctx$.name, "");
         }
       }`;
@@ -173,7 +171,6 @@ describe('compiler compliance: bindings', () => {
             $i0$.ɵɵelement(0, "label", _c0);
         }
         if (rf & 2) {
-            $i0$.ɵɵselect(0);
             $i0$.ɵɵproperty("for", ctx.forValue);
         }
       }`;
@@ -469,7 +466,6 @@ describe('compiler compliance: bindings', () => {
       const template = `
       …
         if (rf & 2) {
-          i0.ɵɵselect(0);
           i0.ɵɵpropertyInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
           i0.ɵɵselect(1);
           i0.ɵɵpropertyInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");
@@ -514,7 +510,6 @@ describe('compiler compliance: bindings', () => {
       const template = `
       …
         if (rf & 2) {
-          i0.ɵɵselect(0);
           i0.ɵɵattributeInterpolateV("title", ["a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i", ctx.nine, "j"]);
           i0.ɵɵselect(1);
           i0.ɵɵattributeInterpolate8("title", "a", ctx.one, "b", ctx.two, "c", ctx.three, "d", ctx.four, "e", ctx.five, "f", ctx.six, "g", ctx.seven, "h", ctx.eight, "i");

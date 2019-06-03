@@ -1386,6 +1386,9 @@
     "name": "searchTokensOnInjector"
   },
   {
+    "name": "selectInternal"
+  },
+  {
     "name": "setActiveHostElement"
   },
   {

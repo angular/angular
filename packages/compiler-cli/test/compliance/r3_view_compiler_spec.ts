@@ -119,7 +119,6 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵtext(0);
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵtextInterpolateV([" ", ctx.list[0], " ", ctx.list[1], " ", ctx.list[2], " ", ctx.list[3], " ", ctx.list[4], " ", ctx.list[5], " ", ctx.list[6], " ", ctx.list[7], " ", ctx.list[8], " "]);
         }
       }
@@ -155,7 +154,6 @@ describe('r3_view_compiler', () => {
           $i0$.ɵɵelement(0, "div");
         }
         if (rf & 2) {
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("@attr", …);
           $i0$.ɵɵproperty("@binding", …);
         }
@@ -187,7 +185,6 @@ describe('r3_view_compiler', () => {
         if (rf & 1) {
           $i0$.ɵɵelementStart(0, "div");
           …
-          $i0$.ɵɵselect(0);
           $i0$.ɵɵproperty("@mySelector", …);
         }
       }`;
