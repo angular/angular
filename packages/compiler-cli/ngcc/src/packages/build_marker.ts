@@ -51,5 +51,5 @@ export function markAsProcessed(
     format: EntryPointJsonProperty) {
   if (!packageJson.__processed_by_ivy_ngcc__) packageJson.__processed_by_ivy_ngcc__ = {};
   packageJson.__processed_by_ivy_ngcc__[format] = NGCC_VERSION;
-  fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+  fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
