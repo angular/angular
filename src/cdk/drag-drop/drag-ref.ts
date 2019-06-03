@@ -510,8 +510,13 @@ export class DragRef<T = any> {
       // in the `pointerMove` subscription, because we're not guaranteed to have one move event
       // per pixel of movement (e.g. if the user moves their pointer quickly).
       if (isOverThreshold && (Date.now() >= this._dragStartTime + (this.dragStartDelay || 0))) {
-        this._hasStartedDragging = true;
-        this._ngZone.run(() => this._startDragSequence(event));
+        // Prevent other drag sequences from starting while something in the container is still
+        // being dragged. This can happen while we're waiting for the drop animation to finish
+        // and can cause errors, because some elements might still be moving around.
+        if (!this._dropContainer || !this._dropContainer.isDragging()) {
+          this._hasStartedDragging = true;
+          this._ngZone.run(() => this._startDragSequence(event));
+        }
       }
 
       return;

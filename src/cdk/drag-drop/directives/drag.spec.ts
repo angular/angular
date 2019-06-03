@@ -2640,6 +2640,23 @@ describe('CdkDrag', () => {
       }).not.toThrow();
     }));
 
+    it('should not be able to start a drag sequence while another one is still active',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+        const [item, otherItem] = fixture.componentInstance.dragItems.toArray();
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        expect(document.querySelectorAll('.cdk-drag-dragging').length)
+            .toBe(1, 'Expected one item to be dragged initially.');
+
+        startDraggingViaMouse(fixture, otherItem.element.nativeElement);
+
+        expect(document.querySelectorAll('.cdk-drag-dragging').length)
+            .toBe(1, 'Expected only one item to continue to be dragged.');
+      }));
+
   });
 
   describe('in a connected drop container', () => {
