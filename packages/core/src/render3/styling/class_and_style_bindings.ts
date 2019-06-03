@@ -1740,7 +1740,7 @@ export function getInitialStyleStringValue(context: StylingContext): string {
 }
 
 /**
- * Returns the current cached mutli-value for a given directiveIndex within the provided context.
+ * Returns the current cached multi-value for a given directiveIndex within the provided context.
  */
 function readCachedMapValue(
     context: StylingContext, entryIsClassBased: boolean, directiveIndex: number) {
