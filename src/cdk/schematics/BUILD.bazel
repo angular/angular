@@ -5,74 +5,89 @@ load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 filegroup(
-  name = "schematics_assets",
-  srcs = glob(["**/files/**/*", "**/*.json"]),
+    name = "schematics_assets",
+    srcs = glob([
+        "**/files/**/*",
+        "**/*.json",
+    ]),
 )
 
 ts_library(
-  name = "schematics",
-  module_name = "@angular/cdk/schematics",
-  srcs = glob(["**/*.ts"], exclude=[
-    "**/files/**/*.ts",
-    "**/*.spec.ts",
-    "ng-update/test-cases/**/*.ts",
-    "testing/**/*.ts"
-  ]),
-  tsconfig = ":tsconfig.json",
-  deps = [
-    "@npm//@schematics/angular",
-    "@npm//@angular-devkit/core",
-    "@npm//@angular-devkit/schematics",
-    # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
-    "@npm//@types/jasmine",
-    "@npm//@types/node",
-    "@npm//glob",
-    "@npm//parse5",
-    "@npm//tslint",
-    "@npm//typescript",
-    "@npm//chalk"
-  ],
+    name = "schematics",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/files/**/*.ts",
+            "**/*.spec.ts",
+            "ng-update/test-cases/**/*.ts",
+            "testing/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/cdk/schematics",
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@schematics/angular",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//glob",
+        "@npm//parse5",
+        "@npm//tslint",
+        "@npm//typescript",
+        "@npm//chalk",
+    ],
 )
 
 # This package is intended to be combined into the main @angular/cdk package as a dep.
 npm_package(
-  name = "npm_package",
-  srcs = [":schematics_assets"],
-  deps = [":schematics"],
-  replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
+    name = "npm_package",
+    srcs = [":schematics_assets"],
+    replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
+    deps = [":schematics"],
 )
 
 ### Testing rules
 
 jasmine_node_test(
-  name = "unit_tests",
-  srcs = [":unit_test_sources"],
-  data = [":schematics_assets", ":schematics_test_cases"],
+    name = "unit_tests",
+    srcs = [":unit_test_sources"],
+    data = [
+        ":schematics_assets",
+        ":schematics_test_cases",
+    ],
 )
 
 ts_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts", "**/files/**/*.spec.ts"]),
-  deps = [
-    "//src/cdk/schematics/testing",
-    "@npm//@schematics/angular",
-    "@npm//@angular-devkit/schematics",
-    "@npm//@types/jasmine",
-    "@npm//@types/node",
-    "@npm//mock-fs",
-    "@npm//tslint",
-    "@npm//typescript",
-    ":schematics",
-  ],
-  tsconfig = ":tsconfig.json",
-  testonly = True,
+    name = "unit_test_sources",
+    testonly = True,
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = [
+            "**/*.e2e.spec.ts",
+            "**/files/**/*.spec.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        ":schematics",
+        "//src/cdk/schematics/testing",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//mock-fs",
+        "@npm//tslint",
+        "@npm//typescript",
+    ],
 )
 
 filegroup(
-  name = "schematics_test_cases",
-  srcs = glob([
-    "ng-update/test-cases/**/*_input.ts",
-    "ng-update/test-cases/**/*_expected_output.ts"
-  ]),
-  testonly = True,
+    name = "schematics_test_cases",
+    testonly = True,
+    srcs = glob([
+        "ng-update/test-cases/**/*_input.ts",
+        "ng-update/test-cases/**/*_expected_output.ts",
+    ]),
 )

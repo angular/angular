@@ -1,53 +1,59 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_web_test_suite", "ng_test_library")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ng_test_library", "ng_web_test_suite")
 load("//:packages.bzl", "ROLLUP_GLOBALS")
 
 ng_module(
-  name = "material-moment-adapter",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material-moment-adapter",
-  deps = [
-    "@npm//@angular/core",
-    "@npm//moment",
-    "//src/material/core",
-  ],
-  # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this
-  # tsconfig because in order to import Moment with TypeScript, we need some special options
-  # enabled.
-  tsconfig = ":tsconfig-build.json",
+    name = "material-moment-adapter",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material-moment-adapter",
+    # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this
+    # tsconfig because in order to import Moment with TypeScript, we need some special options
+    # enabled.
+    tsconfig = ":tsconfig-build.json",
+    deps = [
+        "//src/material/core",
+        "@npm//@angular/core",
+        "@npm//moment",
+    ],
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/material/core",
-    "//src/material/testing",
-    "@npm//moment",
-    ":material-moment-adapter",
-  ],
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":material-moment-adapter",
+        "//src/material/core",
+        "//src/material/testing",
+        "@npm//moment",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [
-    ":require-config.js",
-    ":unit_test_sources"
-  ],
-  # We need to load Moment statically since it is not a named AMD module and needs to
-  # be manually configured through "require.js" which is used by "ts_web_test_suite".
-  static_files = [
-    "@npm//moment",
-  ],
+    name = "unit_tests",
+    # We need to load Moment statically since it is not a named AMD module and needs to
+    # be manually configured through "require.js" which is used by "ts_web_test_suite".
+    static_files = [
+        "@npm//moment",
+    ],
+    deps = [
+        ":require-config.js",
+        ":unit_test_sources",
+    ],
 )
 
 ng_package(
-  name = "npm_package",
-  srcs = ["package.json"],
-  entry_point = "src/material-moment-adapter/public_api.js",
-  globals = ROLLUP_GLOBALS,
-  deps = [":material-moment-adapter"],
-  # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
-  tags = ["manual"],
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "src/material-moment-adapter/public_api.js",
+    globals = ROLLUP_GLOBALS,
+    # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
+    tags = ["manual"],
+    deps = [":material-moment-adapter"],
 )

@@ -6,34 +6,36 @@ load("//tools/dgeni:index.bzl", "dgeni_api_docs")
 
 # List that contains all source files that need to be processed by Dgeni.
 apiSourceFiles = ["//src/cdk/%s:source-files" % name for name in CDK_PACKAGES] + [
-  "//src/material/%s:source-files" % name for name in MATERIAL_PACKAGES]
+    "//src/material/%s:source-files" % name
+    for name in MATERIAL_PACKAGES
+]
 
 exports_files([
-  "bazel-tsconfig-build.json",
-  "bazel-tsconfig-test.json",
-  "README.md",
+    "bazel-tsconfig-build.json",
+    "bazel-tsconfig-test.json",
+    "README.md",
 ])
 
 ts_library(
-  name = 'module-typings',
-  srcs = [":module-typings.d.ts"]
+    name = "module-typings",
+    srcs = [":module-typings.d.ts"],
 )
 
 dgeni_api_docs(
-  name = "api-docs",
-  srcs = apiSourceFiles + [
-    # Add all Angular packages to the sources because some Material exports use
-    # Angular exports and these should not cause any warnings when Dgeni uses the
-    # type checker to parse our TypeScript sources.
-    "@npm//@angular/core",
-    "@npm//@angular/common",
-    "@npm//@angular/forms",
-    "@npm//@angular/animations",
-    "@npm//@angular/platform-browser",
-  ],
-  entry_points = {
-    "cdk": CDK_PACKAGES,
-    "material": MATERIAL_PACKAGES,
-  },
-  tags = ["docs-package"],
+    name = "api-docs",
+    srcs = apiSourceFiles + [
+        # Add all Angular packages to the sources because some Material exports use
+        # Angular exports and these should not cause any warnings when Dgeni uses the
+        # type checker to parse our TypeScript sources.
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/forms",
+        "@npm//@angular/animations",
+        "@npm//@angular/platform-browser",
+    ],
+    entry_points = {
+        "cdk": CDK_PACKAGES,
+        "material": MATERIAL_PACKAGES,
+    },
+    tags = ["docs-package"],
 )

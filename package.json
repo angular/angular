@@ -14,9 +14,11 @@
   "scripts": {
     "postinstall": "ngc -p angular-tsconfig.json",
     "build": "gulp build-release-packages",
+    "bazel:buildifier": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable",
+    "bazel:format-lint": "yarn -s bazel:buildifier --lint=warn --mode=check",
     "dev-app": "gulp serve:devapp",
     "test": "bazel test //src/... --test_tag_filters=-e2e",
-    "lint": "gulp lint",
+    "lint": "gulp lint && yarn -s bazel:format-lint",
     "e2e": "bazel test //src/... --test_tag_filters=e2e",
     "deploy": "gulp deploy:devapp",
     "webdriver-manager": "webdriver-manager",
@@ -26,7 +28,9 @@
     "publish-release": "ts-node --project tools/release/ tools/release/publish-release.ts",
     "check-release-output": "ts-node --project tools/release tools/release/check-release-output.ts",
     "preinstall": "node ./tools/npm/check-npm.js",
-    "format": "git-clang-format HEAD $(git diff HEAD --name-only | grep -v \"\\.d\\.ts\")"
+    "format:ts": "git-clang-format HEAD $(git diff HEAD --name-only | grep -v \"\\.d\\.ts\")",
+    "format:bazel": "yarn -s bazel:buildifier --lint=fix --mode=fix",
+    "format": "yarn -s format:ts && yarn -s format:bazel"
   },
   "version": "8.0.0",
   "requiredAngularVersion": "^8.0.0 || ^9.0.0-0",
@@ -39,6 +43,7 @@
     "@angular/elements": "^8.0.0",
     "@angular/forms": "^8.0.0",
     "@angular/platform-browser": "^8.0.0",
+    "@bazel/buildifier": "^0.25.1",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.6.1",
     "material-components-web": "^1.1.0",

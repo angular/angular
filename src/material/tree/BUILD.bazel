@@ -1,56 +1,67 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
-  "markdown_to_html")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+)
 
 ng_module(
-  name = "tree",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/tree",
-  assets = [":tree.css"] + glob(["**/*.html"]),
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//rxjs",
-    "//src/cdk/collections",
-    "//src/cdk/tree",
-    "//src/material/core",
-  ],
+    name = "tree",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":tree.css"] + glob(["**/*.html"]),
+    module_name = "@angular/material/tree",
+    deps = [
+        "//src/cdk/collections",
+        "//src/cdk/tree",
+        "//src/material/core",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
 )
 
 sass_library(
-  name = "tree_scss_lib",
-  srcs = glob(["**/_*.scss"]),
-  deps = ["//src/material/core:core_scss_lib"],
+    name = "tree_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
-  name = "tree_scss",
-  src = "tree.scss",
+    name = "tree_scss",
+    src = "tree.scss",
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//rxjs",
-    "//src/cdk/tree",
-    ":tree",
-  ]
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":tree",
+        "//src/cdk/tree",
+        "@npm//rxjs",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"],
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":tree.md"],
+    name = "overview",
+    srcs = [":tree.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

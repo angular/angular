@@ -1,12 +1,15 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
-  name = "testing",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk/testing",
-  deps = [
-    "@npm//@angular/core",
-  ],
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/testing",
+    deps = [
+        "@npm//@angular/core",
+    ],
 )

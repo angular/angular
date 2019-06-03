@@ -4,19 +4,19 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-  name = "sources",
-  srcs = glob(["**/*.ts"]),
-  deps = [
-    "@npm//@types/node",
-  ],
-  tsconfig = ":tsconfig.json",
+    name = "sources",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+    ],
 )
 
 nodejs_binary(
-  name = "highlight-files",
-  entry_point = "angular_material/tools/highlight-files/highlight-files.js",
-  data = [
-    "@npm//highlight.js",
-    ":sources",
-  ],
+    name = "highlight-files",
+    data = [
+        ":sources",
+        "@npm//highlight.js",
+    ],
+    entry_point = "angular_material/tools/highlight-files/highlight-files.js",
 )

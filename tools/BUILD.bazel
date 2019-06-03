@@ -1,32 +1,33 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
+
 load("//tools:defaults.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 ts_library(
-  name = "sass_bundle_lib",
-  srcs = ["sass-bundle.ts"],
-  deps = [
-    "@npm//@types/node",
-    "@npm//scss-bundle",
-  ],
-  tsconfig = "bazel-tools-tsconfig.json",
+    name = "sass_bundle_lib",
+    srcs = ["sass-bundle.ts"],
+    tsconfig = "bazel-tools-tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//scss-bundle",
+    ],
 )
 
 # Executable for the custom sass_bundle rule (see sass_bundle.bzl).
 nodejs_binary(
-  name = "sass_bundle",
-  data = [
-   "@npm//scss-bundle",
-    ":sass_bundle_lib",
-  ],
-  entry_point = "angular_material/tools/sass-bundle.js",
+    name = "sass_bundle",
+    data = [
+        ":sass_bundle_lib",
+        "@npm//scss-bundle",
+    ],
+    entry_point = "angular_material/tools/sass-bundle.js",
 )
 
 # Workaround for https://github.com/bazelbuild/bazel-toolchains/issues/356. We need the
 # "SYS_ADMIN" capability in order to run browsers with sandbox enabled.
 platform(
-  name = "rbe_platform",
-  parents = ["@rbe_default//config:platform"],
+    name = "rbe_platform",
+    parents = ["@rbe_default//config:platform"],
     remote_execution_properties = """
       {PARENT_REMOTE_EXECUTION_PROPERTIES}
       properties: {

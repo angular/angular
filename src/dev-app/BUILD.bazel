@@ -1,48 +1,64 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//:packages.bzl", "MATERIAL_TARGETS", "CDK_TARGETS", "CDK_EXPERIMENTAL_TARGETS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS")
+load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "MATERIAL_EXPERIMENTAL_SCSS_LIBS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
 
 # Generate sass binaries for all nested SCSS files.
-sass_generate_binaries("dev_app_scss", glob(["**/*.scss"], exclude = ["theme.scss"]), [
-  # Needed for the input-demo sass file that uses CDK text-field mixins.
-  "//src/cdk/text-field:text_field_scss_lib"
-])
+sass_generate_binaries(
+    "dev_app_scss",
+    glob(
+        ["**/*.scss"],
+        exclude = ["theme.scss"],
+    ),
+    [
+        # Needed for the input-demo sass file that uses CDK text-field mixins.
+        "//src/cdk/text-field:text_field_scss_lib",
+    ],
+)
 
 ng_module(
-  name = "dev-app",
-  srcs = glob(["**/*.ts"], exclude = ["system-config.ts", "system-rxjs-operators.ts"]),
-  assets = glob(["**/*.html"]) + [":dev_app_scss", ":theme"],
-  deps = [
-    "@npm//@angular/animations",
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/elements",
-    "@npm//@angular/forms",
-    "@npm//@angular/platform-browser",
-    "@npm//@angular/platform-browser-dynamic",
-    "@npm//@angular/router",
-    "@npm//rxjs",
-    "//src/material-experimental/mdc-button",
-    "//src/material-experimental/mdc-card",
-    "//src/material-experimental/mdc-checkbox",
-    "//src/material-experimental/mdc-chips",
-    "//src/material-experimental/mdc-menu",
-    "//src/material-experimental/mdc-radio",
-    "//src/material-experimental/mdc-slide-toggle",
-    "//src/material-examples:examples",
-  ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS
+    name = "dev-app",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "system-config.ts",
+            "system-rxjs-operators.ts",
+        ],
+    ),
+    assets = glob(["**/*.html"]) + [
+        ":dev_app_scss",
+        ":theme",
+    ],
+    deps = [
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/elements",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@angular/router",
+        "@npm//rxjs",
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-card",
+        "//src/material-experimental/mdc-checkbox",
+        "//src/material-experimental/mdc-chips",
+        "//src/material-experimental/mdc-menu",
+        "//src/material-experimental/mdc-radio",
+        "//src/material-experimental/mdc-slide-toggle",
+        "//src/material-examples:examples",
+    ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS,
 )
 
 sass_binary(
-  name = "theme",
-  src = "theme.scss",
-  include_paths = [
-    "external/npm/node_modules",
-  ],
-  deps = [
-    "//src/material/core:all_themes",
-  ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS
+    name = "theme",
+    src = "theme.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material/core:all_themes",
+    ] + MATERIAL_EXPERIMENTAL_SCSS_LIBS,
 )

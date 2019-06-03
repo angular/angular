@@ -1,29 +1,32 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "markdown_to_html")
+load("//tools:defaults.bzl", "markdown_to_html", "ng_module")
 
 ng_module(
-  name = "stepper",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk/stepper",
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/forms",
-    "@npm//rxjs",
-    "//src/cdk/a11y",
-    "//src/cdk/bidi",
-    "//src/cdk/coercion",
-    "//src/cdk/keycodes",
-  ],
+    name = "stepper",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/stepper",
+    deps = [
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/coercion",
+        "//src/cdk/keycodes",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//rxjs",
+    ],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":stepper.md"],
+    name = "overview",
+    srcs = [":stepper.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

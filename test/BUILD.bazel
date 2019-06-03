@@ -1,16 +1,16 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ts_library")
 
 # Common set-up for all Angular Material and CDK tests.
 ts_library(
-  name = "angular_test_init",
-  testonly = True,
-  deps = [
-    "@npm//@angular/core",
-    "@npm//@angular/platform-browser-dynamic",
-    "@npm//@types/jasmine",
-  ],
-  # This file *must* end with "spec" in order for ts_web_test to load it.
-  srcs = ["angular-test-init-spec.ts"],
+    name = "angular_test_init",
+    testonly = True,
+    # This file *must* end with "spec" in order for ts_web_test to load it.
+    srcs = ["angular-test-init-spec.ts"],
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
+    ],
 )

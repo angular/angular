@@ -4,24 +4,22 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-  name = "transform-markdown",
-  srcs = glob(["**/*.ts"]),
-  deps = [
-    "@npm//@types/node",
-    "@npm//@types/marked",
-    "//tools/highlight-files:sources",
-  ],
-  tsconfig = ":tsconfig.json",
+    name = "transform-markdown",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//tools/highlight-files:sources",
+        "@npm//@types/marked",
+        "@npm//@types/node",
+    ],
 )
 
 nodejs_binary(
-  name = "markdown-to-html",
-  entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
-  data = [
-    "@npm//marked",
-    "@npm//highlight.js",
-    ":transform-markdown",
-  ],
+    name = "markdown-to-html",
+    data = [
+        ":transform-markdown",
+        "@npm//highlight.js",
+        "@npm//marked",
+    ],
+    entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
 )
-
-

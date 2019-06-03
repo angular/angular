@@ -1,134 +1,147 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//:packages.bzl", "MATERIAL_SCSS_LIBS")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
-  "markdown_to_html")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+)
 
 exports_files(["theming/_theming.scss"])
 
 ng_module(
-  name = "core",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/core",
-  assets = [
-    ":selection/pseudo-checkbox/pseudo-checkbox.css",
-    ":option/option.css",
-    ":option/optgroup.css",
-  ] + glob(["**/*.html"]),
-  deps = [
-    "@npm//@angular/animations",
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/forms",
-    "@npm//@angular/platform-browser",
-    "@npm//rxjs",
-    "//src/cdk/a11y",
-    "//src/cdk/bidi",
-    "//src/cdk/coercion",
-    "//src/cdk/keycodes",
-    "//src/cdk/platform",
-  ],
+    name = "core",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [
+        ":selection/pseudo-checkbox/pseudo-checkbox.css",
+        ":option/option.css",
+        ":option/optgroup.css",
+    ] + glob(["**/*.html"]),
+    module_name = "@angular/material/core",
+    deps = [
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/coercion",
+        "//src/cdk/keycodes",
+        "//src/cdk/platform",
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
 )
 
 sass_library(
-  name = "core_scss_lib",
-  srcs = glob(["**/_*.scss"], exclude = ["theming/_all-theme.scss"]),
-  deps = [
-    "//src/cdk/a11y:a11y_scss_lib",
-    "//src/cdk/overlay:overlay_scss_lib",
-    "//src/cdk/text-field:text_field_scss_lib",
-  ],
+    name = "core_scss_lib",
+    srcs = glob(
+        ["**/_*.scss"],
+        exclude = ["theming/_all-theme.scss"],
+    ),
+    deps = [
+        "//src/cdk/a11y:a11y_scss_lib",
+        "//src/cdk/overlay:overlay_scss_lib",
+        "//src/cdk/text-field:text_field_scss_lib",
+    ],
 )
 
 sass_binary(
-  name = "pseudo_checkbox_scss",
-  src = "selection/pseudo-checkbox/pseudo-checkbox.scss",
-  deps = [":core_scss_lib"],
+    name = "pseudo_checkbox_scss",
+    src = "selection/pseudo-checkbox/pseudo-checkbox.scss",
+    deps = [":core_scss_lib"],
 )
 
 sass_binary(
-  name = "option_scss",
-  src = "option/option.scss",
-  deps = [":core_scss_lib"],
+    name = "option_scss",
+    src = "option/option.scss",
+    deps = [":core_scss_lib"],
 )
 
 sass_binary(
-  name = "optgroup_scss",
-  src = "option/optgroup.scss",
-  deps = [":core_scss_lib"],
+    name = "optgroup_scss",
+    src = "option/optgroup.scss",
+    deps = [":core_scss_lib"],
 )
 
 sass_library(
-  name = "all_themes",
-  srcs = [
-    "theming/_all-theme.scss",
-    "typography/_all-typography.scss",
-  ],
-  deps = MATERIAL_SCSS_LIBS,
+    name = "all_themes",
+    srcs = [
+        "theming/_all-theme.scss",
+        "typography/_all-typography.scss",
+    ],
+    deps = MATERIAL_SCSS_LIBS,
 )
 
 sass_binary(
-  name = "indigo_pink_prebuilt",
-  src = "theming/prebuilt/indigo-pink.scss",
-  deps = [":all_themes"],
+    name = "indigo_pink_prebuilt",
+    src = "theming/prebuilt/indigo-pink.scss",
+    deps = [":all_themes"],
 )
 
 sass_binary(
-  name = "deeppurple-amber_prebuilt",
-  src = "theming/prebuilt/deeppurple-amber.scss",
-  deps = [":all_themes"],
+    name = "deeppurple-amber_prebuilt",
+    src = "theming/prebuilt/deeppurple-amber.scss",
+    deps = [":all_themes"],
 )
 
 sass_binary(
-  name = "pink-bluegrey_prebuilt",
-  src = "theming/prebuilt/pink-bluegrey.scss",
-  deps = [":all_themes"],
+    name = "pink-bluegrey_prebuilt",
+    src = "theming/prebuilt/pink-bluegrey.scss",
+    deps = [":all_themes"],
 )
 
 sass_binary(
-  name = "purple-green_prebuilt",
-  src = "theming/prebuilt/purple-green.scss",
-  deps = [":all_themes"],
+    name = "purple-green_prebuilt",
+    src = "theming/prebuilt/purple-green.scss",
+    deps = [":all_themes"],
 )
-
 
 #################
 #  Test targets
 #################
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//@angular/platform-browser",
-    "//src/cdk/keycodes",
-    "//src/cdk/platform",
-    "//src/cdk/testing",
-    "//src/material/testing",
-    ":core",
-  ]
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":core",
+        "//src/cdk/keycodes",
+        "//src/cdk/platform",
+        "//src/cdk/testing",
+        "//src/material/testing",
+        "@npm//@angular/platform-browser",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"],
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = ["ripple/ripple.md"],
+    name = "overview",
+    srcs = ["ripple/ripple.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 # Test theme used to ensure that our themes will compile using CSS variables in the palettes.
 sass_binary(
-  name = "test-css-variables-theme",
-  src = "theming/test-css-variables-theme.scss",
-  deps = [":all_themes"],
-  testonly = True
+    name = "test-css-variables-theme",
+    testonly = True,
+    src = "theming/test-css-variables-theme.scss",
+    deps = [":all_themes"],
 )

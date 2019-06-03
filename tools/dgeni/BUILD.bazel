@@ -4,24 +4,24 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("//tools:defaults.bzl", "ts_library")
 
 nodejs_binary(
-  name = "dgeni",
-  entry_point = "angular_material/tools/dgeni/bazel-bin.js",
-  data = [
-    "@npm//dgeni",
-    "@npm//dgeni-packages",
-    ":sources",
-  ],
+    name = "dgeni",
+    data = [
+        ":sources",
+        "@npm//dgeni",
+        "@npm//dgeni-packages",
+    ],
+    entry_point = "angular_material/tools/dgeni/bazel-bin.js",
 )
 
 ts_library(
-  name = "sources",
-  srcs = glob(["**/*.ts"]),
-  deps = [
-    "@npm//@types/node",
-    "@npm//dgeni",
-    "@npm//dgeni-packages",
-    "@npm//highlight.js",
-    "//tools/highlight-files:sources",
-  ],
-  tsconfig = ":tsconfig.json",
+    name = "sources",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//tools/highlight-files:sources",
+        "@npm//@types/node",
+        "@npm//dgeni",
+        "@npm//dgeni-packages",
+        "@npm//highlight.js",
+    ],
 )

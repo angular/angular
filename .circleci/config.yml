@@ -258,6 +258,7 @@ jobs:
       - *restore_cache
       - *yarn_install
 
+      - run: ./scripts/circleci/lint-bazel-files.sh
       - run: yarn gulp ci:lint
 
   # -------------------------------------------------------------------------------------------

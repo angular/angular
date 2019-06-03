@@ -1,11 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
-  name = "axe-protractor",
-  srcs = [
-    "index.js",
-    "build-message.js",
-    # "axe-webdriver" is required to run "axe-protractor".
-    "@npm//axe-webdriverjs",
-  ],
+    name = "axe-protractor",
+    srcs = [
+        "index.js",
+        "build-message.js",
+        # "axe-webdriver" is required to run "axe-protractor".
+        "@npm//axe-webdriverjs",
+    ],
 )

@@ -1,23 +1,26 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "markdown_to_html")
+load("//tools:defaults.bzl", "markdown_to_html", "ng_module")
 
 ng_module(
-  name = "platform",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk/platform",
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-  ]
+    name = "platform",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/platform",
+    deps = [
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+    ],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":platform.md"],
+    name = "overview",
+    srcs = [":platform.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

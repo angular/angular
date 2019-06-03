@@ -1,57 +1,68 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
-  "markdown_to_html")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+)
 
 ng_module(
-  name = "text-field",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk/text-field",
-  deps = [
-    "@npm//@angular/core",
-    "@npm//rxjs",
-    "//src/cdk/coercion",
-    "//src/cdk/platform",
-  ],
+    name = "text-field",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/text-field",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/cdk/platform",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
 )
 
 sass_library(
-  name = "text_field_scss_lib",
-  srcs = glob(["**/_*.scss"]),
+    name = "text_field_scss_lib",
+    srcs = glob(["**/_*.scss"]),
 )
 
 sass_binary(
-  name = "text_field_prebuilt_scss",
-  src = "text-field-prebuilt.scss",
-  deps = [":text_field_scss_lib"],
+    name = "text_field_prebuilt_scss",
+    src = "text-field-prebuilt.scss",
+    deps = [":text_field_scss_lib"],
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//@angular/forms",
-    "@npm//@angular/platform-browser",
-    "@npm//rxjs",
-    "//src/cdk/platform",
-    "//src/cdk/testing",
-    ":text-field"
-  ],
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":text-field",
+        "//src/cdk/platform",
+        "//src/cdk/testing",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"],
-  static_css = [":text_field_prebuilt_scss"]
+    name = "unit_tests",
+    static_css = [":text_field_prebuilt_scss"],
+    deps = [":unit_test_sources"],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":text-field.md"],
+    name = "overview",
+    srcs = [":text-field.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

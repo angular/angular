@@ -1,22 +1,25 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "MATERIAL_TARGETS", "CDK_TARGETS")
+load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
 
 # Generate sass binaries for all nested SCSS files.
-sass_generate_binaries("a11y_demo_scss", glob(["**/*.scss"]))
+sass_generate_binaries(
+    "a11y_demo_scss",
+    glob(["**/*.scss"]),
+)
 
 ng_module(
-  name = "a11y-demo",
-  srcs = glob(["**/*.ts"]),
-  assets = glob(["**/*.html"]) + [":a11y_demo_scss"],
-  deps = [
-    "@npm//rxjs",
-    "@npm//@angular/core",
-    "@npm//@angular/common",
-    "@npm//@angular/animations",
-    "@npm//@angular/forms",
-    "@npm//@angular/router",
-  ] + CDK_TARGETS + MATERIAL_TARGETS
+    name = "a11y-demo",
+    srcs = glob(["**/*.ts"]),
+    assets = glob(["**/*.html"]) + [":a11y_demo_scss"],
+    deps = [
+        "@npm//rxjs",
+        "@npm//@angular/core",
+        "@npm//@angular/common",
+        "@npm//@angular/animations",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+    ] + CDK_TARGETS + MATERIAL_TARGETS,
 )

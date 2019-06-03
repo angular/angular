@@ -1,24 +1,24 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-  name = "example-module-lib",
-  srcs = glob(["**/*.ts"]),
-  deps = [
-    "@npm//@types/node",
-    "@npm//typescript",
-  ],
-  tsconfig = ":tsconfig.json",
+    name = "example-module-lib",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
 )
 
 nodejs_binary(
-  name = "bazel-bin",
-  entry_point = "angular_material/tools/example-module/bazel-bin.js",
-  data = [
-    "@npm//typescript",
-    ":example-module-lib",
-    ":example-module.template",
-  ],
+    name = "bazel-bin",
+    data = [
+        ":example-module.template",
+        ":example-module-lib",
+        "@npm//typescript",
+    ],
+    entry_point = "angular_material/tools/example-module/bazel-bin.js",
 )

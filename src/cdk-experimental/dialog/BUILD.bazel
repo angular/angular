@@ -1,47 +1,52 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
-  name = "dialog",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk-experimental/dialog",
-  assets = [":dialog-container.css"] + glob(["**/*.html"]),
-  deps = [
-    "@npm//@angular/animations",
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//rxjs",
-    "//src/cdk/a11y",
-    "//src/cdk/bidi",
-    "//src/cdk/keycodes",
-    "//src/cdk/overlay",
-    "//src/cdk/portal",
-  ],
+    name = "dialog",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":dialog-container.css"] + glob(["**/*.html"]),
+    module_name = "@angular/cdk-experimental/dialog",
+    deps = [
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/portal",
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
 )
 
 sass_binary(
-  name = "dialog_container_scss",
-  src = "dialog-container.scss",
+    name = "dialog_container_scss",
+    src = "dialog-container.scss",
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/platform-browser",
-    "//src/cdk/bidi",
-    "//src/cdk/keycodes",
-    "//src/cdk/overlay",
-    "//src/cdk/testing",
-    ":dialog",
-  ],
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":dialog",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/testing",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"]
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
-

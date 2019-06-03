@@ -1,38 +1,49 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
-  "markdown_to_html")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+)
 
 ng_module(
-  name = "bidi",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk/bidi",
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-  ]
+    name = "bidi",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/bidi",
+    deps = [
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+    ],
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//@angular/platform-browser",
-    ":bidi"
-  ],
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":bidi",
+        "@npm//@angular/platform-browser",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"],
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":bidi.md"],
+    name = "overview",
+    srcs = [":bidi.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

@@ -1,33 +1,33 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 # We use these genrules to put the prebuilt themes into the bazel-generated npm
 # package in the right spot. The *right* thing to do would be to move them, but
 # we would need to update references for Google apps.
 
 genrule(
-  name = "indigo-pink",
-  srcs = ["//src/material/core:theming/prebuilt/indigo-pink.css"],
-  outs = ["indigo-pink.css"],
-  cmd = "cp $< $@",
+    name = "indigo-pink",
+    srcs = ["//src/material/core:theming/prebuilt/indigo-pink.css"],
+    outs = ["indigo-pink.css"],
+    cmd = "cp $< $@",
 )
 
 genrule(
-  name = "deeppurple-amber",
-  srcs = ["//src/material/core:theming/prebuilt/deeppurple-amber.css"],
-  outs = ["deeppurple-amber.css"],
-  cmd = "cp $< $@",
+    name = "deeppurple-amber",
+    srcs = ["//src/material/core:theming/prebuilt/deeppurple-amber.css"],
+    outs = ["deeppurple-amber.css"],
+    cmd = "cp $< $@",
 )
 
 genrule(
-  name = "pink-bluegrey",
-  srcs = ["//src/material/core:theming/prebuilt/pink-bluegrey.css"],
-  outs = ["pink-bluegrey.css"],
-  cmd = "cp $< $@",
+    name = "pink-bluegrey",
+    srcs = ["//src/material/core:theming/prebuilt/pink-bluegrey.css"],
+    outs = ["pink-bluegrey.css"],
+    cmd = "cp $< $@",
 )
 
 genrule(
-  name = "purple-green",
-  srcs = ["//src/material/core:theming/prebuilt/purple-green.css"],
-  outs = ["purple-green.css"],
-  cmd = "cp $< $@",
+    name = "purple-green",
+    srcs = ["//src/material/core:theming/prebuilt/purple-green.css"],
+    outs = ["purple-green.css"],
+    cmd = "cp $< $@",
 )

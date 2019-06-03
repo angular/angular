@@ -1,83 +1,95 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
-  "markdown_to_html", "ng_e2e_test_library")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_e2e_test_library",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+)
 
 ng_module(
-  name = "icon",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/icon",
-  assets = [":icon.css"] + glob(["**/*.html"]),
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/platform-browser",
-    "@npm//rxjs",
-    "//src/cdk/coercion",
-    "//src/material/core",
-  ],
+    name = "icon",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":icon.css"] + glob(["**/*.html"]),
+    module_name = "@angular/material/icon",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/material/core",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
 )
 
 sass_library(
-  name = "icon_scss_lib",
-  srcs = glob(["**/_*.scss"]),
-  deps = ["//src/material/core:core_scss_lib"],
+    name = "icon_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
-  name = "icon_scss",
-  src = "icon.scss",
-  deps = ["//src/material/core:core_scss_lib"],
+    name = "icon_scss",
+    src = "icon.scss",
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "@npm//@angular/common",
-    "@npm//@angular/platform-browser",
-    "//src/cdk/testing",
-    ":icon",
-  ]
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":icon",
+        "//src/cdk/testing",
+        "@npm//@angular/common",
+        "@npm//@angular/platform-browser",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"],
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 ng_e2e_test_library(
-  name = "e2e_test_sources",
-  srcs = glob(["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/cdk/testing/e2e",
-  ]
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/e2e",
+    ],
 )
 
 protractor_web_test_suite(
-  name = "e2e_tests",
-  tags = ["e2e"],
-  configuration = "//src/e2e-app:protractor.conf.js",
-  on_prepare = "//src/e2e-app:start-devserver.js",
-  server = "//src/e2e-app:devserver",
-  deps = [
-    ":e2e_test_sources",
-    "//src/cdk/testing/e2e",
-  ],
-  data = [
-    "@npm//@angular/bazel",
-    "//tools/axe-protractor",
-  ],
+    name = "e2e_tests",
+    configuration = "//src/e2e-app:protractor.conf.js",
+    data = [
+        "//tools/axe-protractor",
+        "@npm//@angular/bazel",
+    ],
+    on_prepare = "//src/e2e-app:start-devserver.js",
+    server = "//src/e2e-app:devserver",
+    tags = ["e2e"],
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/e2e",
+    ],
 )
 
 markdown_to_html(
-  name = "overview",
-  srcs = [":icon.md"],
+    name = "overview",
+    srcs = [":icon.md"],
 )
 
 filegroup(
-  name = "source-files",
-  srcs = glob(["**/*.ts"]),
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

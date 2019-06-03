@@ -1,85 +1,95 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_TARGETS", "CDK_EXPERIMENTAL_TARGETS", "MATERIAL_PACKAGES", "MATERIAL_EXPERIMENTAL_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "MATERIAL_EXPERIMENTAL_TARGETS", "MATERIAL_PACKAGES", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 load("//tools/package-docs-content:index.bzl", "package_docs_content")
 
 ng_module(
-  name = "examples",
-  # TODO(paul): re-add the example-module genfile once angular/angular#30259 is resolved.
-  srcs = glob(["**/*.ts"]),
-  module_name = "@angular/material-examples",
-  assets = glob(["**/*.html", "**/*.css"]),
-  deps = [
-    "@npm//@angular/animations",
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//@angular/forms",
-    "@npm//moment",
-    "//src/material-moment-adapter",
-  ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS + ["//src/material/%s" % p for p in MATERIAL_PACKAGES],
-  # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig
-  # because in order to import Moment with TypeScript, some specific options need to be set.
-  tsconfig = ":tsconfig-build.json",
+    name = "examples",
+    # TODO(paul): re-add the example-module genfile once angular/angular#30259 is resolved.
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    module_name = "@angular/material-examples",
+    # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig
+    # because in order to import Moment with TypeScript, some specific options need to be set.
+    tsconfig = ":tsconfig-build.json",
+    deps = [
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//moment",
+        "//src/material-moment-adapter",
+    ] + CDK_TARGETS + CDK_EXPERIMENTAL_TARGETS + MATERIAL_EXPERIMENTAL_TARGETS + ["//src/material/%s" % p for p in MATERIAL_PACKAGES],
 )
 
 filegroup(
-  name = "example-source-files",
-  srcs = glob(["*/*.html", "*/*.css", "*/*.ts"]),
+    name = "example-source-files",
+    srcs = glob([
+        "*/*.html",
+        "*/*.css",
+        "*/*.ts",
+    ]),
 )
 
 highlight_files(
-  name = "highlighted-source-files",
-  srcs = [":example-source-files"],
-  tags = ["docs-package"],
+    name = "highlighted-source-files",
+    srcs = [":example-source-files"],
+    tags = ["docs-package"],
 )
 
 package_docs_content(
-  name = "docs-content",
-  srcs = {
-    # We want to package the guides in to the docs content. These will be displayed
-    # in the documentation.
-    "//guides": "guides",
+    name = "docs-content",
+    srcs = {
+        # We want to package the guides in to the docs content. These will be displayed
+        # in the documentation.
+        "//guides": "guides",
 
-    # For the live-examples in our docs, we want to package the highlighted files
-    # into the docs content. These will be used to show the source code for examples.
-    ":highlighted-source-files": "examples-highlighted",
+        # For the live-examples in our docs, we want to package the highlighted files
+        # into the docs content. These will be used to show the source code for examples.
+        ":highlighted-source-files": "examples-highlighted",
 
-    # In order to be able to run examples in StackBlitz, we also want to package the
-    # plain source files into the docs-content.
-    ":example-source-files": "examples-source",
+        # In order to be able to run examples in StackBlitz, we also want to package the
+        # plain source files into the docs-content.
+        ":example-source-files": "examples-source",
 
-    # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
-    "//src/material:overviews": "overviews/material",
-    "//src/cdk:overviews": "overviews/cdk",
+        # Package the overviews for "@angular/material" and "@angular/cdk" into the docs content
+        "//src/material:overviews": "overviews/material",
+        "//src/cdk:overviews": "overviews/cdk",
 
-    # Package the API docs for the Material and CDK package into the docs-content
-    "//src:api-docs": "api-docs",
-  },
-  tags = ["docs-package"],
+        # Package the API docs for the Material and CDK package into the docs-content
+        "//src:api-docs": "api-docs",
+    },
+    tags = ["docs-package"],
 )
 
 ng_package(
-  name = "npm_package",
-  srcs = ["package.json"],
-  entry_point = "src/material-examples/public_api.js",
-  globals = ROLLUP_GLOBALS,
-  deps = [":examples"],
-  data = [":docs-content"],
-  tags = ["docs-package"],
+    name = "npm_package",
+    srcs = ["package.json"],
+    data = [":docs-content"],
+    entry_point = "src/material-examples/public_api.js",
+    globals = ROLLUP_GLOBALS,
+    tags = ["docs-package"],
+    deps = [":examples"],
 )
 
 genrule(
-  name = "example-module",
-  # In case the example-module.ts file is present as an actual source file (e.g. generated
-  # through Gulp), we need to exclude it because otherwise the genrule would fail.
-  # TODO(devversion): remove this once gulp has been replaced with bazel.
-  srcs = glob(["**/*.ts"], exclude = ["example-module.ts"]),
-  # TODO(devversion): we can't name the genrule output "example-module.ts" as it would
-  # get accidentally picked up when building the example module. See: angular/angular#30259 
-  outs = ["example-module_generated.ts"],
-  cmd = """
+    name = "example-module",
+    # In case the example-module.ts file is present as an actual source file (e.g. generated
+    # through Gulp), we need to exclude it because otherwise the genrule would fail.
+    # TODO(devversion): remove this once gulp has been replaced with bazel.
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["example-module.ts"],
+    ),
+    # TODO(devversion): we can't name the genrule output "example-module.ts" as it would
+    # get accidentally picked up when building the example module. See: angular/angular#30259
+    outs = ["example-module_generated.ts"],
+    cmd = """
     # As a workaround for https://github.com/bazelbuild/rules_nodejs/issues/404, we pass the
     # data to the Bazel entry-point through environment variables.
     export _SOURCE_FILES="$(SRCS)"
@@ -89,7 +99,6 @@ genrule(
     # Run the bazel entry-point for generating the example module.
     ./$(location //tools/example-module:bazel-bin)
   """,
-  tools = ["//tools/example-module:bazel-bin"],
-  output_to_bindir = True,
+    output_to_bindir = True,
+    tools = ["//tools/example-module:bazel-bin"],
 )
-

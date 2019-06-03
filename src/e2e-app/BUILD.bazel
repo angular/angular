@@ -1,108 +1,119 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver", "ts_library")
+load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
 load("//tools:defaults.bzl", "ng_module")
 load("//:packages.bzl", "ANGULAR_LIBRARY_UMDS")
 
-exports_files(["protractor.conf.js", "start-devserver.js"])
+exports_files([
+    "protractor.conf.js",
+    "start-devserver.js",
+])
 
 ng_module(
-  name = "e2e-app",
-  srcs = glob(["**/*.ts"], exclude = ["test-util/**"]),
-  assets = glob(["**/*.html", "**/*.css"], exclude = ["index.html"]),
-  deps = [
-    "@npm//@angular/core",
-    "@npm//@angular/elements",
-    "@npm//@angular/forms",
-    "@npm//@angular/platform-browser",
-    "@npm//@angular/router",
-    "@npm//@angular/animations",
-    "//src/cdk/drag-drop",
-    "//src/cdk/overlay",
-    "//src/cdk/scrolling",
-    "//src/material/button",
-    "//src/material/icon",
-    "//src/material/checkbox",
-    "//src/material/dialog",
-    "//src/material/core",
-    "//src/material/list",
-    "//src/material/grid-list",
-    "//src/material/icon",
-    "//src/material/form-field",
-    "//src/material/input",
-    "//src/material/menu",
-    "//src/material/progress-bar",
-    "//src/material/progress-spinner",
-    "//src/material/radio",
-    "//src/material/sidenav",
-    "//src/material/slide-toggle",
-    "//src/material/tabs",
-    "//src/material-examples:examples",
-    "//src/cdk-experimental/dialog",
-    "//src/cdk-experimental/scrolling",
-    "//src/material-experimental/mdc-button",
-    "//src/material-experimental/mdc-card",
-    "//src/material-experimental/mdc-checkbox",
-    "//src/material-experimental/mdc-chips",
-    "//src/material-experimental/mdc-menu",
-    "//src/material-experimental/mdc-radio",
-    "//src/material-experimental/mdc-slide-toggle",
-  ],
+    name = "e2e-app",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["test-util/**"],
+    ),
+    assets = glob(
+        [
+            "**/*.html",
+            "**/*.css",
+        ],
+        exclude = ["index.html"],
+    ),
+    deps = [
+        "//src/cdk-experimental/dialog",
+        "//src/cdk-experimental/scrolling",
+        "//src/cdk/drag-drop",
+        "//src/cdk/overlay",
+        "//src/cdk/scrolling",
+        "//src/material-examples:examples",
+        "//src/material-experimental/mdc-button",
+        "//src/material-experimental/mdc-card",
+        "//src/material-experimental/mdc-checkbox",
+        "//src/material-experimental/mdc-chips",
+        "//src/material-experimental/mdc-menu",
+        "//src/material-experimental/mdc-radio",
+        "//src/material-experimental/mdc-slide-toggle",
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/core",
+        "//src/material/dialog",
+        "//src/material/form-field",
+        "//src/material/grid-list",
+        "//src/material/icon",
+        "//src/material/input",
+        "//src/material/list",
+        "//src/material/menu",
+        "//src/material/progress-bar",
+        "//src/material/progress-spinner",
+        "//src/material/radio",
+        "//src/material/sidenav",
+        "//src/material/slide-toggle",
+        "//src/material/tabs",
+        "@npm//@angular/animations",
+        "@npm//@angular/core",
+        "@npm//@angular/elements",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/router",
+    ],
 )
 
 sass_binary(
-  name = "theme",
-  src = "theme.scss",
-  include_paths = [
-    "external/npm/node_modules",
-  ],
-  deps = [
-    "//src/material/core:all_themes",
-    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-    "//src/material-experimental/mdc-button:mdc_button_scss_lib",
-    "//src/material-experimental/mdc-card:mdc_card_scss_lib",
-    "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
-    "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
-    "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
-    "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
-    "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
-  ]
+    name = "theme",
+    src = "theme.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-button:mdc_button_scss_lib",
+        "//src/material-experimental/mdc-card:mdc_card_scss_lib",
+        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
+        "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
+        "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
+        "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
+        "//src/material/core:all_themes",
+    ],
 )
 
 ts_devserver(
     name = "devserver",
-    port = 4200,
-    # Name of the AMD module that should be required on page load.
-    entry_module = "angular_material/src/e2e-app/main",
-    # Serving path of the bundle that serves all files specified in "deps" and "scripts".
-    serving_path = "/bundle.js",
     # Root paths can be used simplify the loading of files from external Bazel repositories
     # (such as the Bazel managed deps repository called "npm")
     additional_root_paths = [
-      "npm/node_modules",
+        "npm/node_modules",
     ],
-    # Files which should be provided by Bazel when running the devserver. These are not
-    # automatically served, but can be loaded manually through HTTP requests.
-    static_files = [
-      "@npm//zone.js",
-      "@npm//core-js",
-      "@npm//hammerjs",
-      "@npm//material-components-web",
-      "@npm//moment",
-      "@npm//@webcomponents/custom-elements",
-      "//src/material/prebuilt-themes:indigo-pink",
-      ":index.html",
-      ":theme",
-    ],
+    # Name of the AMD module that should be required on page load.
+    entry_module = "angular_material/src/e2e-app/main",
+    port = 4200,
     # Scripts which will be included in the serving_path bundle after "require.js" has been
     # loaded.
     # TODO(jelbourn): remove UMDs from here once we don't have to manually include them
     scripts = [
-      ":devserver-configure.js",
-      "//tools/rxjs:rxjs_umd_modules",
-      "@npm//node_modules/tslib:tslib.js",
+        ":devserver-configure.js",
+        "//tools/rxjs:rxjs_umd_modules",
+        "@npm//node_modules/tslib:tslib.js",
     ] + ANGULAR_LIBRARY_UMDS,
+    # Serving path of the bundle that serves all files specified in "deps" and "scripts".
+    serving_path = "/bundle.js",
+    # Files which should be provided by Bazel when running the devserver. These are not
+    # automatically served, but can be loaded manually through HTTP requests.
+    static_files = [
+        "@npm//zone.js",
+        "@npm//core-js",
+        "@npm//hammerjs",
+        "@npm//material-components-web",
+        "@npm//moment",
+        "@npm//@webcomponents/custom-elements",
+        "//src/material/prebuilt-themes:indigo-pink",
+        ":index.html",
+        ":theme",
+    ],
     # Dependencies that produce JavaScript output will be automatically included in the
     # serving_path bundle
     deps = [":e2e-app"],

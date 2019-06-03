@@ -1,55 +1,61 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite", "ng_e2e_test_library")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
-  name = "scrolling",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk-experimental/scrolling",
-  deps = [
-    "@npm//@angular/core",
-    "@npm//rxjs",
-    "//src/cdk/coercion",
-    "//src/cdk/collections",
-    "//src/cdk/scrolling",
-  ],
+    name = "scrolling",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk-experimental/scrolling",
+    deps = [
+        "//src/cdk/coercion",
+        "//src/cdk/collections",
+        "//src/cdk/scrolling",
+        "@npm//@angular/core",
+        "@npm//rxjs",
+    ],
 )
 
 ng_test_library(
-  name = "unit_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/cdk/scrolling",
-    ":scrolling",
-  ],
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":scrolling",
+        "//src/cdk/scrolling",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [":unit_test_sources"]
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 ng_e2e_test_library(
-  name = "e2e_test_sources",
-  srcs = glob(["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/cdk/testing/e2e",
-  ]
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/e2e",
+    ],
 )
 
 protractor_web_test_suite(
-  name = "e2e_tests",
-  tags = ["e2e"],
-  configuration = "//src/e2e-app:protractor.conf.js",
-  on_prepare = "//src/e2e-app:start-devserver.js",
-  server = "//src/e2e-app:devserver",
-  deps = [
-    ":e2e_test_sources",
-    "//src/cdk/testing/e2e",
-  ],
-  data = [
-    "@npm//@angular/bazel",
-    "//tools/axe-protractor",
-  ],
+    name = "e2e_tests",
+    configuration = "//src/e2e-app:protractor.conf.js",
+    data = [
+        "//tools/axe-protractor",
+        "@npm//@angular/bazel",
+    ],
+    on_prepare = "//src/e2e-app:start-devserver.js",
+    server = "//src/e2e-app:devserver",
+    tags = ["e2e"],
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/e2e",
+    ],
 )

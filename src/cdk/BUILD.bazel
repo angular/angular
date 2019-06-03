@@ -1,32 +1,35 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_TARGETS", "CDK_PACKAGES", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "CDK_PACKAGES", "CDK_TARGETS", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 # Root "@angular/cdk" entry-point that does not re-export individual entry-points.
 ng_module(
-  name = "cdk",
-  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk",
-  deps = [
-    "@npm//@angular/core",
-  ],
+    name = "cdk",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk",
+    deps = [
+        "@npm//@angular/core",
+    ],
 )
 
 filegroup(
-  name = "overviews",
-  srcs = ["//src/cdk/%s:overview" % name for name in CDK_PACKAGES]
+    name = "overviews",
+    srcs = ["//src/cdk/%s:overview" % name for name in CDK_PACKAGES],
 )
 
 # Creates the @angular/cdk package published to npm.
 ng_package(
-  name = "npm_package",
-  srcs = ["package.json"],
-  entry_point = "src/cdk/public_api.js",
-  globals = ROLLUP_GLOBALS,
-  deps = CDK_TARGETS,
-  # TODO(devversion): Use the npm package for publishing. Right now this is disabled because
-  # we build using AOT for serving & testing, but the `ng_package` rule should not include factory
-  # files.
-  tags = ["manual"],
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "src/cdk/public_api.js",
+    globals = ROLLUP_GLOBALS,
+    # TODO(devversion): Use the npm package for publishing. Right now this is disabled because
+    # we build using AOT for serving & testing, but the `ng_package` rule should not include factory
+    # files.
+    tags = ["manual"],
+    deps = CDK_TARGETS,
 )

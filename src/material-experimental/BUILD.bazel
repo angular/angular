@@ -1,26 +1,28 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//:packages.bzl", "ROLLUP_GLOBALS")
 
 exports_files(["mdc_require_config.js"])
 
 ng_module(
-  name = "material-experimental",
-  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material-experimental",
-  deps = [
-    "@npm//@angular/forms",
-  ],
+    name = "material-experimental",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/material-experimental",
+    deps = [
+        "@npm//@angular/forms",
+    ],
 )
 
 ng_package(
-  name = "npm_package",
-  srcs = ["package.json"],
-  entry_point = "src/material-experimental/public_api.js",
-  globals = ROLLUP_GLOBALS,
-  deps = [":material-experimental"],
-  # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
-  tags = ["manual"],
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "src/material-experimental/public_api.js",
+    globals = ROLLUP_GLOBALS,
+    # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
+    tags = ["manual"],
+    deps = [":material-experimental"],
 )

@@ -1,54 +1,57 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_module", "ng_e2e_test_library")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module")
 
 ng_module(
-  name = "mdc-radio",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material-experimental/mdc-radio",
-  assets = [":radio_scss"] + glob(["**/*.html"]),
-  deps = [
-    "@npm//material-components-web",
-    "//src/material/core",
-  ],
+    name = "mdc-radio",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":radio_scss"] + glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/mdc-radio",
+    deps = [
+        "//src/material/core",
+        "@npm//material-components-web",
+    ],
 )
 
 sass_library(
-  name = "mdc_radio_scss_lib",
-  srcs = glob(["**/_*.scss"]),
-  deps = [
-    "//src/material/core:core_scss_lib",
-    "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-  ],
+    name = "mdc_radio_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
-  name = "radio_scss",
-  src = "radio.scss",
+    name = "radio_scss",
+    src = "radio.scss",
 )
 
 ng_e2e_test_library(
-  name = "e2e_test_sources",
-  srcs = glob(["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/cdk/testing/e2e",
-  ]
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/e2e",
+    ],
 )
 
 protractor_web_test_suite(
-  name = "e2e_tests",
-  tags = ["e2e"],
-  configuration = "//src/e2e-app:protractor.conf.js",
-  on_prepare = "//src/e2e-app:start-devserver.js",
-  server = "//src/e2e-app:devserver",
-  deps = [
-    ":e2e_test_sources",
-    "//src/cdk/testing/e2e",
-  ],
-  data = [
-    "@npm//@angular/bazel",
-    "//tools/axe-protractor",
-  ],
+    name = "e2e_tests",
+    configuration = "//src/e2e-app:protractor.conf.js",
+    data = [
+        "//tools/axe-protractor",
+        "@npm//@angular/bazel",
+    ],
+    on_prepare = "//src/e2e-app:start-devserver.js",
+    server = "//src/e2e-app:devserver",
+    tags = ["e2e"],
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/e2e",
+    ],
 )

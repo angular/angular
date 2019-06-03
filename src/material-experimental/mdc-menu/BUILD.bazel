@@ -1,91 +1,97 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite", "ng_e2e_test_library")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
-  name = "mdc-menu",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material-experimental/mdc-menu",
-  assets = [":menu_scss"] + glob(["**/*.html"]),
-  deps = [
-    "@npm//@angular/animations",
-    "@npm//@angular/common",
-    "@npm//@angular/core",
-    "@npm//material-components-web",
-    "//src/cdk/overlay",
-    "//src/material/menu",
-    "//src/material/core",
-  ],
+    name = "mdc-menu",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [":menu_scss"] + glob(["**/*.html"]),
+    module_name = "@angular/material-experimental/mdc-menu",
+    deps = [
+        "//src/cdk/overlay",
+        "//src/material/core",
+        "//src/material/menu",
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//material-components-web",
+    ],
 )
 
 sass_library(
-  name = "mdc_menu_scss_lib",
-  srcs = glob(["**/_*.scss"]),
-  deps = [
-    "//src/material/core:core_scss_lib",
-    "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
-    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-  ],
+    name = "mdc_menu_scss_lib",
+    srcs = glob(["**/_*.scss"]),
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
-  name = "menu_scss",
-  src = "menu.scss",
-  include_paths = [
-    "external/npm/node_modules",
-  ],
-  deps = [
-    "//src/material/core:all_themes",
-    "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
-  ]
+    name = "menu_scss",
+    src = "menu.scss",
+    include_paths = [
+        "external/npm/node_modules",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:all_themes",
+    ],
 )
 
 ng_test_library(
-  name = "menu_tests_lib",
-  srcs = glob(["**/*.spec.ts"], exclude = ["**/*.e2e.spec.ts"]),
-  deps = [
-    ":mdc-menu",
-    "@npm//@angular/platform-browser",
-    "@npm//rxjs",
-    "//src/cdk/a11y",
-    "//src/cdk/bidi",
-    "//src/cdk/overlay",
-    "//src/cdk/keycodes",
-    "//src/cdk/scrolling",
-    "//src/cdk/testing",
-    "//src/material/core",
-  ]
+    name = "menu_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":mdc-menu",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/scrolling",
+        "//src/cdk/testing",
+        "//src/material/core",
+        "@npm//@angular/platform-browser",
+        "@npm//rxjs",
+    ],
 )
 
 ng_web_test_suite(
-  name = "unit_tests",
-  deps = [
-    ":menu_tests_lib",
-  ],
+    name = "unit_tests",
+    deps = [
+        ":menu_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(
-  name = "e2e_test_sources",
-  srcs = glob(["**/*.e2e.spec.ts"]),
-  deps = [
-    "//src/cdk/testing/e2e",
-  ]
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/e2e",
+    ],
 )
 
 protractor_web_test_suite(
-  name = "e2e_tests",
-  tags = ["e2e"],
-  configuration = "//src/e2e-app:protractor.conf.js",
-  on_prepare = "//src/e2e-app:start-devserver.js",
-  server = "//src/e2e-app:devserver",
-  deps = [
-    ":e2e_test_sources",
-    "//src/cdk/testing/e2e",
-  ],
-  data = [
-    "@npm//@angular/bazel",
-    "//tools/axe-protractor",
-  ],
+    name = "e2e_tests",
+    configuration = "//src/e2e-app:protractor.conf.js",
+    data = [
+        "//tools/axe-protractor",
+        "@npm//@angular/bazel",
+    ],
+    on_prepare = "//src/e2e-app:start-devserver.js",
+    server = "//src/e2e-app:devserver",
+    tags = ["e2e"],
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/e2e",
+    ],
 )
