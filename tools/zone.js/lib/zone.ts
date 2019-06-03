@@ -1127,8 +1127,7 @@ const Zone: ZoneType = (function(global: any) {
           returnTask._zoneDelegates !.push(this._hasTaskDlgtOwner !);
         }
         returnTask = this._scheduleTaskZS.onScheduleTask !(
-            this._scheduleTaskDlgt !, this._scheduleTaskCurrZone !, targetZone, task)
-                         as ZoneTask<any>;
+            this._scheduleTaskDlgt !, this._scheduleTaskCurrZone !, targetZone, task) as ZoneTask<any>;
         if (!returnTask) returnTask = task as ZoneTask<any>;
       } else {
         if (task.scheduleFn) {
