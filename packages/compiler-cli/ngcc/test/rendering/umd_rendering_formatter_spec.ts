@@ -377,7 +377,7 @@ SOME DEFINITION TEXT
       const output = new MagicString(PROGRAM.contents);
       const compiledClass =
           decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-      const decorator = compiledClass.decorators[0];
+      const decorator = compiledClass.decorators ![0];
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -396,7 +396,7 @@ SOME DEFINITION TEXT
          const output = new MagicString(PROGRAM.contents);
          const compiledClass =
              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
-         const decorator = compiledClass.decorators[0];
+         const decorator = compiledClass.decorators ![0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -417,7 +417,7 @@ SOME DEFINITION TEXT
          const output = new MagicString(PROGRAM.contents);
          const compiledClass =
              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
-         const decorator = compiledClass.decorators[0];
+         const decorator = compiledClass.decorators ![0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -439,7 +439,7 @@ SOME DEFINITION TEXT
       const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
       const compiledClass =
           decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-      const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
+      const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -456,7 +456,7 @@ SOME DEFINITION TEXT
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
          const compiledClass =
              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
-         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
+         const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -474,7 +474,7 @@ SOME DEFINITION TEXT
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
          const compiledClass =
              decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
-         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
+         const decorator = compiledClass.decorators !.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
