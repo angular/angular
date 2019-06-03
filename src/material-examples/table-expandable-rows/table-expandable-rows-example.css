@@ -7,7 +7,7 @@ tr.example-detail-row {
 }
 
 tr.example-element-row:not(.example-expanded-row):hover {
-  background: #f5f5f5;
+  background: #777;
 }
 
 tr.example-element-row:not(.example-expanded-row):active {
