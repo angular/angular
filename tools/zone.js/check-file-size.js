@@ -14,7 +14,8 @@ module.exports = function(config) {
       try {
         const stats = fs.statSync(target.path);
         if (stats.size > target.limit) {
-          console.error(`file ${target.path} size over limit, limit is ${target.limit}, actual is ${stats.size}`);
+          console.error(
+              `file ${target.path} size over limit, limit is ${target.limit}, actual is ${stats.size}`);
           chkResult = false;
         }
       } catch (err) {

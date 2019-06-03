@@ -11,9 +11,7 @@ import {ifEnvSupports, ifEnvSupportsWithDone, supportPatchXHROnProperty, zoneSym
 describe('XMLHttpRequest', function() {
   let testZone: Zone;
 
-  beforeEach(() => {
-    testZone = Zone.current.fork({name: 'test'});
-  });
+  beforeEach(() => { testZone = Zone.current.fork({name: 'test'}); });
 
   it('should intercept XHRs and treat them as MacroTasks', function(done) {
     let req: XMLHttpRequest;
@@ -30,9 +28,7 @@ describe('XMLHttpRequest', function() {
     testZoneWithWtf.run(() => {
       req = new XMLHttpRequest();
       const logs: string[] = [];
-      req.onload = () => {
-        logs.push('onload');
-      };
+      req.onload = () => { logs.push('onload'); };
       onStable = function() {
         expect(wtfMock.log[wtfMock.log.length - 2])
             .toEqual('> Zone:invokeTask:XMLHttpRequest.send("<root>::ProxyZone::WTF::TestZone")');
@@ -98,7 +94,7 @@ describe('XMLHttpRequest', function() {
       req.open('get', '/', true);
     });
 
-    req!.send();
+    req !.send();
   });
 
   it('should return null when access ontimeout first time without error', function() {
@@ -106,9 +102,7 @@ describe('XMLHttpRequest', function() {
     expect(req.ontimeout).toBe(null);
   });
 
-  const supportsOnProgress = function() {
-    return 'onprogress' in (new XMLHttpRequest());
-  };
+  const supportsOnProgress = function() { return 'onprogress' in (new XMLHttpRequest()); };
 
   (<any>supportsOnProgress).message = 'XMLHttpRequest.onprogress';
 
@@ -126,7 +120,7 @@ describe('XMLHttpRequest', function() {
                  req.open('get', '/', true);
                });
 
-               req!.send();
+               req !.send();
              });
 
              it('should allow canceling of an XMLHttpRequest', function(done) {
@@ -136,14 +130,13 @@ describe('XMLHttpRequest', function() {
 
                const trackingTestZone = Zone.current.fork({
                  name: 'tracking test zone',
-                 onHasTask:
-                     (delegate: ZoneDelegate, current: Zone, target: Zone,
-                      hasTaskState: HasTaskState) => {
-                       if (hasTaskState.change == 'macroTask') {
-                         pending = hasTaskState.macroTask;
-                       }
-                       delegate.hasTask(target, hasTaskState);
-                     }
+                 onHasTask: (delegate: ZoneDelegate, current: Zone, target: Zone,
+                             hasTaskState: HasTaskState) => {
+                   if (hasTaskState.change == 'macroTask') {
+                     pending = hasTaskState.macroTask;
+                   }
+                   delegate.hasTask(target, hasTaskState);
+                 }
                });
 
                trackingTestZone.run(function() {
@@ -239,12 +232,8 @@ describe('XMLHttpRequest', function() {
          req.onload = function() {
            req.onload = null as any;
            req.open('get', '/', true);
-           req.onload = function() {
-             done();
-           };
-           expect(() => {
-             req.send();
-           }).not.toThrow();
+           req.onload = function() { done(); };
+           expect(() => { req.send(); }).not.toThrow();
          };
        });
      });
@@ -257,9 +246,7 @@ describe('XMLHttpRequest', function() {
          req.send();
          req.addEventListener('readystatechange', function(ev) {
            if (req.readyState >= 2) {
-             expect(() => {
-               req.abort();
-             }).not.toThrow();
+             expect(() => { req.abort(); }).not.toThrow();
              done();
            }
          });
@@ -385,9 +372,7 @@ describe('XMLHttpRequest', function() {
            }
          };
          expect(req.onreadystatechange).toBe(listener);
-         req.onreadystatechange = function() {
-           return listener.call(this);
-         };
+         req.onreadystatechange = function() { return listener.call(this); };
          req.send();
        });
      }));

@@ -7,8 +7,6 @@
  */
 
 export function supportFeature(Observable: any, method: string) {
-  const func = function() {
-    return !!Observable.prototype[method];
-  };
+  const func = function() { return !!Observable.prototype[method]; };
   (func as any).message = `Observable.${method} not support`;
 }

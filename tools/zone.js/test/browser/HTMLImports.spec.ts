@@ -30,7 +30,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                });
              });
 
-             document.head.appendChild(link!);
+             document.head.appendChild(link !);
            });
 
            function supportsOnEvents() {
@@ -56,7 +56,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link!);
+               document.head.appendChild(link !);
              });
 
              it('should work with onload', function(done) {
@@ -73,7 +73,7 @@ describe('HTML Imports', ifEnvSupports(supportsImports, function() {
                  };
                });
 
-               document.head.appendChild(link!);
+               document.head.appendChild(link !);
              });
            });
          }));

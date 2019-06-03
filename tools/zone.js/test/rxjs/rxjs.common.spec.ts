@@ -157,9 +157,7 @@ describe('Zone interaction', () => {
       };
     }));
 
-    observable.subscribe(() => {
-      log.push('next');
-    });
+    observable.subscribe(() => { log.push('next'); });
 
     expect(log).toEqual(['next', 'cleanup']);
   });
@@ -172,9 +170,7 @@ describe('Zone interaction', () => {
 
     let subject: any;
 
-    constructorZone.run(() => {
-      subject = new Subject();
-    });
+    constructorZone.run(() => { subject = new Subject(); });
 
     let subscription1: any;
     let subscription2: any;

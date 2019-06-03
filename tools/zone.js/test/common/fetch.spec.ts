@@ -12,9 +12,7 @@ declare const global: any;
 describe(
     'fetch', ifEnvSupports('fetch', function() {
       let testZone: Zone;
-      beforeEach(() => {
-        testZone = Zone.current.fork({name: 'TestZone'});
-      });
+      beforeEach(() => { testZone = Zone.current.fork({name: 'TestZone'}); });
       it('should work for text response', function(done) {
         testZone.run(function() {
           global['fetch']('/base/test/assets/sample.json').then(function(response: any) {
@@ -90,9 +88,7 @@ describe(
            testZone.run(function() {
              global['fetch']('http://user:password@example.com')
                  .then(
-                     function(response: any) {
-                       fail('should not success');
-                     },
+                     function(response: any) { fail('should not success'); },
                      (error: any) => {
                        expect(Zone.current.name).toEqual(testZone.name);
                        expect(error.constructor.name).toEqual('TypeError');
@@ -118,14 +114,13 @@ describe(
               }
               return delegate.scheduleTask(target, task);
             },
-            onInvokeTask:
-                (delegate: ZoneDelegate, curr: Zone, target: Zone, task: Task, applyThis: any,
-                 applyArgs: any) => {
-                  if (task.type !== 'eventTask') {
-                    logs.push(`invokeTask:${task.source}:${task.type}`);
-                  }
-                  return delegate.invokeTask(target, task, applyThis, applyArgs);
-                },
+            onInvokeTask: (delegate: ZoneDelegate, curr: Zone, target: Zone, task: Task,
+                           applyThis: any, applyArgs: any) => {
+              if (task.type !== 'eventTask') {
+                logs.push(`invokeTask:${task.source}:${task.type}`);
+              }
+              return delegate.invokeTask(target, task, applyThis, applyArgs);
+            },
             onCancelTask: (delegate: ZoneDelegate, curr: Zone, target: Zone, task: Task) => {
               if (task.type !== 'eventTask') {
                 logs.push(`cancelTask:${task.source}:${task.type}`);
@@ -160,9 +155,7 @@ describe(
                const abort = new AbortController();
                const signal = abort.signal;
                global['fetch']('/base/test/assets/sample.json', {signal})
-                   .then(function(response: any) {
-                     fail('should not get response');
-                   })
+                   .then(function(response: any) { fail('should not get response'); })
                    .catch(function(error: any) {
                      expect(error.name).toEqual('AbortError');
                      expect(logs).toEqual([
@@ -189,9 +182,7 @@ describe(
                const abort = new AbortController();
                const signal = abort.signal;
                global['fetch']('/base/test/assets/sample.json', {signal})
-                   .then(function(response: any) {
-                     fail('should not get response');
-                   })
+                   .then(function(response: any) { fail('should not get response'); })
                    .catch(function(error: any) {
                      expect(error.name).toEqual('AbortError');
                      expect(logs).toEqual([

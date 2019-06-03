@@ -21,65 +21,50 @@ function p(templateStringArray: TemplateStringsArray) {
 }
 
 describe('Zone.js npm_package', () => {
-  beforeEach(() => {
-    shx.cd('./npm_package');
-  });
-  afterEach(() => {
-    shx.cd('../');
-  });
+  beforeEach(() => { shx.cd('./npm_package'); });
+  afterEach(() => { shx.cd('../'); });
   describe('misc root files', () => {
     describe('README.md', () => {
-      it('should have a README.md file with basic info', () => {
-        expect(shx.cat('README.md')).toContain(`Zone`);
-      });
+      it('should have a README.md file with basic info',
+         () => { expect(shx.cat('README.md')).toContain(`Zone`); });
     });
   });
 
   describe('primary entry-point', () => {
     const packageJson = 'package.json';
 
-    it('should have a package.json file', () => {
-      expect(shx.grep('"name":', packageJson)).toContain(`zone.js`);
-    });
+    it('should have a package.json file',
+       () => { expect(shx.grep('"name":', packageJson)).toContain(`zone.js`); });
 
     it('should contain correct version number with the PLACEHOLDER string replaced', () => {
       expect(shx.grep('"version":', packageJson)).toMatch(/\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
     });
 
-    it('should contain module resolution mappings', () => {
-      expect(shx.grep('"main":', packageJson)).toContain(`dist/zone-node.js`);
-    });
+    it('should contain module resolution mappings',
+       () => { expect(shx.grep('"main":', packageJson)).toContain(`dist/zone-node.js`); });
   });
 
   describe('check dist folder', () => {
-    beforeEach(() => {
-      shx.cd('./dist');
-    });
-    afterEach(() => {
-      shx.cd('../');
-    });
+    beforeEach(() => { shx.cd('./dist'); });
+    afterEach(() => { shx.cd('../'); });
     describe('typescript support', () => {
-      it('should have an zone.js.d.ts file', () => {
-        expect(shx.cat('zone.js.d.ts')).toContain('declare const');
-      });
+      it('should have an zone.js.d.ts file',
+         () => { expect(shx.cat('zone.js.d.ts')).toContain('declare const'); });
     });
 
     describe('closure', () => {
-      it('should contain externs', () => {
-        expect(shx.cat('zone_externs.js')).toContain('Externs for zone.js');
-      });
+      it('should contain externs',
+         () => { expect(shx.cat('zone_externs.js')).toContain('Externs for zone.js'); });
     });
 
     describe('es5', () => {
-      it('zone.js(es5) should not contain es6 spread code', () => {
-        expect(shx.cat('zone.js')).not.toContain('let value of values');
-      });
+      it('zone.js(es5) should not contain es6 spread code',
+         () => { expect(shx.cat('zone.js')).not.toContain('let value of values'); });
     });
 
     describe('es2015', () => {
-      it('zone-evergreen.js(es2015) should contain es6 code', () => {
-        expect(shx.cat('zone-evergreen.js')).toContain('let value of values');
-      });
+      it('zone-evergreen.js(es2015) should contain es6 code',
+         () => { expect(shx.cat('zone-evergreen.js')).toContain('let value of values'); });
     });
 
     describe('dist file list', () => {

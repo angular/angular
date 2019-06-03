@@ -29,29 +29,17 @@
         nativeMethod: '__zone_symbol__requestAnimationFrame',
         clearMethod: 'cancelAnimationFrame',
         nativeClearMethod: '__zone_symbol__cancelAnimationFrame',
-        run: function() {
-          return raf(function() {});
-        },
-        runClear: function(timerId) {
-          return cancel(timerId);
-        },
-        nativeRun: function() {
-          return nativeRaf(function() {});
-        },
-        nativeRunClear: function(timerId) {
-          return nativeCancel(timerId);
-        }
+        run: function() { return raf(function() {}); },
+        runClear: function(timerId) { return cancel(timerId); },
+        nativeRun: function() { return nativeRaf(function() {}); },
+        nativeRunClear: function(timerId) { return nativeCancel(timerId); }
       },
       {
         isCallback: true,
         supportClear: false,
         method: 'requestAnimationFrame_callback',
         nativeMethod: 'native_requestAnimationFrame_callback',
-        run: function() {
-          zone.run(function() {
-            raf(function() {});
-          });
-        },
+        run: function() { zone.run(function() { raf(function() {}); }); },
         nativeRun: function() {
           var func = function() {};
           nativeRaf(function() {

@@ -10,7 +10,8 @@
  * @suppress {missingRequire}
  */
 
-import {ADD_EVENT_LISTENER_STR, attachOriginToPatched, FALSE_STR, isNode, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, zoneSymbol} from './utils';
+import {ADD_EVENT_LISTENER_STR, FALSE_STR, ObjectGetPrototypeOf, REMOVE_EVENT_LISTENER_STR, TRUE_STR, ZONE_SYMBOL_PREFIX, attachOriginToPatched, isNode, zoneSymbol} from './utils';
+
 
 /** @internal **/
 interface EventTaskData extends TaskData {
@@ -22,11 +23,8 @@ let passiveSupported = false;
 
 if (typeof window !== 'undefined') {
   try {
-    const options = Object.defineProperty({}, 'passive', {
-      get: function() {
-        passiveSupported = true;
-      }
-    });
+    const options =
+        Object.defineProperty({}, 'passive', {get: function() { passiveSupported = true; }});
 
     window.addEventListener('test', options, options);
     window.removeEventListener('test', options, options);

@@ -5,23 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Observable, of} from 'rxjs';
+import {Observable, of } from 'rxjs';
 import {catchError, map, retry} from 'rxjs/operators';
 
 describe('Observable.catch', () => {
   let log: any[];
   let observable1: Observable<any>;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('catch func callback should run in the correct zone', () => {
     const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
     const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
     observable1 = constructorZone1.run(() => {
       const error = new Error('test');
-      const source = of(1, 2, 3).pipe(map((n: number) => {
+      const source = of (1, 2, 3).pipe(map((n: number) => {
         expect(Zone.current.name).toEqual(constructorZone1.name);
         if (n === 2) {
           throw error;
@@ -30,7 +28,7 @@ describe('Observable.catch', () => {
       }));
       return source.pipe(catchError((err: any) => {
         expect(Zone.current.name).toEqual(constructorZone1.name);
-        return of('error1', 'error2');
+        return of ('error1', 'error2');
       }));
     });
 
@@ -40,9 +38,7 @@ describe('Observable.catch', () => {
             expect(Zone.current.name).toEqual(subscriptionZone.name);
             log.push(result);
           },
-          () => {
-            fail('should not call error');
-          },
+          () => { fail('should not call error'); },
           () => {
             log.push('completed');
             expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -56,7 +52,7 @@ describe('Observable.catch', () => {
     const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
     const error = new Error('test');
     observable1 = constructorZone1.run(() => {
-      return of(1, 2, 3).pipe(
+      return of (1, 2, 3).pipe(
           map((n: number) => {
             expect(Zone.current.name).toEqual(constructorZone1.name);
             if (n === 2) {

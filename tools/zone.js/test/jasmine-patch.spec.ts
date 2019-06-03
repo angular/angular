@@ -47,22 +47,20 @@ ifEnvSupports(supportJasmineSpec, () => {
     afterEach(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeEachZone!.name).toEqual(zone.name);
+      expect(beforeEachZone !.name).toEqual(zone.name);
       expect(itZone).toBe(zone);
     });
 
     afterAll(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeAllZone!.name).toEqual(zone.name);
+      expect(beforeAllZone !.name).toEqual(zone.name);
     });
   });
 
   describe('return promise', () => {
     let log: string[];
-    beforeEach(() => {
-      log = [];
-    });
+    beforeEach(() => { log = []; });
 
     it('should wait for promise to resolve', () => {
       return new Promise((res, _) => {
@@ -73,8 +71,6 @@ ifEnvSupports(supportJasmineSpec, () => {
       });
     });
 
-    afterEach(() => {
-      expect(log).toEqual(['resolved']);
-    });
+    afterEach(() => { expect(log).toEqual(['resolved']); });
   });
 })();

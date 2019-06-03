@@ -32,18 +32,14 @@
           xhr.send();
           return xhr;
         },
-        runClear: function(xhr) {
-          xhr.abort();
-        },
+        runClear: function(xhr) { xhr.abort(); },
         nativeRun: function() {
           var xhr = new XMLHttpRequest();
           xhr['__zone_symbol__open']('get', 'http://localhost:8080', true);
           xhr['__zone_symbol__send']();
           return xhr;
         },
-        nativeRunClear: function(xhr) {
-          xhr['__zone_symbol__abort']();
-        }
+        nativeRunClear: function(xhr) { xhr['__zone_symbol__abort'](); }
       },
     ],
   };

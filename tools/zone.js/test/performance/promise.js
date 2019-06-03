@@ -27,12 +27,8 @@
         isAsync: true,
         method: 'Promise',
         nativeMethod: 'native_Promise',
-        run: function() {
-          return resolved.then(function() {});
-        },
-        nativeRun: function() {
-          return nativeResolved['__zone_symbol__then'](function() {});
-        },
+        run: function() { return resolved.then(function() {}); },
+        nativeRun: function() { return nativeResolved['__zone_symbol__then'](function() {}); },
       },
       {
         isCallback: true,
@@ -42,9 +38,7 @@
         nativeMethod: 'native_Promise_callback',
         run: function() {
           return zone.run(function() {
-            return Promise.resolve(1).then(function(v) {
-              return v;
-            });
+            return Promise.resolve(1).then(function(v) { return v; });
           });
         },
         nativeRun: function() {

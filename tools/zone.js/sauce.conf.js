@@ -107,11 +107,7 @@ module.exports = function(config, ignoredLaunchers) {
     customLaunchers = basicLaunchers;
   } else {
     Object.keys(basicLaunchers).forEach(function(key) {
-      if (ignoredLaunchers
-              .filter(function(ignore) {
-                return ignore === key;
-              })
-              .length === 0) {
+      if (ignoredLaunchers.filter(function(ignore) { return ignore === key; }).length === 0) {
         customLaunchers[key] = basicLaunchers[key];
       }
     });

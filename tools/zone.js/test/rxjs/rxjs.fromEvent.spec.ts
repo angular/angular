@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fromEvent, fromEventPattern, Observable} from 'rxjs';
+import {Observable, fromEvent, fromEventPattern} from 'rxjs';
 
 import {isBrowser} from '../../lib/common/utils';
 import {ifEnvSupports} from '../test-util';
@@ -24,15 +24,11 @@ describe('Observable.fromEvent', () => {
   const triggerZone: Zone = Zone.current.fork({name: 'Trigger Zone'});
   let observable1: Observable<any>;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('fromEvent EventTarget func callback should run in the correct zone',
      ifEnvSupports(isEventTarget, () => {
-       observable1 = constructorZone1.run(() => {
-         return fromEvent(document, 'click');
-       });
+       observable1 = constructorZone1.run(() => { return fromEvent(document, 'click'); });
 
        const clickEvent = document.createEvent('Event');
        clickEvent.initEvent('click', true, true);
@@ -43,18 +39,14 @@ describe('Observable.fromEvent', () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                log.push(result);
              },
-             () => {
-               fail('should not call error');
-             },
+             () => { fail('should not call error'); },
              () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                log.push('completed');
              });
        });
 
-       triggerZone.run(() => {
-         document.dispatchEvent(clickEvent);
-       });
+       triggerZone.run(() => { document.dispatchEvent(clickEvent); });
 
        expect(log).toEqual([clickEvent]);
      }));
@@ -87,9 +79,7 @@ describe('Observable.fromEvent', () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                log.push(result);
              },
-             () => {
-               fail('should not call error');
-             },
+             () => { fail('should not call error'); },
              () => {
                expect(Zone.current.name).toEqual(subscriptionZone.name);
                log.push('completed');

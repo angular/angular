@@ -14,5 +14,5 @@ module.exports.resolved = (val) => {
 };
 
 module.exports.rejected = (reason) => {
-    return Promise.reject(reason);
+  return Promise.reject(reason);
 };

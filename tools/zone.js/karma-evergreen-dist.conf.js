@@ -10,7 +10,7 @@ module.exports = function(config) {
   require('./karma-base.conf.js')(config);
   const files = config.files;
   config.files = [];
-  for (let i = 0; i < files.length; i ++) {
+  for (let i = 0; i < files.length; i++) {
     if (files[i] !== 'node_modules/core-js-bundle/index.js') {
       config.files.push(files[i]);
     }

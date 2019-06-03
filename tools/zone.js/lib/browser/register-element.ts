@@ -7,7 +7,7 @@
  */
 
 export function registerElementPatch(_global: any, api: _ZonePrivate) {
-  const {isBrowser, isMix} = api.getGlobalObjects()!;
+  const {isBrowser, isMix} = api.getGlobalObjects() !;
   if ((!isBrowser && !isMix) || !('registerElement' in (<any>_global).document)) {
     return;
   }

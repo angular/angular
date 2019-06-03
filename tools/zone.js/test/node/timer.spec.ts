@@ -16,9 +16,7 @@ describe('node timer', () => {
               expect(value).toEqual('value');
               done();
             },
-            error => {
-              fail(`should not be here with error: ${error}.`);
-            });
+            error => { fail(`should not be here with error: ${error}.`); });
   });
 
   it('util.promisify should work with setImmediate', (done: DoneFn) => {
@@ -28,8 +26,6 @@ describe('node timer', () => {
           expect(value).toEqual('value');
           done();
         },
-        error => {
-          fail(`should not be here with error: ${error}.`);
-        });
+        error => { fail(`should not be here with error: ${error}.`); });
   });
 });

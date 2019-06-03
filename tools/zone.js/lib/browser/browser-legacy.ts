@@ -15,17 +15,17 @@ import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy';
 import {registerElementPatch} from './register-element';
 
 (function(_global: any) {
-_global[Zone.__symbol__('legacyPatch')] = function() {
-  const Zone = _global['Zone'];
-  Zone.__load_patch('registerElement', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-    registerElementPatch(global, api);
-  });
+  _global[Zone.__symbol__('legacyPatch')] = function() {
+    const Zone = _global['Zone'];
+    Zone.__load_patch('registerElement', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+      registerElementPatch(global, api);
+    });
 
-  Zone.__load_patch('EventTargetLegacy', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-    eventTargetLegacyPatch(global, api);
-    propertyDescriptorLegacyPatch(api, global);
-  });
-};
+    Zone.__load_patch('EventTargetLegacy', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+      eventTargetLegacyPatch(global, api);
+      propertyDescriptorLegacyPatch(api, global);
+    });
+  };
 })(typeof window !== 'undefined' ?
        window :
        typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});

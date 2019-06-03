@@ -37,9 +37,7 @@
           button.addEventListener('click', listener);
           return listener;
         },
-        runClear: function(timerId) {
-          return button.removeEventListener('click', timerId);
-        },
+        runClear: function(timerId) { return button.removeEventListener('click', timerId); },
         nativeRun: function() {
           var listener = function() {};
           button['__zone_symbol__addEventListener']('click', listener);
@@ -56,9 +54,7 @@
         nativeMethod: 'native_addEventListener_callback',
         run: function() {
           var listener = function() {};
-          zone.run(function() {
-            button.addEventListener('click', listener);
-          });
+          zone.run(function() { button.addEventListener('click', listener); });
           var event = document.createEvent('Event');
           event.initEvent('click', true, true);
           button.dispatchEvent(event);

@@ -12,9 +12,7 @@
     if (!attrs) {
       return;
     }
-    Object.keys(attrs).forEach(function(key) {
-      elem.setAttribute(key, attrs[key]);
-    });
+    Object.keys(attrs).forEach(function(key) { elem.setAttribute(key, attrs[key]); });
   }
 
   function createLi(attrs) {
@@ -36,9 +34,7 @@
     return button;
   }
 
-  function createTextNode(text) {
-    return document.createTextNode(text);
-  }
+  function createTextNode(text) { return document.createTextNode(text); }
 
   function createCheckbox(attrs, checked) {
     var checkbox = document.createElement('input');
@@ -66,9 +62,7 @@
         if (checkbox.checked) {
           var test = options.tests[i];
           promiseFactories.push({
-            factory: function(context) {
-              return doTest(context.test, context.idx);
-            },
+            factory: function(context) { return doTest(context.test, context.idx); },
             context: {test: test, idx: i}
           });
         }

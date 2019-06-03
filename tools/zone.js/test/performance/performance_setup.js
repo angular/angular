@@ -37,15 +37,9 @@
 
   var averageMeasures = _global['__zone_symbol__averageMeasures'] = function(name, times) {
     var sum = _global['__zone_symbol__getEntriesByName'](name)
-                  .filter(function(m) {
-                    return m.entryType === 'measure';
-                  })
-                  .map(function(m) {
-                    return m.duration
-                  })
-                  .reduce(function(sum, d) {
-                    return sum + d;
-                  });
+                  .filter(function(m) { return m.entryType === 'measure'; })
+                  .map(function(m) { return m.duration })
+                  .reduce(function(sum, d) { return sum + d; });
     return sum / times;
   };
 
@@ -106,11 +100,7 @@
       return new Promise(function(res, rej) {
         // run test with a setTimeout
         // several times to decrease measurement error
-        setTimeout(function() {
-          testFn().then(function() {
-            res();
-          });
-        }, delay);
+        setTimeout(function() { testFn().then(function() { res(); }); }, delay);
       });
     };
     var promiseFactories = [];
@@ -255,12 +245,8 @@
           clearMeasures(m);
         });
       },
-      before: function() {
-        testTarget.before && testTarget.before();
-      },
-      after: function() {
-        testTarget.after && testTarget.after();
-      },
+      before: function() { testTarget.before && testTarget.before(); },
+      after: function() { testTarget.after && testTarget.after(); },
       testFn: function() {
         var count = typeof testTarget.count === 'number' ? testTarget.count : 10000;
         var times = typeof testTarget.times === 'number' ? testTarget.times : 5;

@@ -13,9 +13,7 @@
   const __extends = function(d: any, b: any) {
     for (const p in b)
       if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
+    function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new (__ as any)());
   };
   // Patch jasmine's describe/it/beforeEach/afterEach functions so test code always runs
@@ -122,9 +120,9 @@
           if (fakeAsyncZoneSpec) {
             const dateTime = arguments.length > 0 ? arguments[0] : new Date();
             return fakeAsyncZoneSpec.setCurrentRealTime.apply(
-                fakeAsyncZoneSpec,
-                dateTime && typeof dateTime.getTime === 'function' ? [dateTime.getTime()] :
-                                                                     arguments);
+                fakeAsyncZoneSpec, dateTime && typeof dateTime.getTime === 'function' ?
+                    [dateTime.getTime()] :
+                    arguments);
           }
           return originalMockDate.apply(this, arguments);
         };
@@ -151,9 +149,7 @@
    * synchronous-only zone.
    */
   function wrapDescribeInZone(describeBody: Function): Function {
-    return function() {
-      return syncZone.run(describeBody, this, (arguments as any) as any[]);
-    };
+    return function() { return syncZone.run(describeBody, this, (arguments as any) as any[]); };
   }
 
   function runInTestZone(testBody: Function, applyThis: any, queueRunner: any, done?: Function) {
@@ -186,9 +182,7 @@
     // think that all functions are sync or async.
     return (testBody && (testBody.length ? function(done: Function) {
               return runInTestZone(testBody, this, this.queueRunner, done);
-            } : function() {
-              return runInTestZone(testBody, this, this.queueRunner);
-            }));
+            } : function() { return runInTestZone(testBody, this, this.queueRunner); }));
   }
   interface QueueRunner {
     execute(): void;

@@ -9,9 +9,7 @@
 class SyncTestZoneSpec implements ZoneSpec {
   runZone = Zone.current;
 
-  constructor(namePrefix: string) {
-    this.name = 'syncTestZone for ' + namePrefix;
-  }
+  constructor(namePrefix: string) { this.name = 'syncTestZone for ' + namePrefix; }
 
   // ZoneSpec implementation below.
 

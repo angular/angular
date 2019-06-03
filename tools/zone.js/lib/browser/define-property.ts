@@ -31,9 +31,7 @@ export function propertyPatch() {
   };
 
   Object.defineProperties = function(obj, props) {
-    Object.keys(props).forEach(function(prop) {
-      Object.defineProperty(obj, prop, props[prop]);
-    });
+    Object.keys(props).forEach(function(prop) { Object.defineProperty(obj, prop, props[prop]); });
     return obj;
   };
 

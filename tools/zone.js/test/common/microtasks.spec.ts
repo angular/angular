@@ -9,9 +9,7 @@
 describe('Microtasks', function() {
   if (!global.Promise) return;
 
-  function scheduleFn(task: Task) {
-    Promise.resolve().then(<any>task.invoke);
-  }
+  function scheduleFn(task: Task) { Promise.resolve().then(<any>task.invoke); }
 
   it('should execute microtasks enqueued in the root zone', function(done) {
     const log: number[] = [];
@@ -37,9 +35,7 @@ describe('Microtasks', function() {
       log.push('-mat1');
     }, 10);
 
-    setTimeout(function() {
-      log.push('mat2');
-    }, 30);
+    setTimeout(function() { log.push('mat2'); }, 30);
 
     setTimeout(function() {
       expect(log).toEqual(['+root', '-root', 'root.mit', '+mat1', '-mat1', 'mat1.mit', 'mat2']);
@@ -66,9 +62,7 @@ describe('Microtasks', function() {
          'in different zone.',
      function(done) {
        let resolve: Function;
-       const promise = new Promise(function(rs) {
-         resolve = rs;
-       });
+       const promise = new Promise(function(rs) { resolve = rs; });
 
        const testZone = Zone.current.fork({name: 'test'});
 
@@ -79,9 +73,7 @@ describe('Microtasks', function() {
          });
        });
 
-       Zone.current.fork({name: 'test'}).run(function() {
-         resolve(null);
-       });
+       Zone.current.fork({name: 'test'}).run(function() { resolve(null); });
      });
 
   describe('Promise', function() {

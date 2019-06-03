@@ -37,13 +37,9 @@ export function ifEnvSupportsWithDone(test: any, block: Function): (done: Functi
 
 function _ifEnvSupports(test: any, block: Function, withDone = false) {
   if (withDone) {
-    return function(done?: Function) {
-      _runTest(test, block, done);
-    };
+    return function(done?: Function) { _runTest(test, block, done); };
   } else {
-    return function() {
-      _runTest(test, block, undefined);
-    };
+    return function() { _runTest(test, block, undefined); };
   }
 }
 
@@ -93,9 +89,8 @@ export function isSupportSetErrorStack() {
 export function asyncTest(testFn: Function, zone: Zone = Zone.current) {
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   return (done: Function) => {
-    let asyncTestZone: Zone = zone.fork(new AsyncTestZoneSpec(() => {}, (error: Error) => {
-      fail(error);
-    }, 'asyncTest'));
+    let asyncTestZone: Zone =
+        zone.fork(new AsyncTestZoneSpec(() => {}, (error: Error) => { fail(error); }, 'asyncTest'));
     asyncTestZone.run(testFn, this, [done]);
   };
 }

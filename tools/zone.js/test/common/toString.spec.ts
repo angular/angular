@@ -32,9 +32,8 @@ describe('global function patch', () => {
   });
 
   describe('isNative', () => {
-    it('ZoneAwareError toString should look like native', () => {
-      expect(Function.prototype.toString.call(Error)).toContain('[native code]');
-    });
+    it('ZoneAwareError toString should look like native',
+       () => { expect(Function.prototype.toString.call(Error)).toContain('[native code]'); });
 
     it('Function toString should look like native', () => {
       expect(Function.prototype.toString.call(Function.prototype.toString))

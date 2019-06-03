@@ -9,12 +9,12 @@
 const ws = require('nodejs-websocket');
 
 // simple echo server
-const server = ws.createServer(function (conn) {
-  conn.on('text', function (str) {
-    if (str === 'close') {
-      server.close();
-      return;
-    }
-    conn.sendText(str.toString());
-  });
-}).listen(8001);
+const server = ws.createServer(function(conn) {
+                   conn.on('text', function(str) {
+                     if (str === 'close') {
+                       server.close();
+                       return;
+                     }
+                     conn.sendText(str.toString());
+                   });
+                 }).listen(8001);

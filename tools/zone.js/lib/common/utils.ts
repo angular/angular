@@ -250,7 +250,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
       // so we should use original native get to retrieve the handler
       let value = originalDescGet && originalDescGet.call(this);
       if (value) {
-        desc!.set!.call(this, value);
+        desc !.set !.call(this, value);
         if (typeof target[REMOVE_ATTRIBUTE] === 'function') {
           target.removeAttribute(prop);
         }
@@ -265,7 +265,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   obj[onPropPatchedSymbol] = true;
 }
 
-export function patchOnProperties(obj: any, properties: string[]|null, prototype?: any) {
+export function patchOnProperties(obj: any, properties: string[] | null, prototype?: any) {
   if (properties) {
     for (let i = 0; i < properties.length; i++) {
       patchProperty(obj, 'on' + properties[i], prototype);
@@ -342,9 +342,7 @@ export function patchClass(className: string) {
               this[originalInstanceKey][prop] = fn;
             }
           },
-          get: function() {
-            return this[originalInstanceKey][prop];
-          }
+          get: function() { return this[originalInstanceKey][prop]; }
         });
       }
     }(prop));
@@ -358,16 +356,14 @@ export function patchClass(className: string) {
 }
 
 export function copySymbolProperties(src: any, dest: any) {
-  if (typeof (Object as any).getOwnPropertySymbols !== 'function') {
+  if (typeof(Object as any).getOwnPropertySymbols !== 'function') {
     return;
   }
   const symbols: any = (Object as any).getOwnPropertySymbols(src);
   symbols.forEach((symbol: any) => {
     const desc = Object.getOwnPropertyDescriptor(src, symbol);
     Object.defineProperty(dest, symbol, {
-      get: function() {
-        return src[symbol];
-      },
+      get: function() { return src[symbol]; },
       set: function(value: any) {
         if (desc && (!desc.writable || typeof desc.set !== 'function')) {
           // if src[symbol] is not writable or not have a setter, just return
@@ -388,9 +384,8 @@ export function setShouldCopySymbolProperties(flag: boolean) {
 }
 
 export function patchMethod(
-    target: any, name: string,
-    patchFn: (delegate: Function, delegateName: string, name: string) => (self: any, args: any[]) =>
-        any): Function|null {
+    target: any, name: string, patchFn: (delegate: Function, delegateName: string, name: string) =>
+                                   (self: any, args: any[]) => any): Function|null {
   let proto = target;
   while (proto && !proto.hasOwnProperty(name)) {
     proto = ObjectGetPrototypeOf(proto);
@@ -408,10 +403,8 @@ export function patchMethod(
     // some property is readonly in safari, such as HtmlCanvasElement.prototype.toBlob
     const desc = proto && ObjectGetOwnPropertyDescriptor(proto, name);
     if (isPropertyWritable(desc)) {
-      const patchDelegate = patchFn(delegate!, delegateName, name);
-      proto[name] = function() {
-        return patchDelegate(this, arguments as any);
-      };
+      const patchDelegate = patchFn(delegate !, delegateName, name);
+      proto[name] = function() { return patchDelegate(this, arguments as any); };
       attachOriginToPatched(proto[name], delegate);
       if (shouldCopySymbolProperties) {
         copySymbolProperties(delegate, proto[name]);
@@ -435,10 +428,8 @@ export function patchMacroTask(
 
   function scheduleTask(task: Task) {
     const data = <MacroTaskMeta>task.data;
-    data.args[data.cbIdx] = function() {
-      task.invoke.apply(this, arguments);
-    };
-    setNative!.apply(data.target, data.args);
+    data.args[data.cbIdx] = function() { task.invoke.apply(this, arguments); };
+    setNative !.apply(data.target, data.args);
     return task;
   }
 
@@ -466,10 +457,8 @@ export function patchMicroTask(
 
   function scheduleTask(task: Task) {
     const data = <MacroTaskMeta>task.data;
-    data.args[data.cbIdx] = function() {
-      task.invoke.apply(this, arguments);
-    };
-    setNative!.apply(data.target, data.args);
+    data.args[data.cbIdx] = function() { task.invoke.apply(this, arguments); };
+    setNative !.apply(data.target, data.args);
     return task;
   }
 

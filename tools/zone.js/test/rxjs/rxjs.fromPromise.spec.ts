@@ -13,23 +13,16 @@ describe('Observable.fromPromise', () => {
   let log: any[];
   let observable1: any;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('fromPromise func callback should run in the correct zone', asyncTest((done: any) => {
        const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
        const promiseZone1: Zone = Zone.current.fork({name: 'Promise Zone1'});
        const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
        let res: any;
-       let promise: any = promiseZone1.run(() => {
-         return new Promise((resolve, reject) => {
-           res = resolve;
-         });
-       });
-       observable1 = constructorZone1.run(() => {
-         return from(promise);
-       });
+       let promise: any =
+           promiseZone1.run(() => { return new Promise((resolve, reject) => { res = resolve; }); });
+       observable1 = constructorZone1.run(() => { return from(promise); });
 
        subscriptionZone.run(() => {
          observable1.subscribe(
@@ -39,10 +32,7 @@ describe('Observable.fromPromise', () => {
                expect(log).toEqual([1]);
                done();
              },
-             () => {
-               fail('should not call error');
-             },
-             () => {});
+             () => { fail('should not call error'); }, () => {});
        });
        res(1);
 

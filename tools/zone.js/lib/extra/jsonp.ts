@@ -70,10 +70,8 @@ Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
     api.patchMethod(
         options.jsonp, options.sendFuncName, (delegate: Function) => (self: any, args: any[]) => {
-          global[api.symbol('jsonpTask')] =
-              Zone.current.scheduleMacroTask('jsonp', noop, {}, (task: Task) => {
-                return delegate.apply(self, args);
-              }, noop);
+          global[api.symbol('jsonpTask')] = Zone.current.scheduleMacroTask(
+              'jsonp', noop, {}, (task: Task) => { return delegate.apply(self, args); }, noop);
         });
   };
 });

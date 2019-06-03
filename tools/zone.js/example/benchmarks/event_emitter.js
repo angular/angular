@@ -14,7 +14,7 @@ const callbacks = [];
 const size = 100000;
 for (let i = 0; i < size; i++) {
   const emitter = new EventEmitter();
-  const callback = (function (i) { return function () { console.log(i); }; })(i);
+  const callback = (function(i) { return function() { console.log(i); }; })(i);
   emitters[i] = emitter;
   callbacks[i] = callback;
 }
@@ -41,7 +41,7 @@ function addRemoveCallback(reuse, useZone) {
   }
   const end = new Date();
   console.log(useZone ? 'use zone' : 'native', reuse ? 'reuse' : 'new');
-  console.log("Execution time: %dms", end - start);
+  console.log('Execution time: %dms', end - start);
 }
 
 addRemoveCallback(false, false);

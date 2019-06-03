@@ -9,6 +9,6 @@
 const ws = require('nodejs-websocket');
 
 const conn = ws.connect('ws://localhost:8001', {}, function() {
-    conn.send('close');
-    conn.close();
+  conn.send('close');
+  conn.close();
 });

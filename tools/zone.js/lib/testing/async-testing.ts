@@ -22,9 +22,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
           // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
           // fake it here and assume sync.
           done = function() {};
-          done.fail = function(e: any) {
-            throw e;
-          };
+          done.fail = function(e: any) { throw e; };
         }
         runInTestZone(fn, this, done, (err: any) => {
           if (typeof err === 'string') {
@@ -70,7 +68,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     // If we do it in ProxyZone then we will get to infinite recursion.
     const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
     const previousDelegate = proxyZoneSpec.getDelegate();
-    proxyZone!.parent!.run(() => {
+    proxyZone !.parent !.run(() => {
       const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
           () => {
             // Need to restore the original zone.
@@ -81,9 +79,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
               proxyZoneSpec.setDelegate(previousDelegate);
             }
             (testZoneSpec as any).unPatchPromiseForTest();
-            currentZone.run(() => {
-              finishCallback();
-            });
+            currentZone.run(() => { finishCallback(); });
           },
           (error: any) => {
             // Need to restore the original zone.
@@ -92,9 +88,7 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
               proxyZoneSpec.setDelegate(previousDelegate);
             }
             (testZoneSpec as any).unPatchPromiseForTest();
-            currentZone.run(() => {
-              failCallback(error);
-            });
+            currentZone.run(() => { failCallback(error); });
           },
           'test');
       proxyZoneSpec.setDelegate(testZoneSpec);

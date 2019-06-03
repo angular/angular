@@ -53,7 +53,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   global['Error'] = ZoneAwareError;
   const stackRewrite = 'stackRewrite';
 
-  type BlackListedStackFramesPolicy = 'default'|'disable'|'lazy';
+  type BlackListedStackFramesPolicy = 'default' | 'disable' | 'lazy';
   const blackListedStackFramesPolicy: BlackListedStackFramesPolicy =
       global['__Zone_Error_BlacklistedStackFrames_policy'] || 'default';
 
@@ -75,7 +75,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   }
 
   function buildZoneAwareStackFrames(
-      originalStack: string, zoneFrame: _ZoneFrame|ZoneFrameName|null, isZoneFrame = true) {
+      originalStack: string, zoneFrame: _ZoneFrame | ZoneFrameName | null, isZoneFrame = true) {
     let frames: string[] = originalStack.split('\n');
     let i = 0;
     // Find the first frame
@@ -190,12 +190,8 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     nativeErrorProperties.forEach(prop => {
       if (specialPropertyNames.filter(sp => sp === prop).length === 0) {
         Object.defineProperty(ZoneAwareError, prop, {
-          get: function() {
-            return NativeError[prop];
-          },
-          set: function(value) {
-            NativeError[prop] = value;
-          }
+          get: function() { return NativeError[prop]; },
+          set: function(value) { NativeError[prop] = value; }
         });
       }
     });
@@ -207,12 +203,8 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
     // make sure that ZoneAwareError has the same property which forwards to NativeError.
     Object.defineProperty(ZoneAwareError, 'stackTraceLimit', {
-      get: function() {
-        return NativeError.stackTraceLimit;
-      },
-      set: function(value) {
-        return NativeError.stackTraceLimit = value;
-      }
+      get: function() { return NativeError.stackTraceLimit; },
+      set: function(value) { return NativeError.stackTraceLimit = value; }
     });
   }
 
@@ -228,9 +220,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   const ZONE_CAPTURESTACKTRACE = 'zoneCaptureStackTrace';
   Object.defineProperty(ZoneAwareError, 'prepareStackTrace', {
-    get: function() {
-      return NativeError.prepareStackTrace;
-    },
+    get: function() { return NativeError.prepareStackTrace; },
     set: function(value) {
       if (!value || typeof value !== 'function') {
         return NativeError.prepareStackTrace = value;
@@ -356,21 +346,13 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
                 blacklistedStackFramesSymbol,
                 () => {
                   childDetectZone.scheduleMicroTask(
-                      blacklistedStackFramesSymbol,
-                      () => {
-                        throw new Error();
-                      },
-                      undefined,
+                      blacklistedStackFramesSymbol, () => { throw new Error(); }, undefined,
                       (t: Task) => {
                         (t as any)._transitionTo = fakeTransitionTo;
                         t.invoke();
                       });
                   childDetectZone.scheduleMicroTask(
-                      blacklistedStackFramesSymbol,
-                      () => {
-                        throw Error();
-                      },
-                      undefined,
+                      blacklistedStackFramesSymbol, () => { throw Error(); }, undefined,
                       (t: Task) => {
                         (t as any)._transitionTo = fakeTransitionTo;
                         t.invoke();

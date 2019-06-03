@@ -29,29 +29,17 @@
         nativeMethod: '__zone_symbol__setTimeout',
         clearMethod: 'clearTimeout',
         nativeClearMethod: '__zone_symbol__clearTimeout',
-        run: function() {
-          return setTimeout(function() {});
-        },
-        runClear: function(timerId) {
-          return clearTimeout(timerId);
-        },
-        nativeRun: function() {
-          return nativeSetTimeout(function() {});
-        },
-        nativeRunClear: function(timerId) {
-          return nativeClearTimeout(timerId);
-        }
+        run: function() { return setTimeout(function() {}); },
+        runClear: function(timerId) { return clearTimeout(timerId); },
+        nativeRun: function() { return nativeSetTimeout(function() {}); },
+        nativeRunClear: function(timerId) { return nativeClearTimeout(timerId); }
       },
       {
         isCallback: true,
         supportClear: false,
         method: 'setTimeout_callback',
         nativeMethod: 'native_setTimeout_callback',
-        run: function() {
-          zone.run(function() {
-            setTimeout(function() {});
-          });
-        },
+        run: function() { zone.run(function() { setTimeout(function() {}); }); },
         nativeRun: function() {
           var func = function() {};
           nativeSetTimeout(function() {

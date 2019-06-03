@@ -13,7 +13,7 @@
 import * as webSocketPatch from './websocket';
 
 export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
-  const {isNode, isMix} = api.getGlobalObjects()!;
+  const {isNode, isMix} = api.getGlobalObjects() !;
   if (isNode && !isMix) {
     return;
   }
@@ -31,7 +31,7 @@ export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
 }
 
 function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
-  const {isBrowser, isMix} = api.getGlobalObjects()!;
+  const {isBrowser, isMix} = api.getGlobalObjects() !;
   if ((isBrowser || isMix) &&
       !api.ObjectGetOwnPropertyDescriptor(HTMLElement.prototype, 'onclick') &&
       typeof Element !== 'undefined') {
@@ -42,13 +42,9 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
     // try to use onclick to detect whether we can patch via propertyDescriptor
     // because XMLHttpRequest is not available in service worker
     if (desc) {
-      api.ObjectDefineProperty(Element.prototype, 'onclick', {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return true;
-        }
-      });
+      api.ObjectDefineProperty(
+          Element.prototype, 'onclick',
+          {enumerable: true, configurable: true, get: function() { return true; }});
       const div = document.createElement('div');
       const result = !!div.onclick;
       api.ObjectDefineProperty(Element.prototype, 'onclick', desc);
@@ -74,13 +70,9 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
   // and if XMLHttpRequest.prototype.onreadystatechange is undefined,
   // we should set a real desc instead a fake one
   if (xhrDesc) {
-    api.ObjectDefineProperty(XMLHttpRequestPrototype, ON_READY_STATE_CHANGE, {
-      enumerable: true,
-      configurable: true,
-      get: function() {
-        return true;
-      }
-    });
+    api.ObjectDefineProperty(
+        XMLHttpRequestPrototype, ON_READY_STATE_CHANGE,
+        {enumerable: true, configurable: true, get: function() { return true; }});
     const req = new XMLHttpRequest();
     const result = !!req.onreadystatechange;
     // restore original desc
@@ -91,12 +83,8 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
     api.ObjectDefineProperty(XMLHttpRequestPrototype, ON_READY_STATE_CHANGE, {
       enumerable: true,
       configurable: true,
-      get: function() {
-        return this[SYMBOL_FAKE_ONREADYSTATECHANGE];
-      },
-      set: function(value) {
-        this[SYMBOL_FAKE_ONREADYSTATECHANGE] = value;
-      }
+      get: function() { return this[SYMBOL_FAKE_ONREADYSTATECHANGE]; },
+      set: function(value) { this[SYMBOL_FAKE_ONREADYSTATECHANGE] = value; }
     });
     const req = new XMLHttpRequest();
     const detectFunc = () => {};
@@ -111,7 +99,7 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
 // for `onwhatever` properties and replace them with zone-bound functions
 // - Chrome (for now)
 function patchViaCapturingAllTheEvents(api: _ZonePrivate) {
-  const {eventNames} = api.getGlobalObjects()!;
+  const {eventNames} = api.getGlobalObjects() !;
   const unboundKey = api.symbol('unbound');
   for (let i = 0; i < eventNames.length; i++) {
     const property = eventNames[i];

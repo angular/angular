@@ -55,12 +55,10 @@
         // Note we have to make a function with correct number of arguments,
         // otherwise mocha will
         // think that all functions are sync or async.
-        args[i] = (arg.length === 0) ? syncTest(arg) : asyncTest!(arg);
+        args[i] = (arg.length === 0) ? syncTest(arg) : asyncTest !(arg);
         // Mocha uses toString to view the test body in the result list, make sure we return the
         // correct function body
-        args[i].toString = function() {
-          return arg.toString();
-        };
+        args[i].toString = function() { return arg.toString(); };
       }
     }
 
@@ -69,9 +67,7 @@
 
   function wrapDescribeInZone(args: IArguments): any[] {
     const syncTest: any = function(fn: Function) {
-      return function() {
-        return syncZone.run(fn, this, arguments as any as any[]);
-      };
+      return function() { return syncZone.run(fn, this, arguments as any as any[]); };
     };
 
     return modifyArguments(args, syncTest);
@@ -79,15 +75,11 @@
 
   function wrapTestInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(done: Function) {
-        return testZone!.run(fn, this, [done]);
-      };
+      return function(done: Function) { return testZone !.run(fn, this, [done]); };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function() {
-        return testZone!.run(fn, this);
-      };
+      return function() { return testZone !.run(fn, this); };
     };
 
     return modifyArguments(args, syncTest, asyncTest);
@@ -95,15 +87,11 @@
 
   function wrapSuiteInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(done: Function) {
-        return suiteZone.run(fn, this, [done]);
-      };
+      return function(done: Function) { return suiteZone.run(fn, this, [done]); };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function() {
-        return suiteZone.run(fn, this);
-      };
+      return function() { return suiteZone.run(fn, this); };
     };
 
     return modifyArguments(args, syncTest, asyncTest);
@@ -121,9 +109,8 @@
     return mochaOriginal.describe.only.apply(this, wrapDescribeInZone(arguments));
   };
 
-  context.it = context.specify = context.test = Mocha.it = function() {
-    return mochaOriginal.it.apply(this, wrapTestInZone(arguments));
-  };
+  context.it = context.specify = context.test =
+      Mocha.it = function() { return mochaOriginal.it.apply(this, wrapTestInZone(arguments)); };
 
   context.xit = context.xspecify = Mocha.it.skip = function() {
     return mochaOriginal.it.skip.apply(this, wrapTestInZone(arguments));
@@ -151,15 +138,11 @@
 
   ((originalRunTest, originalRun) => {
     Mocha.Runner.prototype.runTest = function(fn: Function) {
-      Zone.current.scheduleMicroTask('mocha.forceTask', () => {
-        originalRunTest.call(this, fn);
-      });
+      Zone.current.scheduleMicroTask('mocha.forceTask', () => { originalRunTest.call(this, fn); });
     };
 
     Mocha.Runner.prototype.run = function(fn: Function) {
-      this.on('test', (e: any) => {
-        testZone = rootZone.fork(new ProxyZoneSpec());
-      });
+      this.on('test', (e: any) => { testZone = rootZone.fork(new ProxyZoneSpec()); });
 
       this.on('fail', (test: any, err: any) => {
         const proxyZoneSpec = testZone && testZone.get('ProxyZoneSpec');

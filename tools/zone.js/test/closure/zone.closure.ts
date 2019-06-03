@@ -12,17 +12,12 @@ const testClosureFunction = () => {
   const testZoneSpec: ZoneSpec = {
     name: 'closure',
     properties: {},
-    onFork:
-        (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-         zoneSpec: ZoneSpec) => {
-          return parentZoneDelegate.fork(targetZone, zoneSpec);
-        },
+    onFork: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+             zoneSpec: ZoneSpec) => { return parentZoneDelegate.fork(targetZone, zoneSpec); },
 
     onIntercept:
         (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-         source: string) => {
-          return parentZoneDelegate.intercept(targetZone, delegate, source);
-        },
+         source: string) => { return parentZoneDelegate.intercept(targetZone, delegate, source); },
 
     onInvoke: function(
         parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
@@ -61,25 +56,19 @@ const testClosureFunction = () => {
   testZone.runGuarded(() => {
     testZone.run(() => {
       const properties = testZoneSpec.properties;
-      properties!['key'] = 'value';
+      properties !['key'] = 'value';
       const keyZone = Zone.current.getZoneWith('key');
 
       logs.push('current' + Zone.current.name);
-      logs.push('parent' + Zone.current.parent!.name);
-      logs.push('getZoneWith' + keyZone!.name);
-      logs.push('get' + keyZone!.get('key'));
+      logs.push('parent' + Zone.current.parent !.name);
+      logs.push('getZoneWith' + keyZone !.name);
+      logs.push('get' + keyZone !.get('key'));
       logs.push('root' + Zone.root.name);
-      Object.keys((Zone as any).prototype).forEach(key => {
-        logs.push(key);
-      });
-      Object.keys(testZoneSpec).forEach(key => {
-        logs.push(key);
-      });
+      Object.keys((Zone as any).prototype).forEach(key => { logs.push(key); });
+      Object.keys(testZoneSpec).forEach(key => { logs.push(key); });
 
       const task = Zone.current.scheduleMicroTask('testTask', () => {}, undefined, () => {});
-      Object.keys(task).forEach(key => {
-        logs.push(key);
-      });
+      Object.keys(task).forEach(key => { logs.push(key); });
     });
   });
 
@@ -136,8 +125,6 @@ const testClosureFunction = () => {
   }
   process['exit'](result ? 0 : 1);
 };
-process['on']('uncaughtException', (err: any) => {
-  process['exit'](1);
-});
+process['on']('uncaughtException', (err: any) => { process['exit'](1); });
 
 testClosureFunction();

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defer, Observable} from 'rxjs';
+import {Observable, defer} from 'rxjs';
 
 describe('Observable.defer', () => {
   let log: any[];
@@ -14,9 +14,7 @@ describe('Observable.defer', () => {
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('defer func callback should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => {

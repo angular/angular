@@ -14,9 +14,7 @@ describe('Observable.count', () => {
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;
 
-  beforeEach(() => {
-    log = [];
-  });
+  beforeEach(() => { log = []; });
 
   it('count func callback should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => {
@@ -32,9 +30,7 @@ describe('Observable.count', () => {
             log.push(result);
             expect(Zone.current.name).toEqual(subscriptionZone.name);
           },
-          () => {
-            fail('should not call error');
-          },
+          () => { fail('should not call error'); },
           () => {
             log.push('completed');
             expect(Zone.current.name).toEqual(subscriptionZone.name);
