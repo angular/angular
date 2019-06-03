@@ -1158,7 +1158,7 @@ describe('compiler compliance', () => {
             type: SimpleComponent,
             selectors: [["simple"]],
             factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
-            ngContentSelectors: _c0,
+            ngContentSelectors: $c0$,
             consts: 2,
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
@@ -1188,10 +1188,10 @@ describe('compiler compliance', () => {
               if (rf & 1) {
                 $r3$.ɵɵprojectionDef($c1$);
                 $r3$.ɵɵelementStart(0, "div", $c3$);
-                $r3$.ɵɵprojection(1, 1);
+                $r3$.ɵɵprojection(1);
                 $r3$.ɵɵelementEnd();
                 $r3$.ɵɵelementStart(2, "div", $c4$);
-                $r3$.ɵɵprojection(3, 2);
+                $r3$.ɵɵprojection(3, 1);
                 $r3$.ɵɵelementEnd();
               }
             },
@@ -1206,6 +1206,54 @@ describe('compiler compliance', () => {
             result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
         expectEmit(
             result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+      });
+
+      it('should support multi-slot content projection with multiple wildcard slots', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <ng-content></ng-content>
+                  <ng-content select="[spacer]"></ng-content>
+                  <ng-content></ng-content>
+                \`,
+              })
+              class Cmp {}
+
+              @NgModule({ declarations: [Cmp] })
+              class Module {}
+            `,
+          }
+        };
+
+        const output = `
+          const $c0$ = ["*", [["", "spacer", ""]], "*"];
+          const $c1$ = ["*", "[spacer]", "*"];
+          …
+          Cmp.ngComponentDef = $r3$.ɵɵdefineComponent({
+            type: Cmp,
+            selectors: [["ng-component"]],
+            factory: function Cmp_Factory(t) { return new (t || Cmp)(); },
+            ngContentSelectors: $c1$,
+            consts: 3,
+            vars: 0,
+            template: function Cmp_Template(rf, ctx) {
+              if (rf & 1) {
+                i0.ɵɵprojectionDef($c0$);
+                i0.ɵɵprojection(0);
+                i0.ɵɵprojection(1, 1);
+                i0.ɵɵprojection(2, 2);
+              }
+            },
+            encapsulation: 2
+          });
+        `;
+
+        const {source} = compile(files, angularFiles);
+        expectEmit(source, output, 'Invalid content projection instructions generated');
       });
 
       it('should support content projection in nested templates', () => {
@@ -1240,7 +1288,7 @@ describe('compiler compliance', () => {
           const $_c2$ = ["id", "second"];
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", $_c2$);
-            $r3$.ɵɵprojection(1, 1);
+            $r3$.ɵɵprojection(1);
             $r3$.ɵɵelementEnd();
           } }
           const $_c3$ = ["id", "third"];
@@ -1254,10 +1302,10 @@ describe('compiler compliance', () => {
           function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵtext(0, " '*' selector: ");
-              $r3$.ɵɵprojection(1);
+              $r3$.ɵɵprojection(1, 1);
             }
           }
-          const $_c4$ = [[["span", "title", "tofirst"]]];
+          const $_c4$ = [[["span", "title", "tofirst"]], "*"];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
@@ -1311,31 +1359,31 @@ describe('compiler compliance', () => {
         const output = `
           function Cmp_ng_template_1_ng_template_1_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵprojection(0, 4);
+                $r3$.ɵɵprojection(0, 3);
             }
           }
           function Cmp_ng_template_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵprojection(0, 3);
+              $r3$.ɵɵprojection(0, 2);
               $r3$.ɵɵtemplate(1, Cmp_ng_template_1_ng_template_1_Template, 1, 0, "ng-template");
             }
           }
           function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵtext(0, " '*' selector in a template: ");
-              $r3$.ɵɵprojection(1);
+              $r3$.ɵɵprojection(1, 4);
             }
           }
-          const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]]];
-          const $_c1$ = ["[id=toMainBefore]", "[id=toMainAfter]", "[id=toTemplate]", "[id=toNestedTemplate]"];
+          const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]], "*"];
+          const $_c1$ = ["[id=toMainBefore]", "[id=toMainAfter]", "[id=toTemplate]", "[id=toNestedTemplate]", "*"];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵɵprojectionDef($_c2$);
-              $r3$.ɵɵprojection(0, 1);
+              $r3$.ɵɵprojectionDef($_c0$);
+              $r3$.ɵɵprojection(0);
               $r3$.ɵɵtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
               $r3$.ɵɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
-              $r3$.ɵɵprojection(3, 2);
+              $r3$.ɵɵprojection(3, 1);
             }
           }
         `;

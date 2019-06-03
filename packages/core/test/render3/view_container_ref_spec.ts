@@ -1129,101 +1129,6 @@ describe('ViewContainerRef', () => {
 
         });
       });
-
-      class EmbeddedComponentWithNgContent {
-        static ngComponentDef = ɵɵdefineComponent({
-          type: EmbeddedComponentWithNgContent,
-          encapsulation: ViewEncapsulation.None,
-          selectors: [['embedded-cmp-with-ngcontent']],
-          factory: () => new EmbeddedComponentWithNgContent(),
-          consts: 3,
-          vars: 0,
-          template: (rf: RenderFlags, cmp: EmbeddedComponentWithNgContent) => {
-            if (rf & RenderFlags.Create) {
-              ɵɵprojectionDef();
-              ɵɵprojection(0, 0);
-              ɵɵelement(1, 'hr');
-              ɵɵprojection(2, 1);
-            }
-          }
-        });
-      }
-
-      it('should support projectable nodes', () => {
-        const fixture =
-            new TemplateFixture(createTemplate, updateTemplate, 3, 1, [DirectiveWithVCRef]);
-        expect(fixture.html).toEqual('<p vcref=""></p>');
-
-        const myNode = document.createElement('div');
-        const myText = document.createTextNode('bar');
-        const myText2 = document.createTextNode('baz');
-        myNode.appendChild(myText);
-        myNode.appendChild(myText2);
-
-        directiveInstance !.vcref.createComponent(
-            directiveInstance !.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0,
-            undefined, [[myNode]]);
-        fixture.update();
-        expect(fixture.html)
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent>');
-      });
-
-      it('should support reprojection of projectable nodes', () => {
-        class Reprojector {
-          static ngComponentDef = ɵɵdefineComponent({
-            type: Reprojector,
-            encapsulation: ViewEncapsulation.None,
-            selectors: [['reprojector']],
-            factory: () => new Reprojector(),
-            consts: 2,
-            vars: 0,
-            template: (rf: RenderFlags, cmp: Reprojector) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵprojectionDef();
-                ɵɵelementStart(0, 'embedded-cmp-with-ngcontent');
-                { ɵɵprojection(1, 0); }
-                ɵɵelementEnd();
-              }
-            },
-            directives: [EmbeddedComponentWithNgContent]
-          });
-        }
-
-        const fixture =
-            new TemplateFixture(createTemplate, updateTemplate, 3, 1, [DirectiveWithVCRef]);
-        expect(fixture.html).toEqual('<p vcref=""></p>');
-
-        const myNode = document.createElement('div');
-        const myText = document.createTextNode('bar');
-        const myText2 = document.createTextNode('baz');
-        myNode.appendChild(myText);
-        myNode.appendChild(myText2);
-
-        directiveInstance !.vcref.createComponent(
-            directiveInstance !.cfr.resolveComponentFactory(Reprojector), 0, undefined, [[myNode]]);
-        fixture.update();
-        expect(fixture.html)
-            .toEqual(
-                '<p vcref=""></p><reprojector><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent></reprojector>');
-      });
-
-      it('should support many projectable nodes with many slots', () => {
-        const fixture =
-            new TemplateFixture(createTemplate, updateTemplate, 3, 1, [DirectiveWithVCRef]);
-        expect(fixture.html).toEqual('<p vcref=""></p>');
-
-        directiveInstance !.vcref.createComponent(
-            directiveInstance !.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0,
-            undefined, [
-              [document.createTextNode('1'), document.createTextNode('2')],
-              [document.createTextNode('3'), document.createTextNode('4')]
-            ]);
-        fixture.update();
-        expect(fixture.html)
-            .toEqual(
-                '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
-      });
     });
 
     describe('getters', () => {
@@ -1475,12 +1380,12 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: ChildWithSelector) => {
             if (rf & RenderFlags.Create) {
-              ɵɵprojectionDef([[['header']]]);
+              ɵɵprojectionDef([[['header']], '*']);
               ɵɵelementStart(0, 'first');
-              { ɵɵprojection(1, 1); }
+              { ɵɵprojection(1, 0); }
               ɵɵelementEnd();
               ɵɵelementStart(2, 'second');
-              { ɵɵprojection(3); }
+              { ɵɵprojection(3, 1); }
               ɵɵelementEnd();
             }
           },

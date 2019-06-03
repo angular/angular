@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Component, ComponentFactoryResolver, Directive, ElementRef, EmbeddedViewRef, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵi18nConfigureLocalize} from '@angular/core';
+import {Input, NgModule} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -20,6 +22,15 @@ describe('ViewContainerRef', () => {
     '{$startTagBefore}{$closeTagBefore}{$startTagDiv}{$startTagIn}{$closeTagIn}{$closeTagDiv}{$startTagAfter}{$closeTagAfter}':
         '{$startTagDiv}{$closeTagDiv}{$startTagBefore}{$closeTagBefore}'
   };
+
+  /**
+   * Gets the inner HTML of the given element with all HTML comments and Angular internal
+   * reflect attributes omitted. This makes HTML comparisons easier and less verbose.
+   */
+  function getElementHtml(element: Element) {
+    return element.innerHTML.replace(/<!--(\W|\w)*?-->/g, '')
+        .replace(/\sng-reflect-\S*="[^"]*"/g, '');
+  }
 
   beforeEach(() => {
     ɵi18nConfigureLocalize({translations: TRANSLATIONS});
@@ -269,7 +280,154 @@ describe('ViewContainerRef', () => {
             });
   });
 
+  describe('createComponent', () => {
+    let templateExecutionCounter = 0;
+
+    beforeEach(() => templateExecutionCounter = 0);
+
+    it('should support projectable nodes', () => {
+      TestBed.configureTestingModule({
+        declarations: [EmbeddedViewInsertionComp, VCRefDirective],
+        imports: [EmbeddedComponentWithNgContentModule]
+      });
+      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+      const vcRefDir =
+          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+      fixture.detectChanges();
+
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
+
+      const myNode = document.createElement('div');
+      const myText = document.createTextNode('bar');
+      const myText2 = document.createTextNode('baz');
+      myNode.appendChild(myText);
+      myNode.appendChild(myText2);
+
+      vcRefDir.vcref.createComponent(
+          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0, undefined,
+          [[myNode]]);
+      fixture.detectChanges();
+
+
+      expect(getElementHtml(fixture.nativeElement))
+          .toEqual(
+              '<p vcref=""></p><embedded-cmp-with-ngcontent><div>barbaz</div><hr></embedded-cmp-with-ngcontent>');
+    });
+
+    it('should support reprojection of projectable nodes', () => {
+      @Component({
+        selector: 'reprojector',
+        template:
+            `<embedded-cmp-with-ngcontent><ng-content></ng-content></embedded-cmp-with-ngcontent>`,
+      })
+      class Reprojector {
+      }
+
+      @NgModule({
+        exports: [Reprojector, EmbeddedComponentWithNgContent],
+        declarations: [Reprojector, EmbeddedComponentWithNgContent],
+        entryComponents: [Reprojector]
+      })
+      class ReprojectorModule {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [EmbeddedViewInsertionComp, VCRefDirective],
+        imports: [ReprojectorModule]
+      });
+      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+      const vcRefDir =
+          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+      fixture.detectChanges();
+
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
+
+      const myNode = document.createElement('div');
+      const myText = document.createTextNode('bar');
+      const myText2 = document.createTextNode('baz');
+      myNode.appendChild(myText);
+      myNode.appendChild(myText2);
+
+      vcRefDir.vcref.createComponent(
+          vcRefDir.cfr.resolveComponentFactory(Reprojector), 0, undefined, [[myNode]]);
+      fixture.detectChanges();
+
+      expect(getElementHtml(fixture.nativeElement))
+          .toEqual(
+              '<p vcref=""></p><reprojector><embedded-cmp-with-ngcontent><hr><div>barbaz</div></embedded-cmp-with-ngcontent></reprojector>');
+    });
+
+    it('should support many projectable nodes with many slots', () => {
+      TestBed.configureTestingModule({
+        declarations: [EmbeddedViewInsertionComp, VCRefDirective],
+        imports: [EmbeddedComponentWithNgContentModule]
+      });
+      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+      const vcRefDir =
+          fixture.debugElement.query(By.directive(VCRefDirective)).injector.get(VCRefDirective);
+      fixture.detectChanges();
+
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>');
+
+      vcRefDir.vcref.createComponent(
+          vcRefDir.cfr.resolveComponentFactory(EmbeddedComponentWithNgContent), 0, undefined, [
+            [document.createTextNode('1'), document.createTextNode('2')],
+            [document.createTextNode('3'), document.createTextNode('4')]
+          ]);
+      fixture.detectChanges();
+
+      expect(getElementHtml(fixture.nativeElement))
+          .toEqual(
+              '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
+    });
+  });
 });
+
+@Component({
+  template: `
+    <ng-template #tplRef let-name>{{name}}</ng-template>
+    <p vcref [tplRef]="tplRef"></p>
+  `,
+})
+class EmbeddedViewInsertionComp {
+}
+
+@Directive({
+  selector: '[vcref]',
+})
+class VCRefDirective {
+  @Input() tplRef: TemplateRef<any>|undefined;
+  @Input() name: string = '';
+
+  // Injecting the ViewContainerRef to create a dynamic container in which
+  // embedded views will be created
+  constructor(
+      public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver,
+      public elementRef: ElementRef) {}
+
+  createView(s: string, index?: number): EmbeddedViewRef<any> {
+    if (!this.tplRef) {
+      throw new Error('No template reference passed to directive.');
+    }
+
+    return this.vcref.createEmbeddedView(this.tplRef, {$implicit: s}, index);
+  }
+}
+
+@Component({
+  selector: `embedded-cmp-with-ngcontent`,
+  template: `<ng-content></ng-content><hr><ng-content></ng-content>`
+})
+class EmbeddedComponentWithNgContent {
+}
+
+@NgModule({
+  exports: [EmbeddedComponentWithNgContent],
+  entryComponents: [EmbeddedComponentWithNgContent],
+  declarations: [EmbeddedComponentWithNgContent],
+})
+class EmbeddedComponentWithNgContentModule {
+}
 
 @Component({
   selector: 'view-container-ref-comp',

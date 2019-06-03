@@ -40,9 +40,6 @@ import {Instruction, StylingBuilder} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 
-// Default selector used by `<ng-content>` if none specified
-const DEFAULT_NG_CONTENT_SELECTOR = '*';
-
 // Selector attribute name of `<ng-content>`
 const NG_CONTENT_SELECT_ATTR = 'select';
 
@@ -146,14 +143,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private fileBasedI18nSuffix: string;
 
-  // Whether the template includes <ng-content> tags.
-  private _hasNgContent: boolean = false;
-
-  // Selectors found in the <ng-content> tags in the template.
-  private _ngContentSelectors: string[] = [];
+  // Projection slots found in the template. Projection slots can distribute projected
+  // nodes based on a selector, or can just use the wildcard selector to match
+  // all nodes which aren't matching any selector.
+  private _ngContentReservedSlots: (string|'*')[] = [];
 
   // Number of non-default selectors found in all parent templates of this template. We need to
-  // track it to properly adjust projection bucket index in the `projection` instruction.
+  // track it to properly adjust projection slot index in the `projection` instruction.
   private _ngContentSelectorsOffset = 0;
 
   constructor(
@@ -247,16 +243,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // instructions can be generated with the correct internal const count.
     this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
-    // Output the `projectionDef` instruction when some `<ng-content>` are present.
-    // The `projectionDef` instruction only emitted for the component template and it is skipped for
-    // nested templates (<ng-template> tags).
-    if (this.level === 0 && this._hasNgContent) {
+    // Output the `projectionDef` instruction when some `<ng-content>` tags are present.
+    // The `projectionDef` instruction is only emitted for the component template and
+    // is skipped for nested templates (<ng-template> tags).
+    if (this.level === 0 && this._ngContentReservedSlots.length) {
       const parameters: o.Expression[] = [];
 
-      // Only selectors with a non-default value are generated
-      if (this._ngContentSelectors.length) {
-        const r3Selectors = this._ngContentSelectors.map(s => core.parseSelectorToR3Selector(s));
-        parameters.push(this.constantPool.getConstLiteral(asLiteral(r3Selectors), true));
+      // By default the `projectionDef` instructions creates one slot for the wildcard
+      // selector if no parameters are passed. Therefore we only want to allocate a new
+      // array for the projection slots if the default projection slot is not sufficient.
+      if (this._ngContentReservedSlots.length > 1 || this._ngContentReservedSlots[0] !== '*') {
+        const r3ReservedSlots = this._ngContentReservedSlots.map(
+            s => s !== '*' ? core.parseSelectorToR3Selector(s) : s);
+        parameters.push(this.constantPool.getConstLiteral(asLiteral(r3ReservedSlots), true));
       }
 
       // Since we accumulate ngContent selectors while processing template elements,
@@ -461,13 +460,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitContent(ngContent: t.Content) {
-    this._hasNgContent = true;
     const slot = this.allocateDataSlot();
-    let selectorIndex = ngContent.selector === DEFAULT_NG_CONTENT_SELECTOR ?
-        0 :
-        this._ngContentSelectors.push(ngContent.selector) + this._ngContentSelectorsOffset;
+    const projectionSlotIdx = this._ngContentSelectorsOffset + this._ngContentReservedSlots.length;
     const parameters: o.Expression[] = [o.literal(slot)];
     const attributes: o.Expression[] = [];
+
+    this._ngContentReservedSlots.push(ngContent.selector);
 
     ngContent.attributes.forEach((attribute) => {
       const {name, value} = attribute;
@@ -479,9 +477,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (attributes.length > 0) {
-      parameters.push(o.literal(selectorIndex), o.literalArr(attributes));
-    } else if (selectorIndex !== 0) {
-      parameters.push(o.literal(selectorIndex));
+      parameters.push(o.literal(projectionSlotIdx), o.literalArr(attributes));
+    } else if (projectionSlotIdx !== 0) {
+      parameters.push(o.literal(projectionSlotIdx));
     }
 
     this.creationInstruction(ngContent.sourceSpan, R3.projection, parameters);
@@ -856,11 +854,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
           template.children, template.variables,
-          this._ngContentSelectors.length + this._ngContentSelectorsOffset, template.i18n);
+          this._ngContentReservedSlots.length + this._ngContentSelectorsOffset, template.i18n);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
-      if (templateVisitor._hasNgContent) {
-        this._hasNgContent = true;
-        this._ngContentSelectors.push(...templateVisitor._ngContentSelectors);
+      if (templateVisitor._ngContentReservedSlots.length) {
+        this._ngContentReservedSlots.push(...templateVisitor._ngContentReservedSlots);
       }
     });
 
@@ -972,8 +969,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   getVarCount() { return this._pureFunctionSlots; }
 
   getNgContentSelectors(): o.Expression|null {
-    return this._hasNgContent ?
-        this.constantPool.getConstLiteral(asLiteral(this._ngContentSelectors), true) :
+    return this._ngContentReservedSlots.length ?
+        this.constantPool.getConstLiteral(asLiteral(this._ngContentReservedSlots), true) :
         null;
   }
 

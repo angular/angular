@@ -100,7 +100,7 @@ export {
   ɵɵtext,
   ɵɵtextBinding} from './instructions/all';
 export {RenderFlags} from './interfaces/definition';
-export {CssSelectorList} from './interfaces/projection';
+export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 
 export {
   ɵɵrestoreView,
