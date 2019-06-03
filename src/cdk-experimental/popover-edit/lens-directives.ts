@@ -7,7 +7,15 @@
  */
 
 import {ReplaySubject} from 'rxjs';
-import {Directive, ElementRef, EventEmitter, OnDestroy, OnInit, HostListener} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Input,
+  HostListener,
+} from '@angular/core';
 import {EDIT_PANE_SELECTOR} from './constants';
 import {closest} from './polyfill';
 import {EditRef} from './edit-ref';
@@ -160,6 +168,9 @@ export class CdkEditControl<FormValue> implements OnDestroy, OnInit {
   }
 })
 export class CdkEditRevert<FormValue> {
+  /** Type of the button. Defaults to `button` to avoid accident form submits. */
+  @Input() type: string = 'button';
+
   constructor(
       protected readonly editRef: EditRef<FormValue>) {}
 
@@ -181,6 +192,9 @@ export class CdkEditRevert<FormValue> {
   }
 })
 export class CdkEditClose<FormValue> {
+  /** Type of the button. Defaults to `button` to avoid accident form submits. */
+  @Input() type: string = 'button';
+
   constructor(
       protected readonly editRef: EditRef<FormValue>) {}
 
