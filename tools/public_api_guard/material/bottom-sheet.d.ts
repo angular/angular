@@ -26,6 +26,7 @@ export declare class MatBottomSheetConfig<D = any> {
     hasBackdrop?: boolean;
     panelClass?: string | string[];
     restoreFocus?: boolean;
+    scrollStrategy?: ScrollStrategy;
     viewContainerRef?: ViewContainerRef;
 }
 

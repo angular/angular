@@ -152,11 +152,8 @@ export class MatBottomSheet implements OnDestroy {
       hasBackdrop: config.hasBackdrop,
       disposeOnNavigation: config.closeOnNavigation,
       maxWidth: '100%',
-      scrollStrategy: this._overlay.scrollStrategies.block(),
-      positionStrategy: this._overlay.position()
-        .global()
-        .centerHorizontally()
-        .bottom('0')
+      scrollStrategy: config.scrollStrategy || this._overlay.scrollStrategies.block(),
+      positionStrategy: this._overlay.position().global().centerHorizontally().bottom('0')
     });
 
     if (config.backdropClass) {
