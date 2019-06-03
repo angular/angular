@@ -211,6 +211,16 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return this.getMembersOfSymbol(innerFunctionSymbol);
   }
 
+  /** Gets all decorators of the given class symbol. */
+  getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
+    const innerFunctionSymbol =
+        this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
+    if (!innerFunctionSymbol) return null;
+
+    return super.getDecoratorsOfSymbol(innerFunctionSymbol);
+  }
+
 
   ///////////// Protected Helpers /////////////
 
@@ -319,15 +329,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (!innerFunctionSymbol) return [];
 
     return super.getConstructorParamInfo(innerFunctionSymbol, parameterNodes);
-  }
-
-  protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
-    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
-    const innerFunctionSymbol =
-        this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
-    if (!innerFunctionSymbol) return null;
-
-    return super.getDecoratorsOfSymbol(innerFunctionSymbol);
   }
 
   /**
